@@ -1,0 +1,54 @@
+@import url(../reindeer/styles.css);
+
+.gcp-window-title {
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.gcp-content-title {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.gcp-section-title {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.gcp-form-title {
+	font-weight: bold;
+}
+/* Lay the options horizontally */
+.v-select-optiongroup-horizontal .v-select-option {
+	display: inline-block;
+}
+
+/* Avoid wrapping if the layout is too tight */
+.v-select-optiongroup-horizontal {
+	white-space: nowrap;
+}
+
+/* Some extra spacing is needed */
+.v-select-optiongroup-horizontal
+  .v-select-option.v-radiobutton {
+	align-bottom: 10px;
+}
+
+.addTopSpace {
+	margin-top: 10px;
+	margin-left: 10px
+}
+
+.addSpacing {
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 10px;
+}
+
+.addTablePadding {
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 2px;
+}
