@@ -1,0 +1,77 @@
+/***************************************************************
+ * Copyright (c) 2012, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ **************************************************************/
+
+package org.generationcp.browser.germplasm.listeners;
+
+import org.generationcp.browser.application.GermplasmBrowserMainApplication;
+import org.generationcp.browser.application.MainApplication;
+import org.generationcp.browser.germplasm.GermplasmDetail;
+import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.middleware.exceptions.QueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+
+public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListener{
+
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmItemClickListener.class);
+    private static final long serialVersionUID = -1095503156046245812L;
+
+    private Object sourceClass;
+    private Component sourceComponent;
+
+    public GermplasmItemClickListener(Object sourceClass) {
+	this.sourceClass = sourceClass;
+    }
+
+    public GermplasmItemClickListener(Object sourceClass, Component sourceComponent) {
+	this.sourceClass = sourceClass;
+	this.sourceComponent = sourceComponent;
+    }
+
+    @Override
+    public void itemClick(ItemClickEvent event) {
+
+	if (sourceClass instanceof GermplasmBrowserMainApplication) {
+	    if (event.isDoubleClick()) {
+		((GermplasmBrowserMainApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
+			event.getItem());
+	    }
+	} else if (sourceClass instanceof MainApplication) {
+	    if (event.isDoubleClick()) {
+		((MainApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+	    }
+
+	} else if (sourceClass instanceof GermplasmDetail) {
+	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
+		try {
+		    ((GermplasmDetail) sourceClass).displayGermplasmDetailTab((Integer) event.getItemId());
+		} catch (QueryException e) {
+		    LOG.error("Error in GermplasmDetailTabClick: " + e.getMessage());
+		}
+	    }
+
+	} else if ((sourceClass instanceof SearchGermplasmByPhenotypicTab) && (event.getComponent() == sourceComponent)) {
+	    ((SearchGermplasmByPhenotypicTab) sourceClass).traitTableItemClickAction((Table) event.getSource(), event.getItemId(),
+		    event.getItem());
+	    
+	} else if ((sourceClass instanceof SearchGermplasmByPhenotypicTab) && (event.getComponent() == sourceComponent)) {
+	    ((SearchGermplasmByPhenotypicTab) sourceClass).scaleTableItemClickAction((Table) event.getSource(), event.getItemId(),
+		    event.getItem());
+	}
+
+    }
+
+}
