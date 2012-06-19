@@ -88,7 +88,7 @@ public class WelcomeTab extends VerticalLayout{
 
 	Button germplasmByPhenoButton = new Button("I want to retrieve Germplasms by Phenotypic Data");
 	germplasmByPhenoButton.setWidth(400, UNITS_PIXELS);
-	final VerticalLayout rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
+	rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
 
 	germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this));
 	this.addComponent(germplasmByPhenoButton);
