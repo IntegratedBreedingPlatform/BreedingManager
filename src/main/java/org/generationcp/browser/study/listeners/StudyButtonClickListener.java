@@ -15,9 +15,9 @@ package org.generationcp.browser.study.listeners;
 import java.util.ArrayList;
 
 import org.generationcp.browser.application.MainApplication;
-import org.generationcp.browser.application.StudyBrowserMainApplication;
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.study.RepresentationDatasetComponent;
+import org.generationcp.browser.study.StudyBrowserMainApplication;
 import org.generationcp.browser.study.StudyTreePanel;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;

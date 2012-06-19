@@ -12,7 +12,7 @@
  **************************************************************/
 package org.generationcp.browser.germplasm.listeners;
 
-import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypic;
+import org.generationcp.browser.application.SearchGermplasmByPhenotypic;
 
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;

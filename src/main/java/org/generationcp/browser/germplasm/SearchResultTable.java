@@ -10,7 +10,7 @@
  * 
  **************************************************************/
 
-package org.generationcp.browser.application;
+package org.generationcp.browser.germplasm;
 
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;

@@ -10,7 +10,7 @@
  * 
  **************************************************************/
 
-package org.generationcp.browser.application;
+package org.generationcp.browser.germplasm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +34,7 @@ public class SearchForm extends VerticalLayout implements Property.ValueChangeLi
     private static final List<String> searchOption = Arrays.asList(new String[] { "GID", "Names" });
     private static final List<String> instanceOption = Arrays.asList(new String[] { "Central", "Local" });
 
-    SearchForm() {
+    public SearchForm() {
 
 	GridLayout grid = new GridLayout(4, 4);
 	setSpacing(true);

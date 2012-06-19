@@ -10,12 +10,15 @@
  * 
  **************************************************************/
 
-package org.generationcp.browser.germplasm;
+package org.generationcp.browser.application;
 
-import org.generationcp.browser.application.GermplasmBrowserMainApplication;
-import org.generationcp.browser.application.StudyBrowserMainApplication;
-import org.generationcp.browser.application.WelcomeTab;
+import org.generationcp.browser.germplasm.DatasourceConfig;
+import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
+import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
+import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
+import org.generationcp.browser.study.StudyBrowserMainApplication;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.ManagerFactory;

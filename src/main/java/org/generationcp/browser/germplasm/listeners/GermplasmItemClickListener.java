@@ -12,8 +12,8 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
-import org.generationcp.browser.application.GermplasmBrowserMainApplication;
 import org.generationcp.browser.application.MainApplication;
+import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.middleware.exceptions.QueryException;

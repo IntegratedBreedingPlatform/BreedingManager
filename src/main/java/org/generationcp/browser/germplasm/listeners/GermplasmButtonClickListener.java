@@ -12,9 +12,9 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
-import org.generationcp.browser.application.GermplasmBrowserMainApplication;
 import org.generationcp.browser.application.MainApplication;
 import org.generationcp.browser.application.WelcomeTab;
+import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

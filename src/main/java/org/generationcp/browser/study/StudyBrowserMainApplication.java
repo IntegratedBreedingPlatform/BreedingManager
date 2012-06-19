@@ -10,9 +10,8 @@
  * 
  **************************************************************/
 
-package org.generationcp.browser.application;
+package org.generationcp.browser.study;
 
-import org.generationcp.browser.study.StudyTreePanel;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;

@@ -9,11 +9,8 @@
  * governing permissions and limitations under the License.
  */
 
-package org.generationcp.browser.application;
+package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.germplasm.GermplasmDetail;
-import org.generationcp.browser.germplasm.GermplasmIndexContainer;
-import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.util.Util;
