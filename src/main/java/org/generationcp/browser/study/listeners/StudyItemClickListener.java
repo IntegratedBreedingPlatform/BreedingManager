@@ -25,10 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.TabSheet.Tab;
 
 public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
     
@@ -36,15 +34,9 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
     private static final long serialVersionUID = -5286616518840026212L;
 
     private Layout source;
-    private ArrayList<Object> parameters;
 
     public StudyItemClickListener(Layout source) {
 	this.source = source;
-    }
-
-    public StudyItemClickListener(Layout source, ArrayList<Object> parameters) {
-	this.source = source;
-	this.parameters = parameters;
     }
 
     @Override

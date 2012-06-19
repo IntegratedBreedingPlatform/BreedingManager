@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
-import org.generationcp.browser.study.listeners.StudySelectedTabChangeListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
 import org.generationcp.browser.util.Util;
 import org.generationcp.middleware.exceptions.QueryException;
@@ -29,23 +28,18 @@ import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Study;
 
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 public class StudyTreePanel extends VerticalLayout{
+
+    private static final long serialVersionUID = -3481988646509402160L;
 
     private final static Logger LOG = LoggerFactory.getLogger(StudyTreePanel.class);
 
@@ -56,11 +50,6 @@ public class StudyTreePanel extends VerticalLayout{
     private HorizontalLayout studyBrowserMainLayout;
     private VerticalLayout studyLayout;
     private TraitDataManager traitDataManager;
-    private VerticalLayout layoutVariate;
-    private VerticalLayout layoutFactor;
-    private VerticalLayout layoutEffect;
-    private Accordion accordion;
-    private int studyId;
 
     public StudyTreePanel(ManagerFactory factory, HorizontalLayout studyBrowserMainLayout, Database database) {
 
@@ -178,7 +167,8 @@ public class StudyTreePanel extends VerticalLayout{
 	tabSheetStudy.setWidth("900px");
 
 	if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-	    layout.addComponent(createStudyAccordionMenu(studyId));
+	    layout.addComponent(new StudyAccordionMenu(studyId, 
+		    new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager, traitDataManager));
 	    Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
 	    tab.setClosable(true);
 
@@ -194,58 +184,6 @@ public class StudyTreePanel extends VerticalLayout{
     private String getStudyName(int studyId) throws QueryException {
 	String s = this.studyDataManager.getStudyByID(studyId).getName();
 	return s;
-    }
-
-    @SuppressWarnings("serial")
-    private Accordion createStudyAccordionMenu(final int studyId) throws QueryException {
-	// Create the Accordion.
-//	final Accordion accordion = new Accordion();
-	this.accordion = new Accordion();
-	this.studyId = studyId;
-
-	// Have it take all space available in the layout.
-	accordion.setSizeFull();
-
-	layoutVariate = new VerticalLayout();
-	layoutFactor = new VerticalLayout();
-	layoutEffect = new VerticalLayout();
-
-	accordion.addTab(new StudyDetailComponent(this.studyDataManager, studyId), "Study Detail");
-	accordion.addTab(layoutFactor, "Factor");
-	accordion.addTab(layoutVariate, "Variates");
-	accordion.addTab(layoutEffect, "Effects");
-
-	accordion.addListener(new StudySelectedTabChangeListener(this));
-	return accordion;
-
-    }
-
-    // Called by StudySelectedTabChangeListener
-    public void accordionSelectedTabChangeAction() {
-	Component selected = accordion.getSelectedTab();
-	Tab tab = accordion.getTab(selected);
-	if (tab.getCaption().equals("Factor")) {
-	    if (layoutFactor.getComponentCount() == 0) {
-		try {
-		    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
-		} catch (QueryException e) {
-		    e.printStackTrace();
-		}
-	    }
-	} else if (tab.getCaption().equals("Variates")) {
-	    if (layoutVariate.getComponentCount() == 0) {
-		try {
-		    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
-		} catch (QueryException e) {
-		    e.printStackTrace();
-		}
-	    }
-	} else if (tab.getCaption().equals("Effects")) {
-	    if (layoutEffect.getComponentCount() == 0) {
-		layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, accordion));
-
-	    }
-	}
     }
 
     private boolean hasChildStudy(int studyId) {
@@ -268,4 +206,5 @@ public class StudyTreePanel extends VerticalLayout{
 	}
 	return false;
     }
+    
 }

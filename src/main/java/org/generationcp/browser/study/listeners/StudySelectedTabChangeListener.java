@@ -12,6 +12,7 @@
  **************************************************************/
 package org.generationcp.browser.study.listeners;
 
+import org.generationcp.browser.study.StudyAccordionMenu;
 import org.generationcp.browser.study.StudyTreePanel;
 
 import com.vaadin.ui.Layout;
@@ -22,20 +23,19 @@ public class StudySelectedTabChangeListener implements TabSheet.SelectedTabChang
 
     private static final long serialVersionUID = -1276034489275080024L;
     
-    private Layout source;
+    private Object source;
     
-    public StudySelectedTabChangeListener(Layout source){
+    public StudySelectedTabChangeListener(Object source){
 	this.source = source;
     }
 
     @Override
     public void selectedTabChange(SelectedTabChangeEvent event) {
 
-	if (source instanceof StudyTreePanel){
-	    ((StudyTreePanel) source).accordionSelectedTabChangeAction();
+	if (source instanceof StudyAccordionMenu){
+	    ((StudyAccordionMenu) source).selectedTabChangeAction();
 	    
 	}
-	
     }
 
 }

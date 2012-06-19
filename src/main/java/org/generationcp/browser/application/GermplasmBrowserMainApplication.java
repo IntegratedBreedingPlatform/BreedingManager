@@ -86,54 +86,6 @@ public class GermplasmBrowserMainApplication extends VerticalLayout{
 	Button btnSearch = new Button("Search");
 	btnSearch.addStyleName("addTopSpace");
 
-//	btnSearch.addListener(new Button.ClickListener() {
-//
-//	    public void buttonClick(ClickEvent event) {
-//
-//		searchChoice = searchOption.getChoice();
-//		searchValue = searchOption.getSearchValue();
-//		instanceChoice = searchOption.getDatabaseInstance();
-//
-//		if (instanceChoice.equals("Central")) {
-//		    instance = Database.CENTRAL;
-//		} else {
-//		    instance = Database.LOCAL;
-//		}
-//
-//		try {
-//		    boolean withNoError = true;
-//		    if (searchValue.length() > 0) {
-//			Window window;
-//			if (searchChoice.equals("GID")) {
-//			    try {
-//				int gid = Integer.parseInt(searchValue);
-//				displayGermplasmDetailTab(gid);
-//			    } catch (QueryException e) {
-//				// Log into log file
-//				LOG.error(e.toString() + "\n" + e.getStackTrace());
-//				withNoError = false;
-//				e.printStackTrace();
-//			    } catch (NumberFormatException nFE) {
-//				// Log into log file
-//				LOG.error(nFE.toString() + "\n" + nFE.getStackTrace());
-//				withNoError = false;
-//				// mainLayout.showNotification("Invalid Input","Must be numeric");
-//			    }
-//			}
-//			if (withNoError) {
-//			    dataSourceResult = dataResultIndexContainer.getGermplasResultContainer(searchChoice,
-//				    searchValue, instance);
-//			    resultTable.setCaption("Germplasm Search Result: " + dataSourceResult.size());
-//			    resultTable.setContainerDataSource(dataSourceResult);
-//			    mainLayout.requestRepaintAll();
-//			}
-//		    }
-//		} catch (Exception e) {
-//		    e.printStackTrace();
-//		}
-//	    }
-//	});
-
 	btnSearch.addListener(new GermplasmButtonClickListener(this));
 
 	searchFormLayout.addComponent(btnSearch, 2, 1);
