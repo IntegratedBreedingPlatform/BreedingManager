@@ -126,7 +126,7 @@ public class GermplasmStudyBrowserApplication extends Application{
 		return germplasmByPhenoWindow;
 	    }
 
-	    else if (name.equals("study-browser")) {
+	    else if (name.equals("study")) {
 
 		Window studyBrowserWindow = new Window("Study Browser");
 		studyBrowserWindow.setName("study-browser");
@@ -136,7 +136,7 @@ public class GermplasmStudyBrowserApplication extends Application{
 		return studyBrowserWindow;
 	    }
 
-	    else if (name.equals("germplasm-browser")) {
+	    else if (name.equals("germplasm")) {
 
 		Window germplasmBrowserWindow = new Window("Germplasm Browser");
 		germplasmBrowserWindow.setName("germplasm-browser");
