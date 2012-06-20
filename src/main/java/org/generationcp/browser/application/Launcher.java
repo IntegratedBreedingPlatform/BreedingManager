@@ -35,13 +35,13 @@ public class Launcher{
 //	germplasmBrowser.setInitParameter("application",
 //		"org.generationcp.browser.germplasm.application.MainApplication");
 	germplasmBrowser.setInitParameter("application",
-		"org.generationcp.browser.application.MainApplication");
+		"org.generationcp.browser.application.GermplasmBrowserOnlyApplication");
 	// vaadinLoader.setInitParameter("widgetsets",
 	// "org.generationcp.browser.germplasm.application.widgetset.GermplasmBrowserWidgetset");
 
 	ServletHolder germplasmBrowserByPhenotypic = new ServletHolder(new ApplicationServlet());
 	germplasmBrowserByPhenotypic.setInitParameter("application",
-		"org.generationcp.browser.germplasm.SearchGermplasmByPhenotypic");
+		"org.generationcp.browser.application.GermplasmStudyBrowserApplication");
 
 	context.addServlet(germplasmBrowser, "/GermplasmBrowser/*");
 	context.addServlet(germplasmBrowser, "/VAADIN/*");

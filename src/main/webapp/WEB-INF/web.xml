@@ -15,7 +15,7 @@
 		<init-param>
 			<description>GermplasmBrowser application class to start</description>
 			<param-name>application</param-name>
-			<param-value>org.generationcp.browser.germplasm.application.MainApplication</param-value>
+			<param-value>org.generationcp.browser.application.GermplasmBrowserOnlyApplication</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
@@ -29,7 +29,7 @@
 		<init-param>
 			<description>GermplasmBrowser application class to start</description>
 			<param-name>application</param-name>
-			<param-value>org.generationcp.browser.germplasm.application.SearchGermplasmByPhenotypic</param-value>
+			<param-value>org.generationcp.browser.application.GermplasmStudyBrowserApplication</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

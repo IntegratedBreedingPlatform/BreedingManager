@@ -33,9 +33,9 @@ import com.vaadin.ui.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearchGermplasmByPhenotypic extends Application{
+public class GermplasmStudyBrowserApplication extends Application{
 
-    private final static Logger LOG = LoggerFactory.getLogger(SearchGermplasmByPhenotypic.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GermplasmStudyBrowserApplication.class);
 
     private static final long serialVersionUID = -2630998412856758023L;
 

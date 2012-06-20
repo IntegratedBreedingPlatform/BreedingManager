@@ -12,7 +12,7 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
-import org.generationcp.browser.application.MainApplication;
+import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
@@ -49,9 +49,9 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 		((GermplasmBrowserMainApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
 			event.getItem());
 	    }
-	} else if (sourceClass instanceof MainApplication) {
+	} else if (sourceClass instanceof GermplasmBrowserOnlyApplication) {
 	    if (event.isDoubleClick()) {
-		((MainApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+		((GermplasmBrowserOnlyApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
 	    }
 
 	} else if (sourceClass instanceof GermplasmDetail) {

@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
-	<artifactId>GermplasmBrowser</artifactId>
+	<artifactId>GermplasmStudyBrowser</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
-	<name>GermplasmBrowser</name>
+	<name>GermplasmStudyBrowser</name>
 	<!-- TODO <organization> <name>company name</name> <url>company url</url> 
 		</organization> -->
 	<licenses>
@@ -182,7 +182,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.generationcp.browser.germplasm.application.Launcher
+							<mainClass>org.generationcp.browser.application.Launcher
 							</mainClass>
 						</manifest>
 					</archive>

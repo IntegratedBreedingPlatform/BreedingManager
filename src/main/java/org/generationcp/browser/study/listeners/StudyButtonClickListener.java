@@ -14,7 +14,7 @@ package org.generationcp.browser.study.listeners;
 
 import java.util.ArrayList;
 
-import org.generationcp.browser.application.MainApplication;
+import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.study.RepresentationDatasetComponent;
 import org.generationcp.browser.study.StudyBrowserMainApplication;

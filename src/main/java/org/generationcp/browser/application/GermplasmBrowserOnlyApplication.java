@@ -44,9 +44,9 @@ import com.vaadin.ui.Window;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-public class MainApplication extends Application{
+public class GermplasmBrowserOnlyApplication extends Application{
 
-    private final static Logger LOG = LoggerFactory.getLogger(MainApplication.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserOnlyApplication.class);
 
     private Window window;
     private VerticalLayout mainLayout;
@@ -85,7 +85,7 @@ public class MainApplication extends Application{
 	searchFormLayout = new HorizontalLayout();
 
 	this.searchOption = new SearchForm();
-	final SearchGermplasmByPhenotypic searchPhenotypic = new SearchGermplasmByPhenotypic();
+	final GermplasmStudyBrowserApplication searchPhenotypic = new GermplasmStudyBrowserApplication();
 	searchFormLayout.addComponent(searchOption);
 
 	Button btnSearch = new Button("Search");
