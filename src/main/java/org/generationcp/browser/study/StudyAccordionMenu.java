@@ -20,65 +20,63 @@ import org.generationcp.middleware.manager.api.TraitDataManager;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.TabSheet.Tab;
 
 public class StudyAccordionMenu extends Accordion{
 
-    private static final long serialVersionUID = -1409312205229461614L;
-    private int studyId;
-    private VerticalLayout layoutVariate;
-    private VerticalLayout layoutFactor;
-    private VerticalLayout layoutEffect;
-    
-    private StudyDataManager studyDataManager;
-    private TraitDataManager traitDataManager;
+	private static final long serialVersionUID = -1409312205229461614L;
+	private int studyId;
+	private VerticalLayout layoutVariate;
+	private VerticalLayout layoutFactor;
+	private VerticalLayout layoutEffect;
 
-    public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager, TraitDataManager traitDataManager) {
-	this.studyId = studyId;
-	this.studyDataManager = studyDataManager;
-	this.traitDataManager = traitDataManager;
-	// Have it take all space available in the layout.
-	this.setSizeFull();
+	private StudyDataManager studyDataManager;
+	private TraitDataManager traitDataManager;
 
-	layoutVariate = new VerticalLayout();
-	layoutFactor = new VerticalLayout();
-	layoutEffect = new VerticalLayout();
-	this.addTab(studyDetailComponent, "Study Detail");
-	this.addTab(layoutFactor, "Factor");
-	this.addTab(layoutVariate, "Variates");
-	this.addTab(layoutEffect, "Effects");
+	public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager, TraitDataManager traitDataManager) {
+		this.studyId = studyId;
+		this.studyDataManager = studyDataManager;
+		this.traitDataManager = traitDataManager;
+		// Have it take all space available in the layout.
+		this.setSizeFull();
 
-	this.addListener(new StudySelectedTabChangeListener(this));
-    }
+		layoutVariate = new VerticalLayout();
+		layoutFactor = new VerticalLayout();
+		layoutEffect = new VerticalLayout();
+		this.addTab(studyDetailComponent, "Study Detail");
+		this.addTab(layoutFactor, "Factor");
+		this.addTab(layoutVariate, "Variates");
+		this.addTab(layoutEffect, "Effects");
 
-    public void selectedTabChangeAction() {
-	Component selected = this.getSelectedTab();
-	Tab tab = this.getTab(selected);
-	if (tab.getCaption().equals("Factor")) {
-	    if (layoutFactor.getComponentCount() == 0) {
-		try {
-		    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
-		} catch (QueryException e) {
-		    e.printStackTrace();
-		}
-	    }
-	} else if (tab.getCaption().equals("Variates")) {
-	    if (layoutVariate.getComponentCount() == 0) {
-		try {
-		    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
-		} catch (QueryException e) {
-		    e.printStackTrace();
-		}
-	    }
-	} else if (tab.getCaption().equals("Effects")) {
-	    if (layoutEffect.getComponentCount() == 0) {
-		layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
-
-	    }
+		this.addListener(new StudySelectedTabChangeListener(this));
 	}
 
-    }
+	public void selectedTabChangeAction() {
+		Component selected = this.getSelectedTab();
+		Tab tab = this.getTab(selected);
+		if (tab.getCaption().equals("Factor")) {
+			if (layoutFactor.getComponentCount() == 0) {
+				try {
+					layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
+				} catch (QueryException e) {
+					e.printStackTrace();
+				}
+			}
+		} else if (tab.getCaption().equals("Variates")) {
+			if (layoutVariate.getComponentCount() == 0) {
+				try {
+					layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
+				} catch (QueryException e) {
+					e.printStackTrace();
+				}
+			}
+		} else if (tab.getCaption().equals("Effects")) {
+			if (layoutEffect.getComponentCount() == 0) {
+				layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
+
+			}
+		}
+
+	}
 
 }

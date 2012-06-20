@@ -23,7 +23,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class SearchForm extends VerticalLayout implements Property.ValueChangeListener{
+public class GermplasmSearchFormComponent extends VerticalLayout implements Property.ValueChangeListener{
 
     private String choice;
     private String searchValue;
@@ -34,7 +34,7 @@ public class SearchForm extends VerticalLayout implements Property.ValueChangeLi
     private static final List<String> searchOption = Arrays.asList(new String[] { "GID", "Names" });
     private static final List<String> instanceOption = Arrays.asList(new String[] { "Central", "Local" });
 
-    public SearchForm() {
+    public GermplasmSearchFormComponent() {
 
 	GridLayout grid = new GridLayout(4, 4);
 	setSpacing(true);

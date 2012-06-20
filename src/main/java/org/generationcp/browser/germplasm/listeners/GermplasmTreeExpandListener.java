@@ -14,8 +14,7 @@ package org.generationcp.browser.germplasm.listeners;
 
 import java.util.ArrayList;
 
-import org.generationcp.browser.germplasm.GermplasmDetail;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
@@ -39,8 +38,8 @@ public class GermplasmTreeExpandListener implements Tree.ExpandListener{
     @Override
     public void nodeExpand(ExpandEvent event) {
 	
-	if (source instanceof GermplasmDetail) {
-	    ((GermplasmDetail) source).pedigreeTreeExpandAction((Integer) event.getItemId());
+	if (source instanceof GermplasmPedigreeTreeComponent) {
+	    ((GermplasmPedigreeTreeComponent) source).pedigreeTreeExpandAction((Integer) event.getItemId());
 
 	}
 	    

@@ -13,29 +13,27 @@
 package org.generationcp.browser.study.listeners;
 
 import org.generationcp.browser.study.StudyAccordionMenu;
-import org.generationcp.browser.study.StudyTreePanel;
 
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
 public class StudySelectedTabChangeListener implements TabSheet.SelectedTabChangeListener{
 
-    private static final long serialVersionUID = -1276034489275080024L;
-    
-    private Object source;
-    
-    public StudySelectedTabChangeListener(Object source){
-	this.source = source;
-    }
+	private static final long serialVersionUID = -1276034489275080024L;
 
-    @Override
-    public void selectedTabChange(SelectedTabChangeEvent event) {
+	private Object source;
 
-	if (source instanceof StudyAccordionMenu){
-	    ((StudyAccordionMenu) source).selectedTabChangeAction();
-	    
+	public StudySelectedTabChangeListener(Object source){
+		this.source = source;
 	}
-    }
+
+	@Override
+	public void selectedTabChange(SelectedTabChangeEvent event) {
+
+		if (source instanceof StudyAccordionMenu){
+			((StudyAccordionMenu) source).selectedTabChangeAction();
+
+		}
+	}
 
 }

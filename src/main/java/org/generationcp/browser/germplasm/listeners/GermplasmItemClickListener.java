@@ -14,7 +14,7 @@ package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
-import org.generationcp.browser.germplasm.GermplasmDetail;
+import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.slf4j.Logger;
@@ -54,10 +54,10 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 		((GermplasmBrowserOnlyApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
 	    }
 
-	} else if (sourceClass instanceof GermplasmDetail) {
+	} else if (sourceClass instanceof GermplasmPedigreeTreeComponent) {
 	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT) {
 		try {
-		    ((GermplasmDetail) sourceClass).displayGermplasmDetailTab((Integer) event.getItemId());
+		    ((GermplasmPedigreeTreeComponent) sourceClass).displayNewGermplasmDetailTab((Integer) event.getItemId());
 		} catch (QueryException e) {
 		    LOG.error("Error in GermplasmDetailTabClick: " + e.getMessage());
 		}
