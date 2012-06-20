@@ -24,17 +24,17 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>StudyBrowser</servlet-name>
+		<servlet-name>MainApplication</servlet-name>
 		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
 		<init-param>
-			<description>GermplasmBrowser application class to start</description>
+			<description>GermplasmStudyBrowser application class to start</description>
 			<param-name>application</param-name>
 			<param-value>org.generationcp.browser.application.GermplasmStudyBrowserApplication</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>StudyBrowser</servlet-name>
-		<url-pattern>/study/*</url-pattern>
+		<servlet-name>MainApplication</servlet-name>
+		<url-pattern>/main/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
