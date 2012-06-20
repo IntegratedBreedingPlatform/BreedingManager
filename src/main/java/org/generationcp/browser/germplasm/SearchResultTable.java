@@ -13,6 +13,8 @@
 package org.generationcp.browser.germplasm;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
@@ -41,6 +43,15 @@ public class SearchResultTable extends VerticalLayout{
 
 	// set column headers
 	resultTable.setColumnHeaders(new String[] { "GID", "NAMES", "METHOD", "LOCATION" });
+	
+	resultTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return "Click to view germplasm details.";
+            }
+        });
+	
 	return resultTable;
     }
 

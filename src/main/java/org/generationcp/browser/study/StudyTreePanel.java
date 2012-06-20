@@ -14,8 +14,6 @@ package org.generationcp.browser.study;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
@@ -27,8 +25,12 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
@@ -74,6 +76,17 @@ public class StudyTreePanel extends VerticalLayout{
 	    addComponent(refreshButton);
 	}
 
+	//add tooltip
+	studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            
+            private static final long serialVersionUID = -2669417630841097077L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return "Click to view study details";
+            }
+        });
+	
 	panelStudyTree.addComponent(studyTree);
 	addComponent(panelStudyTree);
 

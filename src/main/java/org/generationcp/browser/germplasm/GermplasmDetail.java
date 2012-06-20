@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -31,7 +32,6 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
 import com.vaadin.ui.VerticalLayout;
 
 public class GermplasmDetail extends HorizontalLayout implements TabSheet.SelectedTabChangeListener{
@@ -221,6 +221,18 @@ public class GermplasmDetail extends HorizontalLayout implements TabSheet.Select
 
 	pedigreeTree.addListener(new GermplasmItemClickListener(this));
 	pedigreeTree.addListener(new GermplasmTreeExpandListener(this));
+	
+	//add tooltip
+	pedigreeTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            
+            private static final long serialVersionUID = 3442425534732855473L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return "Click to view germplasm details";
+            }
+        });
+	
 	panelTree.addComponent(pedigreeTree);
     }
 
