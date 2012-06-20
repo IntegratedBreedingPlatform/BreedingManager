@@ -11,7 +11,6 @@
 
 package org.generationcp.browser.application;
 
-import org.generationcp.browser.germplasm.DatasourceConfig;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.GermplasmQueries;
@@ -19,6 +18,7 @@ import org.generationcp.browser.germplasm.SearchForm;
 import org.generationcp.browser.germplasm.SearchResultTable;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
+import org.generationcp.browser.util.DatasourceConfig;
 import org.generationcp.browser.util.Util;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;

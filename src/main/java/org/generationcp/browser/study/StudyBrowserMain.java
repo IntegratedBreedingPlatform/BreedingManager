@@ -21,7 +21,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class StudyBrowserMainApplication extends HorizontalLayout{
+public class StudyBrowserMain extends HorizontalLayout{
 
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
@@ -29,7 +29,7 @@ public class StudyBrowserMainApplication extends HorizontalLayout{
     private HorizontalLayout studyBrowserMainLayout;
     private StudyDataManager studyDataManager;
 
-    public StudyBrowserMainApplication(ManagerFactory factory) {
+    public StudyBrowserMain(ManagerFactory factory) {
 
 	this.studyDataManager = factory.getStudyDataManager();
 

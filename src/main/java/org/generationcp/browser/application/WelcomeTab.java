@@ -12,12 +12,12 @@
 
 package org.generationcp.browser.application;
 
-import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
-import org.generationcp.browser.study.StudyBrowserMainApplication;
+import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
@@ -99,7 +99,7 @@ public class WelcomeTab extends VerticalLayout{
     // Called by GermplasmButtonClickListener
     public void browserGermplasmInfoButtonClickAction(){
 	if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-	    rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMainApplication(factory));
+	    rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory));
 	    rootLayoutForGermplasmBrowser.addStyleName("addSpacing");
 	}
 
@@ -109,7 +109,7 @@ public class WelcomeTab extends VerticalLayout{
     // Called by StudyButtonClickListener
     public void browseStudiesAndDataSets(){
 	if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
-	    rootLayoutForStudyBrowser.addComponent(new StudyBrowserMainApplication(factory));
+	    rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory));
 	    rootLayoutForStudyBrowser.addStyleName("addSpacing");
 	}
 

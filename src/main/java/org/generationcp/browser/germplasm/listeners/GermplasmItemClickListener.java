@@ -13,7 +13,7 @@
 package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
-import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.middleware.exceptions.QueryException;
@@ -44,18 +44,18 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
     @Override
     public void itemClick(ItemClickEvent event) {
 
-	if (sourceClass instanceof GermplasmBrowserMainApplication) {
-	    if (event.isDoubleClick()) {
-		((GermplasmBrowserMainApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
+	if (sourceClass instanceof GermplasmBrowserMain) {
+	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT) {
+		((GermplasmBrowserMain) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
 			event.getItem());
 	    }
 	} else if (sourceClass instanceof GermplasmBrowserOnlyApplication) {
-	    if (event.isDoubleClick()) {
+	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT) {
 		((GermplasmBrowserOnlyApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
 	    }
 
 	} else if (sourceClass instanceof GermplasmDetail) {
-	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
+	    if (event.getButton() == ItemClickEvent.BUTTON_LEFT) {
 		try {
 		    ((GermplasmDetail) sourceClass).displayGermplasmDetailTab((Integer) event.getItemId());
 		} catch (QueryException e) {

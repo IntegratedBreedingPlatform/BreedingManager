@@ -38,9 +38,9 @@ import com.vaadin.ui.Window;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-public class GermplasmBrowserMainApplication extends VerticalLayout{
+public class GermplasmBrowserMain extends VerticalLayout{
 
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMainApplication.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
     private VerticalLayout mainLayout;
     private GridLayout searchFormLayout;
@@ -60,7 +60,7 @@ public class GermplasmBrowserMainApplication extends VerticalLayout{
     
     private SearchForm searchOption;
 
-    public GermplasmBrowserMainApplication(ManagerFactory factory) {
+    public GermplasmBrowserMain(ManagerFactory factory) {
 	try {
 	    initDataSource(factory);
 	} catch (Exception e1) {

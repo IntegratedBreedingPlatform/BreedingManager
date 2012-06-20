@@ -14,7 +14,7 @@ package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.application.WelcomeTab;
-import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +36,8 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
     @Override
     public void buttonClick(ClickEvent event) {
 
-	if ((source instanceof GermplasmBrowserMainApplication) && event.getComponent().getCaption().equals("Search")) {
-	    ((GermplasmBrowserMainApplication) source).searchButtonClickAction();
+	if ((source instanceof GermplasmBrowserMain) && event.getComponent().getCaption().equals("Search")) {
+	    ((GermplasmBrowserMain) source).searchButtonClickAction();
 
 	} else if ((source instanceof GermplasmBrowserOnlyApplication) && event.getComponent().getCaption().equals("Search")) {
 	    ((GermplasmBrowserOnlyApplication) source).searchButtonClickAction();

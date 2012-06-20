@@ -12,13 +12,13 @@
 
 package org.generationcp.browser.application;
 
-import org.generationcp.browser.germplasm.DatasourceConfig;
-import org.generationcp.browser.germplasm.GermplasmBrowserMainApplication;
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
-import org.generationcp.browser.study.StudyBrowserMainApplication;
+import org.generationcp.browser.study.StudyBrowserMain;
+import org.generationcp.browser.util.DatasourceConfig;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
@@ -131,7 +131,7 @@ public class GermplasmStudyBrowserApplication extends Application{
 		Window studyBrowserWindow = new Window("Study Browser");
 		studyBrowserWindow.setName("study-browser");
 		studyBrowserWindow.setSizeUndefined();
-		studyBrowserWindow.addComponent(new StudyBrowserMainApplication(factory));
+		studyBrowserWindow.addComponent(new StudyBrowserMain(factory));
 		this.addWindow(studyBrowserWindow);
 		return studyBrowserWindow;
 	    }
@@ -141,7 +141,7 @@ public class GermplasmStudyBrowserApplication extends Application{
 		Window germplasmBrowserWindow = new Window("Germplasm Browser");
 		germplasmBrowserWindow.setName("germplasm-browser");
 		germplasmBrowserWindow.setSizeUndefined();
-		germplasmBrowserWindow.addComponent(new GermplasmBrowserMainApplication(factory));
+		germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory));
 		this.addWindow(germplasmBrowserWindow);
 		return germplasmBrowserWindow;
 	    }
@@ -182,11 +182,11 @@ public class GermplasmStudyBrowserApplication extends Application{
 
 	} else if (source.getSelectedTab() == rootLayoutForGermplasmBrowser) {
 	    if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-		rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMainApplication(factory));
+		rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory));
 	    }
 	} else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
 	    if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
-		rootLayoutForStudyBrowser.addComponent(new StudyBrowserMainApplication(factory));
+		rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory));
 	    }
 	}
     }

@@ -10,7 +10,7 @@
  * 
  **************************************************************/
 
-package org.generationcp.browser.germplasm;
+package org.generationcp.browser.util;
 
 import java.io.File;
 import java.io.FileInputStream;
