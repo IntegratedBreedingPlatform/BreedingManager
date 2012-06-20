@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.study;
 
@@ -31,26 +31,26 @@ public class StudyBrowserMain extends HorizontalLayout{
 
     public StudyBrowserMain(ManagerFactory factory) {
 
-	this.studyDataManager = factory.getStudyDataManager();
+        this.studyDataManager = factory.getStudyDataManager();
 
-	studyBrowserMainLayout = new HorizontalLayout();
-	studyBrowserMainLayout.setSizeFull();
-	studyBrowserMainLayout.setSpacing(true);
-	studyBrowserMainLayout.setMargin(true);
-	tabSheetStudyDatabaseInstance = new TabSheet();
-	tabSheetStudyDatabaseInstance.setWidth("300px");
-	tabSheetStudyDatabaseInstance.setHeight("600px");
+        studyBrowserMainLayout = new HorizontalLayout();
+        studyBrowserMainLayout.setSizeFull();
+        studyBrowserMainLayout.setSpacing(true);
+        studyBrowserMainLayout.setMargin(true);
+        tabSheetStudyDatabaseInstance = new TabSheet();
+        tabSheetStudyDatabaseInstance.setWidth("300px");
+        tabSheetStudyDatabaseInstance.setHeight("600px");
 
-	tabLocalInstance = new VerticalLayout();
-	tabCentralInstance = new VerticalLayout();
+        tabLocalInstance = new VerticalLayout();
+        tabCentralInstance = new VerticalLayout();
 
-	tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption("Local");
-	tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption("Central");
-	tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-	tabCentralInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.CENTRAL));
-	tabLocalInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.LOCAL));
+        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption("Local");
+        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption("Central");
+        tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
+        tabCentralInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.CENTRAL));
+        tabLocalInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.LOCAL));
 
-	studyBrowserMainLayout.addComponent(tabSheetStudyDatabaseInstance);
-	addComponent(studyBrowserMainLayout);
+        studyBrowserMainLayout.addComponent(tabSheetStudyDatabaseInstance);
+        addComponent(studyBrowserMainLayout);
     }
 }

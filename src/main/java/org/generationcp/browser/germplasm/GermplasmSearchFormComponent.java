@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.germplasm;
 
@@ -36,58 +36,59 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
 
     public GermplasmSearchFormComponent() {
 
-	GridLayout grid = new GridLayout(4, 4);
-	setSpacing(true);
+        GridLayout grid = new GridLayout(4, 4);
+        setSpacing(true);
 
-	searchSelect = new OptionGroup("Search for", searchOption);
-	searchSelect.select("Names");
-	searchSelect.setImmediate(true);
-	searchSelect.addListener(this);
-	searchSelect.addStyleName("horizontal");
-	grid.addComponent(searchSelect, 1, 1);
+        searchSelect = new OptionGroup("Search for", searchOption);
+        searchSelect.select("Names");
+        searchSelect.setImmediate(true);
+        searchSelect.addListener(this);
+        searchSelect.addStyleName("horizontal");
+        grid.addComponent(searchSelect, 1, 1);
 
-	txtSearchValue.addListener(this);
-	txtSearchValue.setImmediate(true);
-	txtSearchValue.addStyleName("addTopSpace");
-	// txtSearchValue.setSizeUndefined();
-	grid.addComponent(txtSearchValue, 2, 1);
+        txtSearchValue.addListener(this);
+        txtSearchValue.setImmediate(true);
+        txtSearchValue.addStyleName("addTopSpace");
+        // txtSearchValue.setSizeUndefined();
+        grid.addComponent(txtSearchValue, 2, 1);
 
-	databaseInstanceOption = new OptionGroup("", instanceOption);
-	databaseInstanceOption.select("Central");
-	databaseInstanceOption.setImmediate(true);
-	databaseInstanceOption.addListener(this);
-	databaseInstanceOption.addStyleName("horizontal");
+        databaseInstanceOption = new OptionGroup("", instanceOption);
+        databaseInstanceOption.select("Central");
+        databaseInstanceOption.setImmediate(true);
+        databaseInstanceOption.addListener(this);
+        databaseInstanceOption.addStyleName("horizontal");
 
-	grid.addComponent(databaseInstanceOption, 2, 2);
-	addComponent(grid);
+        grid.addComponent(databaseInstanceOption, 2, 2);
+        addComponent(grid);
 
-	this.choice = "Name";
-	this.searchValue = "";
-	this.databaseInstance = "Central";
+        this.choice = "Name";
+        this.searchValue = "";
+        this.databaseInstance = "Central";
     }
 
+    @Override
     public void valueChange(ValueChangeEvent event) {
-	// TODO Auto-generated method stub
-	choice = searchSelect.getValue().toString();
-	searchValue = txtSearchValue.getValue().toString();
-	databaseInstance = databaseInstanceOption.getValue().toString();
-	if (choice.equals("GID")) {
-	    databaseInstanceOption.setVisible(false);
-	} else {
-	    databaseInstanceOption.setVisible(true);
-	}
+        // TODO Auto-generated method stub
+        choice = searchSelect.getValue().toString();
+        searchValue = txtSearchValue.getValue().toString();
+        databaseInstance = databaseInstanceOption.getValue().toString();
+        if (choice.equals("GID")) {
+            databaseInstanceOption.setVisible(false);
+        } else {
+            databaseInstanceOption.setVisible(true);
+        }
     }
 
     public String getChoice() {
-	return choice;
+        return choice;
     }
 
     public String getSearchValue() {
-	return searchValue;
+        return searchValue;
     }
 
     public String getDatabaseInstance() {
-	return databaseInstance;
+        return databaseInstance;
     }
 
 }

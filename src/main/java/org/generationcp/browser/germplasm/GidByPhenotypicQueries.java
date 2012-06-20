@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.germplasm;
 
@@ -27,19 +27,19 @@ public class GidByPhenotypicQueries{
     private ManagerFactory factory;
 
     public GidByPhenotypicQueries(ManagerFactory factory, StudyDataManager managerStudy) throws ConfigException {
-	this.factory = factory;
-	this.managerStudy = factory.getStudyDataManager();
+        this.factory = factory;
+        this.managerStudy = factory.getStudyDataManager();
     }
 
     public ArrayList<Integer> getGIDSByPhenotypicData(List<TraitCombinationFilter> filters) {
-	ArrayList<Integer> results = null;
-	try {
+        ArrayList<Integer> results = null;
+        try {
 
-	    results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return (ArrayList<Integer>) results;
+            results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
 
     }
 }

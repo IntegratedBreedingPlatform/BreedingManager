@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.germplasm;
 
@@ -25,38 +25,38 @@ public class SearchResultTable extends VerticalLayout{
     IndexedContainer dataSource;
 
     public SearchResultTable(IndexedContainer dataSource) {
-	this.dataSource = dataSource;
+        this.dataSource = dataSource;
     }
 
     public Table getResultTable() {
-	resultTable = new Table("", this.dataSource);
-	resultTable.setWidth("100%");
-	resultTable.setHeight("200px");
-	// selectable
-	resultTable.setSelectable(true);
-	resultTable.setMultiSelect(false);
-	resultTable.setImmediate(true); // react at once when something is
-					// selected
-	// turn on column reordering and collapsing
-	resultTable.setColumnReorderingAllowed(true);
-	resultTable.setColumnCollapsingAllowed(true);
+        resultTable = new Table("", this.dataSource);
+        resultTable.setWidth("100%");
+        resultTable.setHeight("200px");
+        // selectable
+        resultTable.setSelectable(true);
+        resultTable.setMultiSelect(false);
+        resultTable.setImmediate(true); // react at once when something is
+        // selected
+        // turn on column reordering and collapsing
+        resultTable.setColumnReorderingAllowed(true);
+        resultTable.setColumnCollapsingAllowed(true);
 
-	// set column headers
-	resultTable.setColumnHeaders(new String[] { "GID", "NAMES", "METHOD", "LOCATION" });
-	
-	resultTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-            
+        // set column headers
+        resultTable.setColumnHeaders(new String[] { "GID", "NAMES", "METHOD", "LOCATION" });
+
+        resultTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
                 return "Click to view germplasm details.";
             }
         });
-	
-	return resultTable;
+
+        return resultTable;
     }
 
     public void setDataSource(IndexedContainer dataSource) {
-	this.dataSource = dataSource;
+        this.dataSource = dataSource;
     }
 
 }

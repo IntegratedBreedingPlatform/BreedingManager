@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.util;
 
@@ -47,57 +47,57 @@ public class DatasourceConfig{
 
     public DatasourceConfig() {
 
-	Properties prop = new Properties();
+        Properties prop = new Properties();
 
-	try {
-	    InputStream in = null;
+        try {
+            InputStream in = null;
 
-	    try {
-		in = new FileInputStream(new File(ResourceFinder.locateFile("IBPDatasource.properties").toURI()));
-	    } catch (IllegalArgumentException ex) {
-		in = getClass().getClassLoader().getResourceAsStream("IBPDatasource.properties");
-	    }
-	    prop.load(in);
+            try {
+                in = new FileInputStream(new File(ResourceFinder.locateFile("IBPDatasource.properties").toURI()));
+            } catch (IllegalArgumentException ex) {
+                in = getClass().getClassLoader().getResourceAsStream("IBPDatasource.properties");
+            }
+            prop.load(in);
 
-	    localHost = prop.getProperty("local.host");
-	    localDbname = prop.getProperty("local.dbname");
-	    localPort = prop.getProperty("local.port");
-	    localUsername = prop.getProperty("local.username");
-	    localPassword = prop.getProperty("local.password");
+            localHost = prop.getProperty("local.host");
+            localDbname = prop.getProperty("local.dbname");
+            localPort = prop.getProperty("local.port");
+            localUsername = prop.getProperty("local.username");
+            localPassword = prop.getProperty("local.password");
 
-	    centralHost = prop.getProperty("central.host");
-	    centralDbname = prop.getProperty("central.dbname");
-	    centralPort = prop.getProperty("central.port");
-	    centralUsername = prop.getProperty("central.username");
-	    centralPassword = prop.getProperty("central.password");
+            centralHost = prop.getProperty("central.host");
+            centralDbname = prop.getProperty("central.dbname");
+            centralPort = prop.getProperty("central.port");
+            centralUsername = prop.getProperty("central.username");
+            centralPassword = prop.getProperty("central.password");
 
-	    in.close();
+            in.close();
 
-	    DatabaseConnectionParameters local = new DatabaseConnectionParameters(localHost, localPort, localDbname,
-		    localUsername, localPassword);
-	    DatabaseConnectionParameters central = new DatabaseConnectionParameters(centralHost, centralPort,
-		    centralDbname, centralUsername, centralPassword);
-	    managerFactory = new ManagerFactory(local, central);
-	} catch (URISyntaxException e) {
-	    e.printStackTrace();
-	} catch (HibernateException e) {
-	    // Log the error
-	    LOG.error(e.toString() + "\n" + e.getStackTrace());
-	    e.printStackTrace();
-	} catch (ConfigException e) {
-	    // Log the error
-	    LOG.error(e.toString() + "\n" + e.getStackTrace());
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // Log the error
-	    LOG.error(e.toString() + "\n" + e.getStackTrace());
-	    e.printStackTrace();
-	}
+            DatabaseConnectionParameters local = new DatabaseConnectionParameters(localHost, localPort, localDbname, localUsername,
+                    localPassword);
+            DatabaseConnectionParameters central = new DatabaseConnectionParameters(centralHost, centralPort, centralDbname,
+                    centralUsername, centralPassword);
+            managerFactory = new ManagerFactory(local, central);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (HibernateException e) {
+            // Log the error
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+        } catch (ConfigException e) {
+            // Log the error
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+        } catch (IOException e) {
+            // Log the error
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+        }
 
     }
 
     public ManagerFactory getManagerFactory() {
-	return this.managerFactory;
+        return this.managerFactory;
     }
 
 }

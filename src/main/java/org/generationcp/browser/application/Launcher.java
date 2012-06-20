@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,11 +8,13 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.application;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
@@ -25,41 +27,45 @@ public class Launcher{
     private static final Logger LOG = LoggerFactory.getLogger(Launcher.class);
 
     public static void main(String[] args) throws Exception {
-	Server server = new Server(8080);
+        Server server = new Server();
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setMaxIdleTime(0); // in ms, 0 for infinite timeout
+        connector.setSoLingerTime(-1);
+        connector.setPort(8080);
+        server.setConnectors(new Connector[] { connector });
 
-	WebAppContext context = new WebAppContext();
-	context.setContextPath("/");
-	context.setResourceBase("./src");
+        WebAppContext context = new WebAppContext();
+        context.setContextPath("/");
+        context.setResourceBase("./src");
 
-	ServletHolder germplasmBrowser = new ServletHolder(new ApplicationServlet());
-//	germplasmBrowser.setInitParameter("application",
-//		"org.generationcp.browser.germplasm.application.MainApplication");
-	germplasmBrowser.setInitParameter("application",
-		"org.generationcp.browser.application.GermplasmBrowserOnlyApplication");
-	// vaadinLoader.setInitParameter("widgetsets",
-	// "org.generationcp.browser.germplasm.application.widgetset.GermplasmBrowserWidgetset");
+        ServletHolder germplasmBrowser = new ServletHolder(new ApplicationServlet());
+        // germplasmBrowser.setInitParameter("application",
+        // "org.generationcp.browser.germplasm.application.MainApplication");
+        germplasmBrowser.setInitParameter("application", "org.generationcp.browser.application.GermplasmBrowserOnlyApplication");
+        // vaadinLoader.setInitParameter("widgetsets",
+        // "org.generationcp.browser.germplasm.application.widgetset.GermplasmBrowserWidgetset");
 
-	ServletHolder germplasmBrowserByPhenotypic = new ServletHolder(new ApplicationServlet());
-	germplasmBrowserByPhenotypic.setInitParameter("application",
-		"org.generationcp.browser.application.GermplasmStudyBrowserApplication");
+        ServletHolder germplasmBrowserByPhenotypic = new ServletHolder(new ApplicationServlet());
+        germplasmBrowserByPhenotypic.setInitParameter("application",
+                "org.generationcp.browser.application.GermplasmStudyBrowserApplication");
 
-	context.addServlet(germplasmBrowser, "/GermplasmBrowser/*");
-	context.addServlet(germplasmBrowser, "/VAADIN/*");
-	context.addServlet(germplasmBrowserByPhenotypic, "/GermplasmStudyBrowser/*");
-	server.setHandler(context);
-	server.start();
-	LOG.info(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
-	// System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
-	// try {
-	// System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
-	// System.in.read();
-	// System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
-	// server.stop();
-	// //server.join();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// System.exit(1);
-	// }
+        context.addServlet(germplasmBrowser, "/GermplasmBrowser/*");
+        context.addServlet(germplasmBrowser, "/VAADIN/*");
+        context.addServlet(germplasmBrowserByPhenotypic, "/GermplasmStudyBrowser/*");
+        server.setHandler(context);
+        server.start();
+        LOG.info(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
+        // System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
+        // try {
+        // System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
+        // System.in.read();
+        // System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
+        // server.stop();
+        // //server.join();
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // System.exit(1);
+        // }
 
     }
 

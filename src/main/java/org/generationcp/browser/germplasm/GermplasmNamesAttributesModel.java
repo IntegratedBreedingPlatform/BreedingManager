@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.germplasm;
 
@@ -21,43 +21,43 @@ public class GermplasmNamesAttributesModel{
     String TypeDesc;
 
     public String getType() {
-	return Type;
+        return Type;
     }
 
     public void setType(String type) {
-	Type = type;
+        Type = type;
     }
 
     public String getName() {
-	return Name;
+        return Name;
     }
 
     public void setName(String name) {
-	Name = name;
+        Name = name;
     }
 
     public String getDate() {
-	return Date;
+        return Date;
     }
 
     public void setDate(String date) {
-	Date = date;
+        Date = date;
     }
 
     public String getLocation() {
-	return Location;
+        return Location;
     }
 
     public void setLocation(String location) {
-	Location = location;
+        Location = location;
     }
 
     public String getTypeDesc() {
-	return TypeDesc;
+        return TypeDesc;
     }
 
     public void setTypeDesc(String typeDesc) {
-	TypeDesc = typeDesc;
+        TypeDesc = typeDesc;
     }
 
 }

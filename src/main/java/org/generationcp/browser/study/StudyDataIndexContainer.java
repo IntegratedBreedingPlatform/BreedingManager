@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.study;
 
@@ -44,121 +44,121 @@ public class StudyDataIndexContainer{
 
     public StudyDataIndexContainer(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {
 
-	this.studyDataManager = studyDataManager;
-	this.traitDataManager = traitDataManager;
-	this.studyId = studyId;
+        this.studyDataManager = studyDataManager;
+        this.traitDataManager = traitDataManager;
+        this.studyId = studyId;
     }
 
     public IndexedContainer getStudyFactor() throws QueryException {
-	IndexedContainer container = new IndexedContainer();
+        IndexedContainer container = new IndexedContainer();
 
-	// Create the container properties
-	container.addContainerProperty(FACTOR_NAME, String.class, "");
-	container.addContainerProperty(DESCRIPTION, String.class, "");
-	container.addContainerProperty(PROPERTY_NAME, String.class, "");
-	container.addContainerProperty(SCALE_NAME, String.class, "");
-	container.addContainerProperty(METHOD_NAME, String.class, "");
-	container.addContainerProperty(DATATYPE, String.class, "");
+        // Create the container properties
+        container.addContainerProperty(FACTOR_NAME, String.class, "");
+        container.addContainerProperty(DESCRIPTION, String.class, "");
+        container.addContainerProperty(PROPERTY_NAME, String.class, "");
+        container.addContainerProperty(SCALE_NAME, String.class, "");
+        container.addContainerProperty(METHOD_NAME, String.class, "");
+        container.addContainerProperty(DATATYPE, String.class, "");
 
-	ArrayList<Factor> query = (ArrayList<Factor>) studyDataManager.getFactorsByStudyID(studyId);
+        ArrayList<Factor> query = (ArrayList<Factor>) studyDataManager.getFactorsByStudyID(studyId);
 
-	for (Factor f : query) {
+        for (Factor f : query) {
 
-	    String description = getFactorDescription(f.getTraitId());
-	    String propertyName = getProperty(f.getTraitId());
-	    String scaleName = getScaleName(f.getScaleId());
-	    String methodName = getMethodName(f.getMethodId());
+            String description = getFactorDescription(f.getTraitId());
+            String propertyName = getProperty(f.getTraitId());
+            String scaleName = getScaleName(f.getScaleId());
+            String methodName = getMethodName(f.getMethodId());
 
-	    addFactorData(container, f.getName(), description, propertyName, scaleName, methodName, f.getDataType());
-	}
-	return container;
+            addFactorData(container, f.getName(), description, propertyName, scaleName, methodName, f.getDataType());
+        }
+        return container;
     }
 
-    private static void addFactorData(Container container, String factorName, String description, String propertyName,
-	    String scale, String method, String datatype) {
-	Object itemId = container.addItem();
-	Item item = container.getItem(itemId);
-	item.getItemProperty(FACTOR_NAME).setValue(factorName);
-	item.getItemProperty(DESCRIPTION).setValue(description);
-	item.getItemProperty(PROPERTY_NAME).setValue(propertyName);
-	item.getItemProperty(SCALE_NAME).setValue(scale);
-	item.getItemProperty(METHOD_NAME).setValue(method);
-	item.getItemProperty(DATATYPE).setValue(datatype);
+    private static void addFactorData(Container container, String factorName, String description, String propertyName, String scale,
+            String method, String datatype) {
+        Object itemId = container.addItem();
+        Item item = container.getItem(itemId);
+        item.getItemProperty(FACTOR_NAME).setValue(factorName);
+        item.getItemProperty(DESCRIPTION).setValue(description);
+        item.getItemProperty(PROPERTY_NAME).setValue(propertyName);
+        item.getItemProperty(SCALE_NAME).setValue(scale);
+        item.getItemProperty(METHOD_NAME).setValue(method);
+        item.getItemProperty(DATATYPE).setValue(datatype);
 
     }
 
     public IndexedContainer getStudyVariate() throws QueryException {
-	IndexedContainer container = new IndexedContainer();
+        IndexedContainer container = new IndexedContainer();
 
-	// Create the container properties
-	container.addContainerProperty(VARIATE_NAME, String.class, "");
-	container.addContainerProperty(DESCRIPTION, String.class, "");
-	container.addContainerProperty(PROPERTY_NAME, String.class, "");
-	container.addContainerProperty(SCALE_NAME, String.class, "");
-	container.addContainerProperty(METHOD_NAME, String.class, "");
-	container.addContainerProperty(DATATYPE, String.class, "");
+        // Create the container properties
+        container.addContainerProperty(VARIATE_NAME, String.class, "");
+        container.addContainerProperty(DESCRIPTION, String.class, "");
+        container.addContainerProperty(PROPERTY_NAME, String.class, "");
+        container.addContainerProperty(SCALE_NAME, String.class, "");
+        container.addContainerProperty(METHOD_NAME, String.class, "");
+        container.addContainerProperty(DATATYPE, String.class, "");
 
-	ArrayList<Variate> query = (ArrayList<Variate>) studyDataManager.getVariatesByStudyID(studyId);
+        ArrayList<Variate> query = (ArrayList<Variate>) studyDataManager.getVariatesByStudyID(studyId);
 
-	for (Variate v : query) {
+        for (Variate v : query) {
 
-	    String description = getFactorDescription(v.getTraitId());
-	    String propertyName = getProperty(v.getTraitId());
-	    String scaleName = getScaleName(v.getScaleId());
-	    String methodName = getMethodName(v.getMethodId());
+            String description = getFactorDescription(v.getTraitId());
+            String propertyName = getProperty(v.getTraitId());
+            String scaleName = getScaleName(v.getScaleId());
+            String methodName = getMethodName(v.getMethodId());
 
-	    addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
-	}
-	return container;
+            addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
+        }
+        return container;
     }
 
-    private static void addVariateData(Container container, String variateName, String description,
-	    String propertyName, String scale, String method, String datatype) {
-	Object itemId = container.addItem();
-	Item item = container.getItem(itemId);
-	item.getItemProperty(VARIATE_NAME).setValue(variateName);
-	item.getItemProperty(DESCRIPTION).setValue(description);
-	item.getItemProperty(PROPERTY_NAME).setValue(propertyName);
-	item.getItemProperty(SCALE_NAME).setValue(scale);
-	item.getItemProperty(METHOD_NAME).setValue(method);
-	item.getItemProperty(DATATYPE).setValue(datatype);
+    private static void addVariateData(Container container, String variateName, String description, String propertyName, String scale,
+            String method, String datatype) {
+        Object itemId = container.addItem();
+        Item item = container.getItem(itemId);
+        item.getItemProperty(VARIATE_NAME).setValue(variateName);
+        item.getItemProperty(DESCRIPTION).setValue(description);
+        item.getItemProperty(PROPERTY_NAME).setValue(propertyName);
+        item.getItemProperty(SCALE_NAME).setValue(scale);
+        item.getItemProperty(METHOD_NAME).setValue(method);
+        item.getItemProperty(DATATYPE).setValue(datatype);
 
     }
 
     private String getFactorDescription(int traitId) {
-	String factorDescription = "";
-	Trait trait = traitDataManager.getTraitById(traitId);
-	if (!(trait == null)) {
-	    factorDescription = trait.getDescripton();
-	}
-	return factorDescription;
+        String factorDescription = "";
+        Trait trait = traitDataManager.getTraitById(traitId);
+        if (!(trait == null)) {
+            factorDescription = trait.getDescripton();
+        }
+        return factorDescription;
     }
 
     private String getProperty(int traitId) {
-	String propertyName = "";
-	Trait trait = traitDataManager.getTraitById(traitId);
-	if (!(trait == null)) {
-	    propertyName = trait.getName();
-	}
-	return propertyName;
+        String propertyName = "";
+        Trait trait = traitDataManager.getTraitById(traitId);
+        if (!(trait == null)) {
+            propertyName = trait.getName();
+        }
+        return propertyName;
     }
 
     private String getScaleName(int scaleId) {
-	String scaleName = "";
-	Scale scale = traitDataManager.getScaleByID(scaleId);
-	if (!(scale == null)) {
-	    scaleName = scale.getName();
-	}
-	return scaleName;
+        String scaleName = "";
+        Scale scale = traitDataManager.getScaleByID(scaleId);
+        if (!(scale == null)) {
+            scaleName = scale.getName();
+        }
+        return scaleName;
     }
 
     private String getMethodName(int methodId) {
-	String methodName = "";
-	TraitMethod method = traitDataManager.getTraitMethodById(methodId);
-	if (!(method == null)) {
-	    methodName = method.getName();
-	}
-	return methodName;
+        String methodName = "";
+        TraitMethod method = traitDataManager.getTraitMethodById(methodId);
+        if (!(method == null)) {
+            methodName = method.getName();
+        }
+        return methodName;
     }
 
 }

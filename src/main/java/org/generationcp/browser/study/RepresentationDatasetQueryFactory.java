@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.study;
 
@@ -49,28 +49,29 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      *            - List of column ids used for the Vaadin Table displaying the
      *            dataset
      */
-    public RepresentationDatasetQueryFactory(StudyDataManager dataManager, Integer representationId,
-	    List<String> columnIds) {
-	super();
-	this.dataManager = dataManager;
-	this.representationId = representationId;
-	this.columnIds = columnIds;
+    public RepresentationDatasetQueryFactory(StudyDataManager dataManager, Integer representationId, List<String> columnIds) {
+        super();
+        this.dataManager = dataManager;
+        this.representationId = representationId;
+        this.columnIds = columnIds;
     }
 
     /**
      * Create the Query object to be used by the LazyQueryContainer. Sorting is
      * not yet supported so the parameters to this method are not used.
      */
+    @Override
     public Query constructQuery(Object[] sortPropertyIds, boolean[] sortStates) {
-	return new RepresentationDataSetQuery(dataManager, representationId, columnIds);
+        return new RepresentationDataSetQuery(dataManager, representationId, columnIds);
     }
 
+    @Override
     public void setQueryDefinition(QueryDefinition definition) {
-	// not sure how a QueryDefinition is used and how to create one
-	// for the current implementation this is not used and I just copied
-	// this method declaration
-	// from the reference
-	this.definition = definition;
+        // not sure how a QueryDefinition is used and how to create one
+        // for the current implementation this is not used and I just copied
+        // this method declaration
+        // from the reference
+        this.definition = definition;
     }
 
 }

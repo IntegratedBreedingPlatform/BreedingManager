@@ -1,4 +1,4 @@
-/***************************************************************
+/*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
@@ -8,7 +8,7 @@
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
- **************************************************************/
+ *******************************************************************************/
 
 package org.generationcp.browser.germplasm;
 
@@ -24,59 +24,59 @@ public class TraitCriteriaModel{
     String criteriaValues;
 
     public int getTraitID() {
-	return traitID;
+        return traitID;
     }
 
     public void setTraitID(int traitID) {
-	this.traitID = traitID;
+        this.traitID = traitID;
     }
 
     public int getScaleID() {
-	return scaleID;
+        return scaleID;
     }
 
     public void setScaleID(int scaleID) {
-	this.scaleID = scaleID;
+        this.scaleID = scaleID;
     }
 
     public int getMethodID() {
-	return methodID;
+        return methodID;
     }
 
     public void setMethodID(int methodID) {
-	this.methodID = methodID;
+        this.methodID = methodID;
     }
 
     public String getTraitName() {
-	return traitName;
+        return traitName;
     }
 
     public void setTraitName(String traitName) {
-	this.traitName = traitName;
+        this.traitName = traitName;
     }
 
     public String getScaleName() {
-	return scaleName;
+        return scaleName;
     }
 
     public void setScaleName(String scaleName) {
-	this.scaleName = scaleName;
+        this.scaleName = scaleName;
     }
 
     public String getMethodName() {
-	return methodName;
+        return methodName;
     }
 
     public void setMethodName(String methodName) {
-	this.methodName = methodName;
+        this.methodName = methodName;
     }
 
     public String getCriteriaValues() {
-	return criteriaValues;
+        return criteriaValues;
     }
 
     public void setCriteriaValues(String criteriaValues) {
-	this.criteriaValues = criteriaValues;
+        this.criteriaValues = criteriaValues;
     }
 
 }
