@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
@@ -40,11 +40,10 @@ public class GermplasmBrowserMain extends VerticalLayout{
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
     private VerticalLayout mainLayout;
-    private GridLayout searchFormLayout;
+    private HorizontalLayout searchFormLayout;
     private Table resultTable;
     private IndexedContainer dataSourceResult;
     private TabSheet tabSheet = new TabSheet();
-    private ManagerFactory factory;
     private GermplasmDataManager managerGermplasm;
     private GermplasmIndexContainer dataResultIndexContainer;
 
@@ -53,7 +52,6 @@ public class GermplasmBrowserMain extends VerticalLayout{
     private String searchValue;
     private String instanceChoice;
     private Database instance;
-    private int screenWidth;
 
     private GermplasmSearchFormComponent searchOption;
 
@@ -72,17 +70,17 @@ public class GermplasmBrowserMain extends VerticalLayout{
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        searchFormLayout = new GridLayout(4, 4);
+        searchFormLayout = new HorizontalLayout();
 
         searchOption = new GermplasmSearchFormComponent();
-        searchFormLayout.addComponent(searchOption, 0, 1);
+        searchFormLayout.addComponent(searchOption);
 
         Button btnSearch = new Button("Search");
         btnSearch.addStyleName("addTopSpace");
 
         btnSearch.addListener(new GermplasmButtonClickListener(this));
-
-        searchFormLayout.addComponent(btnSearch, 2, 1);
+        searchFormLayout.addComponent(btnSearch);
+        
         mainLayout.addComponent(searchFormLayout);
 
         try {
