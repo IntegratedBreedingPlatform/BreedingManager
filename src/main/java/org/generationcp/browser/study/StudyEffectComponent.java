@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
+import org.generationcp.browser.study.listeners.StudyValueChangedListener;
 import org.generationcp.browser.util.Util;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
@@ -30,6 +31,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandEvent;
@@ -46,11 +48,11 @@ public class StudyEffectComponent extends VerticalLayout{
     private static final long serialVersionUID = 116672292965099233L;
 
     private StudyDataManager studyDataManager;
-    private Tree effectTree;
     private final Accordion studyInfoAccordion;
     private final StudyDataManager managerToPass;
     private final Integer studyIdToPass;
     private final Accordion accordion;
+    private ListSelect datasetList;
 
     public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion) {
 
@@ -60,122 +62,68 @@ public class StudyEffectComponent extends VerticalLayout{
         this.studyIdToPass = studyId;
         this.accordion = accordion;
 
-        List<StudyEffect> effects = new ArrayList<StudyEffect>();
+        List<Representation> representations = new ArrayList<Representation>();
         try {
-            effects = studyDataManager.getEffectsByStudyID(studyId);
+            representations = studyDataManager.getRepresentationByStudyID(studyIdToPass);
         } catch (QueryException e) {
-            // Put in an application log
             LOG.error(e.toString() + "\n" + e.getStackTrace());
-
-            // TODO an error window in the UI should pop-up for this
+            
+            //TODO an error window in the UI should pop-up for this
             System.out.println(e);
             e.printStackTrace();
         }
-
-        if (effects.isEmpty()) {
-            addComponent(new Label("No effects retrieved."));
+        
+        if(representations.isEmpty()) {
+            addComponent(new Label("No datasets retrieved."));
         } else {
-            this.effectTree = new Tree();
-
-            for (StudyEffect effect : effects) {
-                Integer effectId = effect.getId().getEffectId();
-                String effectIdStr = "EFF-" + effectId;
-                this.effectTree.addItem(effectIdStr);
-                this.effectTree.setItemCaption(effectIdStr, "Effect " + effectId.toString() + " - " + effect.getName());
-            }
-
-            effectTree.addListener(new StudyTreeExpandListener(this));
-
-            effectTree.addListener(new StudyItemClickListener(this));
-
-            addComponent(this.effectTree);
-        }
-
-    }
-
-    // Called by StudyItemClickListener.itemClick()
-    public void effectTreeItemClickAction(String itemId, Tree sourceTree) {
-        if (itemId.contains("REP-")) {
-            // respond only to double clicks on representation
-            // nodes
-            // display dataset for that representation
-            Integer repId = Integer.valueOf(itemId.replaceAll("REP-", ""));
-
-            String repName = sourceTree.getItemCaption(itemId);
-            String tabTitle = "Dataset of " + repName;
-
-            if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
-                RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(managerToPass, repId, tabTitle,
-                        studyIdToPass);
-                studyInfoAccordion.addTab(datasetComponent, tabTitle);
-                studyInfoAccordion.setSelectedTab(datasetComponent);
-            } else {
-                // open the representation dataset tab already
-                // exist if the user click the same
-                // representation dataset
-                for (int i = 3; i < studyInfoAccordion.getComponentCount(); i++) {
-                    Tab tab = studyInfoAccordion.getTab(i);
-                    if (tab.getCaption().equals(tabTitle)) {
-                        studyInfoAccordion.setSelectedTab(tab.getComponent());
-                        break;
-
+            List<String> datasets = new ArrayList<String>();
+            
+            for(Representation rep : representations) {
+                if(rep.getName() != null) {
+                    if(!rep.getName().equals("STUDY EFFECT")) {
+                        datasets.add("Dataset " + rep.getId() + " - " + rep.getName());
                     }
+                } else {
+                    datasets.add("Dataset " + rep.getId() + " - " + rep.getName());
                 }
-
             }
+            
+            this.datasetList = new ListSelect("", datasets);
+            this.datasetList.setNullSelectionAllowed(false);
+            this.datasetList.setImmediate(true);
+            this.datasetList.setDescription("Click on a dataset to view it");
+            this.datasetList.addListener(new StudyValueChangedListener(this));
+            
+            addComponent(this.datasetList);
         }
     }
 
-    // Called by StudyTreeExpandListener
-    public void addRepAndFactorNodes(String idString) {
+    //called by StudyValueChangedListener.valueChange()
+    public void datasetListValueChangeAction(String datasetLabel) {
+        String[] parts = datasetLabel.split("-");
+        Integer repId = Integer.valueOf(parts[0].replaceAll("Dataset", "").trim());
+        String repName = parts[1].trim();
+        
+        String tabTitle = "Dataset of " + repName;
 
-        if (idString.contains("EFF-")) {
-            int effectId = Integer.valueOf(idString.replaceAll("EFF-", ""));
+        if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
+            RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(managerToPass, repId, tabTitle,
+                    studyIdToPass);
+            studyInfoAccordion.addTab(datasetComponent, tabTitle);
+            studyInfoAccordion.setSelectedTab(datasetComponent);
+        } else {
+            // open the representation dataset tab already
+            // exist if the user click the same
+            // representation dataset
+            for (int i = 3; i < studyInfoAccordion.getComponentCount(); i++) {
+                Tab tab = studyInfoAccordion.getTab(i);
+                if (tab.getCaption().equals(tabTitle)) {
+                    studyInfoAccordion.setSelectedTab(tab.getComponent());
+                    break;
 
-            List<Representation> reps = new ArrayList<Representation>();
-
-            try {
-                reps = studyDataManager.getRepresentationByEffectID(effectId);
-            } catch (QueryException e) {
-                // Put in an application log
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-
-                // TODO an error window in the UI should pop-up for this
-                System.out.println(e);
-                e.printStackTrace();
+                }
             }
 
-            for (Representation rep : reps) {
-                int repId = rep.getId();
-                String repIdStr = "REP-" + repId;
-                this.effectTree.addItem(repIdStr);
-                this.effectTree.setItemCaption(repIdStr, "Representation " + rep.getName());
-                this.effectTree.setParent(repIdStr, idString);
-            }
-        } else if (idString.contains("REP-")) {
-            int repId = Integer.valueOf(idString.replaceAll("REP-", ""));
-
-            List<Factor> factors = new ArrayList<Factor>();
-
-            try {
-                factors = studyDataManager.getFactorsByRepresentationId(repId);
-            } catch (QueryException e) {
-                // Put in an application log
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-
-                // TODO an error window in the UI should pop-up for this
-                System.out.println(e);
-                e.printStackTrace();
-            }
-
-            for (Factor factor : factors) {
-                int labelId = factor.getId();
-                String labelIdStr = "FAC-" + labelId + idString;
-                this.effectTree.addItem(labelIdStr);
-                this.effectTree.setItemCaption(labelIdStr, factor.getName());
-                this.effectTree.setParent(labelIdStr, idString);
-                this.effectTree.setChildrenAllowed(labelIdStr, false);
-            }
         }
     }
 

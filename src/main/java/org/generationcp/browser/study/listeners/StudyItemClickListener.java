@@ -36,13 +36,7 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
     @Override
     public void itemClick(ItemClickEvent event) {
 
-        if (source instanceof StudyEffectComponent) {
-
-            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                ((StudyEffectComponent) source).effectTreeItemClickAction(event.getItemId().toString(), (Tree) event.getComponent());
-            }
-
-        } else if (source instanceof StudyTreePanel) {
+        if (source instanceof StudyTreePanel) {
             int studyId = Integer.valueOf(event.getItemId().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 ((StudyTreePanel) source).studyTreeItemClickAction(studyId);

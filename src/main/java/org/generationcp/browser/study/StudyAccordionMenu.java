@@ -43,10 +43,10 @@ public class StudyAccordionMenu extends Accordion{
         layoutVariate = new VerticalLayout();
         layoutFactor = new VerticalLayout();
         layoutEffect = new VerticalLayout();
-        this.addTab(studyDetailComponent, "Study Detail");
-        this.addTab(layoutFactor, "Factor");
+        this.addTab(studyDetailComponent, "Study Details");
+        this.addTab(layoutFactor, "Factors");
         this.addTab(layoutVariate, "Variates");
-        this.addTab(layoutEffect, "Effects");
+        this.addTab(layoutEffect, "Datasets");
 
         this.addListener(new StudySelectedTabChangeListener(this));
     }
@@ -54,7 +54,7 @@ public class StudyAccordionMenu extends Accordion{
     public void selectedTabChangeAction() {
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
-        if (tab.getCaption().equals("Factor")) {
+        if (tab.getCaption().equals("Factors")) {
             if (layoutFactor.getComponentCount() == 0) {
                 try {
                     layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
@@ -70,7 +70,7 @@ public class StudyAccordionMenu extends Accordion{
                     e.printStackTrace();
                 }
             }
-        } else if (tab.getCaption().equals("Effects")) {
+        } else if (tab.getCaption().equals("Datasets")) {
             if (layoutEffect.getComponentCount() == 0) {
                 layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
 

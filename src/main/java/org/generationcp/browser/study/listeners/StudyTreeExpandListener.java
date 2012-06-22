@@ -40,12 +40,7 @@ public class StudyTreeExpandListener implements Tree.ExpandListener{
     @Override
     public void nodeExpand(ExpandEvent event) {
 
-        if (source instanceof StudyEffectComponent) {
-
-            ((StudyEffectComponent) source).addRepAndFactorNodes(event.getItemId().toString());
-            ;
-
-        } else if (source instanceof StudyTreePanel) {
+        if (source instanceof StudyTreePanel) {
 
             ((StudyTreePanel) source).addStudyNode(Integer.valueOf(event.getItemId().toString()));
 
