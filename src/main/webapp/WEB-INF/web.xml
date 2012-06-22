@@ -9,6 +9,9 @@
 		<param-name>productionMode</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	  <session-config>
+	    <session-timeout>-1</session-timeout>
+	  </session-config>
 	<servlet>
 		<servlet-name>GermplasmBrowser</servlet-name>
 		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
