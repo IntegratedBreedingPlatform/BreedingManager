@@ -88,6 +88,7 @@ public class StudyTreeComponent extends VerticalLayout{
 
 	// Called by StudyButtonClickListener
 	public void createTree() {
+	        this.removeComponent(studyTree);
 		studyTree.removeAllItems();
 		studyTree = createStudyTree(Database.LOCAL);
 		this.addComponent(studyTree);
