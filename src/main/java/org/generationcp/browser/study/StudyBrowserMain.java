@@ -14,7 +14,6 @@ package org.generationcp.browser.study;
 
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
@@ -26,19 +25,16 @@ public class StudyBrowserMain extends HorizontalLayout{
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetStudyDatabaseInstance;
-    private HorizontalLayout studyBrowserMainLayout;
-    private StudyDataManager studyDataManager;
+//    private HorizontalLayout studyBrowserMainLayout;
+//    private StudyDataManager studyDataManager;
 
     public StudyBrowserMain(ManagerFactory factory) {
 
-        this.studyDataManager = factory.getStudyDataManager();
-
-        studyBrowserMainLayout = new HorizontalLayout();
-        studyBrowserMainLayout.setSizeFull();
-        studyBrowserMainLayout.setSpacing(true);
-        studyBrowserMainLayout.setMargin(true);
+        setSizeFull();
+        setSpacing(true);
+        setMargin(true);
         tabSheetStudyDatabaseInstance = new TabSheet();
-        tabSheetStudyDatabaseInstance.setWidth("300px");
+        tabSheetStudyDatabaseInstance.setWidth("100%");
         tabSheetStudyDatabaseInstance.setHeight("600px");
 
         tabLocalInstance = new VerticalLayout();
@@ -47,10 +43,10 @@ public class StudyBrowserMain extends HorizontalLayout{
         tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption("Local");
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption("Central");
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.CENTRAL));
-        tabLocalInstance.addComponent(new StudyTreePanel(factory, studyBrowserMainLayout, Database.LOCAL));
+        tabCentralInstance.addComponent(new StudyTreeComponent(factory, this, Database.CENTRAL));
+        tabLocalInstance.addComponent(new StudyTreeComponent(factory, this, Database.LOCAL));
 
-        studyBrowserMainLayout.addComponent(tabSheetStudyDatabaseInstance);
-        addComponent(studyBrowserMainLayout);
+        addComponent(tabSheetStudyDatabaseInstance);
+        setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
     }
 }

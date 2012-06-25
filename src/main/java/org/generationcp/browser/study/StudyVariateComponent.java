@@ -20,28 +20,20 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class StudyVariateComponent extends VerticalLayout{
+public class StudyVariateComponent extends Table{
 
-    public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) throws QueryException {
+	public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) throws QueryException {
 
-        Table studyVariateTable = new Table();
-        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
-        IndexedContainer dataStudyFactor = dataIndexContainer.getStudyVariate();
-        studyVariateTable = new Table("", dataStudyFactor);
-        studyVariateTable.setSelectable(true);
-        studyVariateTable.setMultiSelect(false);
-        studyVariateTable.setImmediate(true); // react at once when something is
-        // selected
-        studyVariateTable.setSizeFull();
-        // turn on column reordering and collapsing
-        studyVariateTable.setColumnReorderingAllowed(true);
-        studyVariateTable.setColumnCollapsingAllowed(true);
-
-        // set column headers
-        studyVariateTable.setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
-        addComponent(studyVariateTable);
-        setMargin(true);
-        setSpacing(true);
-    }
+		StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
+		IndexedContainer dataStudyFactor = dataIndexContainer.getStudyVariate();
+		this.setContainerDataSource(dataStudyFactor);
+		setSelectable(true);
+		setMultiSelect(false);
+		setImmediate(true); // react at once when something is
+		setSizeFull();
+		setColumnReorderingAllowed(true);
+		setColumnCollapsingAllowed(true);
+		setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
+	}
 
 }

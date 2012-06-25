@@ -20,28 +20,21 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class StudyFactorComponent extends VerticalLayout{
+public class StudyFactorComponent extends Table{
 
-    public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) throws QueryException {
-        // TODO Auto-generated constructor stub
-        Table studyFactorTable = new Table();
-        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
-        IndexedContainer dataStudyFactor = dataIndexContainer.getStudyFactor();
-        studyFactorTable = new Table("", dataStudyFactor);
-        studyFactorTable.setSelectable(true);
-        studyFactorTable.setMultiSelect(false);
-        studyFactorTable.setImmediate(true); // react at once when something is
-        // selected
-        studyFactorTable.setSizeFull();
-        // turn on column reordering and collapsing
-        studyFactorTable.setColumnReorderingAllowed(true);
-        studyFactorTable.setColumnCollapsingAllowed(true);
+	public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) throws QueryException {
+		// TODO Auto-generated constructor stub
+		StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
+		IndexedContainer dataStudyFactor = dataIndexContainer.getStudyFactor();
+		this.setContainerDataSource(dataStudyFactor);
 
-        // set column headers
-        studyFactorTable.setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
-        addComponent(studyFactorTable);
-        setMargin(true);
-        setSpacing(true);
-    }
+		setSelectable(true);
+		setMultiSelect(false);
+		setImmediate(true); // react at once when something is
+		setSizeFull();
+		setColumnReorderingAllowed(true);
+		setColumnCollapsingAllowed(true);
+		setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
+	}
 
 }

@@ -47,7 +47,6 @@ public class StudyEffectComponent extends VerticalLayout{
     private final static Logger LOG = LoggerFactory.getLogger(StudyEffectComponent.class);
     private static final long serialVersionUID = 116672292965099233L;
 
-    private StudyDataManager studyDataManager;
     private final Accordion studyInfoAccordion;
     private final StudyDataManager managerToPass;
     private final Integer studyIdToPass;
@@ -56,7 +55,6 @@ public class StudyEffectComponent extends VerticalLayout{
 
     public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion) {
 
-        this.studyDataManager = studyDataManager;
         this.studyInfoAccordion = accordion;
         this.managerToPass = studyDataManager;
         this.studyIdToPass = studyId;

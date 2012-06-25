@@ -58,6 +58,8 @@ public class StudyAccordionMenu extends Accordion{
             if (layoutFactor.getComponentCount() == 0) {
                 try {
                     layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
+                    layoutFactor.setMargin(true);
+                    layoutFactor.setSpacing(true);
                 } catch (QueryException e) {
                     e.printStackTrace();
                 }
@@ -66,6 +68,8 @@ public class StudyAccordionMenu extends Accordion{
             if (layoutVariate.getComponentCount() == 0) {
                 try {
                     layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
+                    layoutVariate.setMargin(true);
+                    layoutVariate.setSpacing(true);
                 } catch (QueryException e) {
                     e.printStackTrace();
                 }
