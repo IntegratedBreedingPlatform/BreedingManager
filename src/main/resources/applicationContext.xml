@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+>
+    <!-- Enable Spring annotations -->
+    <context:annotation-config/>
+    
+    <!--
+        Enable load-time-weaving so we can use @Configurable annotation.
+        To make this work, we need to set the -java.agent VM argument to the spring-instrument JAR file's path.
+        In windows, you can use:
+            -javaagent:${env_var:HOMEDRIVE}${env_var:HOMEPATH}\.m2\repository\org\springframework\spring-instrument\3.1.1.RELEASE\spring-instrument-3.1.1.RELEASE.jar
+        Mac and Linux users, add your path here.
+    -->
+    <context:load-time-weaver/>
+    
+    
+    <!-- The application classes -->
+    <bean id="germplasm_study_browser_application" class="org.generationcp.browser.application.GermplasmStudyBrowserApplication" scope="prototype"/>
+
+    <bean id="germplasm_browser_only_application" class="org.generationcp.browser.application.GermplasmBrowserOnlyApplication" scope="prototype"/>
+    
+    <!--
+        Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
+        Add @Configurable annotation to your class if you only need auto-wiring.
+    -->
+
+    <!-- The data source configuration -->
+    <bean id="datasourceConfig" class="org.generationcp.browser.util.DatasourceConfig"/>
+    
+    <!--
+        Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
+        Add @Configurable annotation to your class if you only need auto-wiring.
+    -->
+</beans>

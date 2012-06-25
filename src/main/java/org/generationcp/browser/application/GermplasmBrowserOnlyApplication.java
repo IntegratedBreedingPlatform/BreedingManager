@@ -11,6 +11,7 @@
 
 package org.generationcp.browser.application;
 
+import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.GermplasmQueries;
@@ -26,8 +27,10 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
-import com.vaadin.Application;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
@@ -43,8 +46,10 @@ import com.vaadin.ui.Window;
 /**
  * The Application's "main" class
  */
+
 @SuppressWarnings("serial")
-public class GermplasmBrowserOnlyApplication extends Application{
+@Configurable
+public class GermplasmBrowserOnlyApplication extends SpringContextApplication {
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserOnlyApplication.class);
 
@@ -64,10 +69,12 @@ public class GermplasmBrowserOnlyApplication extends Application{
     private String instanceChoice;
     private Database instance;
 
+    private DatasourceConfig datasourceConfig;
+    
     private GermplasmSearchFormComponent searchOption;
 
     @Override
-    public void init() {
+    public void initSpringApplication(ConfigurableWebApplicationContext arg0) {
         try {
             initDataSource();
         } catch (Exception e1) {
@@ -111,6 +118,11 @@ public class GermplasmBrowserOnlyApplication extends Application{
         window.addComponent(mainLayout);
 
     }
+    
+    @Autowired
+    public void setDataSourceConfig(DatasourceConfig datasourceConfig) {
+        this.datasourceConfig = datasourceConfig;
+    }	    
 
     private void displayGermplasmDetailTab(int gid) throws QueryException {
 
@@ -132,14 +144,15 @@ public class GermplasmBrowserOnlyApplication extends Application{
     }
 
     private void initDataSource() throws Exception {
-        factory = new DatasourceConfig().getManagerFactory();
+        factory = this.datasourceConfig.getManagerFactory();
         managerGermplasm = factory.getGermplasmDataManager();
         qQuery = new GermplasmQueries(factory, managerGermplasm);
         dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
 
     }
 
-    private int getScreenWidth() {
+    @SuppressWarnings("unused")
+	private int getScreenWidth() {
         WebApplicationContext context = (WebApplicationContext) this.getContext();
         WebBrowser wb = context.getBrowser();
         return wb.getScreenWidth();

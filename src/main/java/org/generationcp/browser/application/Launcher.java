@@ -17,8 +17,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.generationcp.browser.util.SpringApplicationServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
 
 import com.vaadin.terminal.gwt.server.ApplicationServlet;
 
@@ -37,15 +40,21 @@ public class Launcher{
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
         context.setResourceBase("./src");
+        
+        context.addEventListener(new ContextLoaderListener());
+        context.addEventListener(new RequestContextListener());
+        
+        context.setInitParameter("contextConfigLocation", "classpath*:applicationContext.xml");
 
         ServletHolder germplasmBrowser = new ServletHolder(new ApplicationServlet());
         // germplasmBrowser.setInitParameter("application",
         // "org.generationcp.browser.germplasm.application.MainApplication");
-        germplasmBrowser.setInitParameter("application", "org.generationcp.browser.application.GermplasmBrowserOnlyApplication");
+        germplasmBrowser.setInitParameter("application2", 
+        		"org.generationcp.browser.application.GermplasmBrowserOnlyApplication");
         // vaadinLoader.setInitParameter("widgetsets",
         // "org.generationcp.browser.germplasm.application.widgetset.GermplasmBrowserWidgetset");
 
-        ServletHolder germplasmBrowserByPhenotypic = new ServletHolder(new ApplicationServlet());
+        ServletHolder germplasmBrowserByPhenotypic = new ServletHolder(new SpringApplicationServlet());
         germplasmBrowserByPhenotypic.setInitParameter("application",
                 "org.generationcp.browser.application.GermplasmStudyBrowserApplication");
 
