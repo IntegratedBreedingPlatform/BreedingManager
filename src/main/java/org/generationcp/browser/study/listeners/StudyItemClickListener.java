@@ -12,15 +12,13 @@
 
 package org.generationcp.browser.study.listeners;
 
-import org.generationcp.browser.study.StudyEffectComponent;
-import org.generationcp.browser.study.StudyTreePanel;
+import org.generationcp.browser.study.StudyTreeComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Tree;
 
 public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -36,10 +34,10 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
     @Override
     public void itemClick(ItemClickEvent event) {
 
-        if (source instanceof StudyTreePanel) {
+        if (source instanceof StudyTreeComponent) {
             int studyId = Integer.valueOf(event.getItemId().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                ((StudyTreePanel) source).studyTreeItemClickAction(studyId);
+                ((StudyTreeComponent) source).studyTreeItemClickAction(studyId);
             }
 
         }

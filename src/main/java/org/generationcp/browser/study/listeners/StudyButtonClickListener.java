@@ -14,21 +14,15 @@ package org.generationcp.browser.study.listeners;
 
 import java.util.ArrayList;
 
-import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.study.RepresentationDatasetComponent;
-import org.generationcp.browser.study.StudyBrowserMain;
-import org.generationcp.browser.study.StudyTreePanel;
-import org.generationcp.middleware.exceptions.QueryException;
-import org.generationcp.middleware.manager.Database;
+import org.generationcp.browser.study.StudyTreeComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Layout;
 
 public class StudyButtonClickListener implements Button.ClickListener{
 
@@ -58,8 +52,8 @@ public class StudyButtonClickListener implements Button.ClickListener{
                 && (source instanceof WelcomeTab)) {
             ((WelcomeTab) source).browseStudiesAndDataSets();
 
-        } else if (event.getComponent().getCaption().equals("Refresh") && (source instanceof StudyTreePanel)) {
-            ((StudyTreePanel) source).createTree();
+        } else if (event.getComponent().getCaption().equals("Refresh") && (source instanceof StudyTreeComponent)) {
+            ((StudyTreeComponent) source).createTree();
         }
 
     }

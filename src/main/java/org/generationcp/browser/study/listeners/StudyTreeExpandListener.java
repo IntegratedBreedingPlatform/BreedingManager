@@ -14,8 +14,7 @@ package org.generationcp.browser.study.listeners;
 
 import java.util.ArrayList;
 
-import org.generationcp.browser.study.StudyEffectComponent;
-import org.generationcp.browser.study.StudyTreePanel;
+import org.generationcp.browser.study.StudyTreeComponent;
 
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
@@ -40,9 +39,9 @@ public class StudyTreeExpandListener implements Tree.ExpandListener{
     @Override
     public void nodeExpand(ExpandEvent event) {
 
-        if (source instanceof StudyTreePanel) {
+        if (source instanceof StudyTreeComponent) {
 
-            ((StudyTreePanel) source).addStudyNode(Integer.valueOf(event.getItemId().toString()));
+            ((StudyTreeComponent) source).addStudyNode(Integer.valueOf(event.getItemId().toString()));
 
         }
 
