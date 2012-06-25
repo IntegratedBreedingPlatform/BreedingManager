@@ -107,6 +107,7 @@ public class WelcomeTab extends VerticalLayout{
     // Called by StudyButtonClickListener
     public void browseStudiesAndDataSets() {
         if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
+        	rootLayoutForStudyBrowser.setWidth("100%");
             rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory));
             rootLayoutForStudyBrowser.addStyleName("addSpacing");
         }
