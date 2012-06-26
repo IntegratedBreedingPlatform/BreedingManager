@@ -48,7 +48,7 @@ public class StudyAccordionMenu extends I18NAccordion{
         this.addTab(studyDetailComponent, i18n.getMessage("studyDetails.text")); //"Study Details"
         this.addTab(layoutFactor, i18n.getMessage("factors.text")); //"Factors"
         this.addTab(layoutVariate, i18n.getMessage("variates.text")); //"Variates"
-        this.addTab(layoutEffect, i18n.getMessage("effects.text")); //"Effects"
+        this.addTab(layoutEffect, i18n.getMessage("datasets.text")); //"Effects"
 
         this.addListener(new StudySelectedTabChangeListener(this));
     }
