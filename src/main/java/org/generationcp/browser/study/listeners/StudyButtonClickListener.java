@@ -20,6 +20,7 @@ import org.generationcp.browser.study.StudyTreeComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
@@ -30,29 +31,28 @@ public class StudyButtonClickListener implements Button.ClickListener{
     private static final long serialVersionUID = 7921109465618354206L;
 
     private Layout source;
-    private ArrayList<Object> parameters;
+    
+    private I18N i18n;
 
-    public StudyButtonClickListener(Layout source) {
+    public StudyButtonClickListener(Layout source, I18N i18n) {
         this.source = source;
-    }
-
-    public StudyButtonClickListener(Layout source, ArrayList<Object> parameters) {
-        this.source = source;
-        this.parameters = parameters;
+        this.i18n = i18n;
     }
 
     @Override
     public void buttonClick(ClickEvent event) {
-
-        if (event.getComponent().getCaption().equals("Export to CSV") && (source instanceof RepresentationDatasetComponent)) {
+    	
+        if (event.getComponent().getCaption().equals(i18n.getMessage("exportToCSV.label")) //"Export to CSV" 
+        		&& (source instanceof RepresentationDatasetComponent)) {
 
             ((RepresentationDatasetComponent) source).exportToCSVAction();
 
-        } else if ((event.getComponent().getCaption().equals("I want to browse Studies and their Datasets"))
+        } else if ((event.getComponent().getCaption().equals(i18n.getMessage("study.button.label"))) //"I want to browse Studies and their Datasets"
                 && (source instanceof WelcomeTab)) {
             ((WelcomeTab) source).browseStudiesAndDataSets();
 
-        } else if (event.getComponent().getCaption().equals("Refresh") && (source instanceof StudyTreeComponent)) {
+        } else if (event.getComponent().getCaption().equals(i18n.getMessage("refresh.label")) //"Refresh") 
+        		&& (source instanceof StudyTreeComponent)) {
             ((StudyTreeComponent) source).createTree();
         }
 

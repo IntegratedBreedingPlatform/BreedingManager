@@ -25,15 +25,9 @@ public class StudyTreeExpandListener implements Tree.ExpandListener{
     private static final long serialVersionUID = -5091664285613837786L;
 
     private Layout source;
-    private ArrayList<Object> parameters;
 
     public StudyTreeExpandListener(Layout source) {
         this.source = source;
-    }
-
-    public StudyTreeExpandListener(Layout source, ArrayList<Object> parameters) {
-        this.source = source;
-        this.parameters = parameters;
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Factor;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
 import com.vaadin.ui.Button;
@@ -36,7 +38,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author Kevin Manansala
  * 
  */
-public class RepresentationDatasetComponent extends VerticalLayout{
+public class RepresentationDatasetComponent extends I18NVerticalLayout{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDatasetComponent.class);
     private static final long serialVersionUID = -8476739652987572690L;
@@ -45,9 +47,13 @@ public class RepresentationDatasetComponent extends VerticalLayout{
     private String reportName;
     private Integer studyIdHolder;
     private Integer repIdHolder;
+    
+    private Button exportCsvButton;
+    private String reportTitle; 
 
-    public RepresentationDatasetComponent(StudyDataManager dataManager, Integer representationId, String datasetTitle, Integer studyId) {
-        super();
+    public RepresentationDatasetComponent(StudyDataManager dataManager, Integer representationId, String datasetTitle, Integer studyId, I18N i18n) {
+ 
+    	super(i18n);
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.repIdHolder = representationId;
@@ -132,17 +138,17 @@ public class RepresentationDatasetComponent extends VerticalLayout{
         setSpacing(true);
         addComponent(datasetTable);
 
-        Button exportCsvButton = new Button("Export to CSV");
+        exportCsvButton = new Button(i18n.getMessage("exportToCSV.label")); // "Export to CSV"
 
-        exportCsvButton.addListener(new StudyButtonClickListener(this));
+        exportCsvButton.addListener(new StudyButtonClickListener(this, i18n));
         addComponent(exportCsvButton);
     }
 
     // Called by StudyButtonClickListener
     public void exportToCSVAction() {
         CsvExport csvExport;
-
-        String reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
+        //reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]"; 
+        reportTitle = getI18N().getMessage("reportTitle1.text") + "[" + studyIdHolder + "]-" + getI18N().getMessage("reportTitle2.text") + "[" + repIdHolder + "]";
         String fileName = reportTitle + ".csv";
         csvExport = new CsvExport(datasetTable, reportName, reportTitle, fileName, false);
         csvExport.excludeCollapsedColumns();

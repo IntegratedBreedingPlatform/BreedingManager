@@ -21,6 +21,9 @@
       <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener> 	
     	
+	  <session-config>
+	    <session-timeout>-1</session-timeout>
+	  </session-config>
 	<servlet>
 		<servlet-name>GermplasmBrowser</servlet-name>
 		<servlet-class>org.generationcp.browser.util.SpringApplicationServlet</servlet-class>

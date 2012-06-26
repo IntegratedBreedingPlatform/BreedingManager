@@ -19,15 +19,16 @@ import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class extends a VerticalLayout and is basically a container for the
@@ -38,24 +39,30 @@ import com.vaadin.ui.VerticalLayout;
  * @author Kevin Manansala
  * 
  */
-public class WelcomeTab extends VerticalLayout{
+public class WelcomeTab extends I18NVerticalLayout{
 
     private final static Logger LOG = LoggerFactory.getLogger(WelcomeTab.class);
     private static final long serialVersionUID = -917787404988386915L;
     private int screenWidth;
 
-    private VerticalLayout rootLayoutForGermplasmBrowser;
+    private I18NVerticalLayout rootLayoutForGermplasmBrowser;
 
-    private VerticalLayout rootLayoutForStudyBrowser;
+    private I18NVerticalLayout rootLayoutForStudyBrowser;
     private ManagerFactory factory;
     private TabSheet theTabSheet;
 
-    private VerticalLayout rootLayoutForGermplasmByPheno;
+    private I18NVerticalLayout rootLayoutForGermplasmByPheno;
     private GidByPhenotypicQueries gidByPhenoQueries;
     private TraitDataIndexContainer traitDataCon;
 
-    public WelcomeTab(TabSheet tabSheet, final ManagerFactory factory, VerticalLayout rootLayoutsForOtherTabs[]) {
-        super();
+    private Label welcomeLabel;
+    private Label questionLabel;
+    private Button germplasmButton;
+    private Button studyButton;
+    private Button germplasmByPhenoButton;
+    
+    public WelcomeTab(TabSheet tabSheet, final ManagerFactory factory, I18NVerticalLayout rootLayoutsForOtherTabs[], I18N i18n) {
+        super(i18n);
         this.factory = factory;
         this.setSpacing(true);
         this.setMargin(true);
@@ -63,30 +70,30 @@ public class WelcomeTab extends VerticalLayout{
         this.gidByPhenoQueries = new GidByPhenotypicQueries(factory, factory.getStudyDataManager());
         this.traitDataCon = new TraitDataIndexContainer(factory, factory.getTraitDataManager());
 
-        Label welcomeLabel = new Label("<h1>Welcome to the Germplasm and Study Browser</h1>");
+        welcomeLabel = new Label(i18n.getMessage("welcome.label")); // "<h1>Welcome to the Germplasm and Study Browser</h1>"
         welcomeLabel.setContentMode(Label.CONTENT_XHTML);
         this.addComponent(welcomeLabel);
 
-        Label questionLabel = new Label("<h3>What do you want to do?</h3>");
+        questionLabel = new Label(i18n.getMessage("question.label")); // "<h3>What do you want to do?</h3>"
         questionLabel.setContentMode(Label.CONTENT_XHTML);
         this.addComponent(questionLabel);
 
-        Button germplasmButton = new Button("I want to browse Germplasm information");
+        germplasmButton = new Button(i18n.getMessage("germplasm.button.label")); // "I want to browse Germplasm information"
         germplasmButton.setWidth(400, UNITS_PIXELS);
         this.rootLayoutForGermplasmBrowser = rootLayoutsForOtherTabs[0];
 
         germplasmButton.addListener(new GermplasmButtonClickListener(this));
         this.addComponent(germplasmButton);
 
-        Button studyButton = new Button("I want to browse Studies and their Datasets");
+        studyButton = new Button(i18n.getMessage("study.button.label")); // "I want to browse Studies and their Datasets"
         studyButton.setWidth(400, UNITS_PIXELS);
         rootLayoutForStudyBrowser = rootLayoutsForOtherTabs[1];
 
-        studyButton.addListener(new StudyButtonClickListener(this));
+        studyButton.addListener(new StudyButtonClickListener(this, i18n));
 
         this.addComponent(studyButton);
-
-        Button germplasmByPhenoButton = new Button("I want to retrieve Germplasms by Phenotypic Data");
+ 
+        germplasmByPhenoButton = new Button(i18n.getMessage("germplasmsByPheno.label")); // "I want to retrieve Germplasms by Phenotypic Data"
         germplasmByPhenoButton.setWidth(400, UNITS_PIXELS);
         rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
 
@@ -108,7 +115,7 @@ public class WelcomeTab extends VerticalLayout{
     public void browseStudiesAndDataSets() {
         if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
         	rootLayoutForStudyBrowser.setWidth("100%");
-            rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory));
+            rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory, getI18N()));
             rootLayoutForStudyBrowser.addStyleName("addSpacing");
         }
 

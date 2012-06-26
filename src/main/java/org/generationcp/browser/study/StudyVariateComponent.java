@@ -12,17 +12,24 @@
 
 package org.generationcp.browser.study;
 
+import org.generationcp.browser.i18n.ui.I18NTable;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class StudyVariateComponent extends Table{
+public class StudyVariateComponent extends I18NTable{
 
-	public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) throws QueryException {
+	private static final long serialVersionUID = -3225098517785018744L;
+
+	public StudyVariateComponent(StudyDataManager studyDataManager,
+			TraitDataManager traitDataManager, int studyId, I18N i18n)
+			throws QueryException {
+		super(i18n);
 
 		StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
 		IndexedContainer dataStudyFactor = dataIndexContainer.getStudyVariate();
@@ -33,7 +40,14 @@ public class StudyVariateComponent extends Table{
 		setSizeFull();
 		setColumnReorderingAllowed(true);
 		setColumnCollapsingAllowed(true);
-		setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
+		//setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
+		setColumnHeaders(new String[] {
+				i18n.getMessage("name.header"),
+				i18n.getMessage("description.header"),
+				i18n.getMessage("property.header"),
+				i18n.getMessage("scale.header"),
+				i18n.getMessage("method.header"),
+				i18n.getMessage("datatye.header") });
 	}
 
 }

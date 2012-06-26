@@ -12,15 +12,17 @@
 
 package org.generationcp.browser.study;
 
+import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class StudyBrowserMain extends HorizontalLayout{
+public class StudyBrowserMain extends I18NHorizontalLayout{
 
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
@@ -28,7 +30,8 @@ public class StudyBrowserMain extends HorizontalLayout{
 //    private HorizontalLayout studyBrowserMainLayout;
 //    private StudyDataManager studyDataManager;
 
-    public StudyBrowserMain(ManagerFactory factory) {
+    public StudyBrowserMain(ManagerFactory factory, I18N i18n) {
+    	super(i18n);
 
         setSizeFull();
         setSpacing(true);
@@ -40,11 +43,11 @@ public class StudyBrowserMain extends HorizontalLayout{
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
 
-        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption("Local");
-        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption("Central");
+        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(i18n.getMessage("db.local.text")); //"Local"
+        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(i18n.getMessage("db.central.text")); //"Central"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new StudyTreeComponent(factory, this, Database.CENTRAL));
-        tabLocalInstance.addComponent(new StudyTreeComponent(factory, this, Database.LOCAL));
+        tabCentralInstance.addComponent(new StudyTreeComponent(factory, this, Database.CENTRAL, i18n));
+        tabLocalInstance.addComponent(new StudyTreeComponent(factory, this, Database.LOCAL, i18n));
 
         addComponent(tabSheetStudyDatabaseInstance);
         setExpandRatio(tabSheetStudyDatabaseInstance, .40f);

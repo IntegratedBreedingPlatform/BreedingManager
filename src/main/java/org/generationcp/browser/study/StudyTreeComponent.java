@@ -15,6 +15,8 @@ package org.generationcp.browser.study;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
@@ -28,6 +30,7 @@ import org.generationcp.middleware.pojos.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -39,7 +42,7 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
-public class StudyTreeComponent extends VerticalLayout{
+public class StudyTreeComponent extends I18NVerticalLayout{
 
 	private static final long serialVersionUID = -3481988646509402160L;
 
@@ -48,10 +51,11 @@ public class StudyTreeComponent extends VerticalLayout{
 	private StudyDataManager studyDataManager;
 	private Tree studyTree;
 	private static TabSheet tabSheetStudy;
-	private HorizontalLayout studyBrowserMainLayout;
+	private I18NHorizontalLayout studyBrowserMainLayout;
 	private TraitDataManager traitDataManager;
 
-	public StudyTreeComponent(ManagerFactory factory, HorizontalLayout studyBrowserMainLayout, Database database) {
+	public StudyTreeComponent(ManagerFactory factory, I18NHorizontalLayout studyBrowserMainLayout, Database database, I18N i18n) {
+		super(i18n);
 
 		this.studyDataManager = factory.getStudyDataManager();
 		this.traitDataManager = factory.getTraitDataManager();
@@ -65,9 +69,9 @@ public class StudyTreeComponent extends VerticalLayout{
 		studyTree = createStudyTree(database);
 
 		if (database == Database.LOCAL) {
-			Button refreshButton = new Button("Refresh");
+			Button refreshButton = new Button(i18n.getMessage("refresh.label")); //"Refresh"
 
-			refreshButton.addListener(new StudyButtonClickListener(this));
+			refreshButton.addListener(new StudyButtonClickListener(this, i18n));
 			addComponent(refreshButton);
 		}
 
@@ -78,13 +82,14 @@ public class StudyTreeComponent extends VerticalLayout{
 
 			@Override
 			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				return "Click to view study details";
+				return getI18N().getMessage("studyDetails.label"); //"Click to view study details"
 			}
 		});
 
 		addComponent(studyTree);
 
 	}
+
 
 	// Called by StudyButtonClickListener
 	public void createTree() {
@@ -173,8 +178,8 @@ public class StudyTreeComponent extends VerticalLayout{
 		VerticalLayout layout = new VerticalLayout();
 
 		if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-			layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager,
-					traitDataManager));
+			layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId, getI18N()), studyDataManager,
+					traitDataManager, getI18N()));
 			Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
 			tab.setClosable(true);
 
