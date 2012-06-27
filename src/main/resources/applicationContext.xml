@@ -22,8 +22,6 @@
     
     <!-- The application classes -->
     <bean id="germplasm_study_browser_application" class="org.generationcp.browser.application.GermplasmStudyBrowserApplication" scope="prototype"/>
-
-    <bean id="germplasm_browser_only_application" class="org.generationcp.browser.application.GermplasmBrowserOnlyApplication" scope="prototype"/>
     
     <!--
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.

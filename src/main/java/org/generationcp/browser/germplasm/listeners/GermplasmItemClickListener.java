@@ -12,7 +12,6 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
-import org.generationcp.browser.application.GermplasmBrowserOnlyApplication;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
@@ -50,12 +49,6 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
                 ((GermplasmBrowserMain) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
                         event.getItem());
             }
-        } else if (sourceClass instanceof GermplasmBrowserOnlyApplication) {
-            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                ((GermplasmBrowserOnlyApplication) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
-                        event.getItem());
-            }
-
         } else if (sourceClass instanceof GermplasmPedigreeTreeComponent) {
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {

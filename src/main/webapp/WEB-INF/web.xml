@@ -24,24 +24,7 @@
 	  <session-config>
 	    <session-timeout>-1</session-timeout>
 	  </session-config>
-	<servlet>
-		<servlet-name>GermplasmBrowser</servlet-name>
-		<servlet-class>org.generationcp.browser.util.SpringApplicationServlet</servlet-class>
-		<init-param>
-			<description>GermplasmBrowser application class to start</description>
-			<param-name>application</param-name>
-			<param-value>org.generationcp.browser.application.GermplasmBrowserOnlyApplication</param-value>
-		</init-param>
-		<init-param>
-			<param-name>applicationBeanName</param-name>
-			<param-value>germplasm_browser_only_application</param-value>
-		</init-param>		
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>GermplasmBrowser</servlet-name>
-		<url-pattern>/germplasm/*</url-pattern>
-	</servlet-mapping>
-
+	
   <servlet>
     <servlet-name>MainApplication</servlet-name>
     <servlet-class>org.generationcp.browser.util.SpringApplicationServlet</servlet-class>
@@ -60,7 +43,7 @@
   </servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>GermplasmBrowser</servlet-name>
+		<servlet-name>MainApplication</servlet-name>
 		<url-pattern>/VAADIN/*</url-pattern>
 	</servlet-mapping>
 </web-app>
