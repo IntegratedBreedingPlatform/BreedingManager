@@ -147,7 +147,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
             else if (name.equals("study")) {
 
 				I18NWindow studyBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n);  // Study Browser
-				studyBrowserWindow.setName("study-browser");
+				studyBrowserWindow.setName("study");
 				studyBrowserWindow.setSizeUndefined();
 				studyBrowserWindow.addComponent(new StudyBrowserMain(factory, i18n));
 				this.addWindow(studyBrowserWindow);
@@ -157,7 +157,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
             else if (name.equals("germplasm")) {
 
 				I18NWindow germplasmBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n);  // "Germplasm Browser"
-				germplasmBrowserWindow.setName("germplasm-browser");
+				germplasmBrowserWindow.setName("germplasm");
 				germplasmBrowserWindow.setSizeUndefined();
 				germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory));
 				this.addWindow(germplasmBrowserWindow);
