@@ -12,8 +12,6 @@
 
 package org.generationcp.browser.study.listeners;
 
-import java.util.ArrayList;
-
 import org.generationcp.browser.study.StudyTreeComponent;
 
 import com.vaadin.ui.Layout;

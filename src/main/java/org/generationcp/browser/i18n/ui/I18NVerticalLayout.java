@@ -16,6 +16,8 @@ public class I18NVerticalLayout extends VerticalLayout implements
 	private final I18NComponentSupport support;
 
 	public I18NVerticalLayout(I18N i18n) {
+		
+		super();
 		support = new I18NComponentSupport(this);
 		support.setI18N(i18n);
 	}

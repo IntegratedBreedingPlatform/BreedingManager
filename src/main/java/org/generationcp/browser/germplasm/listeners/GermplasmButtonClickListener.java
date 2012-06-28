@@ -18,18 +18,24 @@ import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 
 public class GermplasmButtonClickListener implements Button.ClickListener{
 
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmButtonClickListener.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmButtonClickListener.class);
     private static final long serialVersionUID = 1721485345429990412L;
 
     private Object source;
+    
+    private I18N i18n;
 
-    public GermplasmButtonClickListener(Object source) {
+    public GermplasmButtonClickListener(Object source, I18N i18n) {
         this.source = source;
+        this.i18n = i18n;
+        
     }
 
     @Override

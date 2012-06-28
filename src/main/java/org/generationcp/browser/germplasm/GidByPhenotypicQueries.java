@@ -24,7 +24,8 @@ import org.generationcp.middleware.pojos.TraitCombinationFilter;
 public class GidByPhenotypicQueries{
 
     private StudyDataManager managerStudy;
-    private ManagerFactory factory;
+    @SuppressWarnings("unused")
+	private ManagerFactory factory;
 
     public GidByPhenotypicQueries(ManagerFactory factory, StudyDataManager managerStudy) throws ConfigException {
         this.factory = factory;

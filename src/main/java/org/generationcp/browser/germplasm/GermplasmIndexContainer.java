@@ -37,12 +37,15 @@ public final class GermplasmIndexContainer{
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
 
     private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
-    private static final String GERMPLASM_SEARCH_BY_GID = "GID";
+    @SuppressWarnings("unused")
+	private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
     private static final Object GERMPLASM_PREFNAME = "prefname";
 
-    private static String choice;
-    private static String searchValue;
+    @SuppressWarnings("unused")
+	private static String choice;
+    @SuppressWarnings("unused")
+	private static String searchValue;
 
     private GermplasmQueries qQuery;
 

@@ -7,7 +7,6 @@ import com.github.peholmst.i18n4vaadin.I18NComponent;
 import com.github.peholmst.i18n4vaadin.I18NListener;
 import com.github.peholmst.i18n4vaadin.support.I18NComponentSupport;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.VerticalLayout;
 
 
 public class I18NAccordion extends Accordion implements

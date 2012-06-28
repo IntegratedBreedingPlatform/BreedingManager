@@ -43,7 +43,8 @@ public class WelcomeTab extends I18NVerticalLayout{
 
     private final static Logger LOG = LoggerFactory.getLogger(WelcomeTab.class);
     private static final long serialVersionUID = -917787404988386915L;
-    private int screenWidth;
+    @SuppressWarnings("unused")
+	private int screenWidth;
 
     private I18NVerticalLayout rootLayoutForGermplasmBrowser;
 
@@ -82,7 +83,7 @@ public class WelcomeTab extends I18NVerticalLayout{
         germplasmButton.setWidth(400, UNITS_PIXELS);
         this.rootLayoutForGermplasmBrowser = rootLayoutsForOtherTabs[0];
 
-        germplasmButton.addListener(new GermplasmButtonClickListener(this));
+        germplasmButton.addListener(new GermplasmButtonClickListener(this, i18n));
         this.addComponent(germplasmButton);
 
         studyButton = new Button(i18n.getMessage("study.button.label")); // "I want to browse Studies and their Datasets"
@@ -97,14 +98,14 @@ public class WelcomeTab extends I18NVerticalLayout{
         germplasmByPhenoButton.setWidth(400, UNITS_PIXELS);
         rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
 
-        germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this));
+        germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this, i18n));
         this.addComponent(germplasmByPhenoButton);
     }
 
     // Called by GermplasmButtonClickListener
     public void browserGermplasmInfoButtonClickAction() {
         if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-            rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory));
+            rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory, getI18N()));
             rootLayoutForGermplasmBrowser.addStyleName("addSpacing");
         }
 
@@ -130,7 +131,7 @@ public class WelcomeTab extends I18NVerticalLayout{
         // creation of content is done only once
         if (rootLayoutForGermplasmByPheno.getComponentCount() == 0) {
             try {
-                rootLayoutForGermplasmByPheno.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon));
+                rootLayoutForGermplasmByPheno.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, getI18N()));
             } catch (QueryException e) {
                 // Log into log file
                 LOG.error(e.toString() + "\n" + e.getStackTrace());

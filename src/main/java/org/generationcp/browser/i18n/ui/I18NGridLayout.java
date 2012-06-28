@@ -7,7 +7,6 @@ import com.github.peholmst.i18n4vaadin.I18NComponent;
 import com.github.peholmst.i18n4vaadin.I18NListener;
 import com.github.peholmst.i18n4vaadin.support.I18NComponentSupport;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.VerticalLayout;
 
 
 public class I18NGridLayout extends GridLayout implements
@@ -17,9 +16,18 @@ public class I18NGridLayout extends GridLayout implements
 	private final I18NComponentSupport support;
 
 	public I18NGridLayout(I18N i18n) {
+		
+		super();
 		support = new I18NComponentSupport(this);
 		support.setI18N(i18n);
 	}
+	
+    public I18NGridLayout(int columns, int rows, I18N i18n) {
+    	
+    	this(i18n);
+        setColumns(columns);
+        setRows(rows);
+    }
 	
 	@Override
 	public void setI18N(I18N i18n) {

@@ -12,12 +12,21 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
-public class GermplasmCharacteristicsComponent extends VerticalLayout{
+public class GermplasmCharacteristicsComponent extends I18NVerticalLayout{
 
-    public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel, I18N i18n) {
+    	
+    	super(i18n);
 
         Label lblGID = new Label("GID : " + gDetailModel.getGid());
         addComponent(lblGID);

@@ -14,6 +14,7 @@ package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmTreeExpandListener;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.browser.util.Util;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
@@ -21,26 +22,32 @@ import org.generationcp.middleware.pojos.GermplasmPedigreeTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
 
-public class GermplasmPedigreeTreeComponent extends VerticalLayout{
+public class GermplasmPedigreeTreeComponent extends I18NVerticalLayout{
 
-    private Tree pedigreeTree;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Tree pedigreeTree;
     private GermplasmPedigreeTree germplasmPedigreeTree;
     private GermplasmQueries qQuery;
-    private VerticalLayout mainLayout;
+    private I18NVerticalLayout mainLayout;
     private TabSheet tabSheet;
     private GermplasmIndexContainer DataIndexContainer;
     private final static Logger log = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
 
     public GermplasmPedigreeTreeComponent(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
-            VerticalLayout mainLayout, TabSheet tabSheet) throws QueryException {
+            I18NVerticalLayout mainLayout, TabSheet tabSheet, I18N i18n) throws QueryException {
 
+    	super(i18n);
+    	
         this.mainLayout = mainLayout;
         this.tabSheet = tabSheet;
         this.qQuery = qQuery;
@@ -53,8 +60,8 @@ public class GermplasmPedigreeTreeComponent extends VerticalLayout{
         addNode(germplasmPedigreeTree.getRoot(), 1);
         pedigreeTree.setImmediate(false);
 
-        pedigreeTree.addListener(new GermplasmItemClickListener(this));
-        pedigreeTree.addListener(new GermplasmTreeExpandListener(this));
+        pedigreeTree.addListener(new GermplasmItemClickListener(this, i18n));
+        pedigreeTree.addListener(new GermplasmTreeExpandListener(this, i18n));
 
         pedigreeTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
@@ -108,11 +115,11 @@ public class GermplasmPedigreeTreeComponent extends VerticalLayout{
     }
 
     public void displayNewGermplasmDetailTab(int gid) throws QueryException {
-        VerticalLayout detailLayout = new VerticalLayout();
+    	I18NVerticalLayout detailLayout = new I18NVerticalLayout(getI18N());
         detailLayout.setSpacing(true);
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, DataIndexContainer, mainLayout, tabSheet));
+            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, DataIndexContainer, mainLayout, tabSheet, getI18N()));
             Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
             tab.setClosable(true);
             tabSheet.setSelectedTab(detailLayout);

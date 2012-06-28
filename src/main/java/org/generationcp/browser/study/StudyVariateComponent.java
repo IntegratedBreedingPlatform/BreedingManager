@@ -19,8 +19,6 @@ import org.generationcp.middleware.manager.api.TraitDataManager;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 public class StudyVariateComponent extends I18NTable{
 

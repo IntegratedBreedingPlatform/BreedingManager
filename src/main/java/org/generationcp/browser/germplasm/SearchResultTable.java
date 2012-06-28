@@ -12,24 +12,29 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class SearchResultTable extends VerticalLayout{
+public class SearchResultTable extends I18NVerticalLayout{
 
-    Table resultTable;
+	I18NTable resultTable;
     IndexedContainer dataSource;
 
-    public SearchResultTable(IndexedContainer dataSource) {
+    public SearchResultTable(IndexedContainer dataSource, I18N i18n) {
+    	
+    	super(i18n);
+    	
         this.dataSource = dataSource;
     }
 
-    public Table getResultTable() {
-        resultTable = new Table("", this.dataSource);
+    public I18NTable getResultTable() {
+        resultTable = new I18NTable("", this.dataSource, getI18N());
         resultTable.setWidth("100%");
         resultTable.setHeight("200px");
         // selectable

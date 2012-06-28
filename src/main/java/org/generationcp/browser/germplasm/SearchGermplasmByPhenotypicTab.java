@@ -17,32 +17,33 @@ import java.util.Iterator;
 
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
+import org.generationcp.browser.i18n.ui.I18NGridLayout;
+import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
+import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.pojos.NumericRange;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
-public class SearchGermplasmByPhenotypicTab extends GridLayout{
+public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     private static final long serialVersionUID = 455865362407450432L;
 
-    private VerticalLayout componentTrait;
-    private VerticalLayout componentTtraitValueInput;
-    private Table traitTable;
-    private Table scaleTable;
-    private Table traitMethodTable;
-    private Table scaleValueTable;
-    private Table criteriaTable;
-    private Table searchResultTable;
+    private I18NVerticalLayout componentTrait;
+    private I18NVerticalLayout componentTtraitValueInput;
+    private I18NTable traitTable;
+    private I18NTable scaleTable;
+    private I18NTable traitMethodTable;
+    private I18NTable scaleValueTable;
+    private I18NTable criteriaTable;
+    private I18NTable searchResultTable;
     private IndexedContainer dataSourceTrait;
     private IndexedContainer dataSourceScale;
     private IndexedContainer dataSourceTraitMethod;
@@ -63,8 +64,11 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
     private int flagScale;
     private int flagResult = 0;
 
-    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam)
+    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam, I18N i18n)
             throws QueryException {
+    	
+    	super(i18n);
+    	
         this.gidsByPhenotypic = gidsByPhenotypicParam;
         this.dataIndexContainer = dataIndexContainerParam;
 
@@ -72,10 +76,10 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
         this.setRows(4);
         this.setSpacing(true);
 
-        componentTrait = new VerticalLayout();
+        componentTrait = new I18NVerticalLayout(getI18N());
         componentTrait.setSpacing(true);
 
-        componentTtraitValueInput = new VerticalLayout();
+        componentTtraitValueInput = new I18NVerticalLayout(getI18N());
         componentTtraitValueInput.setSpacing(true);
 
         Label mainLabel = new Label("<h1>Retrieve Germplasms By Phenotypic Data</h1>");
@@ -91,24 +95,24 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
         btnAddCriteria = new Button("Add Criteria");
         componentTtraitValueInput.addComponent(btnAddCriteria);
 
-        btnAddCriteria.addListener(new GermplasmButtonClickListener(this));
+        btnAddCriteria.addListener(new GermplasmButtonClickListener(this, i18n));
 
         displaySearchCriteria();
 
-        HorizontalLayout hButton = new HorizontalLayout();
+        I18NHorizontalLayout hButton = new I18NHorizontalLayout(getI18N());
         hButton.setSpacing(true);
 
         btnDelete = new Button("Delete");
         btnDelete.setDescription("You can delete the currently selected criteria.");
         hButton.addComponent(btnDelete);
 
-        btnDelete.addListener(new GermplasmButtonClickListener(this));
+        btnDelete.addListener(new GermplasmButtonClickListener(this, i18n));
 
         btnDeleteAll = new Button("Delete All");
         btnDeleteAll.setDescription("You can delete all the criteria.");
         hButton.addComponent(btnDelete);
 
-        btnDeleteAll.addListener(new GermplasmButtonClickListener(this));
+        btnDeleteAll.addListener(new GermplasmButtonClickListener(this, i18n));
         hButton.addComponent(btnDeleteAll);
 
         componentTtraitValueInput.addComponent(hButton);
@@ -121,13 +125,13 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
         btnSearch.setEnabled(false);
         componentTtraitValueInput.addComponent(btnSearch);
 
-        btnSearch.addListener(new GermplasmButtonClickListener(this));
+        btnSearch.addListener(new GermplasmButtonClickListener(this, i18n));
         this.addComponent(componentTrait, 1, 1);
         this.addComponent(componentTtraitValueInput, 3, 1);
 
-        traitTable.addListener(new GermplasmItemClickListener(this, traitTable));
+        traitTable.addListener(new GermplasmItemClickListener(this, traitTable, i18n));
 
-        scaleTable.addListener(new GermplasmItemClickListener(this, scaleTable));
+        scaleTable.addListener(new GermplasmItemClickListener(this, scaleTable, i18n));
 
     }
 
@@ -135,7 +139,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
 
     private void displayTraitTable() throws QueryException {
         dataSourceTrait = dataIndexContainer.getAllTrait();
-        traitTable = new Table("", dataSourceTrait);
+        traitTable = new I18NTable("", dataSourceTrait, getI18N());
 
         // set a style name, so we can style rows and cells
         traitTable.setStyleName("iso3166");
@@ -177,7 +181,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
     // Scale Table
     private void displayScaleTable(int traitID) {
         dataSourceScale = dataIndexContainer.getScaleByTraitID(traitID);
-        scaleTable = new Table("", dataSourceScale);
+        scaleTable = new I18NTable("", dataSourceScale, getI18N());
 
         // set a style name, so we can style rows and cells
         scaleTable.setStyleName("iso3166");
@@ -217,7 +221,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
     // TraitMethod Table
     private void displayMethodTable(int traitID) {
         dataSourceTraitMethod = dataIndexContainer.getMethodTraitID(traitID);
-        traitMethodTable = new Table("", dataSourceTraitMethod);
+        traitMethodTable = new I18NTable("", dataSourceTraitMethod, getI18N());
 
         // set a style name, so we can style rows and cells
         traitMethodTable.setStyleName("iso3166");
@@ -253,7 +257,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
 
     private void displayScaleValueTable() {
         IndexedContainer dataSourceScaleValue = dataIndexContainer.getValueByScaleID(-1);
-        scaleValueTable = new Table("", dataSourceScaleValue);
+        scaleValueTable = new I18NTable("", dataSourceScaleValue, getI18N());
 
         // set a style name, so we can style rows and cells
         scaleValueTable.setStyleName("iso3166");
@@ -282,7 +286,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
 
     private void displaySearchCriteria() {
         dataSourceSearchCriteria = dataIndexContainer.addSearchCriteria();
-        criteriaTable = new Table("", dataSourceSearchCriteria);
+        criteriaTable = new I18NTable("", dataSourceSearchCriteria, getI18N());
 
         // set a style name, so we can style rows and cells
         criteriaTable.setStyleName("iso3166");
@@ -314,7 +318,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
     private void displayGidsToResultTable(ArrayList<Integer> gids) {
 
         dataSourceSearchResult = dataIndexContainer.addGidsResult(gids);
-        searchResultTable = new Table("", dataSourceSearchResult);
+        searchResultTable = new I18NTable("", dataSourceSearchResult, getI18N());
 
         // set a style name, so we can style rows and cells
         searchResultTable.setStyleName("iso3166");
@@ -421,7 +425,8 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
         double start = 0;
         double end = 0;
 
-        for (Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
+        for (@SuppressWarnings("rawtypes")
+		Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
 
             int iid = (Integer) i.next();
             Item item = criteriaTable.getItem(iid);
@@ -502,7 +507,9 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
 
         if (withSelectedTraitScaleMethod()) {
             if (flagScale == 1) {
-                for (Iterator i = scaleValueTable.getItemIds().iterator(); i.hasNext();) {
+            	
+                for (@SuppressWarnings("rawtypes")
+				Iterator i = scaleValueTable.getItemIds().iterator(); i.hasNext();) {
                     int iid = (Integer) i.next();
                     Item item = scaleValueTable.getItem(iid);
                     Button button = (Button) item.getItemProperty("select").getValue();
@@ -562,7 +569,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
         }
     }
 
-    public void traitTableItemClickAction(Table sourceTable, Object itemId, Item item) {
+    public void traitTableItemClickAction(I18NTable sourceTable, Object itemId, Item item) {
         try {
             sourceTable.select(itemId);
             int traitID = Integer.valueOf(item.getItemProperty("traitID").toString());
@@ -585,7 +592,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout{
 
     }
 
-    public void scaleTableItemClickAction(Table sourceTable, Object itemId, Item item) {
+    public void scaleTableItemClickAction(I18NTable sourceTable, Object itemId, Item item) {
         sourceTable.select(itemId);
         int scaleID = Integer.valueOf(item.getItemProperty("scaleID").toString());
         String scaleType = item.getItemProperty("scaleType").toString();

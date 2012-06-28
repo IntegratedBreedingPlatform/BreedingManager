@@ -15,8 +15,8 @@ package org.generationcp.browser.study;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Factor;
@@ -30,7 +30,6 @@ import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class creates the Vaadin Table where a dataset can be displayed.

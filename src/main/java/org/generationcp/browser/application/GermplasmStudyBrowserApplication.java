@@ -88,7 +88,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
 		// add listener triggered by selecting tabs, this listener will create
 		// the content for the tabs dynamically as needed
 
-		tabSheet.addListener(new GermplasmSelectedTabChangeListener(this));
+		tabSheet.addListener(new GermplasmSelectedTabChangeListener(this, i18n));
 
 		// this will be passed to WelcomeTab so that it will have a reference to
 		// the root layout of the other tabs
@@ -133,7 +133,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
 				germplasmByPhenoWindow.setName("germplasm-by-pheno");
 				germplasmByPhenoWindow.setSizeUndefined();
 				try {
-					germplasmByPhenoWindow.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon));
+					germplasmByPhenoWindow.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
 				} catch (QueryException e) {
 					// Log into log file
 					LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -159,7 +159,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
 				I18NWindow germplasmBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n);  // "Germplasm Browser"
 				germplasmBrowserWindow.setName("germplasm");
 				germplasmBrowserWindow.setSizeUndefined();
-				germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory));
+				germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory, i18n));
 				this.addWindow(germplasmBrowserWindow);
 				return germplasmBrowserWindow;
 			}
@@ -187,7 +187,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
         if (source.getSelectedTab() == rootLayoutForGermplasmByPhenoTab) {
             if (rootLayoutForGermplasmByPhenoTab.getComponentCount() == 0) {
                 try {
-                    rootLayoutForGermplasmByPhenoTab.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon));
+                    rootLayoutForGermplasmByPhenoTab.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
                 } catch (QueryException e) {
                     // Log into log file
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -197,7 +197,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
 
         } else if (source.getSelectedTab() == rootLayoutForGermplasmBrowser) {
             if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-                rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory));
+                rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory, i18n));
             }
         } else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
             if (rootLayoutForStudyBrowser.getComponentCount() == 0) {

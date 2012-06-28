@@ -16,6 +16,7 @@ import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.middleware.exceptions.QueryException;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
@@ -24,8 +25,11 @@ public class GermplasmSelectedTabChangeListener implements TabSheet.SelectedTabC
     private static final long serialVersionUID = -3192436611974353597L;
     private Object source;
 
-    public GermplasmSelectedTabChangeListener(Object source) {
+    private I18N i18n;
+    
+    public GermplasmSelectedTabChangeListener(Object source, I18N i18n) {
         this.source = source;
+        this.i18n = i18n;
     }
 
     @Override

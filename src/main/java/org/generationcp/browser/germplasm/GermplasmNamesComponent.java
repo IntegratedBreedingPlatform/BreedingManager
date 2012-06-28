@@ -12,18 +12,26 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
-public class GermplasmNamesComponent extends VerticalLayout{
+public class GermplasmNamesComponent extends I18NVerticalLayout{
 
-    private Table tableNames;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private I18NTable tableNames;
 
-    public GermplasmNamesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel) {
+    public GermplasmNamesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
+    	super(i18n);
+    	
         IndexedContainer dataSourceNames = DataIndexContainer.getGermplasNames(gDetailModel);
-        tableNames = new Table("", dataSourceNames);
+        tableNames = new I18NTable("", dataSourceNames, getI18N());
         tableNames.setSelectable(true);
         tableNames.setMultiSelect(false);
         tableNames.setImmediate(true); // react at once when something is

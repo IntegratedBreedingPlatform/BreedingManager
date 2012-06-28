@@ -34,7 +34,8 @@ public class TraitDataIndexContainer{
 
     // Trait Object
     private static final Object TRAIT_ID = "traitID";
-    private static final Object TRAIT_ABBR = "trabbr";
+    @SuppressWarnings("unused")
+	private static final Object TRAIT_ABBR = "trabbr";
     private static final Object TRAIT_NAME = "traitName";
     private static final Object TRAIT_DESCRIPTION = "traitDesc";
 

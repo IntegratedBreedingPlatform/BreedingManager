@@ -13,6 +13,9 @@ package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
+import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
+import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.browser.util.Util;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
@@ -21,27 +24,24 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 /**
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-public class GermplasmBrowserMain extends VerticalLayout{
+public class GermplasmBrowserMain extends I18NVerticalLayout{
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
-    private VerticalLayout mainLayout;
-    private HorizontalLayout searchFormLayout;
-    private Table resultTable;
+    private I18NVerticalLayout mainLayout;
+    private I18NHorizontalLayout searchFormLayout;
+    private I18NTable resultTable;
     private IndexedContainer dataSourceResult;
     private TabSheet tabSheet = new TabSheet();
     private GermplasmDataManager managerGermplasm;
@@ -55,7 +55,10 @@ public class GermplasmBrowserMain extends VerticalLayout{
 
     private GermplasmSearchFormComponent searchOption;
 
-    public GermplasmBrowserMain(ManagerFactory factory) {
+    public GermplasmBrowserMain(ManagerFactory factory, I18N i18n) {
+    	
+    	super(i18n);
+    	
         try {
             initDataSource(factory);
         } catch (Exception e1) {
@@ -66,19 +69,19 @@ public class GermplasmBrowserMain extends VerticalLayout{
 
         setSpacing(true);
 
-        mainLayout = new VerticalLayout();
+        mainLayout = new I18NVerticalLayout(getI18N());
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
-        searchFormLayout = new HorizontalLayout();
+        searchFormLayout = new I18NHorizontalLayout(getI18N());
 
-        searchOption = new GermplasmSearchFormComponent();
+        searchOption = new GermplasmSearchFormComponent(getI18N());
         searchFormLayout.addComponent(searchOption);
 
         Button btnSearch = new Button("Search");
         btnSearch.addStyleName("addTopSpace");
 
-        btnSearch.addListener(new GermplasmButtonClickListener(this));
+        btnSearch.addListener(new GermplasmButtonClickListener(this, i18n));
         searchFormLayout.addComponent(btnSearch);
         
         mainLayout.addComponent(searchFormLayout);
@@ -91,23 +94,23 @@ public class GermplasmBrowserMain extends VerticalLayout{
             LOG.error(e1.toString() + "\n" + e1.getStackTrace());
             e1.printStackTrace();
         }
-        resultTable = new SearchResultTable(dataSourceResult).getResultTable();
+        resultTable = (I18NTable) new SearchResultTable(dataSourceResult, getI18N()).getResultTable();
 
         mainLayout.addComponent(resultTable);
 
-        resultTable.addListener(new GermplasmItemClickListener(this));
+        resultTable.addListener(new GermplasmItemClickListener(this, i18n));
         addComponent(mainLayout);
 
     }
 
     private void displayGermplasmDetailTab(int gid) throws QueryException {
 
-        VerticalLayout detailLayout = new VerticalLayout();
+        I18NVerticalLayout detailLayout = new I18NVerticalLayout(getI18N());
         detailLayout.setSpacing(true);
         // int screenWidth = 1028;
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
+            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, getI18N()));
             Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
             tab.setClosable(true);
             tabSheet.setSelectedTab(detailLayout);
@@ -147,7 +150,7 @@ public class GermplasmBrowserMain extends VerticalLayout{
         try {
             boolean withNoError = true;
             if (searchValue.length() > 0) {
-                Window window;
+                //Window window;
                 if (searchChoice.equals("GID")) {
                     try {
                         int gid = Integer.parseInt(searchValue);
@@ -177,7 +180,7 @@ public class GermplasmBrowserMain extends VerticalLayout{
     }
 
     // Called by GermplasmItemClickListener
-    public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) {
+    public void resultTableItemClickAction(I18NTable sourceTable, Object itemId, Item item) {
         sourceTable.select(itemId);
         int gid = Integer.valueOf(item.getItemProperty("gid").toString());
         try {

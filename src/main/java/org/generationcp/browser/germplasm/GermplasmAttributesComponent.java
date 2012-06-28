@@ -12,16 +12,24 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
-public class GermplasmAttributesComponent extends VerticalLayout{
+public class GermplasmAttributesComponent extends I18NVerticalLayout{
 
-    private Table tableAttribute;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Table tableAttribute;
 
-    public GermplasmAttributesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel) {
+    public GermplasmAttributesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
+    	super(i18n);
+    	
         IndexedContainer dataSourceAttribute = DataIndexContainer.getGermplasAttribute(gDetailModel);
         tableAttribute = new Table("", dataSourceAttribute);
         // selectable

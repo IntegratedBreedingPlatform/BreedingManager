@@ -15,15 +15,17 @@ package org.generationcp.browser.germplasm;
 import java.util.Arrays;
 import java.util.List;
 
+import org.generationcp.browser.i18n.ui.I18NGridLayout;
+import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+
+import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class GermplasmSearchFormComponent extends VerticalLayout implements Property.ValueChangeListener{
+public class GermplasmSearchFormComponent extends I18NVerticalLayout implements Property.ValueChangeListener{
 
     private String choice;
     private String searchValue;
@@ -34,9 +36,11 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
     private static final List<String> searchOption = Arrays.asList(new String[] { "GID", "Names" });
     private static final List<String> instanceOption = Arrays.asList(new String[] { "Central", "Local" });
 
-    public GermplasmSearchFormComponent() {
+    public GermplasmSearchFormComponent(I18N i18n) {
 
-        GridLayout grid = new GridLayout(4, 4);
+    	super(i18n);
+    	
+        I18NGridLayout grid = new I18NGridLayout(4, 4, getI18N());
         setSpacing(true);
 
         searchSelect = new OptionGroup("Search for", searchOption);
