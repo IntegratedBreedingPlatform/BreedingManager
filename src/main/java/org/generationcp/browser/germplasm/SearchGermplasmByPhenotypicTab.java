@@ -64,11 +64,11 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
     private int flagScale;
     private int flagResult = 0;
 
-    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam, I18N i18n)
-            throws QueryException {
-    	
-    	super(i18n);
-    	
+    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam,
+            I18N i18n) throws QueryException {
+
+        super(i18n);
+
         this.gidsByPhenotypic = gidsByPhenotypicParam;
         this.dataIndexContainer = dataIndexContainerParam;
 
@@ -426,7 +426,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
         double end = 0;
 
         for (@SuppressWarnings("rawtypes")
-		Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
+                Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
 
             int iid = (Integer) i.next();
             Item item = criteriaTable.getItem(iid);
@@ -507,9 +507,9 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
         if (withSelectedTraitScaleMethod()) {
             if (flagScale == 1) {
-            	
+
                 for (@SuppressWarnings("rawtypes")
-				Iterator i = scaleValueTable.getItemIds().iterator(); i.hasNext();) {
+                Iterator i = scaleValueTable.getItemIds().iterator(); i.hasNext();) {
                     int iid = (Integer) i.next();
                     Item item = scaleValueTable.getItem(iid);
                     Button button = (Button) item.getItemProperty("select").getValue();

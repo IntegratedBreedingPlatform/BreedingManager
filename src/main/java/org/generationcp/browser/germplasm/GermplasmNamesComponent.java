@@ -23,19 +23,19 @@ public class GermplasmNamesComponent extends I18NVerticalLayout{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private I18NTable tableNames;
+    private static final long serialVersionUID = 1L;
+    private I18NTable tableNames;
 
     public GermplasmNamesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
-    	super(i18n);
-    	
+        super(i18n);
+
         IndexedContainer dataSourceNames = DataIndexContainer.getGermplasNames(gDetailModel);
         tableNames = new I18NTable("", dataSourceNames, getI18N());
         tableNames.setSelectable(true);
         tableNames.setMultiSelect(false);
         tableNames.setImmediate(true); // react at once when something is
-                                       // selected
+        // selected
         // turn on column reordering and collapsing
         tableNames.setColumnReorderingAllowed(true);
         tableNames.setColumnCollapsingAllowed(true);

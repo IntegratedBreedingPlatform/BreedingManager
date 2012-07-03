@@ -35,7 +35,7 @@ public class StudyAccordionMenu extends I18NAccordion{
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
             TraitDataManager traitDataManager, I18N i18n) {
-    	super(i18n);
+        super(i18n);
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.traitDataManager = traitDataManager;
@@ -45,10 +45,10 @@ public class StudyAccordionMenu extends I18NAccordion{
         layoutVariate = new VerticalLayout();
         layoutFactor = new VerticalLayout();
         layoutEffect = new VerticalLayout();
-        this.addTab(studyDetailComponent, i18n.getMessage("studyDetails.text")); //"Study Details"
-        this.addTab(layoutFactor, i18n.getMessage("factors.text")); //"Factors"
-        this.addTab(layoutVariate, i18n.getMessage("variates.text")); //"Variates"
-        this.addTab(layoutEffect, i18n.getMessage("datasets.text")); //"Effects"
+        this.addTab(studyDetailComponent, i18n.getMessage("studyDetails.text")); // "Study Details"
+        this.addTab(layoutFactor, i18n.getMessage("factors.text")); // "Factors"
+        this.addTab(layoutVariate, i18n.getMessage("variates.text")); // "Variates"
+        this.addTab(layoutEffect, i18n.getMessage("datasets.text")); // "Effects"
 
         this.addListener(new StudySelectedTabChangeListener(this));
     }
@@ -56,7 +56,7 @@ public class StudyAccordionMenu extends I18NAccordion{
     public void selectedTabChangeAction() {
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
-        if (tab.getCaption().equals(getI18N().getMessage("factors.text"))){ //"Factors"
+        if (tab.getCaption().equals(getI18N().getMessage("factors.text"))) { // "Factors"
             if (layoutFactor.getComponentCount() == 0) {
                 try {
                     layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId, getI18N()));
@@ -66,7 +66,7 @@ public class StudyAccordionMenu extends I18NAccordion{
                     e.printStackTrace();
                 }
             }
-        } else if (tab.getCaption().equals(getI18N().getMessage("variates.text"))){ //"Variates"
+        } else if (tab.getCaption().equals(getI18N().getMessage("variates.text"))) { // "Variates"
             if (layoutVariate.getComponentCount() == 0) {
                 try {
                     layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId, getI18N()));
@@ -76,7 +76,7 @@ public class StudyAccordionMenu extends I18NAccordion{
                     e.printStackTrace();
                 }
             }
-        } else if (tab.getCaption().equals(getI18N().getMessage("datasets.text"))){ //"Datasets"
+        } else if (tab.getCaption().equals(getI18N().getMessage("datasets.text"))) { // "Datasets"
             if (layoutEffect.getComponentCount() == 0) {
                 layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, getI18N()));
 

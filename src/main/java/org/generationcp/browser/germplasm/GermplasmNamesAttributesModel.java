@@ -14,50 +14,50 @@ package org.generationcp.browser.germplasm;
 
 public class GermplasmNamesAttributesModel{
 
-    String Type;
-    String Name;
-    String Date;
-    String Location;
-    String TypeDesc;
+    private String type;
+    private String name;
+    private String date;
+    private String location;
+    private String typeDesc;
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setType(String type) {
-        Type = type;
+        this.type = type;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getDate() {
-        return Date;
+        return date;
     }
 
     public void setDate(String date) {
-        Date = date;
+        this.date = date;
     }
 
     public String getLocation() {
-        return Location;
+        return location;
     }
 
     public void setLocation(String location) {
-        Location = location;
+        this.location = location;
     }
 
     public String getTypeDesc() {
-        return TypeDesc;
+        return typeDesc;
     }
 
     public void setTypeDesc(String typeDesc) {
-        TypeDesc = typeDesc;
+        this.typeDesc = typeDesc;
     }
 
 }

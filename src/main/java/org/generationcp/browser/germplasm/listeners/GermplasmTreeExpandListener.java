@@ -26,8 +26,8 @@ public class GermplasmTreeExpandListener implements Tree.ExpandListener{
     private static final long serialVersionUID = 3215012575002448725L;
     private Layout source;
     @SuppressWarnings("unused")
-	private ArrayList<Object> parameters;
-    
+    private ArrayList<Object> parameters;
+
     private I18N i18n;
 
     public GermplasmTreeExpandListener(Layout source, I18N i18n) {
@@ -36,11 +36,11 @@ public class GermplasmTreeExpandListener implements Tree.ExpandListener{
     }
 
     public GermplasmTreeExpandListener(Layout source, ArrayList<Object> parameters, I18N i18n) {
-        
-    	this(source, i18n);
-        
-    	this.parameters = parameters;
-    	
+
+        this(source, i18n);
+
+        this.parameters = parameters;
+
     }
 
     @Override

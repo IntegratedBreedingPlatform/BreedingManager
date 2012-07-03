@@ -39,7 +39,7 @@ public class StudyDataIndexContainer{
     private static final Object DATATYPE = "dataType";
 
     private StudyDataManager studyDataManager;
-    TraitDataManager traitDataManager;
+    private TraitDataManager traitDataManager;
     private int studyId;
 
     public StudyDataIndexContainer(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {

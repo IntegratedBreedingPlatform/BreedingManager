@@ -23,13 +23,13 @@ public class GermplasmAttributesComponent extends I18NVerticalLayout{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private Table tableAttribute;
+    private static final long serialVersionUID = 1L;
+    private Table tableAttribute;
 
     public GermplasmAttributesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
-    	super(i18n);
-    	
+        super(i18n);
+
         IndexedContainer dataSourceAttribute = DataIndexContainer.getGermplasAttribute(gDetailModel);
         tableAttribute = new Table("", dataSourceAttribute);
         // selectable

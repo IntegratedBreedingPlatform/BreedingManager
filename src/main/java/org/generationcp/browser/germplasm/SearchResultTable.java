@@ -23,13 +23,13 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class SearchResultTable extends I18NVerticalLayout{
 
-	I18NTable resultTable;
-    IndexedContainer dataSource;
+    private I18NTable resultTable;
+    private IndexedContainer dataSource;
 
     public SearchResultTable(IndexedContainer dataSource, I18N i18n) {
-    	
-    	super(i18n);
-    	
+
+        super(i18n);
+
         this.dataSource = dataSource;
     }
 

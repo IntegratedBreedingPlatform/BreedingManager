@@ -26,11 +26,12 @@ public class StudyBrowserMain extends I18NHorizontalLayout{
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetStudyDatabaseInstance;
-//    private HorizontalLayout studyBrowserMainLayout;
-//    private StudyDataManager studyDataManager;
+
+    // private HorizontalLayout studyBrowserMainLayout;
+    // private StudyDataManager studyDataManager;
 
     public StudyBrowserMain(ManagerFactory factory, I18N i18n) {
-    	super(i18n);
+        super(i18n);
 
         setSizeFull();
         setSpacing(true);
@@ -42,8 +43,8 @@ public class StudyBrowserMain extends I18NHorizontalLayout{
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
 
-        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(i18n.getMessage("db.local.text")); //"Local"
-        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(i18n.getMessage("db.central.text")); //"Central"
+        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(i18n.getMessage("db.local.text")); // "Local"
+        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(i18n.getMessage("db.central.text")); // "Central"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
         tabCentralInstance.addComponent(new StudyTreeComponent(factory, this, Database.CENTRAL, i18n));
         tabLocalInstance.addComponent(new StudyTreeComponent(factory, this, Database.LOCAL, i18n));

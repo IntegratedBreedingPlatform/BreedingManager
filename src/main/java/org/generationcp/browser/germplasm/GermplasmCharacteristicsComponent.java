@@ -22,11 +22,11 @@ public class GermplasmCharacteristicsComponent extends I18NVerticalLayout{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel, I18N i18n) {
-    	
-    	super(i18n);
+    public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel, I18N i18n) {
+
+        super(i18n);
 
         Label lblGID = new Label("GID : " + gDetailModel.getGid());
         addComponent(lblGID);

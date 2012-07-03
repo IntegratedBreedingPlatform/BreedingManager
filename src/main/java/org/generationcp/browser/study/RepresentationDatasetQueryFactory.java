@@ -36,7 +36,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
     private Integer representationId;
     private List<String> columnIds;
     @SuppressWarnings("unused")
-	private QueryDefinition definition;
+    private QueryDefinition definition;
 
     /**
      * The constructor should be given the parameters which are then passed to

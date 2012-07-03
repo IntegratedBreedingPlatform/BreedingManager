@@ -32,7 +32,6 @@ import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
  * @author Glenn Marintes
  */
 
-
 public class SpringApplicationServlet extends AbstractApplicationServlet{
 
     private static final long serialVersionUID = 1L;

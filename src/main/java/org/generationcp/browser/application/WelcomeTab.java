@@ -44,7 +44,7 @@ public class WelcomeTab extends I18NVerticalLayout{
     private final static Logger LOG = LoggerFactory.getLogger(WelcomeTab.class);
     private static final long serialVersionUID = -917787404988386915L;
     @SuppressWarnings("unused")
-	private int screenWidth;
+    private int screenWidth;
 
     private I18NVerticalLayout rootLayoutForGermplasmBrowser;
 
@@ -61,7 +61,7 @@ public class WelcomeTab extends I18NVerticalLayout{
     private Button germplasmButton;
     private Button studyButton;
     private Button germplasmByPhenoButton;
-    
+
     public WelcomeTab(TabSheet tabSheet, final ManagerFactory factory, I18NVerticalLayout rootLayoutsForOtherTabs[], I18N i18n) {
         super(i18n);
         this.factory = factory;
@@ -93,7 +93,7 @@ public class WelcomeTab extends I18NVerticalLayout{
         studyButton.addListener(new StudyButtonClickListener(this, i18n));
 
         this.addComponent(studyButton);
- 
+
         germplasmByPhenoButton = new Button(i18n.getMessage("germplasmsByPheno.label")); // "I want to retrieve Germplasms by Phenotypic Data"
         germplasmByPhenoButton.setWidth(400, UNITS_PIXELS);
         rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
@@ -115,7 +115,7 @@ public class WelcomeTab extends I18NVerticalLayout{
     // Called by StudyButtonClickListener
     public void browseStudiesAndDataSets() {
         if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
-        	rootLayoutForStudyBrowser.setWidth("100%");
+            rootLayoutForStudyBrowser.setWidth("100%");
             rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory, getI18N()));
             rootLayoutForStudyBrowser.addStyleName("addSpacing");
         }

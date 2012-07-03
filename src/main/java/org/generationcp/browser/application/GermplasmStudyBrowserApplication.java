@@ -38,79 +38,82 @@ import com.github.peholmst.i18n4vaadin.ResourceBundleI18N;
 import com.github.peholmst.i18n4vaadin.support.I18NWindow;
 import java.util.Locale;
 
-
 @Configurable
-public class GermplasmStudyBrowserApplication extends SpringContextApplication {
+public class GermplasmStudyBrowserApplication extends SpringContextApplication{
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmStudyBrowserApplication.class);
 
     private static final long serialVersionUID = -2630998412856758023L;
 
-	private I18NWindow window;
-	private ManagerFactory factory;
+    private I18NWindow window;
+    private ManagerFactory factory;
 
-	private I18NVerticalLayout rootLayoutForGermplasmBrowser;
-	private I18NVerticalLayout rootLayoutForStudyBrowser;
-	private I18NVerticalLayout rootLayoutForGermplasmByPhenoTab;
-	
-	private I18N i18n;
- 
+    private I18NVerticalLayout rootLayoutForGermplasmBrowser;
+    private I18NVerticalLayout rootLayoutForStudyBrowser;
+    private I18NVerticalLayout rootLayoutForGermplasmByPhenoTab;
+
+    private I18N i18n;
+
     private DatasourceConfig datasourceConfig;
 
     @Override
     public void initSpringApplication(ConfigurableWebApplicationContext arg0) {
-		// set internationalization parameters
-		i18n = new ResourceBundleI18N("I18NMessages", Locale.ENGLISH, Locale.GERMAN); // add more Locale as needed
-		i18n.setCurrentLocale(Locale.ENGLISH);
-//		i18n.setCurrentLocale(Locale.GERMAN);
+        // set internationalization parameters
+        i18n = new ResourceBundleI18N("I18NMessages", Locale.ENGLISH, Locale.GERMAN); // add
+                                                                                      // more
+                                                                                      // Locale
+                                                                                      // as
+                                                                                      // needed
+        i18n.setCurrentLocale(Locale.ENGLISH);
+        // i18n.setCurrentLocale(Locale.GERMAN);
 
-		// create blank root layouts for the other tabs, the content will be
-		// added as the tabs are selected
-		// or as the buttons on the WelcomeTab are clicked
-		rootLayoutForGermplasmBrowser = new I18NVerticalLayout(i18n);
-		rootLayoutForStudyBrowser = new I18NVerticalLayout(i18n);
-		rootLayoutForGermplasmByPhenoTab = new I18NVerticalLayout(i18n);
+        // create blank root layouts for the other tabs, the content will be
+        // added as the tabs are selected
+        // or as the buttons on the WelcomeTab are clicked
+        rootLayoutForGermplasmBrowser = new I18NVerticalLayout(i18n);
+        rootLayoutForStudyBrowser = new I18NVerticalLayout(i18n);
+        rootLayoutForGermplasmByPhenoTab = new I18NVerticalLayout(i18n);
 
-		// initialize Middleware ManagerFactory
-		try {
-			initDataSource();
-		} catch (Exception e1) {
-			System.out.println(e1);
-			e1.printStackTrace();
-			return;
-		}
+        // initialize Middleware ManagerFactory
+        try {
+            initDataSource();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
-		window = new I18NWindow(i18n.getMessage("retrieveGerplasmByPheno.title"), i18n); // "Retrieve Germplasms By Phenotypic Data"
-		setMainWindow(window);
-		window.setSizeUndefined();
+        window = new I18NWindow(i18n.getMessage("retrieveGerplasmByPheno.title"), i18n); // "Retrieve Germplasms By Phenotypic Data"
+        setMainWindow(window);
+        window.setSizeUndefined();
 
-		TabSheet tabSheet = new TabSheet();
-		// add listener triggered by selecting tabs, this listener will create
-		// the content for the tabs dynamically as needed
+        TabSheet tabSheet = new TabSheet();
+        // add listener triggered by selecting tabs, this listener will create
+        // the content for the tabs dynamically as needed
 
-		tabSheet.addListener(new GermplasmSelectedTabChangeListener(this, i18n));
+        tabSheet.addListener(new GermplasmSelectedTabChangeListener(this, i18n));
 
-		// this will be passed to WelcomeTab so that it will have a reference to
-		// the root layout of the other tabs
-		I18NVerticalLayout layouts[] = new I18NVerticalLayout[3];
-		layouts[0] = rootLayoutForGermplasmBrowser;
-		layouts[1] = rootLayoutForStudyBrowser;
-		layouts[2] = rootLayoutForGermplasmByPhenoTab;
+        // this will be passed to WelcomeTab so that it will have a reference to
+        // the root layout of the other tabs
+        I18NVerticalLayout layouts[] = new I18NVerticalLayout[3];
+        layouts[0] = rootLayoutForGermplasmBrowser;
+        layouts[1] = rootLayoutForStudyBrowser;
+        layouts[2] = rootLayoutForGermplasmByPhenoTab;
 
-		WelcomeTab welcomeTab = new WelcomeTab(tabSheet, this.factory, layouts, i18n);
+        WelcomeTab welcomeTab = new WelcomeTab(tabSheet, this.factory, layouts, i18n);
 
-		tabSheet.addTab(welcomeTab, i18n.getMessage("welcome.title")); //"Welcome"
-		tabSheet.addTab(rootLayoutForGermplasmBrowser, i18n.getMessage("germplasmBrowser.title")); // "Germplasm Browser"
-		tabSheet.addTab(rootLayoutForStudyBrowser, i18n.getMessage("studyBrowser.title")); // "Study Browser"
-		tabSheet.addTab(rootLayoutForGermplasmByPhenoTab, i18n.getMessage("germplasmByPheno.title")); // "Search for Germplasms By Phenotypic Data"
+        tabSheet.addTab(welcomeTab, i18n.getMessage("welcome.title")); // "Welcome"
+        tabSheet.addTab(rootLayoutForGermplasmBrowser, i18n.getMessage("germplasmBrowser.title")); // "Germplasm Browser"
+        tabSheet.addTab(rootLayoutForStudyBrowser, i18n.getMessage("studyBrowser.title")); // "Study Browser"
+        tabSheet.addTab(rootLayoutForGermplasmByPhenoTab, i18n.getMessage("germplasmByPheno.title")); // "Search for Germplasms By Phenotypic Data"
 
         window.addComponent(tabSheet);
     }
-    
+
     @Autowired
     public void setDataSourceConfig(DatasourceConfig datasourceConfig) {
         this.datasourceConfig = datasourceConfig;
-    }	
+    }
 
     @Override
     public Window getWindow(String name) {
@@ -118,7 +121,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
         // associated with specific URLs
         // these windows are the jumping on points to parts of the application
         if (super.getWindow(name) == null) {
-            if (name.equals("germplasm-by-pheno")) {
+            if ("germplasm-by-pheno".equals(name)) {
                 GidByPhenotypicQueries gidByPhenoQueries = null;
                 try {
                     gidByPhenoQueries = new GidByPhenotypicQueries(this.factory, this.factory.getStudyDataManager());
@@ -129,47 +132,48 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
                 }
                 TraitDataIndexContainer traitDataCon = new TraitDataIndexContainer(this.factory, this.factory.getTraitDataManager());
 
-				I18NWindow germplasmByPhenoWindow = new I18NWindow(i18n.getMessage("germplasmByPheno.title"), i18n);   // "Search for Germplasms By Phenotypic Data"
-				germplasmByPhenoWindow.setName("germplasm-by-pheno");
-				germplasmByPhenoWindow.setSizeUndefined();
-				try {
-					germplasmByPhenoWindow.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
-				} catch (QueryException e) {
-					// Log into log file
-					LOG.error(e.toString() + "\n" + e.getStackTrace());
-					e.printStackTrace();
-				}
-				this.addWindow(germplasmByPhenoWindow);
+                I18NWindow germplasmByPhenoWindow = new I18NWindow(i18n.getMessage("germplasmByPheno.title"), i18n); // "Search for Germplasms By Phenotypic Data"
+                germplasmByPhenoWindow.setName("germplasm-by-pheno");
+                germplasmByPhenoWindow.setSizeUndefined();
+                try {
+                    germplasmByPhenoWindow.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
+                } catch (QueryException e) {
+                    // Log into log file
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                }
+                this.addWindow(germplasmByPhenoWindow);
 
                 return germplasmByPhenoWindow;
             }
 
-            else if (name.equals("study")) {
+            else if ("study".equals(name)) {
 
-				I18NWindow studyBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n);  // Study Browser
-				studyBrowserWindow.setName("study");
-				studyBrowserWindow.setSizeUndefined();
-				studyBrowserWindow.addComponent(new StudyBrowserMain(factory, i18n));
-				this.addWindow(studyBrowserWindow);
-				return studyBrowserWindow;
-			}
+                I18NWindow studyBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n); // Study
+                // Browser
+                studyBrowserWindow.setName("study");
+                studyBrowserWindow.setSizeUndefined();
+                studyBrowserWindow.addComponent(new StudyBrowserMain(factory, i18n));
+                this.addWindow(studyBrowserWindow);
+                return studyBrowserWindow;
+            }
 
-            else if (name.equals("germplasm")) {
+            else if ("germplasm".equals(name)) {
 
-				I18NWindow germplasmBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n);  // "Germplasm Browser"
-				germplasmBrowserWindow.setName("germplasm");
-				germplasmBrowserWindow.setSizeUndefined();
-				germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory, i18n));
-				this.addWindow(germplasmBrowserWindow);
-				return germplasmBrowserWindow;
-			}
+                I18NWindow germplasmBrowserWindow = new I18NWindow(i18n.getMessage("germplasmBrowser.title"), i18n); // "Germplasm Browser"
+                germplasmBrowserWindow.setName("germplasm");
+                germplasmBrowserWindow.setSizeUndefined();
+                germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(factory, i18n));
+                this.addWindow(germplasmBrowserWindow);
+                return germplasmBrowserWindow;
+            }
 
         }
 
         return super.getWindow(name);
     }
 
-    private void initDataSource() throws Exception {
+    private void initDataSource() {
         this.factory = this.datasourceConfig.getManagerFactory();
     }
 
@@ -187,7 +191,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
         if (source.getSelectedTab() == rootLayoutForGermplasmByPhenoTab) {
             if (rootLayoutForGermplasmByPhenoTab.getComponentCount() == 0) {
                 try {
-                    rootLayoutForGermplasmByPhenoTab.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
+                    rootLayoutForGermplasmByPhenoTab
+                            .addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, i18n));
                 } catch (QueryException e) {
                     // Log into log file
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -200,7 +205,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication {
                 rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(factory, i18n));
             }
         } else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
-            if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
+            if (rootLayoutForStudyBrowser.getComponentCount() == 0) { 
                 rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(factory, i18n));
             }
         }

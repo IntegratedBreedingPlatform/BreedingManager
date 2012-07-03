@@ -33,17 +33,17 @@ public class GermplasmSearchFormComponent extends I18NVerticalLayout implements 
     private final TextField txtSearchValue = new TextField();
     private final OptionGroup searchSelect;
     private final OptionGroup databaseInstanceOption;
-    private static final List<String> searchOption = Arrays.asList(new String[] { "GID", "Names" });
-    private static final List<String> instanceOption = Arrays.asList(new String[] { "Central", "Local" });
+    private static final List<String> SEARCH_OPTION = Arrays.asList(new String[] { "GID", "Names" });
+    private static final List<String> INSTANCE_OPTION = Arrays.asList(new String[] { "Central", "Local" });
 
     public GermplasmSearchFormComponent(I18N i18n) {
 
-    	super(i18n);
-    	
+        super(i18n);
+
         I18NGridLayout grid = new I18NGridLayout(4, 4, getI18N());
         setSpacing(true);
 
-        searchSelect = new OptionGroup("Search for", searchOption);
+        searchSelect = new OptionGroup("Search for", SEARCH_OPTION);
         searchSelect.select("Names");
         searchSelect.setImmediate(true);
         searchSelect.addListener(this);
@@ -56,7 +56,7 @@ public class GermplasmSearchFormComponent extends I18NVerticalLayout implements 
         // txtSearchValue.setSizeUndefined();
         grid.addComponent(txtSearchValue, 2, 1);
 
-        databaseInstanceOption = new OptionGroup("", instanceOption);
+        databaseInstanceOption = new OptionGroup("", INSTANCE_OPTION);
         databaseInstanceOption.select("Central");
         databaseInstanceOption.setImmediate(true);
         databaseInstanceOption.addListener(this);

@@ -25,7 +25,7 @@ public class GidByPhenotypicQueries{
 
     private StudyDataManager managerStudy;
     @SuppressWarnings("unused")
-	private ManagerFactory factory;
+    private ManagerFactory factory;
 
     public GidByPhenotypicQueries(ManagerFactory factory, StudyDataManager managerStudy) throws ConfigException {
         this.factory = factory;

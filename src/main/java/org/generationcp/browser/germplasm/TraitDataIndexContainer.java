@@ -29,13 +29,13 @@ import com.vaadin.ui.CheckBox;
 
 public class TraitDataIndexContainer{
 
-    public static final Object iso3166_PROPERTY_SHORT = "short";
-    public static final Object iso3166_PROPERTY_NAME = "name";
+    public static final Object ISO3166_PROPERTY_SHORT = "short";
+    public static final Object ISO3166_PROPERTY_NAME = "name";
 
     // Trait Object
     private static final Object TRAIT_ID = "traitID";
     @SuppressWarnings("unused")
-	private static final Object TRAIT_ABBR = "trabbr";
+    private static final Object TRAIT_ABBR = "trabbr";
     private static final Object TRAIT_NAME = "traitName";
     private static final Object TRAIT_DESCRIPTION = "traitDesc";
 
@@ -58,7 +58,7 @@ public class TraitDataIndexContainer{
 
     // Criteria Value
     private static final Object CRITERIA_VALUES = "criteriaValue";
-    TraitQueries queryTrait;
+    private TraitQueries queryTrait;
 
     // Results GIDS
     private static final Object GID = "gid";

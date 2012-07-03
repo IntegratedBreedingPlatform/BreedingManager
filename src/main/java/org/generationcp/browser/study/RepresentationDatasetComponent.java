@@ -46,13 +46,14 @@ public class RepresentationDatasetComponent extends I18NVerticalLayout{
     private String reportName;
     private Integer studyIdHolder;
     private Integer repIdHolder;
-    
-    private Button exportCsvButton;
-    private String reportTitle; 
 
-    public RepresentationDatasetComponent(StudyDataManager dataManager, Integer representationId, String datasetTitle, Integer studyId, I18N i18n) {
- 
-    	super(i18n);
+    private Button exportCsvButton;
+    private String reportTitle;
+
+    public RepresentationDatasetComponent(StudyDataManager dataManager, Integer representationId, String datasetTitle, Integer studyId,
+            I18N i18n) {
+
+        super(i18n);
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.repIdHolder = representationId;
@@ -67,10 +68,6 @@ public class RepresentationDatasetComponent extends I18NVerticalLayout{
         } catch (QueryException ex) {
             // Log into the log fie
             LOG.error("Error with getting factors of representation: " + representationId + "\n" + ex.toString());
-
-            // System.out.println("Error with getting factors of representation: "
-            // + representationId);
-            // System.out.println(ex);
             ex.printStackTrace();
             factors = new ArrayList<Factor>();
         }
@@ -79,9 +76,6 @@ public class RepresentationDatasetComponent extends I18NVerticalLayout{
             variates = dataManager.getVariatesByRepresentationId(representationId);
         } catch (QueryException ex) {
             LOG.error("Error with getting variates of representation: " + representationId, ex);
-            // System.out.println("Error with getting variates of representation: "
-            // + representationId);
-            // System.out.println(ex);
             ex.printStackTrace();
             variates = new ArrayList<Variate>();
         }
@@ -146,8 +140,10 @@ public class RepresentationDatasetComponent extends I18NVerticalLayout{
     // Called by StudyButtonClickListener
     public void exportToCSVAction() {
         CsvExport csvExport;
-        //reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]"; 
-        reportTitle = getI18N().getMessage("reportTitle1.text") + "[" + studyIdHolder + "]-" + getI18N().getMessage("reportTitle2.text") + "[" + repIdHolder + "]";
+        // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" +
+        // repIdHolder + "]";
+        reportTitle = getI18N().getMessage("reportTitle1.text") + "[" + studyIdHolder + "]-" + getI18N().getMessage("reportTitle2.text")
+                + "[" + repIdHolder + "]";
         String fileName = reportTitle + ".csv";
         csvExport = new CsvExport(datasetTable, reportName, reportTitle, fileName, false);
         csvExport.excludeCollapsedColumns();

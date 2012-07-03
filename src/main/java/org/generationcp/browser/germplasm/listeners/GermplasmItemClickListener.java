@@ -32,7 +32,7 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 
     private Object sourceClass;
     private Component sourceComponent;
-    
+
     private I18N i18n;
 
     public GermplasmItemClickListener(Object sourceClass, I18N i18n) {
@@ -41,10 +41,10 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
     }
 
     public GermplasmItemClickListener(Object sourceClass, Component sourceComponent, I18N i18n) {
-       
-    	this(sourceClass, i18n);
+
+        this(sourceClass, i18n);
         this.sourceComponent = sourceComponent;
-        
+
     }
 
     @Override

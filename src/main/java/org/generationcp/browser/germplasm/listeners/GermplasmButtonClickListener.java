@@ -25,17 +25,17 @@ import com.vaadin.ui.Button.ClickEvent;
 public class GermplasmButtonClickListener implements Button.ClickListener{
 
     @SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(GermplasmButtonClickListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmButtonClickListener.class);
     private static final long serialVersionUID = 1721485345429990412L;
 
     private Object source;
-    
+
     private I18N i18n;
 
     public GermplasmButtonClickListener(Object source, I18N i18n) {
         this.source = source;
         this.i18n = i18n;
-        
+
     }
 
     @Override

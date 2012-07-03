@@ -56,9 +56,9 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
     private GermplasmSearchFormComponent searchOption;
 
     public GermplasmBrowserMain(ManagerFactory factory, I18N i18n) {
-    	
-    	super(i18n);
-    	
+
+        super(i18n);
+
         try {
             initDataSource(factory);
         } catch (Exception e1) {
@@ -83,7 +83,7 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
 
         btnSearch.addListener(new GermplasmButtonClickListener(this, i18n));
         searchFormLayout.addComponent(btnSearch);
-        
+
         mainLayout.addComponent(searchFormLayout);
 
         try {
@@ -94,7 +94,7 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
             LOG.error(e1.toString() + "\n" + e1.getStackTrace());
             e1.printStackTrace();
         }
-        resultTable = (I18NTable) new SearchResultTable(dataSourceResult, getI18N()).getResultTable();
+        resultTable = new SearchResultTable(dataSourceResult, getI18N()).getResultTable();
 
         mainLayout.addComponent(resultTable);
 
@@ -121,7 +121,7 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
         }
     }
 
-    private void initDataSource(ManagerFactory factory) throws Exception {
+    private void initDataSource(ManagerFactory factory) {
         managerGermplasm = factory.getGermplasmDataManager();
         qQuery = new GermplasmQueries(factory, managerGermplasm);
         dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
@@ -141,7 +141,7 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
         searchValue = searchOption.getSearchValue();
         instanceChoice = searchOption.getDatabaseInstance();
 
-        if (instanceChoice.equals("Central")) {
+        if ("Central".equals(instanceChoice)) {
             instance = Database.CENTRAL;
         } else {
             instance = Database.LOCAL;
@@ -150,8 +150,8 @@ public class GermplasmBrowserMain extends I18NVerticalLayout{
         try {
             boolean withNoError = true;
             if (searchValue.length() > 0) {
-                //Window window;
-                if (searchChoice.equals("GID")) {
+                // Window window;
+                if ("GID".equals(searchChoice)) {
                     try {
                         int gid = Integer.parseInt(searchValue);
                         displayGermplasmDetailTab(gid);

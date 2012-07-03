@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -23,6 +25,8 @@ import com.vaadin.data.util.IndexedContainer;
 
 public final class GermplasmIndexContainer{
 
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmIndexContainer.class);
+    
     // Germplasm SearchResult Model
     private static final Object GERMPLASM_GID = "gid";
     private static final Object GERMPLASM_NAMES = "names";
@@ -38,14 +42,14 @@ public final class GermplasmIndexContainer{
 
     private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
     @SuppressWarnings("unused")
-	private static final String GERMPLASM_SEARCH_BY_GID = "GID";
+    private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
     private static final Object GERMPLASM_PREFNAME = "prefname";
 
     @SuppressWarnings("unused")
-	private static String choice;
+    private static String choice;
     @SuppressWarnings("unused")
-	private static String searchValue;
+    private static String searchValue;
 
     private GermplasmQueries qQuery;
 
@@ -94,7 +98,7 @@ public final class GermplasmIndexContainer{
         addContainerProperties(container);
 
         final ArrayList<GermplasmNamesAttributesModel> query = g.getAttributes();
-        System.out.println("Size of the query" + query.size());
+        LOG.info("Size of the query" + query.size());
         for (GermplasmNamesAttributesModel q : query) {
             addGermplasNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
         }

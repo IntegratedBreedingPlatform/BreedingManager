@@ -14,14 +14,14 @@ package org.generationcp.browser.germplasm;
 
 public class TraitCriteriaModel{
 
-    int traitID;
-    int scaleID;
-    int methodID;
+    private int traitID;
+    private int scaleID;
+    private int methodID;
 
-    String traitName;
-    String scaleName;
-    String methodName;
-    String criteriaValues;
+    private String traitName;
+    private String scaleName;
+    private String methodName;
+    private String criteriaValues;
 
     public int getTraitID() {
         return traitID;

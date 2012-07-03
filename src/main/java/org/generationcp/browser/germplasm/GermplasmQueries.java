@@ -33,9 +33,9 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 
 public class GermplasmQueries implements Serializable{
 
-    GermplasmSearchResultModel germplasmResultByGID;
-    GermplasmDetailModel germplasmDetail;
-    ArrayList<Integer> gids;
+    private GermplasmSearchResultModel germplasmResultByGID;
+    private GermplasmDetailModel germplasmDetail;
+    private ArrayList<Integer> gids;
 
     private static final long serialVersionUID = 1L;
     // private HibernateUtil hibernateUtil;
@@ -122,8 +122,6 @@ public class GermplasmQueries implements Serializable{
     }
 
     private ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws QueryException {
-        // TODO Auto-generated method stub
-
         ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
         List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
         generationHistoryList = managerGermplasm.getGenerationHistory(new Integer(gid));
@@ -137,7 +135,6 @@ public class GermplasmQueries implements Serializable{
     }
 
     private ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws QueryException {
-        // TODO Auto-generated method stub
         ArrayList<Name> names = (ArrayList<Name>) managerGermplasm.getNamesByGID(gid, null, null);
         ArrayList<GermplasmNamesAttributesModel> germplasmNames = new ArrayList<GermplasmNamesAttributesModel>();
 
@@ -159,7 +156,6 @@ public class GermplasmQueries implements Serializable{
     }
 
     private ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws QueryException {
-        // TODO Auto-generated method stub
         ArrayList<Attribute> attr = (ArrayList<Attribute>) managerGermplasm.getAttributesByGID(gid);
         ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
 
@@ -200,18 +196,18 @@ public class GermplasmQueries implements Serializable{
     private String getGermplasmNames(int gid) throws QueryException {
 
         List<Name> names = managerGermplasm.getNamesByGID(new Integer(gid), null, null);
-        String s = "";
+        StringBuffer germplasmNames = new StringBuffer("");
         int i = 0;
         for (Name n : names) {
             if (i < names.size() - 1) {
-                s += n.getNval() + ",";
+                germplasmNames.append(n.getNval() + ",");
             } else {
-                s += n.getNval();
+                germplasmNames.append(n.getNval());
             }
             i++;
         }
 
-        return s;
+        return germplasmNames.toString();
     }
 
     private String getReference(int refId) {
@@ -228,7 +224,6 @@ public class GermplasmQueries implements Serializable{
         try {
             Location x = managerGermplasm.getLocationByID(locId);
             return x.getLname();
-
         } catch (Exception e) {
             return "";
         }
@@ -239,9 +234,7 @@ public class GermplasmQueries implements Serializable{
     }
 
     public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws QueryException {
-        // TODO Auto-generated method stub
-        GermplasmPedigreeTree tree = managerGermplasm.generatePedigreeTree(gid, i);
-        return tree;
+        return managerGermplasm.generatePedigreeTree(gid, i);
     }
 
 }

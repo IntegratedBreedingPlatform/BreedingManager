@@ -22,30 +22,30 @@ import com.vaadin.data.util.IndexedContainer;
 
 public class StudyVariateComponent extends I18NTable{
 
-	private static final long serialVersionUID = -3225098517785018744L;
+    private static final long serialVersionUID = -3225098517785018744L;
 
-	public StudyVariateComponent(StudyDataManager studyDataManager,
-			TraitDataManager traitDataManager, int studyId, I18N i18n)
-			throws QueryException {
-		super(i18n);
+    public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId, I18N i18n)
+            throws QueryException {
+        super(i18n);
 
-		StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
-		IndexedContainer dataStudyFactor = dataIndexContainer.getStudyVariate();
-		this.setContainerDataSource(dataStudyFactor);
-		setSelectable(true);
-		setMultiSelect(false);
-		setImmediate(true); // react at once when something is
-		setSizeFull();
-		setColumnReorderingAllowed(true);
-		setColumnCollapsingAllowed(true);
-		//setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY", "SCALE", "METHOD", "DATATYPE" });
-		setColumnHeaders(new String[] {
-				i18n.getMessage("name.header"),
-				i18n.getMessage("description.header"),
-				i18n.getMessage("property.header"),
-				i18n.getMessage("scale.header"),
-				i18n.getMessage("method.header"),
-				i18n.getMessage("datatye.header") });
-	}
+        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
+        IndexedContainer dataStudyFactor = dataIndexContainer.getStudyVariate();
+        this.setContainerDataSource(dataStudyFactor);
+        setSelectable(true);
+        setMultiSelect(false);
+        setImmediate(true); // react at once when something is
+        setSizeFull();
+        setColumnReorderingAllowed(true);
+        setColumnCollapsingAllowed(true);
+        // setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY",
+        // "SCALE", "METHOD", "DATATYPE" });
+        setColumnHeaders(new String[] {
+                i18n.getMessage("name.header"),
+                i18n.getMessage("description.header"),
+                i18n.getMessage("property.header"),
+                i18n.getMessage("scale.header"),
+                i18n.getMessage("method.header"),
+                i18n.getMessage("datatye.header") });
+    }
 
 }

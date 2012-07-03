@@ -97,10 +97,6 @@ public class RepresentationDataSetQuery implements Query{
         } catch (QueryException ex) {
             // Log error in log file
             LOG.error("Error with getting ounitids for representation: " + representationId + "\n" + ex.toString());
-            // System.out.println("Error with getting ounitids for representation: "
-            // + representationId);
-            // System.out.println(ex);
-            // ex.printStackTrace();
             ounitids = new ArrayList<Integer>();
         }
 
@@ -113,9 +109,6 @@ public class RepresentationDataSetQuery implements Query{
             } catch (QueryException ex) {
                 // Log error in log file
                 LOG.error("Error with getting character level values" + "\n" + ex.toString());
-                // System.out.println("Error with getting character level values");
-                // System.out.println(ex);
-                // ex.printStackTrace();
                 charLevels = new ArrayList<CharacterLevelElement>();
             }
 
@@ -140,9 +133,6 @@ public class RepresentationDataSetQuery implements Query{
             } catch (QueryException ex) {
                 // Log error in log file
                 LOG.error("Error with getting numeric level values" + "\n" + ex.toString());
-                // System.out.println("Error with getting numeric level values");
-                // System.out.println(ex);
-                // ex.printStackTrace();
                 numericLevels = new ArrayList<NumericLevelElement>();
             }
 
@@ -167,9 +157,6 @@ public class RepresentationDataSetQuery implements Query{
             } catch (QueryException ex) {
                 // Log error in log file
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
-                // System.out.println("Error with getting character data values");
-                // System.out.println(ex);
-                // ex.printStackTrace();
                 characterDatas = new ArrayList<CharacterDataElement>();
             }
 
@@ -194,9 +181,6 @@ public class RepresentationDataSetQuery implements Query{
             } catch (QueryException ex) {
                 // Log error in log file
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
-                // System.out.println("Error with getting character data values");
-                // System.out.println(ex);
-                // ex.printStackTrace();
                 numericDatas = new ArrayList<NumericDataElement>();
             }
 
@@ -228,18 +212,14 @@ public class RepresentationDataSetQuery implements Query{
      */
     @Override
     public int size() {
+        int size = 0;
         try {
-            int size = dataManager.countOunitIDsByRepresentationId(representationId).intValue();
-            return size;
+            size = dataManager.countOunitIDsByRepresentationId(representationId).intValue();
         } catch (QueryException ex) {
             // Log error in log file
             LOG.error("Error with getting number of ounitids for representation: " + representationId + "\n" + ex.toString());
-            // System.out.println("Error with getting number of ounitids for representation: "
-            // + representationId);
-            // System.out.println(ex);
-            // ex.printStackTrace();
-            return 0;
         }
+        return size;
     }
 
 }

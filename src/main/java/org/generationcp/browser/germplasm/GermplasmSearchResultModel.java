@@ -17,10 +17,10 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class GermplasmSearchResultModel implements Serializable{
 
-    int gid;
-    String names;
-    String method;
-    String location;
+    private int gid;
+    private String names;
+    private String method;
+    private String location;
 
     public Integer getGid() {
         return gid;

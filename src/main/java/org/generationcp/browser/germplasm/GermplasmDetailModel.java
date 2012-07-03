@@ -18,20 +18,29 @@ import org.generationcp.middleware.pojos.Bibref;
 
 public class GermplasmDetailModel{
 
-    int gid;
-    String germplasmPreferredName; // nval value where names.nstat=1
-    String dateNamed; // ndate value where names.nstat=1
-    String nameLocation;
-    String germplasmMethod;
-    String germplasmCreationDate;
-    String germplasmLocation;
-    String Reference;
-    String germplasmUser;
-    String prefID; // nval value where names.nstat=8
-    ArrayList<GermplasmNamesAttributesModel> attributes;
-    ArrayList<GermplasmNamesAttributesModel> names;
-    ArrayList<GermplasmDetailModel> generationhistory;
-    Bibref bibRef;
+    private int gid;
+    String germplasmPreferredName; // nval
+    // value
+    // where
+    // names.nstat=1
+    private String dateNamed; // ndate
+    // value
+    // where
+    // names.nstat=1
+    private String nameLocation;
+    private String germplasmMethod;
+    private String germplasmCreationDate;
+    private String germplasmLocation;
+    private String reference;
+    private String germplasmUser;
+    private String prefID; // nval
+    // value
+    // where
+    // names.nstat=8
+    private ArrayList<GermplasmNamesAttributesModel> attributes;
+    private ArrayList<GermplasmNamesAttributesModel> names;
+    private ArrayList<GermplasmDetailModel> generationhistory;
+    private Bibref bibRef;
 
     public Bibref getBibRef() {
         return bibRef;
@@ -74,11 +83,11 @@ public class GermplasmDetailModel{
     }
 
     public String getReference() {
-        return Reference;
+        return reference;
     }
 
     public void setReference(String reference) {
-        Reference = reference;
+        this.reference = reference;
     }
 
     public String getGermplasmUser() {

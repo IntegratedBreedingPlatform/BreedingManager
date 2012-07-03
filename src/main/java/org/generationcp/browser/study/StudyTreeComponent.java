@@ -41,179 +41,177 @@ import com.vaadin.ui.VerticalLayout;
 
 public class StudyTreeComponent extends I18NVerticalLayout{
 
-	private static final long serialVersionUID = -3481988646509402160L;
+    private static final long serialVersionUID = -3481988646509402160L;
 
-	private final static Logger LOG = LoggerFactory.getLogger(StudyTreeComponent.class);
+    private final static Logger LOG = LoggerFactory.getLogger(StudyTreeComponent.class);
 
-	private StudyDataManager studyDataManager;
-	private Tree studyTree;
-	private static TabSheet tabSheetStudy;
-	private I18NHorizontalLayout studyBrowserMainLayout;
-	private TraitDataManager traitDataManager;
+    private StudyDataManager studyDataManager;
+    private Tree studyTree;
+    private static TabSheet tabSheetStudy;
+    private I18NHorizontalLayout studyBrowserMainLayout;
+    private TraitDataManager traitDataManager;
 
-	public StudyTreeComponent(ManagerFactory factory, I18NHorizontalLayout studyBrowserMainLayout, Database database, I18N i18n) {
-		super(i18n);
+    public StudyTreeComponent(ManagerFactory factory, I18NHorizontalLayout studyBrowserMainLayout, Database database, I18N i18n) {
+        super(i18n);
 
-		this.studyDataManager = factory.getStudyDataManager();
-		this.traitDataManager = factory.getTraitDataManager();
-		this.studyBrowserMainLayout = studyBrowserMainLayout;
+        this.studyDataManager = factory.getStudyDataManager();
+        this.traitDataManager = factory.getTraitDataManager();
+        this.studyBrowserMainLayout = studyBrowserMainLayout;
 
-		setSpacing(true);
-		setMargin(true);
+        setSpacing(true);
+        setMargin(true);
 
-		tabSheetStudy = new TabSheet();
+        tabSheetStudy = new TabSheet();
 
-		studyTree = createStudyTree(database);
+        studyTree = createStudyTree(database);
 
-		if (database == Database.LOCAL) {
-			Button refreshButton = new Button(i18n.getMessage("refresh.label")); //"Refresh"
+        if (database == Database.LOCAL) {
+            Button refreshButton = new Button(i18n.getMessage("refresh.label")); // "Refresh"
 
-			refreshButton.addListener(new StudyButtonClickListener(this, i18n));
-			addComponent(refreshButton);
-		}
+            refreshButton.addListener(new StudyButtonClickListener(this, i18n));
+            addComponent(refreshButton);
+        }
 
-		// add tooltip
-		studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+        // add tooltip
+        studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
-			private static final long serialVersionUID = -2669417630841097077L;
+            private static final long serialVersionUID = -2669417630841097077L;
 
-			@Override
-			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				return getI18N().getMessage("studyDetails.label"); //"Click to view study details"
-			}
-		});
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return getI18N().getMessage("studyDetails.label"); // "Click to view study details"
+            }
+        });
 
-		addComponent(studyTree);
+        addComponent(studyTree);
 
-	}
+    }
 
+    // Called by StudyButtonClickListener
+    public void createTree() {
+        this.removeComponent(studyTree);
+        studyTree.removeAllItems();
+        studyTree = createStudyTree(Database.LOCAL);
+        this.addComponent(studyTree);
+    }
 
-	// Called by StudyButtonClickListener
-	public void createTree() {
-	        this.removeComponent(studyTree);
-		studyTree.removeAllItems();
-		studyTree = createStudyTree(Database.LOCAL);
-		this.addComponent(studyTree);
-	}
+    private Tree createStudyTree(Database database) {
+        List<Study> studyParent = new ArrayList<Study>();
 
-	private Tree createStudyTree(Database database) {
-		List<Study> studyParent = new ArrayList<Study>();
+        try {
+            studyParent = this.studyDataManager.getAllTopLevelStudies(0, 100, database);
+        } catch (QueryException ex) {
+            // Put in an application log
+            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
 
-		try {
-			studyParent = this.studyDataManager.getAllTopLevelStudies(0, 100, database);
-		} catch (QueryException ex) {
-			// Put in an application log
-			LOG.error(ex.toString() + "\n" + ex.getStackTrace());
+            // TODO an error window in the UI should pop-up for this
+            // System.out.println(ex);
+            ex.printStackTrace();
+            studyParent = new ArrayList<Study>();
+        }
 
-			// TODO an error window in the UI should pop-up for this
-			// System.out.println(ex);
-			ex.printStackTrace();
-			studyParent = new ArrayList<Study>();
-		}
+        Tree studyTree = new Tree();
 
-		Tree studyTree = new Tree();
+        for (Study ps : studyParent) {
+            studyTree.addItem(ps.getId());
+            studyTree.setItemCaption(ps.getId(), ps.getName());
+        }
 
-		for (Study ps : studyParent) {
-			studyTree.addItem(ps.getId());
-			studyTree.setItemCaption(ps.getId(), ps.getName());
-		}
+        studyTree.addListener(new StudyTreeExpandListener(this));
+        studyTree.addListener(new StudyItemClickListener(this));
 
-		studyTree.addListener(new StudyTreeExpandListener(this));
-		studyTree.addListener(new StudyItemClickListener(this));
+        return studyTree;
+    }
 
-		return studyTree;
-	}
+    // Called by StudyItemClickListener
+    public void studyTreeItemClickAction(int studyId) {
+        try {
+            if (!hasChildStudy(studyId)) {
+                createStudyInfoTab(studyId);
+            }
+        } catch (NumberFormatException e) {
+            // Log into log file
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+        } catch (QueryException e) {
+            // Log into log file
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+        }
 
-	// Called by StudyItemClickListener
-	public void studyTreeItemClickAction(int studyId) {
-		try {
-			if (!hasChildStudy(studyId)) {
-				createStudyInfoTab(studyId);
-			}
-		} catch (NumberFormatException e) {
-			// Log into log file
-			LOG.error(e.toString() + "\n" + e.getStackTrace());
-			e.printStackTrace();
-		} catch (QueryException e) {
-			// Log into log file
-			LOG.error(e.toString() + "\n" + e.getStackTrace());
-			e.printStackTrace();
-		}
+    }
 
-	}
+    public void addStudyNode(int parentStudyId) {
+        List<Study> studyChildren = new ArrayList<Study>();
 
-	public void addStudyNode(int parentStudyId) {
-		List<Study> studyChildren = new ArrayList<Study>();
+        try {
+            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 500);
+        } catch (QueryException ex) {
+            // Put in an application log
+            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
 
-		try {
-			studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 500);
-		} catch (QueryException ex) {
-			// Put in an application log
-			LOG.error(ex.toString() + "\n" + ex.getStackTrace());
+            // TODO an error window in the UI should pop-up for this
+            // System.out.println(ex);
+            ex.printStackTrace();
+            studyChildren = new ArrayList<Study>();
+        }
 
-			// TODO an error window in the UI should pop-up for this
-			// System.out.println(ex);
-			ex.printStackTrace();
-			studyChildren = new ArrayList<Study>();
-		}
+        for (Study sc : studyChildren) {
+            studyTree.addItem(sc.getId());
+            studyTree.setItemCaption(sc.getId(), sc.getName());
+            studyTree.setParent(sc.getId(), parentStudyId);
+            // check if the study has sub study
+            if (hasChildStudy(sc.getId())) {
+                studyTree.setChildrenAllowed(sc.getId(), true);
+            } else {
+                studyTree.setChildrenAllowed(sc.getId(), false);
+            }
 
-		for (Study sc : studyChildren) {
-			studyTree.addItem(sc.getId());
-			studyTree.setItemCaption(sc.getId(), sc.getName());
-			studyTree.setParent(sc.getId(), parentStudyId);
-			// check if the study has sub study
-			if (hasChildStudy(sc.getId())) {
-				studyTree.setChildrenAllowed(sc.getId(), true);
-			} else {
-				studyTree.setChildrenAllowed(sc.getId(), false);
-			}
+        }
+    }
 
-		}
-	}
+    private void createStudyInfoTab(int studyId) throws QueryException {
+        VerticalLayout layout = new VerticalLayout();
 
-	private void createStudyInfoTab(int studyId) throws QueryException {
-		VerticalLayout layout = new VerticalLayout();
+        if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId, getI18N()),
+                    studyDataManager, traitDataManager, getI18N()));
+            Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
+            tab.setClosable(true);
 
-		if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-			layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId, getI18N()), studyDataManager,
-					traitDataManager, getI18N()));
-			Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
-			tab.setClosable(true);
+            studyBrowserMainLayout.addComponent(tabSheetStudy);
+            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
+            tabSheetStudy.setSelectedTab(layout);
+        } else {
+            Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
+            tabSheetStudy.setSelectedTab(tab.getComponent());
+        }
 
-			studyBrowserMainLayout.addComponent(tabSheetStudy);
-			studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
-			tabSheetStudy.setSelectedTab(layout);
-		} else {
-			Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
-			tabSheetStudy.setSelectedTab(tab.getComponent());
-		}
+    }
 
-	}
+    private String getStudyName(int studyId) throws QueryException {
+        return this.studyDataManager.getStudyByID(studyId).getName();
+    }
 
-	private String getStudyName(int studyId) throws QueryException {
-		String s = this.studyDataManager.getStudyByID(studyId).getName();
-		return s;
-	}
+    private boolean hasChildStudy(int studyId) {
 
-	private boolean hasChildStudy(int studyId) {
+        List<Study> studyChildren = new ArrayList<Study>();
 
-		List<Study> studyChildren = new ArrayList<Study>();
+        try {
+            studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
+        } catch (QueryException ex) {
+            // Put in an application log
+            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
 
-		try {
-			studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
-		} catch (QueryException ex) {
-			// Put in an application log
-			LOG.error(ex.toString() + "\n" + ex.getStackTrace());
-
-			// TODO an error window in the UI should pop-up for this
-			// System.out.println(ex);
-			ex.printStackTrace();
-			studyChildren = new ArrayList<Study>();
-		}
-		if (studyChildren.size() > 0) {
-			return true;
-		}
-		return false;
-	}
+            // TODO an error window in the UI should pop-up for this
+            // System.out.println(ex);
+            ex.printStackTrace();
+            studyChildren = new ArrayList<Study>();
+        }
+        if (!studyChildren.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
 }

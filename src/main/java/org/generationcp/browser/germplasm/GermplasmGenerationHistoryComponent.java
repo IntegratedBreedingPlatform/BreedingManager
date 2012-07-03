@@ -23,19 +23,19 @@ public class GermplasmGenerationHistoryComponent extends I18NVerticalLayout{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private Table tableGermplasmHistory;
+    private static final long serialVersionUID = 1L;
+    private Table tableGermplasmHistory;
 
     public GermplasmGenerationHistoryComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
-    	super(i18n);
-    	
+        super(i18n);
+
         IndexedContainer dataSourceGenerationHistory = DataIndexContainer.getGermplasGenerationHistory(gDetailModel);
         tableGermplasmHistory = new Table("", dataSourceGenerationHistory);
         tableGermplasmHistory.setSelectable(true);
         tableGermplasmHistory.setMultiSelect(false);
-        tableGermplasmHistory.setImmediate(true); // react at once when
-                                                  // something is selected
+        tableGermplasmHistory.setImmediate(true);   // react at once when
+                                                    // something is selected
 
         // turn on column reordering and collapsing
         tableGermplasmHistory.setColumnReorderingAllowed(true);

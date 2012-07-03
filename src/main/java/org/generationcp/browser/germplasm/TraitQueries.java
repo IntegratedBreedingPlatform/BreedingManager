@@ -31,10 +31,10 @@ import org.generationcp.middleware.pojos.TraitMethod;
 
 public class TraitQueries implements Serializable{
 
-    ArrayList<Trait> trait;
-    ArrayList<Scale> scale;
-    ArrayList<TraitMethod> traitMethod;
-    ArrayList<ScaleDiscrete> scaleDiscreteValue;
+    private ArrayList<Trait> trait;
+    private ArrayList<Scale> scale;
+    private ArrayList<TraitMethod> traitMethod;
+    private ArrayList<ScaleDiscrete> scaleDiscreteValue;
 
     /**
 	 * 
@@ -51,38 +51,32 @@ public class TraitQueries implements Serializable{
 
     public ArrayList<Trait> getTrait() throws QueryException {
         int allTraitCount = managerTrait.countAllTraits();
-        ArrayList<Trait> trait = (ArrayList<Trait>) managerTrait.getAllTraits(1, allTraitCount, Database.CENTRAL);
-        return trait;
+        return (ArrayList<Trait>) managerTrait.getAllTraits(1, allTraitCount, Database.CENTRAL);
     }
 
     public ArrayList<Scale> getScale(int traitID) {
-        ArrayList<Scale> scale = (ArrayList<Scale>) managerTrait.getScalesByTraitId(traitID);
-        return scale;
+        return (ArrayList<Scale>) managerTrait.getScalesByTraitId(traitID);
     }
 
     public ArrayList<TraitMethod> getTraitMethod(int traitID) {
-        ArrayList<TraitMethod> traitMethod = (ArrayList<TraitMethod>) managerTrait.getTraitMethodsByTraitId(traitID);
-        return traitMethod;
+        return (ArrayList<TraitMethod>) managerTrait.getTraitMethodsByTraitId(traitID);
     }
 
     public ArrayList<ScaleDiscrete> getScaleDiscreteValue(int scaleID) {
-        ArrayList<ScaleDiscrete> scaleDiscreteValue = (ArrayList<ScaleDiscrete>) managerTrait.getDiscreteValuesOfScale(scaleID);
-        return scaleDiscreteValue;
+        return (ArrayList<ScaleDiscrete>) managerTrait.getDiscreteValuesOfScale(scaleID);
     }
 
-    public ArrayList<Integer> getGIDSByPhenotypicData() throws Exception {
+    public ArrayList<Integer> getGIDSByPhenotypicData() throws QueryException{
 
         factory = new DatasourceConfig().getManagerFactory();
         StudyDataManager managerStudy = factory.getStudyDataManager();
 
         NumericRange range = new NumericRange(new Double(2000), new Double(3000));
-        TraitCombinationFilter combination = new TraitCombinationFilter(new Integer(1003), new Integer(9), new Integer(30), range);
+        TraitCombinationFilter combination = new TraitCombinationFilter(Integer.valueOf(1003), Integer.valueOf(9), Integer.valueOf(30), range);
         List<TraitCombinationFilter> filters = new ArrayList<TraitCombinationFilter>();
         filters.add(combination);
 
-        ArrayList<Integer> results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 10, Database.CENTRAL);
-        return results;
-
+        return (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 10, Database.CENTRAL);
     }
 
 }

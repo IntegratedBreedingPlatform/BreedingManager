@@ -21,14 +21,11 @@ import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 
-public class GermplasmDetail extends I18NAccordion {
+public class GermplasmDetail extends I18NAccordion{
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private GermplasmIndexContainer DataIndexContainer;
+    private static final long serialVersionUID = 1L;
+
+    private GermplasmIndexContainer dataIndexContainer;
     private GermplasmQueries qQuery;
     private GermplasmDetailModel gDetailModel;
     private I18NVerticalLayout layoutNames;
@@ -40,18 +37,18 @@ public class GermplasmDetail extends I18NAccordion {
     private TabSheet tabSheet;
     private GermplasmIndexContainer dataResultIndexContainer;
 
-    public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer, I18NVerticalLayout mainLayout,
-            TabSheet tabSheet, I18N i18n) throws QueryException {
+    public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
+            I18NVerticalLayout mainLayout, TabSheet tabSheet, I18N i18n) throws QueryException {
 
-    	super(i18n);
-    	
+        super(i18n);
+
         this.qQuery = qQuery;
         this.mainLayout = mainLayout;
         this.gid = gid;
         this.tabSheet = tabSheet;
         this.dataResultIndexContainer = dataResultIndexContainer;
-        this.DataIndexContainer = dataResultIndexContainer;
-        this.DataIndexContainer = dataResultIndexContainer;
+        this.dataIndexContainer = dataResultIndexContainer;
+        this.dataIndexContainer = dataResultIndexContainer;
         gDetailModel = this.qQuery.getGermplasmDetails(gid);
 
         layoutNames = new I18NVerticalLayout(this.getI18N());
@@ -74,15 +71,16 @@ public class GermplasmDetail extends I18NAccordion {
         Tab tab = this.getTab(selected);
         if (tab.getCaption().equals("Names")) {
             if (layoutNames.getComponentCount() == 0) {
-                layoutNames.addComponent(new GermplasmNamesComponent(DataIndexContainer, gDetailModel, this.getI18N()));
+                layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel, this.getI18N()));
             }
         } else if (tab.getCaption().equals("Attributes")) {
             if (layoutAttributes.getComponentCount() == 0) {
-                layoutAttributes.addComponent(new GermplasmAttributesComponent(DataIndexContainer, gDetailModel, this.getI18N()));
+                layoutAttributes.addComponent(new GermplasmAttributesComponent(dataIndexContainer, gDetailModel, this.getI18N()));
             }
         } else if (tab.getCaption().equals("Generation History")) {
             if (layoutGenerationHistory.getComponentCount() == 0) {
-                layoutGenerationHistory.addComponent(new GermplasmGenerationHistoryComponent(DataIndexContainer, gDetailModel, this.getI18N()));
+                layoutGenerationHistory.addComponent(new GermplasmGenerationHistoryComponent(dataIndexContainer, gDetailModel, this
+                        .getI18N()));
             }
         } else if (tab.getCaption().equals("Pedigree Tree")) {
             if (layoutPedigreeTree.getComponentCount() == 0) {

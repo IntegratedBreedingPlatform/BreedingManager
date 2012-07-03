@@ -12,8 +12,6 @@
 
 package org.generationcp.browser.study.listeners;
 
-import java.util.ArrayList;
-
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.study.RepresentationDatasetComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
@@ -31,7 +29,7 @@ public class StudyButtonClickListener implements Button.ClickListener{
     private static final long serialVersionUID = 7921109465618354206L;
 
     private Layout source;
-    
+
     private I18N i18n;
 
     public StudyButtonClickListener(Layout source, I18N i18n) {
@@ -41,18 +39,18 @@ public class StudyButtonClickListener implements Button.ClickListener{
 
     @Override
     public void buttonClick(ClickEvent event) {
-    	
-        if (event.getComponent().getCaption().equals(i18n.getMessage("exportToCSV.label")) //"Export to CSV" 
-        		&& (source instanceof RepresentationDatasetComponent)) {
+
+        if (event.getComponent().getCaption().equals(i18n.getMessage("exportToCSV.label")) // "Export to CSV"
+                && (source instanceof RepresentationDatasetComponent)) {
 
             ((RepresentationDatasetComponent) source).exportToCSVAction();
 
-        } else if ((event.getComponent().getCaption().equals(i18n.getMessage("study.button.label"))) //"I want to browse Studies and their Datasets"
+        } else if ((event.getComponent().getCaption().equals(i18n.getMessage("study.button.label"))) // "I want to browse Studies and their Datasets"
                 && (source instanceof WelcomeTab)) {
             ((WelcomeTab) source).browseStudiesAndDataSets();
 
-        } else if (event.getComponent().getCaption().equals(i18n.getMessage("refresh.label")) //"Refresh") 
-        		&& (source instanceof StudyTreeComponent)) {
+        } else if (event.getComponent().getCaption().equals(i18n.getMessage("refresh.label")) // "Refresh")
+                && (source instanceof StudyTreeComponent)) {
             ((StudyTreeComponent) source).createTree();
         }
 

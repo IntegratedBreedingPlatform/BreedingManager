@@ -55,7 +55,7 @@ public class DatasourceConfig{
             try {
                 in = new FileInputStream(new File(ResourceFinder.locateFile("IBPDatasource.properties").toURI()));
             } catch (IllegalArgumentException ex) {
-                in = getClass().getClassLoader().getResourceAsStream("IBPDatasource.properties");
+                in = Thread.currentThread().getContextClassLoader().getResourceAsStream("IBPDatasource.properties");
             }
             prop.load(in);
 
