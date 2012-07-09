@@ -81,6 +81,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
 
         window = new I18NWindow(i18n.getMessage("retrieveGerplasmByPheno.title"), i18n); // "Retrieve Germplasms By Phenotypic Data"
         setMainWindow(window);
+        setTheme("gcp-default");
         window.setSizeUndefined();
 
         TabSheet tabSheet = new TabSheet();
