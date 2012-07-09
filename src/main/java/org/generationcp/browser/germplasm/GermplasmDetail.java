@@ -16,6 +16,7 @@ import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeLi
 import org.generationcp.browser.i18n.ui.I18NAccordion;
 import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.middleware.exceptions.QueryException;
+import org.springframework.beans.factory.config.SetFactoryBean;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Component;
@@ -62,8 +63,7 @@ public class GermplasmDetail extends I18NAccordion{
         this.addTab(layoutGenerationHistory, "Generation History");
         this.addTab(layoutPedigreeTree, "Pedigree Tree");
         this.addListener(new GermplasmSelectedTabChangeListener(this, i18n));
-        setSizeFull();
-
+        
     }
 
     public void selectedTabChangeAction() throws QueryException {
@@ -72,15 +72,18 @@ public class GermplasmDetail extends I18NAccordion{
         if (tab.getCaption().equals("Names")) {
             if (layoutNames.getComponentCount() == 0) {
                 layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel, this.getI18N()));
+                layoutNames.setMargin(true);
             }
         } else if (tab.getCaption().equals("Attributes")) {
             if (layoutAttributes.getComponentCount() == 0) {
                 layoutAttributes.addComponent(new GermplasmAttributesComponent(dataIndexContainer, gDetailModel, this.getI18N()));
+                layoutAttributes.setMargin(true);
             }
         } else if (tab.getCaption().equals("Generation History")) {
             if (layoutGenerationHistory.getComponentCount() == 0) {
                 layoutGenerationHistory.addComponent(new GermplasmGenerationHistoryComponent(dataIndexContainer, gDetailModel, this
                         .getI18N()));
+                layoutGenerationHistory.setMargin(true);
             }
         } else if (tab.getCaption().equals("Pedigree Tree")) {
             if (layoutPedigreeTree.getComponentCount() == 0) {

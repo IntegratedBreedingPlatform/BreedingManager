@@ -13,37 +13,37 @@
 package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.i18n.ui.I18NTable;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 
-public class GermplasmNamesComponent extends I18NVerticalLayout{
+public class GermplasmNamesComponent extends  I18NTable{
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-    private I18NTable tableNames;
 
     public GermplasmNamesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
         super(i18n);
 
         IndexedContainer dataSourceNames = DataIndexContainer.getGermplasNames(gDetailModel);
-        tableNames = new I18NTable("", dataSourceNames, getI18N());
-        tableNames.setSelectable(true);
-        tableNames.setMultiSelect(false);
-        tableNames.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        tableNames.setColumnReorderingAllowed(true);
-        tableNames.setColumnCollapsingAllowed(true);
-        // set column headers
-        tableNames.setColumnHeaders(new String[] { "Type", "Name", "Date", "Location", "Type Desc" });
-        tableNames.setSizeFull();
-
-        addComponent(tableNames);
-        setSpacing(true);
-        setMargin(true);
+        this.setContainerDataSource(dataSourceNames);
+        setSelectable(true);
+        setMultiSelect(false);
+        setSizeFull();
+        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+        setColumnReorderingAllowed(true);
+        setColumnCollapsingAllowed(true);
+        setColumnHeaders(new String[] {
+        		i18n.getMessage("type.label"),
+                i18n.getMessage("name.label"),
+                i18n.getMessage("date.label"),
+                i18n.getMessage("location.label"),
+                i18n.getMessage("typedesc.label")});
+        
+        
     }
 
 }

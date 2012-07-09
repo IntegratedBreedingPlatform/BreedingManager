@@ -12,41 +12,36 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.i18n.ui.I18NTable;
 import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 
-public class GermplasmGenerationHistoryComponent extends I18NVerticalLayout{
+public class GermplasmGenerationHistoryComponent extends I18NTable{
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-    private Table tableGermplasmHistory;
 
     public GermplasmGenerationHistoryComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
         super(i18n);
 
         IndexedContainer dataSourceGenerationHistory = DataIndexContainer.getGermplasGenerationHistory(gDetailModel);
-        tableGermplasmHistory = new Table("", dataSourceGenerationHistory);
-        tableGermplasmHistory.setSelectable(true);
-        tableGermplasmHistory.setMultiSelect(false);
-        tableGermplasmHistory.setImmediate(true);   // react at once when
-                                                    // something is selected
 
-        // turn on column reordering and collapsing
-        tableGermplasmHistory.setColumnReorderingAllowed(true);
-        tableGermplasmHistory.setColumnCollapsingAllowed(true);
-        tableGermplasmHistory.setSizeFull();
-
-        // set column headers
-        tableGermplasmHistory.setColumnHeaders(new String[] { "GID", "PREFNAME" });
-        addComponent(tableGermplasmHistory);
-        setSpacing(true);
-        setMargin(true);
+        this.setContainerDataSource(dataSourceGenerationHistory);
+        setSelectable(true);
+        setMultiSelect(false);
+        setSizeFull();
+        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+        setColumnReorderingAllowed(true);
+        setColumnCollapsingAllowed(true);
+        setColumnHeaders(new String[] {
+                i18n.getMessage("gid.label"),
+                i18n.getMessage("prefname.label")});
     }
 
 }

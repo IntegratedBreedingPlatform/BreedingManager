@@ -12,42 +12,35 @@
 
 package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.browser.i18n.ui.I18NTable;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Table;
 
-public class GermplasmAttributesComponent extends I18NVerticalLayout{
+public class GermplasmAttributesComponent extends I18NTable{
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-    private Table tableAttribute;
 
     public GermplasmAttributesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
 
         super(i18n);
 
         IndexedContainer dataSourceAttribute = DataIndexContainer.getGermplasAttribute(gDetailModel);
-        tableAttribute = new Table("", dataSourceAttribute);
-        // selectable
-        tableAttribute.setSelectable(true);
-        tableAttribute.setMultiSelect(false);
-        tableAttribute.setImmediate(true); // react at once when something is
-                                           // selected
-
-        // turn on column reordering and collapsing
-        tableAttribute.setColumnReorderingAllowed(true);
-        tableAttribute.setColumnCollapsingAllowed(true);
-
-        // set column headers
-        tableAttribute.setColumnHeaders(new String[] { "Type", "Name", "Date", "Location", "Type Desc" });
-        tableAttribute.setSizeFull();
-        addComponent(tableAttribute);
-        setSpacing(true);
-        setMargin(true);
+        this.setContainerDataSource(dataSourceAttribute);
+        setSelectable(true);
+        setMultiSelect(false);
+        setSizeFull();
+        setImmediate(true); // react at once when something is
+        setColumnReorderingAllowed(true);
+        setColumnCollapsingAllowed(true);
+        setColumnHeaders(new String[] {
+        		i18n.getMessage("type.label"),
+                i18n.getMessage("name.label"),
+                i18n.getMessage("date.label"),
+                i18n.getMessage("location.label"),
+                i18n.getMessage("typedesc.label")});
     }
-
 }
