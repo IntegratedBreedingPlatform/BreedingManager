@@ -13,8 +13,6 @@
 package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.i18n.ui.I18NGridLayout;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
-import org.generationcp.middleware.pojos.Study;
 
 import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.Label;
