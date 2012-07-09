@@ -19,24 +19,15 @@ import org.generationcp.middleware.pojos.Bibref;
 public class GermplasmDetailModel{
 
     private int gid;
-    String germplasmPreferredName; // nval
-    // value
-    // where
-    // names.nstat=1
-    private String dateNamed; // ndate
-    // value
-    // where
-    // names.nstat=1
+    String germplasmPreferredName; // nval value where names.nstat=1
+    private String dateNamed; // ndate value where names.nstat=1
     private String nameLocation;
     private String germplasmMethod;
     private String germplasmCreationDate;
     private String germplasmLocation;
     private String reference;
     private String germplasmUser;
-    private String prefID; // nval
-    // value
-    // where
-    // names.nstat=8
+    private String prefID; // nval value where names.nstat=8
     private ArrayList<GermplasmNamesAttributesModel> attributes;
     private ArrayList<GermplasmNamesAttributesModel> names;
     private ArrayList<GermplasmDetailModel> generationhistory;

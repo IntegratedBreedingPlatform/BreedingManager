@@ -59,11 +59,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
     @Override
     public void initSpringApplication(ConfigurableWebApplicationContext arg0) {
         // set internationalization parameters
-        i18n = new ResourceBundleI18N("I18NMessages", Locale.ENGLISH, Locale.GERMAN); // add
-                                                                                      // more
-                                                                                      // Locale
-                                                                                      // as
-                                                                                      // needed
+        i18n = new ResourceBundleI18N("I18NMessages", Locale.ENGLISH, Locale.GERMAN); // add more Locale as needed
         i18n.setCurrentLocale(Locale.ENGLISH);
         // i18n.setCurrentLocale(Locale.GERMAN);
 

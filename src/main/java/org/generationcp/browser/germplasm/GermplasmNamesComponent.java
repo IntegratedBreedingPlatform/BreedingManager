@@ -34,9 +34,7 @@ public class GermplasmNamesComponent extends I18NVerticalLayout{
         tableNames = new I18NTable("", dataSourceNames, getI18N());
         tableNames.setSelectable(true);
         tableNames.setMultiSelect(false);
-        tableNames.setImmediate(true); // react at once when something is
-        // selected
-        // turn on column reordering and collapsing
+        tableNames.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         tableNames.setColumnReorderingAllowed(true);
         tableNames.setColumnCollapsingAllowed(true);
         // set column headers
