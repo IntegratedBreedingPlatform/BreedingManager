@@ -56,6 +56,7 @@ public class GermplasmDetail extends I18NAccordion{
         layoutAttributes = new I18NVerticalLayout(this.getI18N());
         layoutGenerationHistory = new I18NVerticalLayout(this.getI18N());
         layoutPedigreeTree = new I18NVerticalLayout(this.getI18N());
+        layoutPedigreeTree.setMargin(true);
 
         this.addTab(new GermplasmCharacteristicsComponent(gDetailModel, this.getI18N()), "Characteristics");
         this.addTab(layoutNames, "Names");

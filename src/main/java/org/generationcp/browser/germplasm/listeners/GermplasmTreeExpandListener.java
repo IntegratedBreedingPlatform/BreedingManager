@@ -24,18 +24,18 @@ import com.vaadin.ui.Tree.ExpandEvent;
 public class GermplasmTreeExpandListener implements Tree.ExpandListener{
 
     private static final long serialVersionUID = 3215012575002448725L;
-    private Layout source;
+    private Tree source;
     @SuppressWarnings("unused")
     private ArrayList<Object> parameters;
 
     private I18N i18n;
 
-    public GermplasmTreeExpandListener(Layout source, I18N i18n) {
+    public GermplasmTreeExpandListener(Tree source, I18N i18n) {
         this.source = source;
         this.i18n = i18n;
     }
 
-    public GermplasmTreeExpandListener(Layout source, ArrayList<Object> parameters, I18N i18n) {
+    public GermplasmTreeExpandListener(Tree source, ArrayList<Object> parameters, I18N i18n) {
 
         this(source, i18n);
 
