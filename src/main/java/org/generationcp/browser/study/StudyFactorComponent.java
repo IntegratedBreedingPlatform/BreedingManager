@@ -12,25 +12,67 @@
 
 package org.generationcp.browser.study;
 
-import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Table;
 
-public class StudyFactorComponent extends I18NTable{
+@Configurable
+public class StudyFactorComponent extends Table implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1053068118831514119L;
+    
+    private static final String NAME = "NAME";
+    private static final String DESC = "DESCRIPTION"; 
+    private static final String PROP = "PROPERTY";
+    private static final String SCA = "SCALE";
+    private static final String METH = "METHOD";
+    private static final String DTYPE = "DATATYPE";
+    
+    private int studyId;
+    
+    private StudyDataManager studyDataManager;
+    
+    private TraitDataManager traitDataManager;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId, I18N i18n)
+    public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId)
             throws QueryException {
-        super(i18n);
+    	
+    	
+    	this.studyDataManager = studyDataManager;
+    	this.traitDataManager = traitDataManager;
+    	this.studyId = studyId;
+
+    }
+    
+    
+    @Override
+    public void afterPropertiesSet() {
 
         StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
-        IndexedContainer dataStudyFactor = dataIndexContainer.getStudyFactor();
-        this.setContainerDataSource(dataStudyFactor);
+        IndexedContainer dataStudyFactor;
+        
+		try {
+			
+			dataStudyFactor = dataIndexContainer.getStudyFactor();
+
+			this.setContainerDataSource(dataStudyFactor);
+        
+		} catch (QueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         setSelectable(true);
         setMultiSelect(false);
@@ -41,12 +83,36 @@ public class StudyFactorComponent extends I18NTable{
         // setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY",
         // "SCALE", "METHOD", "DATATYPE" });
         setColumnHeaders(new String[] {
-                i18n.getMessage("name.header"),
-                i18n.getMessage("description.header"),
-                i18n.getMessage("property.header"),
-                i18n.getMessage("scale.header"),
-                i18n.getMessage("method.header"),
-                i18n.getMessage("datatye.header") });
+        		NAME,
+                DESC,
+                PROP,
+                SCA,
+                METH,
+                DTYPE });
+        
+        
+    	
     }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+        
+        messageSource.setColumnHeader(this, "NAME", Message.name_header);
+        messageSource.setColumnHeader(this, "DESCRIPTION", Message.description_header);
+        messageSource.setColumnHeader(this, "PROPERTY", Message.property_header);
+        messageSource.setColumnHeader(this, "SCALE", Message.scale_header);
+        messageSource.setColumnHeader(this, "METHOD", Message.method_header);
+        messageSource.setColumnHeader(this, "DATATYPE", Message.datatype_header);
+        
+	}
 
 }

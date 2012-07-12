@@ -12,17 +12,23 @@
 
 package org.generationcp.browser.study;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudySelectedTabChangeListener;
-import org.generationcp.browser.i18n.ui.I18NAccordion;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
-public class StudyAccordionMenu extends I18NAccordion{
+@Configurable
+public class StudyAccordionMenu extends Accordion implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = -1409312205229461614L;
     private int studyId;
@@ -32,57 +38,88 @@ public class StudyAccordionMenu extends I18NAccordion{
 
     private StudyDataManager studyDataManager;
     private TraitDataManager traitDataManager;
+    private StudyDetailComponent studyDetailComponent;
+   
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
-            TraitDataManager traitDataManager, I18N i18n) {
-        super(i18n);
+            TraitDataManager traitDataManager) {
+   
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.traitDataManager = traitDataManager;
+        this.studyDetailComponent = studyDetailComponent;
         // Have it take all space available in the layout.
-        this.setSizeFull();
-
-        layoutVariate = new VerticalLayout();
-        layoutFactor = new VerticalLayout();
-        layoutEffect = new VerticalLayout();
-        this.addTab(studyDetailComponent, i18n.getMessage("studyDetails.text")); // "Study Details"
-        this.addTab(layoutFactor, i18n.getMessage("factors.text")); // "Factors"
-        this.addTab(layoutVariate, i18n.getMessage("variates.text")); // "Variates"
-        this.addTab(layoutEffect, i18n.getMessage("datasets.text")); // "Effects"
-
-        this.addListener(new StudySelectedTabChangeListener(this));
     }
 
     public void selectedTabChangeAction() {
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
-        if (tab.getCaption().equals(getI18N().getMessage("factors.text"))) { // "Factors"
+        if (tab.getCaption().equals(layoutFactor.getCaption())) { // "Factors"
             if (layoutFactor.getComponentCount() == 0) {
                 try {
-                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId, getI18N()));
+                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
                     layoutFactor.setMargin(true);
                     layoutFactor.setSpacing(true);
                 } catch (QueryException e) {
                     e.printStackTrace();
                 }
             }
-        } else if (tab.getCaption().equals(getI18N().getMessage("variates.text"))) { // "Variates"
+        } else if (tab.getCaption().equals(layoutVariate.getCaption())) { // "Variates"
             if (layoutVariate.getComponentCount() == 0) {
                 try {
-                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId, getI18N()));
+                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
                     layoutVariate.setMargin(true);
                     layoutVariate.setSpacing(true);
                 } catch (QueryException e) {
                     e.printStackTrace();
                 }
             }
-        } else if (tab.getCaption().equals(getI18N().getMessage("datasets.text"))) { // "Datasets"
+        } else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             if (layoutEffect.getComponentCount() == 0) {
-                layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, getI18N()));
+                layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
 
             }
         }
 
     }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
+        this.setSizeFull();
+
+        layoutVariate = new VerticalLayout();
+        layoutFactor = new VerticalLayout();
+        layoutEffect = new VerticalLayout();
+        this.addTab(studyDetailComponent, "Study Details"); // "Study Details"
+        this.addTab(layoutFactor, "Factors"); // "Factors"
+        this.addTab(layoutVariate, "Variates"); // "Variates"
+        this.addTab(layoutEffect, "Datasets"); // "Effects"
+
+        this.addListener(new StudySelectedTabChangeListener(this));
+    	
+    }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+
+		messageSource.setCaption(studyDetailComponent, Message.study_details_label);
+		messageSource.setCaption(layoutFactor, Message.factors_text);
+		messageSource.setCaption(layoutVariate, Message.variates_text);
+		messageSource.setCaption(layoutEffect, Message.datasets_text);
+		
+        
+	}
 
 }

@@ -12,27 +12,36 @@
 
 package org.generationcp.browser.study;
 
-import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.ManagerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class StudyBrowserMain extends I18NHorizontalLayout{
+@Configurable
+public class StudyBrowserMain extends HorizontalLayout implements InitializingBean, InternationalizableComponent  {
 
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetStudyDatabaseInstance;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    // private HorizontalLayout studyBrowserMainLayout;
-    // private StudyDataManager studyDataManager;
-
-    public StudyBrowserMain(ManagerFactory factory, I18N i18n) {
-        super(i18n);
-
+    public StudyBrowserMain() {
+    	
+    }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
         setSizeFull();
         setSpacing(true);
         setMargin(true);
@@ -43,13 +52,32 @@ public class StudyBrowserMain extends I18NHorizontalLayout{
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
 
-        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(i18n.getMessage("db.local.text")); // "Local"
-        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(i18n.getMessage("db.central.text")); // "Central"
+        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.db_local_text)); // "Local"
+        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.db_central_text)); // "Central"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new StudyTreeComponent(factory, this, Database.CENTRAL, i18n));
-        tabLocalInstance.addComponent(new StudyTreeComponent(factory, this, Database.LOCAL, i18n));
+        tabCentralInstance.addComponent(new StudyTreeComponent(this, Database.CENTRAL));
+        tabLocalInstance.addComponent(new StudyTreeComponent(this, Database.LOCAL));
 
         addComponent(tabSheetStudyDatabaseInstance);
         setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
+    	
     }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+		
+		messageSource.setCaption(tabLocalInstance, Message.db_local_text);
+		messageSource.setCaption(tabCentralInstance, Message.db_central_text);
+        
+	}
+    
 }
