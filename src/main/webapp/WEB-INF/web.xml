@@ -32,10 +32,10 @@
      		<param-name>application</param-name>
      		<param-value>org.generationcp.browser.application.GermplasmStudyBrowserApplication</param-value>
    	</init-param>
-	<init-param>
+<!-- 	<init-param>
 		<param-name>applicationBeanName</param-name>
 		<param-value>germplasm_study_browser_application</param-value>
-	</init-param>		    
+	</init-param>	 -->	    
   </servlet>
   <servlet-mapping>
     <servlet-name>MainApplication</servlet-name>
