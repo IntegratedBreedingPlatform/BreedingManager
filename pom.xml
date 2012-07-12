@@ -146,6 +146,13 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- IBPCommons Dependency -->
+        <dependency>
+            <groupId>ibpcommons</groupId>
+            <artifactId>ibpcommons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
 		<!-- JETTY DEPENDENCIES FOR TESTING -->
 		<!-- <dependency> <groupId>org.eclipse.jetty.aggregate</groupId> <artifactId>jetty-all-server</artifactId> 
@@ -153,7 +160,7 @@
 		<dependency>
 			<groupId>org.generationcp</groupId>
 			<artifactId>middleware</artifactId>
-			<version>0.3.0</version>
+			<version>1.0.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -203,11 +210,7 @@
 			<type>pom</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-		   <groupId>org.vaadin.addons</groupId>
-		   <artifactId>i18n4vaadin</artifactId>
-		   <version>0.9.1</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>
