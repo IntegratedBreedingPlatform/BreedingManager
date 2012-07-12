@@ -4,8 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:context="http://www.springframework.org/schema/context"
         xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:util="http://www.springframework.org/schema/util"
         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
 >
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
@@ -21,15 +23,23 @@
     
     
     <!-- The application classes -->
-    <bean id="germplasm_study_browser_application" class="org.generationcp.browser.application.GermplasmStudyBrowserApplication" scope="prototype"/>
+    <bean id="application" class="org.generationcp.browser.application.GermplasmStudyBrowserApplication" scope="prototype"/>
     
     <!--
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
         Add @Configurable annotation to your class if you only need auto-wiring.
     -->
 
+    <!-- The Message Source -->
+    <bean id="messageSource" class="org.generationcp.commons.spring.SimpleResourceBundleMessageSource">
+        <property name="basename" value="I18NMessages"/>
+        <property name="locale">
+            <util:constant static-field="java.util.Locale.ENGLISH"/>
+        </property>
+    </bean>
+
     <!-- The data source configuration -->
-    <bean id="datasourceConfig" class="org.generationcp.browser.util.DatasourceConfig"/>
+    <bean id="managerFactory" class="org.generationcp.middleware.manager.ManagerFactory"/>
     
     <!--
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
