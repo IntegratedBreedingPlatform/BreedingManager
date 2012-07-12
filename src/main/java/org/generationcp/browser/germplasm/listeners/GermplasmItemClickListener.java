@@ -15,15 +15,14 @@ package org.generationcp.browser.germplasm.listeners;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
-import org.generationcp.browser.i18n.ui.I18NTable;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
 
 public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -33,16 +32,14 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
     private Object sourceClass;
     private Component sourceComponent;
 
-    private I18N i18n;
 
-    public GermplasmItemClickListener(Object sourceClass, I18N i18n) {
+    public GermplasmItemClickListener(Object sourceClass) {
         this.sourceClass = sourceClass;
-        this.i18n = i18n;
     }
 
-    public GermplasmItemClickListener(Object sourceClass, Component sourceComponent, I18N i18n) {
+    public GermplasmItemClickListener(Object sourceClass, Component sourceComponent) {
 
-        this(sourceClass, i18n);
+        this(sourceClass);
         this.sourceComponent = sourceComponent;
 
     }
@@ -52,7 +49,7 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 
         if (sourceClass instanceof GermplasmBrowserMain) {
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                ((GermplasmBrowserMain) sourceClass).resultTableItemClickAction((I18NTable) event.getSource(), event.getItemId(),
+                ((GermplasmBrowserMain) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(),
                         event.getItem());
             }
         } else if (sourceClass instanceof GermplasmPedigreeTreeComponent) {
@@ -65,11 +62,11 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
             }
 
         } else if (sourceClass instanceof SearchGermplasmByPhenotypicTab && event.getComponent() == sourceComponent) {
-            ((SearchGermplasmByPhenotypicTab) sourceClass).traitTableItemClickAction((I18NTable) event.getSource(), event.getItemId(),
+            ((SearchGermplasmByPhenotypicTab) sourceClass).traitTableItemClickAction((Table) event.getSource(), event.getItemId(),
                     event.getItem());
 
         } else if (sourceClass instanceof SearchGermplasmByPhenotypicTab && event.getComponent() == sourceComponent) {
-            ((SearchGermplasmByPhenotypicTab) sourceClass).scaleTableItemClickAction((I18NTable) event.getSource(), event.getItemId(),
+            ((SearchGermplasmByPhenotypicTab) sourceClass).scaleTableItemClickAction((Table) event.getSource(), event.getItemId(),
                     event.getItem());
         }
 

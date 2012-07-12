@@ -16,8 +16,6 @@ import java.util.ArrayList;
 
 import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 
-import com.github.peholmst.i18n4vaadin.I18N;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandEvent;
 
@@ -28,16 +26,14 @@ public class GermplasmTreeExpandListener implements Tree.ExpandListener{
     @SuppressWarnings("unused")
     private ArrayList<Object> parameters;
 
-    private I18N i18n;
-
-    public GermplasmTreeExpandListener(Tree source, I18N i18n) {
+    public GermplasmTreeExpandListener(Tree source) {
         this.source = source;
-        this.i18n = i18n;
+
     }
 
-    public GermplasmTreeExpandListener(Tree source, ArrayList<Object> parameters, I18N i18n) {
+    public GermplasmTreeExpandListener(Tree source, ArrayList<Object> parameters) {
 
-        this(source, i18n);
+        this(source);
 
         this.parameters = parameters;
 
