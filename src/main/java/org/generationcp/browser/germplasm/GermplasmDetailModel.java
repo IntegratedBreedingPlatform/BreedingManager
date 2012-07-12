@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import org.generationcp.middleware.pojos.Bibref;
 
-public class GermplasmDetailModel{
+public class GermplasmDetailModel {
 
     private int gid;
     String germplasmPreferredName; // nval value where names.nstat=1

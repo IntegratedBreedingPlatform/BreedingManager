@@ -15,35 +15,46 @@ package org.generationcp.browser.germplasm;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
-import org.generationcp.browser.i18n.ui.I18NGridLayout;
-import org.generationcp.browser.i18n.ui.I18NHorizontalLayout;
-import org.generationcp.browser.i18n.ui.I18NTable;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.pojos.NumericRange;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
-public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
+@Configurable
+public class SearchGermplasmByPhenotypicTab extends GridLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 455865362407450432L;
+    
+    public static final String ADD_CRITERIA_BUTTON_ID = "SearchGermplasmByPhenotypicTab Add Criteria Button";
+    public static final String DELETE_BUTTON_ID = "SearchGermplasmByPhenotypicTab Delete Button";
+    public static final String DELETE_ALL_BUTTON_ID = "SearchGermplasmByPhenotypicTab Delete All Button";
+    public static final String SEARCH_BUTTON_ID = "SearchGermplasmByPhenotypicTab Search Button";
 
-    private I18NVerticalLayout componentTrait;
-    private I18NVerticalLayout componentTtraitValueInput;
-    private I18NTable traitTable;
-    private I18NTable scaleTable;
-    private I18NTable traitMethodTable;
-    private I18NTable scaleValueTable;
-    private I18NTable criteriaTable;
-    private I18NTable searchResultTable;
+    private VerticalLayout componentTrait;
+    private VerticalLayout componentTtraitValueInput;
+    private Table traitTable;
+    private Table scaleTable;
+    private Table traitMethodTable;
+    private Table scaleValueTable;
+    private Table criteriaTable;
+    private Table searchResultTable;
     private IndexedContainer dataSourceTrait;
     private IndexedContainer dataSourceScale;
     private IndexedContainer dataSourceTraitMethod;
@@ -57,81 +68,27 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
     private Button btnDeleteAll;
     private Label rangeInstructionLabel;
     private Label valueOptionsInstuctionLabel;
+    private Label step1Label;
+    private Label step2Label;
+    private Label step3Label;
+    private Label step4Label;
+    private Label step5Label;
+    private Label finalStepLabel;
+    private Label mainLabel;
     private GidByPhenotypicQueries gidsByPhenotypic;
     private TraitDataIndexContainer dataIndexContainer;
 
     private int traitID;
     private int flagScale;
     private int flagResult = 0;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam,
-            I18N i18n) throws QueryException {
-
-        super(i18n);
+    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam) throws QueryException {
 
         this.gidsByPhenotypic = gidsByPhenotypicParam;
         this.dataIndexContainer = dataIndexContainerParam;
-
-        this.setColumns(4);
-        this.setRows(4);
-        this.setSpacing(true);
-
-        componentTrait = new I18NVerticalLayout(getI18N());
-        componentTrait.setSpacing(true);
-
-        componentTtraitValueInput = new I18NVerticalLayout(getI18N());
-        componentTtraitValueInput.setSpacing(true);
-
-        Label mainLabel = new Label("<h1>Retrieve Germplasms By Phenotypic Data</h1>");
-        mainLabel.setContentMode(Label.CONTENT_XHTML);
-        componentTrait.addComponent(mainLabel);
-
-        displayTraitTable();
-
-        Label step5Label = new Label("<h3>Step 5 - Add search criteria.</h3>");
-        step5Label.setContentMode(Label.CONTENT_XHTML);
-        componentTtraitValueInput.addComponent(step5Label);
-
-        btnAddCriteria = new Button("Add Criteria");
-        componentTtraitValueInput.addComponent(btnAddCriteria);
-
-        btnAddCriteria.addListener(new GermplasmButtonClickListener(this, i18n));
-
-        displaySearchCriteria();
-
-        I18NHorizontalLayout hButton = new I18NHorizontalLayout(getI18N());
-        hButton.setSpacing(true);
-
-        btnDelete = new Button("Delete");
-        btnDelete.setDescription("You can delete the currently selected criteria.");
-        hButton.addComponent(btnDelete);
-
-        btnDelete.addListener(new GermplasmButtonClickListener(this, i18n));
-
-        btnDeleteAll = new Button("Delete All");
-        btnDeleteAll.setDescription("You can delete all the criteria.");
-        hButton.addComponent(btnDelete);
-
-        btnDeleteAll.addListener(new GermplasmButtonClickListener(this, i18n));
-        hButton.addComponent(btnDeleteAll);
-
-        componentTtraitValueInput.addComponent(hButton);
-
-        Label finalStepLabel = new Label("<h3>Final Step - Perform the Search.</h3>");
-        finalStepLabel.setContentMode(Label.CONTENT_XHTML);
-        componentTtraitValueInput.addComponent(finalStepLabel);
-
-        btnSearch = new Button("Search");
-        btnSearch.setEnabled(false);
-        componentTtraitValueInput.addComponent(btnSearch);
-
-        btnSearch.addListener(new GermplasmButtonClickListener(this, i18n));
-        this.addComponent(componentTrait, 1, 1);
-        this.addComponent(componentTtraitValueInput, 3, 1);
-
-        traitTable.addListener(new GermplasmItemClickListener(this, traitTable, i18n));
-
-        scaleTable.addListener(new GermplasmItemClickListener(this, scaleTable, i18n));
 
     }
 
@@ -139,7 +96,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     private void displayTraitTable() throws QueryException {
         dataSourceTrait = dataIndexContainer.getAllTrait();
-        traitTable = new I18NTable("", dataSourceTrait, getI18N());
+        traitTable = new Table("", dataSourceTrait);
 
         // set a style name, so we can style rows and cells
         traitTable.setStyleName("iso3166");
@@ -168,8 +125,6 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
         Object itemID = traitTable.getValue();
         traitID = Integer.valueOf(traitTable.getItem(itemID).getItemProperty("traitID").toString());
 
-        Label step1Label = new Label("<h3>Step 1 - Select a Trait.</h3>");
-        step1Label.setContentMode(Label.CONTENT_XHTML);
         componentTrait.addComponent(step1Label);
         componentTrait.addComponent(traitTable);
 
@@ -181,7 +136,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
     // Scale Table
     private void displayScaleTable(int traitID) {
         dataSourceScale = dataIndexContainer.getScaleByTraitID(traitID);
-        scaleTable = new I18NTable("", dataSourceScale, getI18N());
+        scaleTable = new Table("", dataSourceScale);
 
         // set a style name, so we can style rows and cells
         scaleTable.setStyleName("iso3166");
@@ -211,8 +166,6 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
         displayScaleValueTable();
         updateScaleValueInputDisplay(getScaleType(), getScaleID());
 
-        Label step2Label = new Label("<h3>Step 2 - Select a scale.</h3>");
-        step2Label.setContentMode(Label.CONTENT_XHTML);
         componentTrait.addComponent(step2Label);
         componentTrait.addComponent(scaleTable);
 
@@ -221,7 +174,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
     // TraitMethod Table
     private void displayMethodTable(int traitID) {
         dataSourceTraitMethod = dataIndexContainer.getMethodTraitID(traitID);
-        traitMethodTable = new I18NTable("", dataSourceTraitMethod, getI18N());
+        traitMethodTable = new Table("", dataSourceTraitMethod);
 
         // set a style name, so we can style rows and cells
         traitMethodTable.setStyleName("iso3166");
@@ -248,8 +201,6 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
         traitMethodTable.setValue(traitMethodTable.firstItemId());
 
-        Label step3Label = new Label("<h3>Step 3 - Select a Method.</h3>");
-        step3Label.setContentMode(Label.CONTENT_XHTML);
         componentTrait.addComponent(step3Label);
         componentTrait.addComponent(traitMethodTable);
 
@@ -257,7 +208,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     private void displayScaleValueTable() {
         IndexedContainer dataSourceScaleValue = dataIndexContainer.getValueByScaleID(-1);
-        scaleValueTable = new I18NTable("", dataSourceScaleValue, getI18N());
+        scaleValueTable = new Table("", dataSourceScaleValue);
 
         // set a style name, so we can style rows and cells
         scaleValueTable.setStyleName("iso3166");
@@ -276,7 +227,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
         // Column alignment
         scaleValueTable.setCaption("Value Options");
-        valueOptionsInstuctionLabel = new Label("Select a value from the options below.");
+        
         valueOptionsInstuctionLabel.setVisible(false);
         componentTtraitValueInput.addComponent(valueOptionsInstuctionLabel);
         scaleValueTable.setVisible(false);
@@ -286,7 +237,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     private void displaySearchCriteria() {
         dataSourceSearchCriteria = dataIndexContainer.addSearchCriteria();
-        criteriaTable = new I18NTable("", dataSourceSearchCriteria, getI18N());
+        criteriaTable = new Table("", dataSourceSearchCriteria);
 
         // set a style name, so we can style rows and cells
         criteriaTable.setStyleName("iso3166");
@@ -318,7 +269,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
     private void displayGidsToResultTable(ArrayList<Integer> gids) {
 
         dataSourceSearchResult = dataIndexContainer.addGidsResult(gids);
-        searchResultTable = new I18NTable("", dataSourceSearchResult, getI18N());
+        searchResultTable = new Table("", dataSourceSearchResult);
 
         // set a style name, so we can style rows and cells
         searchResultTable.setStyleName("iso3166");
@@ -342,14 +293,11 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     private void displayInputValueForm() {
 
-        Label step4Label = new Label("<h3>Step 4 - Enter a Value.</h3>");
-        step4Label.setContentMode(Label.CONTENT_XHTML);
         componentTtraitValueInput.addComponent(step4Label);
         txtValueInput = new TextField("Value");
         txtValueInput.setEnabled(false);
         txtValueInput.setVisible(false);
         componentTtraitValueInput.addComponent(txtValueInput);
-        rangeInstructionLabel = new Label("To enter a range of values follow this example: 10 - 20");
         rangeInstructionLabel.setVisible(false);
         componentTtraitValueInput.addComponent(rangeInstructionLabel);
     }
@@ -569,7 +517,7 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
         }
     }
 
-    public void traitTableItemClickAction(I18NTable sourceTable, Object itemId, Item item) {
+    public void traitTableItemClickAction(Table sourceTable, Object itemId, Item item) {
         try {
             sourceTable.select(itemId);
             int traitID = Integer.valueOf(item.getItemProperty("traitID").toString());
@@ -592,10 +540,147 @@ public class SearchGermplasmByPhenotypicTab extends I18NGridLayout{
 
     }
 
-    public void scaleTableItemClickAction(I18NTable sourceTable, Object itemId, Item item) {
+    public void scaleTableItemClickAction(Table sourceTable, Object itemId, Item item) {
         sourceTable.select(itemId);
         int scaleID = Integer.valueOf(item.getItemProperty("scaleID").toString());
         String scaleType = item.getItemProperty("scaleType").toString();
         updateScaleValueInputDisplay(scaleType, scaleID);
     }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
+        this.setColumns(4);
+        this.setRows(4);
+        this.setSpacing(true);
+        
+        step1Label = new Label();
+        //step1Label.setContentMode(Label.CONTENT_XHTML);
+        step1Label.setStyleName("h3");
+        
+        step2Label = new Label();
+        //step2Label.setContentMode(Label.CONTENT_XHTML);
+        step2Label.setStyleName("h3");
+        
+        step3Label = new Label();
+        //step3Label.setContentMode(Label.CONTENT_XHTML);
+        step3Label.setStyleName("h3");
+        
+        step4Label = new Label();
+        //step4Label.setContentMode(Label.CONTENT_XHTML);
+        step4Label.setStyleName("h3");
+        
+        step5Label = new Label();
+        //step5Label.setContentMode(Label.CONTENT_XHTML);
+        step5Label.setStyleName("h3");
+        
+        mainLabel = new Label();
+        //mainLabel.setContentMode(Label.CONTENT_XHTML);
+        mainLabel.setStyleName("h1");
+        
+        finalStepLabel = new Label();
+        //finalStepLabel.setContentMode(Label.CONTENT_XHTML);
+        finalStepLabel.setStyleName("h3");
+        finalStepLabel = new Label();
+
+        valueOptionsInstuctionLabel = new Label();
+        
+        rangeInstructionLabel = new Label();
+        
+        componentTrait = new VerticalLayout();
+        componentTrait.setSpacing(true);
+
+        componentTtraitValueInput = new VerticalLayout();
+        componentTtraitValueInput.setSpacing(true);
+
+        componentTrait.addComponent(mainLabel);
+
+        try {
+        	
+			displayTraitTable();
+			
+		} catch (QueryException e) {
+			
+			e.printStackTrace();
+		}
+
+        componentTtraitValueInput.addComponent(step5Label);
+
+        btnAddCriteria = new Button();
+        btnAddCriteria.setData(ADD_CRITERIA_BUTTON_ID);
+        componentTtraitValueInput.addComponent(btnAddCriteria);
+
+        btnAddCriteria.addListener(new GermplasmButtonClickListener(this));
+
+        displaySearchCriteria();
+
+        HorizontalLayout hButton = new HorizontalLayout();
+        hButton.setSpacing(true);
+
+        btnDelete = new Button();
+        btnDelete.setData(DELETE_BUTTON_ID);
+        btnDelete.setDescription("You can delete the currently selected criteria.");
+        hButton.addComponent(btnDelete);
+
+        btnDelete.addListener(new GermplasmButtonClickListener(this));
+
+        btnDeleteAll = new Button();
+        btnDeleteAll.setData(DELETE_ALL_BUTTON_ID);
+        btnDeleteAll.setDescription("You can delete all the criteria.");
+        hButton.addComponent(btnDelete);
+
+        btnDeleteAll.addListener(new GermplasmButtonClickListener(this));
+        hButton.addComponent(btnDeleteAll);
+
+        componentTtraitValueInput.addComponent(hButton);
+
+        componentTtraitValueInput.addComponent(finalStepLabel);
+
+        btnSearch = new Button();
+        btnSearch.setData(SEARCH_BUTTON_ID);
+        btnSearch.setEnabled(false);
+        componentTtraitValueInput.addComponent(btnSearch);
+
+        btnSearch.addListener(new GermplasmButtonClickListener(this));
+        this.addComponent(componentTrait, 1, 1);
+        this.addComponent(componentTtraitValueInput, 3, 1);
+
+        traitTable.addListener(new GermplasmItemClickListener(this, traitTable));
+
+        scaleTable.addListener(new GermplasmItemClickListener(this, scaleTable));
+
+    }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+
+		messageSource.setCaption(btnAddCriteria, Message.add_criteria_label);
+		messageSource.setCaption(btnDelete, Message.delete_label);
+		messageSource.setCaption(btnDeleteAll, Message.delete_all_label);
+		messageSource.setCaption(btnSearch, Message.search_label);
+		
+		messageSource.setCaption(step1Label, Message.step1_label);
+		messageSource.setCaption(step2Label, Message.step2_label);
+		messageSource.setCaption(step3Label, Message.step3_label);
+		messageSource.setCaption(step4Label, Message.step4_label);
+		messageSource.setCaption(step5Label, Message.step5_label);
+		messageSource.setCaption(mainLabel, Message.germplasm_by_pheno_title);
+		messageSource.setCaption(finalStepLabel, Message.finalstep_label);
+		messageSource.setCaption(valueOptionsInstuctionLabel, Message.select_a_value_from_the_options_below_label);
+		messageSource.setCaption(rangeInstructionLabel, Message.to_enter_a_range_of_values_follow_this_example_label);
+		
+		messageSource.setDescription(btnDelete, Message.you_can_delete_the_currently_selected_criteria_desc);
+		messageSource.setDescription(btnDeleteAll, Message.you_can_delete_all_the_criteria_desc);
+
+	}
+    
 }

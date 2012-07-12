@@ -30,8 +30,12 @@ import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class GermplasmQueries implements Serializable{
+@Configurable
+public class GermplasmQueries implements Serializable, InitializingBean {
 
     private GermplasmSearchResultModel germplasmResultByGID;
     private GermplasmDetailModel germplasmDetail;
@@ -40,12 +44,13 @@ public class GermplasmQueries implements Serializable{
     private static final long serialVersionUID = 1L;
     // private HibernateUtil hibernateUtil;
 
-    private ManagerFactory factory;
-    private GermplasmDataManager managerGermplasm;
+    @Autowired
+    private ManagerFactory managerFactory;
+    
+    private GermplasmDataManager germplasmDataManager;
 
-    public GermplasmQueries(ManagerFactory factory, GermplasmDataManager managerGermplasm) {
-        this.factory = factory;
-        this.managerGermplasm = managerGermplasm;
+    public GermplasmQueries() {
+        
     }
 
     public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefName(String searchBy, String searchString,
@@ -55,12 +60,12 @@ public class GermplasmQueries implements Serializable{
 
         if (searchString.contains("%")) {
             count = 500;
-            germplasmList = managerGermplasm.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.LIKE,
+            germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.LIKE,
                     null, null, databaseInstance);
         } else {
-            count = managerGermplasm.countGermplasmByName(searchString, FindGermplasmByNameModes.NORMAL, Operation.EQUAL, null, null,
+            count = germplasmDataManager.countGermplasmByName(searchString, FindGermplasmByNameModes.NORMAL, Operation.EQUAL, null, null,
                     databaseInstance);
-            germplasmList = managerGermplasm.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.EQUAL,
+            germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.EQUAL,
                     null, null, databaseInstance);
         }
         ArrayList<GermplasmSearchResultModel> toReturn = new ArrayList<GermplasmSearchResultModel>();
@@ -75,7 +80,7 @@ public class GermplasmQueries implements Serializable{
 
     public GermplasmSearchResultModel getGermplasmResultByGID(String gid) throws QueryException {
 
-        Germplasm gData = managerGermplasm.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
+        Germplasm gData = germplasmDataManager.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
         GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
         return this.germplasmResultByGID = setGermplasmSearchResult(gResult, gData);
     }
@@ -84,14 +89,14 @@ public class GermplasmQueries implements Serializable{
         gResult.setGid(gData.getGid());
         gResult.setNames(getGermplasmNames(gData.getGid()));
 
-        Method method = managerGermplasm.getMethodByID(gData.getMethodId());
+        Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
         if (method != null) {
             gResult.setMethod(method.getMname());
         } else {
             gResult.setMethod("");
         }
 
-        Location loc = managerGermplasm.getLocationByID(gData.getLocationId());
+        Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
         if (loc != null) {
             gResult.setLocation(loc.getLname());
         } else {
@@ -104,11 +109,11 @@ public class GermplasmQueries implements Serializable{
     public GermplasmDetailModel getGermplasmDetails(int gid) throws QueryException {
 
         germplasmDetail = new GermplasmDetailModel();
-        Germplasm g = managerGermplasm.getGermplasmByGID(new Integer(gid));
-        Name name = managerGermplasm.getPreferredNameByGID(gid);
+        Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
+        Name name = germplasmDataManager.getPreferredNameByGID(gid);
 
         germplasmDetail.setGid(g.getGid());
-        germplasmDetail.setGermplasmMethod(managerGermplasm.getMethodByID(g.getMethodId()).getMname());
+        germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
         germplasmDetail.setGermplasmPreferredName(name.getNval());
         germplasmDetail.setGermplasmCreationDate(String.valueOf(name.getNdate()));
         germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
@@ -124,7 +129,7 @@ public class GermplasmQueries implements Serializable{
     private ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws QueryException {
         ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
         List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
-        generationHistoryList = managerGermplasm.getGenerationHistory(new Integer(gid));
+        generationHistoryList = germplasmDataManager.getGenerationHistory(new Integer(gid));
         for (Germplasm g : generationHistoryList) {
             GermplasmDetailModel genHistory = new GermplasmDetailModel();
             genHistory.setGid(g.getGid());
@@ -135,7 +140,7 @@ public class GermplasmQueries implements Serializable{
     }
 
     private ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws QueryException {
-        ArrayList<Name> names = (ArrayList<Name>) managerGermplasm.getNamesByGID(gid, null, null);
+        ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, null, null);
         ArrayList<GermplasmNamesAttributesModel> germplasmNames = new ArrayList<GermplasmNamesAttributesModel>();
 
         for (Name n : names) {
@@ -143,7 +148,7 @@ public class GermplasmQueries implements Serializable{
             gNamesRow.setName(n.getNval());
             gNamesRow.setLocation(getLocation(n.getLocationId()));
 
-            UserDefinedField type = managerGermplasm.getUserDefinedFieldByID(n.getTypeId());
+            UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(n.getTypeId());
             if (type != null) {
                 gNamesRow.setType(type.getFcode());
                 gNamesRow.setTypeDesc(type.getFname());
@@ -156,19 +161,19 @@ public class GermplasmQueries implements Serializable{
     }
 
     private ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws QueryException {
-        ArrayList<Attribute> attr = (ArrayList<Attribute>) managerGermplasm.getAttributesByGID(gid);
+        ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
         ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
 
         for (Attribute a : attr) {
             GermplasmNamesAttributesModel gAttributeRow = new GermplasmNamesAttributesModel();
             gAttributeRow.setName(a.getAval());
 
-            Location location = managerGermplasm.getLocationByID(a.getLocationId());
+            Location location = germplasmDataManager.getLocationByID(a.getLocationId());
             if (location != null) {
                 gAttributeRow.setLocation(location.getLname());
             }
 
-            UserDefinedField type = managerGermplasm.getUserDefinedFieldByID(a.getTypeId());
+            UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
             if (type != null) {
                 gAttributeRow.setType(type.getFcode());
                 gAttributeRow.setTypeDesc(type.getFname());
@@ -181,7 +186,7 @@ public class GermplasmQueries implements Serializable{
     }
 
     private String getGermplasmPrefID(int gid) throws QueryException {
-        ArrayList<Name> names = (ArrayList<Name>) managerGermplasm.getNamesByGID(gid, 8, null);
+        ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
         String prefId = "";
         for (Name n : names) {
             if (n.getNstat() == 8) {
@@ -195,7 +200,7 @@ public class GermplasmQueries implements Serializable{
 
     private String getGermplasmNames(int gid) throws QueryException {
 
-        List<Name> names = managerGermplasm.getNamesByGID(new Integer(gid), null, null);
+        List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
         StringBuffer germplasmNames = new StringBuffer("");
         int i = 0;
         for (Name n : names) {
@@ -211,7 +216,7 @@ public class GermplasmQueries implements Serializable{
     }
 
     private String getReference(int refId) {
-        Bibref bibRef = managerGermplasm.getBibliographicReferenceByID(refId);
+        Bibref bibRef = germplasmDataManager.getBibliographicReferenceByID(refId);
         if (bibRef != null) {
             return bibRef.getAnalyt();
         } else {
@@ -222,19 +227,22 @@ public class GermplasmQueries implements Serializable{
 
     private String getLocation(int locId) {
         try {
-            Location x = managerGermplasm.getLocationByID(locId);
+            Location x = germplasmDataManager.getLocationByID(locId);
             return x.getLname();
         } catch (Exception e) {
             return "";
         }
     }
 
-    public ManagerFactory getFactory() {
-        return factory;
+    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws QueryException {
+        return germplasmDataManager.generatePedigreeTree(gid, i);
     }
 
-    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws QueryException {
-        return managerGermplasm.generatePedigreeTree(gid, i);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
+		
+	}
 
 }

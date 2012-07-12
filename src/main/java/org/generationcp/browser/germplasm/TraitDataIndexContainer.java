@@ -15,8 +15,6 @@ package org.generationcp.browser.germplasm;
 import java.util.ArrayList;
 
 import org.generationcp.middleware.exceptions.QueryException;
-import org.generationcp.middleware.manager.ManagerFactory;
-import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Scale;
 import org.generationcp.middleware.pojos.ScaleDiscrete;
 import org.generationcp.middleware.pojos.Trait;
@@ -27,7 +25,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.CheckBox;
 
-public class TraitDataIndexContainer{
+public class TraitDataIndexContainer {
 
     public static final Object ISO3166_PROPERTY_SHORT = "short";
     public static final Object ISO3166_PROPERTY_NAME = "name";
@@ -63,9 +61,10 @@ public class TraitDataIndexContainer{
     // Results GIDS
     private static final Object GID = "gid";
 
-    public TraitDataIndexContainer(ManagerFactory factory, TraitDataManager managerTrait) {
+    public TraitDataIndexContainer() {
 
-        queryTrait = new TraitQueries(factory, managerTrait);
+        queryTrait = new TraitQueries();
+        
     }
 
     public IndexedContainer getAllTrait() throws QueryException {

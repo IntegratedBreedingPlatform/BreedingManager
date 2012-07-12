@@ -12,23 +12,51 @@
 
 package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.i18n.ui.I18NTable;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Table;
 
-public class GermplasmAttributesComponent extends I18NTable{
+@Configurable
+public class GermplasmAttributesComponent extends Table implements InitializingBean, InternationalizableComponent {
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
+    
+    private static final String TYPE = "Type";
+    private static final String NAME = "Name";
+    private static final String DATE = "Date";
+    private static final String LOCATION = "Location";
+    private static final String TYPE_DESC = "Type Desc";
+    
+    GermplasmIndexContainer dataIndexContainer;
+    
+    GermplasmDetailModel gDetailModel;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmAttributesComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
+    public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
 
-        super(i18n);
 
-        IndexedContainer dataSourceAttribute = DataIndexContainer.getGermplasAttribute(gDetailModel);
+    	this.dataIndexContainer = dataIndexContainer;
+    	
+    	this.gDetailModel = gDetailModel;
+    	
+    }
+    
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+        IndexedContainer dataSourceAttribute = dataIndexContainer.getGermplasAttribute(gDetailModel);
         this.setContainerDataSource(dataSourceAttribute);
         setSelectable(true);
         setMultiSelect(false);
@@ -37,10 +65,30 @@ public class GermplasmAttributesComponent extends I18NTable{
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
         setColumnHeaders(new String[] {
-        		i18n.getMessage("type.label"),
-                i18n.getMessage("name.label"),
-                i18n.getMessage("date.label"),
-                i18n.getMessage("location.label"),
-                i18n.getMessage("typedesc.label")});
+        		TYPE,
+        		NAME,
+        		DATE,
+        		LOCATION,
+        		TYPE_DESC});
+		
+	}
+    
+    @Override
+    public void attach() {
+        super.attach();
+        
+        updateLabels();
     }
+
+	@Override
+	public void updateLabels() {
+	        
+        messageSource.setColumnHeader(this, TYPE, Message.type_label);
+        messageSource.setColumnHeader(this, NAME, Message.name_label);
+        messageSource.setColumnHeader(this, DATE, Message.date_label);
+        messageSource.setColumnHeader(this, LOCATION, Message.location_label);
+        messageSource.setColumnHeader(this, TYPE_DESC, Message.typedesc_label);
+	     
+	}
+	
 }

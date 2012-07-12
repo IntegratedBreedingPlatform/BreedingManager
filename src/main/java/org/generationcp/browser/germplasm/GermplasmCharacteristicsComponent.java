@@ -12,12 +12,18 @@
 
 package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.i18n.ui.I18NGridLayout;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 
-public class GermplasmCharacteristicsComponent extends I18NGridLayout{
+@Configurable
+public class GermplasmCharacteristicsComponent extends GridLayout implements InitializingBean, InternationalizableComponent {
 
     /**
 	 * 
@@ -29,22 +35,32 @@ public class GermplasmCharacteristicsComponent extends I18NGridLayout{
 	private Label lblGermplasmMethod;
 	private Label lblCreationDate;
 	private Label lblReference;
+	
+	private GermplasmDetailModel gDetailModel;
+	
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel, I18N i18n) {
+    public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel) {
 
-        super(i18n);
-
+    	this.gDetailModel = gDetailModel;
+    	
+    }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
         setRows(7);
         setColumns(3);
         setSpacing(true);
         setMargin(true);
 
-        lblGID = new Label(i18n.getMessage("gid.label")); // "Name"
-        lblPrefName = new Label(i18n.getMessage("prefname.label")); // "Title"
-        lblLocation = new Label(i18n.getMessage("location.label")); // "Objective"
-        lblGermplasmMethod = new Label(i18n.getMessage("method.label")); // "Type"
-        lblCreationDate = new Label(i18n.getMessage("creationdate.label")); // "Start Date"
-        lblReference = new Label(i18n.getMessage("reference.label")); // "End Date"
+        lblGID = new Label(); // "Name"
+        lblPrefName = new Label(); // "Title"
+        lblLocation = new Label(); // "Objective"
+        lblGermplasmMethod = new Label(); // "Type"
+        lblCreationDate = new Label(); // "Start Date"
+        lblReference = new Label(); // "End Date"
 
         addComponent(lblGID, 1, 1);
         addComponent(lblPrefName, 1, 2);
@@ -68,5 +84,26 @@ public class GermplasmCharacteristicsComponent extends I18NGridLayout{
         addComponent(reference, 2, 6);
         
     }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+		
+		messageSource.setCaption(lblGID, Message.gid_label);
+		messageSource.setCaption(lblPrefName, Message.prefname_label);
+		messageSource.setCaption(lblLocation, Message.location_label);
+		messageSource.setCaption(lblGermplasmMethod, Message.method_label);
+		messageSource.setCaption(lblCreationDate, Message.creation_date_label);
+		messageSource.setCaption(lblReference, Message.reference_label);
+		
+	}
 
 }

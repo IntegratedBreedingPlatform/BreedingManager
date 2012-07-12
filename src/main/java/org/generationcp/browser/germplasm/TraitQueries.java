@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.generationcp.browser.util.DatasourceConfig;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
@@ -28,8 +27,12 @@ import org.generationcp.middleware.pojos.ScaleDiscrete;
 import org.generationcp.middleware.pojos.Trait;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
 import org.generationcp.middleware.pojos.TraitMethod;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class TraitQueries implements Serializable{
+@Configurable
+public class TraitQueries implements Serializable, InitializingBean {
 
     private ArrayList<Trait> trait;
     private ArrayList<Scale> scale;
@@ -41,12 +44,14 @@ public class TraitQueries implements Serializable{
 	 */
     private static final long serialVersionUID = 1L;
     // private HibernateUtil hibernateUtil;
-    private ManagerFactory factory;
+    
+    @Autowired
+    private ManagerFactory managerFactory;
+    
     private TraitDataManager managerTrait;
 
-    public TraitQueries(ManagerFactory factory, TraitDataManager managerTrait) {
-        this.factory = factory;
-        this.managerTrait = managerTrait;
+    public TraitQueries() {
+        
     }
 
     public ArrayList<Trait> getTrait() throws QueryException {
@@ -68,8 +73,7 @@ public class TraitQueries implements Serializable{
 
     public ArrayList<Integer> getGIDSByPhenotypicData() throws QueryException{
 
-        factory = new DatasourceConfig().getManagerFactory();
-        StudyDataManager managerStudy = factory.getStudyDataManager();
+        StudyDataManager managerStudy = managerFactory.getStudyDataManager();
 
         NumericRange range = new NumericRange(new Double(2000), new Double(3000));
         TraitCombinationFilter combination = new TraitCombinationFilter(Integer.valueOf(1003), Integer.valueOf(9), Integer.valueOf(30), range);
@@ -78,5 +82,12 @@ public class TraitQueries implements Serializable{
 
         return (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 10, Database.CENTRAL);
     }
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+        this.managerTrait = managerFactory.getTraitDataManager();
+		
+	}
 
 }

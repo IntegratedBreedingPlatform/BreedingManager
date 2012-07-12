@@ -57,7 +57,7 @@ public final class GermplasmIndexContainer{
         this.qQuery = qQuery;
     }
 
-    public IndexedContainer getGermplasResultContainer(String choice, String searchValue, Database databaseInstance) throws QueryException {
+    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance) throws QueryException {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties - Germplasm Search Result
@@ -71,18 +71,18 @@ public final class GermplasmIndexContainer{
         if (choice.equals(GERMPLASM_SEARCH_BY_NAMES)) {
             queryByNames = qQuery.getGermplasmListResultByPrefName(choice, searchValue, databaseInstance);
             for (GermplasmSearchResultModel q : queryByNames) {
-                addGermplasResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
+                addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
             }
         } else {
             queryByGid = qQuery.getGermplasmResultByGID(searchValue);
-            addGermplasResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
+            addGermplasmResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
                     queryByGid.getLocation());
         }
 
         return container;
     }
 
-    private static void addGermplasResultContainer(Container container, int gid, String names, String method, String location) {
+    private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(GERMPLASM_GID).setValue(gid);
@@ -100,12 +100,12 @@ public final class GermplasmIndexContainer{
         final ArrayList<GermplasmNamesAttributesModel> query = g.getAttributes();
         LOG.info("Size of the query" + query.size());
         for (GermplasmNamesAttributesModel q : query) {
-            addGermplasNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+            addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
         }
         return container;
     }
 
-    public IndexedContainer getGermplasNames(GermplasmDetailModel g) {
+    public IndexedContainer getGermplasmNames(GermplasmDetailModel g) {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
@@ -113,7 +113,7 @@ public final class GermplasmIndexContainer{
 
         final ArrayList<GermplasmNamesAttributesModel> query = g.getNames();
         for (GermplasmNamesAttributesModel q : query) {
-            addGermplasNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+            addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
         }
         return container;
     }
@@ -126,7 +126,7 @@ public final class GermplasmIndexContainer{
         container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC, String.class, "");
     }
 
-    private static void addGermplasNamesAttributeContainer(Container container, String type, String name, String date, String location,
+    private static void addGermplasmNamesAttributeContainer(Container container, String type, String name, String date, String location,
             String typeDesc) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
@@ -138,7 +138,7 @@ public final class GermplasmIndexContainer{
 
     }
 
-    public IndexedContainer getGermplasGenerationHistory(GermplasmDetailModel G) {
+    public IndexedContainer getGermplasmGenerationHistory(GermplasmDetailModel G) {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
@@ -146,12 +146,12 @@ public final class GermplasmIndexContainer{
         container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
 
         for (GermplasmDetailModel g : G.getGenerationhistory()) {
-            addGermplasGenerationHistory(container, g.getGid(), g.getGermplasmPreferredName());
+            addGermplasmGenerationHistory(container, g.getGid(), g.getGermplasmPreferredName());
         }
         return container;
     }
 
-    private static void addGermplasGenerationHistory(Container container, int gid, String prefname) {
+    private static void addGermplasmGenerationHistory(Container container, int gid, String prefname) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(GERMPLASM_GID).setValue(gid);

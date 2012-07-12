@@ -12,25 +12,44 @@
 
 package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.i18n.ui.I18NTable;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 
-public class GermplasmGenerationHistoryComponent extends I18NTable{
+@Configurable
+public class GermplasmGenerationHistoryComponent extends Table implements InitializingBean, InternationalizableComponent {
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
+    
+    private static final String  GID = "GID";
+    private static final String PREF_NAME = "Prefname";
+    
+    GermplasmIndexContainer dataIndexContainer;
+    GermplasmDetailModel gDetailModel;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmGenerationHistoryComponent(GermplasmIndexContainer DataIndexContainer, GermplasmDetailModel gDetailModel, I18N i18n) {
+    public GermplasmGenerationHistoryComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
 
-        super(i18n);
+    	this.dataIndexContainer = dataIndexContainer;
+    	this.gDetailModel = gDetailModel;
 
-        IndexedContainer dataSourceGenerationHistory = DataIndexContainer.getGermplasGenerationHistory(gDetailModel);
+    }
+    
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+        IndexedContainer dataSourceGenerationHistory = dataIndexContainer.getGermplasmGenerationHistory(gDetailModel);
 
         this.setContainerDataSource(dataSourceGenerationHistory);
         setSelectable(true);
@@ -40,8 +59,28 @@ public class GermplasmGenerationHistoryComponent extends I18NTable{
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
         setColumnHeaders(new String[] {
-                i18n.getMessage("gid.label"),
-                i18n.getMessage("prefname.label")});
+        		GID,
+                PREF_NAME});
+		
+	}
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
     }
+    
+
+	@Override
+	public void updateLabels() {
+		
+        messageSource.setColumnHeader(this, GID, Message.gid_label);
+        messageSource.setColumnHeader(this, PREF_NAME, Message.prefname_label);
+
+		
+	}
+
 
 }

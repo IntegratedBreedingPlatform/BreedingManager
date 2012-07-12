@@ -12,29 +12,43 @@
 
 package org.generationcp.browser.germplasm;
 
-import org.generationcp.browser.i18n.ui.I18NTable;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class SearchResultTable extends I18NVerticalLayout{
+@Configurable
+public class SearchResultTable extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
-    private I18NTable resultTable;
+	private static final String GID = "GID";
+	private static final String NAMES = "NAMES";
+	private static final String METHOD = "METHOD";
+	private static final String LOCATION = "LOCATION";
+	
+    private Table resultTable;
     private IndexedContainer dataSource;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public SearchResultTable(IndexedContainer dataSource, I18N i18n) {
-
-        super(i18n);
+    public SearchResultTable(IndexedContainer dataSource) {
 
         this.dataSource = dataSource;
+        
     }
 
-    public I18NTable getResultTable() {
-        resultTable = new I18NTable("", this.dataSource, getI18N());
+    public Table getResultTable() {
+    	
+        resultTable = new Table("", this.dataSource);
         resultTable.setWidth("100%");
         resultTable.setHeight("200px");
         // selectable
@@ -47,13 +61,13 @@ public class SearchResultTable extends I18NVerticalLayout{
         resultTable.setColumnCollapsingAllowed(true);
 
         // set column headers
-        resultTable.setColumnHeaders(new String[] { "GID", "NAMES", "METHOD", "LOCATION" });
+        resultTable.setColumnHeaders(new String[] { GID, NAMES, METHOD, LOCATION });
 
         resultTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return "Click to view germplasm details.";
+                return messageSource.getMessage(Message.click_to_view_germplasm_details);
             }
         });
 
@@ -63,5 +77,26 @@ public class SearchResultTable extends I18NVerticalLayout{
     public void setDataSource(IndexedContainer dataSource) {
         this.dataSource = dataSource;
     }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
+
+    }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+
+        
+	}
 
 }

@@ -15,32 +15,70 @@ package org.generationcp.browser.germplasm;
 import java.util.Arrays;
 import java.util.List;
 
-import org.generationcp.browser.i18n.ui.I18NGridLayout;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class GermplasmSearchFormComponent extends I18NVerticalLayout implements Property.ValueChangeListener{
+@Configurable
+public class GermplasmSearchFormComponent extends VerticalLayout implements Property.ValueChangeListener, InitializingBean, InternationalizableComponent {
 
     private String choice;
     private String searchValue;
     private String databaseInstance;
     private final TextField txtSearchValue = new TextField();
-    private final OptionGroup searchSelect;
-    private final OptionGroup databaseInstanceOption;
+    private OptionGroup searchSelect;
+    private OptionGroup databaseInstanceOption;
     private static final List<String> SEARCH_OPTION = Arrays.asList(new String[] { "GID", "Names" });
     private static final List<String> INSTANCE_OPTION = Arrays.asList(new String[] { "Central", "Local" });
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmSearchFormComponent(I18N i18n) {
+    public GermplasmSearchFormComponent() {
 
-        super(i18n);
+    }
 
-        I18NGridLayout grid = new I18NGridLayout(4, 4, getI18N());
+    @Override
+    public void valueChange(ValueChangeEvent event) {
+        // TODO Auto-generated method stub
+        choice = searchSelect.getValue().toString();
+        searchValue = txtSearchValue.getValue().toString();
+        databaseInstance = databaseInstanceOption.getValue().toString();
+        if (choice.equals("GID")) {
+            databaseInstanceOption.setVisible(false);
+        } else {
+            databaseInstanceOption.setVisible(true);
+        }
+    }
+
+    public String getChoice() {
+        return choice;
+    }
+
+    public String getSearchValue() {
+        return searchValue;
+    }
+
+    public String getDatabaseInstance() {
+        return databaseInstance;
+    }
+    
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
+        GridLayout grid = new GridLayout(4, 4);
         setSpacing(true);
 
         searchSelect = new OptionGroup("Search for", SEARCH_OPTION);
@@ -68,31 +106,23 @@ public class GermplasmSearchFormComponent extends I18NVerticalLayout implements 
         this.choice = "Name";
         this.searchValue = "";
         this.databaseInstance = "Central";
-    }
 
+    }
+    
     @Override
-    public void valueChange(ValueChangeEvent event) {
-        // TODO Auto-generated method stub
-        choice = searchSelect.getValue().toString();
-        searchValue = txtSearchValue.getValue().toString();
-        databaseInstance = databaseInstanceOption.getValue().toString();
-        if (choice.equals("GID")) {
-            databaseInstanceOption.setVisible(false);
-        } else {
-            databaseInstanceOption.setVisible(true);
-        }
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
     }
+    
 
-    public String getChoice() {
-        return choice;
-    }
+	@Override
+	public void updateLabels() {
 
-    public String getSearchValue() {
-        return searchValue;
-    }
-
-    public String getDatabaseInstance() {
-        return databaseInstance;
-    }
+		messageSource.setCaption(searchSelect, Message.search_for_label);
+        
+	}
 
 }

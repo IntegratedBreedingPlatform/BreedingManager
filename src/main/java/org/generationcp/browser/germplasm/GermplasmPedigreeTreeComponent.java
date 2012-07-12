@@ -12,24 +12,30 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmTreeExpandListener;
-import org.generationcp.browser.i18n.ui.I18NVerticalLayout;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.spring.InternationalizableComponent;
+import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-import com.github.peholmst.i18n4vaadin.I18N;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
 
-public class GermplasmPedigreeTreeComponent extends Tree{
+@Configurable
+public class GermplasmPedigreeTreeComponent extends Tree implements InitializingBean, InternationalizableComponent{
 
     /**
 	 * 
@@ -37,14 +43,17 @@ public class GermplasmPedigreeTreeComponent extends Tree{
     private static final long serialVersionUID = 1L;
     private GermplasmPedigreeTree germplasmPedigreeTree;
     private GermplasmQueries qQuery;
-    private I18NVerticalLayout mainLayout;
+    private VerticalLayout mainLayout;
     private TabSheet tabSheet;
     private GermplasmIndexContainer dataIndexContainer;
-    private I18N i18n;
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmPedigreeTreeComponent(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
-            I18NVerticalLayout mainLayout, TabSheet tabSheet, I18N i18n) throws QueryException {
+            VerticalLayout mainLayout, TabSheet tabSheet) throws QueryException {
+
 
         super();
         
@@ -52,7 +61,6 @@ public class GermplasmPedigreeTreeComponent extends Tree{
         this.tabSheet = tabSheet;
         this.qQuery = qQuery;
         this.dataIndexContainer = dataResultIndexContainer;
-        this.i18n = i18n;
         // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
 
         this.setSizeFull();
@@ -60,8 +68,8 @@ public class GermplasmPedigreeTreeComponent extends Tree{
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
 
-        this.addListener(new GermplasmItemClickListener(this, i18n));
-        this.addListener(new GermplasmTreeExpandListener(this, i18n));
+        this.addListener(new GermplasmItemClickListener(this));
+        this.addListener(new GermplasmTreeExpandListener(this));
 
         this.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
@@ -69,7 +77,7 @@ public class GermplasmPedigreeTreeComponent extends Tree{
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return "Click to view germplasm details";
+                return messageSource.getMessage(Message.click_to_view_germplasm_details);
             }
         });
     }
@@ -112,11 +120,11 @@ public class GermplasmPedigreeTreeComponent extends Tree{
     }
 
     public void displayNewGermplasmDetailTab(int gid) throws QueryException {
-        I18NVerticalLayout detailLayout = new I18NVerticalLayout(this.i18n);
+        VerticalLayout detailLayout = new VerticalLayout();
         detailLayout.setSpacing(true);
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, this.i18n));
+            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet));
             Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
             tab.setClosable(true);
             tabSheet.setSelectedTab(detailLayout);
@@ -127,4 +135,26 @@ public class GermplasmPedigreeTreeComponent extends Tree{
         }
 
     }
+    
+    @Override
+    public void afterPropertiesSet() {
+    	
+
+    }
+    
+    @Override
+    public void attach() {
+    	
+        super.attach();
+        
+        updateLabels();
+    }
+    
+
+	@Override
+	public void updateLabels() {
+
+        
+	}
+    
 }

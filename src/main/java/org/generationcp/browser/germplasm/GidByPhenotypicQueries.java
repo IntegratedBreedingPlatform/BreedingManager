@@ -20,16 +20,22 @@ import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class GidByPhenotypicQueries{
+@Configurable
+public class GidByPhenotypicQueries implements InitializingBean {
 
     private StudyDataManager managerStudy;
-    @SuppressWarnings("unused")
-    private ManagerFactory factory;
+    
+    @Autowired
+    private ManagerFactory managerFactory;
 
-    public GidByPhenotypicQueries(ManagerFactory factory, StudyDataManager managerStudy) throws ConfigException {
-        this.factory = factory;
-        this.managerStudy = factory.getStudyDataManager();
+    public GidByPhenotypicQueries() throws ConfigException {
+    	
+
+        
     }
 
     public ArrayList<Integer> getGIDSByPhenotypicData(List<TraitCombinationFilter> filters) {
@@ -43,4 +49,11 @@ public class GidByPhenotypicQueries{
         return results;
 
     }
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+        this.managerStudy = managerFactory.getStudyDataManager();
+		
+	}
 }
