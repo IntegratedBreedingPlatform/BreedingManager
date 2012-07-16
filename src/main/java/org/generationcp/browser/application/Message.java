@@ -74,6 +74,12 @@ public enum Message {
 	 step5_label,
 	 finalstep_label,
 	 select_a_value_from_the_options_below_label,
-	 to_enter_a_range_of_values_follow_this_example_label
+	 to_enter_a_range_of_values_follow_this_example_label, 
+	 save_germplasmlist_button_label,
+	 close_all_germlasmdetail_tab_label,
+	 enter_germplasm_listname_label,
+	 save_germplasm_list_window_label, 
+	 save_germplasm_listname_button_label, 
+	 cancel_germplasm_listname_button_label
 
 }
