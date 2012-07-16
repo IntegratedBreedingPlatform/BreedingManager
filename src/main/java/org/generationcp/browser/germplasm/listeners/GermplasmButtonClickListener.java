@@ -14,7 +14,9 @@ package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
+import org.generationcp.browser.germplasm.SaveGermplasmListDialog;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.middleware.exceptions.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,24 @@ public class GermplasmButtonClickListener implements Button.ClickListener {
         if (source instanceof GermplasmBrowserMain && event.getButton().getData().equals(GermplasmBrowserMain.SEARCH_BUTTON_ID)) {
             ((GermplasmBrowserMain) source).searchButtonClickAction();
 
-        } else if (source instanceof WelcomeTab && event.getButton().getData().equals(WelcomeTab.BROWSE_GERMPLASM_BUTTON_ID)) {
+        }else if (source instanceof GermplasmBrowserMain && event.getButton().getData().equals(GermplasmBrowserMain.SAVE_GERMPLASMLIST_ID)) {
+            ((GermplasmBrowserMain) source).saveGermplasmListButtonClickAction();
+
+        }else if (source instanceof GermplasmBrowserMain && event.getButton().getData().equals(GermplasmBrowserMain.CLOSE_ALL_GERMPLASMDETAIL_TAB_ID)) {
+            ((GermplasmBrowserMain) source).closeAllGermplasmDetailTabButtonClickAction();
+
+        }else if (source instanceof SaveGermplasmListDialog && event.getButton().getData().equals(SaveGermplasmListDialog.SAVE_BUTTON_ID)) {
+            try {
+				((SaveGermplasmListDialog) source).saveGermplasmListButtonClickAction();
+			} catch (QueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        
+        }else if (source instanceof SaveGermplasmListDialog && event.getButton().getData().equals(SaveGermplasmListDialog.CANCEL_BUTTON_ID)) {
+            ((SaveGermplasmListDialog) source).cancelGermplasmListButtonClickAction();
+            
+        }else if (source instanceof WelcomeTab && event.getButton().getData().equals(WelcomeTab.BROWSE_GERMPLASM_BUTTON_ID)) {
             ((WelcomeTab) source).browserGermplasmInfoButtonClickAction();
 
         } else if (source instanceof WelcomeTab
