@@ -55,5 +55,15 @@ public class Util{
         return null;
 
     }
+    
+    public static void closeAllTab(TabSheet tabSheet){
+    	
+    	 for (int i =  tabSheet.getComponentCount()-1; i >=0; i--) {
+            tabSheet.removeTab(tabSheet.getTab(i));
+          } 
+    	
+    }
+
+
 
 }
