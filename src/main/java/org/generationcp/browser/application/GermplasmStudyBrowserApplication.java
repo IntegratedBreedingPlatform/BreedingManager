@@ -19,7 +19,7 @@ import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
 import org.generationcp.browser.study.StudyBrowserMain;
-import org.generationcp.commons.actions.UpdateComponentLabelsAction;
+import org.generationcp.commons.actions.vaadin.UpdateComponentLabelsAction;
 import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.QueryException;
