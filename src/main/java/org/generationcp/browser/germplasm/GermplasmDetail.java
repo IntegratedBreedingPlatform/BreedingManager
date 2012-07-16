@@ -14,8 +14,8 @@ package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
-import org.generationcp.commons.spring.InternationalizableComponent;
-import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

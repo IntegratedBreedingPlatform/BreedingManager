@@ -27,7 +27,7 @@
 	
   <servlet>
     <servlet-name>MainApplication</servlet-name>
-    <servlet-class>org.generationcp.browser.util.SpringApplicationServlet</servlet-class>
+    <servlet-class>org.generationcp.commons.vaadin.spring.SpringApplicationServlet</servlet-class>
    	<init-param>
      		<param-name>application</param-name>
      		<param-value>org.generationcp.browser.application.GermplasmStudyBrowserApplication</param-value>

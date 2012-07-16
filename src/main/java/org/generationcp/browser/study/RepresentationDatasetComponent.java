@@ -17,8 +17,8 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
-import org.generationcp.commons.spring.InternationalizableComponent;
-import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Factor;

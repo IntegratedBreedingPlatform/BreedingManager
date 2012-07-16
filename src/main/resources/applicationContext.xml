@@ -31,7 +31,7 @@
     -->
 
     <!-- The Message Source -->
-    <bean id="messageSource" class="org.generationcp.commons.spring.SimpleResourceBundleMessageSource">
+    <bean id="messageSource" class="org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource">
         <property name="basename" value="I18NMessages"/>
         <property name="locale">
             <util:constant static-field="java.util.Locale.ENGLISH"/>

@@ -13,8 +13,8 @@
 package org.generationcp.browser.study;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.commons.spring.InternationalizableComponent;
-import org.generationcp.commons.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.Database;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
