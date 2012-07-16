@@ -281,7 +281,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
 	public void closeAllGermplasmDetailTabButtonClickAction() {
 
-		Util.closeAllGermplasmDetailTab(tabSheet);
+		Util.closeAllTab(tabSheet);
 		hLayoutForButtons.setVisible(false);
 		mainLayout.removeComponent(tabSheet);
 		mainLayout.requestRepaintAll();
