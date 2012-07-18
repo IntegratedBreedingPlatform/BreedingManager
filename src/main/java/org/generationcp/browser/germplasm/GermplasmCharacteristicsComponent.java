@@ -55,12 +55,12 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         setSpacing(true);
         setMargin(true);
 
-        lblGID = new Label(); // "Name"
-        lblPrefName = new Label(); // "Title"
-        lblLocation = new Label(); // "Objective"
-        lblGermplasmMethod = new Label(); // "Type"
-        lblCreationDate = new Label(); // "Start Date"
-        lblReference = new Label(); // "End Date"
+        lblGID = new Label("Name"); // "Name"
+        lblPrefName = new Label("Title"); // "Title"
+        lblLocation = new Label("Objective"); // "Objective"
+        lblGermplasmMethod = new Label("Type"); // "Type"
+        lblCreationDate = new Label("Start Date"); // "Start Date"
+        lblReference = new Label("End Date"); // "End Date"
 
         addComponent(lblGID, 1, 1);
         addComponent(lblPrefName, 1, 2);
@@ -97,12 +97,12 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
 	@Override
 	public void updateLabels() {
 		
-		messageSource.setCaption(lblGID, Message.gid_label);
+/*		messageSource.setCaption(lblGID, Message.gid_label);
 		messageSource.setCaption(lblPrefName, Message.prefname_label);
 		messageSource.setCaption(lblLocation, Message.location_label);
 		messageSource.setCaption(lblGermplasmMethod, Message.method_label);
 		messageSource.setCaption(lblCreationDate, Message.creation_date_label);
-		messageSource.setCaption(lblReference, Message.reference_label);
+		messageSource.setCaption(lblReference, Message.reference_label);*/
 		
 	}
 

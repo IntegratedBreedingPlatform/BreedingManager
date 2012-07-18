@@ -37,6 +37,13 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private Label lblStartDate;
     private Label lblEndDate;
     
+    private Label studyName;
+    private Label studyTitle;
+    private Label studyObjective;
+    private Label studyType;
+    private Label studyStartDate;
+    private Label studyEndDate;
+    
     private StudyDataManager studyDataManager;
     private int studyId;
 
@@ -58,13 +65,13 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         setSpacing(true);
         setMargin(true);
 
-        lblName = new Label(); // "Name"
-        lblTitle = new Label(); // "Title"
-        lblObjective = new Label(); // "Objective"
-        lblType = new Label(); // "Type"
-        lblStartDate = new Label(); // "Start Date"
-        lblEndDate = new Label(); // "End Date"
-
+        lblName = new Label("Name"); // "Name"
+        lblTitle = new Label("Title"); // "Title"
+        lblObjective = new Label("Objective"); // "Objective"
+        lblType = new Label("Type"); // "Type"
+        lblStartDate = new Label("Start Date"); // "Start Date"
+        lblEndDate = new Label("End Date"); // "End Date"
+        
         addComponent(lblName, 1, 1);
         addComponent(lblTitle, 1, 2);
         addComponent(lblObjective, 1, 3);
@@ -80,12 +87,12 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
 			
 			study = studyDataManager.getStudyByID(studyId);
 
-	        Label studyName = new Label(study.getName());
-	        Label studyTitle = new Label(study.getTitle());
-	        Label studyObjective = new Label(study.getObjective());
-	        Label studyType = new Label(study.getType());
-	        Label studyStartDate = new Label(String.valueOf(study.getStartDate()));
-	        Label studyEndDate = new Label(String.valueOf(study.getEndDate()));
+	        studyName = new Label(study.getName());
+	        studyTitle = new Label(study.getTitle());
+	        studyObjective = new Label(study.getObjective());
+	        studyType = new Label(study.getType());
+	        studyStartDate = new Label(String.valueOf(study.getStartDate()));
+	        studyEndDate = new Label(String.valueOf(study.getEndDate()));
 	
 	        addComponent(studyName, 2, 1);
 	        addComponent(studyTitle, 2, 2);
@@ -113,14 +120,13 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
 	@Override
 	public void updateLabels() {
 		
-		messageSource.setCaption(lblName, Message.name_label);
+/*		messageSource.setCaption(lblName, Message.name_label);
 		messageSource.setCaption(lblTitle, Message.title_label);
 		messageSource.setCaption(lblObjective, Message.objective_label);
 		messageSource.setCaption(lblType, Message.type_label);
 		messageSource.setCaption(lblStartDate, Message.start_date_label);
-		messageSource.setCaption(lblEndDate, Message.end_date_label);
-        
-		
+		messageSource.setCaption(lblEndDate, Message.end_date_label);*/
+
 	}
 
 }
