@@ -36,6 +36,13 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
 	private Label lblCreationDate;
 	private Label lblReference;
 	
+	private Label gid;
+	private Label prefName;
+	private Label location;
+	private Label germplasmMethod;
+	private Label creationDate;
+	private Label reference;
+	
 	private GermplasmDetailModel gDetailModel;
 	
     @Autowired
@@ -55,12 +62,19 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         setSpacing(true);
         setMargin(true);
 
-        lblGID = new Label("Name"); // "Name"
-        lblPrefName = new Label("Title"); // "Title"
-        lblLocation = new Label("Objective"); // "Objective"
-        lblGermplasmMethod = new Label("Type"); // "Type"
-        lblCreationDate = new Label("Start Date"); // "Start Date"
-        lblReference = new Label("End Date"); // "End Date"
+        lblGID = new Label(messageSource.getMessage(Message.gid_label)); // "Name"
+        lblPrefName = new Label(messageSource.getMessage(Message.prefname_label)); // "Title"
+        lblLocation = new Label(messageSource.getMessage(Message.location_label)); // "Objective"
+        lblGermplasmMethod = new Label(messageSource.getMessage(Message.method_label)); // "Type"
+        lblCreationDate = new Label(messageSource.getMessage(Message.creation_date_label)); // "Start Date"
+        lblReference = new Label(messageSource.getMessage(Message.gid_label)); // "End Date"
+
+        gid = new Label(String.valueOf(gDetailModel.getGid()));
+        prefName = new Label(gDetailModel.getGermplasmPreferredName());
+        location = new Label( gDetailModel.getGermplasmLocation());
+        germplasmMethod = new Label(gDetailModel.getGermplasmMethod());
+        creationDate = new Label(String.valueOf(gDetailModel.getGermplasmCreationDate()));
+        reference = new Label(String.valueOf( gDetailModel.getReference()));
 
         addComponent(lblGID, 1, 1);
         addComponent(lblPrefName, 1, 2);
@@ -68,14 +82,7 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         addComponent(lblGermplasmMethod, 1, 4);
         addComponent(lblCreationDate, 1, 5);
         addComponent(lblReference, 1, 6);
-
-        Label gid = new Label(String.valueOf(gDetailModel.getGid()));
-        Label prefName = new Label(gDetailModel.getGermplasmPreferredName());
-        Label location = new Label( gDetailModel.getGermplasmLocation());
-        Label germplasmMethod = new Label(gDetailModel.getGermplasmMethod());
-        Label creationDate = new Label(String.valueOf(gDetailModel.getGermplasmCreationDate()));
-        Label reference = new Label(String.valueOf( gDetailModel.getReference()));
-
+        
         addComponent(gid, 2, 1);
         addComponent(prefName, 2, 2);
         addComponent(location, 2, 3);

@@ -65,19 +65,14 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         setSpacing(true);
         setMargin(true);
 
-        lblName = new Label("Name"); // "Name"
-        lblTitle = new Label("Title"); // "Title"
-        lblObjective = new Label("Objective"); // "Objective"
-        lblType = new Label("Type"); // "Type"
-        lblStartDate = new Label("Start Date"); // "Start Date"
-        lblEndDate = new Label("End Date"); // "End Date"
+        lblName = new Label(messageSource.getMessage(Message.name_label)); // "Name"
+        lblTitle = new Label(messageSource.getMessage(Message.title_label)); // "Title"
+        lblObjective = new Label(messageSource.getMessage(Message.objective_label)); // "Objective"
+        lblType = new Label(messageSource.getMessage(Message.type_label)); // "Type"
+        lblStartDate = new Label(messageSource.getMessage(Message.start_date_label)); // "Start Date"
+        lblEndDate = new Label(messageSource.getMessage(Message.end_date_label)); // "End Date"
         
-        addComponent(lblName, 1, 1);
-        addComponent(lblTitle, 1, 2);
-        addComponent(lblObjective, 1, 3);
-        addComponent(lblType, 1, 4);
-        addComponent(lblStartDate, 1, 5);
-        addComponent(lblEndDate, 1, 6);
+
 
         // get Study Detail
 
@@ -93,18 +88,25 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
 	        studyType = new Label(study.getType());
 	        studyStartDate = new Label(String.valueOf(study.getStartDate()));
 	        studyEndDate = new Label(String.valueOf(study.getEndDate()));
-	
-	        addComponent(studyName, 2, 1);
-	        addComponent(studyTitle, 2, 2);
-	        addComponent(studyObjective, 2, 3);
-	        addComponent(studyType, 2, 4);
-	        addComponent(studyStartDate, 2, 5);
-	        addComponent(studyEndDate, 2, 6);
         
 		} catch (QueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+        addComponent(lblName, 1, 1);
+        addComponent(lblTitle, 1, 2);
+        addComponent(lblObjective, 1, 3);
+        addComponent(lblType, 1, 4);
+        addComponent(lblStartDate, 1, 5);
+        addComponent(lblEndDate, 1, 6);
+        
+        addComponent(studyName, 2, 1);
+        addComponent(studyTitle, 2, 2);
+        addComponent(studyObjective, 2, 3);
+        addComponent(studyType, 2, 4);
+        addComponent(studyStartDate, 2, 5);
+        addComponent(studyEndDate, 2, 6);
     	
     }
     
