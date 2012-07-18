@@ -2,6 +2,13 @@ package org.generationcp.browser.germplasm;
 
 
 
+
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -34,11 +41,14 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private SimpleResourceBundleMessageSource messageSource;
 	private Button btnSave;
 	private Button btnCancel;
+	private ArrayList<Integer> listOfGids;
+	
 
 	
-    public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow) {
+    public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow, ArrayList<Integer> listOfGids) {
     	this.dialogWindow=dialogWindow;
     	this.mainWindow=mainWindow;
+    	this.listOfGids=listOfGids;
     }
 	
 
@@ -97,16 +107,19 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 
 	public void saveGermplasmListButtonClickAction() throws QueryException {
 		SaveGermplasmListAction saveGermplasmAction= new SaveGermplasmListAction();
-		
+		Date date =  new Date();
+		Format formatter = new SimpleDateFormat("yyyyMMdd");
 		String germplasmListName=txtGermplasmListName.getValue().toString();
-		Long germplasmListData=new Long(20120305); // sample data
-		Integer userId=new Integer(1); // sample data
-		String description =  "Test List #1 for GCP-92"; // sample data
+		Long currentDate=Long.valueOf(formatter.format(date)); 
+		int userId=1; 
+		String description = "-"; 
+		String type="LST";
 		GermplasmList parent=null;
+		int status=1;
 		
-		GermplasmList germplasmList = new GermplasmList(null, germplasmListName, germplasmListData, "LST", userId,
-				description, parent, 1);
-		saveGermplasmAction.addGermplasListNameAndData(germplasmList);
+		GermplasmList germplasmList = new GermplasmList(null, germplasmListName, currentDate, type, userId,
+				description, parent, status);
+		saveGermplasmAction.addGermplasListNameAndData(germplasmList,listOfGids);
 		closeSavingGermplasmListDialog();
 	}
 
