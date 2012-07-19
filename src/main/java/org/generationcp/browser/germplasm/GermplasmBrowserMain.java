@@ -71,7 +71,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 	private Button btnSearch;
 	private Button btnSaveGermplasmList;
 	private Button btnCloseAllGermplamDetailTab;
-	private ArrayList<Integer> listOfGids= new ArrayList<Integer>();
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -111,7 +110,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		// int screenWidth = 1028;
 
 		if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-			listOfGids.add(new Integer(gid));
 			detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
 			Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
 			tab.setClosable(true);
@@ -278,7 +276,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		saveGermplasmListDialog.setModal(true);
 		saveGermplasmListDialog.setWidth(500);
 		saveGermplasmListDialog.setHeight(300);
-		saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(),saveGermplasmListDialog,listOfGids));
+		saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(),saveGermplasmListDialog,tabSheet));
 		this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);
 		
 	}
@@ -289,7 +287,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		hLayoutForButtons.setVisible(false);
 		mainLayout.removeComponent(tabSheet);
 		mainLayout.requestRepaintAll();
-		listOfGids.clear();
 
 	}
 

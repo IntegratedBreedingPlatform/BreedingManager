@@ -23,6 +23,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
@@ -41,14 +42,14 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private SimpleResourceBundleMessageSource messageSource;
 	private Button btnSave;
 	private Button btnCancel;
-	private ArrayList<Integer> listOfGids;
+	private TabSheet tabSheet;
 	
 
 	
-    public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow, ArrayList<Integer> listOfGids) {
+    public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
     	this.dialogWindow=dialogWindow;
     	this.mainWindow=mainWindow;
-    	this.listOfGids=listOfGids;
+    	this.tabSheet=tabSheet;
     }
 	
 
@@ -107,19 +108,10 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 
 	public void saveGermplasmListButtonClickAction() throws QueryException {
 		SaveGermplasmListAction saveGermplasmAction= new SaveGermplasmListAction();
-		Date date =  new Date();
-		Format formatter = new SimpleDateFormat("yyyyMMdd");
-		String germplasmListName=txtGermplasmListName.getValue().toString();
-		Long currentDate=Long.valueOf(formatter.format(date)); 
-		int userId=1; 
-		String description = "-"; 
-		String type="LST";
-		GermplasmList parent=null;
-		int status=1;
-		
-		GermplasmList germplasmList = new GermplasmList(null, germplasmListName, currentDate, type, userId,
-				description, parent, status);
-		saveGermplasmAction.addGermplasListNameAndData(germplasmList,listOfGids);
+	
+		String listName=txtGermplasmListName.getValue().toString();
+
+		saveGermplasmAction.addGermplasListNameAndData(listName,this.tabSheet);
 		closeSavingGermplasmListDialog();
 	}
 
