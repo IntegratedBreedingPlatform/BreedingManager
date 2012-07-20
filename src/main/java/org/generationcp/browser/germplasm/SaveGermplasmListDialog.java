@@ -43,61 +43,61 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private Button btnSave;
 	private Button btnCancel;
 	private TabSheet tabSheet;
-	
 
-	
-    public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
-    	this.dialogWindow=dialogWindow;
-    	this.mainWindow=mainWindow;
-    	this.tabSheet=tabSheet;
-    }
-	
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-        setRows(7);
-        setColumns(3);
-        setSpacing(true);
-        setMargin(true);
-        
-        
-        labelEnterGermplasmListName= new Label();
-        
-        txtGermplasmListName= new TextField();
-        txtGermplasmListName.setWidth(300);
-       
-        HorizontalLayout hButton = new HorizontalLayout();
-        hButton.setSpacing(true);
 
-        btnSave = new Button();
-        btnSave.setData(SAVE_BUTTON_ID);
-        btnSave.setDescription("Save Germplasm List ");
-        btnSave.addListener(new GermplasmButtonClickListener(this));
-        
-        hButton.addComponent(btnSave);
-
-        btnCancel = new Button();
-        btnCancel.setData(CANCEL_BUTTON_ID);
-        btnCancel.setDescription("Cancel Saving Germplasm List");
-        btnCancel.addListener(new GermplasmButtonClickListener(this));
-        
-        hButton.addComponent(btnCancel);
- 
-        addComponent(labelEnterGermplasmListName, 1, 1);
-        addComponent(txtGermplasmListName,1,2);
-        addComponent(hButton,1,3);
+	public SaveGermplasmListDialog( Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
+		this.dialogWindow=dialogWindow;
+		this.mainWindow=mainWindow;
+		this.tabSheet=tabSheet;
 	}
 
 
-	
-    @Override
-    public void attach() {
-    	
-        super.attach();
-        
-        updateLabels();
-    }
-    
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		setRows(7);
+		setColumns(3);
+		setSpacing(true);
+		setMargin(true);
+
+
+		labelEnterGermplasmListName= new Label();
+
+		txtGermplasmListName= new TextField();
+		txtGermplasmListName.setWidth(300);
+
+		HorizontalLayout hButton = new HorizontalLayout();
+		hButton.setSpacing(true);
+
+		btnSave = new Button();
+		btnSave.setData(SAVE_BUTTON_ID);
+		btnSave.setDescription("Save Germplasm List ");
+		btnSave.addListener(new GermplasmButtonClickListener(this));
+
+		hButton.addComponent(btnSave);
+
+		btnCancel = new Button();
+		btnCancel.setData(CANCEL_BUTTON_ID);
+		btnCancel.setDescription("Cancel Saving Germplasm List");
+		btnCancel.addListener(new GermplasmButtonClickListener(this));
+
+		hButton.addComponent(btnCancel);
+
+		addComponent(labelEnterGermplasmListName, 1, 1);
+		addComponent(txtGermplasmListName,1,2);
+		addComponent(hButton,1,3);
+	}
+
+
+
+	@Override
+	public void attach() {
+
+		super.attach();
+
+		updateLabels();
+	}
+
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(labelEnterGermplasmListName, Message.enter_germplasm_listname_label);
@@ -108,18 +108,20 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 
 	public void saveGermplasmListButtonClickAction() throws QueryException {
 		SaveGermplasmListAction saveGermplasmAction= new SaveGermplasmListAction();
-	
+
 		String listName=txtGermplasmListName.getValue().toString();
 
-		saveGermplasmAction.addGermplasListNameAndData(listName,this.tabSheet);
-		closeSavingGermplasmListDialog();
+		if(listName.length() > 0){
+			saveGermplasmAction.addGermplasListNameAndData(listName,this.tabSheet);
+			closeSavingGermplasmListDialog();
+		}
 	}
 
 
 	public void cancelGermplasmListButtonClickAction() {
 		closeSavingGermplasmListDialog();
 	}
-	
+
 	public void closeSavingGermplasmListDialog(){
 		this.mainWindow.removeWindow(dialogWindow);
 	}
