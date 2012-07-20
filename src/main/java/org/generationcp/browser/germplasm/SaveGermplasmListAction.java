@@ -71,7 +71,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		int localRecordId=0;
 		int entryid=1;
 
-		for (int i = 0 ; i < tabSheet.getComponentCount()-1; i++) {
+		for (int i = 0 ; i < tabSheet.getComponentCount(); i++) {
 			int gid=Integer.valueOf(tabSheet.getTab(i).getCaption().toString());
 			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryCode, seedSource, designation, groupName, status, localRecordId);
 			germplasmListManager.addGermplasmListData(germplasmListData);
