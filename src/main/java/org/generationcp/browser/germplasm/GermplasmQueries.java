@@ -250,8 +250,11 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 	}
 
 	public List<GermplasmListData> getGermplasmListByGID(int gid) throws QueryException {
+		
+		int count =this.germplasmListManager.countGermplasmListDataByGID(gid);
 
-		return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, 1000);
+		return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
+	
 	}
 
 }
