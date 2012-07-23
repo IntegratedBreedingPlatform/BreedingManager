@@ -29,122 +29,134 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class GermplasmDetail extends Accordion implements InitializingBean, InternationalizableComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final int FIRST_TAB = 1;
-    private static final int SECOND_TAB = 2;
-    private static final int THIRD_TAB = 3;
-    private static final int FOURTH_TAB = 4;
-    private static final int FIFTH_TAB = 5;
-    
-    private GermplasmIndexContainer dataIndexContainer;
-    private GermplasmQueries qQuery;
-    private GermplasmDetailModel gDetailModel;
-    private VerticalLayout layoutNames;
-    private VerticalLayout layoutAttributes;
-    private VerticalLayout layoutGenerationHistory;
-    private VerticalLayout layoutPedigreeTree;
-    private VerticalLayout mainLayout;
-    private int gid;
-    private TabSheet tabSheet;
-    private GermplasmIndexContainer dataResultIndexContainer;
-    private GermplasmCharacteristicsComponent germplasmCharacteristicsComponent;
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+	private static final int FIRST_TAB = 1;
+	private static final int SECOND_TAB = 2;
+	private static final int THIRD_TAB = 3;
+	private static final int FOURTH_TAB = 4;
+	private static final int FIFTH_TAB = 5;
+	private static final int SIX_TAB = 6;
 
-    public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
-            VerticalLayout mainLayout, TabSheet tabSheet) throws QueryException {
+	private GermplasmIndexContainer dataIndexContainer;
+	private GermplasmQueries qQuery;
+	private GermplasmDetailModel gDetailModel;
+	private VerticalLayout layoutNames;
+	private VerticalLayout layoutAttributes;
+	private VerticalLayout layoutGenerationHistory;
+	private VerticalLayout layoutPedigreeTree;
+	private VerticalLayout layoutGermplasmList;
+	private VerticalLayout mainLayout;
+	private int gid;
+	private TabSheet tabSheet;
+	private GermplasmIndexContainer dataResultIndexContainer;
+	private GermplasmCharacteristicsComponent germplasmCharacteristicsComponent;
 
-        this.qQuery = qQuery;
-        this.mainLayout = mainLayout;
-        this.gid = gid;
-        this.tabSheet = tabSheet;
-        this.dataResultIndexContainer = dataResultIndexContainer;
-        this.dataIndexContainer = dataResultIndexContainer;
-        this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
-        
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
-    }
+	public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
+			VerticalLayout mainLayout, TabSheet tabSheet) throws QueryException {
 
-    public void selectedTabChangeAction() throws QueryException {
-        Component selected = this.getSelectedTab();
-        Tab tab = this.getTab(selected);
-        if (tab.getComponent() instanceof VerticalLayout) {
-        	
-	        if (((VerticalLayout)tab.getComponent()).getData().equals(SECOND_TAB)) {
-	            if (layoutNames.getComponentCount() == 0) {
-	                layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel));
-	                layoutNames.setMargin(true);
-	            }
-	        }else if (((VerticalLayout)tab.getComponent()).getData().equals(THIRD_TAB)) {
-	            if (layoutAttributes.getComponentCount() == 0) {
-	                layoutAttributes.addComponent(new GermplasmAttributesComponent(dataIndexContainer, gDetailModel));
-	                layoutAttributes.setMargin(true);
-	            }
-	        }else if (((VerticalLayout)tab.getComponent()).getData().equals(FOURTH_TAB)) {
-	            if (layoutGenerationHistory.getComponentCount() == 0) {
-	                layoutGenerationHistory.addComponent(new GermplasmGenerationHistoryComponent(dataIndexContainer, gDetailModel));
-	                layoutGenerationHistory.setMargin(true);
-	            }
-	        }else if (((VerticalLayout)tab.getComponent()).getData().equals(FIFTH_TAB)) {
-	            if (layoutPedigreeTree.getComponentCount() == 0) {
-	                layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
-	                        tabSheet));
-	            }
-	        }
-	        
-        }
+		this.qQuery = qQuery;
+		this.mainLayout = mainLayout;
+		this.gid = gid;
+		this.tabSheet = tabSheet;
+		this.dataResultIndexContainer = dataResultIndexContainer;
+		this.dataIndexContainer = dataResultIndexContainer;
+		this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
 
-    }
-    
-    @Override
-    public void afterPropertiesSet() {
-    	
-    	germplasmCharacteristicsComponent = new GermplasmCharacteristicsComponent(gDetailModel);
-    	germplasmCharacteristicsComponent.setData(FIRST_TAB);
-    	
-        layoutNames = new VerticalLayout();
-        layoutNames.setData(SECOND_TAB);
-        
-        layoutAttributes = new VerticalLayout();
-        layoutAttributes.setData(THIRD_TAB);
-        
-        layoutGenerationHistory = new VerticalLayout();
-        layoutGenerationHistory.setData(FOURTH_TAB);
-        
-        layoutPedigreeTree = new VerticalLayout();
-        layoutPedigreeTree.setData(FIFTH_TAB);
-        
-        layoutPedigreeTree.setMargin(true);
 
-        this.addTab(germplasmCharacteristicsComponent, "Characteristics");
-        this.addTab(layoutNames, "Names");
-        this.addTab(layoutAttributes, "Attributes");
-        this.addTab(layoutGenerationHistory, "Generation History");
-        this.addTab(layoutPedigreeTree, "Pedigree Tree");
-        
-        this.addListener(new GermplasmSelectedTabChangeListener(this));
-        
-    }
-    
-    @Override
-    public void attach() {
-    	
-        super.attach();
-        
-        updateLabels();
-    }
+	}
+
+	public void selectedTabChangeAction() throws QueryException {
+		Component selected = this.getSelectedTab();
+		Tab tab = this.getTab(selected);
+		if (tab.getComponent() instanceof VerticalLayout) {
+
+			if (((VerticalLayout)tab.getComponent()).getData().equals(SECOND_TAB)) {
+				if (layoutNames.getComponentCount() == 0) {
+					layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel));
+					layoutNames.setMargin(true);
+				}
+			}else if (((VerticalLayout)tab.getComponent()).getData().equals(THIRD_TAB)) {
+				if (layoutAttributes.getComponentCount() == 0) {
+					layoutAttributes.addComponent(new GermplasmAttributesComponent(dataIndexContainer, gDetailModel));
+					layoutAttributes.setMargin(true);
+				}
+			}else if (((VerticalLayout)tab.getComponent()).getData().equals(FOURTH_TAB)) {
+				if (layoutGenerationHistory.getComponentCount() == 0) {
+					layoutGenerationHistory.addComponent(new GermplasmGenerationHistoryComponent(dataIndexContainer, gDetailModel));
+					layoutGenerationHistory.setMargin(true);
+				}
+			}else if (((VerticalLayout)tab.getComponent()).getData().equals(FIFTH_TAB)) {
+				if (layoutPedigreeTree.getComponentCount() == 0) {
+					layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
+							tabSheet));
+				}
+
+			}else if (((VerticalLayout)tab.getComponent()).getData().equals(SIX_TAB)) {
+				if (layoutGermplasmList.getComponentCount() == 0) {
+					layoutGermplasmList.addComponent(new GermplasmListComponent(dataIndexContainer, gDetailModel));
+					layoutGermplasmList.setMargin(true);
+				}
+			}
+
+		}
+
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+
+		germplasmCharacteristicsComponent = new GermplasmCharacteristicsComponent(gDetailModel);
+		germplasmCharacteristicsComponent.setData(FIRST_TAB);
+
+		layoutNames = new VerticalLayout();
+		layoutNames.setData(SECOND_TAB);
+
+		layoutAttributes = new VerticalLayout();
+		layoutAttributes.setData(THIRD_TAB);
+
+		layoutGenerationHistory = new VerticalLayout();
+		layoutGenerationHistory.setData(FOURTH_TAB);
+
+		layoutPedigreeTree = new VerticalLayout();
+		layoutPedigreeTree.setData(FIFTH_TAB);
+		
+		layoutGermplasmList = new VerticalLayout();
+		layoutGermplasmList.setData(SIX_TAB);
+
+		layoutPedigreeTree.setMargin(true);
+
+		this.addTab(germplasmCharacteristicsComponent, "Characteristics");
+		this.addTab(layoutNames, "Names");
+		this.addTab(layoutAttributes, "Attributes");
+		this.addTab(layoutGenerationHistory, "Generation History");
+		this.addTab(layoutPedigreeTree, "Pedigree Tree");
+		this.addTab(layoutGermplasmList, "Lists");
+
+		this.addListener(new GermplasmSelectedTabChangeListener(this));
+
+	}
+
+	@Override
+	public void attach() {
+
+		super.attach();
+
+		updateLabels();
+	}
 
 	@Override
 	public void updateLabels() {
-		
+
 		messageSource.setCaption(germplasmCharacteristicsComponent, Message.characteristics_label);
 		messageSource.setCaption(layoutNames, Message.names_label);
 		messageSource.setCaption(layoutAttributes, Message.attributes_label);
 		messageSource.setCaption(layoutGenerationHistory, Message.generation_history_label);
 		messageSource.setCaption(layoutPedigreeTree, Message.pedigree_tree_label);
-		
+
 	}
 
 

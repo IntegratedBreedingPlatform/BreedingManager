@@ -22,9 +22,11 @@ import org.generationcp.middleware.manager.FindGermplasmByNameModes;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
@@ -48,6 +50,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
     private ManagerFactory managerFactory;
     
     private GermplasmDataManager germplasmDataManager;
+    private GermplasmListManager germplasmListManager;
 
     public GermplasmQueries() {
         
@@ -242,7 +245,13 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 
 		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
+		this.germplasmListManager=managerFactory.getGermplasmListManager();
 		
+	}
+
+	public List<GermplasmListData> getGermplasmListByGID(int gid) throws QueryException {
+
+		return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, 1000);
 	}
 
 }

@@ -16,6 +16,9 @@ import java.util.ArrayList;
 
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.gdms.GermplasmMarkerElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +42,12 @@ public final class GermplasmIndexContainer{
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_DATE = "date";
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_LOCATION = "location";
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
+    
+    // GermplasmList Model
+    
+    private static final Object GERMPLASMLIST_NAME = "name";
+    private static final Object GERMPLASMLIST_DATE = "date";
+    private static final Object GERMPLASMLIST_DESCRIPTION = "description";
 
     private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
     @SuppressWarnings("unused")
@@ -156,6 +165,37 @@ public final class GermplasmIndexContainer{
         Item item = container.getItem(itemId);
         item.getItemProperty(GERMPLASM_GID).setValue(gid);
         item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+
+    }
+    
+    
+    public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws QueryException {
+        IndexedContainer container = new IndexedContainer();
+
+        // Create the container properties
+        container.addContainerProperty(GERMPLASMLIST_NAME, String.class, "");
+        container.addContainerProperty(GERMPLASMLIST_DATE, String.class, "");
+        container.addContainerProperty(GERMPLASMLIST_DESCRIPTION, String.class, "");
+        
+
+        final ArrayList<GermplasmListData> germplasmListData =(ArrayList<GermplasmListData>) qQuery.getGermplasmListByGID(g.getGid());
+        
+        for(GermplasmListData gListData : germplasmListData ){
+        	
+        	addGermplasmListContainer(container, gListData.getList().getName(), String.valueOf(gListData.getList().getDate()), gListData.getList().getDescription());
+        }
+
+        return container;
+    }
+
+
+
+    private static void addGermplasmListContainer(Container container, String name, String date, String description) {
+        Object itemId = container.addItem();
+        Item item = container.getItem(itemId);
+        item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
+        item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
+        item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
 
     }
 
