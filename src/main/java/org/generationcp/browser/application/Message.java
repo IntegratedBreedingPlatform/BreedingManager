@@ -52,6 +52,7 @@ public enum Message {
      scale_header,
      method_header,
      datatype_header,
+     date_header,
      refresh_label,
      study_details_label,       
      characteristics_label,
