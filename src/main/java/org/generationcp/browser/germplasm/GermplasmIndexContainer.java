@@ -16,9 +16,7 @@ import java.util.ArrayList;
 
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.gdms.GermplasmMarkerElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
