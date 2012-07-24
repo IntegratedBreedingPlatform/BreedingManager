@@ -13,6 +13,7 @@
 package org.generationcp.browser.study;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;

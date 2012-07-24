@@ -10,7 +10,7 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.browser.study;
+package org.generationcp.browser.study.containers;
 
 import java.util.ArrayList;
 

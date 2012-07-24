@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.containers.RepresentationDatasetQueryFactory;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
