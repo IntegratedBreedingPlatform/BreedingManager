@@ -35,7 +35,7 @@ public class StudyButtonClickListener implements Button.ClickListener {
 
     @Override
     public void buttonClick(ClickEvent event) {
-
+        
         if (event.getButton().getData().equals(RepresentationDatasetComponent.EXPORT_CSV_BUTTON_ID) // "Export to CSV"
                 && (source instanceof RepresentationDatasetComponent)) {
             ((RepresentationDatasetComponent) source).exportToCSVAction();
@@ -48,9 +48,8 @@ public class StudyButtonClickListener implements Button.ClickListener {
                 && (source instanceof StudyTreeComponent)) {
             ((StudyTreeComponent) source).createTree();
         } else {
-        	System.out.println("WHY!");
+            LOG.error("StudyButtonClickListener: Error with buttonClick action. Source not identified.");
         }
-
     }
 
 }

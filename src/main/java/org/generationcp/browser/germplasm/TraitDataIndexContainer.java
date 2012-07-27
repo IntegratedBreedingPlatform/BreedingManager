@@ -12,9 +12,10 @@
 
 package org.generationcp.browser.germplasm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.pojos.Scale;
 import org.generationcp.middleware.pojos.ScaleDiscrete;
 import org.generationcp.middleware.pojos.Trait;
@@ -25,8 +26,9 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.CheckBox;
 
-public class TraitDataIndexContainer {
+public class TraitDataIndexContainer implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static final Object ISO3166_PROPERTY_SHORT = "short";
     public static final Object ISO3166_PROPERTY_NAME = "name";
 
@@ -62,12 +64,10 @@ public class TraitDataIndexContainer {
     private static final Object GID = "gid";
 
     public TraitDataIndexContainer() {
-
         queryTrait = new TraitQueries();
-        
     }
 
-    public IndexedContainer getAllTrait() throws QueryException {
+    public IndexedContainer getAllTrait() throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
@@ -89,7 +89,6 @@ public class TraitDataIndexContainer {
         item.getItemProperty(TRAIT_ID).setValue(traitID);
         item.getItemProperty(TRAIT_NAME).setValue(traitName);
         item.getItemProperty(TRAIT_DESCRIPTION).setValue(traitDesc);
-
     }
 
     public IndexedContainer getScaleByTraitID(int traitID) {
@@ -119,7 +118,6 @@ public class TraitDataIndexContainer {
         item.getItemProperty(SCALE_ID).setValue(scaleID);
         item.getItemProperty(SCALE_NAME).setValue(scaleName);
         item.getItemProperty(SCALE_TYPE).setValue(scaleType);
-
     }
 
     public IndexedContainer getMethodTraitID(int traitID) {
@@ -145,10 +143,9 @@ public class TraitDataIndexContainer {
         item.getItemProperty(METHOD_ID).setValue(methodID);
         item.getItemProperty(METHOD_NAME).setValue(methodName);
         item.getItemProperty(METHOD_DESCRIPTION).setValue(methodDescription);
-
     }
 
-    public IndexedContainer getValueByScaleID(int scaleID) {
+    public IndexedContainer getValueByScaleID(int scaleID) throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
@@ -171,7 +168,6 @@ public class TraitDataIndexContainer {
         item.getItemProperty(SCALE_SELECTED).setValue(new CheckBox(null, activ));
         item.getItemProperty(SCALE_VALUE_DESCRIPTION).setValue(scaleDescription);
         item.getItemProperty(SCALE_VALUE).setValue(scaleValue);
-
     }
 
     public IndexedContainer addSearchCriteria() {
@@ -208,7 +204,6 @@ public class TraitDataIndexContainer {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(GID).setValue(gid);
-
     }
 
 }

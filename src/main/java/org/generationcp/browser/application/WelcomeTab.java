@@ -19,9 +19,9 @@ import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,6 +45,7 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class WelcomeTab extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
+    @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(WelcomeTab.class);
     private static final long serialVersionUID = -917787404988386915L;
     
@@ -76,16 +77,14 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     private SimpleResourceBundleMessageSource messageSource;
     
     public WelcomeTab(TabSheet tabSheet, VerticalLayout rootLayoutsForOtherTabs[]) {
- 
         this.theTabSheet = tabSheet;
         this.rootLayoutsForOtherTabs = rootLayoutsForOtherTabs;
         this.gidByPhenoQueries = new GidByPhenotypicQueries();
         this.traitDataCon = new TraitDataIndexContainer();
-
     }
 
     // Called by GermplasmButtonClickListener
-    public void browserGermplasmInfoButtonClickAction() {
+    public void browserGermplasmInfoButtonClickAction() throws InternationalizableException {
         if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
             rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain());
             rootLayoutForGermplasmBrowser.addStyleName("addSpacing");
@@ -103,30 +102,22 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         }
 
         theTabSheet.setSelectedTab(rootLayoutForStudyBrowser);
-
     }
 
     // Called by GermplasmButtonClickListener
-    public void searchGermplasmByPhenotyicDataButtonClickAction() {
+    public void searchGermplasmByPhenotyicDataButtonClickAction() throws InternationalizableException{
         // when the button is clicked, content for the tab is
         // dynamically created
         // creation of content is done only once
         if (rootLayoutForGermplasmByPheno.getComponentCount() == 0) {
-            try {
-                rootLayoutForGermplasmByPheno.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon));
-            } catch (QueryException e) {
-                // Log into log file
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-            }
+                rootLayoutForGermplasmByPheno.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, getWindow()));
         }
         theTabSheet.setSelectedTab(rootLayoutForGermplasmByPheno);
-
     }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-        
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
         this.setSpacing(true);
         this.setMargin(true);
 
@@ -164,28 +155,21 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
 
         germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this));
         this.addComponent(germplasmByPhenoButton);
-		
-	}
+    }
 	
     @Override
-    public void attach() {
-    	
+    public void attach() {    	
         super.attach();
-        
         updateLabels();
     }
     
-
-	@Override
-	public void updateLabels() {
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(welcomeLabel, Message.welcome_label);
+        messageSource.setCaption(questionLabel, Message.question_label);
+        messageSource.setCaption(germplasmButton, Message.germplasm_button_label);
+        messageSource.setCaption(studyButton, Message.study_button_label);
+        messageSource.setCaption(germplasmByPhenoButton, Message.germplasms_by_pheno_label);
+    }
 		
-		messageSource.setCaption(welcomeLabel, Message.welcome_label);
-		messageSource.setCaption(questionLabel, Message.question_label);
-		messageSource.setCaption(germplasmButton, Message.germplasm_button_label);
-		messageSource.setCaption(studyButton, Message.study_button_label);
-		messageSource.setCaption(germplasmByPhenoButton, Message.germplasms_by_pheno_label);
-		
-	}
-	
-	
 }

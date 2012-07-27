@@ -18,11 +18,14 @@ import java.util.Iterator;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.NumericRange;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -36,12 +39,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
-public class SearchGermplasmByPhenotypicTab extends GridLayout implements InitializingBean, InternationalizableComponent {
+public class SearchGermplasmByPhenotypicTab extends GridLayout implements InitializingBean, InternationalizableComponent{
 
+    private static final Logger LOG = LoggerFactory.getLogger(SearchGermplasmByPhenotypicTab.class);
     private static final long serialVersionUID = 455865362407450432L;
-    
+
     public static final String ADD_CRITERIA_BUTTON_ID = "SearchGermplasmByPhenotypicTab Add Criteria Button";
     public static final String DELETE_BUTTON_ID = "SearchGermplasmByPhenotypicTab Delete Button";
     public static final String DELETE_ALL_BUTTON_ID = "SearchGermplasmByPhenotypicTab Delete All Button";
@@ -77,24 +82,25 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
     private Label mainLabel;
     private GidByPhenotypicQueries gidsByPhenotypic;
     private TraitDataIndexContainer dataIndexContainer;
+    private Window parentWindow;
 
     private int traitID;
     private int flagScale;
     private int flagResult = 0;
-    
+
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam) throws QueryException {
-
+    public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam,
+            Window parentWindow) {
         this.gidsByPhenotypic = gidsByPhenotypicParam;
         this.dataIndexContainer = dataIndexContainerParam;
-
+        this.parentWindow = parentWindow;
     }
 
     // Trait Table
 
-    private void displayTraitTable() throws QueryException {
+    private void displayTraitTable() throws InternationalizableException {
         dataSourceTrait = dataIndexContainer.getAllTrait();
         traitTable = new Table("", dataSourceTrait);
 
@@ -130,11 +136,10 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         displayScaleTable(traitID);
         displayMethodTable(traitID);
-
     }
 
     // Scale Table
-    private void displayScaleTable(int traitID) {
+    private void displayScaleTable(int traitID) throws InternationalizableException {
         dataSourceScale = dataIndexContainer.getScaleByTraitID(traitID);
         scaleTable = new Table("", dataSourceScale);
 
@@ -168,7 +173,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         componentTrait.addComponent(step2Label);
         componentTrait.addComponent(scaleTable);
-
     }
 
     // TraitMethod Table
@@ -203,10 +207,9 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         componentTrait.addComponent(step3Label);
         componentTrait.addComponent(traitMethodTable);
-
     }
 
-    private void displayScaleValueTable() {
+    private void displayScaleValueTable() throws InternationalizableException {
         IndexedContainer dataSourceScaleValue = dataIndexContainer.getValueByScaleID(-1);
         scaleValueTable = new Table("", dataSourceScaleValue);
 
@@ -227,12 +230,11 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         // Column alignment
         scaleValueTable.setCaption("Value Options");
-        
+
         valueOptionsInstuctionLabel.setVisible(false);
         componentTtraitValueInput.addComponent(valueOptionsInstuctionLabel);
         scaleValueTable.setVisible(false);
         componentTtraitValueInput.addComponent(scaleValueTable);
-
     }
 
     private void displaySearchCriteria() {
@@ -263,7 +265,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         // Column alignment
         criteriaTable.setCaption("Search Criteria");
         componentTtraitValueInput.addComponent(criteriaTable);
-
     }
 
     private void displayGidsToResultTable(ArrayList<Integer> gids) {
@@ -302,7 +303,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         componentTtraitValueInput.addComponent(rangeInstructionLabel);
     }
 
-    private void updateScaleValueInputDisplay(String scaleType, int scaleID) {
+    private void updateScaleValueInputDisplay(String scaleType, int scaleID) throws InternationalizableException {
         if (scaleType.equals("discrete")) {
             dataSourceScaleValue = dataIndexContainer.getValueByScaleID(scaleID);
             scaleValueTable.setContainerDataSource(dataSourceScaleValue);
@@ -374,7 +375,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         double end = 0;
 
         for (@SuppressWarnings("rawtypes")
-                Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
+        Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
 
             int iid = (Integer) i.next();
             Item item = criteriaTable.getItem(iid);
@@ -395,13 +396,21 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                     Double valueToUseInDouble = Double.valueOf(valueToUse);
                     TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
                             methodID), valueToUseInDouble);
+                    LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
                     System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
                     tcf.add(filter);
-                } catch (NumberFormatException ex) {
+                } catch (NumberFormatException e) {
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    if (getWindow() != null) {
+                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.error_invalid_format),
+                                messageSource.getMessage(Message.error_invalid_number_format_must_be_numeric));
+                    }
                 }
 
                 TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
                         new Integer(methodID), valueToUse);
+                LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
                 System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
                 tcf.add(filter);
             } else {
@@ -417,8 +426,12 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                             TraitCombinationFilter tcFilter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
                                     new Integer(methodID), ranges);
                             tcf.add(tcFilter);
-                        } catch (NumberFormatException ex) {
+                        } catch (NumberFormatException e) {
                             notNumericRange = true;
+                            LOG.error(e.toString() + "\n" + e.getStackTrace());
+                            e.printStackTrace();
+                            MessageNotifier.showWarning(parentWindow, messageSource.getMessage(Message.error_invalid_format),
+                                    messageSource.getMessage(Message.error_invalid_number_format_must_be_numeric));
                         }
                     } else {
                         notNumericRange = true;
@@ -439,17 +452,21 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         return tcf;
     }
 
-    boolean withSelectedTraitScaleMethod() {
-        Object itemIDTrait = traitTable.getValue();
-        Object itemIDScale = scaleTable.getValue();
-        Object itemIDMethod = traitMethodTable.getValue();
-        if (traitTable.isSelected(itemIDTrait) && scaleTable.isSelected(itemIDScale) && traitMethodTable.isSelected(itemIDMethod)) {
-            return true;
+    boolean withSelectedTraitScaleMethod() throws InternationalizableException {
+        try {
+            Object itemIDTrait = traitTable.getValue();
+            Object itemIDScale = scaleTable.getValue();
+            Object itemIDMethod = traitMethodTable.getValue();
+            if (traitTable.isSelected(itemIDTrait) && scaleTable.isSelected(itemIDScale) && traitMethodTable.isSelected(itemIDMethod)) {
+                return true;
+            }
+        } catch (NullPointerException e) {
+            throw new InternationalizableException(e, Message.error_null_table, Message.empty_string);
         }
         return false;
     }
 
-    public void addCriteriaButtonClickAction() {
+    public void addCriteriaButtonClickAction() throws InternationalizableException {
         String valueCriteria = "";
         String scaleDiscreteValue = "";
 
@@ -475,7 +492,10 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
             addToCriteriaTable(valueCriteria, scaleDiscreteValue);
 
         } else {
-            System.out.println("Error");
+            LOG.error("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
+            System.out.println("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
+            throw new InternationalizableException(new Exception("Input error. No selected trait scale method."), 
+                    Message.error_input, Message.error_no_selected_trait_scale_method);
         }
     }
 
@@ -495,7 +515,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         btnSearch.setEnabled(false);
     }
 
-    public void searchButtonClickAction() {
+    public void searchButtonClickAction() throws InternationalizableException {
 
         try {
             ArrayList<Integer> gids = gidsByPhenotypic.getGIDSByPhenotypicData(getSearchFilters());
@@ -509,15 +529,12 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                 dataSourceSearchResult = dataIndexContainer.addGidsResult(gids);
                 searchResultTable.setContainerDataSource(dataSourceSearchResult);
             }
-
         } catch (Exception e) {
-            System.out.println("Error");
-            e.printStackTrace();
-
+            throw new InternationalizableException(e, Message.error_in_search, Message.empty_string);
         }
     }
 
-    public void traitTableItemClickAction(Table sourceTable, Object itemId, Item item) {
+    public void traitTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
         try {
             sourceTable.select(itemId);
             int traitID = Integer.valueOf(item.getItemProperty("traitID").toString());
@@ -535,58 +552,57 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
             traitMethodTable.setValue(traitMethodTable.firstItemId());
             traitMethodTable.requestRepaint();
         } catch (Exception e) {
-
+            throw new InternationalizableException(e, Message.error_in_displaying_details, Message.empty_string);
         }
-
     }
 
-    public void scaleTableItemClickAction(Table sourceTable, Object itemId, Item item) {
+    public void scaleTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
         sourceTable.select(itemId);
         int scaleID = Integer.valueOf(item.getItemProperty("scaleID").toString());
         String scaleType = item.getItemProperty("scaleType").toString();
         updateScaleValueInputDisplay(scaleType, scaleID);
     }
-    
+
     @Override
     public void afterPropertiesSet() {
-    	
+
         this.setColumns(4);
         this.setRows(4);
         this.setSpacing(true);
-        
+
         step1Label = new Label();
         //step1Label.setContentMode(Label.CONTENT_XHTML);
         step1Label.setStyleName("h3");
-        
+
         step2Label = new Label();
         //step2Label.setContentMode(Label.CONTENT_XHTML);
         step2Label.setStyleName("h3");
-        
+
         step3Label = new Label();
         //step3Label.setContentMode(Label.CONTENT_XHTML);
         step3Label.setStyleName("h3");
-        
+
         step4Label = new Label();
         //step4Label.setContentMode(Label.CONTENT_XHTML);
         step4Label.setStyleName("h3");
-        
+
         step5Label = new Label();
         //step5Label.setContentMode(Label.CONTENT_XHTML);
         step5Label.setStyleName("h3");
-        
+
         mainLabel = new Label();
         //mainLabel.setContentMode(Label.CONTENT_XHTML);
         mainLabel.setStyleName("h1");
-        
+
         finalStepLabel = new Label();
         //finalStepLabel.setContentMode(Label.CONTENT_XHTML);
         finalStepLabel.setStyleName("h3");
         finalStepLabel = new Label();
 
         valueOptionsInstuctionLabel = new Label();
-        
+
         rangeInstructionLabel = new Label();
-        
+
         componentTrait = new VerticalLayout();
         componentTrait.setSpacing(true);
 
@@ -596,13 +612,14 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         componentTrait.addComponent(mainLabel);
 
         try {
-        	
-			displayTraitTable();
-			
-		} catch (QueryException e) {
-			
-			e.printStackTrace();
-		}
+            displayTraitTable();
+        } catch (InternationalizableException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showError(parentWindow, // TESTED
+                    messageSource.getMessage(Message.error_in_displaying_trait_table), 
+                    "</br>" + messageSource.getMessage(Message.error_please_contact_administrator));
+        }
 
         componentTtraitValueInput.addComponent(step5Label);
 
@@ -648,39 +665,33 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         traitTable.addListener(new GermplasmItemClickListener(this, traitTable));
 
         scaleTable.addListener(new GermplasmItemClickListener(this, scaleTable));
-
     }
-    
+
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(btnAddCriteria, Message.add_criteria_label);
+        messageSource.setCaption(btnDelete, Message.delete_label);
+        messageSource.setCaption(btnDeleteAll, Message.delete_all_label);
+        messageSource.setCaption(btnSearch, Message.search_label);
 
-		messageSource.setCaption(btnAddCriteria, Message.add_criteria_label);
-		messageSource.setCaption(btnDelete, Message.delete_label);
-		messageSource.setCaption(btnDeleteAll, Message.delete_all_label);
-		messageSource.setCaption(btnSearch, Message.search_label);
-		
-		messageSource.setCaption(step1Label, Message.step1_label);
-		messageSource.setCaption(step2Label, Message.step2_label);
-		messageSource.setCaption(step3Label, Message.step3_label);
-		messageSource.setCaption(step4Label, Message.step4_label);
-		messageSource.setCaption(step5Label, Message.step5_label);
-		messageSource.setCaption(mainLabel, Message.germplasm_by_pheno_title);
-		messageSource.setCaption(finalStepLabel, Message.finalstep_label);
-		messageSource.setCaption(valueOptionsInstuctionLabel, Message.select_a_value_from_the_options_below_label);
-		messageSource.setCaption(rangeInstructionLabel, Message.to_enter_a_range_of_values_follow_this_example_label);
-		
-		messageSource.setDescription(btnDelete, Message.you_can_delete_the_currently_selected_criteria_desc);
-		messageSource.setDescription(btnDeleteAll, Message.you_can_delete_all_the_criteria_desc);
+        messageSource.setCaption(step1Label, Message.step1_label);
+        messageSource.setCaption(step2Label, Message.step2_label);
+        messageSource.setCaption(step3Label, Message.step3_label);
+        messageSource.setCaption(step4Label, Message.step4_label);
+        messageSource.setCaption(step5Label, Message.step5_label);
+        messageSource.setCaption(mainLabel, Message.germplasm_by_pheno_title);
+        messageSource.setCaption(finalStepLabel, Message.finalstep_label);
+        messageSource.setCaption(valueOptionsInstuctionLabel, Message.select_a_value_from_the_options_below_label);
+        messageSource.setCaption(rangeInstructionLabel, Message.to_enter_a_range_of_values_follow_this_example_label);
 
-	}
-    
+        messageSource.setDescription(btnDelete, Message.you_can_delete_the_currently_selected_criteria_desc);
+        messageSource.setDescription(btnDeleteAll, Message.you_can_delete_all_the_criteria_desc);
+    }
+
 }

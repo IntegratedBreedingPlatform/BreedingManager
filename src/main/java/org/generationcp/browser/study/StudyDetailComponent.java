@@ -13,11 +13,14 @@
 package org.generationcp.browser.study;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -28,6 +31,8 @@ import com.vaadin.ui.Label;
 @Configurable
 public class StudyDetailComponent extends GridLayout implements InitializingBean, InternationalizableComponent {
 
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(StudyDetailComponent.class);
     private static final long serialVersionUID = 1738426765643928293L;
 
     private Label lblName;
@@ -50,16 +55,13 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyDetailComponent(StudyDataManager studyDataManager, int studyId) {
-
+    public StudyDetailComponent(StudyDataManager studyDataManager, int studyId){
     	this.studyDataManager = studyDataManager;
     	this.studyId = studyId;
-
     }
     
     @Override
-    public void afterPropertiesSet() {
-    	
+    public void afterPropertiesSet() throws Exception{
         setRows(7);
         setColumns(3);
         setSpacing(true);
@@ -72,27 +74,22 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         lblStartDate = new Label(messageSource.getMessage(Message.start_date_label)); // "Start Date"
         lblEndDate = new Label(messageSource.getMessage(Message.end_date_label)); // "End Date"
         
-
-
         // get Study Detail
-
         Study study;
-        
-		try {
-			
-			study = studyDataManager.getStudyByID(studyId);
 
-	        studyName = new Label(study.getName());
-	        studyTitle = new Label(study.getTitle());
-	        studyObjective = new Label(study.getObjective());
-	        studyType = new Label(study.getType());
-	        studyStartDate = new Label(String.valueOf(study.getStartDate()));
-	        studyEndDate = new Label(String.valueOf(study.getEndDate()));
-        
-		} catch (QueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try {
+            study = studyDataManager.getStudyByID(studyId);
+
+            studyName = new Label(study.getName());
+            studyTitle = new Label(study.getTitle());
+            studyObjective = new Label(study.getObjective());
+            studyType = new Label(study.getType());
+            studyStartDate = new Label(String.valueOf(study.getStartDate()));
+            studyEndDate = new Label(String.valueOf(study.getEndDate()));
+
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_in_getting_study_detail_by_id, Message.empty_string);
+        }
 		
         addComponent(lblName, 1, 1);
         addComponent(lblTitle, 1, 2);
@@ -107,28 +104,22 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         addComponent(studyType, 2, 4);
         addComponent(studyStartDate, 2, 5);
         addComponent(studyEndDate, 2, 6);
-    	
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-		
-/*		messageSource.setCaption(lblName, Message.name_label);
-		messageSource.setCaption(lblTitle, Message.title_label);
-		messageSource.setCaption(lblObjective, Message.objective_label);
-		messageSource.setCaption(lblType, Message.type_label);
-		messageSource.setCaption(lblStartDate, Message.start_date_label);
-		messageSource.setCaption(lblEndDate, Message.end_date_label);*/
-
-	}
+    @Override
+    public void updateLabels() {
+/*        messageSource.setCaption(lblName, Message.name_label);
+        messageSource.setCaption(lblTitle, Message.title_label);
+        messageSource.setCaption(lblObjective, Message.objective_label);
+        messageSource.setCaption(lblType, Message.type_label);
+        messageSource.setCaption(lblStartDate, Message.start_date_label);
+        messageSource.setCaption(lblEndDate, Message.end_date_label);*/
+    }
 
 }

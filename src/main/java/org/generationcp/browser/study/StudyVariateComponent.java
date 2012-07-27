@@ -16,9 +16,10 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -28,7 +29,9 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class StudyVariateComponent extends Table implements InitializingBean, InternationalizableComponent {
-
+    
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(StudyVariateComponent.class);
     private static final long serialVersionUID = -3225098517785018744L;
     
     private StudyDataManager studyDataManager;
@@ -45,69 +48,44 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId)
-            throws QueryException {
-
+    public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {
     	this.studyDataManager = studyDataManager;
     	this.traitDataManager = traitDataManager;
     	this.studyId = studyId;
-    	
     }
     
 
     @Override
-    public void afterPropertiesSet() {
-    	
+    public void afterPropertiesSet() throws Exception{
         StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
         IndexedContainer dataStudyFactor;
         
-		try {
-			
-			dataStudyFactor = dataIndexContainer.getStudyVariate();
+        dataStudyFactor = dataIndexContainer.getStudyVariate();
+        this.setContainerDataSource(dataStudyFactor);
 
-			this.setContainerDataSource(dataStudyFactor);
-        
-		} catch (QueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
         setSelectable(true);
         setMultiSelect(false);
         setImmediate(true); // react at once when something is
         setSizeFull();
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        // setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY",
-        // "SCALE", "METHOD", "DATATYPE" });
-        setColumnHeaders(new String[] {
-        		NAME,
-                DESC,
-                PROP,
-                SCA,
-                METH,
-                DTYPE });
-    	
+        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE });    	
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
-	@Override
-	public void updateLabels() {
-		
+
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, "NAME", Message.name_header);
         messageSource.setColumnHeader(this, "DESCRIPTION", Message.description_header);
         messageSource.setColumnHeader(this, "PROPERTY", Message.property_header);
         messageSource.setColumnHeader(this, "SCALE", Message.scale_header);
         messageSource.setColumnHeader(this, "METHOD", Message.method_header);
         messageSource.setColumnHeader(this, "DATATYPE", Message.datatype_header);
-        
-	}
+    }
 
 }

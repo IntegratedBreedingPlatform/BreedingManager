@@ -13,12 +13,17 @@
 package org.generationcp.browser.study.listeners;
 
 import org.generationcp.browser.study.StudyAccordionMenu;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
 public class StudySelectedTabChangeListener implements TabSheet.SelectedTabChangeListener{
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(StudySelectedTabChangeListener.class);
     private static final long serialVersionUID = -1276034489275080024L;
 
     private Object source;
@@ -31,8 +36,13 @@ public class StudySelectedTabChangeListener implements TabSheet.SelectedTabChang
     public void selectedTabChange(SelectedTabChangeEvent event) {
 
         if (source instanceof StudyAccordionMenu) {
-            ((StudyAccordionMenu) source).selectedTabChangeAction();
-
+            try {
+                ((StudyAccordionMenu) source).selectedTabChangeAction();
+            } catch (InternationalizableException e) {
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+            }
         }
     }
 

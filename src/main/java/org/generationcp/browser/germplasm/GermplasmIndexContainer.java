@@ -14,7 +14,7 @@ package org.generationcp.browser.germplasm;
 
 import java.util.ArrayList;
 
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public final class GermplasmIndexContainer{
         this.qQuery = qQuery;
     }
 
-    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance) throws QueryException {
+    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance) throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties - Germplasm Search Result
@@ -163,11 +163,10 @@ public final class GermplasmIndexContainer{
         Item item = container.getItem(itemId);
         item.getItemProperty(GERMPLASM_GID).setValue(gid);
         item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-
     }
     
     
-    public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws QueryException {
+    public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
@@ -186,15 +185,12 @@ public final class GermplasmIndexContainer{
         return container;
     }
 
-
-
     private static void addGermplasmListContainer(Container container, String name, String date, String description) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
         item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
         item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
-
     }
 
 }

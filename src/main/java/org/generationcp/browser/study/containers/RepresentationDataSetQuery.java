@@ -92,7 +92,6 @@ public class RepresentationDataSetQuery implements Query{
         List<Integer> ounitids = new ArrayList<Integer>();
 
         try {
-
             ounitids = dataManager.getOunitIDsByRepresentationId(representationId, start, numOfRows);
         } catch (QueryException ex) {
             // Log error in log file
@@ -107,7 +106,6 @@ public class RepresentationDataSetQuery implements Query{
             try {
                 charLevels = dataManager.getCharacterLevelValuesByOunitIdList(ounitids);
             } catch (QueryException ex) {
-                // Log error in log file
                 LOG.error("Error with getting character level values" + "\n" + ex.toString());
                 charLevels = new ArrayList<CharacterLevelElement>();
             }
@@ -131,7 +129,6 @@ public class RepresentationDataSetQuery implements Query{
             try {
                 numericLevels = dataManager.getNumericLevelValuesByOunitIdList(ounitids);
             } catch (QueryException ex) {
-                // Log error in log file
                 LOG.error("Error with getting numeric level values" + "\n" + ex.toString());
                 numericLevels = new ArrayList<NumericLevelElement>();
             }
@@ -145,7 +142,6 @@ public class RepresentationDataSetQuery implements Query{
                     item = new PropertysetItem();
                     itemMap.put(numericLevel.getOunitId(), item);
                 }
-
                 item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
             }
 
@@ -155,7 +151,6 @@ public class RepresentationDataSetQuery implements Query{
             try {
                 characterDatas = dataManager.getCharacterDataValuesByOunitIdList(ounitids);
             } catch (QueryException ex) {
-                // Log error in log file
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
                 characterDatas = new ArrayList<CharacterDataElement>();
             }
@@ -179,7 +174,6 @@ public class RepresentationDataSetQuery implements Query{
             try {
                 numericDatas = dataManager.getNumericDataValuesByOunitIdList(ounitids);
             } catch (QueryException ex) {
-                // Log error in log file
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
                 numericDatas = new ArrayList<NumericDataElement>();
             }
@@ -216,7 +210,6 @@ public class RepresentationDataSetQuery implements Query{
         try {
             size = dataManager.countOunitIDsByRepresentationId(representationId).intValue();
         } catch (QueryException ex) {
-            // Log error in log file
             LOG.error("Error with getting number of ounitids for representation: " + representationId + "\n" + ex.toString());
         }
         return size;

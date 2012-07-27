@@ -19,9 +19,11 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.ManagerFactory;
@@ -69,10 +71,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private ManagerFactory managerFactory;
     
     public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database) {
-
         this.studyBrowserMainLayout = studyBrowserMainLayout;
         this.database = database;
-
     }
 
     // Called by StudyButtonClickListener
@@ -88,13 +88,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         try {
             studyParent = this.studyDataManager.getAllTopLevelStudies(0, 100, database);
-        } catch (QueryException ex) {
-            // Put in an application log
-            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
-
-            // TODO an error window in the UI should pop-up for this
-            // System.out.println(ex);
-            ex.printStackTrace();
+        } catch (QueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            if (getWindow() != null){
+                MessageNotifier.showWarning(getWindow(), 
+                        messageSource.getMessage(Message.error_database),
+                    messageSource.getMessage(Message.error_in_getting_top_level_studies));
+            }
             studyParent = new ArrayList<Study>();
         }
 
@@ -112,35 +113,31 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     // Called by StudyItemClickListener
-    public void studyTreeItemClickAction(int studyId) {
+    public void studyTreeItemClickAction(int studyId) throws InternationalizableException{
         try {
             if (!hasChildStudy(studyId)) {
                 createStudyInfoTab(studyId);
             }
         } catch (NumberFormatException e) {
-            // Log into log file
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
-        } catch (QueryException e) {
-            // Log into log file
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.error_invalid_format),
+                    messageSource.getMessage(Message.error_in_number_format));
         }
-
     }
 
-    public void addStudyNode(int parentStudyId) {
+    public void addStudyNode(int parentStudyId) throws InternationalizableException{
         List<Study> studyChildren = new ArrayList<Study>();
 
         try {
             studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 500);
-        } catch (QueryException ex) {
-            // Put in an application log
-            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
-
-            // TODO an error window in the UI should pop-up for this
-            // System.out.println(ex);
-            ex.printStackTrace();
+        } catch (QueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.error_database), 
+                    messageSource.getMessage(Message.error_in_getting_studies_by_parent_folder_id));
             studyChildren = new ArrayList<Study>();
         }
 
@@ -154,11 +151,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             } else {
                 studyTree.setChildrenAllowed(sc.getId(), false);
             }
-
         }
     }
 
-    private void createStudyInfoTab(int studyId) throws QueryException {
+    private void createStudyInfoTab(int studyId) throws InternationalizableException {
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
@@ -174,11 +170,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
             tabSheetStudy.setSelectedTab(tab.getComponent());
         }
-
     }
 
-    private String getStudyName(int studyId) throws QueryException {
-        return this.studyDataManager.getStudyByID(studyId).getName();
+    private String getStudyName(int studyId) throws InternationalizableException {
+        try {
+            return this.studyDataManager.getStudyByID(studyId).getName();
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_detail_by_id);
+        }
     }
 
     private boolean hasChildStudy(int studyId) {
@@ -187,13 +186,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         try {
             studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
-        } catch (QueryException ex) {
-            // Put in an application log
-            LOG.error(ex.toString() + "\n" + ex.getStackTrace());
-
-            // TODO an error window in the UI should pop-up for this
-            // System.out.println(ex);
-            ex.printStackTrace();
+        } catch (QueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.error_database), 
+                    messageSource.getMessage(Message.error_in_getting_studies_by_parent_folder_id));
             studyChildren = new ArrayList<Study>();
         }
         if (!studyChildren.isEmpty()) {
@@ -202,11 +199,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         return false;
     }
     
-
     @Override
     public void afterPropertiesSet() {
-    	
-        setSpacing(true);
+    	setSpacing(true);
         setMargin(true);
         
         this.studyDataManager = managerFactory.getStudyDataManager();
@@ -237,22 +232,17 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         });
 
         addComponent(studyTree);
-    	
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
     
-	@Override
-	public void updateLabels() {
-		
-		messageSource.setCaption(refreshButton, Message.refresh_label);
-        
-	}
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(refreshButton, Message.refresh_label);
+    }
 
 }

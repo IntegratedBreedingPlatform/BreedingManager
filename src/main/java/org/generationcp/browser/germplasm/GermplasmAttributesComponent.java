@@ -25,9 +25,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class GermplasmAttributesComponent extends Table implements InitializingBean, InternationalizableComponent {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     
     private static final String TYPE = "Type";
@@ -44,18 +41,12 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-
-
     	this.dataIndexContainer = dataIndexContainer;
-    	
     	this.gDetailModel = gDetailModel;
-    	
     }
-    
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
+    @Override
+    public void afterPropertiesSet() throws Exception {
         IndexedContainer dataSourceAttribute = dataIndexContainer.getGermplasAttribute(gDetailModel);
         this.setContainerDataSource(dataSourceAttribute);
         setSelectable(true);
@@ -64,31 +55,22 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
         setImmediate(true); // react at once when something is
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] {
-        		TYPE,
-        		NAME,
-        		DATE,
-        		LOCATION,
-        		TYPE_DESC});
-		
-	}
-    
+        setColumnHeaders(new String[] { TYPE, NAME, DATE, LOCATION, TYPE_DESC });
+    }
+
     @Override
     public void attach() {
         super.attach();
-        
         updateLabels();
     }
 
-	@Override
-	public void updateLabels() {
-	        
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, TYPE, Message.type_label);
         messageSource.setColumnHeader(this, NAME, Message.name_label);
         messageSource.setColumnHeader(this, DATE, Message.date_label);
         messageSource.setColumnHeader(this, LOCATION, Message.location_label);
         messageSource.setColumnHeader(this, TYPE_DESC, Message.typedesc_label);
-	     
-	}
-	
+    }
+
 }

@@ -24,10 +24,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
-@SuppressWarnings("serial")
 @Configurable
 public class StudyBrowserMain extends HorizontalLayout implements InitializingBean, InternationalizableComponent  {
 
+    private static final long serialVersionUID = 1L;
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetStudyDatabaseInstance;
@@ -41,7 +41,6 @@ public class StudyBrowserMain extends HorizontalLayout implements InitializingBe
     
     @Override
     public void afterPropertiesSet() {
-    	
         setSizeFull();
         setSpacing(true);
         setMargin(true);
@@ -60,24 +59,18 @@ public class StudyBrowserMain extends HorizontalLayout implements InitializingBe
 
         addComponent(tabSheetStudyDatabaseInstance);
         setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
-    	
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
     
-
-	@Override
-	public void updateLabels() {
-		
-		messageSource.setCaption(tabLocalInstance, Message.db_local_text);
-		messageSource.setCaption(tabCentralInstance, Message.db_central_text);
-        
-	}
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(tabLocalInstance, Message.db_local_text);
+        messageSource.setCaption(tabCentralInstance, Message.db_central_text);
+    }
     
 }

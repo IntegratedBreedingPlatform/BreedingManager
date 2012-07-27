@@ -15,7 +15,6 @@ package org.generationcp.browser.germplasm;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -26,9 +25,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class GermplasmListComponent extends Table implements InitializingBean, InternationalizableComponent {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     
 
@@ -44,27 +40,15 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-
-	
-
     public GermplasmListComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-
     	this.dataIndexContainer = dataIndexContainer;
     	this.gDetailModel=gDetailModel;
-    	
     }
-    
 
-	@Override
-    public void afterPropertiesSet() {
-    	
-        IndexedContainer dataSourceNames=null;;
-		try {
-			dataSourceNames = dataIndexContainer.getGermplasmListNames(gDetailModel);
-		} catch (QueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        IndexedContainer dataSourceNames = null;
+        dataSourceNames = dataIndexContainer.getGermplasmListNames(gDetailModel);
         this.setContainerDataSource(dataSourceNames);
         setSelectable(true);
         setMultiSelect(false);
@@ -72,30 +56,20 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] {
-        		NAME,
-        		DATE,
-        		DESCRIPTION
-        		});
-
+        setColumnHeaders(new String[] { NAME, DATE, DESCRIPTION });
     }
-    
+
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, NAME, Message.name_header);
         messageSource.setColumnHeader(this, DATE, Message.date_header);
         messageSource.setColumnHeader(this, DESCRIPTION, Message.description_header);
-        
-	}
+    }
 
 }

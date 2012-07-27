@@ -18,8 +18,10 @@ import java.util.List;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.RepresentationDatasetQueryFactory;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Factor;
@@ -65,22 +67,17 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private SimpleResourceBundleMessageSource messageSource;
     
     public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId) {
-
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.representationId = representationId;
         this.studyDataManager = studyDataManager;
-
     }
 
     // Called by StudyButtonClickListener
     public void exportToCSVAction() {
         CsvExport csvExport;
-        // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" +
-        // repIdHolder + "]";
-        
-        reportTitle = new StringBuffer();
-        
+        // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
+        reportTitle = new StringBuffer();        
         reportTitle.append(messageSource.getMessage(Message.report_title1_text)).append("[").append(studyIdHolder)
         		   .append("]-").append(messageSource.getMessage(Message.report_title2_text)).append("[").append(representationId).append("]-");
         
@@ -92,11 +89,10 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         csvExport.excludeCollapsedColumns();
         csvExport.setMimeType(TableExport.CSV_MIME_TYPE);
         csvExport.export();
-
     }
     
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception{
     	
     	 // set the column header ids
         List<Factor> factors = new ArrayList<Factor>();
@@ -105,19 +101,30 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         try {
             factors = studyDataManager.getFactorsByRepresentationId(representationId);
-        } catch (QueryException ex) {
-            // Log into the log fie
-            LOG.error("Error with getting factors of representation: " + representationId + "\n" + ex.toString());
-            ex.printStackTrace();
+        } catch (QueryException e) {
+            LOG.error("Error in getting factors of representation: "
+                            + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
             factors = new ArrayList<Factor>();
+            if (getWindow() != null) {
+                MessageNotifier.showWarning(getWindow(), 
+                        messageSource.getMessage(Message.error_database), 
+                        messageSource.getMessage(Message.error_in_getting_factors_of_representation)  + " " + representationId); 
+            }
         }
 
         try {
             variates = studyDataManager.getVariatesByRepresentationId(representationId);
-        } catch (QueryException ex) {
-            LOG.error("Error with getting variates of representation: " + representationId, ex);
-            ex.printStackTrace();
+        } catch (QueryException e) {
+            LOG.error("Error in getting variates of representation: " 
+                            + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
             variates = new ArrayList<Variate>();
+            if (getWindow() != null) {
+                MessageNotifier.showWarning(getWindow(), 
+                        messageSource.getMessage(Message.error_database), 
+                        messageSource.getMessage(Message.error_in_getting_variates_of_representation)  + " " + representationId);
+            }
         }
 
         for (Factor factor : factors) {
@@ -134,25 +141,19 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManager, representationId, columnIds);
         LazyQueryContainer datasetContainer = new LazyQueryContainer(factory, false, 50);
 
-        // add the column ids to the LazyQueryContainer
-        // tells the container the columns to display for the Table
+        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
         for (String columnId : columnIds) {
             datasetContainer.addContainerProperty(columnId, String.class, null);
         }
 
-        datasetContainer.getQueryView().getItem(0); // initialize the first
-        // batch of data to be
-        // displayed
+        datasetContainer.getQueryView().getItem(0); // initialize the first batch of data to be displayed
 
-        // create the Vaadin Table to display the dataset, pass the container
-        // object created
+        // create the Vaadin Table to display the dataset, pass the container object created
         datasetTable = new Table("", datasetContainer);
         datasetTable.setColumnCollapsingAllowed(true);
         datasetTable.setColumnReorderingAllowed(true);
-        datasetTable.setPageLength(15); // number of rows to display in the
-        // Table
-        datasetTable.setSizeFull(); // to make scrollbars appear on the Table
-        // component
+        datasetTable.setPageLength(15); // number of rows to display in the Table
+        datasetTable.setSizeFull(); // to make scrollbars appear on the Table component
 
         // set column headers for the Table
         for (Factor factor : factors) {
@@ -176,23 +177,17 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         exportCsvButton.addListener(new StudyButtonClickListener(this));
         addComponent(exportCsvButton);
-
     }
     
     @Override
-    public void attach() {
-    	
+    public void attach() {    	
         super.attach();
-        
         updateLabels();
     }
     
-
-	@Override
-	public void updateLabels() {
-
-		 messageSource.setCaption(exportCsvButton, Message.export_to_CSV_label);
-		
-	}
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(exportCsvButton, Message.export_to_CSV_label);
+    }
     
 }

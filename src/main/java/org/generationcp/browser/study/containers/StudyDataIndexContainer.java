@@ -14,6 +14,8 @@ package org.generationcp.browser.study.containers;
 
 import java.util.ArrayList;
 
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
@@ -43,35 +45,39 @@ public class StudyDataIndexContainer{
     private int studyId;
 
     public StudyDataIndexContainer(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {
-
         this.studyDataManager = studyDataManager;
         this.traitDataManager = traitDataManager;
         this.studyId = studyId;
     }
 
-    public IndexedContainer getStudyFactor() throws QueryException {
-        IndexedContainer container = new IndexedContainer();
+    public IndexedContainer getStudyFactor() throws InternationalizableException {
+        try {
+            IndexedContainer container = new IndexedContainer();
 
-        // Create the container properties
-        container.addContainerProperty(FACTOR_NAME, String.class, "");
-        container.addContainerProperty(DESCRIPTION, String.class, "");
-        container.addContainerProperty(PROPERTY_NAME, String.class, "");
-        container.addContainerProperty(SCALE_NAME, String.class, "");
-        container.addContainerProperty(METHOD_NAME, String.class, "");
-        container.addContainerProperty(DATATYPE, String.class, "");
+            // Create the container properties
+            container.addContainerProperty(FACTOR_NAME, String.class, "");
+            container.addContainerProperty(DESCRIPTION, String.class, "");
+            container.addContainerProperty(PROPERTY_NAME, String.class, "");
+            container.addContainerProperty(SCALE_NAME, String.class, "");
+            container.addContainerProperty(METHOD_NAME, String.class, "");
+            container.addContainerProperty(DATATYPE, String.class, "");
 
-        ArrayList<Factor> query = (ArrayList<Factor>) studyDataManager.getFactorsByStudyID(studyId);
+            ArrayList<Factor> query = (ArrayList<Factor>) studyDataManager.getFactorsByStudyID(studyId);
 
-        for (Factor f : query) {
+            for (Factor f : query) {
 
-            String description = getFactorDescription(f.getTraitId());
-            String propertyName = getProperty(f.getTraitId());
-            String scaleName = getScaleName(f.getScaleId());
-            String methodName = getMethodName(f.getMethodId());
+                String description = getFactorDescription(f.getTraitId());
+                String propertyName = getProperty(f.getTraitId());
+                String scaleName = getScaleName(f.getScaleId());
+                String methodName = getMethodName(f.getMethodId());
 
-            addFactorData(container, f.getName(), description, propertyName, scaleName, methodName, f.getDataType());
+                addFactorData(container, f.getName(), description, propertyName, scaleName, methodName, f.getDataType());
+            }
+            return container;
+
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_factor);
         }
-        return container;
     }
 
     private static void addFactorData(Container container, String factorName, String description, String propertyName, String scale,
@@ -84,32 +90,36 @@ public class StudyDataIndexContainer{
         item.getItemProperty(SCALE_NAME).setValue(scale);
         item.getItemProperty(METHOD_NAME).setValue(method);
         item.getItemProperty(DATATYPE).setValue(datatype);
-
     }
 
-    public IndexedContainer getStudyVariate() throws QueryException {
-        IndexedContainer container = new IndexedContainer();
+    public IndexedContainer getStudyVariate() throws InternationalizableException {
+        try {
+            IndexedContainer container = new IndexedContainer();
 
-        // Create the container properties
-        container.addContainerProperty(VARIATE_NAME, String.class, "");
-        container.addContainerProperty(DESCRIPTION, String.class, "");
-        container.addContainerProperty(PROPERTY_NAME, String.class, "");
-        container.addContainerProperty(SCALE_NAME, String.class, "");
-        container.addContainerProperty(METHOD_NAME, String.class, "");
-        container.addContainerProperty(DATATYPE, String.class, "");
+            // Create the container properties
+            container.addContainerProperty(VARIATE_NAME, String.class, "");
+            container.addContainerProperty(DESCRIPTION, String.class, "");
+            container.addContainerProperty(PROPERTY_NAME, String.class, "");
+            container.addContainerProperty(SCALE_NAME, String.class, "");
+            container.addContainerProperty(METHOD_NAME, String.class, "");
+            container.addContainerProperty(DATATYPE, String.class, "");
 
-        ArrayList<Variate> query = (ArrayList<Variate>) studyDataManager.getVariatesByStudyID(studyId);
+            ArrayList<Variate> query;
+            query = (ArrayList<Variate>) studyDataManager.getVariatesByStudyID(studyId);
 
-        for (Variate v : query) {
+            for (Variate v : query) {
 
-            String description = getFactorDescription(v.getTraitId());
-            String propertyName = getProperty(v.getTraitId());
-            String scaleName = getScaleName(v.getScaleId());
-            String methodName = getMethodName(v.getMethodId());
+                String description = getFactorDescription(v.getTraitId());
+                String propertyName = getProperty(v.getTraitId());
+                String scaleName = getScaleName(v.getScaleId());
+                String methodName = getMethodName(v.getMethodId());
 
-            addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
+                addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
+            }
+            return container;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_variate);
         }
-        return container;
     }
 
     private static void addVariateData(Container container, String variateName, String description, String propertyName, String scale,
@@ -122,7 +132,6 @@ public class StudyDataIndexContainer{
         item.getItemProperty(SCALE_NAME).setValue(scale);
         item.getItemProperty(METHOD_NAME).setValue(method);
         item.getItemProperty(DATATYPE).setValue(datatype);
-
     }
 
     private String getFactorDescription(int traitId) {

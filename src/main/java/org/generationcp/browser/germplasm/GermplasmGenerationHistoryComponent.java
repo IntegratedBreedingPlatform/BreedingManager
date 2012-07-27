@@ -25,9 +25,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class GermplasmGenerationHistoryComponent extends Table implements InitializingBean, InternationalizableComponent {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     
     private static final String  GID = "GID";
@@ -40,15 +37,12 @@ public class GermplasmGenerationHistoryComponent extends Table implements Initia
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmGenerationHistoryComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-
     	this.dataIndexContainer = dataIndexContainer;
     	this.gDetailModel = gDetailModel;
-
     }
-    
-	@Override
-	public void afterPropertiesSet() throws Exception {
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
         IndexedContainer dataSourceGenerationHistory = dataIndexContainer.getGermplasmGenerationHistory(gDetailModel);
 
         this.setContainerDataSource(dataSourceGenerationHistory);
@@ -58,29 +52,19 @@ public class GermplasmGenerationHistoryComponent extends Table implements Initia
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] {
-        		GID,
-                PREF_NAME});
-		
-	}
-    
+        setColumnHeaders(new String[] { GID, PREF_NAME });
+    }
+
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-		
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, GID, Message.gid_label);
         messageSource.setColumnHeader(this, PREF_NAME, Message.prefname_label);
-
-		
-	}
-
+    }
 
 }

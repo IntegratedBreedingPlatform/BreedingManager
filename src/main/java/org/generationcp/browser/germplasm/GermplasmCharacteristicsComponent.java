@@ -25,38 +25,32 @@ import com.vaadin.ui.Label;
 @Configurable
 public class GermplasmCharacteristicsComponent extends GridLayout implements InitializingBean, InternationalizableComponent {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
-	private Label lblGID;
-	private Label lblPrefName;
-	private Label lblLocation;
-	private Label lblGermplasmMethod;
-	private Label lblCreationDate;
-	private Label lblReference;
-	
-	private Label gid;
-	private Label prefName;
-	private Label location;
-	private Label germplasmMethod;
-	private Label creationDate;
-	private Label reference;
-	
-	private GermplasmDetailModel gDetailModel;
+    private Label lblGID;
+    private Label lblPrefName;
+    private Label lblLocation;
+    private Label lblGermplasmMethod;
+    private Label lblCreationDate;
+    private Label lblReference;
+
+    private Label gid;
+    private Label prefName;
+    private Label location;
+    private Label germplasmMethod;
+    private Label creationDate;
+    private Label reference;
+
+    private GermplasmDetailModel gDetailModel;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel) {
-
     	this.gDetailModel = gDetailModel;
-    	
     }
     
     @Override
     public void afterPropertiesSet() {
-    	
         setRows(7);
         setColumns(3);
         setSpacing(true);
@@ -89,28 +83,22 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         addComponent(germplasmMethod, 2, 4);
         addComponent(creationDate, 2, 5);
         addComponent(reference, 2, 6);
-        
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-		
-/*		messageSource.setCaption(lblGID, Message.gid_label);
-		messageSource.setCaption(lblPrefName, Message.prefname_label);
-		messageSource.setCaption(lblLocation, Message.location_label);
-		messageSource.setCaption(lblGermplasmMethod, Message.method_label);
-		messageSource.setCaption(lblCreationDate, Message.creation_date_label);
-		messageSource.setCaption(lblReference, Message.reference_label);*/
-		
-	}
+    @Override
+    public void updateLabels() {
+/*        messageSource.setCaption(lblGID, Message.gid_label);
+        messageSource.setCaption(lblPrefName, Message.prefname_label);
+        messageSource.setCaption(lblLocation, Message.location_label);
+        messageSource.setCaption(lblGermplasmMethod, Message.method_label);
+        messageSource.setCaption(lblCreationDate, Message.creation_date_label);
+        messageSource.setCaption(lblReference, Message.reference_label);*/
+    }
 
 }

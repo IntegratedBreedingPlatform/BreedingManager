@@ -29,11 +29,11 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class SearchResultTable extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
-	private static final String GID = "GID";
-	private static final String NAMES = "NAMES";
-	private static final String METHOD = "METHOD";
-	private static final String LOCATION = "LOCATION";
-	
+    private static final String GID = "GID";
+    private static final String NAMES = "NAMES";
+    private static final String METHOD = "METHOD";
+    private static final String LOCATION = "LOCATION";
+
     private Table resultTable;
     private IndexedContainer dataSource;
     
@@ -41,9 +41,7 @@ public class SearchResultTable extends VerticalLayout implements InitializingBea
     private SimpleResourceBundleMessageSource messageSource;
 
     public SearchResultTable(IndexedContainer dataSource) {
-
         this.dataSource = dataSource;
-        
     }
 
     public Table getResultTable() {
@@ -80,23 +78,17 @@ public class SearchResultTable extends VerticalLayout implements InitializingBea
     
     @Override
     public void afterPropertiesSet() {
-    	
-
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
+    @Override
+    public void updateLabels() {
 
-        
-	}
+    }
 
 }

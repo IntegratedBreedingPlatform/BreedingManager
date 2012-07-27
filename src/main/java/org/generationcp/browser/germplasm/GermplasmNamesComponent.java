@@ -25,9 +25,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class GermplasmNamesComponent extends Table implements InitializingBean, InternationalizableComponent {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     
     private static final String TYPE = "Type";
@@ -44,16 +41,12 @@ public class GermplasmNamesComponent extends Table implements InitializingBean, 
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmNamesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-
     	this.dataIndexContainer = dataIndexContainer;
-        
     	this.gDetailModel = gDetailModel;
-    	
     }
     
     @Override
     public void afterPropertiesSet() {
-    	
         IndexedContainer dataSourceNames = dataIndexContainer.getGermplasmNames(gDetailModel);
         this.setContainerDataSource(dataSourceNames);
         setSelectable(true);
@@ -62,33 +55,22 @@ public class GermplasmNamesComponent extends Table implements InitializingBean, 
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] {
-        		TYPE,
-        		NAME,
-        		DATE,
-        		LOCATION,
-        		TYPE_DESC});
-
+        setColumnHeaders(new String[] { TYPE, NAME, DATE, LOCATION, TYPE_DESC });
     }
     
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
     
-
-	@Override
-	public void updateLabels() {
-
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, TYPE, Message.type_label);
         messageSource.setColumnHeader(this, NAME, Message.name_label);
         messageSource.setColumnHeader(this, DATE, Message.date_label);
         messageSource.setColumnHeader(this, LOCATION, Message.location_label);
         messageSource.setColumnHeader(this, TYPE_DESC, Message.typedesc_label);
-        
-	}
+    }
 
 }

@@ -16,6 +16,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.application.Message;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.FindGermplasmByNameModes;
@@ -37,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class GermplasmQueries implements Serializable, InitializingBean {
+public class GermplasmQueries implements Serializable, InitializingBean{
 
     private GermplasmSearchResultModel germplasmResultByGID;
     private GermplasmDetailModel germplasmDetail;
@@ -48,47 +50,51 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 
     @Autowired
     private ManagerFactory managerFactory;
-    
+
     private GermplasmDataManager germplasmDataManager;
     private GermplasmListManager germplasmListManager;
 
     public GermplasmQueries() {
-        
+
     }
 
     public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefName(String searchBy, String searchString,
-            Database databaseInstance) throws QueryException {
-        List<Germplasm> germplasmList;
-        int count;
+            Database databaseInstance) throws InternationalizableException {
+        try {
+            List<Germplasm> germplasmList;
+            int count;
 
-        if (searchString.contains("%")) {
-            count = 500;
-            germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.LIKE,
-                    null, null, databaseInstance);
-        } else {
-            count = germplasmDataManager.countGermplasmByName(searchString, FindGermplasmByNameModes.NORMAL, Operation.EQUAL, null, null,
-                    databaseInstance);
-            germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL, Operation.EQUAL,
-                    null, null, databaseInstance);
-        }
-        ArrayList<GermplasmSearchResultModel> toReturn = new ArrayList<GermplasmSearchResultModel>();
-        for (Germplasm g : germplasmList) {
-            Germplasm gData = g;
-            GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
-            toReturn.add(setGermplasmSearchResult(gResult, gData));
+            if (searchString.contains("%")) {
+                count = 500;
+                germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL,
+                        Operation.LIKE, null, null, databaseInstance);
+            } else {
+                count = germplasmDataManager.countGermplasmByName(searchString, FindGermplasmByNameModes.NORMAL, Operation.EQUAL, null,
+                        null, databaseInstance);
+                germplasmList = germplasmDataManager.findGermplasmByName(searchString, 0, count, FindGermplasmByNameModes.NORMAL,
+                        Operation.EQUAL, null, null, databaseInstance);
+            }
+            ArrayList<GermplasmSearchResultModel> toReturn = new ArrayList<GermplasmSearchResultModel>();
+            for (Germplasm g : germplasmList) {
+                Germplasm gData = g;
+                GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+                toReturn.add(setGermplasmSearchResult(gResult, gData));
 
+            }
+            return toReturn;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_result_by_preferred_name);
         }
-        return toReturn;
     }
 
-    public GermplasmSearchResultModel getGermplasmResultByGID(String gid) throws QueryException {
-
+    public GermplasmSearchResultModel getGermplasmResultByGID(String gid) throws InternationalizableException {
         Germplasm gData = germplasmDataManager.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
         GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
         return this.germplasmResultByGID = setGermplasmSearchResult(gResult, gData);
     }
 
-    private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData) throws QueryException {
+    private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
+            throws InternationalizableException {
         gResult.setGid(gData.getGid());
         gResult.setNames(getGermplasmNames(gData.getGid()));
 
@@ -109,113 +115,136 @@ public class GermplasmQueries implements Serializable, InitializingBean {
         return gResult;
     }
 
-    public GermplasmDetailModel getGermplasmDetails(int gid) throws QueryException {
+    public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
+        try {
+            germplasmDetail = new GermplasmDetailModel();
+            Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
+            Name name = germplasmDataManager.getPreferredNameByGID(gid);
 
-        germplasmDetail = new GermplasmDetailModel();
-        Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
-        Name name = germplasmDataManager.getPreferredNameByGID(gid);
+            germplasmDetail.setGid(g.getGid());
+            germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
+            germplasmDetail.setGermplasmPreferredName(name.getNval());
+            germplasmDetail.setGermplasmCreationDate(String.valueOf(name.getNdate()));
+            germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
+            germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
+            germplasmDetail.setReference(getReference(g.getReferenceId()));
+            germplasmDetail.setAttributes(getAttributes(g.getGid()));
+            germplasmDetail.setNames(getNames(g.getGid()));
+            germplasmDetail.setGenerationhistory(getGenerationHistory(g.getGid()));
 
-        germplasmDetail.setGid(g.getGid());
-        germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
-        germplasmDetail.setGermplasmPreferredName(name.getNval());
-        germplasmDetail.setGermplasmCreationDate(String.valueOf(name.getNdate()));
-        germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
-        germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
-        germplasmDetail.setReference(getReference(g.getReferenceId()));
-        germplasmDetail.setAttributes(getAttributes(g.getGid()));
-        germplasmDetail.setNames(getNames(g.getGid()));
-        germplasmDetail.setGenerationhistory(getGenerationHistory(g.getGid()));
-
-        return germplasmDetail;
+            return germplasmDetail;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_details);
+        }
     }
 
-    private ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws QueryException {
-        ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
-        List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
-        generationHistoryList = germplasmDataManager.getGenerationHistory(new Integer(gid));
-        for (Germplasm g : generationHistoryList) {
-            GermplasmDetailModel genHistory = new GermplasmDetailModel();
-            genHistory.setGid(g.getGid());
-            genHistory.setGermplasmPreferredName(g.getPreferredName().getNval());
-            toreturn.add(genHistory);
+    private ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws InternationalizableException {
+        try {
+            ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
+            List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
+            generationHistoryList = germplasmDataManager.getGenerationHistory(new Integer(gid));
+            for (Germplasm g : generationHistoryList) {
+                GermplasmDetailModel genHistory = new GermplasmDetailModel();
+                genHistory.setGid(g.getGid());
+                genHistory.setGermplasmPreferredName(g.getPreferredName().getNval());
+                toreturn.add(genHistory);
+            }
+            return toreturn;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_generation_history);
         }
-        return toreturn;
     }
 
-    private ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws QueryException {
-        ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, null, null);
-        ArrayList<GermplasmNamesAttributesModel> germplasmNames = new ArrayList<GermplasmNamesAttributesModel>();
+    private ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws InternationalizableException {
+        try {
+            ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, null, null);
+            ArrayList<GermplasmNamesAttributesModel> germplasmNames = new ArrayList<GermplasmNamesAttributesModel>();
 
-        for (Name n : names) {
-            GermplasmNamesAttributesModel gNamesRow = new GermplasmNamesAttributesModel();
-            gNamesRow.setName(n.getNval());
-            gNamesRow.setLocation(getLocation(n.getLocationId()));
+            for (Name n : names) {
+                GermplasmNamesAttributesModel gNamesRow = new GermplasmNamesAttributesModel();
+                gNamesRow.setName(n.getNval());
+                gNamesRow.setLocation(getLocation(n.getLocationId()));
 
-            UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(n.getTypeId());
-            if (type != null) {
-                gNamesRow.setType(type.getFcode());
-                gNamesRow.setTypeDesc(type.getFname());
+                UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(n.getTypeId());
+                if (type != null) {
+                    gNamesRow.setType(type.getFcode());
+                    gNamesRow.setTypeDesc(type.getFname());
+                }
+
+                gNamesRow.setDate(n.getNdate().toString());
+                germplasmNames.add(gNamesRow);
             }
-
-            gNamesRow.setDate(n.getNdate().toString());
-            germplasmNames.add(gNamesRow);
+            return germplasmNames;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
         }
-        return germplasmNames;
     }
 
-    private ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws QueryException {
-        ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
-        ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
+    private ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws InternationalizableException {
+        try {
+            ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
+            ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
 
-        for (Attribute a : attr) {
-            GermplasmNamesAttributesModel gAttributeRow = new GermplasmNamesAttributesModel();
-            gAttributeRow.setName(a.getAval());
+            for (Attribute a : attr) {
+                GermplasmNamesAttributesModel gAttributeRow = new GermplasmNamesAttributesModel();
+                gAttributeRow.setName(a.getAval());
 
-            Location location = germplasmDataManager.getLocationByID(a.getLocationId());
-            if (location != null) {
-                gAttributeRow.setLocation(location.getLname());
+                Location location = germplasmDataManager.getLocationByID(a.getLocationId());
+                if (location != null) {
+                    gAttributeRow.setLocation(location.getLname());
+                }
+
+                UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
+                if (type != null) {
+                    gAttributeRow.setType(type.getFcode());
+                    gAttributeRow.setTypeDesc(type.getFname());
+                }
+
+                gAttributeRow.setDate(a.getAdate().toString());
+                germplasmAttributes.add(gAttributeRow);
             }
-
-            UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
-            if (type != null) {
-                gAttributeRow.setType(type.getFcode());
-                gAttributeRow.setTypeDesc(type.getFname());
-            }
-
-            gAttributeRow.setDate(a.getAdate().toString());
-            germplasmAttributes.add(gAttributeRow);
+            return germplasmAttributes;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_attributes_by_germplasm_id);
         }
-        return germplasmAttributes;
     }
 
-    private String getGermplasmPrefID(int gid) throws QueryException {
-        ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
-        String prefId = "";
-        for (Name n : names) {
-            if (n.getNstat() == 8) {
-                prefId = n.getNval();
-                break;
-            }
+    private String getGermplasmPrefID(int gid) throws InternationalizableException {
+        try {
+            ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
+            String prefId = "";
+            for (Name n : names) {
+                if (n.getNstat() == 8) {
+                    prefId = n.getNval();
+                    break;
+                }
 
+            }
+            return prefId;
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
         }
-        return prefId;
     }
 
-    private String getGermplasmNames(int gid) throws QueryException {
+    private String getGermplasmNames(int gid) throws InternationalizableException {
 
-        List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-        StringBuffer germplasmNames = new StringBuffer("");
-        int i = 0;
-        for (Name n : names) {
-            if (i < names.size() - 1) {
-                germplasmNames.append(n.getNval() + ",");
-            } else {
-                germplasmNames.append(n.getNval());
+        try {
+            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+            StringBuffer germplasmNames = new StringBuffer("");
+            int i = 0;
+            for (Name n : names) {
+                if (i < names.size() - 1) {
+                    germplasmNames.append(n.getNval() + ",");
+                } else {
+                    germplasmNames.append(n.getNval());
+                }
+                i++;
             }
-            i++;
-        }
 
-        return germplasmNames.toString();
+            return germplasmNames.toString();
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
+        }
     }
 
     private String getReference(int refId) {
@@ -233,28 +262,32 @@ public class GermplasmQueries implements Serializable, InitializingBean {
             Location x = germplasmDataManager.getLocationByID(locId);
             return x.getLname();
         } catch (Exception e) {
-            return "";
+            return ""; // TODO: Verify that this doesn't need ui error notification and really just returns ""
         }
     }
 
-    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws QueryException {
-        return germplasmDataManager.generatePedigreeTree(gid, i);
+    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws InternationalizableException {
+        try {
+            return germplasmDataManager.generatePedigreeTree(gid, i);
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_generating_pedigree_tree);
+        }
     }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
 
-		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
-		this.germplasmListManager=managerFactory.getGermplasmListManager();
-		
-	}
+    public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
+        int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
 
-	public List<GermplasmListData> getGermplasmListByGID(int gid) throws QueryException {
-		
-		int count =this.germplasmListManager.countGermplasmListDataByGID(gid);
+        try {
+            return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
+        } catch (QueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_by_id);
+        }
+    }
 
-		return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
-	
-	}
-
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.germplasmDataManager = managerFactory.getGermplasmDataManager();
+        this.germplasmListManager = managerFactory.getGermplasmListManager();
+    }
 }

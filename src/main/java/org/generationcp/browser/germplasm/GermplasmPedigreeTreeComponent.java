@@ -15,10 +15,10 @@ package org.generationcp.browser.germplasm;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmTreeExpandListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTreeNode;
 import org.slf4j.Logger;
@@ -37,26 +37,23 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class GermplasmPedigreeTreeComponent extends Tree implements InitializingBean, InternationalizableComponent{
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     private GermplasmPedigreeTree germplasmPedigreeTree;
     private GermplasmQueries qQuery;
     private VerticalLayout mainLayout;
     private TabSheet tabSheet;
     private GermplasmIndexContainer dataIndexContainer;
+    @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
-    
+
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmPedigreeTreeComponent(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
-            VerticalLayout mainLayout, TabSheet tabSheet) throws QueryException {
-
+            VerticalLayout mainLayout, TabSheet tabSheet) throws InternationalizableException {
 
         super();
-        
+
         this.mainLayout = mainLayout;
         this.tabSheet = tabSheet;
         this.qQuery = qQuery;
@@ -64,7 +61,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
 
         this.setSizeFull();
-        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1);
+        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1); // throws QueryException
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
 
@@ -107,19 +104,13 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         }
     }
 
-    public void pedigreeTreeExpandAction(int gid) {
-        try {
-            germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 2);
-        } catch (QueryException e) {
-            // Log the error
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
-        }
+    public void pedigreeTreeExpandAction(int gid) throws InternationalizableException {
+        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 2);
         addNode(germplasmPedigreeTree.getRoot(), 2);
 
     }
 
-    public void displayNewGermplasmDetailTab(int gid) throws QueryException {
+    public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
         VerticalLayout detailLayout = new VerticalLayout();
         detailLayout.setSpacing(true);
 
@@ -129,32 +120,30 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             tab.setClosable(true);
             tabSheet.setSelectedTab(detailLayout);
             mainLayout.addComponent(tabSheet);
+
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
             tabSheet.setSelectedTab(tab.getComponent());
         }
 
     }
-    
+
     @Override
     public void afterPropertiesSet() {
-    	
 
     }
-    
+
     @Override
     public void attach() {
-    	
+
         super.attach();
-        
+
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
+    @Override
+    public void updateLabels() {
 
-        
-	}
-    
+    }
+
 }

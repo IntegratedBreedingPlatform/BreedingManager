@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyValueChangedListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -43,6 +44,7 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class StudyEffectComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
+    @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(StudyEffectComponent.class);
     private static final long serialVersionUID = 116672292965099233L;
     
@@ -56,7 +58,6 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion) {
-
         this.studyInfoAccordion = accordion;
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
@@ -64,7 +65,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     }
 
     // called by StudyValueChangedListener.valueChange()
-    public void datasetListValueChangeAction(String datasetLabel) {
+    public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
         String[] parts = datasetLabel.split("-");
         Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.dataset_text), "").trim()); // "Dataset"
         String repName = parts[1].trim();
@@ -77,32 +78,25 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
         } else {
-            // open the representation dataset tab already
-            // exist if the user click the same
-            // representation dataset
+            // open the representation dataset tab already exist if the user click the same representation dataset
             for (int i = 3; i < studyInfoAccordion.getComponentCount(); i++) {
                 Tab tab = studyInfoAccordion.getTab(i);
                 if (tab.getCaption().equals(tabTitle)) {
                     studyInfoAccordion.setSelectedTab(tab.getComponent());
                     break;
-
                 }
             }
-
         }
     }
     
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception{
     	
         List<Representation> representations = new ArrayList<Representation>();
         try {
             representations = studyDataManager.getRepresentationByStudyID(studyId);
         } catch (QueryException e) {
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
-
-            // TODO an error window in the UI should pop-up for this
-            e.printStackTrace();
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_representation_by_study_id);
         }
 
         if (representations.isEmpty()) {
@@ -132,18 +126,13 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     }
     
     @Override
-    public void attach() {
-    	
+    public void attach() {    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-		
-        
-	}
+    @Override
+    public void updateLabels() {
+    }
 
 }

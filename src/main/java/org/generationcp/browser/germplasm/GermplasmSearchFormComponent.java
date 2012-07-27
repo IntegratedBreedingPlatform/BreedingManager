@@ -51,7 +51,6 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
 
     @Override
     public void valueChange(ValueChangeEvent event) {
-        // TODO Auto-generated method stub
         choice = searchSelect.getValue().toString();
         searchValue = txtSearchValue.getValue().toString();
         databaseInstance = databaseInstanceOption.getValue().toString();
@@ -106,23 +105,17 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
         this.choice = "Name";
         this.searchValue = "";
         this.databaseInstance = "Central";
-
     }
     
     @Override
-    public void attach() {
-    	
-        super.attach();
-        
+    public void attach() {  	
+        super.attach();      
         updateLabels();
     }
     
-
-	@Override
-	public void updateLabels() {
-
-		messageSource.setCaption(searchSelect, Message.search_for_label);
-        
-	}
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(searchSelect, Message.search_for_label);
+    }
 
 }

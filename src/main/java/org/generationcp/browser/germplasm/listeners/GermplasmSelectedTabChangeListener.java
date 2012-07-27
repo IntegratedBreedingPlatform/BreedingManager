@@ -13,14 +13,19 @@
 package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.GermplasmDetail;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
-public class GermplasmSelectedTabChangeListener implements TabSheet.SelectedTabChangeListener{
+public class GermplasmSelectedTabChangeListener implements TabSheet.SelectedTabChangeListener {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmSelectedTabChangeListener.class);
     private static final long serialVersionUID = -3192436611974353597L;
     private Object source;
 
@@ -32,16 +37,26 @@ public class GermplasmSelectedTabChangeListener implements TabSheet.SelectedTabC
     public void selectedTabChange(SelectedTabChangeEvent event) {
 
         if (source instanceof GermplasmStudyBrowserApplication) {
-            ((GermplasmStudyBrowserApplication) source).tabSheetSelectedTabChangeAction(event.getTabSheet());
+          
+            try {
+                ((GermplasmStudyBrowserApplication) source).tabSheetSelectedTabChangeAction(event.getTabSheet());
+            } catch (InternationalizableException e) {
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(((GermplasmStudyBrowserApplication) source).getMainWindow(), 
+                        e.getCaption(), e.getDescription()); // TESTED 
+            }
 
         } else if (source instanceof GermplasmDetail) {
             try {
                 ((GermplasmDetail) source).selectedTabChangeAction();
-            } catch (QueryException e) {
-                // TODO Auto-generated catch block
+            } catch (InternationalizableException e) {
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
+                e.setCaption(Message.error_in_displaying_requested_detail);
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             }
         }
     }
-
+    
 }

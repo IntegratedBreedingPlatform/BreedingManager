@@ -16,9 +16,10 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -27,53 +28,42 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 
 @Configurable
-public class StudyFactorComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class StudyFactorComponent extends Table implements InitializingBean, InternationalizableComponent{
 
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(StudyFactorComponent.class);
     private static final long serialVersionUID = 1053068118831514119L;
-    
+
     private static final String NAME = "NAME";
-    private static final String DESC = "DESCRIPTION"; 
+    private static final String DESC = "DESCRIPTION";
     private static final String PROP = "PROPERTY";
     private static final String SCA = "SCALE";
     private static final String METH = "METHOD";
     private static final String DTYPE = "DATATYPE";
-    
+
     private int studyId;
-    
+
     private StudyDataManager studyDataManager;
-    
+
     private TraitDataManager traitDataManager;
-    
+
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId)
-            throws QueryException {
-    	
-    	
-    	this.studyDataManager = studyDataManager;
-    	this.traitDataManager = traitDataManager;
-    	this.studyId = studyId;
-
+    public StudyFactorComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) { //throws QueryException {
+        this.studyDataManager = studyDataManager;
+        this.traitDataManager = traitDataManager;
+        this.studyId = studyId;
     }
-    
-    
-    @Override
-    public void afterPropertiesSet() {
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
         StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
         IndexedContainer dataStudyFactor;
-        
-		try {
-			
-			dataStudyFactor = dataIndexContainer.getStudyFactor();
 
-			this.setContainerDataSource(dataStudyFactor);
-        
-		} catch (QueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        dataStudyFactor = dataIndexContainer.getStudyFactor();
+
+        this.setContainerDataSource(dataStudyFactor);
 
         setSelectable(true);
         setMultiSelect(false);
@@ -81,39 +71,23 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
         setSizeFull();
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        // setColumnHeaders(new String[] { "NAME", "DESCRIPTION", "PROPERTY",
-        // "SCALE", "METHOD", "DATATYPE" });
-        setColumnHeaders(new String[] {
-        		NAME,
-                DESC,
-                PROP,
-                SCA,
-                METH,
-                DTYPE });
-        
-        
-    	
+        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE });
     }
-    
+
     @Override
     public void attach() {
-    	
         super.attach();
-        
         updateLabels();
     }
-    
 
-	@Override
-	public void updateLabels() {
-        
+    @Override
+    public void updateLabels() {
         messageSource.setColumnHeader(this, "NAME", Message.name_header);
         messageSource.setColumnHeader(this, "DESCRIPTION", Message.description_header);
         messageSource.setColumnHeader(this, "PROPERTY", Message.property_header);
         messageSource.setColumnHeader(this, "SCALE", Message.scale_header);
         messageSource.setColumnHeader(this, "METHOD", Message.method_header);
         messageSource.setColumnHeader(this, "DATATYPE", Message.datatype_header);
-        
-	}
+    }
 
 }

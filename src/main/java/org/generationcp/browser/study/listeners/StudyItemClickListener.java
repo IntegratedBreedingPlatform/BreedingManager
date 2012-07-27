@@ -12,7 +12,9 @@
 
 package org.generationcp.browser.study.listeners;
 
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.study.StudyTreeComponent;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +39,15 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
         if (source instanceof StudyTreeComponent) {
             int studyId = Integer.valueOf(event.getItemId().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                ((StudyTreeComponent) source).studyTreeItemClickAction(studyId);
+                try {
+                    ((StudyTreeComponent) source).studyTreeItemClickAction(studyId);
+                } catch (InternationalizableException e) {
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription()); // TESTED 
+                }
             }
-
         }
-
     }
 
 }
