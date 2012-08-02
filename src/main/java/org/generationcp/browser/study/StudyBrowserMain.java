@@ -21,13 +21,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class StudyBrowserMain extends HorizontalLayout implements InitializingBean, InternationalizableComponent  {
+public class StudyBrowserMain extends VerticalLayout implements InitializingBean, InternationalizableComponent  {
 
     private static final long serialVersionUID = 1L;
+    
+    private final static String VERSION = "1.1.0";
+    
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetStudyDatabaseInstance;
@@ -41,9 +45,17 @@ public class StudyBrowserMain extends HorizontalLayout implements InitializingBe
     
     @Override
     public void afterPropertiesSet() {
-        setSizeFull();
-        setSpacing(true);
-        setMargin(true);
+        this.setSpacing(true);
+        this.setMargin(true);
+        
+        Label applicationTitle = new Label("<h1>Study Browser " + VERSION + "</h1>");
+        applicationTitle.setContentMode(Label.CONTENT_XHTML);
+        this.addComponent(applicationTitle);
+        
+        HorizontalLayout mainLayout = new HorizontalLayout();
+        mainLayout.setSizeFull();
+        mainLayout.setSpacing(true);
+        
         tabSheetStudyDatabaseInstance = new TabSheet();
         tabSheetStudyDatabaseInstance.setWidth("100%");
         tabSheetStudyDatabaseInstance.setHeight("600px");
@@ -54,11 +66,13 @@ public class StudyBrowserMain extends HorizontalLayout implements InitializingBe
         tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.db_local_text)); // "Local"
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.db_central_text)); // "Central"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new StudyTreeComponent(this, Database.CENTRAL));
-        tabLocalInstance.addComponent(new StudyTreeComponent(this, Database.LOCAL));
+        tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
+        tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
 
-        addComponent(tabSheetStudyDatabaseInstance);
-        setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
+        mainLayout.addComponent(tabSheetStudyDatabaseInstance);
+        mainLayout.setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
+        
+        this.addComponent(mainLayout);
     }
     
     @Override

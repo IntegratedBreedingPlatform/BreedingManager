@@ -30,6 +30,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
@@ -46,6 +47,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
+    private final static String VERSION = "1.1.0";
+    
     private final static String NAMES = "Names";
     private final static String GID = "gid";
 
@@ -168,6 +171,10 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
 
+        Label applicationTitle = new Label("<h1>Germplasm Browser " + VERSION + "</h1>");
+        applicationTitle.setContentMode(Label.CONTENT_XHTML);
+        mainLayout.addComponent(applicationTitle);
+        
         searchFormLayout = new HorizontalLayout();
 
         searchOption = new GermplasmSearchFormComponent();
