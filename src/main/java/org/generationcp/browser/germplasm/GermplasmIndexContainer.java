@@ -193,4 +193,23 @@ public final class GermplasmIndexContainer{
         item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
     }
 
+	public IndexedContainer getGermplasmGroupRelatives(GermplasmDetailModel G) {
+		IndexedContainer container = new IndexedContainer();
+
+        // Create the container properties
+        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
+        container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
+
+        for (GermplasmDetailModel g : G.getGroupRelatives()) {
+        	addGermplasmGroupRelatives(container, g.getGid(), g.getGermplasmPreferredName());
+        }
+        return container;
+	}
+	 private static void addGermplasmGroupRelatives(Container container, int gid, String prefname) {
+	        Object itemId = container.addItem();
+	        Item item = container.getItem(itemId);
+	        item.getItemProperty(GERMPLASM_GID).setValue(gid);
+	        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+	    }
+
 }

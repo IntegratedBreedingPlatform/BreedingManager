@@ -31,6 +31,7 @@ public class GermplasmDetailModel {
     private ArrayList<GermplasmNamesAttributesModel> attributes;
     private ArrayList<GermplasmNamesAttributesModel> names;
     private ArrayList<GermplasmDetailModel> generationhistory;
+    private ArrayList<GermplasmDetailModel> groupRelatives;
     private Bibref bibRef;
 
     public Bibref getBibRef() {
@@ -144,5 +145,17 @@ public class GermplasmDetailModel {
     public void setGenerationhistory(ArrayList<GermplasmDetailModel> generationhistory) {
         this.generationhistory = generationhistory;
     }
+
+	public ArrayList<GermplasmDetailModel> getGroupRelatives() {
+		return groupRelatives;
+	}
+
+	public void setGroupRelatives(ArrayList<GermplasmDetailModel> groupRelatives) {
+		this.groupRelatives = groupRelatives;
+	}
+
+
+    
+    
 
 }

@@ -129,5 +129,6 @@ public enum Message {
      error_in_adding_germplasm_list,
      error_in_counting_traits,
      error_in_getting_discrete_values_of_scale,
-     error_null_table
+     error_null_table, 
+     group_relatives_label
 }
