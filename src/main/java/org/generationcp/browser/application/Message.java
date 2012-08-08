@@ -130,5 +130,6 @@ public enum Message {
      error_in_counting_traits,
      error_in_getting_discrete_values_of_scale,
      error_null_table, 
-     group_relatives_label
+     group_relatives_label, 
+     management_neighbors_label
 }

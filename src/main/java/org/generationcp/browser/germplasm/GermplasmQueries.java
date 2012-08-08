@@ -132,10 +132,28 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 			germplasmDetail.setNames(getNames(g.getGid()));
 			germplasmDetail.setGenerationhistory(getGenerationHistory(g.getGid()));
 			germplasmDetail.setGroupRelatives(getGroupRelativesList(g.getGid()));
+			germplasmDetail.setManagementNeighbors(getManagementNeighborList(g.getGid()));
 
 			return germplasmDetail;
 		} catch (QueryException e) {
 			throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_details);
+		}
+	}
+
+	private ArrayList<GermplasmDetailModel> getManagementNeighborList(Integer gid) throws InternationalizableException{
+		try {
+			ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
+			List<Germplasm> managementNeighborsList = new ArrayList<Germplasm>();
+			managementNeighborsList = germplasmDataManager.getManagementNeighbors(new Integer(gid));
+			for (Germplasm g : managementNeighborsList) {
+				GermplasmDetailModel managementNeighbors = new GermplasmDetailModel();
+				managementNeighbors.setGid(g.getGid());
+				managementNeighbors.setGermplasmPreferredName(getPreferredName(g));
+				toreturn.add(managementNeighbors);
+			}
+			return toreturn;
+		} catch (QueryException e) {
+			throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_generation_history);
 		}
 	}
 

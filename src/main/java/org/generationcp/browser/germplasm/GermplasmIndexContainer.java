@@ -26,190 +26,210 @@ import com.vaadin.data.util.IndexedContainer;
 
 public final class GermplasmIndexContainer{
 
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmIndexContainer.class);
-    
-    // Germplasm SearchResult Model
-    private static final Object GERMPLASM_GID = "gid";
-    private static final Object GERMPLASM_NAMES = "names";
-    private static final Object GERMPLASM_METHOD = "method";
-    private static final Object GERMPLASM_LOCATION = "location";
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmIndexContainer.class);
 
-    // GermplasmNamesAttribute Model
-    private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE = "type";
-    private static final Object GERMPLASM_NAMES_ATTRIBUTE_NAME = "name";
-    private static final Object GERMPLASM_NAMES_ATTRIBUTE_DATE = "date";
-    private static final Object GERMPLASM_NAMES_ATTRIBUTE_LOCATION = "location";
-    private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
-    
-    // GermplasmList Model
-    
-    private static final Object GERMPLASMLIST_NAME = "name";
-    private static final Object GERMPLASMLIST_DATE = "date";
-    private static final Object GERMPLASMLIST_DESCRIPTION = "description";
+	// Germplasm SearchResult Model
+	private static final Object GERMPLASM_GID = "gid";
+	private static final Object GERMPLASM_NAMES = "names";
+	private static final Object GERMPLASM_METHOD = "method";
+	private static final Object GERMPLASM_LOCATION = "location";
 
-    private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
-    @SuppressWarnings("unused")
-    private static final String GERMPLASM_SEARCH_BY_GID = "GID";
+	// GermplasmNamesAttribute Model
+	private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE = "type";
+	private static final Object GERMPLASM_NAMES_ATTRIBUTE_NAME = "name";
+	private static final Object GERMPLASM_NAMES_ATTRIBUTE_DATE = "date";
+	private static final Object GERMPLASM_NAMES_ATTRIBUTE_LOCATION = "location";
+	private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
 
-    private static final Object GERMPLASM_PREFNAME = "prefname";
+	// GermplasmList Model
 
-    @SuppressWarnings("unused")
-    private static String choice;
-    @SuppressWarnings("unused")
-    private static String searchValue;
+	private static final Object GERMPLASMLIST_NAME = "name";
+	private static final Object GERMPLASMLIST_DATE = "date";
+	private static final Object GERMPLASMLIST_DESCRIPTION = "description";
 
-    private GermplasmQueries qQuery;
+	private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
+	@SuppressWarnings("unused")
+	private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
-    public GermplasmIndexContainer(GermplasmQueries qQuery) {
-        this.qQuery = qQuery;
-    }
+	private static final Object GERMPLASM_PREFNAME = "prefname";
 
-    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance) throws InternationalizableException {
-        IndexedContainer container = new IndexedContainer();
+	@SuppressWarnings("unused")
+	private static String choice;
+	@SuppressWarnings("unused")
+	private static String searchValue;
 
-        // Create the container properties - Germplasm Search Result
-        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
-        container.addContainerProperty(GERMPLASM_NAMES, String.class, "");
-        container.addContainerProperty(GERMPLASM_METHOD, String.class, "");
-        container.addContainerProperty(GERMPLASM_LOCATION, String.class, "");
+	private GermplasmQueries qQuery;
 
-        ArrayList<GermplasmSearchResultModel> queryByNames = null;
-        GermplasmSearchResultModel queryByGid = null;
-        if (choice.equals(GERMPLASM_SEARCH_BY_NAMES)) {
-            queryByNames = qQuery.getGermplasmListResultByPrefName(choice, searchValue, databaseInstance);
-            for (GermplasmSearchResultModel q : queryByNames) {
-                addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
-            }
-        } else {
-            queryByGid = qQuery.getGermplasmResultByGID(searchValue);
-            addGermplasmResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
-                    queryByGid.getLocation());
-        }
+	public GermplasmIndexContainer(GermplasmQueries qQuery) {
+		this.qQuery = qQuery;
+	}
 
-        return container;
-    }
+	public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance) throws InternationalizableException {
+		IndexedContainer container = new IndexedContainer();
 
-    private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_NAMES).setValue(names);
-        item.getItemProperty(GERMPLASM_METHOD).setValue(method);
-        item.getItemProperty(GERMPLASM_LOCATION).setValue(location);
-    }
+		// Create the container properties - Germplasm Search Result
+		container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
+		container.addContainerProperty(GERMPLASM_NAMES, String.class, "");
+		container.addContainerProperty(GERMPLASM_METHOD, String.class, "");
+		container.addContainerProperty(GERMPLASM_LOCATION, String.class, "");
 
-    public IndexedContainer getGermplasAttribute(GermplasmDetailModel g) {
-        IndexedContainer container = new IndexedContainer();
+		ArrayList<GermplasmSearchResultModel> queryByNames = null;
+		GermplasmSearchResultModel queryByGid = null;
+		if (choice.equals(GERMPLASM_SEARCH_BY_NAMES)) {
+			queryByNames = qQuery.getGermplasmListResultByPrefName(choice, searchValue, databaseInstance);
+			for (GermplasmSearchResultModel q : queryByNames) {
+				addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
+			}
+		} else {
+			queryByGid = qQuery.getGermplasmResultByGID(searchValue);
+			addGermplasmResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
+					queryByGid.getLocation());
+		}
 
-        // Create the container properties
-        addContainerProperties(container);
+		return container;
+	}
 
-        final ArrayList<GermplasmNamesAttributesModel> query = g.getAttributes();
-        LOG.info("Size of the query" + query.size());
-        for (GermplasmNamesAttributesModel q : query) {
-            addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
-        }
-        return container;
-    }
+	private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASM_GID).setValue(gid);
+		item.getItemProperty(GERMPLASM_NAMES).setValue(names);
+		item.getItemProperty(GERMPLASM_METHOD).setValue(method);
+		item.getItemProperty(GERMPLASM_LOCATION).setValue(location);
+	}
 
-    public IndexedContainer getGermplasmNames(GermplasmDetailModel g) {
-        IndexedContainer container = new IndexedContainer();
+	public IndexedContainer getGermplasAttribute(GermplasmDetailModel g) {
+		IndexedContainer container = new IndexedContainer();
 
-        // Create the container properties
-        addContainerProperties(container);
+		// Create the container properties
+		addContainerProperties(container);
 
-        final ArrayList<GermplasmNamesAttributesModel> query = g.getNames();
-        for (GermplasmNamesAttributesModel q : query) {
-            addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
-        }
-        return container;
-    }
+		final ArrayList<GermplasmNamesAttributesModel> query = g.getAttributes();
+		LOG.info("Size of the query" + query.size());
+		for (GermplasmNamesAttributesModel q : query) {
+			addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+		}
+		return container;
+	}
 
-    private void addContainerProperties(Container container) {
-        container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE, String.class, "");
-        container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_NAME, String.class, "");
-        container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_DATE, String.class, "");
-        container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_LOCATION, String.class, "");
-        container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC, String.class, "");
-    }
+	public IndexedContainer getGermplasmNames(GermplasmDetailModel g) {
+		IndexedContainer container = new IndexedContainer();
 
-    private static void addGermplasmNamesAttributeContainer(Container container, String type, String name, String date, String location,
-            String typeDesc) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE).setValue(type);
-        item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_NAME).setValue(name);
-        item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_DATE).setValue(date);
-        item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_LOCATION).setValue(location);
-        item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC).setValue(typeDesc);
+		// Create the container properties
+		addContainerProperties(container);
 
-    }
+		final ArrayList<GermplasmNamesAttributesModel> query = g.getNames();
+		for (GermplasmNamesAttributesModel q : query) {
+			addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+		}
+		return container;
+	}
 
-    public IndexedContainer getGermplasmGenerationHistory(GermplasmDetailModel G) {
-        IndexedContainer container = new IndexedContainer();
+	private void addContainerProperties(Container container) {
+		container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE, String.class, "");
+		container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_NAME, String.class, "");
+		container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_DATE, String.class, "");
+		container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_LOCATION, String.class, "");
+		container.addContainerProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC, String.class, "");
+	}
 
-        // Create the container properties
-        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
-        container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
+	private static void addGermplasmNamesAttributeContainer(Container container, String type, String name, String date, String location,
+			String typeDesc) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE).setValue(type);
+		item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_NAME).setValue(name);
+		item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_DATE).setValue(date);
+		item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_LOCATION).setValue(location);
+		item.getItemProperty(GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC).setValue(typeDesc);
 
-        for (GermplasmDetailModel g : G.getGenerationhistory()) {
-            addGermplasmGenerationHistory(container, g.getGid(), g.getGermplasmPreferredName());
-        }
-        return container;
-    }
+	}
 
-    private static void addGermplasmGenerationHistory(Container container, int gid, String prefname) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-    }
-    
-    
-    public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
-        IndexedContainer container = new IndexedContainer();
+	public IndexedContainer getGermplasmGenerationHistory(GermplasmDetailModel G) {
+		IndexedContainer container = new IndexedContainer();
 
-        // Create the container properties
-        container.addContainerProperty(GERMPLASMLIST_NAME, String.class, "");
-        container.addContainerProperty(GERMPLASMLIST_DATE, String.class, "");
-        container.addContainerProperty(GERMPLASMLIST_DESCRIPTION, String.class, "");
-        
+		// Create the container properties
+		container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
+		container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
 
-        final ArrayList<GermplasmListData> germplasmListData =(ArrayList<GermplasmListData>) qQuery.getGermplasmListByGID(g.getGid());
-        
-        for(GermplasmListData gListData : germplasmListData ){
-        	
-        	addGermplasmListContainer(container, gListData.getList().getName(), String.valueOf(gListData.getList().getDate()), gListData.getList().getDescription());
-        }
+		for (GermplasmDetailModel g : G.getGenerationhistory()) {
+			addGermplasmGenerationHistory(container, g.getGid(), g.getGermplasmPreferredName());
+		}
+		return container;
+	}
 
-        return container;
-    }
+	private static void addGermplasmGenerationHistory(Container container, int gid, String prefname) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASM_GID).setValue(gid);
+		item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+	}
 
-    private static void addGermplasmListContainer(Container container, String name, String date, String description) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
-        item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
-        item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
-    }
+
+	public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
+		IndexedContainer container = new IndexedContainer();
+
+		// Create the container properties
+		container.addContainerProperty(GERMPLASMLIST_NAME, String.class, "");
+		container.addContainerProperty(GERMPLASMLIST_DATE, String.class, "");
+		container.addContainerProperty(GERMPLASMLIST_DESCRIPTION, String.class, "");
+
+
+		final ArrayList<GermplasmListData> germplasmListData =(ArrayList<GermplasmListData>) qQuery.getGermplasmListByGID(g.getGid());
+
+		for(GermplasmListData gListData : germplasmListData ){
+
+			addGermplasmListContainer(container, gListData.getList().getName(), String.valueOf(gListData.getList().getDate()), gListData.getList().getDescription());
+		}
+
+		return container;
+	}
+
+	private static void addGermplasmListContainer(Container container, String name, String date, String description) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
+		item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
+		item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
+	}
 
 	public IndexedContainer getGermplasmGroupRelatives(GermplasmDetailModel G) {
 		IndexedContainer container = new IndexedContainer();
 
-        // Create the container properties
-        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
-        container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
+		// Create the container properties
+		container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
+		container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
 
-        for (GermplasmDetailModel g : G.getGroupRelatives()) {
-        	addGermplasmGroupRelatives(container, g.getGid(), g.getGermplasmPreferredName());
-        }
-        return container;
+		for (GermplasmDetailModel g : G.getGroupRelatives()) {
+			addGermplasmGroupRelatives(container, g.getGid(), g.getGermplasmPreferredName());
+		}
+		return container;
 	}
-	 private static void addGermplasmGroupRelatives(Container container, int gid, String prefname) {
-	        Object itemId = container.addItem();
-	        Item item = container.getItem(itemId);
-	        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-	        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-	    }
+	
+	private static void addGermplasmGroupRelatives(Container container, int gid, String prefname) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASM_GID).setValue(gid);
+		item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+	}
+
+	public IndexedContainer getGermplasmManagementNeighbors(GermplasmDetailModel G) {
+		IndexedContainer container = new IndexedContainer();
+		// Create the container properties
+		container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
+		container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
+
+		for (GermplasmDetailModel g : G.getManagementNeighbors()) {
+			addGermplasmManagementNeighbors(container, g.getGid(), g.getGermplasmPreferredName());
+		}
+		return container;
+	}
+	
+	private static void addGermplasmManagementNeighbors(Container container, int gid, String prefname) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(GERMPLASM_GID).setValue(gid);
+		item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+	}
 
 }
