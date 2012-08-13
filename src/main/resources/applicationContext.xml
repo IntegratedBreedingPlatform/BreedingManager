@@ -39,7 +39,7 @@
     </bean>
 
     <!-- The data source configuration -->
-    <bean id="managerFactory" class="org.generationcp.middleware.manager.ManagerFactory"/>
+    <bean id="managerFactory" class="org.generationcp.middleware.manager.ManagerFactory" destroy-method="close"/>
     
     <!--
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
