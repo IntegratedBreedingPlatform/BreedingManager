@@ -37,7 +37,7 @@
 	</root>
 
 	<!-- Set the log levels -->
-	<logger name="org.generationcp.browser" level="TRACE" />
+	<logger name="org.generationcp" level="TRACE" />
 	<logger name="org.hibernate.cfg" level="WARN" />
 	<logger name="org.eclipse.jetty.server.nio.SelectChannelConnector"
 		level="INFO" />
