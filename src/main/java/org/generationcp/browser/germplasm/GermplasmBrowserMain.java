@@ -236,8 +236,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
     private void openDialogSaveList() {
         saveGermplasmListDialog = new Window(messageSource.getMessage(Message.save_germplasm_list_window_label));
         saveGermplasmListDialog.setModal(true);
-        saveGermplasmListDialog.setWidth(500);
-        saveGermplasmListDialog.setHeight(300);
+        saveGermplasmListDialog.setWidth(700);
+        saveGermplasmListDialog.setHeight(350);
         saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(), saveGermplasmListDialog,
                 tabSheet));
         this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);

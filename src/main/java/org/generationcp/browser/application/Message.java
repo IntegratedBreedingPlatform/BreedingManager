@@ -78,10 +78,18 @@ public enum Message {
      to_enter_a_range_of_values_follow_this_example_label, 
      save_germplasmlist_button_label,
      close_all_germlasmdetail_tab_label,
-     enter_germplasm_listname_label,
+     listname_label,
      save_germplasm_list_window_label, 
      save_germplasm_listname_button_label, 
      cancel_germplasm_listname_button_label,
+     group_relatives_label, 
+     management_neighbors_label, 
+     description_label,
+     status_label,
+     hidden_label,
+     locked_label,
+     final_label,
+     
      
      // ERROR NOTIFICATION MESSAGES
      empty_string,
@@ -129,7 +137,6 @@ public enum Message {
      error_in_adding_germplasm_list,
      error_in_counting_traits,
      error_in_getting_discrete_values_of_scale,
-     error_null_table, 
-     group_relatives_label, 
-     management_neighbors_label
+     error_null_table  
+
 }

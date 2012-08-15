@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -56,10 +57,15 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
      *
      * @param listName the list name
      * @param tabSheet the tab sheet
+     * @param statusFinal 
+     * @param statusLocked 
+     * @param statusHidden 
+     * @param type 
+     * @param description 
      * @throws QueryException the query exception
      */
     @SuppressWarnings("unused")
-    public void addGermplasListNameAndData(String listName, TabSheet tabSheet) throws InternationalizableException {
+    public void addGermplasListNameAndData(String listName, TabSheet tabSheet, String description, String type, String statusHidden, String statusLocked, String statusFinal) throws InternationalizableException {
 
         try {
             SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
@@ -67,10 +73,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
             Format formatter = new SimpleDateFormat("yyyyMMdd");
             Long currentDate = Long.valueOf(formatter.format(date));
             int userId = 1;
-            String description = "-";
-            String type = "LST";
             GermplasmList parent = null;
-            int statusListName = 1;
+            int statusListName = Integer.valueOf(getStatus(statusHidden,statusLocked,statusFinal));
 
             GermplasmList listNameData = new GermplasmList(null, listName, currentDate, type, userId, description, parent, statusListName);
 
@@ -98,7 +102,31 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
         }
     }
 
-    /* (non-Javadoc)
+    private String getStatus(String statusHidden, String statusLocked,String statusFinal) {
+    	String status="";
+    	
+    	if(statusHidden.equals("true")){
+    		status="1";
+    	}else{
+    		status="0";
+    	}
+    	
+    	if(statusLocked.equals("true")){
+    		status+="1";
+    	}else{
+    		status+="0";
+    	}
+    	
+    	if(statusFinal.equals("true")){
+    		status+="1";
+    	}else{
+    		status+="0";
+    	}
+    	
+		return status+"1";
+	}
+
+	/* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
