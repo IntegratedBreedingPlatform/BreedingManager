@@ -19,6 +19,7 @@ import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
 import org.generationcp.middleware.pojos.CharacterLevelElement;
+import org.generationcp.middleware.pojos.DatasetCondition;
 import org.generationcp.middleware.pojos.Factor;
 import org.generationcp.middleware.pojos.NumericDataElement;
 import org.generationcp.middleware.pojos.NumericLevelElement;
@@ -31,7 +32,7 @@ import org.generationcp.middleware.pojos.Variate;
 
 public class DatasetExporter {
 
-    private static final int factorListHeaderRowIndex = 8;
+    private static final int conditionListHeaderRowIndex = 8;
     
     private StudyDataManager studyDataManager;
     private TraitDataManager traitDataManager;
@@ -119,51 +120,121 @@ public class DatasetExporter {
             //empty row
             Row row7 = descriptionSheet.createRow(7);
             
+            //row with headings for condition list
+            Row conditionHeaderRow = descriptionSheet.createRow(this.conditionListHeaderRowIndex);
+            conditionHeaderRow.createCell(0).setCellValue("CONDITION");
+            conditionHeaderRow.createCell(1).setCellValue("DESCRIPTION");
+            conditionHeaderRow.createCell(2).setCellValue("PROPERTY");
+            conditionHeaderRow.createCell(3).setCellValue("SCALE");
+            conditionHeaderRow.createCell(4).setCellValue("METHOD");
+            conditionHeaderRow.createCell(5).setCellValue("DATA TYPE");
+            conditionHeaderRow.createCell(6).setCellValue("VALUE");
+            conditionHeaderRow.createCell(7).setCellValue("LABEL");
+            
+            //get the conditions and their details
+            List<DatasetCondition> conditions = new ArrayList<DatasetCondition>();
+            try {
+                conditions.addAll(this.studyDataManager.getConditionsByRepresentationId(this.representationId));
+            } catch(Exception ex) {
+                throw new DatasetExporterException("Error with getting conditions of study - " + name 
+                        + ", representation - " + this.representationId, ex);
+            }
+            
+            int conditionRowIndex = this.conditionListHeaderRowIndex + 1;
+            for(DatasetCondition condition : conditions) {
+                String traitScaleMethodInfo[] = getTraitScaleMethodInfo(condition.getTraitId(), condition.getScaleId(), condition.getMethodId());
+                
+                String conditionName = condition.getName();
+                String conditionType = condition.getType();
+                
+                String conditionLabel = "";
+                try {
+                    conditionLabel = this.studyDataManager.getMainLabelOfFactorByFactorId(condition.getFactorId());
+                } catch (QueryException ex) {
+                    conditionLabel = "";
+                }
+                
+                Row conditionRow = descriptionSheet.createRow(conditionRowIndex);
+                conditionRow.createCell(0).setCellValue(conditionName);
+                conditionRow.createCell(1).setCellValue(traitScaleMethodInfo[0]);
+                conditionRow.createCell(2).setCellValue(traitScaleMethodInfo[1]);
+                conditionRow.createCell(3).setCellValue(traitScaleMethodInfo[2]);
+                conditionRow.createCell(4).setCellValue(traitScaleMethodInfo[3]);
+                conditionRow.createCell(5).setCellValue(conditionType);
+                if(conditionType.equals("N")) {
+                    Double thevalue = (Double) condition.getValue();
+                    conditionRow.createCell(6).setCellValue(thevalue);
+                } else {
+                    conditionRow.createCell(6).setCellValue(condition.getValue().toString());
+                }
+                conditionRow.createCell(7).setCellValue(conditionLabel);
+                
+                //add entry to columns mapping
+                //we set the value to -1 to signify that this should not be a column in the observation sheet
+                if(!conditionName.equals("STUDY")) {
+                    columnsMap.put(conditionName, Integer.valueOf(-1));
+                }
+                
+                conditionRowIndex++;
+            }
+            
+            //empty row
+            Row emptyRowBeforeFactors = descriptionSheet.createRow(conditionRowIndex);
+            
             //row with headings for factor list
-            Row row8 = descriptionSheet.createRow(this.factorListHeaderRowIndex);
-            row8.createCell(0).setCellValue("FACTOR");
-            row8.createCell(1).setCellValue("DESCRIPTION");
-            row8.createCell(2).setCellValue("PROPERTY");
-            row8.createCell(3).setCellValue("SCALE");
-            row8.createCell(4).setCellValue("METHOD");
-            row8.createCell(5).setCellValue("DATA TYPE");
-            row8.createCell(6).setCellValue("NESTED IN");
-            row8.createCell(7).setCellValue("LABEL");
+            int factorRowHeaderIndex = conditionRowIndex + 1;
+            Row factorHeaderRow = descriptionSheet.createRow(factorRowHeaderIndex);
+            factorHeaderRow.createCell(0).setCellValue("FACTOR");
+            factorHeaderRow.createCell(1).setCellValue("DESCRIPTION");
+            factorHeaderRow.createCell(2).setCellValue("PROPERTY");
+            factorHeaderRow.createCell(3).setCellValue("SCALE");
+            factorHeaderRow.createCell(4).setCellValue("METHOD");
+            factorHeaderRow.createCell(5).setCellValue("DATA TYPE");
+            factorHeaderRow.createCell(6).setCellValue("");
+            factorHeaderRow.createCell(7).setCellValue("LABEL");
             
             //get the factors and their details
             List<Factor> factors = new ArrayList<Factor>();
             try {
                 factors.addAll(this.studyDataManager.getFactorsByRepresentationId(this.representationId));
-            }
-            catch (Exception ex) {
+            } catch(Exception ex) {
                 throw new DatasetExporterException("Error with getting factors of study - " + name 
                         + ", representation - " + this.representationId, ex);
             }
             
-            int factorRowIndex = this.factorListHeaderRowIndex + 1;
+            int factorRowIndex = factorRowHeaderIndex + 1;
             for(Factor factor : factors) {
                 String dataType = factor.getDataType();
                 String factorName = factor.getName();
                 
-                String traitScaleMethodInfo[] = getTraitScaleMethodInfo(factor.getTraitId(), factor.getScaleId(), factor.getMethodId());
-                
-                Row factorRow = descriptionSheet.createRow(factorRowIndex);
-                factorRow.createCell(0).setCellValue(factorName);
-                factorRow.createCell(1).setCellValue(traitScaleMethodInfo[0]);
-                factorRow.createCell(2).setCellValue(traitScaleMethodInfo[1]);
-                factorRow.createCell(3).setCellValue(traitScaleMethodInfo[2]);
-                factorRow.createCell(4).setCellValue(traitScaleMethodInfo[3]);
-                factorRow.createCell(5).setCellValue(dataType);
-                factorRow.createCell(6).setCellValue("");
-                factorRow.createCell(7).setCellValue("");
-                
-                //add entry to columns mapping
-                if(!factorName.equals("STUDY")) {
+                //check if factor is already written as a condition
+                Integer temp = columnsMap.get(factorName);
+                if(temp == null && !factorName.equals("STUDY")) {
+                    String traitScaleMethodInfo[] = getTraitScaleMethodInfo(factor.getTraitId(), factor.getScaleId(), factor.getMethodId());
+                    
+                    String factorLabel = "";
+                    try {
+                        factorLabel = this.studyDataManager.getMainLabelOfFactorByFactorId(factor.getFactorId());
+                    } catch (QueryException ex) {
+                        factorLabel = "";
+                    }
+                    
+                    Row factorRow = descriptionSheet.createRow(factorRowIndex);
+                    factorRow.createCell(0).setCellValue(factorName);
+                    factorRow.createCell(1).setCellValue(traitScaleMethodInfo[0]);
+                    factorRow.createCell(2).setCellValue(traitScaleMethodInfo[1]);
+                    factorRow.createCell(3).setCellValue(traitScaleMethodInfo[2]);
+                    factorRow.createCell(4).setCellValue(traitScaleMethodInfo[3]);
+                    factorRow.createCell(5).setCellValue(dataType);
+                    factorRow.createCell(6).setCellValue("");
+                    factorRow.createCell(7).setCellValue(factorLabel);
+                    
+                    //add entry to columns mapping
                     columnsMap.put(factorName, Integer.valueOf(observationSheetColumnIndex));
                     observationSheetColumnIndex++;
+                        
+                    factorRowIndex++;
                 }
-                    
-                factorRowIndex++;
             }
             
             //empty row
@@ -216,8 +287,10 @@ public class DatasetExporter {
             Row datasetHeaderRow = observationSheet.createRow(0);
             for(String columnName : columnsMap.keySet()) {
                 short columnIndex = columnsMap.get(columnName).shortValue();
-                Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, datasetHeaderRow, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                cell.setCellValue(columnName);
+                if(columnIndex >= 0) {
+                    Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, datasetHeaderRow, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
+                    cell.setCellValue(columnName);
+                }
             }
             
             //then work with the data
@@ -267,8 +340,10 @@ public class DatasetExporter {
                             Row row = rowMap.get(elem.getOunitId());
                             if(row != null) {
                                 short columnIndex = columnsMap.get(elem.getFactorName()).shortValue();
-                                Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                                cell.setCellValue(elem.getValue());
+                                if(columnIndex >= 0) {
+                                    Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
+                                    cell.setCellValue(elem.getValue());
+                                }
                             }
                         }
                     }
@@ -287,8 +362,10 @@ public class DatasetExporter {
                             Row row = rowMap.get(elem.getOunitId());
                             if(row != null) {
                                 short columnIndex = columnsMap.get(elem.getFactorName()).shortValue();
-                                Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                                cell.setCellValue(elem.getValue());
+                                if(columnIndex >= 0) {
+                                    Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
+                                    cell.setCellValue(elem.getValue());
+                                }
                             }
                         }
                     }
