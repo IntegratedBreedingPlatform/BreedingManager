@@ -118,12 +118,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
     	}
     	
     	if(statusHidden.equals("true")){
-            status="1";
+            status+="1";
         }else{
-                status="0";
+                status+="0";
         }
     	
-	return status+"1";
+	return status+="1";
     }
 
 	/* (non-Javadoc)
