@@ -145,6 +145,9 @@ public class DatasetExporter {
                 String traitScaleMethodInfo[] = getTraitScaleMethodInfo(condition.getTraitId(), condition.getScaleId(), condition.getMethodId());
                 
                 String conditionName = condition.getName();
+                if(conditionName != null) {
+                    conditionName = conditionName.trim();
+                }
                 String conditionType = condition.getType();
                 
                 String conditionLabel = "";
@@ -206,6 +209,9 @@ public class DatasetExporter {
             for(Factor factor : factors) {
                 String dataType = factor.getDataType();
                 String factorName = factor.getName();
+                if(factorName != null) {
+                    factorName = factorName.trim();
+                }
                 
                 //check if factor is already written as a condition
                 Integer temp = columnsMap.get(factorName);
@@ -264,6 +270,9 @@ public class DatasetExporter {
             for(Variate variate : variates) {
                 String dataType = variate.getDataType();
                 String variateName = variate.getName();
+                if(variateName != null) {
+                    variateName = variateName.trim();
+                }
                 
                 String traitScaleMethodInfo[] = getTraitScaleMethodInfo(variate.getTraitId(), variate.getScaleId(), variate.getMethodId());
                 
@@ -336,13 +345,20 @@ public class DatasetExporter {
                     
                     for(CharacterLevelElement elem : charLevels) {
                         String factorName = elem.getFactorName();
+                        if(factorName != null) {
+                            factorName = factorName.trim();
+                        }
                         if(!factorName.equals("STUDY")) {
                             Row row = rowMap.get(elem.getOunitId());
                             if(row != null) {
-                                short columnIndex = columnsMap.get(elem.getFactorName()).shortValue();
+                                short columnIndex = columnsMap.get(factorName).shortValue();
                                 if(columnIndex >= 0) {
                                     Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                                    cell.setCellValue(elem.getValue());
+                                    String value = elem.getValue();
+                                    if(value != null) {
+                                        value = value.trim();
+                                    }
+                                    cell.setCellValue(value);
                                 }
                             }
                         }
@@ -358,10 +374,13 @@ public class DatasetExporter {
                     
                     for(NumericLevelElement elem : numericLevels) {
                         String factorName = elem.getFactorName();
+                        if(factorName != null) {
+                            factorName = factorName.trim();
+                        }
                         if(!factorName.equals("STUDY")) {
                             Row row = rowMap.get(elem.getOunitId());
                             if(row != null) {
-                                short columnIndex = columnsMap.get(elem.getFactorName()).shortValue();
+                                short columnIndex = columnsMap.get(factorName).shortValue();
                                 if(columnIndex >= 0) {
                                     Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
                                     cell.setCellValue(elem.getValue());
@@ -381,9 +400,17 @@ public class DatasetExporter {
                     for(CharacterDataElement elem : charDatas) {
                         Row row = rowMap.get(elem.getOunitId());
                         if(row != null) {
-                            short columnIndex = columnsMap.get(elem.getVariateName()).shortValue();
+                            String variateName = elem.getVariateName();
+                            if(variateName != null) {
+                                variateName = variateName.trim();
+                            }
+                            short columnIndex = columnsMap.get(variateName).shortValue();
                             Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                            cell.setCellValue(elem.getValue());
+                            String value = elem.getValue();
+                            if(value != null) {
+                                value = value.trim();
+                            }
+                            cell.setCellValue(value);
                         }
                     }
                     
@@ -398,7 +425,11 @@ public class DatasetExporter {
                     for(NumericDataElement elem : numericDatas) {
                         Row row = rowMap.get(elem.getOunitId());
                         if(row != null) {
-                            short columnIndex = columnsMap.get(elem.getVariateName()).shortValue();
+                            String variateName = elem.getVariateName();
+                            if(variateName != null) {
+                                variateName = variateName.trim();
+                            }
+                            short columnIndex = columnsMap.get(variateName).shortValue();
                             Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
                             cell.setCellValue(elem.getValue());
                         }
