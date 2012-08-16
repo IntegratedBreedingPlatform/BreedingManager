@@ -105,11 +105,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
     private String getStatus(String statusHidden, String statusLocked,String statusFinal) {
     	String status="";
     	
-    	if(statusHidden.equals("true")){
-    		status="1";
-    	}else{
-    		status="0";
-    	}
+    	if(statusFinal.equals("true")){
+            status+="1";
+        }else{
+                status+="0";
+        }
     	
     	if(statusLocked.equals("true")){
     		status+="1";
@@ -117,14 +117,14 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
     		status+="0";
     	}
     	
-    	if(statusFinal.equals("true")){
-    		status+="1";
-    	}else{
-    		status+="0";
-    	}
+    	if(statusHidden.equals("true")){
+            status="1";
+        }else{
+                status="0";
+        }
     	
-		return status+"1";
-	}
+	return status+"1";
+    }
 
 	/* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

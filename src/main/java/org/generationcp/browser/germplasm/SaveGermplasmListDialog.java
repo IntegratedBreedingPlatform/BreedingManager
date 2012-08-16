@@ -38,7 +38,7 @@ import com.vaadin.ui.Window;
 @Configurable
 public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent{
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
     private static final long serialVersionUID = 1L;
     public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
     public static final String CANCEL_BUTTON_ID = "Cancel Saving";
@@ -50,9 +50,9 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
     private Label labelType;
     private TextField txtType;
     private Label labelStatus;
-	private CheckBox statusHidden;
-	private CheckBox statusLocked;
-	private CheckBox statusFinal;
+    private CheckBox statusHidden;
+    private CheckBox statusLocked;
+    private CheckBox statusFinal;
     private Window dialogWindow;
     private Window mainWindow;
 
@@ -61,10 +61,8 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
     private Button btnSave;
     private Button btnCancel;
     private TabSheet tabSheet;
-	private ComboBox comboBoxType;
-	private Select selectType;
-
-
+    private ComboBox comboBoxType;
+    private Select selectType;
 
     public SaveGermplasmListDialog(Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
         this.dialogWindow = dialogWindow;
