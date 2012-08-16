@@ -337,10 +337,6 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         public List<LotReportRow> getReportOnLotsByEntityTypeAndEntityId(String type, Integer gid) throws InternationalizableException {
                 int count = this.inventoryDataManager.countLotsByEntityTypeAndEntityId(type, gid);
                 
-                System.out.println("type: " + type);
-                System.out.println("gid: " + gid);
-                System.out.println("count: " + count);
-
 //                try {
                         return this.inventoryDataManager.generateReportOnLotsByEntityTypeAndEntityId(type, gid, 0, count);
 //                } catch (QueryException e) {

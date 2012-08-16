@@ -211,7 +211,6 @@ public final class GermplasmIndexContainer{
 
                 for(LotReportRow lotReportRow : lotReportRowData ){
                     addLotReportRowContainer(container, String.valueOf(lotReportRow.getActualLotBalance()), lotReportRow.getLocationOfLot().getLname(), lotReportRow.getScaleOfLot().getName());
-                    System.out.println("LotReportRow:" + lotReportRow);
                 }
 
                 return container;
