@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +43,14 @@ public final class GermplasmIndexContainer{
 	private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
 
 	// GermplasmList Model
-
 	private static final Object GERMPLASMLIST_NAME = "name";
 	private static final Object GERMPLASMLIST_DATE = "date";
 	private static final Object GERMPLASMLIST_DESCRIPTION = "description";
+	
+	// Germplasm Inventory Model
+        private static final Object GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE = "lotbalance";
+        private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
+        private static final Object GERMPLASM_INVENTORY_SCALE_NAME = "scale";
 
 	private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
 	@SuppressWarnings("unused")
@@ -166,24 +171,24 @@ public final class GermplasmIndexContainer{
 	}
 
 
-	public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
-		IndexedContainer container = new IndexedContainer();
+        public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
+                IndexedContainer container = new IndexedContainer();
 
-		// Create the container properties
-		container.addContainerProperty(GERMPLASMLIST_NAME, String.class, "");
-		container.addContainerProperty(GERMPLASMLIST_DATE, String.class, "");
-		container.addContainerProperty(GERMPLASMLIST_DESCRIPTION, String.class, "");
+                // Create the container properties
+                container.addContainerProperty(GERMPLASMLIST_NAME, String.class, "");
+                container.addContainerProperty(GERMPLASMLIST_DATE, String.class, "");
+                container.addContainerProperty(GERMPLASMLIST_DESCRIPTION, String.class, "");
 
 
-		final ArrayList<GermplasmListData> germplasmListData =(ArrayList<GermplasmListData>) qQuery.getGermplasmListByGID(g.getGid());
+                final ArrayList<GermplasmListData> germplasmListData =(ArrayList<GermplasmListData>) qQuery.getGermplasmListByGID(g.getGid());
 
-		for(GermplasmListData gListData : germplasmListData ){
+                for(GermplasmListData gListData : germplasmListData ){
 
-			addGermplasmListContainer(container, gListData.getList().getName(), String.valueOf(gListData.getList().getDate()), gListData.getList().getDescription());
-		}
+                        addGermplasmListContainer(container, gListData.getList().getName(), String.valueOf(gListData.getList().getDate()), gListData.getList().getDescription());
+                }
 
-		return container;
-	}
+                return container;
+        }
 
 	private static void addGermplasmListContainer(Container container, String name, String date, String description) {
 		Object itemId = container.addItem();
@@ -192,6 +197,36 @@ public final class GermplasmIndexContainer{
 		item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
 		item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
 	}
+
+
+        public IndexedContainer getReportOnLots(GermplasmDetailModel g) throws InternationalizableException {
+                IndexedContainer container = new IndexedContainer();
+
+                // Create the container properties
+                container.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, String.class, "");
+                container.addContainerProperty(GERMPLASM_INVENTORY_LOCATION_NAME, String.class, "");
+                container.addContainerProperty(GERMPLASM_INVENTORY_SCALE_NAME, String.class, "");
+
+                final ArrayList<LotReportRow> lotReportRowData =(ArrayList<LotReportRow>) qQuery.getReportOnLotsByEntityTypeAndEntityId("GERMPLSM", Integer.valueOf(g.getGid()));
+
+                for(LotReportRow lotReportRow : lotReportRowData ){
+                    addLotReportRowContainer(container, String.valueOf(lotReportRow.getActualLotBalance()), lotReportRow.getLocationOfLot().getLname(), lotReportRow.getScaleOfLot().getName());
+                    System.out.println("LotReportRow:" + lotReportRow);
+                }
+
+                return container;
+        }
+        
+
+
+        private static void addLotReportRowContainer(Container container, String lotBalance, String locationName, String scaleName) {
+                Object itemId = container.addItem();
+                Item item = container.getItem(itemId);
+                item.getItemProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE).setValue(lotBalance);
+                item.getItemProperty(GERMPLASM_INVENTORY_LOCATION_NAME).setValue(locationName);
+                item.getItemProperty(GERMPLASM_INVENTORY_SCALE_NAME).setValue(scaleName);
+        }
+
 
 	public IndexedContainer getGermplasmGroupRelatives(GermplasmDetailModel G) {
 		IndexedContainer container = new IndexedContainer();

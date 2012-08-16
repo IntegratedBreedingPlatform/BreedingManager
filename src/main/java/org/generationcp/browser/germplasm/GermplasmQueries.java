@@ -25,6 +25,7 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -34,6 +35,7 @@ import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -52,7 +54,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 	private ManagerFactory managerFactory;
 
 	private GermplasmDataManager germplasmDataManager;
-	private GermplasmListManager germplasmListManager;
+        private GermplasmListManager germplasmListManager;
+        private InventoryDataManager inventoryDataManager;
 
 	public GermplasmQueries() {
 
@@ -320,19 +323,35 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 	}
 
 
-	public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
-		int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
+        public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
+                int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
 
-		try {
-			return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
-		} catch (QueryException e) {
-			throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_by_id);
-		}
-	}
+                try {
+                        return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
+                } catch (QueryException e) {
+                        throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_by_id);
+                }
+        }
+
+
+        public List<LotReportRow> getReportOnLotsByEntityTypeAndEntityId(String type, Integer gid) throws InternationalizableException {
+                int count = this.inventoryDataManager.countLotsByEntityTypeAndEntityId(type, gid);
+                
+                System.out.println("type: " + type);
+                System.out.println("gid: " + gid);
+                System.out.println("count: " + count);
+
+//                try {
+                        return this.inventoryDataManager.generateReportOnLotsByEntityTypeAndEntityId(type, gid, 0, count);
+//                } catch (QueryException e) {
+//                        throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_report_on_lots_by_entity_type_and_entity_id);
+//                }
+        }
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
-		this.germplasmListManager = managerFactory.getGermplasmListManager();
+                this.germplasmListManager = managerFactory.getGermplasmListManager();
+                this.inventoryDataManager = managerFactory.getInventoryDataManager();
 	}
 }
