@@ -18,6 +18,7 @@ import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
+import org.generationcp.browser.germplasmlist.GermplasmListBrowserMain;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -47,6 +48,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
     private VerticalLayout rootLayoutForGermplasmBrowser;
     private VerticalLayout rootLayoutForStudyBrowser;
     private VerticalLayout rootLayoutForGermplasmByPhenoTab;
+    private VerticalLayout rootLayoutForGermplasmListBrowser;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -66,6 +68,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
         messageSource.addListener(messageSourceListener);
 
         rootLayoutForGermplasmBrowser = new VerticalLayout();
+        rootLayoutForGermplasmListBrowser = new VerticalLayout();
         rootLayoutForStudyBrowser = new VerticalLayout();
         rootLayoutForGermplasmByPhenoTab = new VerticalLayout();
 
@@ -88,15 +91,17 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
         tabSheet.addListener(new GermplasmSelectedTabChangeListener(this));
 
         // this will be passed to WelcomeTab so that it will have a reference to the root layout of the other tabs
-        VerticalLayout layouts[] = new VerticalLayout[3];
+        VerticalLayout layouts[] = new VerticalLayout[4];
         layouts[0] = rootLayoutForGermplasmBrowser;
-        layouts[1] = rootLayoutForStudyBrowser;
-        layouts[2] = rootLayoutForGermplasmByPhenoTab;
+        layouts[1] = rootLayoutForGermplasmListBrowser;
+        layouts[2] = rootLayoutForStudyBrowser;
+        layouts[3] = rootLayoutForGermplasmByPhenoTab;
 
         WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
 
         tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.welcome_label)); // "Welcome"
         tabSheet.addTab(rootLayoutForGermplasmBrowser, messageSource.getMessage(Message.germplasmbrowser_title)); // "Germplasm Browser"
+        tabSheet.addTab(rootLayoutForGermplasmListBrowser, messageSource.getMessage(Message.germplasmlist_browser_title)); // "Germplasm List Browser"
         tabSheet.addTab(rootLayoutForStudyBrowser, messageSource.getMessage(Message.studybrowser_title)); // "Study Browser"
         tabSheet.addTab(rootLayoutForGermplasmByPhenoTab, messageSource.getMessage(Message.germplasm_by_pheno_title)); // "Search for Germplasms By Phenotypic Data"
 
@@ -163,6 +168,23 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
                     }
                 }
             }
+            
+            else if ("germplasmlist".equals(name)) {
+                Window germplasmListBrowserWindow = new Window(messageSource.getMessage(Message.germplasmlist_browser_title)); // "Germplasm List Browser"
+                germplasmListBrowserWindow.setName("germplasmlist");
+                germplasmListBrowserWindow.setSizeUndefined();
+                try {
+                    germplasmListBrowserWindow.addComponent(new GermplasmListBrowserMain());
+                    this.addWindow(germplasmListBrowserWindow);
+                    return germplasmListBrowserWindow;
+                } catch (InternationalizableException e) {
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    if (getMainWindow() != null) {
+                        MessageNotifier.showError(getMainWindow(), e.getCaption(), e.getDescription());
+                    }
+                }
+            }
 
         }
 
@@ -192,6 +214,10 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
         } else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
             if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
                 rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain());
+            }
+        } else if (source.getSelectedTab() == rootLayoutForGermplasmListBrowser) {
+            if (rootLayoutForGermplasmListBrowser.getComponentCount() == 0) {
+                rootLayoutForGermplasmListBrowser.addComponent(new GermplasmListBrowserMain());
             }
         }
     }

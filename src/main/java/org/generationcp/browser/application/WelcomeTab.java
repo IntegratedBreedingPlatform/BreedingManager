@@ -17,6 +17,8 @@ import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
+import org.generationcp.browser.germplasmlist.GermplasmListBrowserMain;
+import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -51,6 +53,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     
     public static final String BROWSE_STUDY_BUTTON_ID = "WelcomeTab Browse Study Button";
     public static final String BROWSE_GERMPLASM_BUTTON_ID = "WelcomeTab Browse Germplasm Button";
+    public static final String BROWSE_GERMPLASM_LIST_BUTTON_ID = "WelcomeTab Browse Germplasm List Button";
     public static final String BROWSE_GERMPLASM_BY_PHENO_BUTTON_ID = "WelcomeTab Browse Germplasm By Pheno Button";
     
     @SuppressWarnings("unused")
@@ -59,6 +62,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     VerticalLayout rootLayoutsForOtherTabs[];
     
     private VerticalLayout rootLayoutForGermplasmBrowser;
+    private VerticalLayout rootLayoutForGermplasmListBrowser;
 
     private VerticalLayout rootLayoutForStudyBrowser;
     private TabSheet theTabSheet;
@@ -70,6 +74,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     private Label welcomeLabel;
     private Label questionLabel;
     private Button germplasmButton;
+    private Button germplasmListButton;
     private Button studyButton;
     private Button germplasmByPhenoButton;
     
@@ -91,6 +96,16 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         }
 
         theTabSheet.setSelectedTab(rootLayoutForGermplasmBrowser);
+    }
+    
+    // Called by GermplasmListButtonClickListener
+    public void browseGermplasmListInfoButtonClickAction() throws InternationalizableException {
+        if (rootLayoutForGermplasmListBrowser.getComponentCount() == 0) {
+            rootLayoutForGermplasmListBrowser.addComponent(new GermplasmListBrowserMain());
+            rootLayoutForGermplasmListBrowser.addStyleName("addSpacing");
+        }
+
+        theTabSheet.setSelectedTab(rootLayoutForGermplasmListBrowser);
     }
 
     // Called by StudyButtonClickListener
@@ -138,11 +153,19 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
 
         germplasmButton.addListener(new GermplasmButtonClickListener(this));
         this.addComponent(germplasmButton);
+        
+        germplasmListButton = new Button(); // "I want to browse Germplasm List information"
+        germplasmListButton.setWidth(400, UNITS_PIXELS);
+        germplasmListButton.setData(BROWSE_GERMPLASM_LIST_BUTTON_ID);
+        this.rootLayoutForGermplasmListBrowser = rootLayoutsForOtherTabs[1];
+
+        germplasmListButton.addListener(new GermplasmListButtonClickListener(this));
+        this.addComponent(germplasmListButton);
 
         studyButton = new Button(); // "I want to browse Studies and their Datasets"
         studyButton.setWidth(400, UNITS_PIXELS);
         studyButton.setData(BROWSE_STUDY_BUTTON_ID);
-        rootLayoutForStudyBrowser = rootLayoutsForOtherTabs[1];
+        rootLayoutForStudyBrowser = rootLayoutsForOtherTabs[2];
 
         studyButton.addListener(new StudyButtonClickListener(this));
 
@@ -151,7 +174,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         germplasmByPhenoButton = new Button(); // "I want to retrieve Germplasms by Phenotypic Data"
         germplasmByPhenoButton.setWidth(400, UNITS_PIXELS);
         germplasmByPhenoButton.setData(BROWSE_GERMPLASM_BY_PHENO_BUTTON_ID);
-        rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[2];
+        rootLayoutForGermplasmByPheno = rootLayoutsForOtherTabs[3];
 
         germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this));
         this.addComponent(germplasmByPhenoButton);
@@ -168,6 +191,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         messageSource.setCaption(welcomeLabel, Message.welcome_label);
         messageSource.setCaption(questionLabel, Message.question_label);
         messageSource.setCaption(germplasmButton, Message.germplasm_button_label);
+        messageSource.setCaption(germplasmListButton, Message.germplasm_list_button_label);
         messageSource.setCaption(studyButton, Message.study_button_label);
         messageSource.setCaption(germplasmByPhenoButton, Message.germplasms_by_pheno_label);
     }
