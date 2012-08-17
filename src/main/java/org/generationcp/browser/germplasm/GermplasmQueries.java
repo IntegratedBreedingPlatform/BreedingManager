@@ -24,12 +24,10 @@ import org.generationcp.middleware.manager.FindGermplasmByNameModes;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
@@ -54,7 +52,6 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 	private ManagerFactory managerFactory;
 
 	private GermplasmDataManager germplasmDataManager;
-        private GermplasmListManager germplasmListManager;
         private InventoryDataManager inventoryDataManager;
 
 	public GermplasmQueries() {
@@ -322,7 +319,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 		}
 	}
 
-
+	/**
         public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
                 int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
 
@@ -332,7 +329,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
                         throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_by_id);
                 }
         }
-
+        **/
 
         public List<LotReportRow> getReportOnLotsByEntityTypeAndEntityId(String type, Integer gid) throws InternationalizableException {
                 int count = this.inventoryDataManager.countLotsByEntityTypeAndEntityId(type, gid);
@@ -347,7 +344,6 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
-                this.germplasmListManager = managerFactory.getGermplasmListManager();
                 this.inventoryDataManager = managerFactory.getInventoryDataManager();
 	}
 }

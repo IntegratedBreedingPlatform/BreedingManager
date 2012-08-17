@@ -56,12 +56,12 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         setSpacing(true);
         setMargin(true);
 
-        lblGID = new Label(messageSource.getMessage(Message.gid_label)); // "Name"
-        lblPrefName = new Label(messageSource.getMessage(Message.prefname_label)); // "Title"
-        lblLocation = new Label(messageSource.getMessage(Message.location_label)); // "Objective"
-        lblGermplasmMethod = new Label(messageSource.getMessage(Message.method_label)); // "Type"
-        lblCreationDate = new Label(messageSource.getMessage(Message.creation_date_label)); // "Start Date"
-        lblReference = new Label(messageSource.getMessage(Message.gid_label)); // "End Date"
+        lblGID = new Label(messageSource.getMessage(Message.gid_label)); // "GID"
+        lblPrefName = new Label(messageSource.getMessage(Message.prefname_label)); // "Preferred Name"
+        lblLocation = new Label(messageSource.getMessage(Message.location_label)); // "Location"
+        lblGermplasmMethod = new Label(messageSource.getMessage(Message.method_label)); // "Creation Method"
+        lblCreationDate = new Label(messageSource.getMessage(Message.creation_date_label)); // "Creation Date"
+        lblReference = new Label(messageSource.getMessage(Message.reference_label)); // "Reference"
 
         gid = new Label(String.valueOf(gDetailModel.getGid()));
         prefName = new Label(gDetailModel.getGermplasmPreferredName());

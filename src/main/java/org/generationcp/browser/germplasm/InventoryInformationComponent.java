@@ -13,6 +13,7 @@
 package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;

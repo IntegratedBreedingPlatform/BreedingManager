@@ -15,7 +15,7 @@ package org.generationcp.browser.application;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
-import org.generationcp.browser.germplasm.TraitDataIndexContainer;
+import org.generationcp.browser.germplasm.containers.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasmlist.GermplasmListBrowserMain;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;

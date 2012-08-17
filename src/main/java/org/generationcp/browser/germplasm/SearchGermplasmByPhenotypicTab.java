@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasm.containers.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;

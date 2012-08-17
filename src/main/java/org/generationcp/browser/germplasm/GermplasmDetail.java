@@ -13,10 +13,12 @@
 package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.ManagerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -58,6 +60,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private GermplasmIndexContainer dataResultIndexContainer;
 	private GermplasmCharacteristicsComponent germplasmCharacteristicsComponent;
 
+	@Autowired
+        private ManagerFactory managerFactory;
+	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -101,7 +106,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(SIX_TAB)) {
 				if (layoutGermplasmList.getComponentCount() == 0) {
-					layoutGermplasmList.addComponent(new GermplasmListComponent(dataIndexContainer, gDetailModel));
+					layoutGermplasmList.addComponent(new GermplasmListComponent(managerFactory.getGermplasmListManager(), gid));
 					layoutGermplasmList.setMargin(true);
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(SEVEN_TAB)) {

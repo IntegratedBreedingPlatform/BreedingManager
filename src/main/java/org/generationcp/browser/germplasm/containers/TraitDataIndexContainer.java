@@ -10,11 +10,12 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.browser.germplasm;
+package org.generationcp.browser.germplasm.containers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.generationcp.browser.germplasm.TraitQueries;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.pojos.Scale;
 import org.generationcp.middleware.pojos.ScaleDiscrete;

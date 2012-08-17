@@ -10,13 +10,16 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.browser.germplasm;
+package org.generationcp.browser.germplasm.containers;
 
 import java.util.ArrayList;
 
+import org.generationcp.browser.germplasm.GermplasmDetailModel;
+import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
+import org.generationcp.browser.germplasm.GermplasmQueries;
+import org.generationcp.browser.germplasm.GermplasmSearchResultModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +45,6 @@ public final class GermplasmIndexContainer{
 	private static final Object GERMPLASM_NAMES_ATTRIBUTE_LOCATION = "location";
 	private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
 
-	// GermplasmList Model
-	private static final Object GERMPLASMLIST_NAME = "name";
-	private static final Object GERMPLASMLIST_DATE = "date";
-	private static final Object GERMPLASMLIST_DESCRIPTION = "description";
-	
 	// Germplasm Inventory Model
         private static final Object GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE = "lotbalance";
         private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
@@ -170,7 +168,7 @@ public final class GermplasmIndexContainer{
 		item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
 	}
 
-
+	/**
         public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
                 IndexedContainer container = new IndexedContainer();
 
@@ -189,6 +187,7 @@ public final class GermplasmIndexContainer{
 
                 return container;
         }
+        
 
 	private static void addGermplasmListContainer(Container container, String name, String date, String description) {
 		Object itemId = container.addItem();
@@ -197,7 +196,7 @@ public final class GermplasmIndexContainer{
 		item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
 		item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
 	}
-
+        **/
 
         public IndexedContainer getReportOnLots(GermplasmDetailModel g) throws InternationalizableException {
                 IndexedContainer container = new IndexedContainer();
