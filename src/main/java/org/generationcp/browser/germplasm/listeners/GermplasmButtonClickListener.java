@@ -14,6 +14,7 @@ package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
+import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodComponent;
 import org.generationcp.browser.germplasm.SaveGermplasmListDialog;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -113,6 +114,15 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             }
 
+        } else if (source instanceof GermplasmDerivativeNeighborhoodComponent
+                && event.getButton().getData().equals(GermplasmDerivativeNeighborhoodComponent.DISPLAY_BUTTON_ID)) {
+            try {
+                ((GermplasmDerivativeNeighborhoodComponent) source).displayButtonClickAction();
+            }catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+            }
         } else {
             LOG.error("GermplasmButtonClickListener: Error with buttonClick action. Source not identified.");
         }

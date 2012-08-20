@@ -92,11 +92,15 @@ public enum Message {
      group_relatives_label, 
      management_neighbors_label, 
      inventory_information_label, 
+     derivative_neighborhood_label,  
      description_label,
      status_label,
      hidden_label,
      locked_label,
      final_label,
+     number_of_steps_forward_label, 
+     number_of_steps_backward_label,  
+     display_button_label,
      
      
      // ERROR NOTIFICATION MESSAGES
@@ -148,6 +152,8 @@ public enum Message {
      error_in_adding_germplasm_list,
      error_in_counting_traits,
      error_in_getting_discrete_values_of_scale,
-     error_null_table  
+     error_null_table,
+     error_in_getting_derivative_neighborhood
+     
 
 }

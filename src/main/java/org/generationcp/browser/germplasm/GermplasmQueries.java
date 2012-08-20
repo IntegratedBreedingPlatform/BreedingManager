@@ -318,6 +318,14 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 			throw new InternationalizableException(e, Message.error_database, Message.error_in_generating_pedigree_tree);
 		}
 	}
+	
+	public GermplasmPedigreeTree getDerivativeNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward) throws InternationalizableException {
+		try {
+			return germplasmDataManager.getDerivativeNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
+		} catch (QueryException e) {
+			throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_derivative_neighborhood);
+		}
+	}
 
 	/**
         public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {

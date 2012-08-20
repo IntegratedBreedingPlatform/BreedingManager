@@ -40,8 +40,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private static final int FIFTH_TAB = 5;
 	private static final int SIX_TAB = 6;
 	private static final int SEVEN_TAB = 7;
-        private static final int EIGHT_TAB = 8;
-        private static final int NINE_TAB = 9;
+	private static final int EIGHT_TAB = 8;
+	private static final int NINE_TAB = 9;
+	private static final int TEN_TAB = 10;
 
 	private GermplasmIndexContainer dataIndexContainer;
 	private GermplasmQueries qQuery;
@@ -52,8 +53,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private VerticalLayout layoutPedigreeTree;
 	private VerticalLayout layoutGermplasmList;
 	private VerticalLayout layoutGroupRelatives;
-        private VerticalLayout layoutManagementNeighbors;
-        private VerticalLayout layoutInventoryInformation;
+	private VerticalLayout layoutManagementNeighbors;
+	private VerticalLayout layoutInventoryInformation;
+	private VerticalLayout layoutDerivativeNeighborhood;
 	private VerticalLayout mainLayout;
 	private int gid;
 	private TabSheet tabSheet;
@@ -61,8 +63,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private GermplasmCharacteristicsComponent germplasmCharacteristicsComponent;
 
 	@Autowired
-        private ManagerFactory managerFactory;
-	
+	private ManagerFactory managerFactory;
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -103,7 +105,6 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 					layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
 							tabSheet));
 				}
-
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(SIX_TAB)) {
 				if (layoutGermplasmList.getComponentCount() == 0) {
 					layoutGermplasmList.addComponent(new GermplasmListComponent(managerFactory.getGermplasmListManager(), gid));
@@ -114,16 +115,21 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 					layoutGroupRelatives.addComponent(new GermplasmGroupRelativesComponent(dataIndexContainer, gDetailModel));
 					layoutGroupRelatives.setMargin(true);
 				}
-                        }else if (((VerticalLayout) tab.getComponent()).getData().equals(EIGHT_TAB)) {
-                            if (layoutManagementNeighbors.getComponentCount() == 0) {
-                                    layoutManagementNeighbors.addComponent(new GermplasmManagementNeighborsComponent(dataIndexContainer, gDetailModel));
-                                    layoutManagementNeighbors.setMargin(true);
-                            }
-                        }else if (((VerticalLayout) tab.getComponent()).getData().equals(NINE_TAB)) {
-                            if (layoutInventoryInformation.getComponentCount() == 0) {
-                                layoutInventoryInformation.addComponent(new InventoryInformationComponent(dataIndexContainer, gDetailModel));
-                                layoutInventoryInformation.setMargin(true);
-                            }
+			}else if (((VerticalLayout) tab.getComponent()).getData().equals(EIGHT_TAB)) {
+				if (layoutManagementNeighbors.getComponentCount() == 0) {
+					layoutManagementNeighbors.addComponent(new GermplasmManagementNeighborsComponent(dataIndexContainer, gDetailModel));
+					layoutManagementNeighbors.setMargin(true);
+				}
+			}else if (((VerticalLayout) tab.getComponent()).getData().equals(NINE_TAB)) {
+				if (layoutDerivativeNeighborhood.getComponentCount() == 0) {
+					layoutDerivativeNeighborhood.addComponent(new GermplasmDerivativeNeighborhoodComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
+							tabSheet));
+				}
+			}else if (((VerticalLayout) tab.getComponent()).getData().equals(TEN_TAB)) {
+				if (layoutInventoryInformation.getComponentCount() == 0) {
+					layoutInventoryInformation.addComponent(new InventoryInformationComponent(dataIndexContainer, gDetailModel));
+					layoutInventoryInformation.setMargin(true);
+				}
 			}
 		}
 	}
@@ -148,15 +154,18 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 		layoutGermplasmList = new VerticalLayout();
 		layoutGermplasmList.setData(SIX_TAB);
-		
+
 		layoutGroupRelatives = new VerticalLayout();
 		layoutGroupRelatives.setData(SEVEN_TAB);
-		
-                layoutManagementNeighbors = new VerticalLayout();
-                layoutManagementNeighbors.setData(EIGHT_TAB);
 
-                layoutInventoryInformation = new VerticalLayout();
-                layoutInventoryInformation.setData(NINE_TAB);
+		layoutManagementNeighbors = new VerticalLayout();
+		layoutManagementNeighbors.setData(EIGHT_TAB);
+
+		layoutDerivativeNeighborhood = new VerticalLayout();
+		layoutDerivativeNeighborhood.setData(NINE_TAB);
+
+		layoutInventoryInformation = new VerticalLayout();
+		layoutInventoryInformation.setData(TEN_TAB);
 
 		layoutPedigreeTree.setMargin(true);
 
@@ -167,8 +176,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		this.addTab(layoutPedigreeTree, "Pedigree Tree");
 		this.addTab(layoutGermplasmList, "Lists");
 		this.addTab(layoutGroupRelatives, "Group Relatives");
-                this.addTab(layoutManagementNeighbors, "Management Neighbors");
-                this.addTab(layoutInventoryInformation, "Inventory Information");
+		this.addTab(layoutManagementNeighbors, "Management Neighbors");
+		this.addTab(layoutDerivativeNeighborhood, "Derivative Neighborhood");
+		this.addTab(layoutInventoryInformation, "Inventory Information");
 
 		this.addListener(new GermplasmSelectedTabChangeListener(this));
 	}
@@ -187,8 +197,10 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		messageSource.setCaption(layoutGenerationHistory, Message.generation_history_label);
 		messageSource.setCaption(layoutPedigreeTree, Message.pedigree_tree_label);
 		messageSource.setCaption(layoutGroupRelatives, Message.group_relatives_label);
-                messageSource.setCaption(layoutManagementNeighbors, Message.management_neighbors_label);
-                messageSource.setCaption(layoutInventoryInformation, Message.inventory_information_label);
+		messageSource.setCaption(layoutManagementNeighbors, Message.management_neighbors_label);
+		messageSource.setCaption(layoutDerivativeNeighborhood, Message.derivative_neighborhood_label);
+		messageSource.setCaption(layoutInventoryInformation, Message.inventory_information_label);
+
 	}
 
 }
