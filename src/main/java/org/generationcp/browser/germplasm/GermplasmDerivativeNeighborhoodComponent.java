@@ -50,15 +50,15 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
     private GermplasmIndexContainer dataIndexContainer;
     private Tree derivativeNeighborhoodTree;
     private int gid;
-	private Label labelNumberOfStepsBackward;
-	private Label labelNumberOfStepsForward;
-	private Button btnDisplay;
-	private HorizontalLayout hLayout;
-	private Select selectNumberOfStepBackward;
-	private Select selectNumberOfStepForward;
-	public static final String  DISPLAY_BUTTON_ID="Display Derivative Neighborhood";
+    private Label labelNumberOfStepsBackward;
+    private Label labelNumberOfStepsForward;
+    private Button btnDisplay;
+    private HorizontalLayout hLayout;
+    private Select selectNumberOfStepBackward;
+    private Select selectNumberOfStepForward;
+    public static final String  DISPLAY_BUTTON_ID="Display Derivative Neighborhood";
   
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmDerivativeNeighborhoodComponent.class);
 
     @Autowired
@@ -79,26 +79,26 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
     private void addNode(GermplasmPedigreeTreeNode node, int level) {
 
     	 if (level == 1) {
-	        String name = node.getGermplasm().getPreferredName() != null ? node.getGermplasm().getPreferredName().getNval() : null;
-	        String leafNodeLabel = name + "(" + node.getGermplasm().getGid() + ")";
-	        int leafNodeId = node.getGermplasm().getGid();
-	        derivativeNeighborhoodTree.addItem(leafNodeId);
-	        derivativeNeighborhoodTree.setItemCaption(leafNodeId, leafNodeLabel);
-	        derivativeNeighborhoodTree.setParent(leafNodeId, leafNodeId);
-	        derivativeNeighborhoodTree.setChildrenAllowed(leafNodeId, true);
-	        derivativeNeighborhoodTree.expandItemsRecursively(leafNodeId);
+    	     String name = node.getGermplasm().getPreferredName() != null ? node.getGermplasm().getPreferredName().getNval() : null;
+	     String rootNodeLabel = name + "(" + node.getGermplasm().getGid() + ")";
+	     int rootNodeId = node.getGermplasm().getGid();
+	     derivativeNeighborhoodTree.addItem(rootNodeId);
+	     derivativeNeighborhoodTree.setItemCaption(rootNodeId, rootNodeLabel);
+	     derivativeNeighborhoodTree.setParent(rootNodeId, rootNodeId);
+	     derivativeNeighborhoodTree.setChildrenAllowed(rootNodeId, true);
+	     derivativeNeighborhoodTree.expandItemsRecursively(rootNodeId);
     	 }
-        for (GermplasmPedigreeTreeNode parent : node.getLinkedNodes()) {
-        	String name = parent.getGermplasm().getPreferredName() != null ? parent.getGermplasm().getPreferredName().getNval() : null;
-        	int leafNodeId = node.getGermplasm().getGid();
-            String parentNodeLabel = name + "(" + parent.getGermplasm().getGid() + ")";
-            int parentNodeId = parent.getGermplasm().getGid();
-            derivativeNeighborhoodTree.addItem(parentNodeId);
-            derivativeNeighborhoodTree.setItemCaption(parentNodeId, parentNodeLabel);
-            derivativeNeighborhoodTree.setParent(parentNodeId, leafNodeId);
-            derivativeNeighborhoodTree.setChildrenAllowed(parentNodeId, true);
-            derivativeNeighborhoodTree.expandItemsRecursively(parentNodeId);
-        	addNode(parent, level + 1);
+        for (GermplasmPedigreeTreeNode child : node.getLinkedNodes()) {
+            String name = child.getGermplasm().getPreferredName() != null ? child.getGermplasm().getPreferredName().getNval() : null;
+            int parentNodeId = node.getGermplasm().getGid();
+            String childNodeLabel = name + "(" + child.getGermplasm().getGid() + ")";
+            int childNodeId = child.getGermplasm().getGid();
+            derivativeNeighborhoodTree.addItem(childNodeId);
+            derivativeNeighborhoodTree.setItemCaption(childNodeId, childNodeLabel);
+            derivativeNeighborhoodTree.setParent(childNodeId, parentNodeId);
+            derivativeNeighborhoodTree.setChildrenAllowed(childNodeId, true);
+            derivativeNeighborhoodTree.expandItemsRecursively(childNodeId);
+            addNode(child, level + 1);
         }
     }
     
