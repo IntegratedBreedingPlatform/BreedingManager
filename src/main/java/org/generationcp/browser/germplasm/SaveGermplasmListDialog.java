@@ -84,13 +84,13 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         labelStatus = new Label();
 
         txtGermplasmListName = new TextField();
-        txtGermplasmListName.setWidth(300);
+        txtGermplasmListName.setWidth("300px");
         
         txtDescription = new TextField();
-        txtDescription.setWidth(400);
+        txtDescription.setWidth("400px");
         
         txtType = new TextField();
-        txtType.setWidth(200);
+        txtType.setWidth("200px");
   
         selectType = new Select ();
         selectType.addItem("LST");
@@ -117,6 +117,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         hButton.setSpacing(true);
 
         btnSave = new Button();
+        btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save Germplasm List ");
         btnSave.addListener(new GermplasmButtonClickListener(this));
@@ -124,6 +125,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         hButton.addComponent(btnSave);
 
         btnCancel = new Button();
+        btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving Germplasm List");
         btnCancel.addListener(new GermplasmButtonClickListener(this));
@@ -163,7 +165,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         String listName = txtGermplasmListName.getValue().toString();
 
         if (listName.length() > 0) {
-
             saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString(),statusHidden.getValue().toString(),statusLocked.getValue().toString(),statusFinal.getValue().toString());
             closeSavingGermplasmListDialog();
         }
