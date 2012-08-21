@@ -152,18 +152,10 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
     }
 
     private void populateSelectSteps(Select select) {
-		
-    	select.addItem("1");
-		select.addItem("2");
-		select.addItem("3");
-		select.addItem("4");
-		select.addItem("5");
-		select.addItem("6");
-		select.addItem("7");
-		select.addItem("8");
-		select.addItem("9");
-		select.addItem("10");
-		
+    	
+    	for(int i=1;i<=10;i++){
+    		select.addItem(String.valueOf(i));
+    	}
 	}
 
 
