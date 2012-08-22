@@ -56,7 +56,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         Tab tab = this.getTab(selected);
         if (tab.getCaption().equals(layoutListData.getCaption())) { // "Germplasm List Data"
             if (layoutListData.getComponentCount() == 0) {
-                //TODO: layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId));
+                layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId));
                 layoutListData.setMargin(true);
                 layoutListData.setSpacing(true);
             }
