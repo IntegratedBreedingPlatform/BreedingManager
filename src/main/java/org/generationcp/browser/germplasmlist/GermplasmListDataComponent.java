@@ -98,8 +98,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         
         listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
 
-        setMargin(true);
-        setSpacing(true);
         addComponent(listDataTable);
     }
     
