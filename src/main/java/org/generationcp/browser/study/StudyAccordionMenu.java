@@ -35,6 +35,11 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(StudyAccordionMenu.class);
     private static final long serialVersionUID = -1409312205229461614L;
+    
+    private static final String STUDY_VARIATES = "Study Variates";
+    private static final String STUDY_FACTORS = "Study Factors";
+    private static final String STUDY_EFFECTS = "Study Effects";
+    
     private int studyId;
     private VerticalLayout layoutVariate;
     private VerticalLayout layoutFactor;
@@ -59,21 +64,26 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     public void selectedTabChangeAction() throws InternationalizableException{
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
-        if (tab.getCaption().equals(layoutFactor.getCaption())) { // "Factors"
-            if (layoutFactor.getComponentCount() == 0) {
-                layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
-                layoutFactor.setMargin(true);
-                layoutFactor.setSpacing(true);
-            }
-        } else if (tab.getCaption().equals(layoutVariate.getCaption())) { // "Variates"
-            if (layoutVariate.getComponentCount() == 0) {
-                layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
-                layoutVariate.setMargin(true);
-                layoutVariate.setSpacing(true);
-            }
-        } else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
-            if (layoutEffect.getComponentCount() == 0) {
-                layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
+        if (tab.getComponent() instanceof VerticalLayout) {
+            //if (tab.getCaption().equals(layoutFactor.getCaption())) { // "Factors"
+            if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_FACTORS)) {
+                if (layoutFactor.getComponentCount() == 0) {
+                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
+                    layoutFactor.setMargin(true);
+                    layoutFactor.setSpacing(true);
+                }
+            }// else if (tab.getCaption().equals(layoutVariate.getCaption())) { // "Variates"
+            else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_VARIATES)) {
+                if (layoutVariate.getComponentCount() == 0) {
+                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
+                    layoutVariate.setMargin(true);
+                    layoutVariate.setSpacing(true);
+                }
+            }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
+            else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
+                if (layoutEffect.getComponentCount() == 0) {
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
+                }
             }
         }
     }
@@ -83,12 +93,18 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
         this.setSizeFull();
 
         layoutVariate = new VerticalLayout();
+        layoutVariate.setData(STUDY_VARIATES);
+        
         layoutFactor = new VerticalLayout();
+        layoutFactor.setData(STUDY_FACTORS);
+        
         layoutEffect = new VerticalLayout();
-        this.addTab(studyDetailComponent, "Study Details"); // "Study Details"
-        this.addTab(layoutFactor, "Factors"); // "Factors"
-        this.addTab(layoutVariate, "Variates"); // "Variates"
-        this.addTab(layoutEffect, "Datasets"); // "Effects"
+        layoutEffect.setData(STUDY_EFFECTS);
+        
+        this.addTab(studyDetailComponent, messageSource.getMessage(Message.study_details_text)); // "Study Details"
+        this.addTab(layoutFactor, messageSource.getMessage(Message.factors_text)); // "Factors"
+        this.addTab(layoutVariate, messageSource.getMessage(Message.variates_text)); // "Variates"
+        this.addTab(layoutEffect, messageSource.getMessage(Message.datasets_text)); // "Effects"
 
         this.addListener(new StudySelectedTabChangeListener(this));    	
     }
@@ -101,10 +117,10 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(studyDetailComponent, Message.study_details_label);
+        /*messageSource.setCaption(studyDetailComponent, Message.study_details_label);
         messageSource.setCaption(layoutFactor, Message.factors_text);
         messageSource.setCaption(layoutVariate, Message.variates_text);
-        messageSource.setCaption(layoutEffect, Message.datasets_text);
+        messageSource.setCaption(layoutEffect, Message.datasets_text);*/
     }
 
 }

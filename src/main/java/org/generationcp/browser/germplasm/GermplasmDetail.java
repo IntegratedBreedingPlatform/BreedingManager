@@ -169,16 +169,16 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 		layoutPedigreeTree.setMargin(true);
 
-		this.addTab(germplasmCharacteristicsComponent, "Characteristics");
-		this.addTab(layoutNames, "Names");
-		this.addTab(layoutAttributes, "Attributes");
-		this.addTab(layoutGenerationHistory, "Generation History");
-		this.addTab(layoutPedigreeTree, "Pedigree Tree");
-		this.addTab(layoutGermplasmList, "Lists");
-		this.addTab(layoutGroupRelatives, "Group Relatives");
-		this.addTab(layoutManagementNeighbors, "Management Neighbors");
-		this.addTab(layoutDerivativeNeighborhood, "Derivative Neighborhood");
-		this.addTab(layoutInventoryInformation, "Inventory Information");
+		this.addTab(germplasmCharacteristicsComponent, messageSource.getMessage(Message.characteristics_label));
+		this.addTab(layoutNames, messageSource.getMessage(Message.names_label));
+		this.addTab(layoutAttributes, messageSource.getMessage(Message.attributes_label));
+		this.addTab(layoutGenerationHistory, messageSource.getMessage(Message.generation_history_label));
+		this.addTab(layoutPedigreeTree, messageSource.getMessage(Message.pedigree_tree_label));
+		this.addTab(layoutGermplasmList, messageSource.getMessage(Message.lists_label));
+		this.addTab(layoutGroupRelatives, messageSource.getMessage(Message.group_relatives_label));
+		this.addTab(layoutManagementNeighbors, messageSource.getMessage(Message.management_neighbors_label));
+		this.addTab(layoutDerivativeNeighborhood, messageSource.getMessage(Message.derivative_neighborhood_label));
+		this.addTab(layoutInventoryInformation, messageSource.getMessage(Message.inventory_information_label));
 
 		this.addListener(new GermplasmSelectedTabChangeListener(this));
 	}
@@ -191,7 +191,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 	@Override
 	public void updateLabels() {
-		messageSource.setCaption(germplasmCharacteristicsComponent, Message.characteristics_label);
+		/*messageSource.setCaption(germplasmCharacteristicsComponent, Message.characteristics_label);
 		messageSource.setCaption(layoutNames, Message.names_label);
 		messageSource.setCaption(layoutAttributes, Message.attributes_label);
 		messageSource.setCaption(layoutGenerationHistory, Message.generation_history_label);
@@ -199,7 +199,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		messageSource.setCaption(layoutGroupRelatives, Message.group_relatives_label);
 		messageSource.setCaption(layoutManagementNeighbors, Message.management_neighbors_label);
 		messageSource.setCaption(layoutDerivativeNeighborhood, Message.derivative_neighborhood_label);
-		messageSource.setCaption(layoutInventoryInformation, Message.inventory_information_label);
+		messageSource.setCaption(layoutInventoryInformation, Message.inventory_information_label);*/
 
 	}
 

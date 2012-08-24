@@ -34,31 +34,34 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(GermplasmListAccordionMenu.class);
     private static final long serialVersionUID = -1409312205229461614L;
+    
+    private static final String LIST_DETAILS = "List Details";
+    private static final String LIST_DATA = "List Data";
+    
     private int germplasmListId;
-    private VerticalLayout layoutListData;
-
     private GermplasmListManager germplasmListManager;
     private GermplasmListDetailComponent germplasmListDetailComponent;
+    
+    private VerticalLayout layoutListData;
    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmListAccordionMenu(int germplasmListId, GermplasmListManager germplasmListManager, 
-            GermplasmListDetailComponent germplasmListDetailComponent) {
+    public GermplasmListAccordionMenu(int germplasmListId, GermplasmListManager germplasmListManager) {
         this.germplasmListId = germplasmListId;
         this.germplasmListManager = germplasmListManager;
-        this.germplasmListDetailComponent = germplasmListDetailComponent;
-        // Have it take all space available in the layout.
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
-        if (tab.getCaption().equals(layoutListData.getCaption())) { // "Germplasm List Data"
-            if (layoutListData.getComponentCount() == 0) {
-                layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId));
-                layoutListData.setMargin(true);
-                layoutListData.setSpacing(true);
+        if (tab.getComponent() instanceof VerticalLayout) {
+            if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
+                if (layoutListData.getComponentCount() == 0) {
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId));
+                    layoutListData.setMargin(true);
+                    layoutListData.setSpacing(true);
+                }
             }
         }
     }
@@ -66,10 +69,15 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Override
     public void afterPropertiesSet() {
         this.setSizeFull();
+        
+        germplasmListDetailComponent = new GermplasmListDetailComponent(germplasmListManager, germplasmListId);
+        germplasmListDetailComponent.setData(LIST_DETAILS);
 
         layoutListData = new VerticalLayout();
-        this.addTab(germplasmListDetailComponent, "Germplasm List Details"); // "Germplasm List Details"
-        this.addTab(layoutListData, "Germplasm List Data"); // "Germplasm List Data"
+        layoutListData.setData(LIST_DATA);
+        
+        this.addTab(germplasmListDetailComponent, messageSource.getMessage(Message.germplasm_list_details_tab)); // "Germplasm List Details"
+        this.addTab(layoutListData, messageSource.getMessage(Message.germplasm_list_data_tab)); // "Germplasm List Data"
 
         this.addListener(new GermplasmListSelectedTabChangeListener(this));    	
     }
@@ -82,8 +90,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(germplasmListDetailComponent, Message.germplasm_list_details_text);
-        messageSource.setCaption(layoutListData, Message.germplasm_list_data_text);
     }
 
 }

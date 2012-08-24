@@ -31,9 +31,9 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
     private static final long serialVersionUID = 1L;
     
 
-    private static final String NAME = "Name";
+    /*private static final String NAME = "Name";
     private static final String DATE = "Date";
-    private static final String DESCRIPTION = "Description";
+    private static final String DESCRIPTION = "Description";*/
     
     private GermplasmListManager dataManager;
     private Integer gid;
@@ -56,6 +56,10 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DATE, String.class, null);
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, String.class, null);
         
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, Message.name_header);
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE, Message.date_header);
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, Message.description_header);
+        
         container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
         
         setContainerDataSource(container);
@@ -66,7 +70,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
         setPageLength(15);
-        setColumnHeaders(new String[] { NAME, DATE, DESCRIPTION });
+        //setColumnHeaders(new String[] { NAME, DATE, DESCRIPTION });
     }
 
     @Override
@@ -77,9 +81,9 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, NAME, Message.name_header);
+        /*messageSource.setColumnHeader(this, NAME, Message.name_header);
         messageSource.setColumnHeader(this, DATE, Message.date_header);
-        messageSource.setColumnHeader(this, DESCRIPTION, Message.description_header);
+        messageSource.setColumnHeader(this, DESCRIPTION, Message.description_header);*/
     }
 
 }
