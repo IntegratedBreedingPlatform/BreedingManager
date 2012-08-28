@@ -171,6 +171,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         setMargin(true);
         setSpacing(true);
         addComponent(datasetTable);
+        setData(this.reportName);
 
         exportCsvButton = new Button(); // "Export to CSV"
         exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
