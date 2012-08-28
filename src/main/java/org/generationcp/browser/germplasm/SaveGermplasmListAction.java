@@ -57,15 +57,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
      *
      * @param listName the list name
      * @param tabSheet the tab sheet
-     * @param statusFinal 
-     * @param statusLocked 
-     * @param statusHidden 
      * @param type 
      * @param description 
      * @throws QueryException the query exception
      */
     @SuppressWarnings("unused")
-    public void addGermplasListNameAndData(String listName, TabSheet tabSheet, String description, String type, String statusHidden, String statusLocked, String statusFinal) throws InternationalizableException {
+    public void addGermplasListNameAndData(String listName, TabSheet tabSheet, String description, String type) throws InternationalizableException {
 
         try {
             SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
@@ -74,7 +71,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
             Long currentDate = Long.valueOf(formatter.format(date));
             int userId = 1;
             GermplasmList parent = null;
-            int statusListName = Integer.valueOf(getStatus(statusHidden,statusLocked,statusFinal));
+            int statusListName = 1;
 
             GermplasmList listNameData = new GermplasmList(null, listName, currentDate, type, userId, description, parent, statusListName);
 
@@ -102,29 +99,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
         }
     }
 
-    private String getStatus(String statusHidden, String statusLocked,String statusFinal) {
-    	String status="";
-    	
-    	if(statusFinal.equals("true")){
-            status+="1";
-        }else{
-                status+="0";
-        }
-    	
-    	if(statusLocked.equals("true")){
-    		status+="1";
-    	}else{
-    		status+="0";
-    	}
-    	
-    	if(statusHidden.equals("true")){
-            status+="1";
-        }else{
-                status+="0";
-        }
-    	
-	return status+="1";
-    }
+    
 
 	/* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

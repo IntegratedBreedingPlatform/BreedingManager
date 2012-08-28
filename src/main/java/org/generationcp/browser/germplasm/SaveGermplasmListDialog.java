@@ -45,14 +45,9 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private TextField txtGermplasmListName;
 	private Label labelListName;
 	private Label labelDescription;
-	private Label labelHidden;
 	private TextField txtDescription;
 	private Label labelType;
 	private TextField txtType;
-	private Label labelStatus;
-	private CheckBox statusHidden;
-	private CheckBox statusLocked;
-	private CheckBox statusFinal;
 	private Window dialogWindow;
 	private Window mainWindow;
 
@@ -81,7 +76,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		labelListName = new Label();
 		labelDescription = new Label();
 		labelType = new Label();
-		labelStatus = new Label();
 
 		txtGermplasmListName = new TextField();
 		txtGermplasmListName.setWidth("300px");
@@ -97,23 +91,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		selectType.setNullSelectionAllowed(false);
 		selectType.select("LST");
 
-
-
-		statusHidden = new CheckBox("Hidden");
-		statusHidden.setValue(false);
-
-		statusLocked = new CheckBox("Locked");
-		statusLocked.setValue(false);
-
-		statusFinal = new CheckBox("Final");
-		statusFinal.setValue(false);
-
-		HorizontalLayout hStatus = new HorizontalLayout();
-		hStatus.setSpacing(true);
-
-		hStatus.addComponent(statusHidden);
-		hStatus.addComponent(statusLocked);
-		hStatus.addComponent(statusFinal);
 
 		HorizontalLayout hButton = new HorizontalLayout();
 		hButton.setSpacing(true);
@@ -140,8 +117,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		addComponent(txtDescription, 2, 2);
 		addComponent(labelType, 1,3);
 		addComponent(selectType, 2, 3);
-		addComponent(labelStatus, 1, 4);
-		addComponent(hStatus, 2, 4);
 		addComponent(hButton, 1, 6);
 	}
 
@@ -177,7 +152,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		messageSource.setCaption(labelListName, Message.listname_label);
 		messageSource.setCaption(labelDescription, Message.description_label);
 		messageSource.setCaption(labelType, Message.type_label);
-		messageSource.setCaption(labelStatus, Message.status_label);
 		messageSource.setCaption(btnSave, Message.save_germplasm_listname_button_label);
 		messageSource.setCaption(btnCancel, Message.cancel_germplasm_listname_button_label);
 	}
@@ -188,7 +162,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		String listName = txtGermplasmListName.getValue().toString();
 
 		if (listName.length() > 0) {
-			saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString(),statusHidden.getValue().toString(),statusLocked.getValue().toString(),statusFinal.getValue().toString());
+			saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
 			closeSavingGermplasmListDialog();
 		}
 	}
