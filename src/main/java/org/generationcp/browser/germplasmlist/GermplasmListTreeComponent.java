@@ -50,6 +50,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     private static final long serialVersionUID = -3481988646509402160L;
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmListTreeComponent.class);
+    private final static int BATCH_SIZE = 50;
     
     public final static String REFRESH_BUTTON_ID = "GermplasmListTreeComponent Refresh Button";
 
@@ -85,7 +86,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         List<GermplasmList> germplasmListParent = new ArrayList<GermplasmList>();
 
         try {
-            germplasmListParent = this.germplasmListManager.getTopLevelFolders(0, 100, database);
+            germplasmListParent = this.germplasmListManager.getTopLevelFoldersBatched(BATCH_SIZE, database);
         } catch (QueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
@@ -129,7 +130,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 
         try {
-            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderId(parentGermplasmListId, 0, 500);
+            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
         } catch (QueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
