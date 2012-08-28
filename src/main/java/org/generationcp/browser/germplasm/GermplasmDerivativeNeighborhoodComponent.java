@@ -98,6 +98,12 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
             derivativeNeighborhoodTree.setParent(childNodeId, parentNodeId);
             derivativeNeighborhoodTree.setChildrenAllowed(childNodeId, true);
             derivativeNeighborhoodTree.expandItemsRecursively(childNodeId);
+            
+            if(child.getGermplasm().getGid()==gid){
+            	derivativeNeighborhoodTree.setValue(childNodeId);
+            	derivativeNeighborhoodTree.setImmediate(true);
+            }
+            
             addNode(child, level + 1);
         }
     }
@@ -115,14 +121,14 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
         selectNumberOfStepBackward.setWidth("50px");
         populateSelectSteps(selectNumberOfStepBackward);
         selectNumberOfStepBackward.setNullSelectionAllowed(false);
-        selectNumberOfStepBackward.select("1");
+        selectNumberOfStepBackward.select("2");
       
         labelNumberOfStepsForward= new Label();
         selectNumberOfStepForward= new Select ();
         selectNumberOfStepForward.setWidth("50px");
         populateSelectSteps(selectNumberOfStepForward);
         selectNumberOfStepForward.setNullSelectionAllowed(false);
-        selectNumberOfStepForward.select("1");
+        selectNumberOfStepForward.select("3");
         
         btnDisplay = new Button();
         btnDisplay.setData(DISPLAY_BUTTON_ID);
@@ -149,6 +155,7 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
                 return messageSource.getMessage(Message.click_to_view_germplasm_details);
             }
         });
+        
     }
 
     private void populateSelectSteps(Select select) {
