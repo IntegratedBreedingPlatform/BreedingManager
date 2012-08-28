@@ -37,145 +37,168 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent{
-	
-    private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
-    private static final long serialVersionUID = 1L;
-    public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
-    public static final String CANCEL_BUTTON_ID = "Cancel Saving";
-    private TextField txtGermplasmListName;
-    private Label labelListName;
-    private Label labelDescription;
-    private Label labelHidden;
-    private TextField txtDescription;
-    private Label labelType;
-    private TextField txtType;
-    private Label labelStatus;
-    private CheckBox statusHidden;
-    private CheckBox statusLocked;
-    private CheckBox statusFinal;
-    private Window dialogWindow;
-    private Window mainWindow;
 
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    private Button btnSave;
-    private Button btnCancel;
-    private TabSheet tabSheet;
-    private ComboBox comboBoxType;
-    private Select selectType;
+	private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
+	private static final long serialVersionUID = 1L;
+	public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
+	public static final String CANCEL_BUTTON_ID = "Cancel Saving";
+	private TextField txtGermplasmListName;
+	private Label labelListName;
+	private Label labelDescription;
+	private Label labelHidden;
+	private TextField txtDescription;
+	private Label labelType;
+	private TextField txtType;
+	private Label labelStatus;
+	private CheckBox statusHidden;
+	private CheckBox statusLocked;
+	private CheckBox statusFinal;
+	private Window dialogWindow;
+	private Window mainWindow;
 
-    public SaveGermplasmListDialog(Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
-        this.dialogWindow = dialogWindow;
-        this.mainWindow = mainWindow;
-        this.tabSheet = tabSheet;
-    }
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+	private Button btnSave;
+	private Button btnCancel;
+	private TabSheet tabSheet;
+	private ComboBox comboBoxType;
+	private Select selectType;
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        setRows(8);
-        setColumns(3);
-        setSpacing(true);
-        setMargin(true);
+	public SaveGermplasmListDialog(Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
+		this.dialogWindow = dialogWindow;
+		this.mainWindow = mainWindow;
+		this.tabSheet = tabSheet;
+	}
 
-        labelListName = new Label();
-        labelDescription = new Label();
-        labelType = new Label();
-        labelStatus = new Label();
+	@SuppressWarnings("deprecation")
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		setRows(8);
+		setColumns(3);
+		setSpacing(true);
+		setMargin(true);
 
-        txtGermplasmListName = new TextField();
-        txtGermplasmListName.setWidth("300px");
-        
-        txtDescription = new TextField();
-        txtDescription.setWidth("400px");
-        
-        txtType = new TextField();
-        txtType.setWidth("200px");
-  
-        selectType = new Select ();
-        selectType.addItem("LST");
-        selectType.setNullSelectionAllowed(false);
-        selectType.select("LST");
-        
-        statusHidden = new CheckBox("Hidden");
-        statusHidden.setValue(false);
+		labelListName = new Label();
+		labelDescription = new Label();
+		labelType = new Label();
+		labelStatus = new Label();
 
-        statusLocked = new CheckBox("Locked");
-        statusLocked.setValue(false);
-        
-        statusFinal = new CheckBox("Final");
-        statusFinal.setValue(false);
-        
-        HorizontalLayout hStatus = new HorizontalLayout();
-        hStatus.setSpacing(true);
-        
-        hStatus.addComponent(statusHidden);
-        hStatus.addComponent(statusLocked);
-        hStatus.addComponent(statusFinal);
-        
-        HorizontalLayout hButton = new HorizontalLayout();
-        hButton.setSpacing(true);
+		txtGermplasmListName = new TextField();
+		txtGermplasmListName.setWidth("300px");
 
-        btnSave = new Button();
-        btnSave.setWidth("80px");
-        btnSave.setData(SAVE_BUTTON_ID);
-        btnSave.setDescription("Save Germplasm List ");
-        btnSave.addListener(new GermplasmButtonClickListener(this));
+		txtDescription = new TextField();
+		txtDescription.setWidth("400px");
 
-        hButton.addComponent(btnSave);
+		txtType = new TextField();
+		txtType.setWidth("200px");
 
-        btnCancel = new Button();
-        btnCancel.setWidth("80px");
-        btnCancel.setData(CANCEL_BUTTON_ID);
-        btnCancel.setDescription("Cancel Saving Germplasm List");
-        btnCancel.addListener(new GermplasmButtonClickListener(this));
+		selectType = new Select ();
+		populateSelectType(selectType);
+		selectType.setNullSelectionAllowed(false);
+		selectType.select("LST");
 
-        hButton.addComponent(btnCancel);
 
-        addComponent(labelListName, 1, 1);
-        addComponent(txtGermplasmListName, 2, 1);
-        addComponent(labelDescription, 1,2);
-        addComponent(txtDescription, 2, 2);
-        addComponent(labelType, 1,3);
-        addComponent(selectType, 2, 3);
-        addComponent(labelStatus, 1, 4);
-        addComponent(hStatus, 2, 4);
-        addComponent(hButton, 1, 6);
-    }
 
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
+		statusHidden = new CheckBox("Hidden");
+		statusHidden.setValue(false);
 
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(labelListName, Message.listname_label);
-        messageSource.setCaption(labelDescription, Message.description_label);
-        messageSource.setCaption(labelType, Message.type_label);
-        messageSource.setCaption(labelStatus, Message.status_label);
-        messageSource.setCaption(btnSave, Message.save_germplasm_listname_button_label);
-        messageSource.setCaption(btnCancel, Message.cancel_germplasm_listname_button_label);
-    }
+		statusLocked = new CheckBox("Locked");
+		statusLocked.setValue(false);
 
-    public void saveGermplasmListButtonClickAction() throws InternationalizableException {
-        SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
+		statusFinal = new CheckBox("Final");
+		statusFinal.setValue(false);
 
-        String listName = txtGermplasmListName.getValue().toString();
+		HorizontalLayout hStatus = new HorizontalLayout();
+		hStatus.setSpacing(true);
 
-        if (listName.length() > 0) {
-            saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString(),statusHidden.getValue().toString(),statusLocked.getValue().toString(),statusFinal.getValue().toString());
-            closeSavingGermplasmListDialog();
-        }
-    }
+		hStatus.addComponent(statusHidden);
+		hStatus.addComponent(statusLocked);
+		hStatus.addComponent(statusFinal);
 
-    public void cancelGermplasmListButtonClickAction() {
-        closeSavingGermplasmListDialog();
-    }
+		HorizontalLayout hButton = new HorizontalLayout();
+		hButton.setSpacing(true);
 
-    public void closeSavingGermplasmListDialog() {
-        this.mainWindow.removeWindow(dialogWindow);
-    }
+		btnSave = new Button();
+		btnSave.setWidth("80px");
+		btnSave.setData(SAVE_BUTTON_ID);
+		btnSave.setDescription("Save Germplasm List ");
+		btnSave.addListener(new GermplasmButtonClickListener(this));
+
+		hButton.addComponent(btnSave);
+
+		btnCancel = new Button();
+		btnCancel.setWidth("80px");
+		btnCancel.setData(CANCEL_BUTTON_ID);
+		btnCancel.setDescription("Cancel Saving Germplasm List");
+		btnCancel.addListener(new GermplasmButtonClickListener(this));
+
+		hButton.addComponent(btnCancel);
+
+		addComponent(labelListName, 1, 1);
+		addComponent(txtGermplasmListName, 2, 1);
+		addComponent(labelDescription, 1,2);
+		addComponent(txtDescription, 2, 2);
+		addComponent(labelType, 1,3);
+		addComponent(selectType, 2, 3);
+		addComponent(labelStatus, 1, 4);
+		addComponent(hStatus, 2, 4);
+		addComponent(hButton, 1, 6);
+	}
+
+
+
+	private void populateSelectType(Select selectType) {
+		selectType.addItem("LST");
+		selectType.addItem("HB");
+		selectType.addItem("F1");
+		selectType.addItem("F2");
+		selectType.addItem("PN");
+		selectType.addItem("OYT");
+		selectType.addItem("RYT");
+		selectType.addItem("FOLDER");
+		selectType.addItem("EXTACQ");
+		selectType.addItem("EXTREQ");
+		selectType.addItem("INTREQ");
+		selectType.addItem("COLLMIS");
+		selectType.addItem("INTACQ");
+		selectType.addItem("SI");
+		selectType.addItem("SEEDSTCK");
+		selectType.addItem("TRNGENC");
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		updateLabels();
+	}
+
+	@Override
+	public void updateLabels() {
+		messageSource.setCaption(labelListName, Message.listname_label);
+		messageSource.setCaption(labelDescription, Message.description_label);
+		messageSource.setCaption(labelType, Message.type_label);
+		messageSource.setCaption(labelStatus, Message.status_label);
+		messageSource.setCaption(btnSave, Message.save_germplasm_listname_button_label);
+		messageSource.setCaption(btnCancel, Message.cancel_germplasm_listname_button_label);
+	}
+
+	public void saveGermplasmListButtonClickAction() throws InternationalizableException {
+		SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
+
+		String listName = txtGermplasmListName.getValue().toString();
+
+		if (listName.length() > 0) {
+			saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString(),statusHidden.getValue().toString(),statusLocked.getValue().toString(),statusFinal.getValue().toString());
+			closeSavingGermplasmListDialog();
+		}
+	}
+
+	public void cancelGermplasmListButtonClickAction() {
+		closeSavingGermplasmListDialog();
+	}
+
+	public void closeSavingGermplasmListDialog() {
+		this.mainWindow.removeWindow(dialogWindow);
+	}
 
 }
