@@ -49,6 +49,7 @@ public final class GermplasmIndexContainer{
         private static final Object GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE = "lotbalance";
         private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
         private static final Object GERMPLASM_INVENTORY_SCALE_NAME = "scale";
+        private static final Object GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
 
 	private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
 	@SuppressWarnings("unused")
@@ -205,11 +206,12 @@ public final class GermplasmIndexContainer{
                 container.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, String.class, "");
                 container.addContainerProperty(GERMPLASM_INVENTORY_LOCATION_NAME, String.class, "");
                 container.addContainerProperty(GERMPLASM_INVENTORY_SCALE_NAME, String.class, "");
+                container.addContainerProperty(GERMPLASM_INVENTORY_LOT_COMMENT, String.class, "");
 
                 final ArrayList<LotReportRow> lotReportRowData =(ArrayList<LotReportRow>) qQuery.getReportOnLotsByEntityTypeAndEntityId("GERMPLSM", Integer.valueOf(g.getGid()));
 
                 for(LotReportRow lotReportRow : lotReportRowData ){
-                    addLotReportRowContainer(container, String.valueOf(lotReportRow.getActualLotBalance()), lotReportRow.getLocationOfLot().getLname(), lotReportRow.getScaleOfLot().getName());
+                    addLotReportRowContainer(container, String.valueOf(lotReportRow.getActualLotBalance()), lotReportRow.getLocationOfLot().getLname(), lotReportRow.getScaleOfLot().getName(), lotReportRow.getCommentOfLot());
                 }
 
                 return container;
@@ -217,12 +219,13 @@ public final class GermplasmIndexContainer{
         
 
 
-        private static void addLotReportRowContainer(Container container, String lotBalance, String locationName, String scaleName) {
+        private static void addLotReportRowContainer(Container container, String lotBalance, String locationName, String scaleName, String lotComment) {
                 Object itemId = container.addItem();
                 Item item = container.getItem(itemId);
                 item.getItemProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE).setValue(lotBalance);
                 item.getItemProperty(GERMPLASM_INVENTORY_LOCATION_NAME).setValue(locationName);
                 item.getItemProperty(GERMPLASM_INVENTORY_SCALE_NAME).setValue(scaleName);
+                item.getItemProperty(GERMPLASM_INVENTORY_LOT_COMMENT).setValue(lotComment);
         }
 
 

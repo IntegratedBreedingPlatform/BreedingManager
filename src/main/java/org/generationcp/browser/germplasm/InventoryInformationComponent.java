@@ -31,6 +31,7 @@ public class InventoryInformationComponent extends Table implements Initializing
     private static final String ACTUAL_LOT_BALANCE = "Actual Lot Balance";
     private static final String LOCATION_NAME = "Location Name";
     private static final String SCALE_NAME = "Scale Name";
+    private static final String LOT_COMMENT = "Lot Comment";
     
     private GermplasmIndexContainer dataIndexContainer;
     private GermplasmDetailModel gDetailModel;
@@ -53,7 +54,7 @@ public class InventoryInformationComponent extends Table implements Initializing
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { ACTUAL_LOT_BALANCE, LOCATION_NAME, SCALE_NAME });
+        setColumnHeaders(new String[] { ACTUAL_LOT_BALANCE, LOCATION_NAME, SCALE_NAME, LOT_COMMENT });
     }
 
     @Override
@@ -67,6 +68,7 @@ public class InventoryInformationComponent extends Table implements Initializing
         messageSource.setColumnHeader(this, ACTUAL_LOT_BALANCE, Message.lot_balance_header);
         messageSource.setColumnHeader(this, LOCATION_NAME, Message.location_header);
         messageSource.setColumnHeader(this, SCALE_NAME, Message.scale_header);
+        messageSource.setColumnHeader(this, LOT_COMMENT, Message.lot_comment_header);
     }
 
 }

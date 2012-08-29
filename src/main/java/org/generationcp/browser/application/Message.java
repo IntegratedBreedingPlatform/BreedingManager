@@ -56,6 +56,7 @@ public enum Message {
      scale_header,
      location_header,
      lot_balance_header,
+     lot_comment_header,
      method_header,
      datatype_header,
      date_header,
