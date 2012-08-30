@@ -87,7 +87,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         List<Study> studyParent = new ArrayList<Study>();
 
         try {
-            studyParent = this.studyDataManager.getAllTopLevelStudies(0, 100, database);
+            studyParent = this.studyDataManager.getAllTopLevelStudies(0, 
+                                studyDataManager.countAllTopLevelStudies(database).intValue(), 
+                                database);
         } catch (QueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();

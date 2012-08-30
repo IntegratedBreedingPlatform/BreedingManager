@@ -70,6 +70,9 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
         Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.dataset_text), "").trim()); // "Dataset"
         String repName = parts[1].trim();
 
+        // if repName is null or empty, use repId in dataset tab title
+        repName = ((repName == null || repName.equals("")) ? repId.toString() : repName);
+        
         String tabTitle = messageSource.getMessage(Message.dataset_of_text) + repName; // "Dataset of "
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
