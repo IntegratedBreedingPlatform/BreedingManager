@@ -86,7 +86,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         List<GermplasmList> germplasmListParent = new ArrayList<GermplasmList>();
 
         try {
-            germplasmListParent = this.germplasmListManager.getTopLevelFoldersBatched(BATCH_SIZE, database);
+            germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, database);
         } catch (QueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
