@@ -42,6 +42,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmStudyBrowserApplication.class);
 
     private static final long serialVersionUID = 1L;
+    
+    public static final String GERMPLASM_WINDOW_NAME = "germplasm"; 
 
     private Window window;
 
@@ -151,13 +153,13 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
                 return studyBrowserWindow;
             }
 
-            else if ("germplasm".equals(name)) {
+            else if (GERMPLASM_WINDOW_NAME.equals(name)) {
 
                 Window germplasmBrowserWindow = new Window(messageSource.getMessage(Message.germplasmbrowser_title)); // "Germplasm Browser"
                 germplasmBrowserWindow.setName("germplasm");
                 germplasmBrowserWindow.setSizeUndefined();
                 try {
-                    germplasmBrowserWindow.addComponent(new GermplasmBrowserMain());
+                    germplasmBrowserWindow.addComponent(new GermplasmBrowserMain(true));
                     this.addWindow(germplasmBrowserWindow);
                     return germplasmBrowserWindow;
                 } catch (InternationalizableException e) {
@@ -209,7 +211,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
 
         } else if (source.getSelectedTab() == rootLayoutForGermplasmBrowser) {
             if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-                rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain());
+                rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(false));
             }
         } else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
             if (rootLayoutForStudyBrowser.getComponentCount() == 0) {

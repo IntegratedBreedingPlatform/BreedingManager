@@ -11,6 +11,7 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
@@ -82,8 +83,11 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
     private HorizontalLayout hLayoutForButtons;
 
     private Window saveGermplasmListDialog;
+    
+    private boolean forGermplasmWindow;         //this is true if this component is created for the germplasm browser only window
 
-    public GermplasmBrowserMain() throws InternationalizableException {
+    public GermplasmBrowserMain(boolean forGermplasmWindow) throws InternationalizableException {
+        this.forGermplasmWindow = forGermplasmWindow;
         qQuery = new GermplasmQueries();
         dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
     }
@@ -239,9 +243,15 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         saveGermplasmListDialog.setModal(true);
         saveGermplasmListDialog.setWidth(700);
         saveGermplasmListDialog.setHeight(350);
-        saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(), saveGermplasmListDialog,
-                tabSheet));
-        this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);
+        if(this.forGermplasmWindow) {
+            saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME)
+                    , saveGermplasmListDialog, tabSheet));
+            this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME).addWindow(saveGermplasmListDialog);
+        } else {
+            saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(), saveGermplasmListDialog,
+                    tabSheet));
+            this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);
+        }
     }
 
     public void closeAllGermplasmDetailTabButtonClickAction() {

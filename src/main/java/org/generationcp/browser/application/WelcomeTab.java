@@ -91,7 +91,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     // Called by GermplasmButtonClickListener
     public void browserGermplasmInfoButtonClickAction() throws InternationalizableException {
         if (rootLayoutForGermplasmBrowser.getComponentCount() == 0) {
-            rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain());
+            rootLayoutForGermplasmBrowser.addComponent(new GermplasmBrowserMain(false));
             rootLayoutForGermplasmBrowser.addStyleName("addSpacing");
         }
 
