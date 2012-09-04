@@ -112,21 +112,22 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     }
 
     public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
-        VerticalLayout detailLayout = new VerticalLayout();
-        detailLayout.setSpacing(true);
-
-        if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet));
-            Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
-            tab.setClosable(true);
-            tabSheet.setSelectedTab(detailLayout);
-            mainLayout.addComponent(tabSheet);
-
-        } else {
-            Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
-            tabSheet.setSelectedTab(tab.getComponent());
+        if(this.mainLayout != null && this.tabSheet != null) {
+            VerticalLayout detailLayout = new VerticalLayout();
+            detailLayout.setSpacing(true);
+    
+            if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
+                detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet));
+                Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
+                tab.setClosable(true);
+                tabSheet.setSelectedTab(detailLayout);
+                mainLayout.addComponent(tabSheet);
+    
+            } else {
+                Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
+                tabSheet.setSelectedTab(tab.getComponent());
+            }
         }
-
     }
 
     @Override

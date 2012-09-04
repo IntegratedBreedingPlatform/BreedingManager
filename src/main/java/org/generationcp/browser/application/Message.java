@@ -111,7 +111,9 @@ public enum Message {
      number_of_steps_forward_label, 
      number_of_steps_backward_label,  
      display_button_label,
-     
+     null_study_details,
+     germplasm_details_text,
+     null_germplasm_details,
      
      // ERROR NOTIFICATION MESSAGES
      empty_string,
@@ -163,7 +165,8 @@ public enum Message {
      error_in_counting_traits,
      error_in_getting_discrete_values_of_scale,
      error_null_table,
-     error_in_getting_derivative_neighborhood
-     
+     error_in_getting_derivative_neighborhood,
+     error_in_creating_study_details_window,
+     error_in_creating_germplasm_details_window
 
 }

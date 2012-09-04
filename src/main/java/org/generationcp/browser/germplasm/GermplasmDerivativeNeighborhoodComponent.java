@@ -199,6 +199,7 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
 	}
 	
 	 public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
+	     if(this.mainLayout != null && this.tabSheet != null) {
 	        VerticalLayout detailLayout = new VerticalLayout();
 	        detailLayout.setSpacing(true);
 
@@ -214,5 +215,6 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
 	            tabSheet.setSelectedTab(tab.getComponent());
 	        }
 
-	    }
+	     }
+	 }
 }
