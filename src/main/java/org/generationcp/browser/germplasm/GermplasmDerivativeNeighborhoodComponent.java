@@ -156,6 +156,7 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
             }
         });
         
+        displayButtonClickAction();
     }
 
     private void populateSelectSteps(Select select) {
