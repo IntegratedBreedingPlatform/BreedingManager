@@ -131,9 +131,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     public void addStudyNode(int parentStudyId) throws InternationalizableException{
         List<Study> studyChildren = new ArrayList<Study>();
-
         try {
-            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 500);
+            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0,studyDataManager.countAllStudyByParentFolderID(parentStudyId, database).intValue());
         } catch (QueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
