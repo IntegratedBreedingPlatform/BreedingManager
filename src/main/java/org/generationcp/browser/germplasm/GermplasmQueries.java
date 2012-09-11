@@ -21,7 +21,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.FindGermplasmByNameModes;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -49,11 +48,11 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 	// private HibernateUtil hibernateUtil;
 
 	@Autowired
-	private ManagerFactory managerFactory;
-
 	private GermplasmDataManager germplasmDataManager;
-        private InventoryDataManager inventoryDataManager;
-
+	
+	@Autowired
+	private InventoryDataManager inventoryDataManager;
+	
 	public GermplasmQueries() {
 
 	}
@@ -351,7 +350,5 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.germplasmDataManager = managerFactory.getGermplasmDataManager();
-                this.inventoryDataManager = managerFactory.getInventoryDataManager();
 	}
 }

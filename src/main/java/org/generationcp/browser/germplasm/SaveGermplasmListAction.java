@@ -16,12 +16,10 @@ import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.QueryException;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -39,10 +37,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
     private static final long serialVersionUID = 1L;
 
-    /** The manager factory. */
     @Autowired
-    private ManagerFactory managerFactory;
-
     private GermplasmListManager germplasmListManager;
 
     /**
@@ -100,13 +95,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
     }
 
     
-
-	/* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.germplasmListManager = managerFactory.getGermplasmListManager();
     }
 
 }

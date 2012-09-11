@@ -21,7 +21,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
 import org.slf4j.Logger;
@@ -40,11 +39,8 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
     private static final long serialVersionUID = 1L;
 
     /** The StudyDataManager. */
-    private StudyDataManager managerStudy;
-
-    /** The manager factory. */
     @Autowired
-    private ManagerFactory managerFactory;
+    private StudyDataManager managerStudy;
 
     /**
      * Instantiates a new GidByPhenotypicQueries.
@@ -77,6 +73,5 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.managerStudy = managerFactory.getStudyDataManager();
     }
 }

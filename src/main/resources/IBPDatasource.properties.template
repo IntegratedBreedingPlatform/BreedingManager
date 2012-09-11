@@ -1,10 +1,14 @@
-#IBPMiddleware hibernate configuration 
+#IBPMiddleware hibernate configuration
+local.driver = com.mysql.jdbc.Driver
+local.url =  jdbc:mysql://localhost:3306/iris_innodb
 local.host = localhost
 local.port = 3306
 local.dbname = iris_innodb
 local.username = root
 local.password = password
 
+central.driver = com.mysql.jdbc.Driver
+central.url =  jdbc:mysql://localhost:3306/iris_innodb
 central.host = localhost
 central.port = 3306
 central.dbname = iris_innodb

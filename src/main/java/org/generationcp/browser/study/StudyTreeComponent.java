@@ -19,14 +19,13 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Study;
@@ -54,10 +53,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     public final static String REFRESH_BUTTON_ID = "StudyTreeComponent Refresh Button";
 
+    @Autowired
     private StudyDataManager studyDataManager;
+    
     private Tree studyTree;
     private static TabSheet tabSheetStudy;
     private HorizontalLayout studyBrowserMainLayout;
+    
+    @Autowired
     private TraitDataManager traitDataManager;
     
     private Button refreshButton;
@@ -66,9 +69,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
-    @Autowired
-    private ManagerFactory managerFactory;
     
     public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database) {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
@@ -205,9 +205,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	setSpacing(true);
         setMargin(true);
         
-        this.studyDataManager = managerFactory.getStudyDataManager();
-        this.traitDataManager = managerFactory.getTraitDataManager();
-
         tabSheetStudy = new TabSheet();
 
         studyTree = createStudyTree(database);

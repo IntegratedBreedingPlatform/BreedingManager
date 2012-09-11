@@ -12,6 +12,9 @@
 
 package org.generationcp.browser.application;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
@@ -26,17 +29,20 @@ import org.generationcp.browser.study.StudyAccordionMenu;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.StudyDetailComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.vaadin.terminal.Terminal;
@@ -46,7 +52,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmStudyBrowserApplication extends SpringContextApplication{
+public class GermplasmStudyBrowserApplication extends SpringContextApplication implements ApplicationContextAware {
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmStudyBrowserApplication.class);
 
@@ -66,11 +72,21 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    @Autowired
-    private ManagerFactory managerFactory;
-
     private UpdateComponentLabelsAction messageSourceListener;
 
+    private ApplicationContext applicationContext;
+    
+    @Autowired
+    private StudyDataManager studyDataManager;
+    
+    @Autowired
+    private TraitDataManager traitDataManager;
+    
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+    
     public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
         this.messageSource = messageSource;
     }
@@ -200,8 +216,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
                     int studyId = Integer.parseInt(studyIdPart);
                     Window studyDetailsWindow = new Window(messageSource.getMessage(Message.study_details_text) + " " + studyId);  // "Study Details" + study id
                     studyDetailsWindow.setSizeUndefined();
-                    StudyDataManager studyDataManager = managerFactory.getStudyDataManager();
-                    TraitDataManager traitDataManager = managerFactory.getTraitDataManager();
+                    
                     studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
                         , studyDataManager, traitDataManager));
                     this.addWindow(studyDetailsWindow);
@@ -300,5 +315,30 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication{
 
         LOG.debug("Application closed");
     }
+    
+    public static GermplasmStudyBrowserApplication get() {
+        return get(GermplasmStudyBrowserApplication.class);
+    }
 
+    @Override
+    protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
+        super.doOnRequestStart(request, response);
+        
+        LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
+        
+        synchronized (this) {
+            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+        }
+    }
+    
+    @Override
+    protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
+        super.doOnRequestEnd(request, response);
+        
+        LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
+        
+        synchronized (this) {
+            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+        }
+    }
 }

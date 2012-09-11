@@ -26,7 +26,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
@@ -57,6 +56,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     private Tree germplasmListTree;
     private static TabSheet tabSheetGermplasmList;
     private HorizontalLayout germplasmListBrowserMainLayout;
+    
+    @Autowired
     private GermplasmListManager germplasmListManager;  
     
     private Button refreshButton;
@@ -65,9 +66,6 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
-    @Autowired
-    private ManagerFactory managerFactory;
     
     public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
@@ -192,8 +190,6 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     	setSpacing(true);
         setMargin(true);
         
-        this.germplasmListManager = managerFactory.getGermplasmListManager();
-
         tabSheetGermplasmList = new TabSheet();
 
         germplasmListTree = createGermplasmListTree(database);

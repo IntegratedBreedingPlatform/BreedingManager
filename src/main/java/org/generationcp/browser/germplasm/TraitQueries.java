@@ -20,7 +20,6 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.NumericRange;
@@ -42,12 +41,12 @@ public class TraitQueries implements Serializable, InitializingBean{
     private ArrayList<ScaleDiscrete> scaleDiscreteValue;
 
     private static final long serialVersionUID = 1L;
-    // private HibernateUtil hibernateUtil;
 
     @Autowired
-    private ManagerFactory managerFactory;
-
     private TraitDataManager traitDataManager;
+    
+    @Autowired
+    private StudyDataManager studyDataManager;
 
     public TraitQueries() {
 
@@ -79,9 +78,6 @@ public class TraitQueries implements Serializable, InitializingBean{
     }
 
     public ArrayList<Integer> getGIDSByPhenotypicData() throws InternationalizableException {
-
-        StudyDataManager studyDataManager = managerFactory.getStudyDataManager();
-
         NumericRange range = new NumericRange(new Double(2000), new Double(3000));
         TraitCombinationFilter combination = new TraitCombinationFilter(Integer.valueOf(1003), Integer.valueOf(9), Integer.valueOf(30),
                 range);
@@ -97,7 +93,6 @@ public class TraitQueries implements Serializable, InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.traitDataManager = managerFactory.getTraitDataManager();
     }
 
 }
