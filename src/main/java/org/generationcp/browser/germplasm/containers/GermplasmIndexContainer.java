@@ -13,6 +13,7 @@
 package org.generationcp.browser.germplasm.containers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.generationcp.browser.germplasm.GermplasmDetailModel;
 import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
@@ -20,6 +21,7 @@ import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchResultModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,12 @@ public final class GermplasmIndexContainer{
         private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
         private static final Object GERMPLASM_INVENTORY_SCALE_NAME = "scale";
         private static final Object GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
+    
+   // Study Information Model
+     private static final Object STUDY_NAME = "studyname";
+     private static final Object STUDY_DESCRIPTION = "description";
+     private static final Object STUDY_NUMBER_OF_ROWS = "rowCount";
+        
 
 	private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
 	@SuppressWarnings("unused")
@@ -266,6 +274,29 @@ public final class GermplasmIndexContainer{
 		Item item = container.getItem(itemId);
 		item.getItemProperty(GERMPLASM_GID).setValue(gid);
 		item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+	}
+	
+	public IndexedContainer getGermplasmStudyInformation(GermplasmDetailModel G) {
+		IndexedContainer container = new IndexedContainer();
+
+		// Create the container properties
+		container.addContainerProperty(STUDY_NAME, String.class, "");
+		container.addContainerProperty(STUDY_DESCRIPTION, String.class, "");
+		container.addContainerProperty(STUDY_NUMBER_OF_ROWS, Integer.class, 0);
+
+		List<StudyInfo> studyInfo = G.getGermplasmStudyInfo();
+        for(StudyInfo info : studyInfo) {
+        	addGermplasmStudyInformation(container,info.getName(),info.getTitle(),info.getRowCount());
+        }
+		return container;
+	}
+
+	private static void addGermplasmStudyInformation(Container container,String studyName, String descprition,int numberRows) {
+		Object itemId = container.addItem();
+		Item item = container.getItem(itemId);
+		item.getItemProperty(STUDY_NAME).setValue(studyName);
+		item.getItemProperty(STUDY_DESCRIPTION).setValue(descprition);
+		item.getItemProperty(STUDY_NUMBER_OF_ROWS).setValue(numberRows);
 	}
 
 }

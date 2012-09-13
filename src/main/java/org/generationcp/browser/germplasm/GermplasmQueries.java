@@ -24,6 +24,7 @@ import org.generationcp.middleware.manager.FindGermplasmByNameModes;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -31,6 +32,7 @@ import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,6 +51,9 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
+	private StudyDataManager studyManager;
 	
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -132,6 +137,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 			germplasmDetail.setGenerationhistory(getGenerationHistory(g.getGid()));
 			germplasmDetail.setGroupRelatives(getGroupRelativesList(g.getGid()));
 			germplasmDetail.setManagementNeighbors(getManagementNeighborList(g.getGid()));
+			germplasmDetail.setGermplasmStudyInfo(getGermplasmStudyInfo(g.getGid()));
 
 			return germplasmDetail;
 		} catch (QueryException e) {
@@ -347,6 +353,14 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 //                        throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_report_on_lots_by_entity_type_and_entity_id);
 //                }
         }
+        
+		private ArrayList<StudyInfo> getGermplasmStudyInfo(int gid) throws InternationalizableException {
+    		try {
+    				return (ArrayList<StudyInfo>) studyManager.getStudyInformationByGID(Long.valueOf(gid));
+    		} catch (QueryException e) {
+    			throw new InternationalizableException(e, Message.error_database, Message.error_in_germpls_study_information_by_germplasm_id);
+    		}
+    	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

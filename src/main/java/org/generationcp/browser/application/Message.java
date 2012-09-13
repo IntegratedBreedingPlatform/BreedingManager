@@ -114,6 +114,9 @@ public enum Message {
      null_study_details,
      germplasm_details_text,
      null_germplasm_details,
+     germplasm_studyinformation_label,
+     study_name_label,
+     number_of_rows,
      
      // ERROR NOTIFICATION MESSAGES
      empty_string,
@@ -167,6 +170,7 @@ public enum Message {
      error_null_table,
      error_in_getting_derivative_neighborhood,
      error_in_creating_study_details_window,
-     error_in_creating_germplasm_details_window
+     error_in_creating_germplasm_details_window,
+     error_in_germpls_study_information_by_germplasm_id
 
 }
