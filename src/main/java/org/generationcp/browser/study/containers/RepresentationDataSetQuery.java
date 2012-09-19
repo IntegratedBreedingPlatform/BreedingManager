@@ -30,6 +30,8 @@ import org.vaadin.addons.lazyquerycontainer.Query;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Link;
 
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
@@ -135,14 +137,36 @@ public class RepresentationDataSetQuery implements Query{
 
             for (NumericLevelElement numericLevel : numericLevels) {
                 String columnId = numericLevel.getFactorId() + "-" + numericLevel.getFactorName();
-                // get Item for ounitid
-                Item item = itemMap.get(numericLevel.getOunitId());
-                if (item == null) {
-                    // not yet in map so create a new Item and add to map
-                    item = new PropertysetItem();
-                    itemMap.put(numericLevel.getOunitId(), item);
+                if ("GID".equals(numericLevel.getFactorName().trim())) {
+                    // get Item for ounitid
+                    Item item = itemMap.get(numericLevel.getOunitId());
+                    if (item == null) {
+                        // not yet in map so create a new Item and add to map
+                        item = new PropertysetItem();
+                        itemMap.put(numericLevel.getOunitId(), item);
+                    }
+                    
+                    String gid = String.format("%.0f",numericLevel.getValue());
+                    Link gidLink = new Link(gid
+                            ,new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid)
+                            //TODO: ,new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid)
+                            ,"_blank"
+                            ,640
+                            ,480
+                            ,Link.TARGET_BORDER_DEFAULT);
+                    item.addItemProperty(columnId, new ObjectProperty<Link>(gidLink));
+                            
+                } else {
+                    // get Item for ounitid
+                    Item item = itemMap.get(numericLevel.getOunitId());
+                    if (item == null) {
+                        // not yet in map so create a new Item and add to map
+                        item = new PropertysetItem();
+                        itemMap.put(numericLevel.getOunitId(), item);
+                    }
+                    
+                    item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
                 }
-                item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
             }
 
             // get character data

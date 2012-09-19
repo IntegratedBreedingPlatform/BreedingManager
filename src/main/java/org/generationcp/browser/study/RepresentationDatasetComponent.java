@@ -18,7 +18,6 @@ import java.util.List;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.RepresentationDatasetQueryFactory;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -36,6 +35,7 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
@@ -143,7 +143,11 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
         for (String columnId : columnIds) {
-            datasetContainer.addContainerProperty(columnId, String.class, null);
+            if (columnId.contains("GID")) {
+                datasetContainer.addContainerProperty(columnId, Link.class, null);
+            } else {
+                datasetContainer.addContainerProperty(columnId, String.class, null);
+            }
         }
 
         datasetContainer.getQueryView().getItem(0); // initialize the first batch of data to be displayed
