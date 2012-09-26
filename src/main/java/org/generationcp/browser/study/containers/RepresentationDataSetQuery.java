@@ -19,12 +19,17 @@ import java.util.Map;
 
 import org.generationcp.middleware.exceptions.QueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
 import org.generationcp.middleware.pojos.CharacterLevelElement;
 import org.generationcp.middleware.pojos.NumericDataElement;
 import org.generationcp.middleware.pojos.NumericLevelElement;
+import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 import com.vaadin.data.Item;
@@ -43,6 +48,7 @@ import com.vaadin.ui.Link;
  * @author Kevin Manansala
  * 
  */
+@Configurable
 public class RepresentationDataSetQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDataSetQuery.class);
@@ -50,6 +56,9 @@ public class RepresentationDataSetQuery implements Query{
     private StudyDataManager dataManager;
     private Integer representationId;
     private List<String> columnIds;
+    
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
 
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -146,10 +155,28 @@ public class RepresentationDataSetQuery implements Query{
                         itemMap.put(numericLevel.getOunitId(), item);
                     }
                     
+                    Tool tool = null;
+                    try {
+                        tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
+                        System.out.println(tool);
+                    } catch (QueryException qe) {
+                        LOG.error("QueryException", qe);
+                        /*MessageNotifier.showError(window, messageSource.getMessage(Message.DATABASE_ERROR),
+                                "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
+                    }
+                    
                     String gid = String.format("%.0f",numericLevel.getValue());
+                    ExternalResource germplasmBrowserLink = null;
+                    if (tool == null) {
+                        germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+                        System.out.println("TOOL == NULL");
+                    } else {
+                        germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
+                        System.out.println("TOOL: " + tool.getPath().toString());
+                    }
+                    
                     Link gidLink = new Link(gid
-                            ,new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid)
-                            //TODO: ,new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid)
+                            ,germplasmBrowserLink
                             ,"_blank"
                             ,640
                             ,480

@@ -12,7 +12,7 @@
                             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 >
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:IBPDatasource.properties" />
+    <context:property-placeholder location="classpath:IBPDatasource.properties, classpath:workbench.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
@@ -58,6 +58,13 @@
         <property name="password" value="${central.password}"/>
     </bean>
     
+    <bean id="workbenchDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${workbench.driver}"/>
+        <property name="url" value="${workbench.url}"/>
+        <property name="username" value="${workbench.username}"/>
+        <property name="password" value="${workbench.password}"/>
+    </bean>
+    
     <bean id="localSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="localDataSource"/>
         <property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml"/>
@@ -66,6 +73,11 @@
     <bean id="centralSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="centralDataSource"/>
         <property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml"/>
+    </bean>
+    
+    <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="workbenchDataSource"/>
+        <property name="configLocation" value="classpath:ibpworkbench_hib.cfg.xml"/>
     </bean>
     
     <bean id="localHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request">
@@ -77,6 +89,13 @@
     
     <bean id="centralHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request">
         <property name="sessionFactory" ref="centralSessionFactory"/>
+        
+        <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
+        <aop:scoped-proxy proxy-target-class="false"/>
+    </bean>
+    
+    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request">
+        <property name="sessionFactory" ref="workbenchSessionFactory"/>
         
         <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
         <aop:scoped-proxy proxy-target-class="false"/>
@@ -115,6 +134,11 @@
     <bean id="userDataManager" class="org.generationcp.middleware.manager.UserDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
+    </bean>
+    
+    <bean id="workbenchDataManager"
+        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl">
+        <constructor-arg ref="workbenchHibernateSessionProvider" />
     </bean>
     
     <!--
