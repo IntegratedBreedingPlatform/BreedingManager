@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Factor;
@@ -75,7 +75,7 @@ public class StudyDataIndexContainer{
             }
             return container;
 
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_factor);
         }
     }
@@ -117,7 +117,7 @@ public class StudyDataIndexContainer{
                 addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
             }
             return container;
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_variate);
         }
     }
@@ -134,7 +134,7 @@ public class StudyDataIndexContainer{
         item.getItemProperty(DATATYPE).setValue(datatype);
     }
 
-    private String getFactorDescription(int traitId) {
+    private String getFactorDescription(int traitId) throws MiddlewareQueryException{
         String factorDescription = "";
         Trait trait = traitDataManager.getTraitById(traitId);
         if (!(trait == null)) {
@@ -143,7 +143,7 @@ public class StudyDataIndexContainer{
         return factorDescription;
     }
 
-    private String getProperty(int traitId) {
+    private String getProperty(int traitId) throws MiddlewareQueryException {
         String propertyName = "";
         Trait trait = traitDataManager.getTraitById(traitId);
         if (!(trait == null)) {
@@ -161,7 +161,7 @@ public class StudyDataIndexContainer{
         return scaleName;
     }
 
-    private String getMethodName(int methodId) {
+    private String getMethodName(int methodId)  throws MiddlewareQueryException{
         String methodName = "";
         TraitMethod method = traitDataManager.getTraitMethodById(methodId);
         if (!(method == null)) {

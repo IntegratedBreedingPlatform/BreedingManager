@@ -24,7 +24,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -85,7 +85,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
         try {
             germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, database);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             if (getWindow() != null){
@@ -129,7 +129,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
         try {
             germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
@@ -174,7 +174,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
         try {
             listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, 0, 1);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.error_database), 

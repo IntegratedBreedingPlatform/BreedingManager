@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
@@ -50,10 +50,10 @@ public class ListsForGermplasmQuery implements Query{
     public static final Object GERMPLASMLIST_NAME = "name";
     public static final Object GERMPLASMLIST_DATE = "date";
     public static final Object GERMPLASMLIST_DESCRIPTION = "description";
-    
+
     private GermplasmListManager dataManager;
     private Integer gid;
-    
+
     /**
      * These parameters are passed by the QueryFactory which instantiates
      * objects of this class.
@@ -88,23 +88,23 @@ public class ListsForGermplasmQuery implements Query{
     @Override
     public List<Item> loadItems(int start, int numOfRows) {
         List<Item> items = new ArrayList<Item>();
-        
+
         List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
         try {
             listDatas.addAll(this.dataManager.getGermplasmListDataByGID(gid, start, numOfRows));
-        } catch(QueryException ex) {
+        } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting list data for gid = " + gid + ": " + ex.getMessage());
             return new ArrayList<Item>();
         }
-        
-        for(GermplasmListData listData : listDatas) {
+
+        for (GermplasmListData listData : listDatas) {
             PropertysetItem item = new PropertysetItem();
             item.addItemProperty(GERMPLASMLIST_NAME, new ObjectProperty<String>(listData.getList().getName()));
             item.addItemProperty(GERMPLASMLIST_DATE, new ObjectProperty<String>(String.valueOf(listData.getList().getDate())));
             item.addItemProperty(GERMPLASMLIST_DESCRIPTION, new ObjectProperty<String>(listData.getList().getDescription()));
             items.add(item);
         }
-        
+
         return items;
     }
 
@@ -119,7 +119,12 @@ public class ListsForGermplasmQuery implements Query{
     @Override
     public int size() {
         int size = 0;
-        size = dataManager.countGermplasmListDataByGID(gid);
+        try {
+            size = ((Long) dataManager.countGermplasmListDataByGID(gid)).intValue();
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in countGermplasmListDataByGID in size() " + e.getMessage());
+            e.printStackTrace();
+        }
         return size;
     }
 

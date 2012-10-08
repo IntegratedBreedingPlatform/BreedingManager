@@ -21,7 +21,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Representation;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
         List<Representation> representations = new ArrayList<Representation>();
         try {
             representations = studyDataManager.getRepresentationByStudyID(studyId);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_representation_by_study_id);
         }
 

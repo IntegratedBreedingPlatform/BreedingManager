@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -54,7 +54,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
      * @param tabSheet the tab sheet
      * @param type 
      * @param description 
-     * @throws QueryException the query exception
+     * @throws MiddlewareQueryException the query exception
      */
     @SuppressWarnings("unused")
     public void addGermplasListNameAndData(String listName, TabSheet tabSheet, String description, String type) throws InternationalizableException {
@@ -89,7 +89,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
                 germplasmListManager.addGermplasmListData(germplasmListData);
                 entryid++;
             }
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_adding_germplasm_list);
         }
     }

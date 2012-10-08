@@ -19,7 +19,7 @@ import java.util.List;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.TraitCombinationFilter;
@@ -61,7 +61,7 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
         ArrayList<Integer> results = null;
         try {
             results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_ids_by_phenotypic_data);
         }
         return results;

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
@@ -104,7 +104,7 @@ public class RepresentationDataSetQuery implements Query{
 
         try {
             ounitids = dataManager.getOunitIDsByRepresentationId(representationId, start, numOfRows);
-        } catch (QueryException ex) {
+        } catch (MiddlewareQueryException ex) {
             // Log error in log file
             LOG.error("Error with getting ounitids for representation: " + representationId + "\n" + ex.toString());
             ounitids = new ArrayList<Integer>();
@@ -116,7 +116,7 @@ public class RepresentationDataSetQuery implements Query{
 
             try {
                 charLevels = dataManager.getCharacterLevelValuesByOunitIdList(ounitids);
-            } catch (QueryException ex) {
+            } catch (MiddlewareQueryException ex) {
                 LOG.error("Error with getting character level values" + "\n" + ex.toString());
                 charLevels = new ArrayList<CharacterLevelElement>();
             }
@@ -139,7 +139,7 @@ public class RepresentationDataSetQuery implements Query{
 
             try {
                 numericLevels = dataManager.getNumericLevelValuesByOunitIdList(ounitids);
-            } catch (QueryException ex) {
+            } catch (MiddlewareQueryException ex) {
                 LOG.error("Error with getting numeric level values" + "\n" + ex.toString());
                 numericLevels = new ArrayList<NumericLevelElement>();
             }
@@ -159,7 +159,7 @@ public class RepresentationDataSetQuery implements Query{
                     try {
                         tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
                         System.out.println(tool);
-                    } catch (QueryException qe) {
+                    } catch (MiddlewareQueryException qe) {
                         LOG.error("QueryException", qe);
                         /*MessageNotifier.showError(window, messageSource.getMessage(Message.DATABASE_ERROR),
                                 "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
@@ -201,7 +201,7 @@ public class RepresentationDataSetQuery implements Query{
 
             try {
                 characterDatas = dataManager.getCharacterDataValuesByOunitIdList(ounitids);
-            } catch (QueryException ex) {
+            } catch (MiddlewareQueryException ex) {
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
                 characterDatas = new ArrayList<CharacterDataElement>();
             }
@@ -224,7 +224,7 @@ public class RepresentationDataSetQuery implements Query{
 
             try {
                 numericDatas = dataManager.getNumericDataValuesByOunitIdList(ounitids);
-            } catch (QueryException ex) {
+            } catch (MiddlewareQueryException ex) {
                 LOG.error("Error with getting character data values" + "\n" + ex.toString());
                 numericDatas = new ArrayList<NumericDataElement>();
             }
@@ -259,8 +259,8 @@ public class RepresentationDataSetQuery implements Query{
     public int size() {
         int size = 0;
         try {
-            size = dataManager.countOunitIDsByRepresentationId(representationId).intValue();
-        } catch (QueryException ex) {
+            size = ((Long) dataManager.countOunitIDsByRepresentationId(representationId)).intValue();
+        } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting number of ounitids for representation: " + representationId + "\n" + ex.toString());
         }
         return size;

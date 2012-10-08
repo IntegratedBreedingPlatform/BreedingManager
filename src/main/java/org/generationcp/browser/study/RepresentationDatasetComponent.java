@@ -21,7 +21,7 @@ import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Factor;
 import org.generationcp.middleware.pojos.Variate;
@@ -101,7 +101,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         try {
             factors = studyDataManager.getFactorsByRepresentationId(representationId);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error("Error in getting factors of representation: "
                             + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
@@ -115,7 +115,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         try {
             variates = studyDataManager.getVariatesByRepresentationId(representationId);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error("Error in getting variates of representation: " 
                             + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();

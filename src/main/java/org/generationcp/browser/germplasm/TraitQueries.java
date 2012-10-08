@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
@@ -54,25 +54,33 @@ public class TraitQueries implements Serializable, InitializingBean{
 
     public ArrayList<Trait> getTrait() throws InternationalizableException {
         try {
-            int allTraitCount = traitDataManager.countAllTraits();
-            return (ArrayList<Trait>) traitDataManager.getAllTraits(1, allTraitCount, Database.CENTRAL);
-        } catch (QueryException e) {
+            long allTraitCount = traitDataManager.countAllTraits();
+            return (ArrayList<Trait>) traitDataManager.getAllTraits(1, (int) allTraitCount, Database.CENTRAL);
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_counting_traits);
         }
     }
 
-    public ArrayList<Scale> getScale(int traitID) {
-        return (ArrayList<Scale>) traitDataManager.getScalesByTraitId(traitID);
+    public ArrayList<Scale> getScale(int traitID) throws InternationalizableException {
+        try {
+            return (ArrayList<Scale>) traitDataManager.getScalesByTraitId(traitID);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_scales_by_trait_id);
+        }
     }
 
-    public ArrayList<TraitMethod> getTraitMethod(int traitID) {
-        return (ArrayList<TraitMethod>) traitDataManager.getTraitMethodsByTraitId(traitID);
+    public ArrayList<TraitMethod> getTraitMethod(int traitID)  throws InternationalizableException {
+        try {
+            return (ArrayList<TraitMethod>) traitDataManager.getTraitMethodsByTraitId(traitID);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_trait_method);
+        }
     }
 
     public ArrayList<ScaleDiscrete> getScaleDiscreteValue(int scaleID) throws InternationalizableException {
         try {
             return (ArrayList<ScaleDiscrete>) traitDataManager.getDiscreteValuesOfScale(scaleID);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_discrete_values_of_scale);
         }
     }
@@ -86,7 +94,7 @@ public class TraitQueries implements Serializable, InitializingBean{
 
         try {
             return (ArrayList<Integer>) studyDataManager.getGIDSByPhenotypicData(filters, 0, 10, Database.CENTRAL);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_ids_by_phenotypic_data);
         }
     }

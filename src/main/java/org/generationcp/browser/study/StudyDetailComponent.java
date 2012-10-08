@@ -16,7 +16,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Study;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
             studyStartDate = new Label(String.valueOf(study.getStartDate()));
             studyEndDate = new Label(String.valueOf(study.getEndDate()));
 
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_in_getting_study_detail_by_id, Message.empty_string);
         }
 		

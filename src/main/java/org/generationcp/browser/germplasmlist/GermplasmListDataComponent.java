@@ -61,12 +61,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     @Override
     public void afterPropertiesSet() throws Exception{
         List<GermplasmListData> listData = new ArrayList<GermplasmListData>();
-        int listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+        long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
         if (listDataCount == 0) {
             addComponent(new Label(messageSource.getMessage(Message.no_listdata_retrieved_label))); // "No Germplasm List Data retrieved."
         } else {
             
-            listData = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, listDataCount);
+            listData = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
             
             // create the Vaadin Table to display the Germplasm List Data
             listDataTable = new Table("");

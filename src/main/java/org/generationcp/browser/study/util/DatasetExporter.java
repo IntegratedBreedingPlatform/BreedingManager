@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.util.PoiUtil;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
@@ -66,7 +66,7 @@ public class DatasetExporter {
         
         try {
             study = this.studyDataManager.getStudyByID(this.studyId);
-        } catch (QueryException ex) {
+        } catch (MiddlewareQueryException ex) {
             throw new DatasetExporterException("Error with getting Study with id: " + this.studyId, ex);
         }
         
@@ -153,7 +153,7 @@ public class DatasetExporter {
                 String conditionLabel = "";
                 try {
                     conditionLabel = this.studyDataManager.getMainLabelOfFactorByFactorId(condition.getFactorId());
-                } catch (QueryException ex) {
+                } catch (MiddlewareQueryException ex) {
                     conditionLabel = "";
                 }
                 
@@ -221,7 +221,7 @@ public class DatasetExporter {
                     String factorLabel = "";
                     try {
                         factorLabel = this.studyDataManager.getMainLabelOfFactorByFactorId(factor.getFactorId());
-                    } catch (QueryException ex) {
+                    } catch (MiddlewareQueryException ex) {
                         factorLabel = "";
                     }
                     
@@ -305,11 +305,11 @@ public class DatasetExporter {
             //then work with the data
             //do it by 50 rows at a time
             int pageSize = 50;
-            int totalNumberOfRows = 0;
+            long totalNumberOfRows = 0;
             int sheetRowIndex = 1;
             
             try {
-                totalNumberOfRows = this.studyDataManager.countOunitIDsByRepresentationId(this.representationId).intValue();
+                totalNumberOfRows = this.studyDataManager.countOunitIDsByRepresentationId(this.representationId);
             } catch(Exception ex) {
                 throw new DatasetExporterException("Error with getting count of ounit ids for study - " + name 
                         + ", representation - " + this.representationId, ex); 

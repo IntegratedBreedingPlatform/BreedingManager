@@ -24,7 +24,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.QueryException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
@@ -88,9 +88,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         try {
             studyParent = this.studyDataManager.getAllTopLevelStudies(0, 
-                                studyDataManager.countAllTopLevelStudies(database).intValue(), 
+                                (int) studyDataManager.countAllTopLevelStudies(database), 
                                 database);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             if (getWindow() != null){
@@ -132,8 +132,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public void addStudyNode(int parentStudyId) throws InternationalizableException{
         List<Study> studyChildren = new ArrayList<Study>();
         try {
-            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0,studyDataManager.countAllStudyByParentFolderID(parentStudyId, database).intValue());
-        } catch (QueryException e) {
+            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 
+                    (int) studyDataManager.countAllStudyByParentFolderID(parentStudyId, database));
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
@@ -176,7 +177,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
             return this.studyDataManager.getStudyByID(studyId).getName();
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_detail_by_id);
         }
     }
@@ -187,7 +188,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         try {
             studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
-        } catch (QueryException e) {
+        } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.error_database), 

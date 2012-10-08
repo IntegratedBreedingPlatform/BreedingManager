@@ -166,6 +166,8 @@ public enum Message {
      error_in_getting_report_on_lots_by_entity_type_and_entity_id,
      error_in_adding_germplasm_list,
      error_in_counting_traits,
+     error_in_getting_scales_by_trait_id,
+     error_in_getting_trait_method,
      error_in_getting_discrete_values_of_scale,
      error_null_table,
      error_in_getting_derivative_neighborhood,
