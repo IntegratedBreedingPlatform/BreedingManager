@@ -17,26 +17,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.study.listeners.RepresentationDatasetGidButtonClickListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
 import org.generationcp.middleware.pojos.CharacterLevelElement;
 import org.generationcp.middleware.pojos.NumericDataElement;
 import org.generationcp.middleware.pojos.NumericLevelElement;
-import org.generationcp.middleware.pojos.workbench.Tool;
-import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Link;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
@@ -48,7 +44,6 @@ import com.vaadin.ui.Link;
  * @author Kevin Manansala
  * 
  */
-@Configurable
 public class RepresentationDataSetQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDataSetQuery.class);
@@ -57,9 +52,6 @@ public class RepresentationDataSetQuery implements Query{
     private Integer representationId;
     private List<String> columnIds;
     
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
-
     /**
      * These parameters are passed by the QueryFactory which instantiates
      * objects of this class.
@@ -146,6 +138,7 @@ public class RepresentationDataSetQuery implements Query{
 
             for (NumericLevelElement numericLevel : numericLevels) {
                 String columnId = numericLevel.getFactorId() + "-" + numericLevel.getFactorName();
+                //check factor name, if it's a GID, then make the GID as a link. else, show it as a value only
                 if ("GID".equals(numericLevel.getFactorName().trim())) {
                     // get Item for ounitid
                     Item item = itemMap.get(numericLevel.getOunitId());
@@ -155,34 +148,14 @@ public class RepresentationDataSetQuery implements Query{
                         itemMap.put(numericLevel.getOunitId(), item);
                     }
                     
-                    Tool tool = null;
-                    try {
-                        tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
-                        System.out.println(tool);
-                    } catch (MiddlewareQueryException qe) {
-                        LOG.error("QueryException", qe);
-                        /*MessageNotifier.showError(window, messageSource.getMessage(Message.DATABASE_ERROR),
-                                "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
-                    }
-                    
                     String gid = String.format("%.0f",numericLevel.getValue());
-                    ExternalResource germplasmBrowserLink = null;
-                    if (tool == null) {
-                        germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
-                        System.out.println("TOOL == NULL");
-                    } else {
-                        germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
-                        System.out.println("TOOL: " + tool.getPath().toString());
-                    }
                     
-                    Link gidLink = new Link(gid
-                            ,germplasmBrowserLink
-                            ,"_blank"
-                            ,640
-                            ,480
-                            ,Link.TARGET_BORDER_DEFAULT);
-                    item.addItemProperty(columnId, new ObjectProperty<Link>(gidLink));
-                            
+                    Button gidButton = new Button(gid, new RepresentationDatasetGidButtonClickListener(gid));
+                    gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                    gidButton.setDescription("Click to view Germplasm information");
+                    
+                    item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
+                //end GID link creation
                 } else {
                     // get Item for ounitid
                     Item item = itemMap.get(numericLevel.getOunitId());
