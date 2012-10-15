@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -35,68 +36,98 @@ import com.vaadin.ui.TabSheet;
 @Configurable
 public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Autowired
-    private GermplasmListManager germplasmListManager;
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
-    /**
-     * Instantiates a new SaveGermplasmListAction.
-     */
-    public SaveGermplasmListAction() {
+	/**
+	 * Instantiates a new SaveGermplasmListAction.
+	 */
+	public SaveGermplasmListAction() {
 
-    }
+	}
 
-    /**
-     * Adds the germplas list name and data.
-     *
-     * @param listName the list name
-     * @param tabSheet the tab sheet
-     * @param type 
-     * @param description 
-     * @throws MiddlewareQueryException the query exception
-     */
-    @SuppressWarnings("unused")
-    public void addGermplasListNameAndData(String listName, TabSheet tabSheet, String description, String type) throws InternationalizableException {
+	/**
+	 * Adds the germplasm list name and data.
+	 *
+	 * @param listName the list name
+	 * @param tabSheet the tab sheet
+	 * @param type 
+	 * @param description 
+	 * @throws MiddlewareQueryException the query exception
+	 */
+	@SuppressWarnings("unused")
+	public void addGermplasListNameAndData(String listName,String listId, TabSheet tabSheet, String description, String type) throws InternationalizableException {
 
-        try {
-            SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
-            Date date = new Date();
-            Format formatter = new SimpleDateFormat("yyyyMMdd");
-            Long currentDate = Long.valueOf(formatter.format(date));
-            int userId = 1;
-            GermplasmList parent = null;
-            int statusListName = 1;
+		try {
+			//            SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
+			Date date = new Date();
+			Format formatter = new SimpleDateFormat("yyyyMMdd");
+			Long currentDate = Long.valueOf(formatter.format(date));
+			int userId = 1;
+			GermplasmList parent = null;
+			int statusListName = 1;
 
-            GermplasmList listNameData = new GermplasmList(null, listName, currentDate, type, userId, description, parent, statusListName);
+			if(listId=="null"){
+				GermplasmList listNameData = new GermplasmList(null, listName, currentDate, type, userId, description, parent, statusListName);
 
-            int listid = germplasmListManager.addGermplasmList(listNameData);
+				int listid = germplasmListManager.addGermplasmList(listNameData);
 
-            GermplasmList germList = germplasmListManager.getGermplasmListById(listid);
-            String entryCode = "-";
-            String seedSource = "-";
-            String groupName = "-";
-            String designation = "-";
-            int status = 0;
-            int localRecordId = 0;
-            int entryid = 1;
+				GermplasmList germList = germplasmListManager.getGermplasmListById(listid);
+				String entryCode = "-";
+				String seedSource = "-";
+				String groupName = "-";
+				String designation = "-";
+				int status = 0;
+				int localRecordId = 0;
+				int entryid = 1;
 
-            for (int i = 0; i < tabSheet.getComponentCount(); i++) {
-                int gid = Integer.valueOf(tabSheet.getTab(i).getCaption().toString());
-                GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryCode, seedSource,
-                        designation, groupName, status, localRecordId);
+				for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+					int gid = Integer.valueOf(tabSheet.getTab(i).getCaption().toString());
+					GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryCode, seedSource,
+							designation, groupName, status, localRecordId);
 
-                germplasmListManager.addGermplasmListData(germplasmListData);
-                entryid++;
-            }
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_adding_germplasm_list);
-        }
-    }
+					germplasmListManager.addGermplasmListData(germplasmListData);
+					entryid++;
+				}
+			}else{
+				
+				GermplasmList germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
+				String entryCode = "-";
+				String seedSource = "-";
+				String groupName = "-";
+				String designation = "-";
+				int status = 0;
+				int localRecordId = 0;
+				int entryid = (int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
+				
+				for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+					int gid = Integer.valueOf(tabSheet.getTab(i).getCaption().toString());
+					
+					// check if there is existing gid in the list
+					List<GermplasmListData> germplasmList=germplasmListManager.getGermplasmListDataByListIdAndGID(Integer.valueOf(listId), gid);
+					
+					if(germplasmList.size() < 1){
+						++entryid;
+						GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryCode, seedSource,
+							designation, groupName, status, localRecordId);
+					
+						germplasmListManager.addGermplasmListData(germplasmListData);
+						
+					}
+					
+				}
+				
+			}
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.error_database, Message.error_in_adding_germplasm_list);
+		}
+	}
 
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	}
 
 }

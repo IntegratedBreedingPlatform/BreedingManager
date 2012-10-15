@@ -12,21 +12,34 @@
 
 package org.generationcp.browser.germplasm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -36,7 +49,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent{
+public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent,Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
 	private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
 	private static final long serialVersionUID = 1L;
@@ -52,12 +65,19 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private Window mainWindow;
 
 	@Autowired
+	private GermplasmListManager germplasmListManager;
+
+	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 	private Button btnSave;
 	private Button btnCancel;
 	private TabSheet tabSheet;
-	private ComboBox comboBoxType;
+	private ComboBox comboBoxListName;
 	private Select selectType;
+	private List<GermplasmList> germplasmList;
+	private boolean lastAdded = false;
+	private Map<String,Integer> mapExistingList;
+
 
 	public SaveGermplasmListDialog(Window mainWindow, Window dialogWindow, TabSheet tabSheet) {
 		this.dialogWindow = dialogWindow;
@@ -77,8 +97,12 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		labelDescription = new Label();
 		labelType = new Label();
 
-		txtGermplasmListName = new TextField();
-		txtGermplasmListName.setWidth("300px");
+		comboBoxListName = new ComboBox();
+		populateComboBoxListName();
+		comboBoxListName.setNewItemsAllowed(true);
+		comboBoxListName.setNewItemHandler(this);
+		comboBoxListName.setImmediate(true);
+		comboBoxListName.addListener(this);
 
 		txtDescription = new TextField();
 		txtDescription.setWidth("400px");
@@ -112,7 +136,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		hButton.addComponent(btnCancel);
 
 		addComponent(labelListName, 1, 1);
-		addComponent(txtGermplasmListName, 2, 1);
+		addComponent(comboBoxListName, 2, 1);
 		addComponent(labelDescription, 1,2);
 		addComponent(txtDescription, 2, 2);
 		addComponent(labelType, 1,3);
@@ -121,6 +145,17 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	}
 
 
+
+	private void populateComboBoxListName() throws MiddlewareQueryException {
+		// TODO Auto-generated method stub
+		germplasmList=germplasmListManager.getAllGermplasmLists(0, 100, Database.LOCAL);
+		mapExistingList= new HashMap<String,Integer>();
+		for(GermplasmList gList:germplasmList){
+			comboBoxListName.addItem(gList.getName());
+			mapExistingList.put(gList.getName(),new Integer(gList.getId()));
+		}
+
+	}
 
 	private void populateSelectType(Select selectType) {
 		selectType.addItem("LST");
@@ -159,12 +194,14 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	public void saveGermplasmListButtonClickAction() throws InternationalizableException {
 		SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
 
-		String listName = txtGermplasmListName.getValue().toString();
+		String listName = comboBoxListName.getValue().toString();
+		String listNameId=String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
 
-		if (listName.length() > 0) {
-			saveGermplasmAction.addGermplasListNameAndData(listName, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
-			closeSavingGermplasmListDialog();
+		if (listName.length() > 0  ) {
+				saveGermplasmAction.addGermplasListNameAndData(listName,listNameId, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
+				closeSavingGermplasmListDialog();
 		}
+
 	}
 
 	public void cancelGermplasmListButtonClickAction() {
@@ -174,5 +211,27 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	public void closeSavingGermplasmListDialog() {
 		this.mainWindow.removeWindow(dialogWindow);
 	}
+
+	/*
+	 * Shows a notification when a selection is made.
+	 */
+	public void valueChange(ValueChangeEvent event) {
+		if (!lastAdded) {
+
+		}
+		lastAdded = false;
+	}
+
+
+	@Override
+	public void addNewItem(String newItemCaption) {
+		if (!comboBoxListName.containsId(newItemCaption)) {
+			lastAdded = true;
+			comboBoxListName.addItem(newItemCaption);
+			comboBoxListName.setValue(newItemCaption);
+		}
+
+	}
+
 
 }
