@@ -152,7 +152,7 @@ public class StudyDataIndexContainer{
         return propertyName;
     }
 
-    private String getScaleName(int scaleId) {
+    private String getScaleName(int scaleId) throws MiddlewareQueryException {
         String scaleName = "";
         Scale scale = traitDataManager.getScaleByID(scaleId);
         if (!(scale == null)) {
