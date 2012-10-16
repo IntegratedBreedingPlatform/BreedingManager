@@ -56,7 +56,7 @@ public class GermplasmNamesComponent extends Table implements InitializingBean, 
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { TYPE, NAME, DATE, LOCATION, TYPE_DESC });
+        setColumnHeaders(new String[] { NAME, DATE, LOCATION, TYPE, TYPE_DESC });
     }
     
     @Override

@@ -119,7 +119,7 @@ public final class GermplasmIndexContainer{
 		final ArrayList<GermplasmNamesAttributesModel> query = g.getAttributes();
 		LOG.info("Size of the query" + query.size());
 		for (GermplasmNamesAttributesModel q : query) {
-			addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+			addGermplasmNamesAttributeContainer(container, q.getType(), q.getTypeDesc(), q.getName(), q.getDate(), q.getLocation() );
 		}
 		return container;
 	}
@@ -132,7 +132,7 @@ public final class GermplasmIndexContainer{
 
 		final ArrayList<GermplasmNamesAttributesModel> query = g.getNames();
 		for (GermplasmNamesAttributesModel q : query) {
-			addGermplasmNamesAttributeContainer(container, q.getType(), q.getName(), q.getDate(), q.getLocation(), q.getTypeDesc());
+			addGermplasmNamesAttributeContainer(container, q.getName(), q.getDate(), q.getLocation(), q.getType(), q.getTypeDesc());
 		}
 		return container;
 	}

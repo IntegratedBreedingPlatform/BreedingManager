@@ -29,7 +29,7 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
     private static final long serialVersionUID = 1L;
     
     private static final String TYPE = "Type";
-    private static final String NAME = "Name";
+    private static final String NAME = "Value";
     private static final String DATE = "Date";
     private static final String LOCATION = "Location";
     private static final String TYPE_DESC = "Type Desc";
@@ -56,7 +56,7 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
         setImmediate(true); // react at once when something is
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { TYPE, NAME, DATE, LOCATION, TYPE_DESC });
+        setColumnHeaders(new String[] { TYPE, TYPE_DESC, NAME, DATE, LOCATION, });
     }
 
     @Override
