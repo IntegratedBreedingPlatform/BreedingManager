@@ -128,25 +128,18 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
             germplasmDetail.setGid(g.getGid());
             germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
-            germplasmDetail.setGermplasmPreferredName(name.getNval());
-            germplasmDetail.setGermplasmCreationDate(String.valueOf(name.getNdate()));
+            germplasmDetail.setGermplasmPreferredName(name==null?"":name.getNval());
+            germplasmDetail.setGermplasmCreationDate(name==null?"":String.valueOf(name.getNdate()));
             germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
             germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
             germplasmDetail.setReference(getReference(g.getReferenceId()));
-            germplasmDetail.setAttributes(getAttributes(g.getGid()));
-            germplasmDetail.setNames(getNames(g.getGid()));
-            germplasmDetail.setGenerationhistory(getGenerationHistory(g.getGid()));
-            germplasmDetail.setGroupRelatives(getGroupRelativesList(g.getGid()));
-            germplasmDetail.setManagementNeighbors(getManagementNeighborList(g.getGid()));
-            germplasmDetail.setGermplasmStudyInfo(getGermplasmStudyInfo(g.getGid()));
-
             return germplasmDetail;
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_details);
         }
     }
 
-    private ArrayList<GermplasmDetailModel> getManagementNeighborList(Integer gid) throws InternationalizableException {
+    public ArrayList<GermplasmDetailModel> getManagementNeighbors(Integer gid) throws InternationalizableException {
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
             List<Germplasm> managementNeighborsList = new ArrayList<Germplasm>();
@@ -163,7 +156,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
-    private ArrayList<GermplasmDetailModel> getGroupRelativesList(Integer gid) throws InternationalizableException {
+    public ArrayList<GermplasmDetailModel> getGroupRelatives(Integer gid) throws InternationalizableException {
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
             List<Germplasm> groupRelativeList = new ArrayList<Germplasm>();
@@ -180,7 +173,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
-    private ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws InternationalizableException {
+    public ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws InternationalizableException {
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
             List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
@@ -206,7 +199,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         return "";
     }
 
-    private ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws InternationalizableException {
+    public ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws InternationalizableException {
         try {
             ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, null, null);
             ArrayList<GermplasmNamesAttributesModel> germplasmNames = new ArrayList<GermplasmNamesAttributesModel>();
@@ -231,7 +224,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
-    private ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws InternationalizableException {
+    public ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws InternationalizableException {
         try {
             ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
             ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
@@ -358,12 +351,14 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         return result;
     }
 
-    private ArrayList<StudyInfo> getGermplasmStudyInfo(int gid) throws InternationalizableException {
+    public List<StudyInfo> getGermplasmStudyInfo(int gid) throws InternationalizableException {
+        List<StudyInfo> result = new ArrayList<StudyInfo>();
         try {
-            return (ArrayList<StudyInfo>) studyManager.getStudyInformationByGID(Long.valueOf(gid));
+            result = studyManager.getStudyInformationByGID(Long.valueOf(gid));
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.error_database, Message.error_in_germpls_study_information_by_germplasm_id);
         }
+        return result;
     }
 
     @Override

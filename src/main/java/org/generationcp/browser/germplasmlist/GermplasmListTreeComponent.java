@@ -112,7 +112,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     // Called by GermplasmListItemClickListener
     public void germplasmListTreeItemClickAction(int germplasmListId) throws InternationalizableException{
         try {
-            if (!hasChildList(germplasmListId)) {
+            if (!hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)) {
                 createGermplasmListInfoTab(germplasmListId);
             }
         } catch (NumberFormatException e) {
@@ -184,7 +184,12 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         
         return !listChildren.isEmpty();
     }
-    
+
+    private boolean isEmptyFolder(int listId) {
+        boolean isFolder = germplasmListManager.getGermplasmListById(listId).getType().equalsIgnoreCase("FOLDER");
+        return isFolder && !hasChildList(listId);
+    }
+
     @Override
     public void afterPropertiesSet() {
     	setSpacing(true);

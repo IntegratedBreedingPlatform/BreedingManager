@@ -104,7 +104,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
         this.addTab(studyDetailComponent, messageSource.getMessage(Message.study_details_text)); // "Study Details"
         this.addTab(layoutFactor, messageSource.getMessage(Message.factors_text)); // "Factors"
         this.addTab(layoutVariate, messageSource.getMessage(Message.variates_text)); // "Variates"
-        this.addTab(layoutEffect, messageSource.getMessage(Message.datasets_text)); // "Effects"
+        this.addTab(layoutEffect, messageSource.getMessage(Message.datasets_text)); // "Datasets"
 
         this.addListener(new StudySelectedTabChangeListener(this));    	
     }

@@ -48,7 +48,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private GermplasmIndexContainer dataIndexContainer;
 	private GermplasmQueries qQuery;
 	private GermplasmDetailModel gDetailModel;
-	private VerticalLayout layoutNames;
+    private VerticalLayout layoutDetails;
+    private VerticalLayout layoutNames;
 	private VerticalLayout layoutAttributes;
 	private VerticalLayout layoutGenerationHistory;
 	private VerticalLayout layoutPedigreeTree;
@@ -62,7 +63,6 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private int gid;
 	private TabSheet tabSheet;
 	private GermplasmIndexContainer dataResultIndexContainer;
-	private GermplasmCharacteristicsComponent germplasmCharacteristicsComponent;
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -72,14 +72,12 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 	public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer, VerticalLayout mainLayout,
 			TabSheet tabSheet) throws InternationalizableException {
-
 		this.qQuery = qQuery;
 		this.mainLayout = mainLayout;
 		this.gid = gid;
 		this.tabSheet = tabSheet;
 		this.dataResultIndexContainer = dataResultIndexContainer;
 		this.dataIndexContainer = dataResultIndexContainer;
-		this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
 	}
 
 	public void selectedTabChangeAction() throws InternationalizableException {
@@ -87,11 +85,11 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		Tab tab = this.getTab(selected);
 		if (tab.getComponent() instanceof VerticalLayout) {
 
-			if (((VerticalLayout) tab.getComponent()).getData().equals(SECOND_TAB)) {
-				if (layoutNames.getComponentCount() == 0) {
-					layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel));
-					layoutNames.setMargin(true);
-				}
+            if (((VerticalLayout) tab.getComponent()).getData().equals(SECOND_TAB)) {
+                if (layoutNames.getComponentCount() == 0) {
+                    layoutNames.addComponent(new GermplasmNamesComponent(dataIndexContainer, gDetailModel));
+                    layoutNames.setMargin(true);
+                }
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(THIRD_TAB)) {
 				if (layoutAttributes.getComponentCount() == 0) {
 					layoutAttributes.addComponent(new GermplasmAttributesComponent(dataIndexContainer, gDetailModel));
@@ -104,8 +102,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 				}
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(FIFTH_TAB)) {
 				if (layoutPedigreeTree.getComponentCount() == 0) {
-					layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
-							tabSheet));
+                    layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
 				}
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(SIX_TAB)) {
 				if (layoutGermplasmList.getComponentCount() == 0) {
@@ -124,8 +121,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(NINE_TAB)) {
 				if (layoutDerivativeNeighborhood.getComponentCount() == 0) {
-					layoutDerivativeNeighborhood.addComponent(new GermplasmDerivativeNeighborhoodComponent(gid, qQuery, dataResultIndexContainer, mainLayout,
-							tabSheet));
+                    layoutDerivativeNeighborhood.addComponent(new GermplasmDerivativeNeighborhoodComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(TEN_TAB)) {
 				if (layoutInventoryInformation.getComponentCount() == 0) {
@@ -144,9 +140,13 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	@Override
 	public void afterPropertiesSet() {
 
-		germplasmCharacteristicsComponent = new GermplasmCharacteristicsComponent(gDetailModel);
-		germplasmCharacteristicsComponent.setData(FIRST_TAB);
-
+		layoutDetails = new VerticalLayout();
+        layoutDetails.setData(FIRST_TAB);
+        gDetailModel = qQuery.getGermplasmDetails(gid);
+        layoutDetails.addComponent(new GermplasmCharacteristicsComponent(gDetailModel));
+        
+        layoutDetails.setMargin(true);
+        
 		layoutNames = new VerticalLayout();
 		layoutNames.setData(SECOND_TAB);
 
@@ -179,7 +179,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 		layoutPedigreeTree.setMargin(true);
 
-		this.addTab(germplasmCharacteristicsComponent, messageSource.getMessage(Message.characteristics_label));
+        this.addTab(layoutDetails, messageSource.getMessage(Message.characteristics_label));
 		this.addTab(layoutNames, messageSource.getMessage(Message.names_label));
 		this.addTab(layoutAttributes, messageSource.getMessage(Message.attributes_label));
 		this.addTab(layoutGenerationHistory, messageSource.getMessage(Message.generation_history_label));

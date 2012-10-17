@@ -48,7 +48,7 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        IndexedContainer dataSourceAttribute = dataIndexContainer.getGermplasAttribute(gDetailModel);
+        IndexedContainer dataSourceAttribute = dataIndexContainer.getGermplasmAttribute(gDetailModel);
         this.setContainerDataSource(dataSourceAttribute);
         setSelectable(true);
         setMultiSelect(false);
