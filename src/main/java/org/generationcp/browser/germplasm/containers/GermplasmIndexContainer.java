@@ -93,8 +93,10 @@ public final class GermplasmIndexContainer{
             }
         } else {
             queryByGid = qQuery.getGermplasmResultByGID(searchValue);
-            addGermplasmResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
+            if (queryByGid != null){
+                addGermplasmResultContainer(container, queryByGid.getGid(), queryByGid.getNames(), queryByGid.getMethod(),
                     queryByGid.getLocation());
+            }
         }
 
         return container;

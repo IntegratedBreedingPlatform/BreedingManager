@@ -80,7 +80,11 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		this.dataIndexContainer = dataResultIndexContainer;
 	}
 
-	public void selectedTabChangeAction() throws InternationalizableException {
+    public GermplasmDetailModel getGermplasmDetailModel() {
+        return gDetailModel;
+    }
+
+    public void selectedTabChangeAction() throws InternationalizableException {
 		Component selected = this.getSelectedTab();
 		Tab tab = this.getTab(selected);
 		if (tab.getComponent() instanceof VerticalLayout) {

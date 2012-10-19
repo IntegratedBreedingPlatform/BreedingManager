@@ -101,11 +101,15 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         // int screenWidth = 1028;
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
-            Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
-            tab.setClosable(true);
-            tabSheet.setSelectedTab(detailLayout);
-            mainLayout.addComponent(tabSheet);
+            GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet);
+            if (germplasmDetail.getGermplasmDetailModel().getGid() != 0){  // Germplasm found
+                detailLayout.addComponent(germplasmDetail);
+                Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
+                tab.setClosable(true);
+                tabSheet.setSelectedTab(detailLayout);
+                mainLayout.addComponent(tabSheet);
+            } 
+            // If germplasm is not found, no details tab is displayed
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
             tabSheet.setSelectedTab(tab.getComponent());
@@ -138,7 +142,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                 try {
                     int gid = Integer.parseInt(searchValue);
                     displayGermplasmDetailTab(gid);
-
                 } catch (NumberFormatException e) {
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();
@@ -155,8 +158,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                 resultTable.setCaption("Germplasm Search Result: " + dataSourceResult.size());
                 resultTable.setContainerDataSource(dataSourceResult);
                 mainLayout.requestRepaintAll();
-
             }
+               
         }
     }
 

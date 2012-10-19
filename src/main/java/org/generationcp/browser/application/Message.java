@@ -173,6 +173,6 @@ public enum Message {
      error_in_getting_derivative_neighborhood,
      error_in_creating_study_details_window,
      error_in_creating_germplasm_details_window,
-     error_in_germpls_study_information_by_germplasm_id
+     error_in_germplasm_study_information_by_germplasm_id
 
 }
