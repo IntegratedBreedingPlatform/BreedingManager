@@ -114,7 +114,7 @@ public class RepresentationDataSetQuery implements Query{
             }
 
             for (CharacterLevelElement charLevel : charLevels) {
-                String columnId = charLevel.getFactorId() + "-" + charLevel.getFactorName();
+                String columnId = new StringBuffer().append(charLevel.getFactorId()).append("-").append(charLevel.getFactorName()).toString();
                 // get Item for ounitid
                 Item item = itemMap.get(charLevel.getOunitId());
                 if (item == null) {
@@ -137,7 +137,7 @@ public class RepresentationDataSetQuery implements Query{
             }
 
             for (NumericLevelElement numericLevel : numericLevels) {
-                String columnId = numericLevel.getFactorId() + "-" + numericLevel.getFactorName();
+                String columnId = new StringBuffer().append(numericLevel.getFactorId()).append("-").append(numericLevel.getFactorName()).toString();
                 //check factor name, if it's a GID, then make the GID as a link. else, show it as a value only
                 if ("GID".equals(numericLevel.getFactorName().trim())) {
                     // get Item for ounitid

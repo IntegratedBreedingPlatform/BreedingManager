@@ -77,8 +77,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public void exportToCSVAction() {
         CsvExport csvExport;
         // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
-        reportTitle = new StringBuffer();        
-        reportTitle.append(messageSource.getMessage(Message.report_title1_text)).append("[").append(studyIdHolder)
+        reportTitle = new StringBuffer().append(messageSource.getMessage(Message.report_title1_text)).append("[").append(studyIdHolder)
         		   .append("]-").append(messageSource.getMessage(Message.report_title2_text)).append("[").append(representationId).append("]-");
         
         StringBuffer fileName = new StringBuffer();
@@ -128,7 +127,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         }
 
         for (Factor factor : factors) {
-            String columnId = factor.getFactorId() + "-" + factor.getName();
+            String columnId = new StringBuffer().append(factor.getFactorId()).append("-").append(factor.getName()).toString();
             columnIds.add(columnId);
         }
 
@@ -161,7 +160,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
         // set column headers for the Table
         for (Factor factor : factors) {
-            String columnId = factor.getFactorId() + "-" + factor.getName();
+            String columnId = new StringBuffer().append(factor.getFactorId()).append("-").append(factor.getName()).toString();
             String columnHeader = factor.getName();
             datasetTable.setColumnHeader(columnId, columnHeader);
         }
