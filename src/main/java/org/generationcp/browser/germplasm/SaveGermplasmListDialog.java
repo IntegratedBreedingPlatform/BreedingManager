@@ -12,13 +12,9 @@
 
 package org.generationcp.browser.germplasm;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
@@ -55,7 +51,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private static final long serialVersionUID = 1L;
 	public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
 	public static final String CANCEL_BUTTON_ID = "Cancel Saving";
-	private TextField txtGermplasmListName;
 	private Label labelListName;
 	private Label labelDescription;
 	private TextField txtDescription;
@@ -115,10 +110,8 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		selectType.setNullSelectionAllowed(false);
 		selectType.select("LST");
 
-
 		HorizontalLayout hButton = new HorizontalLayout();
 		hButton.setSpacing(true);
-
 		btnSave = new Button();
 		btnSave.setWidth("80px");
 		btnSave.setData(SAVE_BUTTON_ID);
@@ -126,13 +119,11 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		btnSave.addListener(new GermplasmButtonClickListener(this));
 
 		hButton.addComponent(btnSave);
-
 		btnCancel = new Button();
 		btnCancel.setWidth("80px");
 		btnCancel.setData(CANCEL_BUTTON_ID);
 		btnCancel.setDescription("Cancel Saving Germplasm List");
 		btnCancel.addListener(new GermplasmButtonClickListener(this));
-
 		hButton.addComponent(btnCancel);
 
 		addComponent(labelListName, 1, 1);
@@ -154,7 +145,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 			comboBoxListName.addItem(gList.getName());
 			mapExistingList.put(gList.getName(),new Integer(gList.getId()));
 		}
-
 	}
 
 	private void populateSelectType(Select selectType) {
@@ -198,10 +188,9 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		String listNameId=String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
 
 		if (listName.length() > 0  ) {
-				saveGermplasmAction.addGermplasListNameAndData(listName,listNameId, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
-				closeSavingGermplasmListDialog();
+			saveGermplasmAction.addGermplasListNameAndData(listName,listNameId, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
+			closeSavingGermplasmListDialog();
 		}
-
 	}
 
 	public void cancelGermplasmListButtonClickAction() {
@@ -217,11 +206,27 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	 */
 	public void valueChange(ValueChangeEvent event) {
 		if (!lastAdded) {
-
+			String listNameId=String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
+			if(listNameId!="null"){
+				GermplasmList gList=germplasmListManager.getGermplasmListById(Integer.valueOf(listNameId));
+				txtDescription.setValue(gList.getDescription());
+				txtDescription.setEnabled(false);
+				selectType.select(gList.getType());
+				selectType.setEnabled(false);
+			}else{
+				txtDescription.setValue("");
+				txtDescription.setEnabled(true);
+				selectType.select("LST");
+				selectType.setEnabled(true);
+			}
+		}else{
+			txtDescription.setValue("");
+			txtDescription.setEnabled(true);
+			selectType.select("LST");
+			selectType.setEnabled(true);
 		}
 		lastAdded = false;
 	}
-
 
 	@Override
 	public void addNewItem(String newItemCaption) {
@@ -232,6 +237,4 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		}
 
 	}
-
-
 }
