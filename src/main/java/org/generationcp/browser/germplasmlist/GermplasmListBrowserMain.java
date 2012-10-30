@@ -63,8 +63,8 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
 
-        tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.db_local_text)); // "Local"
-        tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.db_central_text)); // "Central"
+        tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
+        tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabCentralInstance);
         tabCentralInstance.addComponent(new GermplasmListTreeComponent(mainLayout, Database.CENTRAL));
         tabLocalInstance.addComponent(new GermplasmListTreeComponent(mainLayout, Database.LOCAL));
@@ -83,8 +83,8 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(tabLocalInstance, Message.db_local_text);
-        messageSource.setCaption(tabCentralInstance, Message.db_central_text);
+        messageSource.setCaption(tabLocalInstance, Message.DB_LOCAL_TEXT);
+        messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
     }
     
 }

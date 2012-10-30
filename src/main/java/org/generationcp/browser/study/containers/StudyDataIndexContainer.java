@@ -76,7 +76,7 @@ public class StudyDataIndexContainer{
             return container;
 
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_factor);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_FACTOR);
         }
     }
 
@@ -118,7 +118,7 @@ public class StudyDataIndexContainer{
             }
             return container;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_variate);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_VARIATE);
         }
     }
 

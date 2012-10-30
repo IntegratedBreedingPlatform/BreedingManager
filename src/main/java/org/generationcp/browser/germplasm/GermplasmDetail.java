@@ -183,17 +183,17 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 
 		layoutPedigreeTree.setMargin(true);
 
-        this.addTab(layoutDetails, messageSource.getMessage(Message.characteristics_label));
-		this.addTab(layoutNames, messageSource.getMessage(Message.names_label));
-		this.addTab(layoutAttributes, messageSource.getMessage(Message.attributes_label));
-		this.addTab(layoutGenerationHistory, messageSource.getMessage(Message.generation_history_label));
-		this.addTab(layoutPedigreeTree, messageSource.getMessage(Message.pedigree_tree_label));
-		this.addTab(layoutGermplasmList, messageSource.getMessage(Message.lists_label));
-		this.addTab(layoutGroupRelatives, messageSource.getMessage(Message.group_relatives_label));
-		this.addTab(layoutManagementNeighbors, messageSource.getMessage(Message.management_neighbors_label));
-		this.addTab(layoutDerivativeNeighborhood, messageSource.getMessage(Message.derivative_neighborhood_label));
-		this.addTab(layoutInventoryInformation, messageSource.getMessage(Message.inventory_information_label));
-		this.addTab(layoutGermplasmStudyInformation, messageSource.getMessage(Message.germplasm_studyinformation_label));
+        this.addTab(layoutDetails, messageSource.getMessage(Message.CHARACTERISTICS_LABEL));
+		this.addTab(layoutNames, messageSource.getMessage(Message.NAMES_LABEL));
+		this.addTab(layoutAttributes, messageSource.getMessage(Message.ATTRIBUTES_LABEL));
+		this.addTab(layoutGenerationHistory, messageSource.getMessage(Message.GENERATION_HISTORY_LABEL));
+		this.addTab(layoutPedigreeTree, messageSource.getMessage(Message.PEDIGREE_TREE_LABEL));
+		this.addTab(layoutGermplasmList, messageSource.getMessage(Message.LISTS_LABEL));
+		this.addTab(layoutGroupRelatives, messageSource.getMessage(Message.GROUP_RELATIVES_LABEL));
+		this.addTab(layoutManagementNeighbors, messageSource.getMessage(Message.MANAGEMENT_NEIGHBORS_LABEL));
+		this.addTab(layoutDerivativeNeighborhood, messageSource.getMessage(Message.DERIVATIVE_NEIGHBORHOOD_LABEL));
+		this.addTab(layoutInventoryInformation, messageSource.getMessage(Message.INVENTORY_INFORMATION_LABEL));
+		this.addTab(layoutGermplasmStudyInformation, messageSource.getMessage(Message.GERMPLASM_STUDY_INFORMATION_LABEL));
 		
 
 		this.addListener(new GermplasmSelectedTabChangeListener(this));

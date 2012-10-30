@@ -67,13 +67,13 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     // called by StudyValueChangedListener.valueChange()
     public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
         String[] parts = datasetLabel.split("-");
-        Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.dataset_text), "").trim()); // "Dataset"
+        Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
         String repName = parts[1].trim();
 
         // if repName is null or empty, use repId in dataset tab title
         repName = ((repName == null || repName.equals("")) ? repId.toString() : repName);
         
-        String tabTitle = messageSource.getMessage(Message.dataset_of_text) + repName; // "Dataset of "
+        String tabTitle = messageSource.getMessage(Message.DATASET_OF_TEXT) + repName; // "Dataset of "
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
             RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, repId, tabTitle,
@@ -99,28 +99,28 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
         try {
             representations = studyDataManager.getRepresentationByStudyID(studyId);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_representation_by_study_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_REPRESENTATION_BY_STUDY_ID);
         }
 
         if (representations.isEmpty()) {
-            addComponent(new Label(messageSource.getMessage(Message.no_datasets_retrieved_label))); // "No datasets retrieved."
+            addComponent(new Label(messageSource.getMessage(Message.NO_DATASETS_RETRIEVED_LABEL))); // "No datasets retrieved."
         } else {
             List<String> datasets = new ArrayList<String>();
 
             for (Representation rep : representations) {
                 if (rep.getName() != null) {
-                    if (!rep.getName().equals(messageSource.getMessage(Message.study_effect_header))) { // "STUDY EFFECT"
-                        datasets.add(messageSource.getMessage(Message.dataset_text) + " " + rep.getId() + " - " + rep.getName()); // Dataset
+                    if (!rep.getName().equals(messageSource.getMessage(Message.STUDY_EFFECT_HEADER))) { // "STUDY EFFECT"
+                        datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " - " + rep.getName()); // Dataset
                     }
                 } else {
-                    datasets.add(messageSource.getMessage(Message.dataset_text) + " " + rep.getId() + " - " + rep.getName()); // Dataset
+                    datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " - " + rep.getName()); // Dataset
                 }
             }
 
             this.datasetList = new ListSelect("", datasets);
             this.datasetList.setNullSelectionAllowed(false);
             this.datasetList.setImmediate(true);
-            this.datasetList.setDescription(messageSource.getMessage(Message.click_dataset_to_view_text)); // "Click on a dataset to view it"
+            this.datasetList.setDescription(messageSource.getMessage(Message.CLICK_DATASET_TO_VIEW_TEXT)); // "Click on a dataset to view it"
             this.datasetList.addListener(new StudyValueChangedListener(this));
 
             addComponent(this.datasetList);

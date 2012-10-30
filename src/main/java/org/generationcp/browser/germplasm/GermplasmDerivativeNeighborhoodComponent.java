@@ -152,7 +152,7 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.click_to_view_germplasm_details);
+                return messageSource.getMessage(Message.CLICK_TO_VIEW_GERMPLASM_DETAILS);
             }
         });
         
@@ -177,9 +177,9 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
     @Override
     public void updateLabels() {
     	
-        messageSource.setCaption(labelNumberOfStepsBackward, Message.number_of_steps_backward_label);
-        messageSource.setCaption(labelNumberOfStepsForward, Message.number_of_steps_forward_label);
-        messageSource.setCaption(btnDisplay, Message.display_button_label);
+        messageSource.setCaption(labelNumberOfStepsBackward, Message.NUMBER_OF_STEPS_BACKWARD_LABEL);
+        messageSource.setCaption(labelNumberOfStepsForward, Message.NUMBER_OF_STEPS_FORWARD_LABEL);
+        messageSource.setCaption(btnDisplay, Message.DISPLAY_BUTTON_LABEL);
        
     }
 

@@ -63,11 +63,11 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         setSpacing(true);
         setMargin(true);
 
-        lblName = new Label(messageSource.getMessage(Message.name_label)); // "Name"
-        lblDescription = new Label(messageSource.getMessage(Message.description_label)); // "Description"
-        lblCreationDate = new Label(messageSource.getMessage(Message.creation_date_label)); // "Creation Date"
-        lblType = new Label(messageSource.getMessage(Message.type_label)); // "Type"
-        lblStatus = new Label(messageSource.getMessage(Message.status_label)); // "Status"
+        lblName = new Label(messageSource.getMessage(Message.NAME_LABEL)); // "Name"
+        lblDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL)); // "Description"
+        lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL)); // "Creation Date"
+        lblType = new Label(messageSource.getMessage(Message.TYPE_LABEL)); // "Type"
+        lblStatus = new Label(messageSource.getMessage(Message.STATUS_LABEL)); // "Status"
         
         // get GermplasmList Detail
         GermplasmList germplasmList;

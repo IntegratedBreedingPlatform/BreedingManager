@@ -67,11 +67,11 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, TYPE, Message.type_label);
-        messageSource.setColumnHeader(this, NAME, Message.name_label);
-        messageSource.setColumnHeader(this, DATE, Message.date_label);
-        messageSource.setColumnHeader(this, LOCATION, Message.location_label);
-        messageSource.setColumnHeader(this, TYPE_DESC, Message.typedesc_label);
+        messageSource.setColumnHeader(this, TYPE, Message.TYPE_LABEL);
+        messageSource.setColumnHeader(this, NAME, Message.NAME_LABEL);
+        messageSource.setColumnHeader(this, DATE, Message.DATE_LABEL);
+        messageSource.setColumnHeader(this, LOCATION, Message.LOCATION_LABEL);
+        messageSource.setColumnHeader(this, TYPE_DESC, Message.TYPEDESC_LABEL);
     }
 
 }

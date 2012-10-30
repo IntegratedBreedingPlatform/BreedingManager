@@ -57,7 +57,7 @@ public class TraitQueries implements Serializable, InitializingBean{
             long allTraitCount = traitDataManager.countAllTraits();
             return (ArrayList<Trait>) traitDataManager.getAllTraits(1, (int) allTraitCount, Database.CENTRAL);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_counting_traits);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_COUNTING_TRAITS);
         }
     }
 
@@ -65,7 +65,7 @@ public class TraitQueries implements Serializable, InitializingBean{
         try {
             return (ArrayList<Scale>) traitDataManager.getScalesByTraitId(traitID);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_scales_by_trait_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_SCALES_BY_TRAIT_ID);
         }
     }
 
@@ -73,7 +73,7 @@ public class TraitQueries implements Serializable, InitializingBean{
         try {
             return (ArrayList<TraitMethod>) traitDataManager.getTraitMethodsByTraitId(traitID);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_trait_method);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_TRAIT_METHOD);
         }
     }
 
@@ -81,7 +81,7 @@ public class TraitQueries implements Serializable, InitializingBean{
         try {
             return (ArrayList<ScaleDiscrete>) traitDataManager.getDiscreteValuesOfScale(scaleID);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_discrete_values_of_scale);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DISCRETE_VALUES_OF_SCALE);
         }
     }
 
@@ -95,7 +95,7 @@ public class TraitQueries implements Serializable, InitializingBean{
         try {
             return (ArrayList<Integer>) studyDataManager.getGIDSByPhenotypicData(filters, 0, 10, Database.CENTRAL);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_ids_by_phenotypic_data);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_IDS_BY_PHENO_DATA);
         }
     }
 

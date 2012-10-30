@@ -112,7 +112,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     return;
                 }*/
 
-        window = new Window(messageSource.getMessage(Message.retrieve_germplasm_by_pheno_label)); // "Retrieve Germplasms By Phenotypic Data"
+        window = new Window(messageSource.getMessage(Message.RETRIEVE_GERMPLASM_BY_PHENO_LABEL)); // "Retrieve Germplasms By Phenotypic Data"
         setMainWindow(window);
         setTheme("gcp-default");
         window.setSizeUndefined();
@@ -131,11 +131,11 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
         WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
 
-        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.welcome_label)); // "Welcome"
-        tabSheet.addTab(rootLayoutForGermplasmBrowser, messageSource.getMessage(Message.germplasmbrowser_title)); // "Germplasm Browser"
-        tabSheet.addTab(rootLayoutForGermplasmListBrowser, messageSource.getMessage(Message.germplasmlist_browser_title)); // "Germplasm List Browser"
-        tabSheet.addTab(rootLayoutForStudyBrowser, messageSource.getMessage(Message.studybrowser_title)); // "Study Browser"
-        tabSheet.addTab(rootLayoutForGermplasmByPhenoTab, messageSource.getMessage(Message.germplasm_by_pheno_title)); // "Search for Germplasms By Phenotypic Data"
+        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_LABEL)); // "Welcome"
+        tabSheet.addTab(rootLayoutForGermplasmBrowser, messageSource.getMessage(Message.GERMPLASM_BROWSER_TITLE)); // "Germplasm Browser"
+        tabSheet.addTab(rootLayoutForGermplasmListBrowser, messageSource.getMessage(Message.GERMPLASM_LIST_BROWSER_TITLE)); // "Germplasm List Browser"
+        tabSheet.addTab(rootLayoutForStudyBrowser, messageSource.getMessage(Message.STUDY_BROWSER_TITLE)); // "Study Browser"
+        tabSheet.addTab(rootLayoutForGermplasmByPhenoTab, messageSource.getMessage(Message.GERMPLASM_BY_PHENO_TITLE)); // "Search for Germplasms By Phenotypic Data"
 
         window.addComponent(tabSheet);
 
@@ -157,15 +157,15 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     e.printStackTrace();
                     if (getMainWindow() != null) {
                         MessageNotifier.showError(getMainWindow(),   // TESTED 
-                                messageSource.getMessage(Message.error_with_configuration),
+                                messageSource.getMessage(Message.ERROR_CONFIGURATION),
                                 (e.getLocalizedMessage() == null ? "</br>"
-                                        + messageSource.getMessage(Message.error_please_contact_administrator) : "</br>"
+                                        + messageSource.getMessage(Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR) : "</br>"
                                         + e.getLocalizedMessage()));
                     }
                 }
                 TraitDataIndexContainer traitDataCon = new TraitDataIndexContainer();
 
-                Window germplasmByPhenoWindow = new Window(messageSource.getMessage(Message.germplasm_by_pheno_title)); // "Search for Germplasms By Phenotypic Data"
+                Window germplasmByPhenoWindow = new Window(messageSource.getMessage(Message.GERMPLASM_BY_PHENO_TITLE)); // "Search for Germplasms By Phenotypic Data"
                 germplasmByPhenoWindow.setName("germplasm-by-pheno");
                 germplasmByPhenoWindow.setSizeUndefined();
                 germplasmByPhenoWindow.addComponent(new SearchGermplasmByPhenotypicTab(gidByPhenoQueries, traitDataCon, germplasmByPhenoWindow));
@@ -173,7 +173,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
                 return germplasmByPhenoWindow;
             } else if("study".equals(name)) {
-                Window studyBrowserWindow = new Window(messageSource.getMessage(Message.studybrowser_title)); // Study
+                Window studyBrowserWindow = new Window(messageSource.getMessage(Message.STUDY_BROWSER_TITLE)); // Study
                 // Browser
                 studyBrowserWindow.setName("study");
                 studyBrowserWindow.setSizeUndefined();
@@ -181,7 +181,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 this.addWindow(studyBrowserWindow);
                 return studyBrowserWindow;
             } else if(GERMPLASM_WINDOW_NAME.equals(name)) {
-                Window germplasmBrowserWindow = new Window(messageSource.getMessage(Message.germplasmbrowser_title)); // "Germplasm Browser"
+                Window germplasmBrowserWindow = new Window(messageSource.getMessage(Message.GERMPLASM_BROWSER_TITLE)); // "Germplasm Browser"
                 germplasmBrowserWindow.setName("germplasm");
                 germplasmBrowserWindow.setSizeUndefined();
                 try {
@@ -196,7 +196,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     }
                 }
             } else if("germplasmlist".equals(name)) {
-                Window germplasmListBrowserWindow = new Window(messageSource.getMessage(Message.germplasmlist_browser_title)); // "Germplasm List Browser"
+                Window germplasmListBrowserWindow = new Window(messageSource.getMessage(Message.GERMPLASM_LIST_BROWSER_TITLE)); // "Germplasm List Browser"
                 germplasmListBrowserWindow.setName("germplasmlist");
                 germplasmListBrowserWindow.setSizeUndefined();
                 try {
@@ -214,7 +214,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 String studyIdPart = name.substring(name.indexOf("-") + 1);
                 try {
                     int studyId = Integer.parseInt(studyIdPart);
-                    Window studyDetailsWindow = new Window(messageSource.getMessage(Message.study_details_text) + " " + studyId);  // "Study Details" + study id
+                    Window studyDetailsWindow = new Window(messageSource.getMessage(Message.STUDY_DETAILS_TEXT) + " " + studyId);  // "Study Details" + study id
                     studyDetailsWindow.setSizeUndefined();
                     
                     studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
@@ -222,11 +222,11 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;
                 } catch (Exception ex) {
-                    LOG.error(messageSource.getMessage(Message.error_in_creating_study_details_window)  // "Error with creating study details window for"
+                    LOG.error(messageSource.getMessage(Message.ERROR_IN_CREATING_STUDY_DETAILS_WINDOW)  // "Error with creating study details window for"
                             + " " + name + ex.toString() + "\n" + ex.getStackTrace());
-                    Window emptyStudyDetailsWindow = new Window(messageSource.getMessage(Message.study_details_text));  // "Study Details"
+                    Window emptyStudyDetailsWindow = new Window(messageSource.getMessage(Message.STUDY_DETAILS_TEXT));  // "Study Details"
                     emptyStudyDetailsWindow.setSizeUndefined();
-                    emptyStudyDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.null_study_details)  // "No study details for:"
+                    emptyStudyDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.NULL_STUDY_DETAILS)  // "No study details for:"
                             + " " + studyIdPart));
                     this.addWindow(emptyStudyDetailsWindow);
                     return emptyStudyDetailsWindow;
@@ -235,7 +235,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                  String gidPart = name.substring(name.indexOf("-") + 1);
                  try {
                      int gid = Integer.parseInt(gidPart);
-                     Window germplasmDetailsWindow = new Window(messageSource.getMessage(Message.germplasm_details_text) + " " + gid);  // "Germplasm Details"
+                     Window germplasmDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASM_DETAILS_TEXT) + " " + gid);  // "Germplasm Details"
                      germplasmDetailsWindow.setSizeUndefined();
                      GermplasmQueries queries = new GermplasmQueries();
                      GermplasmIndexContainer container = new GermplasmIndexContainer(queries);
@@ -243,11 +243,11 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {
-                     LOG.error(messageSource.getMessage(Message.error_in_creating_germplasm_details_window)   // "Error with creating germplasm details window for"
+                     LOG.error(messageSource.getMessage(Message.ERROR_IN_CREATING_GERMPLASM_DETAILS_WINDOW)   // "Error with creating germplasm details window for"
                              + " " + name + ex.toString() + "\n" + ex.getStackTrace());
-                     Window emptyGermplasmDetailsWindow = new Window(messageSource.getMessage(Message.germplasm_details_text));    // "Germplasm Details"
+                     Window emptyGermplasmDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASM_DETAILS_TEXT));    // "Germplasm Details"
                      emptyGermplasmDetailsWindow.setSizeUndefined();
-                     emptyGermplasmDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.null_germplasm_details)    // "No germplasm details for:"
+                     emptyGermplasmDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.NULL_GERMPLASM_DETAILS)    // "No germplasm details for:"
                              + " " + gidPart));
                      this.addWindow(emptyGermplasmDetailsWindow);
                      return emptyGermplasmDetailsWindow;
@@ -265,8 +265,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         try {
             gidByPhenoQueries = new GidByPhenotypicQueries();
         } catch (ConfigException e) {
-            throw new InternationalizableException(e, Message.error_with_configuration, 
-                                Message.error_please_contact_administrator);  // TESTED 
+            throw new InternationalizableException(e, Message.ERROR_CONFIGURATION, 
+                                Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR);  // TESTED 
         }
         final TraitDataIndexContainer traitDataCon = new TraitDataIndexContainer();
         if (source.getSelectedTab() == rootLayoutForGermplasmByPhenoTab) {
@@ -299,8 +299,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         event.getThrowable().printStackTrace();
         // Some custom behaviour.
         if (getMainWindow() != null) {
-            MessageNotifier.showError(getMainWindow(), messageSource.getMessage(Message.error_internal),  // TESTED
-                    messageSource.getMessage(Message.error_please_contact_administrator)
+            MessageNotifier.showError(getMainWindow(), messageSource.getMessage(Message.ERROR_INTERNAL),  // TESTED
+                    messageSource.getMessage(Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR)
                             + (event.getThrowable().getLocalizedMessage() == null ? "" : "</br>"
                                     + event.getThrowable().getLocalizedMessage()));
         }

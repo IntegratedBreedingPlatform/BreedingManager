@@ -115,7 +115,7 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(searchSelect, Message.search_for_label);
+        messageSource.setCaption(searchSelect, Message.SEARCH_FOR_LABEL);
     }
 
 }

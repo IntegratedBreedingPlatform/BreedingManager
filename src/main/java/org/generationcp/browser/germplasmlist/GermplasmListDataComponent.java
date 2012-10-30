@@ -63,7 +63,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         List<GermplasmListData> listData = new ArrayList<GermplasmListData>();
         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
         if (listDataCount == 0) {
-            addComponent(new Label(messageSource.getMessage(Message.no_listdata_retrieved_label))); // "No Germplasm List Data retrieved."
+            addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
         } else {
             
             listData = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
@@ -83,13 +83,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.addContainerProperty(GROUP_NAME, String.class, null);
             listDataTable.addContainerProperty(STATUS, String.class, null);
             
-            messageSource.setColumnHeader(listDataTable, GID, Message.listdata_gid_header);
-            messageSource.setColumnHeader(listDataTable, ENTRY_ID, Message.listdata_entryid_header);
-            messageSource.setColumnHeader(listDataTable, ENTRY_CODE, Message.listdata_entrycode_header);
-            messageSource.setColumnHeader(listDataTable, SEED_SOURCE, Message.listdata_seedsource_header);
-            messageSource.setColumnHeader(listDataTable, DESIGNATION, Message.listdata_designation_header);
-            messageSource.setColumnHeader(listDataTable, GROUP_NAME, Message.listdata_groupname_header);
-            messageSource.setColumnHeader(listDataTable, STATUS, Message.listdata_status_header);
+            messageSource.setColumnHeader(listDataTable, GID, Message.LISTDATA_GID_HEADER);
+            messageSource.setColumnHeader(listDataTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
+            messageSource.setColumnHeader(listDataTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
+            messageSource.setColumnHeader(listDataTable, SEED_SOURCE, Message.LISTDATA_SEEDSOURCE_HEADER);
+            messageSource.setColumnHeader(listDataTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
+            messageSource.setColumnHeader(listDataTable, GROUP_NAME, Message.LISTDATA_GROUPNAME_HEADER);
+            messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
             
             for (GermplasmListData data : listData) {
                 listDataTable.addItem(new Object[] {

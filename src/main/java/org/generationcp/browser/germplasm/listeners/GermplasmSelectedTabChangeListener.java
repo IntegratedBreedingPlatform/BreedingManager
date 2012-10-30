@@ -53,7 +53,7 @@ public class GermplasmSelectedTabChangeListener implements TabSheet.SelectedTabC
             } catch (InternationalizableException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
-                e.setCaption(Message.error_in_displaying_requested_detail);
+                e.setCaption(Message.ERROR_IN_DISPLAYING_RQUESTED_DETAIL);
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             }
         }

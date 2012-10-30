@@ -63,8 +63,8 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
 
-        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.db_local_text)); // "Local"
-        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.db_central_text)); // "Central"
+        tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
+        tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
         tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
         tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
@@ -83,8 +83,8 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(tabLocalInstance, Message.db_local_text);
-        messageSource.setCaption(tabCentralInstance, Message.db_central_text);
+        messageSource.setCaption(tabLocalInstance, Message.DB_LOCAL_TEXT);
+        messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
     }
     
 }

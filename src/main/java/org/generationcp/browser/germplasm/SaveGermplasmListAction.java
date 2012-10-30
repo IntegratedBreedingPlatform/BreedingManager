@@ -121,7 +121,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 				
 			}
 		} catch (MiddlewareQueryException e) {
-			throw new InternationalizableException(e, Message.error_database, Message.error_in_adding_germplasm_list);
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_ADDING_GERMPLASM_LIST);
 		}
 	}
 

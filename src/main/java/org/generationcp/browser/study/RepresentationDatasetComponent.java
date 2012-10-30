@@ -77,8 +77,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public void exportToCSVAction() {
         CsvExport csvExport;
         // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
-        reportTitle = new StringBuffer().append(messageSource.getMessage(Message.report_title1_text)).append("[").append(studyIdHolder)
-        		   .append("]-").append(messageSource.getMessage(Message.report_title2_text)).append("[").append(representationId).append("]-");
+        reportTitle = new StringBuffer().append(messageSource.getMessage(Message.REPORT_TITLE1_TEXT)).append("[").append(studyIdHolder)
+        		   .append("]-").append(messageSource.getMessage(Message.REPORT_TITLE2_TEXT)).append("[").append(representationId).append("]-");
         
         StringBuffer fileName = new StringBuffer();
         
@@ -107,8 +107,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
             factors = new ArrayList<Factor>();
             if (getWindow() != null) {
                 MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.error_database), 
-                        messageSource.getMessage(Message.error_in_getting_factors_of_representation)  + " " + representationId); 
+                        messageSource.getMessage(Message.ERROR_DATABASE), 
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_FACTORS_OF_REPRESENTATION)  + " " + representationId); 
             }
         }
 
@@ -121,8 +121,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
             variates = new ArrayList<Variate>();
             if (getWindow() != null) {
                 MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.error_database), 
-                        messageSource.getMessage(Message.error_in_getting_variates_of_representation)  + " " + representationId);
+                        messageSource.getMessage(Message.ERROR_DATABASE), 
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_VARIATES_OF_REPRESENTATION)  + " " + representationId);
             }
         }
 
@@ -191,7 +191,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(exportCsvButton, Message.export_to_CSV_label);
+        messageSource.setCaption(exportCsvButton, Message.EXPORT_TO_CSV_LABEL);
     }
     
 }

@@ -87,8 +87,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return toReturn;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database,
-                    Message.error_in_getting_germplasm_list_result_by_preferred_name);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
         }
     }
 
@@ -142,7 +142,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             } 
             return germplasmDetail;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_details);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_DETAILS);
         }
     }
 
@@ -159,7 +159,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return toreturn;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_generation_history);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GENERATION_HISTORY);
         }
     }
 
@@ -176,7 +176,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return toreturn;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_generation_history);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GENERATION_HISTORY);
         }
     }
 
@@ -193,7 +193,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return toreturn;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_generation_history);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GENERATION_HISTORY);
         }
     }
 
@@ -227,7 +227,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return germplasmNames;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
         }
     }
 
@@ -256,7 +256,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return germplasmAttributes;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_attributes_by_germplasm_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID);
         }
     }
 
@@ -273,7 +273,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             }
             return prefId;
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
         }
     }
 
@@ -294,7 +294,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
             return germplasmNames.toString();
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_names_by_germplasm_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
         }
     }
 
@@ -321,7 +321,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         try {
             return germplasmDataManager.generatePedigreeTree(gid, i);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_generating_pedigree_tree);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
         }
     }
 
@@ -330,7 +330,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         try {
             return germplasmDataManager.getDerivativeNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_derivative_neighborhood);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DERIVATIVE_NEIGHBORHOOD);
         }
     }
 
@@ -352,8 +352,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             long count = this.inventoryDataManager.countLotsByEntityTypeAndEntityId(type, gid);
             result = this.inventoryDataManager.generateReportOnLotsByEntityTypeAndEntityId(type, gid, 0, (int) count);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database,
-                    Message.error_in_getting_report_on_lots_by_entity_type_and_entity_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_GETTING_REPORT_ON_LOTS_BY_ENTITY_TYPE_AND_ENTITY_ID);
         }
         return result;
     }
@@ -363,7 +363,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         try {
             result = studyManager.getStudyInformationByGID(Long.valueOf(gid));
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_germplasm_study_information_by_germplasm_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GERMPLASM_STUDY_INFORMATION_BY_GERMPLASM_ID);
         }
         return result;
     }

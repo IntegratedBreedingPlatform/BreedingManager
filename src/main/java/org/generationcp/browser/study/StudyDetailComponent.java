@@ -67,12 +67,12 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         setSpacing(true);
         setMargin(true);
 
-        lblName = new Label(messageSource.getMessage(Message.name_label)); // "Name"
-        lblTitle = new Label(messageSource.getMessage(Message.title_label)); // "Title"
-        lblObjective = new Label(messageSource.getMessage(Message.objective_label)); // "Objective"
-        lblType = new Label(messageSource.getMessage(Message.type_label)); // "Type"
-        lblStartDate = new Label(messageSource.getMessage(Message.start_date_label)); // "Start Date"
-        lblEndDate = new Label(messageSource.getMessage(Message.end_date_label)); // "End Date"
+        lblName = new Label(messageSource.getMessage(Message.NAME_LABEL)); // "Name"
+        lblTitle = new Label(messageSource.getMessage(Message.TITLE_LABEL)); // "Title"
+        lblObjective = new Label(messageSource.getMessage(Message.OBJECTIVE_LABEL)); // "Objective"
+        lblType = new Label(messageSource.getMessage(Message.TYPE_LABEL)); // "Type"
+        lblStartDate = new Label(messageSource.getMessage(Message.START_DATE_LABEL)); // "Start Date"
+        lblEndDate = new Label(messageSource.getMessage(Message.END_DATE_LABEL)); // "End Date"
         
         // get Study Detail
         Study study;
@@ -88,7 +88,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
             studyEndDate = new Label(String.valueOf(study.getEndDate()));
 
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_in_getting_study_detail_by_id, Message.empty_string);
+            throw new InternationalizableException(e, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID, Message.EMPTY_STRING);
         }
 		
         addComponent(lblName, 1, 1);

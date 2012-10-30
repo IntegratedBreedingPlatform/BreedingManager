@@ -95,8 +95,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             e.printStackTrace();
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.error_database),
-                    messageSource.getMessage(Message.error_in_getting_top_level_studies));
+                        messageSource.getMessage(Message.ERROR_DATABASE),
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_STUDIES));
             }
             studyParent = new ArrayList<Study>();
         }
@@ -124,8 +124,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_invalid_format),
-                    messageSource.getMessage(Message.error_in_number_format));
+                    messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
         }
     }
 
@@ -138,8 +138,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_database), 
-                    messageSource.getMessage(Message.error_in_getting_studies_by_parent_folder_id));
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
             studyChildren = new ArrayList<Study>();
         }
 
@@ -178,7 +178,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         try {
             return this.studyDataManager.getStudyByID(studyId).getName();
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_study_detail_by_id);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID);
         }
     }
 
@@ -191,8 +191,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_database), 
-                    messageSource.getMessage(Message.error_in_getting_studies_by_parent_folder_id));
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
             studyChildren = new ArrayList<Study>();
         }
         if (!studyChildren.isEmpty()) {
@@ -226,7 +226,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.study_details_label); // "Click to view study details"
+                return messageSource.getMessage(Message.STUDY_DETAILS_LABEL); // "Click to view study details"
             }
         });
 
@@ -241,7 +241,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(refreshButton, Message.refresh_label);
+        messageSource.setCaption(refreshButton, Message.REFRESH_LABEL);
     }
 
 }

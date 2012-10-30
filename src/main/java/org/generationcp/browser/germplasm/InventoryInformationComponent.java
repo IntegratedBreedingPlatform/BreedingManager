@@ -65,10 +65,10 @@ public class InventoryInformationComponent extends Table implements Initializing
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, ACTUAL_LOT_BALANCE, Message.lot_balance_header);
-        messageSource.setColumnHeader(this, LOCATION_NAME, Message.location_header);
-        messageSource.setColumnHeader(this, SCALE_NAME, Message.scale_header);
-        messageSource.setColumnHeader(this, LOT_COMMENT, Message.lot_comment_header);
+        messageSource.setColumnHeader(this, ACTUAL_LOT_BALANCE, Message.LOT_BALANCE_HEADER);
+        messageSource.setColumnHeader(this, LOCATION_NAME, Message.LOCATION_HEADER);
+        messageSource.setColumnHeader(this, SCALE_NAME, Message.SCALE_HEADER);
+        messageSource.setColumnHeader(this, LOT_COMMENT, Message.LOT_COMMENT_HEADER);
     }
 
 }

@@ -148,8 +148,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                     withNoError = false;
                     // mainLayout.showNotification("Invalid Input","Must be numeric");
                     if (getWindow() != null) {
-                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.error_invalid_format),
-                                messageSource.getMessage(Message.error_invalid_input_must_be_numeric));
+                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+                                messageSource.getMessage(Message.ERROR_INVALID_INPUT_MUST_BE_NUMERIC));
                     }
                 }
             }
@@ -235,14 +235,14 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(btnSearch, Message.search_label);
-        messageSource.setCaption(btnSaveGermplasmList, Message.save_germplasmlist_button_label);
-        messageSource.setCaption(btnCloseAllGermplamDetailTab, Message.close_all_germlasmdetail_tab_label);
+        messageSource.setCaption(btnSearch, Message.SEARCH_LABEL);
+        messageSource.setCaption(btnSaveGermplasmList, Message.SAVE_GERMPLASM_LIST_BUTTON_LABEL);
+        messageSource.setCaption(btnCloseAllGermplamDetailTab, Message.CLOSE_ALL_GERMPLASM_DETAIL_TAB_LABEL);
     }
 
     @SuppressWarnings("deprecation")
     private void openDialogSaveList() {
-        saveGermplasmListDialog = new Window(messageSource.getMessage(Message.save_germplasm_list_window_label));
+        saveGermplasmListDialog = new Window(messageSource.getMessage(Message.SAVE_GERMPLASM_LIST_WINDOW_LABEL));
         saveGermplasmListDialog.setModal(true);
         saveGermplasmListDialog.setWidth(700);
         saveGermplasmListDialog.setHeight(350);

@@ -101,10 +101,10 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
         layoutEffect = new VerticalLayout();
         layoutEffect.setData(STUDY_EFFECTS);
         
-        this.addTab(studyDetailComponent, messageSource.getMessage(Message.study_details_text)); // "Study Details"
-        this.addTab(layoutFactor, messageSource.getMessage(Message.factors_text)); // "Factors"
-        this.addTab(layoutVariate, messageSource.getMessage(Message.variates_text)); // "Variates"
-        this.addTab(layoutEffect, messageSource.getMessage(Message.datasets_text)); // "Datasets"
+        this.addTab(studyDetailComponent, messageSource.getMessage(Message.STUDY_DETAILS_TEXT)); // "Study Details"
+        this.addTab(layoutFactor, messageSource.getMessage(Message.FACTORS_TEXT)); // "Factors"
+        this.addTab(layoutVariate, messageSource.getMessage(Message.VARIATES_TEXT)); // "Variates"
+        this.addTab(layoutEffect, messageSource.getMessage(Message.DATASETS_TEXT)); // "Datasets"
 
         this.addListener(new StudySelectedTabChangeListener(this));    	
     }

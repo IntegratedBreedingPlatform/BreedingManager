@@ -82,12 +82,12 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, "NAME", Message.name_header);
-        messageSource.setColumnHeader(this, "DESCRIPTION", Message.description_header);
-        messageSource.setColumnHeader(this, "PROPERTY", Message.property_header);
-        messageSource.setColumnHeader(this, "SCALE", Message.scale_header);
-        messageSource.setColumnHeader(this, "METHOD", Message.method_header);
-        messageSource.setColumnHeader(this, "DATATYPE", Message.datatype_header);
+        messageSource.setColumnHeader(this, "NAME", Message.NAME_HEADER);
+        messageSource.setColumnHeader(this, "DESCRIPTION", Message.DESCRIPTION_HEADER);
+        messageSource.setColumnHeader(this, "PROPERTY", Message.PROPERTY_HEADER);
+        messageSource.setColumnHeader(this, "SCALE", Message.SCALE_HEADER);
+        messageSource.setColumnHeader(this, "METHOD", Message.METHOD_HEADER);
+        messageSource.setColumnHeader(this, "DATATYPE", Message.DATATYPE_HEADER);
     }
 
 }

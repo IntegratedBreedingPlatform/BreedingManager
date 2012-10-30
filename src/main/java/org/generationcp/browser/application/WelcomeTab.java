@@ -188,12 +188,12 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(welcomeLabel, Message.welcome_label);
-        messageSource.setCaption(questionLabel, Message.question_label);
-        messageSource.setCaption(germplasmButton, Message.germplasm_button_label);
-        messageSource.setCaption(germplasmListButton, Message.germplasm_list_button_label);
-        messageSource.setCaption(studyButton, Message.study_button_label);
-        messageSource.setCaption(germplasmByPhenoButton, Message.germplasms_by_pheno_label);
+        messageSource.setCaption(welcomeLabel, Message.WELCOME_LABEL);
+        messageSource.setCaption(questionLabel, Message.QUESTION_LABEL);
+        messageSource.setCaption(germplasmButton, Message.GERMPLASM_BUTTON_LABEL);
+        messageSource.setCaption(germplasmListButton, Message.GERMPLASM_LIST_BUTTON_LABEL);
+        messageSource.setCaption(studyButton, Message.STUDY_BUTTON_LABEL);
+        messageSource.setCaption(germplasmByPhenoButton, Message.GERMPLASM_BY_PHENO_LABEL);
     }
 		
 }

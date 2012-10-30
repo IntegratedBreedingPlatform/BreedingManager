@@ -56,9 +56,9 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DATE, String.class, null);
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, String.class, null);
         
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, Message.name_header);
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE, Message.date_header);
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, Message.description_header);
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, Message.NAME_HEADER);
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE, Message.DATE_HEADER);
+        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, Message.DESCRIPTION_HEADER);
         
         container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
         

@@ -65,7 +65,7 @@ public class SearchResultTable extends VerticalLayout implements InitializingBea
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.click_to_view_germplasm_details);
+                return messageSource.getMessage(Message.CLICK_TO_VIEW_GERMPLASM_DETAILS);
             }
         });
 

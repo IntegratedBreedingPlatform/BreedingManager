@@ -404,8 +404,8 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();
                     if (getWindow() != null) {
-                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.error_invalid_format),
-                                messageSource.getMessage(Message.error_invalid_number_format_must_be_numeric));
+                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+                                messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
                     }
                 }
 
@@ -431,8 +431,8 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                             notNumericRange = true;
                             LOG.error(e.toString() + "\n" + e.getStackTrace());
                             e.printStackTrace();
-                            MessageNotifier.showWarning(parentWindow, messageSource.getMessage(Message.error_invalid_format),
-                                    messageSource.getMessage(Message.error_invalid_number_format_must_be_numeric));
+                            MessageNotifier.showWarning(parentWindow, messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+                                    messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
                         }
                     } else {
                         notNumericRange = true;
@@ -462,7 +462,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                 return true;
             }
         } catch (NullPointerException e) {
-            throw new InternationalizableException(e, Message.error_null_table, Message.empty_string);
+            throw new InternationalizableException(e, Message.ERROR_NULL_TABLE, Message.EMPTY_STRING);
         }
         return false;
     }
@@ -496,7 +496,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
             LOG.error("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
             System.out.println("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
             throw new InternationalizableException(new Exception("Input error. No selected trait scale method."), 
-                    Message.error_input, Message.error_no_selected_trait_scale_method);
+                    Message.ERROR_INPUT, Message.ERROR_NO_SELECTED_TRAIT_SCALE_METHOD);
         }
     }
 
@@ -531,7 +531,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
                 searchResultTable.setContainerDataSource(dataSourceSearchResult);
             }
         } catch (Exception e) {
-            throw new InternationalizableException(e, Message.error_in_search, Message.empty_string);
+            throw new InternationalizableException(e, Message.ERROR_IN_SEARCH, Message.EMPTY_STRING);
         }
     }
 
@@ -553,7 +553,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
             traitMethodTable.setValue(traitMethodTable.firstItemId());
             traitMethodTable.requestRepaint();
         } catch (Exception e) {
-            throw new InternationalizableException(e, Message.error_in_displaying_details, Message.empty_string);
+            throw new InternationalizableException(e, Message.ERROR_IN_DISPLAYING_DETAILS, Message.EMPTY_STRING);
         }
     }
 
@@ -618,8 +618,8 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showError(parentWindow, // TESTED
-                    messageSource.getMessage(Message.error_in_displaying_trait_table), 
-                    "</br>" + messageSource.getMessage(Message.error_please_contact_administrator));
+                    messageSource.getMessage(Message.ERROR_IN_DISPLAYING_TRAIT_TABLE), 
+                    "</br>" + messageSource.getMessage(Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR));
         }
 
         componentTtraitValueInput.addComponent(step5Label);
@@ -676,23 +676,23 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(btnAddCriteria, Message.add_criteria_label);
-        messageSource.setCaption(btnDelete, Message.delete_label);
-        messageSource.setCaption(btnDeleteAll, Message.delete_all_label);
-        messageSource.setCaption(btnSearch, Message.search_label);
+        messageSource.setCaption(btnAddCriteria, Message.ADD_CRITERIA_LABEL);
+        messageSource.setCaption(btnDelete, Message.DELETE_LABEL);
+        messageSource.setCaption(btnDeleteAll, Message.DELETE_ALL_LABEL);
+        messageSource.setCaption(btnSearch, Message.SEARCH_LABEL);
 
-        messageSource.setCaption(step1Label, Message.step1_label);
-        messageSource.setCaption(step2Label, Message.step2_label);
-        messageSource.setCaption(step3Label, Message.step3_label);
-        messageSource.setCaption(step4Label, Message.step4_label);
-        messageSource.setCaption(step5Label, Message.step5_label);
-        messageSource.setCaption(mainLabel, Message.germplasm_by_pheno_title);
-        messageSource.setCaption(finalStepLabel, Message.finalstep_label);
-        messageSource.setCaption(valueOptionsInstuctionLabel, Message.select_a_value_from_the_options_below_label);
-        messageSource.setCaption(rangeInstructionLabel, Message.to_enter_a_range_of_values_follow_this_example_label);
+        messageSource.setCaption(step1Label, Message.STEP1_LABEL);
+        messageSource.setCaption(step2Label, Message.STEP2_LABEL);
+        messageSource.setCaption(step3Label, Message.STEP3_LABEL);
+        messageSource.setCaption(step4Label, Message.STEP4_LABEL);
+        messageSource.setCaption(step5Label, Message.STEP5_LABEL);
+        messageSource.setCaption(mainLabel, Message.GERMPLASM_BY_PHENO_TITLE);
+        messageSource.setCaption(finalStepLabel, Message.FINAL_STEP_LABEL);
+        messageSource.setCaption(valueOptionsInstuctionLabel, Message.SELECT_A_VALUE_FROM_THE_OPTIONS_BELOW_LABEL);
+        messageSource.setCaption(rangeInstructionLabel, Message.TO_ENTER_A_RANGE_OF_VALUES_FOLLOW_THIS_EXAMPLE_LABEL);
 
-        messageSource.setDescription(btnDelete, Message.you_can_delete_the_currently_selected_criteria_desc);
-        messageSource.setDescription(btnDeleteAll, Message.you_can_delete_all_the_criteria_desc);
+        messageSource.setDescription(btnDelete, Message.YOU_CAN_DELETE_THE_CURRENTLY_SELECTED_CRITERIA_DESC);
+        messageSource.setDescription(btnDeleteAll, Message.YOU_CAN_DELETE_ALL_THE_CRITERIA_DESC);
     }
 
 }

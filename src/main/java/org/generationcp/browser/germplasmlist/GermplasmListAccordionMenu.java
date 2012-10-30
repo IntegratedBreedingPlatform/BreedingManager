@@ -76,8 +76,8 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         layoutListData = new VerticalLayout();
         layoutListData.setData(LIST_DATA);
         
-        this.addTab(germplasmListDetailComponent, messageSource.getMessage(Message.germplasm_list_details_tab)); // "Germplasm List Details"
-        this.addTab(layoutListData, messageSource.getMessage(Message.germplasm_list_data_tab)); // "Germplasm List Data"
+        this.addTab(germplasmListDetailComponent, messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_TAB)); // "Germplasm List Details"
+        this.addTab(layoutListData, messageSource.getMessage(Message.GERMPLASM_LIST_DATA_TAB)); // "Germplasm List Data"
 
         this.addListener(new GermplasmListSelectedTabChangeListener(this));    	
     }

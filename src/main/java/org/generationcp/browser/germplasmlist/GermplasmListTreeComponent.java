@@ -90,8 +90,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             e.printStackTrace();
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.error_database),
-                    messageSource.getMessage(Message.error_in_getting_top_level_folders));
+                        messageSource.getMessage(Message.ERROR_DATABASE),
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
             }
             germplasmListParent = new ArrayList<GermplasmList>();
         }
@@ -119,8 +119,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_invalid_format),
-                    messageSource.getMessage(Message.error_in_number_format));
+                    messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
         }
     }
 
@@ -133,8 +133,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_database), 
-                    messageSource.getMessage(Message.error_in_getting_germplasm_lists_by_parent_folder_id));
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
             germplasmListChildren = new ArrayList<GermplasmList>();
         }
 
@@ -177,8 +177,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.error_database), 
-                    messageSource.getMessage(Message.error_in_getting_germplasm_lists_by_parent_folder_id));
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
             listChildren = new ArrayList<GermplasmList>();
         }
         
@@ -214,7 +214,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.germplasm_list_details_label); // "Click to view germplasm list details"
+                return messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_LABEL); // "Click to view germplasm list details"
             }
         });
 
@@ -229,7 +229,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(refreshButton, Message.refresh_label);
+        messageSource.setCaption(refreshButton, Message.REFRESH_LABEL);
     }
 
 }

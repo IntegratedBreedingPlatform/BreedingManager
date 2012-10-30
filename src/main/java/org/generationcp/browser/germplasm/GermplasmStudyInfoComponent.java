@@ -66,9 +66,9 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, STUDY_NAME, Message.study_name_label);
-        messageSource.setColumnHeader(this, DESCRIPTION, Message.description_label);
-        messageSource.setColumnHeader(this, NUM_ROWS, Message.number_of_rows);
+        messageSource.setColumnHeader(this, STUDY_NAME, Message.STUDY_NAME_LABEL);
+        messageSource.setColumnHeader(this, DESCRIPTION, Message.DESCRIPTION_LABEL);
+        messageSource.setColumnHeader(this, NUM_ROWS, Message.NUMBER_OF_ROWS);
 
     }
 

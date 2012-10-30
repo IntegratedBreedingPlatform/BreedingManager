@@ -64,8 +64,8 @@ public class GermplasmGroupRelativesComponent extends Table implements Initializ
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, GID, Message.gid_label);
-        messageSource.setColumnHeader(this, PREF_NAME, Message.prefname_label);
+        messageSource.setColumnHeader(this, GID, Message.GID_LABEL);
+        messageSource.setColumnHeader(this, PREF_NAME, Message.PREFNAME_LABEL);
     }
 
 }

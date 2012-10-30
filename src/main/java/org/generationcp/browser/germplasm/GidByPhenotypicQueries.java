@@ -62,7 +62,7 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
         try {
             results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_ids_by_phenotypic_data);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_IDS_BY_PHENO_DATA);
         }
         return results;
 
