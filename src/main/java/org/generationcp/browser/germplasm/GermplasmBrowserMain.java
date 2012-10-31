@@ -198,6 +198,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         mainLayout.addComponent(searchFormLayout);
 
         // Set the initial search result in Central
+        //TODO can we remove this? as it slows down the initial rendering of the germplasm browser?
         dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(NAMES, "", Database.CENTRAL);
         resultTable = new SearchResultTable(dataSourceResult).getResultTable();
 
