@@ -52,3 +52,21 @@
 	padding-right: 5px;
 	padding-bottom: 2px;
 }
+
+/* Modify default styles for the progress indicator */
+.v-loading-indicator,
+.v-loading-indicator-delay,
+.v-loading-indicator-wait {
+    position: absolute;
+    /* change indicator position from top-right to center from top-left */
+    top: 50%;
+    left: 50%;
+    /* double the size of the default gif, might need to create new gif to avoid pixellation */
+    width: 62px;
+    height: 62px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    margin: 0;
+    /* reduce opacity of progress indicator since it will sit on top of other elements */
+    opacity: 0.8;
+}
