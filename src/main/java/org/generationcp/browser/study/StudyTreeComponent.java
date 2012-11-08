@@ -117,7 +117,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     // Called by StudyItemClickListener
     public void studyTreeItemClickAction(int studyId) throws InternationalizableException{
         try {
-            if (!hasChildStudy(studyId)) {
+            Study study = this.studyDataManager.getStudyByID(studyId);
+            //don't show study details if study record is a Folder ("F")
+            if (!hasChildStudy(studyId) && !study.getType().equals("F")) {
                 createStudyInfoTab(studyId);
             }
         } catch (NumberFormatException e) {
@@ -126,6 +128,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
                     messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID),
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID));
         }
     }
 
