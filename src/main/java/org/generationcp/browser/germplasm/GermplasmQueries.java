@@ -167,7 +167,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
             List<Germplasm> groupRelativeList = new ArrayList<Germplasm>();
-            groupRelativeList = germplasmDataManager.getGroupRelatives(new Integer(gid));
+            int groupRelativeCnt = (int) germplasmDataManager.countGroupRelatives(new Integer(gid));
+            groupRelativeList = germplasmDataManager.getGroupRelatives(new Integer(gid), 0, groupRelativeCnt);
             for (Germplasm g : groupRelativeList) {
                 GermplasmDetailModel groupRelative = new GermplasmDetailModel();
                 groupRelative.setGid(g.getGid());
