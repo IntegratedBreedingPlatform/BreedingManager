@@ -14,6 +14,7 @@ package org.generationcp.browser.germplasm.containers;
 
 import java.util.ArrayList;
 
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetailModel;
 import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
 import org.generationcp.browser.germplasm.GermplasmQueries;
@@ -57,7 +58,6 @@ public final class GermplasmIndexContainer{
     private static final Object STUDY_DESCRIPTION = "description";
     private static final Object STUDY_NUMBER_OF_ROWS = "rowCount";
 
-    private static final String GERMPLASM_SEARCH_BY_NAMES = "Names";
     @SuppressWarnings("unused")
     private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
@@ -86,11 +86,16 @@ public final class GermplasmIndexContainer{
 
         ArrayList<GermplasmSearchResultModel> queryByNames = null;
         GermplasmSearchResultModel queryByGid = null;
-        if (choice.equals(GERMPLASM_SEARCH_BY_NAMES)) {
+        if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
             queryByNames = qQuery.getGermplasmListResultByPrefName(choice, searchValue, databaseInstance);
             for (GermplasmSearchResultModel q : queryByNames) {
                 addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
             }
+        } else if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_STANDARD_SEARCH)) {
+                queryByNames = qQuery.getGermplasmListResultByPrefStandardizedName(choice, searchValue, databaseInstance);
+                for (GermplasmSearchResultModel q : queryByNames) {
+                    addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
+                }
         } else {
             queryByGid = qQuery.getGermplasmResultByGID(searchValue);
             if (queryByGid != null){

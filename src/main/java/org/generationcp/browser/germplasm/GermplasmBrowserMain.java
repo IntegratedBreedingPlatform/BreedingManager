@@ -54,9 +54,16 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
     private final static String NAMES = "Names";
     private final static String GID = "gid";
 
+    public static final String SEARCH_OPTION_GID = "GID";
+    public static final String SEARCH_OPTION_NAME = "Names";
+    public static final String SEARCH_OPTION_STANDARD_SEARCH = "Standard Search";
+
     public final static String SEARCH_BUTTON_ID = "GermplasmBrowserMain Search Button";
     public final static String SAVE_GERMPLASMLIST_ID = "Save GermplasmList Button";
     public final static String CLOSE_ALL_GERMPLASMDETAIL_TAB_ID = "Close all GermplasmDetail Tab Button";
+
+    public static final String INSTANCE_OPTION_CENTRAL = "Central";
+    public static final String INSTANCE_OPTION_LOCAL = "Local";
 
     private VerticalLayout mainLayout;
     private HorizontalLayout searchFormLayout;
@@ -152,7 +159,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                                 messageSource.getMessage(Message.ERROR_INVALID_INPUT_MUST_BE_NUMERIC));
                     }
                 }
-            }
+            } 
             if (withNoError) {
                 dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(searchChoice, searchValue, instance);
                 resultTable.setCaption("Germplasm Search Result: " + dataSourceResult.size());

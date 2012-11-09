@@ -91,6 +91,35 @@ public class GermplasmQueries implements Serializable, InitializingBean{
                     Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
         }
     }
+    
+
+
+    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchBy, String searchString,
+            Database databaseInstance) throws InternationalizableException {
+        try {
+            List<Germplasm> germplasmList;
+            long count;
+
+            if (searchString.contains("%")) {
+                count = 500;
+                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count);
+            } else {
+                count = germplasmDataManager.countGermplasmByName(searchString);
+                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count);
+            }
+            ArrayList<GermplasmSearchResultModel> toReturn = new ArrayList<GermplasmSearchResultModel>();
+            for (Germplasm g : germplasmList) {
+                Germplasm gData = g;
+                GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+                toReturn.add(setGermplasmSearchResult(gResult, gData));
+
+            }
+            return toReturn;
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
+        }
+    }
 
     public GermplasmSearchResultModel getGermplasmResultByGID(String gid) throws InternationalizableException {
         Germplasm gData = germplasmDataManager.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
