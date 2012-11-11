@@ -272,7 +272,9 @@ public final class GermplasmIndexContainer{
         container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
         container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
 
-        final ArrayList<GermplasmDetailModel> query = qQuery.getManagementNeighbors(Integer.valueOf(G.getGid()));
+        //TODO must apply paging somewhere as the middleware function for getManagementNeighbors ahs been refactored to have startRecord and maxRecordFetchLimit
+        // for now it is gettin all to avoid errors
+        final ArrayList<GermplasmDetailModel> query = qQuery.getManagementNeighbors(Integer.valueOf(G.getGid()), 0 , Integer.MAX_VALUE);
         for (GermplasmDetailModel g : query) {
             addGermplasmManagementNeighbors(container, g.getGid(), g.getGermplasmPreferredName());
         }
