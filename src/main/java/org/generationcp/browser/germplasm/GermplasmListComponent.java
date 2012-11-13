@@ -30,11 +30,6 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
 
     private static final long serialVersionUID = 1L;
     
-
-    /*private static final String NAME = "Name";
-    private static final String DATE = "Date";
-    private static final String DESCRIPTION = "Description";*/
-    
     private GermplasmListManager dataManager;
     private Integer gid;
     
@@ -70,7 +65,6 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
         setPageLength(15);
-        //setColumnHeaders(new String[] { NAME, DATE, DESCRIPTION });
     }
 
     @Override

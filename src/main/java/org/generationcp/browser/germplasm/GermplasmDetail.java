@@ -18,6 +18,7 @@ import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeLi
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private GermplasmListManager germplasmListManager;
 	
 	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
 	public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer, VerticalLayout mainLayout,
@@ -115,7 +119,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(SEVEN_TAB)) {
 				if (layoutGroupRelatives.getComponentCount() == 0) {
-					layoutGroupRelatives.addComponent(new GermplasmGroupRelativesComponent(dataIndexContainer, gDetailModel));
+					layoutGroupRelatives.addComponent(new GermplasmGroupRelativesComponent(germplasmDataManager, gid));
 					layoutGroupRelatives.setMargin(true);
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(EIGHT_TAB)) {

@@ -245,27 +245,6 @@ public final class GermplasmIndexContainer{
         item.getItemProperty(GERMPLASM_INVENTORY_LOT_COMMENT).setValue(lotComment);
     }
 
-    public IndexedContainer getGermplasmGroupRelatives(GermplasmDetailModel G) {
-        IndexedContainer container = new IndexedContainer();
-
-        // Create the container properties
-        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
-        container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
-
-        final ArrayList<GermplasmDetailModel> query = qQuery.getGroupRelatives(Integer.valueOf(G.getGid()));
-        for (GermplasmDetailModel g : query) {
-            addGermplasmGroupRelatives(container, g.getGid(), g.getGermplasmPreferredName());
-        }
-        return container;
-    }
-
-    private static void addGermplasmGroupRelatives(Container container, int gid, String prefname) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-    }
-
     public IndexedContainer getGermplasmManagementNeighbors(GermplasmDetailModel G) {
         IndexedContainer container = new IndexedContainer();
         // Create the container properties
