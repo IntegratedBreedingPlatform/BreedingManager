@@ -13,14 +13,16 @@
 package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
+import org.generationcp.browser.germplasm.containers.ManagementNeighborsQuery;
+import org.generationcp.browser.germplasm.containers.ManagementNeighborsQueryFactory;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Table;
 
 @Configurable
@@ -28,32 +30,38 @@ public class GermplasmManagementNeighborsComponent extends Table implements Init
 
     private static final long serialVersionUID = 1L;
     
-    private static final String  GID = "GID";
-    private static final String PREF_NAME = "Prefname";
-    
-    GermplasmIndexContainer dataIndexContainer;
-    GermplasmDetailModel gDetailModel;
+    private GermplasmDataManager dataManager;
+    private Integer gid;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmManagementNeighborsComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-    	this.dataIndexContainer = dataIndexContainer;
-    	this.gDetailModel = gDetailModel;
+    public GermplasmManagementNeighborsComponent(GermplasmDataManager dataManager, Integer gid) {
+        this.dataManager = dataManager;
+        this.gid = gid;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        IndexedContainer dataSourceGenerationHistory = dataIndexContainer.getGermplasmManagementNeighbors(gDetailModel);
+        ManagementNeighborsQueryFactory factory = new ManagementNeighborsQueryFactory(dataManager, gid);
+        LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
 
-        this.setContainerDataSource(dataSourceGenerationHistory);
+        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
+        container.addContainerProperty(ManagementNeighborsQuery.GID, String.class, null);
+        container.addContainerProperty(ManagementNeighborsQuery.PREFERRED_NAME, String.class, null);
+        
+        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.GID, Message.GID_LABEL);
+        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
+        
+        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
+        
+        this.setContainerDataSource(container);
         setSelectable(true);
         setMultiSelect(false);
         setSizeFull();
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { GID, PREF_NAME });
     }
 
     @Override
@@ -64,8 +72,8 @@ public class GermplasmManagementNeighborsComponent extends Table implements Init
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, PREF_NAME, Message.PREFNAME_LABEL);
+        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.GID, Message.GID_LABEL);
+        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
     }
 
 }

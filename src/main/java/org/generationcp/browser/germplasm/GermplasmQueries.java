@@ -175,23 +175,6 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
-    public ArrayList<GermplasmDetailModel> getManagementNeighbors(Integer gid, int start, int numRows) throws InternationalizableException {
-        try {
-            ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
-            List<Germplasm> managementNeighborsList = new ArrayList<Germplasm>();
-            managementNeighborsList = germplasmDataManager.getManagementNeighbors(new Integer(gid), start, numRows);
-            for (Germplasm g : managementNeighborsList) {
-                GermplasmDetailModel managementNeighbors = new GermplasmDetailModel();
-                managementNeighbors.setGid(g.getGid());
-                managementNeighbors.setGermplasmPreferredName(getPreferredName(g));
-                toreturn.add(managementNeighbors);
-            }
-            return toreturn;
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GENERATION_HISTORY);
-        }
-    }
-
     public ArrayList<GermplasmDetailModel> getGenerationHistory(Integer gid) throws InternationalizableException {
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();

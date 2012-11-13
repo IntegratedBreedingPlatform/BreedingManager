@@ -245,28 +245,6 @@ public final class GermplasmIndexContainer{
         item.getItemProperty(GERMPLASM_INVENTORY_LOT_COMMENT).setValue(lotComment);
     }
 
-    public IndexedContainer getGermplasmManagementNeighbors(GermplasmDetailModel G) {
-        IndexedContainer container = new IndexedContainer();
-        // Create the container properties
-        container.addContainerProperty(GERMPLASM_GID, Integer.class, 0);
-        container.addContainerProperty(GERMPLASM_PREFNAME, String.class, "");
-
-        //TODO must apply paging somewhere as the middleware function for getManagementNeighbors ahs been refactored to have startRecord and maxRecordFetchLimit
-        // for now it is gettin all to avoid errors
-        final ArrayList<GermplasmDetailModel> query = qQuery.getManagementNeighbors(Integer.valueOf(G.getGid()), 0 , Integer.MAX_VALUE);
-        for (GermplasmDetailModel g : query) {
-            addGermplasmManagementNeighbors(container, g.getGid(), g.getGermplasmPreferredName());
-        }
-        return container;
-    }
-
-    private static void addGermplasmManagementNeighbors(Container container, int gid, String prefname) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-    }
-
     public IndexedContainer getGermplasmStudyInformation(GermplasmDetailModel G) {
         IndexedContainer container = new IndexedContainer();
 
