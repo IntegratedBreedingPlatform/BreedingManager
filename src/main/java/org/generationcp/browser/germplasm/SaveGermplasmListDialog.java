@@ -177,8 +177,8 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		messageSource.setCaption(labelListName, Message.LIST_NAME_LABEL);
 		messageSource.setCaption(labelDescription, Message.DESCRIPTION_LABEL);
 		messageSource.setCaption(labelType, Message.TYPE_LABEL);
-		messageSource.setCaption(btnSave, Message.SAVE_GERMPLASM_LISTNAME_BUTTON_LABEL);
-		messageSource.setCaption(btnCancel, Message.CANCEL_GERMPLASM_LISTNAME_BUTTON_LABEL);
+		messageSource.setCaption(btnSave, Message.SAVE_LABEL);
+		messageSource.setCaption(btnCancel, Message.CANCEL_LABEL);
 	}
 
 	public void saveGermplasmListButtonClickAction() throws InternationalizableException {

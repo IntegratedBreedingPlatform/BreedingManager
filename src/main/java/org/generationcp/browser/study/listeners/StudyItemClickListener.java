@@ -13,6 +13,7 @@
 package org.generationcp.browser.study.listeners;
 
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.browser.study.StudySearchMainComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -21,6 +22,12 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.Layout;
+
+/**
+ * 
+ * @author Joyce Avestro
+ * 
+ */
 
 public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -47,6 +54,20 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription()); // TESTED 
                 }
             }
+        }
+        
+        if (source instanceof StudySearchMainComponent){
+            int studyId = Integer.valueOf(event.getItemId().toString());
+            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+                try {
+                    ((StudySearchMainComponent) source).studyItemClickAction(studyId);
+                } catch (InternationalizableException e) {
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  
+                }
+            }
+            
         }
     }
 

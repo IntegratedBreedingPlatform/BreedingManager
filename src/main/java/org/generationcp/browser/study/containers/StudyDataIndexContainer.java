@@ -17,20 +17,28 @@ import java.util.ArrayList;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Factor;
 import org.generationcp.middleware.pojos.Scale;
+import org.generationcp.middleware.pojos.Study;
 import org.generationcp.middleware.pojos.Trait;
 import org.generationcp.middleware.pojos.TraitMethod;
 import org.generationcp.middleware.pojos.Variate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 
 public class StudyDataIndexContainer{
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(StudyDataIndexContainer.class);
+    
     // Factor Object
     private static final Object FACTOR_NAME = "factorName";
     private static final Object VARIATE_NAME = "variateName";
@@ -39,6 +47,10 @@ public class StudyDataIndexContainer{
     private static final Object SCALE_NAME = "scaleName";
     private static final Object METHOD_NAME = "methodName";
     private static final Object DATATYPE = "dataType";
+    
+    
+    private static final String STUDY_ID = "ID";
+    private static final String STUDY_NAME = "NAME";
 
     private StudyDataManager studyDataManager;
     private TraitDataManager traitDataManager;
@@ -168,6 +180,81 @@ public class StudyDataIndexContainer{
             methodName = method.getName();
         }
         return methodName;
+    }
+
+    public IndexedContainer getStudies(String name, String country, Season season, Integer date) throws InternationalizableException {
+        IndexedContainer container = new IndexedContainer();
+
+        // Create the container properties
+        container.addContainerProperty(STUDY_ID, Integer.class, "");
+        container.addContainerProperty(STUDY_NAME, String.class, "");
+        
+        ArrayList<Study> studies = new ArrayList<Study>();
+
+        try {
+            if (date != null) {
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyBySDate(date, 0,
+                        (int) studyDataManager.countStudyBySDate(date, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL,
+                        Database.CENTRAL));
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyBySDate(date, 0,
+                        (int) studyDataManager.countStudyBySDate(date, Operation.EQUAL, Database.LOCAL), Operation.EQUAL, Database.LOCAL));
+            }
+
+            if (name != null) {
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyByName(name, 0,
+                        (int) studyDataManager.countStudyByName(name, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL, Database.CENTRAL));
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyByName(name, 0,
+                        (int) studyDataManager.countStudyByName(name, Operation.EQUAL, Database.LOCAL), Operation.EQUAL, Database.LOCAL));
+
+            }
+
+            if (country != null) {
+                // Get from central
+                studies.addAll(studyDataManager.getStudyByCountry(country, 0,
+                        (int) studyDataManager.countStudyByCountry(country, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL,
+                        Database.CENTRAL));
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyByCountry(country, 0,
+                        (int) studyDataManager.countStudyByCountry(country, Operation.EQUAL, Database.LOCAL), Operation.EQUAL,
+                        Database.LOCAL));
+            }
+
+            if (season != null) {
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyBySeason(season, 0,
+                        (int) studyDataManager.countStudyBySeason(season, Database.CENTRAL), Database.CENTRAL));
+
+                // Get from central
+                studies.addAll(studyDataManager.getStudyBySeason(season, 0,
+                        (int) studyDataManager.countStudyBySeason(season, Database.LOCAL), Database.LOCAL));
+            }
+
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error encountered while searching for studies", e);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR);
+        }
+
+        for (Study study : studies) {
+            addStudyData(container, study.getId(), study.getName()); 
+        }
+        return container;
+    }
+
+    private static void addStudyData(Container container, Integer id, String name) {
+        Object itemId = container.addItem();
+        Item item = container.getItem(itemId);
+        item.getItemProperty(STUDY_ID).setValue(id);
+        item.getItemProperty(STUDY_NAME).setValue(name);
     }
 
 }

@@ -34,6 +34,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
+    private VerticalLayout tabSearch;
     private TabSheet tabSheetStudyDatabaseInstance;
     
     @Autowired
@@ -62,12 +63,15 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 
         tabLocalInstance = new VerticalLayout();
         tabCentralInstance = new VerticalLayout();
+        tabSearch = new VerticalLayout();
 
         tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
+        tabSheetStudyDatabaseInstance.addTab(tabSearch).setCaption(messageSource.getMessage(Message.SEARCH_LABEL)); // "Search"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
         tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
         tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
+        tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
 
         mainLayout.addComponent(tabSheetStudyDatabaseInstance);
         mainLayout.setExpandRatio(tabSheetStudyDatabaseInstance, .40f);
@@ -85,6 +89,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     public void updateLabels() {
         messageSource.setCaption(tabLocalInstance, Message.DB_LOCAL_TEXT);
         messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
+        messageSource.setCaption(tabSearch, Message.SEARCH_LABEL);
     }
     
 }
