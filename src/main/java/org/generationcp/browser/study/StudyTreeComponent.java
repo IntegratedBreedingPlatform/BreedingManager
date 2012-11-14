@@ -69,6 +69,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+    static{
+        tabSheetStudy = new TabSheet();
+    }
     
     public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database) {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
@@ -214,8 +218,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	setSpacing(true);
         setMargin(true);
         
-        tabSheetStudy = new TabSheet();
-
         studyTree = createStudyTree(database);
 
         refreshButton = new Button(); // "Refresh"
@@ -250,6 +252,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     @Override
     public void updateLabels() {
         messageSource.setCaption(refreshButton, Message.REFRESH_LABEL);
+    }
+
+    
+    public static TabSheet getTabSheetStudy() {
+        return tabSheetStudy;
     }
 
 }

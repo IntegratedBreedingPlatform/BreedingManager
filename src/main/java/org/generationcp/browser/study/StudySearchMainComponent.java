@@ -82,7 +82,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     public void afterPropertiesSet() throws Exception { 
 
         studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, null, 0);
-        tabSheetStudy = new TabSheet();
+        tabSheetStudy = StudyTreeComponent.getTabSheetStudy();
 
         setSpacing(true);
         mainLayout = new VerticalLayout();
