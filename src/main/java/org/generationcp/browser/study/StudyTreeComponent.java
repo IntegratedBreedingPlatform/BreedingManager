@@ -218,6 +218,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	setSpacing(true);
         setMargin(true);
         
+        tabSheetStudy = new TabSheet();
+        
         studyTree = createStudyTree(database);
 
         refreshButton = new Button(); // "Refresh"

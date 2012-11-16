@@ -35,9 +35,11 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  * This class creates the Vaadin Table where a dataset can be displayed.
@@ -52,6 +54,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private static final long serialVersionUID = -8476739652987572690L;
     
     public static final String EXPORT_CSV_BUTTON_ID = "RepresentationDatasetComponent Export CSV Button";
+    public static final String EXPORT_EXCEL_BUTTON_ID = "RepresentationDatasetComponent Export to FieldBook Excel File Button";
 
     private Table datasetTable;
     private String reportName;
@@ -59,9 +62,12 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Integer representationId;
 
     private Button exportCsvButton;
+    private Button exportExcelButton;
     private StringBuffer reportTitle;
     
     private StudyDataManager studyDataManager;
+    
+    private Window saveFieldBookExcelFileDialog;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -78,7 +84,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         CsvExport csvExport;
         // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
         reportTitle = new StringBuffer().append(messageSource.getMessage(Message.REPORT_TITLE1_TEXT)).append("[").append(studyIdHolder)
-        		   .append("]-").append(messageSource.getMessage(Message.REPORT_TITLE2_TEXT)).append("[").append(representationId).append("]-");
+                   .append("]-").append(messageSource.getMessage(Message.REPORT_TITLE2_TEXT)).append("[").append(representationId).append("]-");
         
         StringBuffer fileName = new StringBuffer();
         
@@ -88,6 +94,21 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         csvExport.excludeCollapsedColumns();
         csvExport.setMimeType(TableExport.CSV_MIME_TYPE);
         csvExport.export();
+    }
+    
+    // Called by StudyButtonClickListener
+    @SuppressWarnings("deprecation")
+    public void exportToExcelAction() {
+        
+        saveFieldBookExcelFileDialog = new Window(messageSource.getMessage(Message.EXPORT_TO_EXCEL_LABEL));        
+        saveFieldBookExcelFileDialog.setModal(true);
+        saveFieldBookExcelFileDialog.setWidth(700);
+        saveFieldBookExcelFileDialog.setHeight(350);
+
+        saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
+                this.getApplication().getMainWindow(), saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
+        this.getApplication().getMainWindow().addWindow(saveFieldBookExcelFileDialog);
+        
     }
     
     @Override
@@ -175,12 +196,21 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         setSpacing(true);
         addComponent(datasetTable);
         setData(this.reportName);
-
+        
         exportCsvButton = new Button(); // "Export to CSV"
         exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
-
         exportCsvButton.addListener(new StudyButtonClickListener(this));
-        addComponent(exportCsvButton);
+
+        exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
+        exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
+        exportExcelButton.addListener(new StudyButtonClickListener(this));
+        
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        buttonLayout.addComponent(exportCsvButton);
+        buttonLayout.addComponent(exportExcelButton);
+
+        addComponent(buttonLayout);
     }
     
     @Override
@@ -192,6 +222,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     @Override
     public void updateLabels() {
         messageSource.setCaption(exportCsvButton, Message.EXPORT_TO_CSV_LABEL);
+        messageSource.setCaption(exportExcelButton, Message.EXPORT_TO_EXCEL_LABEL);
     }
     
 }

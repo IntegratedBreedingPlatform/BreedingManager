@@ -1,6 +1,7 @@
 package org.generationcp.browser.study.util;
 
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class DatasetExporter {
         this.representationId = representationId;
     }
     
-    public void exportToFieldBookExcel(String filename) throws DatasetExporterException {
+    public FileOutputStream exportToFieldBookExcel(String filename) throws DatasetExporterException {
         //create workbook
         Workbook workbook = new HSSFWorkbook();
         CellStyle cellStyle = workbook.createCellStyle();
@@ -456,6 +457,7 @@ public class DatasetExporter {
             FileOutputStream fileOutputStream = new FileOutputStream(filename);
             workbook.write(fileOutputStream);
             fileOutputStream.close();
+            return fileOutputStream;
         } catch(Exception ex) {
             throw new DatasetExporterException("Error with writing to: " + filename, ex);
         }
