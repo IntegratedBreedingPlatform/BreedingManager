@@ -143,13 +143,17 @@ public class Util{
      * @return
      */
     public static String getOneFolderUp(String path){
-        String newPath = path.substring(0, path.lastIndexOf(File.separator));
+        String newPath = path;
         
-        if (newPath.equals("")) { // already at the root directory
-            newPath = File.separator; 
+        if (path != null && path.length() > 0){
+            newPath = path.substring(0, path.lastIndexOf(File.separator));
         }
-        return newPath;
+            
+        if (newPath.equals("")) { // already at the root directory
+                newPath = File.separator; 
+        }
                 
+        return newPath;
         
     }
 }
