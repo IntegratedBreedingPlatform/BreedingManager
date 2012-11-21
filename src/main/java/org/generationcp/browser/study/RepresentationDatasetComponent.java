@@ -15,6 +15,7 @@ package org.generationcp.browser.study;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.RepresentationDatasetQueryFactory;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
@@ -68,15 +69,18 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private StudyDataManager studyDataManager;
     
     private Window saveFieldBookExcelFileDialog;
+    
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId) {
+    public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId, boolean forStudyWindow) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.representationId = representationId;
         this.studyDataManager = studyDataManager;
+        this.forStudyWindow = forStudyWindow;
     }
 
     // Called by StudyButtonClickListener
@@ -105,9 +109,16 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         saveFieldBookExcelFileDialog.setWidth(700);
         saveFieldBookExcelFileDialog.setHeight(350);
 
-        saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
-                this.getApplication().getMainWindow(), saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
-        this.getApplication().getMainWindow().addWindow(saveFieldBookExcelFileDialog);
+        if(this.forStudyWindow){
+            saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
+                    this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME)
+                    , saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
+            this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME).addWindow(saveFieldBookExcelFileDialog);
+        } else{
+            saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
+                    this.getApplication().getMainWindow(), saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
+            this.getApplication().getMainWindow().addWindow(saveFieldBookExcelFileDialog);
+        }
         
     }
     

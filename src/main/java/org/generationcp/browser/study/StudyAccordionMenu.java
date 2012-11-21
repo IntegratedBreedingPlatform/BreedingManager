@@ -48,17 +48,19 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private StudyDataManager studyDataManager;
     private TraitDataManager traitDataManager;
     private StudyDetailComponent studyDetailComponent;
-   
+
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
-            TraitDataManager traitDataManager) {
+            TraitDataManager traitDataManager, boolean forStudyWindow) {
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.traitDataManager = traitDataManager;
         this.studyDetailComponent = studyDetailComponent;
-        // Have it take all space available in the layout.
+        this.forStudyWindow = forStudyWindow;
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
@@ -82,7 +84,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
                 if (layoutEffect.getComponentCount() == 0) {
-                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this));
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, forStudyWindow));
                 }
             }
         }

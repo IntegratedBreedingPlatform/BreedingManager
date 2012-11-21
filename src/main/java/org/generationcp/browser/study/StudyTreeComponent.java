@@ -67,6 +67,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     private Database database;
 
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
@@ -74,9 +76,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         tabSheetStudy = new TabSheet();
     }
     
-    public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database) {
+    public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database, boolean forStudyWindow) {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
         this.database = database;
+        this.forStudyWindow = forStudyWindow;
     }
 
     // Called by StudyButtonClickListener
@@ -173,7 +176,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
             layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
-                    studyDataManager, traitDataManager));
+                    studyDataManager, traitDataManager, forStudyWindow));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

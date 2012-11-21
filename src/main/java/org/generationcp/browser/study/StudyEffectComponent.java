@@ -54,14 +54,17 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private final Accordion accordion;
     private ListSelect datasetList;
     
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion) {
+    public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion, boolean forStudyWindow) {
         this.studyInfoAccordion = accordion;
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.accordion = accordion;
+        this.forStudyWindow = forStudyWindow;
     }
 
     // called by StudyValueChangedListener.valueChange()
@@ -77,7 +80,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
             RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, repId, tabTitle,
-            		studyId);
+            		studyId, forStudyWindow);
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
         } else {

@@ -37,11 +37,13 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     private VerticalLayout tabSearch;
     private TabSheet tabSheetStudyDatabaseInstance;
     
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyBrowserMain() {
-    	
+    public StudyBrowserMain(boolean forStudyWindow) {
+    	this.forStudyWindow = forStudyWindow;
     }
     
     @Override
@@ -69,9 +71,9 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetStudyDatabaseInstance.addTab(tabSearch).setCaption(messageSource.getMessage(Message.SEARCH_LABEL)); // "Search"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
-        tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
-        tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
+        tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL, forStudyWindow));
+        tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL, forStudyWindow));
+        tabSearch.addComponent(new StudySearchMainComponent(mainLayout, forStudyWindow));
 
         mainLayout.addComponent(tabSheetStudyDatabaseInstance);
         mainLayout.setExpandRatio(tabSheetStudyDatabaseInstance, .40f);

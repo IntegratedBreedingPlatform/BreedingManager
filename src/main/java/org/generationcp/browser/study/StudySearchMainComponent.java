@@ -64,6 +64,8 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     private HorizontalLayout studyBrowserMainLayout;
 
     private StudyDataIndexContainer studyDataIndexContainer;
+    
+    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -74,8 +76,9 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Autowired
     private TraitDataManager traitDataManager;
 
-    public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout) throws InternationalizableException {
+    public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout, boolean forStudyWindow) throws InternationalizableException {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
+        this.forStudyWindow = forStudyWindow;
     }
 
     @Override
@@ -182,7 +185,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
             layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager,
-                    traitDataManager));
+                    traitDataManager, forStudyWindow));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

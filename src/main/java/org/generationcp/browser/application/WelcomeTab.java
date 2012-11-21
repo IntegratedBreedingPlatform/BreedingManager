@@ -112,7 +112,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     public void browseStudiesAndDataSets() {
         if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
             rootLayoutForStudyBrowser.setWidth("100%");
-            rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain());
+            rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(false));
             rootLayoutForStudyBrowser.addStyleName("addSpacing");
         }
 

@@ -59,6 +59,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private static final long serialVersionUID = 1L;
     
     public static final String GERMPLASM_WINDOW_NAME = "germplasm"; 
+    public static final String STUDY_WINDOW_NAME = "study";
     public static final String STUDY_DETAILS_PREFIX = "study-";
     public static final String GERMPLASM_DETAILS_PREFIX = "germplasm-";
 
@@ -172,12 +173,12 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 this.addWindow(germplasmByPhenoWindow);
 
                 return germplasmByPhenoWindow;
-            } else if("study".equals(name)) {
+            } else if(STUDY_WINDOW_NAME.equals(name)) {
                 Window studyBrowserWindow = new Window(messageSource.getMessage(Message.STUDY_BROWSER_TITLE)); // Study
                 // Browser
                 studyBrowserWindow.setName("study");
                 studyBrowserWindow.setSizeUndefined();
-                studyBrowserWindow.addComponent(new StudyBrowserMain());
+                studyBrowserWindow.addComponent(new StudyBrowserMain(true));
                 this.addWindow(studyBrowserWindow);
                 return studyBrowserWindow;
             } else if(GERMPLASM_WINDOW_NAME.equals(name)) {
@@ -216,9 +217,9 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     int studyId = Integer.parseInt(studyIdPart);
                     Window studyDetailsWindow = new Window(messageSource.getMessage(Message.STUDY_DETAILS_TEXT) + " " + studyId);  // "Study Details" + study id
                     studyDetailsWindow.setSizeUndefined();
-                    
+                    //TODO should disable export functions for this screen
                     studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
-                        , studyDataManager, traitDataManager));
+                        , studyDataManager, traitDataManager, false));
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;
                 } catch (Exception ex) {
@@ -281,7 +282,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
             }
         } else if (source.getSelectedTab() == rootLayoutForStudyBrowser) {
             if (rootLayoutForStudyBrowser.getComponentCount() == 0) {
-                rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain());
+                rootLayoutForStudyBrowser.addComponent(new StudyBrowserMain(false));
             }
         } else if (source.getSelectedTab() == rootLayoutForGermplasmListBrowser) {
             if (rootLayoutForGermplasmListBrowser.getComponentCount() == 0) {
