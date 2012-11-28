@@ -49,8 +49,8 @@ public class StudyDataIndexContainer{
     private static final Object DATATYPE = "dataType";
     
     
-    private static final String STUDY_ID = "ID";
-    private static final String STUDY_NAME = "NAME";
+    public static final String STUDY_ID = "ID";
+    public static final String STUDY_NAME = "NAME";
 
     private StudyDataManager studyDataManager;
     private TraitDataManager traitDataManager;

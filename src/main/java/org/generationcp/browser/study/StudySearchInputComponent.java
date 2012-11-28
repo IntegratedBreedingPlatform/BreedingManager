@@ -12,13 +12,15 @@
 
 package org.generationcp.browser.study;
 
-import java.util.Date;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.util.InvalidDateException;
+import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -30,12 +32,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -61,7 +64,9 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
     Label seasonLabel;
 
     private GridLayout gridLayout;
-    private DateField dateField;
+    private TextField dateYearField;
+    private TextField dateMonthField;
+    private TextField dateDayField;
     private TextField nameField;
     private ComboBox countryCombo;
     private ComboBox seasonCombo;
@@ -88,7 +93,32 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
 
         setSpacing(true);
 
-        dateField = new DateField();
+        dateYearField = new TextField();
+        dateYearField.setDescription(messageSource.getMessage(Message.DATE_YEAR_FIELD_DESCRIPTION)); //"Input at least the year for the search date."
+        dateYearField.setWidth(1, UNITS_CM);
+        dateYearField.addValidator(new IntegerValidator(messageSource.getMessage(Message.ERROR_YEAR_MUST_BE_NUMBER))); //"Year must be a number"));
+        dateYearField.addValidator(new StringLengthValidator(messageSource.getMessage(Message.ERROR_YEAR_FORMAT), 4, 4, true)); //"Year must be in format YYYY"
+
+        dateMonthField = new TextField();
+        dateMonthField.setWidth(1, UNITS_CM);
+        dateMonthField.addValidator(new IntegerValidator(messageSource.getMessage(Message.ERROR_MONTH_MUST_BE_NUMBER))); //"Month must be a number"
+        dateMonthField.addValidator(new StringLengthValidator(messageSource.getMessage(Message.ERROR_MONTH_FORMAT, 1, 2, true))); //"Month must be in format MM"
+
+        dateDayField = new TextField();
+        dateDayField.setWidth(1, UNITS_CM);
+        dateDayField.addValidator(new IntegerValidator(messageSource.getMessage(Message.ERROR_DAY_MUST_BE_NUMBER))); //"Day must be a number"
+        dateDayField.addValidator(new StringLengthValidator(messageSource.getMessage(Message.ERROR_DAY_FORMAT, 1, 2, true))); //"Day must be in format DD"
+
+        GridLayout dateLayout = new GridLayout();
+        dateLayout.setRows(3);
+        dateLayout.setColumns(4);
+        dateLayout.addComponent(dateYearField, 1, 1);
+        dateLayout.addComponent(dateMonthField, 2, 1);
+        dateLayout.addComponent(dateDayField, 3, 1);
+        dateLayout.addComponent(new Label("Year"), 1, 2);
+        dateLayout.addComponent(new Label("Month"), 2, 2);
+        dateLayout.addComponent(new Label("Day"), 3, 2);
+        
         nameField = new TextField();
         nameField.setDescription(messageSource.getMessage(Message.EXACT_STUDY_NAME_TEXT));
         countryCombo = createCountryComboBox();
@@ -105,11 +135,15 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         gridLayout.setSpacing(true);
         
         gridLayout.addComponent(dateLabel, 1, 1);
-        gridLayout.addComponent(dateField, 2, 1);
+
+        gridLayout.addComponent(dateLayout, 2, 1);
+        
         gridLayout.addComponent(nameLabel, 1, 2);
         gridLayout.addComponent(nameField, 2, 2);
+        
         gridLayout.addComponent(countryLabel, 1, 3);
         gridLayout.addComponent(countryCombo, 2, 3);
+        
         gridLayout.addComponent(seasonLabel, 1, 4);
         gridLayout.addComponent(seasonCombo, 2, 4);
         addComponent(gridLayout);
@@ -197,14 +231,53 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
             
             Integer dateValue = null;
+            Integer yearValue = 0;
+            Integer monthValue = 0;
+            Integer dayValue = 0;
+
             String nameValue = null;
             String countryValue = null;
             Season seasonValue = null;
 
-            if (event.getButton() == searchButton){
-                if ((dateField != null) && (dateField.getValue() != null)){
-                    dateValue = new Integer((int) ((Date) dateField.getValue()).getTime());
+            if (event.getButton() == searchButton) {
+                
+                // Data not valid, do nothing
+                if (!dateYearField.isValid() || !dateMonthField.isValid() || !dateDayField.isValid()){
+                    return;
                 }
+
+                try{
+                    if ((dateYearField != null) && (dateYearField.getValue() != null)) {
+                        String value = (String) dateYearField.getValue();
+                        yearValue = (value.equals("") || value == null) ? 0 : Integer.parseInt(value);
+                    }
+                    if ((dateMonthField != null) && (dateMonthField.getValue() != null)) {
+                        String value = (String) dateMonthField.getValue();
+                        monthValue = (value.equals("") || value == null) ? 0 : Integer.parseInt(value);
+                        if ((monthValue > 0) && (yearValue == 0)) {
+                            throw new InvalidDateException(messageSource.getMessage(Message.ERROR_MONTH_WITHOUT_YEAR)); //"Month cannot be specified without the year." 
+                        }
+                    }
+                    if ((dateDayField != null) && (dateDayField.getValue() != null)) {
+                        String value = (String) dateDayField.getValue();
+                        dayValue = (value.equals("") || value == null) ? 0 : Integer.parseInt(value);
+                        if ((dayValue > 0) && ((yearValue == 0) || (monthValue == 0))){
+                            throw new InvalidDateException(messageSource.getMessage(Message.ERROR_DAY_WITHOUT_MONTH_YEAR)); //"Day cannot be specified without the year or month."
+                        }
+                    }
+                    
+                    dateValue = Util.getIBPDate(yearValue, monthValue, dayValue);
+                    if (dateValue == 0) {
+                        dateValue = null;
+                    }
+
+                } catch (NumberFormatException e){
+                    // Already handled by the validator of the fields. Do nothing.
+                } catch (InvalidDateException e) {
+                    MessageNotifier.showError(getWindow(), "Invalid date", e.getMessage());
+                    return;
+                }
+
                 if ((nameField != null) && (nameField.getValue() != null)) {
                     nameValue = nameField.getValue().toString();
                 }
@@ -214,11 +287,12 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
                 if ((seasonCombo != null) && (seasonCombo.getValue() != null)) {
                     seasonValue = (Season) seasonCombo.getValue();
                 }
-                
                 parentComponent.searchStudy(nameValue, countryValue, seasonValue, dateValue);
 
             } else if (event.getButton() == clearButton){
-                dateField.setValue(null);
+                dateYearField.setValue("");
+                dateMonthField.setValue("");
+                dateDayField.setValue("");
                 nameField.setValue("");
                 countryCombo.setValue(null);
                 seasonCombo.setValue(null);

@@ -13,8 +13,13 @@
 package org.generationcp.browser.util;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.exception.GermplasmStudyBrowserException;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Accordion;
@@ -22,6 +27,10 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 
 public class Util{
+    
+    @Autowired
+    private static SimpleResourceBundleMessageSource messageSource;
+
 
     public static boolean isTabExist(TabSheet tabSheet, String tabCaption) {
 
@@ -156,4 +165,106 @@ public class Util{
         return newPath;
         
     }
+    
+
+    public static Integer getCurrentDate(){
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateNowStr = formatter.format(now.getTime());
+        Integer dateNowInt = Integer.valueOf(dateNowStr);
+        return dateNowInt;
+
+    }
+    
+
+    /**
+     * Returns in format "yyyyMMdd"
+     * 
+     * @param time - the date in Integer format
+     * @return
+     */
+    public static Integer getIBPDate(Integer time){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = formatter.format(time);
+        Integer dateInt = Integer.valueOf(dateStr);
+        return dateInt;
+    }
+    
+    /**
+     * Returns in format "yyyyMMdd"
+     * 
+     * @param time - the date in long format
+     * @return
+     */
+    public static Integer getIBPDate(long time){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = formatter.format(time);
+        Integer dateInt = Integer.valueOf(dateStr);
+        return dateInt;
+    }
+
+    /** 
+     * Returns in format "yyyyMMdd"
+     * 
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
+    public static Integer getIBPDate(int year, int month, int day) throws InvalidDateException{
+        validateDate(year, month, day);
+        return Integer.valueOf(year * 10000 + month * 100 + day);
+
+    }
+    
+    /**
+     * Checks if a given date is valid.
+     * 
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     * @throws InvalidDateException
+     */
+    public static boolean validateDate(int year, int month, int day) throws InvalidDateException{
+        if (month < 0 || month > 12) {
+            throw new InvalidDateException(messageSource.getMessage(Message.ERROR_MONTH_OUT_OF_RANGE)); //"Month out of range"        
+        }
+        if (month == 2){
+           if (isLeapYear(year)){
+               if (day < 0 || day > 29){
+                   throw new InvalidDateException(messageSource.getMessage(Message.ERROR_DAY_OUT_OF_RANGE)); //"Day out of range"
+               }
+           } else {
+               if (day < 0 || day > 28){
+                   throw new InvalidDateException(messageSource.getMessage(Message.ERROR_DAY_OUT_OF_RANGE));
+               }               
+           }
+        } else if (((month == 4 || month == 6 || month == 9 || month == 11) && (day > 30))  || (day < 0 || day > 31)){
+            throw new InvalidDateException(messageSource.getMessage(Message.ERROR_DAY_OUT_OF_RANGE));                    
+        }
+        return true;
+                
+    }
+    
+    /**
+     * Checks if the given year is a leap year.
+     * 
+     * @param year
+     * @return
+     */
+    public static boolean isLeapYear(int year){
+        boolean isLeapYear = false;
+        if (year % 400 == 0) {
+            isLeapYear = true;
+        } else if (year % 100 == 0) {
+            isLeapYear = false;
+        } else if (year % 4 == 0 ) {
+            isLeapYear = true;
+        } else {
+            isLeapYear = false;
+        }
+        return isLeapYear;
+    }    
+
 }

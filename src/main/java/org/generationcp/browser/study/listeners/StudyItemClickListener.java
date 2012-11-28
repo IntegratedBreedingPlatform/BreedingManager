@@ -15,6 +15,7 @@ package org.generationcp.browser.study.listeners;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.study.StudySearchMainComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
+import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
         }
         
         if (source instanceof StudySearchMainComponent){
-            int studyId = Integer.valueOf(event.getItemId().toString());
+            int studyId = Integer.valueOf(event.getItem().getItemProperty(StudyDataIndexContainer.STUDY_ID).getValue().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
                     ((StudySearchMainComponent) source).studyItemClickAction(studyId);

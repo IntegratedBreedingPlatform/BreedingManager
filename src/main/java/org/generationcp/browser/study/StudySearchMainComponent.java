@@ -118,15 +118,20 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     
     public void searchStudy(String name, String country, Season season, Integer date){
         IndexedContainer dataSourceResult = studyDataIndexContainer.getStudies(name, country, season, date);
-        searchResultTable = new StudySearchResultTable(dataSourceResult).getResultTable();
-        searchResultTable.setCaption(messageSource.getMessage(Message.SEARCH_RESULT_LABEL) + ": " + dataSourceResult.size());
-        searchResultTable.addListener(new StudyItemClickListener(this));
-        searchResultTable.setWidth(8, UNITS_CM);
-        searchResultTable.setHeight(8, UNITS_CM);
-        searchResultLayout.removeAllComponents();
-        searchResultLayout.addComponent(searchResultTable);
-        searchResultLayout.setVisible(true);
-        mainLayout.requestRepaintAll();
+        
+        if (dataSourceResult.size() == 0){
+            MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.NO_STUDIES_FOUND), ""); 
+        } else {
+            searchResultTable = new StudySearchResultTable(dataSourceResult).getResultTable();
+            searchResultTable.setCaption(messageSource.getMessage(Message.SEARCH_RESULT_LABEL) + ": " + dataSourceResult.size());
+            searchResultTable.addListener(new StudyItemClickListener(this));
+            searchResultTable.setWidth(8, UNITS_CM);
+            searchResultTable.setHeight(8, UNITS_CM);
+            searchResultLayout.removeAllComponents();
+            searchResultLayout.addComponent(searchResultTable);
+            searchResultLayout.setVisible(true);
+            mainLayout.requestRepaintAll();
+        }
 
     }
     
