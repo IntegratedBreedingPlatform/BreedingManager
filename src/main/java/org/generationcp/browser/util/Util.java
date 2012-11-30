@@ -155,7 +155,11 @@ public class Util{
         String newPath = path;
         
         if (path != null && path.length() > 0){
-            newPath = path.substring(0, path.lastIndexOf(File.separator));
+        	try{
+        		newPath = path.substring(0, path.lastIndexOf(File.separator));
+        	}catch (StringIndexOutOfBoundsException e){
+        		newPath = "";
+        	}
         }
             
         if (newPath.equals("")) { // already at the root directory

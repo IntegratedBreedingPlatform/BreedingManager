@@ -129,23 +129,25 @@ public class DirectoryTreeBrowser extends VerticalLayout {
                 tree.setChildrenAllowed(path, false);
                 return;
             }
-
-            for (int x = 0; x < files.length; x++) {
-                // add new item (String) to tree
-                path = files[x].getCanonicalPath().toString();
-
-                // check if item is a directory and read access exists
-                if (files[x].isDirectory() && files[x].canRead()) {
-                    
-                  tree.addItem(path);
-                  // set parent if this item has one
-                  if (parent != null) {
-                      tree.setParent(path, parent);
-                  }
-                    tree.setChildrenAllowed(path, true);
-                } else {
-                    tree.setChildrenAllowed(path, false);
-                }
+            
+            if (files != null){		// if the directory is empty
+	            for (int x = 0; x < files.length; x++) {
+	                // add new item (String) to tree
+	                path = files[x].getCanonicalPath().toString();
+	
+	                // check if item is a directory and read access exists
+	                if (files[x].isDirectory() && files[x].canRead() && !files[x].isHidden()) {
+	                    
+	                  tree.addItem(path);
+	                  // set parent if this item has one
+	                  if (parent != null) {
+	                      tree.setParent(path, parent);
+	                  }
+	                    tree.setChildrenAllowed(path, true);
+	                } else {
+	                    tree.setChildrenAllowed(path, false);
+	                }
+	            }
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
