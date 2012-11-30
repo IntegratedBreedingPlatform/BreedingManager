@@ -21,7 +21,6 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.manager.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,7 +55,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     public static final String SEARCH_OPTION_GID = "GID";
     public static final String SEARCH_OPTION_NAME = "Names";
-    public static final String SEARCH_OPTION_STANDARD_SEARCH = "Standard Search";
 
     public final static String SEARCH_BUTTON_ID = "GermplasmBrowserMain Search Button";
     public final static String SAVE_GERMPLASMLIST_ID = "Save GermplasmList Button";
@@ -75,8 +73,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
     private GermplasmQueries qQuery;
     private String searchChoice;
     private String searchValue;
-    private String instanceChoice;
-    private Database instance;
 
     private Button btnSearch;
     private Button btnSaveGermplasmList;
@@ -105,7 +101,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
         VerticalLayout detailLayout = new VerticalLayout();
         detailLayout.setSpacing(true);
-        // int screenWidth = 1028;
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
             GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet);
@@ -123,28 +118,13 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         }
     }
 
-    // private int getScreenWidth(){
-    // WebApplicationContext context =
-    // ((WebApplicationContext)this.getContext());
-    // WebBrowser wb = context.getBrowser();
-    // return wb.getScreenWidth();
-    // }
-
     public void searchButtonClickAction() throws InternationalizableException {
 
         searchChoice = searchOption.getChoice();
         searchValue = searchOption.getSearchValue();
-        instanceChoice = searchOption.getDatabaseInstance();
-
-        if ("Central".equals(instanceChoice)) {
-            instance = Database.CENTRAL;
-        } else {
-            instance = Database.LOCAL;
-        }
 
         boolean withNoError = true;
         if (searchValue.length() > 0) {
-            // Window window;
             if ("GID".equals(searchChoice)) {
                 try {
                     int gid = Integer.parseInt(searchValue);
@@ -153,7 +133,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();
                     withNoError = false;
-                    // mainLayout.showNotification("Invalid Input","Must be numeric");
                     if (getWindow() != null) {
                         MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
                                 messageSource.getMessage(Message.ERROR_INVALID_INPUT_MUST_BE_NUMERIC));
@@ -161,7 +140,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                 }
             } 
             if (withNoError) {
-                dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(searchChoice, searchValue, instance);
+                dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(searchChoice, searchValue);
                 resultTable.setCaption("Germplasm Search Result: " + dataSourceResult.size());
                 resultTable.setContainerDataSource(dataSourceResult);
                 mainLayout.requestRepaintAll();
@@ -206,7 +185,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
         // Set the initial search result in Central
         //TODO can we remove this? as it slows down the initial rendering of the germplasm browser?
-        dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(NAMES, "", Database.CENTRAL);
+        dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(NAMES, "");
         resultTable = new SearchResultTable(dataSourceResult).getResultTable();
 
         mainLayout.addComponent(resultTable);

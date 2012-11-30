@@ -36,18 +36,13 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
 
     private String choice;
     private String searchValue;
-    private String databaseInstance;
     private final TextField txtSearchValue = new TextField();
     private OptionGroup searchSelect;
-    private OptionGroup databaseInstanceOption;
 
     private static final List<String> SEARCH_OPTION = Arrays.asList(new String[] { 
-                                                            GermplasmBrowserMain.SEARCH_OPTION_GID,
-                                                            GermplasmBrowserMain.SEARCH_OPTION_NAME, 
-                                                            GermplasmBrowserMain.SEARCH_OPTION_STANDARD_SEARCH });
-    private static final List<String> INSTANCE_OPTION = Arrays.asList(new String[] { 
-                                                            GermplasmBrowserMain.INSTANCE_OPTION_CENTRAL,
-                                                            GermplasmBrowserMain.INSTANCE_OPTION_LOCAL });
+                                                             GermplasmBrowserMain.SEARCH_OPTION_GID
+                                                            ,GermplasmBrowserMain.SEARCH_OPTION_NAME 
+                                                            });
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -60,14 +55,6 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
     public void valueChange(ValueChangeEvent event) {
         choice = searchSelect.getValue().toString();
         searchValue = txtSearchValue.getValue().toString();
-        databaseInstance = databaseInstanceOption.getValue().toString();
-        if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_GID)) {
-            databaseInstanceOption.setVisible(false);
-        } else if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_STANDARD_SEARCH)) {
-            databaseInstanceOption.setVisible(false);
-        } else {
-            databaseInstanceOption.setVisible(true);
-        }
     }
 
     public String getChoice() {
@@ -76,10 +63,6 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
 
     public String getSearchValue() {
         return searchValue;
-    }
-
-    public String getDatabaseInstance() {
-        return databaseInstance;
     }
 
     @Override
@@ -98,21 +81,11 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
         txtSearchValue.addListener(this);
         txtSearchValue.setImmediate(true);
         txtSearchValue.addStyleName("addTopSpace");
-        // txtSearchValue.setSizeUndefined();
         grid.addComponent(txtSearchValue, 2, 1);
-
-        databaseInstanceOption = new OptionGroup("", INSTANCE_OPTION);
-        databaseInstanceOption.select(GermplasmBrowserMain.INSTANCE_OPTION_CENTRAL);
-        databaseInstanceOption.setImmediate(true);
-        databaseInstanceOption.addListener(this);
-        databaseInstanceOption.addStyleName("horizontal");
-
-        grid.addComponent(databaseInstanceOption, 2, 2);
         addComponent(grid);
 
         this.choice = GermplasmBrowserMain.SEARCH_OPTION_NAME;
         this.searchValue = "";
-        this.databaseInstance = GermplasmBrowserMain.INSTANCE_OPTION_CENTRAL;
     }
 
     @Override

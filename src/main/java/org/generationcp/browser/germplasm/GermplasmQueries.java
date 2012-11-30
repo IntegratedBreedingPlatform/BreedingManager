@@ -94,18 +94,17 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     
 
 
-    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchBy, String searchString,
-            Database databaseInstance) throws InternationalizableException {
+    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchBy, String searchString) throws InternationalizableException {
         try {
             List<Germplasm> germplasmList;
             long count;
 
             if (searchString.contains("%")) {
                 count = 500;
-                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count);
+                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count, Operation.LIKE);
             } else {
-                count = germplasmDataManager.countGermplasmByName(searchString);
-                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count);
+                count = germplasmDataManager.countGermplasmByName(searchString, Operation.EQUAL);
+                germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count, Operation.EQUAL);
             }
             ArrayList<GermplasmSearchResultModel> toReturn = new ArrayList<GermplasmSearchResultModel>();
             for (Germplasm g : germplasmList) {

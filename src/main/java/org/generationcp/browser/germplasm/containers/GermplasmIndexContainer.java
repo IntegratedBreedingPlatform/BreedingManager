@@ -20,7 +20,6 @@ import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchResultModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
@@ -74,7 +73,7 @@ public final class GermplasmIndexContainer{
         this.qQuery = qQuery;
     }
 
-    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue, Database databaseInstance)
+    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue)//, Database databaseInstance)
             throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
@@ -87,12 +86,7 @@ public final class GermplasmIndexContainer{
         ArrayList<GermplasmSearchResultModel> queryByNames = null;
         GermplasmSearchResultModel queryByGid = null;
         if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
-            queryByNames = qQuery.getGermplasmListResultByPrefName(choice, searchValue, databaseInstance);
-            for (GermplasmSearchResultModel q : queryByNames) {
-                addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
-            }
-        } else if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_STANDARD_SEARCH)) {
-                queryByNames = qQuery.getGermplasmListResultByPrefStandardizedName(choice, searchValue, databaseInstance);
+                queryByNames = qQuery.getGermplasmListResultByPrefStandardizedName(choice, searchValue);
                 for (GermplasmSearchResultModel q : queryByNames) {
                     addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
                 }
