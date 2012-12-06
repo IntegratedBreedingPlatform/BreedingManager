@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>GermplasmStudyBrowser</artifactId>
-	<version>1.1.2</version>
+	<version>1.1.2.1</version>
 	<packaging>war</packaging>
 	<name>GermplasmStudyBrowser</name>
 	
@@ -227,6 +227,14 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- 
+		<dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
 	</dependencies>
 
 	<build>

@@ -30,7 +30,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 
     private static final long serialVersionUID = 1L;
     
-    private final static String VERSION = "1.1.1";
+    private final static String VERSION = "1.1.2.1";
     
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;

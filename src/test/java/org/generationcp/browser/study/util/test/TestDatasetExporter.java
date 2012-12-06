@@ -23,7 +23,7 @@ public class TestDatasetExporter{
         factory = new ManagerFactory(local, central);
         StudyDataManager studyManager = factory.getStudyDataManager();
         TraitDataManager traitManager = factory.getTraitDataManager();
-        exporter = new DatasetExporter(studyManager, traitManager, Integer.valueOf(1), Integer.valueOf(2));
+        exporter = new DatasetExporter(studyManager, traitManager, Integer.valueOf(2), Integer.valueOf(4));
     }
     
     @Test

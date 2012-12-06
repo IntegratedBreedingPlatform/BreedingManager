@@ -218,7 +218,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
-        buttonLayout.addComponent(exportCsvButton);
+        //TODO uncomment this when the feature of exporting to CSV is working properly
+        //buttonLayout.addComponent(exportCsvButton);
         buttonLayout.addComponent(exportExcelButton);
 
         addComponent(buttonLayout);
