@@ -69,7 +69,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             long count;
 
             if (searchString.contains("%")) {
-                count = 500;
+                count = germplasmDataManager.countGermplasmByName(searchString, GetGermplasmByNameModes.NORMAL, Operation.LIKE, null,
+                        null, databaseInstance);
                 germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count, GetGermplasmByNameModes.NORMAL,
                         Operation.LIKE, null, null, databaseInstance);
             } else {
@@ -94,13 +95,13 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     
 
 
-    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchBy, String searchString) throws InternationalizableException {
+    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchString) throws InternationalizableException {
         try {
             List<Germplasm> germplasmList;
             long count;
 
             if (searchString.contains("%")) {
-                count = 500;
+                count = germplasmDataManager.countGermplasmByName(searchString, Operation.LIKE);
                 germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count, Operation.LIKE);
             } else {
                 count = germplasmDataManager.countGermplasmByName(searchString, Operation.EQUAL);

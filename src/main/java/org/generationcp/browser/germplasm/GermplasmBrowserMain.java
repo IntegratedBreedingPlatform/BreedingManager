@@ -21,14 +21,15 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -66,7 +67,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
     private VerticalLayout mainLayout;
     private HorizontalLayout searchFormLayout;
     private Table resultTable;
-    private IndexedContainer dataSourceResult;
     private TabSheet tabSheet = new TabSheet();
     private GermplasmIndexContainer dataResultIndexContainer;
 
@@ -80,6 +80,9 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
 
     private GermplasmSearchFormComponent searchOption;
 
@@ -140,9 +143,9 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                 }
             } 
             if (withNoError) {
-                dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(searchChoice, searchValue);
-                resultTable.setCaption("Germplasm Search Result: " + dataSourceResult.size());
-                resultTable.setContainerDataSource(dataSourceResult);
+                LazyQueryContainer dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);                                        
+                resultTable.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
+                resultTable.setContainerDataSource(dataSourceResultLazy);
                 mainLayout.requestRepaintAll();
             }
                
@@ -183,11 +186,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
         mainLayout.addComponent(searchFormLayout);
 
-        // Set the initial search result in Central
-        //TODO can we remove this? as it slows down the initial rendering of the germplasm browser?
-        dataSourceResult = dataResultIndexContainer.getGermplasmResultContainer(NAMES, "");
-        resultTable = new SearchResultTable(dataSourceResult).getResultTable();
-
+        resultTable = new GermplasmSearchResultComponent(germplasmDataManager, NAMES, "");
         mainLayout.addComponent(resultTable);
 
         resultTable.addListener(new GermplasmItemClickListener(this));

@@ -20,10 +20,12 @@ import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchResultModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -62,18 +64,13 @@ public final class GermplasmIndexContainer{
 
     private static final Object GERMPLASM_PREFNAME = "prefname";
 
-    @SuppressWarnings("unused")
-    private static String choice;
-    @SuppressWarnings("unused")
-    private static String searchValue;
-
     private GermplasmQueries qQuery;
 
     public GermplasmIndexContainer(GermplasmQueries qQuery) {
         this.qQuery = qQuery;
     }
 
-    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue)//, Database databaseInstance)
+    public IndexedContainer getGermplasmResultContainer(String choice, String searchValue)
             throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
@@ -86,7 +83,7 @@ public final class GermplasmIndexContainer{
         ArrayList<GermplasmSearchResultModel> queryByNames = null;
         GermplasmSearchResultModel queryByGid = null;
         if (choice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
-                queryByNames = qQuery.getGermplasmListResultByPrefStandardizedName(choice, searchValue);
+                queryByNames = qQuery.getGermplasmListResultByPrefStandardizedName(searchValue);
                 for (GermplasmSearchResultModel q : queryByNames) {
                     addGermplasmResultContainer(container, q.getGid(), q.getNames(), q.getMethod(), q.getLocation());
                 }
@@ -100,6 +97,23 @@ public final class GermplasmIndexContainer{
 
         return container;
     }
+    
+    public LazyQueryContainer getGermplasmResultLazyContainer(GermplasmDataManager germplasmDataManager, String searchChoice, String searchValue)
+            throws InternationalizableException {
+
+        GermplasmSearchQueryFactory factory = new GermplasmSearchQueryFactory(germplasmDataManager, searchChoice, searchValue);
+        LazyQueryContainer container = new LazyQueryContainer(factory, false, 10);
+
+        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
+        container.addContainerProperty(GermplasmSearchQuery.GID, String.class, null);
+        container.addContainerProperty(GermplasmSearchQuery.NAMES, String.class, null);
+        container.addContainerProperty(GermplasmSearchQuery.METHOD, String.class, null);
+        container.addContainerProperty(GermplasmSearchQuery.LOCATION, String.class, null);
+
+        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
+        return container;
+    }
+
 
     private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
         Object itemId = container.addItem();

@@ -43,6 +43,7 @@ public enum Message {
 
      ,DATE_LABEL
      ,NAME_LABEL
+     ,METHOD_LABEL
      ,LOCATION_LABEL
      ,TYPEDESC_LABEL
      ,TYPE_LABEL
@@ -53,7 +54,7 @@ public enum Message {
      ,OBJECTIVE_LABEL
      ,GID_LABEL
      ,PREFNAME_LABEL
-     ,METHOD_LABEL
+     ,CREATION_METHOD_LABEL
      ,CREATION_DATE_LABEL
      ,REFERENCE_LABEL
      ,START_DATE_LABEL

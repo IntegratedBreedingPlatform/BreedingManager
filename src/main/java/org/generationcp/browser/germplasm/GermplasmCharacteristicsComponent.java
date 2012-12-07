@@ -59,7 +59,7 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         lblGID = new Label(messageSource.getMessage(Message.GID_LABEL)); // "GID"
         lblPrefName = new Label(messageSource.getMessage(Message.PREFNAME_LABEL)); // "Preferred Name"
         lblLocation = new Label(messageSource.getMessage(Message.LOCATION_LABEL)); // "Location"
-        lblGermplasmMethod = new Label(messageSource.getMessage(Message.METHOD_LABEL)); // "Creation Method"
+        lblGermplasmMethod = new Label(messageSource.getMessage(Message.CREATION_METHOD_LABEL)); // "Creation Method"
         lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL)); // "Creation Date"
         lblReference = new Label(messageSource.getMessage(Message.REFERENCE_LABEL)); // "Reference"
 
