@@ -49,7 +49,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
-    private final static String VERSION = "1.1.2.1";
+    private final static String VERSION = "1.1.2.2";
     
     private final static String NAMES = "Names";
     private final static String GID = "gid";
