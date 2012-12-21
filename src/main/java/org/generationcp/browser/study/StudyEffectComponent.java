@@ -69,7 +69,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
     // called by StudyValueChangedListener.valueChange()
     public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
-        String[] parts = datasetLabel.split("-");
+        String[] parts = datasetLabel.split("->");
         Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
         String repName = parts[1].trim();
 
@@ -113,10 +113,10 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
             for (Representation rep : representations) {
                 if (rep.getName() != null) {
                     if (!rep.getName().equals(messageSource.getMessage(Message.STUDY_EFFECT_HEADER))) { // "STUDY EFFECT"
-                        datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " - " + rep.getName()); // Dataset
+                        datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName()); // Dataset
                     }
                 } else {
-                    datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " - " + rep.getName()); // Dataset
+                    datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName()); // Dataset
                 }
             }
 
