@@ -1,8 +1,4 @@
 #Workbench hibernate configuration 
-central.password=central
-central.user=central
-local.password=local
-local.user=local
 workbench.driver=com.mysql.jdbc.Driver
 workbench.url=jdbc:mysql://localhost:13306/workbench
 workbench.host=localhost
