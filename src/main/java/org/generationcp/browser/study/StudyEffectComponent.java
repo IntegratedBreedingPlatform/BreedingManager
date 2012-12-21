@@ -17,12 +17,13 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyValueChangedListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.pojos.Factor;
 import org.generationcp.middleware.pojos.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
     // called by StudyValueChangedListener.valueChange()
     public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
-        String[] parts = datasetLabel.split("->");
+        String[] parts = datasetLabel.split("-");
         Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
         String repName = parts[1].trim();
 
@@ -113,7 +114,25 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
             for (Representation rep : representations) {
                 if (rep.getName() != null) {
                     if (!rep.getName().equals(messageSource.getMessage(Message.STUDY_EFFECT_HEADER))) { // "STUDY EFFECT"
-                        datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName()); // Dataset
+                        
+                        List<Factor> factors = studyDataManager.getFactorsByRepresentationId(rep.getId());
+                        
+                        int count = factors.size();
+                        
+                        if (count>1) {
+                            
+                            datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName());
+                            
+                        } else if (count == 1) {
+                            
+                            Factor factor = factors.get(0);
+                            
+                            if (!factor.getName().toUpperCase().equals(messageSource.getMessage(Message.STUDY_NAME).toUpperCase())) {
+                                
+                                datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName());
+                                
+                            }
+                        } 
                     }
                 } else {
                     datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName()); // Dataset

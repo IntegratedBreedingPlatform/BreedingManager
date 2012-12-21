@@ -212,6 +212,7 @@ public enum Message {
      ,ERROR_DAY_OUT_OF_RANGE
      ,ERROR_MONTH_OUT_OF_RANGE
      ,NO_STUDIES_FOUND
+     ,STUDY_NAME
 
 
 }
