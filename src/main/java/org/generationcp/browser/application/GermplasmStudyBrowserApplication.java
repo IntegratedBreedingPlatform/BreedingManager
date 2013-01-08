@@ -51,6 +51,10 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+/**
+ * The main Vaadin application class for the project.
+ *
+ */
 @Configurable
 public class GermplasmStudyBrowserApplication extends SpringContextApplication implements ApplicationContextAware {
 
