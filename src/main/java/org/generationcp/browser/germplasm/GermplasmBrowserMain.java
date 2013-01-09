@@ -149,6 +149,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                 mainLayout.requestRepaintAll();
             }
                
+        } else {
+            MessageNotifier.showError(getWindow(), "Error", "Please input search string.");
         }
     }
 
