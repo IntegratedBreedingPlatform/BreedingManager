@@ -78,6 +78,7 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
         searchSelect.addStyleName("horizontal");
         grid.addComponent(searchSelect, 1, 1);
 
+        txtSearchValue.setMaxLength(-1);
         txtSearchValue.addListener(this);
         txtSearchValue.setImmediate(true);
         txtSearchValue.addStyleName("addTopSpace");
