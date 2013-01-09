@@ -124,7 +124,7 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         countryCombo = createCountryComboBox();
         seasonCombo = createSeasonComboBox();
 
-        dateLabel = new Label(messageSource.getMessage(Message.DATE_LABEL));
+        dateLabel = new Label(messageSource.getMessage(Message.START_DATE_LABEL));
         nameLabel = new Label(messageSource.getMessage(Message.NAME_LABEL));
         countryLabel = new Label(messageSource.getMessage(Message.COUNTRY_LABEL));
         seasonLabel = new Label(messageSource.getMessage(Message.SEASON_LABEL));        
