@@ -1,7 +1,6 @@
 package org.generationcp.browser.study.util;
 
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,8 +91,11 @@ public class DatasetExporter {
             
             Row row2 = descriptionSheet.createRow(2);
             row2.createCell(0).setCellValue("PMKEY");
-            Cell pmKeyCell = PoiUtil.createCell(cellStyle, row2, (short) 1, CellStyle.ALIGN_LEFT, CellStyle.ALIGN_JUSTIFY);
-            pmKeyCell.setCellValue(pmkey);
+            if(pmkey != null){
+                row2.createCell(1).setCellValue(pmkey.toString());
+            } else{
+                row2.createCell(1).setCellValue(pmkey);
+            }
             
             Row row3 = descriptionSheet.createRow(3);
             row3.createCell(0).setCellValue("OBJECTIVE");
@@ -101,13 +103,19 @@ public class DatasetExporter {
             
             Row row4 = descriptionSheet.createRow(4);
             row4.createCell(0).setCellValue("START DATE");
-            Cell startDateCell = PoiUtil.createCell(cellStyle, row4, (short) 1, CellStyle.ALIGN_LEFT, CellStyle.ALIGN_JUSTIFY);
-            startDateCell.setCellValue(startDate);
+            if(startDate != null){
+                row4.createCell(1).setCellValue(startDate.toString());
+            } else {
+                row4.createCell(1).setCellValue(startDate);
+            }
             
             Row row5 = descriptionSheet.createRow(5);
             row5.createCell(0).setCellValue("END DATE");
-            Cell endDateCell = PoiUtil.createCell(cellStyle, row5, (short) 1, CellStyle.ALIGN_LEFT, CellStyle.ALIGN_JUSTIFY);
-            endDateCell.setCellValue(endDate);
+            if(endDate != null){
+                row5.createCell(1).setCellValue(endDate.toString());
+            } else {
+                row5.createCell(1).setCellValue(endDate);
+            }
             
             Row row6 = descriptionSheet.createRow(6);
             row6.createCell(0).setCellValue("STUDY TYPE");
