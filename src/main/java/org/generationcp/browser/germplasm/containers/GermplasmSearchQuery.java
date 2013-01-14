@@ -54,6 +54,7 @@ public class GermplasmSearchQuery implements Query{
     private GermplasmDataManager germplasmDataManager;
     private String searchChoice;
     private String searchValue;
+    private int size;
 
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -65,6 +66,7 @@ public class GermplasmSearchQuery implements Query{
         this.germplasmDataManager = germplasmDataManager;
         this.searchChoice = searchChoice;
         this.searchValue = searchValue;
+        this.size = -1;
     }
 
     /**
@@ -194,23 +196,24 @@ public class GermplasmSearchQuery implements Query{
      */
     @Override
     public int size() {
-        int count = 0;
         try {
-            if (searchChoice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
-                if (searchValue.contains("%")) {
-                    count = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.LIKE);
+            if(this.size == -1){
+                if (searchChoice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
+                    if (searchValue.contains("%")) {
+                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.LIKE);
+                    } else {
+                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.EQUAL);
+                    }
                 } else {
-                    count = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.EQUAL);
+                    this.size = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue)) != null ? 1 : 0;
                 }
-            } else {
-                count = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue)) != null ? 1 : 0;
             }
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
                     Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
         }
 
-        return count;
+        return this.size;
     }
 
 }

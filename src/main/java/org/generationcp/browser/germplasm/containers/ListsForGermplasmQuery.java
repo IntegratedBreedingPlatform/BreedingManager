@@ -46,6 +46,7 @@ public class ListsForGermplasmQuery implements Query{
 
     private GermplasmListManager dataManager;
     private Integer gid;
+    private int size;
 
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -59,6 +60,7 @@ public class ListsForGermplasmQuery implements Query{
         super();
         this.dataManager = dataManager;
         this.gid = gid;
+        this.size = -1;
     }
 
     /**
@@ -111,14 +113,15 @@ public class ListsForGermplasmQuery implements Query{
      */
     @Override
     public int size() {
-        int size = 0;
         try {
-            size = ((Long) dataManager.countGermplasmListDataByGID(gid)).intValue();
+            if(this.size == -1){
+                this.size = ((Long) dataManager.countGermplasmListDataByGID(gid)).intValue();
+            }
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in countGermplasmListDataByGID in size() " + e.getMessage());
             e.printStackTrace();
         }
-        return size;
+        return this.size;
     }
 
 }
