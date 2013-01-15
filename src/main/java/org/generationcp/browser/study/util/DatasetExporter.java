@@ -395,7 +395,11 @@ public class DatasetExporter {
                                     double elemValue = 0;
                                     if(elem.getValue() != null){
                                         elemValue = elem.getValue().doubleValue();
+                                    } else {
+                                        String nullValue = null;
+                                        cell.setCellValue(nullValue);
                                     }
+                                    
                                     cell.setCellValue(elemValue);
                                 }
                             }
@@ -447,8 +451,18 @@ public class DatasetExporter {
                             double elemValue = 0;
                             if(elem.getValue() != null){
                                 elemValue = elem.getValue().doubleValue();
+                            } else {
+                                String nullValue = null;
+                                cell.setCellValue(nullValue);
                             }
-                            cell.setCellValue(elemValue);
+                            
+                            if(elemValue <= -1.0e36){
+                                //this means the values is lost so set it to null
+                                String nullValue = null;
+                                cell.setCellValue(nullValue);
+                            } else {
+                                cell.setCellValue(elemValue);
+                            }
                         }
                     }
                 }
