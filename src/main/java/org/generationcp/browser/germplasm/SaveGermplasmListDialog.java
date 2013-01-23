@@ -43,6 +43,8 @@ import com.vaadin.ui.Select;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+
 
 @Configurable
 public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent,Property.ValueChangeListener, AbstractSelect.NewItemHandler{
@@ -96,7 +98,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		populateComboBoxListName();
 		comboBoxListName.setNewItemsAllowed(true);
 		comboBoxListName.setNewItemHandler(this);
-		comboBoxListName.setImmediate(true);
+		comboBoxListName.setNullSelectionAllowed(false);
 		comboBoxListName.addListener(this);
 
 		txtDescription = new TextField();
@@ -141,10 +143,12 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		// TODO Auto-generated method stub
 		germplasmList=germplasmListManager.getAllGermplasmLists(0, 100, Database.LOCAL);
 		mapExistingList= new HashMap<String,Integer>();
+		comboBoxListName.addItem("");
 		for(GermplasmList gList:germplasmList){
 			comboBoxListName.addItem(gList.getName());
 			mapExistingList.put(gList.getName(),new Integer(gList.getId()));
 		}
+		comboBoxListName.select("");
 	}
 
 	private void populateSelectType(Select selectType) {
@@ -182,12 +186,27 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	}
 
 	public void saveGermplasmListButtonClickAction() throws InternationalizableException {
-		SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
 
+		SaveGermplasmListAction saveGermplasmAction = new SaveGermplasmListAction();
 		String listName = comboBoxListName.getValue().toString();
 		String listNameId=String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
 
-		if (listName.length() > 0  ) {
+		if(listName.trim().length()==0){
+
+			getWindow().showNotification(
+					"List Name Input Error...",
+					"Please specify a List Name before saving",
+					Notification.TYPE_WARNING_MESSAGE);
+
+		}else if (listName.trim().length() > 50  ) {
+			
+			getWindow().showNotification(
+					"List Name Input Error...",
+					"Listname input is too large limit the name only up to 50 characters",
+					Notification.TYPE_WARNING_MESSAGE);
+			comboBoxListName.setValue("");
+
+		}else{
 			saveGermplasmAction.addGermplasListNameAndData(listName,listNameId, this.tabSheet,txtDescription.getValue().toString(),selectType.getValue().toString());
 			closeSavingGermplasmListDialog();
 		}
