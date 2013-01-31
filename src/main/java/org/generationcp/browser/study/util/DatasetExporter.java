@@ -52,7 +52,7 @@ public class DatasetExporter {
         CellStyle cellStyle = workbook.createCellStyle();
         CellStyle cellStyleForObservationSheet = workbook.createCellStyle();
         
-        //create two sheets, one for description and nother for measurements
+        //create two sheets, one for description and another for measurements
         Sheet descriptionSheet = workbook.createSheet("Description");
         Sheet observationSheet = workbook.createSheet("Observation");
         
@@ -395,12 +395,11 @@ public class DatasetExporter {
                                     double elemValue = 0;
                                     if(elem.getValue() != null){
                                         elemValue = elem.getValue().doubleValue();
+                                        cell.setCellValue(elemValue);
                                     } else {
                                         String nullValue = null;
                                         cell.setCellValue(nullValue);
                                     }
-                                    
-                                    cell.setCellValue(elemValue);
                                 }
                             }
                         }
@@ -451,17 +450,17 @@ public class DatasetExporter {
                             double elemValue = 0;
                             if(elem.getValue() != null){
                                 elemValue = elem.getValue().doubleValue();
+                                
+                                if(elemValue <= -1.0e36){
+                                    //this means the values is lost so set it to null
+                                    String nullValue = null;
+                                    cell.setCellValue(nullValue);
+                                } else {
+                                    cell.setCellValue(elemValue);
+                                }
                             } else {
                                 String nullValue = null;
                                 cell.setCellValue(nullValue);
-                            }
-                            
-                            if(elemValue <= -1.0e36){
-                                //this means the values is lost so set it to null
-                                String nullValue = null;
-                                cell.setCellValue(nullValue);
-                            } else {
-                                cell.setCellValue(elemValue);
                             }
                         }
                     }

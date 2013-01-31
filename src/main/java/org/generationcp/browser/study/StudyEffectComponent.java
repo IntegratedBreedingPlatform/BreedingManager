@@ -70,7 +70,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
     // called by StudyValueChangedListener.valueChange()
     public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
-        String[] parts = datasetLabel.split("-");
+        String[] parts = datasetLabel.split("->");
         Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
         String repName = parts[1].trim();
 

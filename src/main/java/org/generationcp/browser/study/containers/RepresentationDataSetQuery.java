@@ -165,7 +165,11 @@ public class RepresentationDataSetQuery implements Query{
                         itemMap.put(numericLevel.getOunitId(), item);
                     }
                     
-                    item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
+                    if(numericLevel.getValue() != null){
+                        item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
+                    } else{
+                        item.addItemProperty(columnId, null);
+                    }
                 }
             }
 
@@ -212,7 +216,11 @@ public class RepresentationDataSetQuery implements Query{
                     itemMap.put(numericData.getOunitId(), item);
                 }
 
-                item.addItemProperty(columnId, new ObjectProperty<String>(numericData.getValue().toString()));
+                if(numericData.getValue() != null){
+                    item.addItemProperty(columnId, new ObjectProperty<String>(numericData.getValue().toString()));
+                } else{
+                    item.addItemProperty(columnId, null);
+                }
             }
         }
 
