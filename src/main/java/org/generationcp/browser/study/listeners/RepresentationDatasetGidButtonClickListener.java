@@ -68,7 +68,7 @@ public class RepresentationDatasetGidButtonClickListener implements Button.Click
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
         layoutForGermplasm.setWidth("640px");
-        layoutForGermplasm.setHeight("530px");
+        layoutForGermplasm.setHeight("560px");
         
         Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
@@ -77,10 +77,10 @@ public class RepresentationDatasetGidButtonClickListener implements Button.Click
         
 //        germplasmWindow.addComponent(layoutForGermplasm);
         germplasmWindow.setContent(layoutForGermplasm);
-        germplasmWindow.setWidth("660px");
-        germplasmWindow.setHeight("550px");
+        germplasmWindow.setWidth("645px");
+        germplasmWindow.setHeight("600px");
         germplasmWindow.center();
-        germplasmWindow.setResizable(true);
+        germplasmWindow.setResizable(false);
         
         mainWindow.addWindow(germplasmWindow);
     }
