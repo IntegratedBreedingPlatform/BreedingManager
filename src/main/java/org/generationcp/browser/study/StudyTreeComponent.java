@@ -176,7 +176,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
             layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
-                    studyDataManager, traitDataManager, forStudyWindow));
+                    studyDataManager, traitDataManager, forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

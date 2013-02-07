@@ -106,7 +106,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         detailLayout.setSpacing(true);
 
         if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet);
+            GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, false);
             if (germplasmDetail.getGermplasmDetailModel().getGid() != 0){  // Germplasm found
                 detailLayout.addComponent(germplasmDetail);
                 Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);

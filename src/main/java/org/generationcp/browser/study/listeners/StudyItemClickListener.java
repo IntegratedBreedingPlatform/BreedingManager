@@ -12,17 +12,18 @@
 
 package org.generationcp.browser.study.listeners;
 
-import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.browser.germplasm.GermplasmStudyInfoComponent;
+import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.study.StudySearchMainComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.ui.Layout;
 
 /**
  * 
@@ -35,9 +36,9 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
     private static final Logger LOG = LoggerFactory.getLogger(StudyItemClickListener.class);
     private static final long serialVersionUID = -5286616518840026212L;
 
-    private Layout source;
+    private Object source;
 
-    public StudyItemClickListener(Layout source) {
+    public StudyItemClickListener(Object source) {
         this.source = source;
     }
 
@@ -69,6 +70,19 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
                 }
             }
             
+        }
+        
+        if (source instanceof GermplasmStudyInfoComponent) {
+        	int studyId = Integer.valueOf(event.getItem().getItemProperty(GermplasmIndexContainer.STUDY_ID).getValue().toString());
+        	if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+                try {
+                    ((GermplasmStudyInfoComponent) source).studyItemClickAction(event, studyId);
+                } catch (InternationalizableException e) {
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  
+                }
+            }
         }
     }
 

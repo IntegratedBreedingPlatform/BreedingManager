@@ -55,9 +55,10 @@ public final class GermplasmIndexContainer{
     private static final Object GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
 
     // Study Information Model
-    private static final Object STUDY_NAME = "studyname";
-    private static final Object STUDY_DESCRIPTION = "description";
-    private static final Object STUDY_NUMBER_OF_ROWS = "rowCount";
+    public static final String STUDY_ID = "studyid";
+    public static final String STUDY_NAME = "studyname";
+    public static final String STUDY_DESCRIPTION = "description";
+    public static final String STUDY_NUMBER_OF_ROWS = "rowCount";
 
     @SuppressWarnings("unused")
     private static final String GERMPLASM_SEARCH_BY_GID = "GID";
@@ -257,23 +258,26 @@ public final class GermplasmIndexContainer{
         IndexedContainer container = new IndexedContainer();
 
         // Create the container properties
+        container.addContainerProperty(STUDY_ID, Integer.class, 0);
         container.addContainerProperty(STUDY_NAME, String.class, "");
         container.addContainerProperty(STUDY_DESCRIPTION, String.class, "");
         container.addContainerProperty(STUDY_NUMBER_OF_ROWS, Integer.class, 0);
 
         final ArrayList<StudyInfo> query = (ArrayList<StudyInfo>) qQuery.getGermplasmStudyInfo(Integer.valueOf(G.getGid()));
         for (StudyInfo info : query) {
-            addGermplasmStudyInformation(container, info.getName(), info.getTitle(), info.getRowCount());
+            addGermplasmStudyInformation(container, info);
         }
         return container;
     }
 
-    private static void addGermplasmStudyInformation(Container container, String studyName, String descprition, int numberRows) {
+    private static void addGermplasmStudyInformation(Container container, StudyInfo info) {
+    	StudyInfo studyInfo = info;
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
-        item.getItemProperty(STUDY_NAME).setValue(studyName);
-        item.getItemProperty(STUDY_DESCRIPTION).setValue(descprition);
-        item.getItemProperty(STUDY_NUMBER_OF_ROWS).setValue(numberRows);
+        item.getItemProperty(STUDY_ID).setValue(studyInfo.getId());
+        item.getItemProperty(STUDY_NAME).setValue(studyInfo.getName());
+        item.getItemProperty(STUDY_DESCRIPTION).setValue(studyInfo.getTitle());
+        item.getItemProperty(STUDY_NUMBER_OF_ROWS).setValue(studyInfo.getRowCount());
     }
 
 }

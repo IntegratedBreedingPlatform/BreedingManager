@@ -37,6 +37,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
     private List<String> columnIds;
     @SuppressWarnings("unused")
     private QueryDefinition definition;
+    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
 
     /**
      * The constructor should be given the parameters which are then passed to
@@ -50,11 +51,12 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      *            - List of column ids used for the Vaadin Table displaying the
      *            dataset
      */
-    public RepresentationDatasetQueryFactory(StudyDataManager dataManager, Integer representationId, List<String> columnIds) {
+    public RepresentationDatasetQueryFactory(StudyDataManager dataManager, Integer representationId, List<String> columnIds, boolean fromUrl) {
         super();
         this.dataManager = dataManager;
         this.representationId = representationId;
         this.columnIds = columnIds;
+        this.fromUrl = fromUrl;
     }
 
     /**
@@ -63,7 +65,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      */
     @Override
     public Query constructQuery(Object[] sortPropertyIds, boolean[] sortStates) {
-        return new RepresentationDataSetQuery(dataManager, representationId, columnIds);
+        return new RepresentationDataSetQuery(dataManager, representationId, columnIds, fromUrl);
     }
 
     @Override

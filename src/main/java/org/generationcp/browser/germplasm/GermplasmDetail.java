@@ -64,6 +64,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private int gid;
 	private TabSheet tabSheet;
 	private GermplasmIndexContainer dataResultIndexContainer;
+	private boolean fromUrl;				//this is true if this component is created by accessing the Germplasm Details page directly from the URL
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -75,13 +76,14 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private SimpleResourceBundleMessageSource messageSource;
 
 	public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer, VerticalLayout mainLayout,
-			TabSheet tabSheet) throws InternationalizableException {
+			TabSheet tabSheet, boolean fromUrl) throws InternationalizableException {
 		this.qQuery = qQuery;
 		this.mainLayout = mainLayout;
 		this.gid = gid;
 		this.tabSheet = tabSheet;
 		this.dataResultIndexContainer = dataResultIndexContainer;
 		this.dataIndexContainer = dataResultIndexContainer;
+		this.fromUrl = fromUrl;
 	}
 
     public GermplasmDetailModel getGermplasmDetailModel() {
@@ -138,7 +140,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 				}
 			}else if (((VerticalLayout) tab.getComponent()).getData().equals(ELEVEN_TAB)) {
 				if (layoutGermplasmStudyInformation.getComponentCount() == 0) {
-					layoutGermplasmStudyInformation.addComponent(new GermplasmStudyInfoComponent(dataIndexContainer, gDetailModel));
+					layoutGermplasmStudyInformation.addComponent(new GermplasmStudyInfoComponent(dataIndexContainer, gDetailModel, fromUrl));
 					layoutGermplasmStudyInformation.setMargin(true);
 				}
 			}

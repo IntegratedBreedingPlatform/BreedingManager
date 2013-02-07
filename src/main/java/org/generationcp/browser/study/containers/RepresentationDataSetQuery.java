@@ -51,6 +51,7 @@ public class RepresentationDataSetQuery implements Query{
     private StudyDataManager dataManager;
     private Integer representationId;
     private List<String> columnIds;
+    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
     
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -60,11 +61,12 @@ public class RepresentationDataSetQuery implements Query{
      * @param representationId
      * @param columnIds
      */
-    public RepresentationDataSetQuery(StudyDataManager dataManager, Integer representationId, List<String> columnIds) {
+    public RepresentationDataSetQuery(StudyDataManager dataManager, Integer representationId, List<String> columnIds, boolean fromUrl) {
         super();
         this.dataManager = dataManager;
         this.representationId = representationId;
         this.columnIds = columnIds;
+        this.fromUrl = fromUrl;
     }
 
     /**
@@ -139,7 +141,8 @@ public class RepresentationDataSetQuery implements Query{
             for (NumericLevelElement numericLevel : numericLevels) {
                 String columnId = new StringBuffer().append(numericLevel.getFactorId()).append("-").append(numericLevel.getFactorName()).toString();
                 //check factor name, if it's a GID, then make the GID as a link. else, show it as a value only
-                if ("GID".equals(numericLevel.getFactorName().trim())) {
+                //make GID as link only if the page wasn't directly accessed from the URL
+                if ("GID".equals(numericLevel.getFactorName().trim()) && !fromUrl) {
                     // get Item for ounitid
                     Item item = itemMap.get(numericLevel.getOunitId());
                     if (item == null) {
@@ -148,12 +151,12 @@ public class RepresentationDataSetQuery implements Query{
                         itemMap.put(numericLevel.getOunitId(), item);
                     }
                     
-                    String gid = String.format("%.0f",numericLevel.getValue());
-                    
-                    Button gidButton = new Button(gid, new RepresentationDatasetGidButtonClickListener(gid));
+                   	String gid = String.format("%.0f",numericLevel.getValue());
+
+                   	Button gidButton = new Button(gid, new RepresentationDatasetGidButtonClickListener(gid));
                     gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                     gidButton.setDescription("Click to view Germplasm information");
-                    
+
                     item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
                 //end GID link creation
                 } else {

@@ -71,16 +71,19 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Window saveFieldBookExcelFileDialog;
     
     private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
+    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId, boolean forStudyWindow) {
+    public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId,
+    		boolean forStudyWindow, boolean fromUrl) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.representationId = representationId;
         this.studyDataManager = studyDataManager;
         this.forStudyWindow = forStudyWindow;
+        this.fromUrl = fromUrl;
     }
 
     // Called by StudyButtonClickListener
@@ -169,12 +172,12 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         }
 
         // create item container for dataset table
-        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManager, representationId, columnIds);
+        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManager, representationId, columnIds, fromUrl);
         LazyQueryContainer datasetContainer = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
         for (String columnId : columnIds) {
-            if (columnId.contains("GID")) {
+            if (columnId.contains("GID") && !fromUrl) {
                 datasetContainer.addContainerProperty(columnId, Link.class, null);
             } else {
                 datasetContainer.addContainerProperty(columnId, String.class, null);
@@ -220,7 +223,10 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         buttonLayout.setSpacing(true);
         //TODO uncomment this when the feature of exporting to CSV is working properly
         //buttonLayout.addComponent(exportCsvButton);
-        buttonLayout.addComponent(exportExcelButton);
+        //only show Fieldbook Export to Excel button if study page not accessed directly from URL
+        if (!fromUrl) {
+        	buttonLayout.addComponent(exportExcelButton);
+        }
 
         addComponent(buttonLayout);
     }

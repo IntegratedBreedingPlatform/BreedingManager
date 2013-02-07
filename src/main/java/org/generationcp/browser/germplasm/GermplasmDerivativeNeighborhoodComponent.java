@@ -205,7 +205,7 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
 	        detailLayout.setSpacing(true);
 
 	        if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-	            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet));
+	            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, false));
 	            Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
 	            tab.setClosable(true);
 	            tabSheet.setSelectedTab(detailLayout);

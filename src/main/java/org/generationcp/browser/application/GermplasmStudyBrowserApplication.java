@@ -223,7 +223,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     studyDetailsWindow.setSizeUndefined();
                     //TODO should disable export functions for this screen
                     studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
-                        , studyDataManager, traitDataManager, false));
+                        , studyDataManager, traitDataManager, false, true));
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;
                 } catch (Exception ex) {
@@ -244,7 +244,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      germplasmDetailsWindow.setSizeUndefined();
                      GermplasmQueries queries = new GermplasmQueries();
                      GermplasmIndexContainer container = new GermplasmIndexContainer(queries);
-                     germplasmDetailsWindow.addComponent(new GermplasmDetail(gid, queries, container, null, null));
+                     germplasmDetailsWindow.addComponent(new GermplasmDetail(gid, queries, container, null, null, true));
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {

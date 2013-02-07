@@ -190,7 +190,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
             layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager,
-                    traitDataManager, forStudyWindow));
+                    traitDataManager, forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
