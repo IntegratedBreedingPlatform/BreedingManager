@@ -151,7 +151,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetGermplasmList, getGermplasmListName(germplasmListId))) {
-            layout.addComponent(new GermplasmListAccordionMenu(germplasmListId, germplasmListManager));
+            layout.addComponent(new GermplasmListAccordionMenu(germplasmListId));
             Tab tab = tabSheetGermplasmList.addTab(layout, getGermplasmListName(germplasmListId), null);
             tab.setClosable(true);
 

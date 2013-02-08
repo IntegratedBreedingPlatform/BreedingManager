@@ -40,6 +40,7 @@ public class ListsForGermplasmQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(ListsForGermplasmQuery.class);
 
+    public static final Object GERMPLASMLIST_ID = "id";
     public static final Object GERMPLASMLIST_NAME = "name";
     public static final Object GERMPLASMLIST_DATE = "date";
     public static final Object GERMPLASMLIST_DESCRIPTION = "description";
@@ -69,6 +70,7 @@ public class ListsForGermplasmQuery implements Query{
     @Override
     public Item constructItem() {
         PropertysetItem item = new PropertysetItem();
+        item.addItemProperty(GERMPLASMLIST_ID, new ObjectProperty<String>(""));
         item.addItemProperty(GERMPLASMLIST_NAME, new ObjectProperty<String>(""));
         item.addItemProperty(GERMPLASMLIST_DATE, new ObjectProperty<String>(""));
         item.addItemProperty(GERMPLASMLIST_DESCRIPTION, new ObjectProperty<String>(""));
@@ -94,6 +96,7 @@ public class ListsForGermplasmQuery implements Query{
 
         for (GermplasmListData listData : listDatas) {
             PropertysetItem item = new PropertysetItem();
+            item.addItemProperty(GERMPLASMLIST_ID, new ObjectProperty<String>(listData.getList().getId().toString()));
             item.addItemProperty(GERMPLASMLIST_NAME, new ObjectProperty<String>(listData.getList().getName()));
             item.addItemProperty(GERMPLASMLIST_DATE, new ObjectProperty<String>(String.valueOf(listData.getList().getDate())));
             item.addItemProperty(GERMPLASMLIST_DESCRIPTION, new ObjectProperty<String>(listData.getList().getDescription()));

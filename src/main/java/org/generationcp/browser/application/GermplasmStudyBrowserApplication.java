@@ -24,6 +24,7 @@ import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.containers.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
+import org.generationcp.browser.germplasmlist.GermplasmListAccordionMenu;
 import org.generationcp.browser.germplasmlist.GermplasmListBrowserMain;
 import org.generationcp.browser.study.StudyAccordionMenu;
 import org.generationcp.browser.study.StudyBrowserMain;
@@ -66,6 +67,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String STUDY_WINDOW_NAME = "study";
     public static final String STUDY_DETAILS_PREFIX = "study-";
     public static final String GERMPLASM_DETAILS_PREFIX = "germplasm-";
+    public static final String GERMPLASMLIST_DETAILS_PREFIX = "germplasmlist-";
 
     private Window window;
 
@@ -256,6 +258,25 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                              + " " + gidPart));
                      this.addWindow(emptyGermplasmDetailsWindow);
                      return emptyGermplasmDetailsWindow;
+                 }
+             } else if(name.startsWith(GERMPLASMLIST_DETAILS_PREFIX)) {
+                 String gListIdPart = name.substring(name.indexOf("-") + 1);
+                 try {
+                     int listId = Integer.parseInt(gListIdPart);
+                     Window germplasmListDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASMLIST_DETAILS_TEXT) + " " + listId);  // "Germplasm List Details"
+                     germplasmListDetailsWindow.setSizeUndefined();
+                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(listId));
+                     this.addWindow(germplasmListDetailsWindow);
+                     return germplasmListDetailsWindow;
+                 } catch (Exception ex) {
+                     LOG.error(messageSource.getMessage(Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW)   // "Error with creating germplasm list details window for"
+                             + " " + name + ex.toString() + "\n" + ex.getStackTrace());
+                     Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASMLIST_DETAILS_TEXT));    // "Germplasm List Details"
+                     emptyGermplasmListDetailsWindow.setSizeUndefined();
+                     emptyGermplasmListDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.NULL_GERMPLASMLIST_DETAILS)    // "No germplasm list details for:"
+                             + " " + gListIdPart));
+                     this.addWindow(emptyGermplasmListDetailsWindow);
+                     return emptyGermplasmListDetailsWindow;
                  }
              }
 

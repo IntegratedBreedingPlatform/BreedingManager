@@ -39,17 +39,18 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private static final String LIST_DATA = "List Data";
     
     private int germplasmListId;
-    private GermplasmListManager germplasmListManager;
     private GermplasmListDetailComponent germplasmListDetailComponent;
     
     private VerticalLayout layoutListData;
    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+	private GermplasmListManager germplasmListManager;
 
-    public GermplasmListAccordionMenu(int germplasmListId, GermplasmListManager germplasmListManager) {
+    public GermplasmListAccordionMenu(int germplasmListId) {
         this.germplasmListId = germplasmListId;
-        this.germplasmListManager = germplasmListManager;
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
