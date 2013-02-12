@@ -100,6 +100,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 		comboBoxListName.setNewItemHandler(this);
 		comboBoxListName.setNullSelectionAllowed(false);
 		comboBoxListName.addListener(this);
+		comboBoxListName.setImmediate(true);
 
 		txtDescription = new TextField();
 		txtDescription.setWidth("400px");
@@ -250,6 +251,9 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	@Override
 	public void addNewItem(String newItemCaption) {
 		if (!comboBoxListName.containsId(newItemCaption)) {
+		    if (comboBoxListName.containsId("")){
+		        comboBoxListName.removeItem("");
+		    }
 			lastAdded = true;
 			comboBoxListName.addItem(newItemCaption);
 			comboBoxListName.setValue(newItemCaption);
