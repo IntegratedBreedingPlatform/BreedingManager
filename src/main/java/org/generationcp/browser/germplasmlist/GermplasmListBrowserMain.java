@@ -30,7 +30,7 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
 
     private static final long serialVersionUID = 1L;
     
-    private final static String VERSION = "1.1.2.4";
+    private final static String VERSION = "1.1.2.5";
     
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
