@@ -73,6 +73,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 	private Select selectType;
 	private List<GermplasmList> germplasmList;
 	private boolean lastAdded = false;
+	private boolean existingListSelected = false;
 	private Map<String,Integer> mapExistingList;
 
 
@@ -233,6 +234,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 				txtDescription.setEnabled(false);
 				selectType.select(gList.getType());
 				selectType.setEnabled(false);
+				this.existingListSelected = true;
 			}else{
 				txtDescription.setValue("");
 				txtDescription.setEnabled(true);
@@ -240,10 +242,13 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 				selectType.setEnabled(true);
 			}
 		}else{
-			txtDescription.setValue("");
-			txtDescription.setEnabled(true);
-			selectType.select("LST");
-			selectType.setEnabled(true);
+		    if(existingListSelected){
+		        txtDescription.setValue("");
+		        existingListSelected = false;
+		    }
+		    txtDescription.setEnabled(true);
+		    selectType.select("LST");
+		    selectType.setEnabled(true);
 		}
 		lastAdded = false;
 	}
