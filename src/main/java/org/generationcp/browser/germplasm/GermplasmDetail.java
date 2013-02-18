@@ -12,9 +12,13 @@
 
 package org.generationcp.browser.germplasm;
 
+import java.util.ArrayList;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
+import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
+import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -25,9 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmDetail extends Accordion implements InitializingBean, InternationalizableComponent{
@@ -45,7 +52,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private static final int NINE_TAB = 9;
 	private static final int TEN_TAB = 10;
 	private static final int ELEVEN_TAB = 11;
-
+	public final static String VIEW_PEDIGREE_GRAPH_ID = "View Pedigree Graph";
 	private GermplasmIndexContainer dataIndexContainer;
 	private GermplasmQueries qQuery;
 	private GermplasmDetailModel gDetailModel;
@@ -74,6 +81,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	private Button btnViewPedigreeGraph;
 
 	public GermplasmDetail(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer, VerticalLayout mainLayout,
 			TabSheet tabSheet, boolean fromUrl) throws InternationalizableException {
@@ -112,6 +121,10 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 				}
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(FIFTH_TAB)) {
 				if (layoutPedigreeTree.getComponentCount() == 0) {
+					btnViewPedigreeGraph = new Button("View Pedigree Graph");
+					btnViewPedigreeGraph.setData(VIEW_PEDIGREE_GRAPH_ID);
+					btnViewPedigreeGraph.addListener(new GermplasmButtonClickListener(this));
+					layoutPedigreeTree.addComponent(btnViewPedigreeGraph);
                     layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
 				}
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(SIX_TAB)) {
@@ -224,5 +237,22 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		messageSource.setCaption(layoutInventoryInformation, Message.inventory_information_label);*/
 
 	}
+	
+	
+	 public void viewPedigreeGraphClickAction() throws InternationalizableException {
+
+	        try {
+	        	Window pedigreeGraphWindow = new Window("Pedigree Graph");
+	        	pedigreeGraphWindow.setModal(true);
+	        	pedigreeGraphWindow.setWidth(getWindow().getWidth()-100);
+	        	pedigreeGraphWindow.setHeight(getWindow().getHeight()-100);
+	        	pedigreeGraphWindow.setName("Pedigree Graph");
+	        	pedigreeGraphWindow.addComponent(new GermplasmPedigreeGraphComponent(this.gid, this.qQuery));
+	        	getWindow().addWindow(pedigreeGraphWindow);
+	        	
+	        } catch (Exception e) {
+	            throw new InternationalizableException(e, Message.ERROR_IN_SEARCH, Message.EMPTY_STRING);
+	        }
+	    }
 
 }

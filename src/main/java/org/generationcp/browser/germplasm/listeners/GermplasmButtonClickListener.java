@@ -12,13 +12,19 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+
 import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodComponent;
+import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.SaveGermplasmListDialog;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +129,33 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             }
+        } else if (source instanceof GermplasmDetail
+                && event.getButton().getData().equals(GermplasmDetail.VIEW_PEDIGREE_GRAPH_ID)) {
+            try {
+                ((GermplasmDetail) source).viewPedigreeGraphClickAction();
+            }catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+            }
+        } else if (source instanceof GermplasmPedigreeGraphComponent
+                && event.getButton().getData().equals(GermplasmPedigreeGraphComponent.UPDATE_PEDIGREE_GRAPH_BUTTON_ID)) {
+            try {
+                ((GermplasmPedigreeGraphComponent) source).updatePedigreeGraphButtonClickAction();
+            }catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+            } catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MiddlewareQueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else {
             LOG.error("GermplasmButtonClickListener: Error with buttonClick action. Source not identified.");
         }
