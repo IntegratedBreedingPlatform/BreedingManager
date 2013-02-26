@@ -94,6 +94,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         germplasmListWindow.setHeight("600px");
         germplasmListWindow.center();
         germplasmListWindow.setResizable(false);
+        germplasmListWindow.setModal(true);
         
         mainWindow.addWindow(germplasmListWindow);
     }

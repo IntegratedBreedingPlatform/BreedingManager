@@ -131,6 +131,7 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
         studyWindow.setHeight("600px");
         studyWindow.center();
         studyWindow.setResizable(false);
+        studyWindow.setModal(true);
         
         mainWindow.addWindow(studyWindow);
     }
