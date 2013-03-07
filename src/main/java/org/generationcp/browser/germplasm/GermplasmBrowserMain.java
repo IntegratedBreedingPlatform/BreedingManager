@@ -16,8 +16,8 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -31,9 +31,11 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -45,214 +47,232 @@ import com.vaadin.ui.Window;
 @Configurable
 public class GermplasmBrowserMain extends VerticalLayout implements InitializingBean, InternationalizableComponent{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
+	private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
-    private final static String VERSION = "1.1.2.5";
-    
-    private final static String NAMES = "Names";
-    private final static String GID = "gid";
+	private final static String VERSION = "1.1.2.5";
 
-    public static final String SEARCH_OPTION_GID = "GID";
-    public static final String SEARCH_OPTION_NAME = "Names";
+	private final static String NAMES = "Names";
+	private final static String GID = "gid";
 
-    public final static String SEARCH_BUTTON_ID = "GermplasmBrowserMain Search Button";
-    public final static String SAVE_GERMPLASMLIST_ID = "Save GermplasmList Button";
-    public final static String CLOSE_ALL_GERMPLASMDETAIL_TAB_ID = "Close all GermplasmDetail Tab Button";
+	public static final String SEARCH_OPTION_GID = "GID";
+	public static final String SEARCH_OPTION_NAME = "Names";
 
-    public static final String INSTANCE_OPTION_CENTRAL = "Central";
-    public static final String INSTANCE_OPTION_LOCAL = "Local";
+	public final static String SEARCH_BUTTON_ID = "GermplasmBrowserMain Search Button";
+	public final static String SAVE_GERMPLASMLIST_ID = "Save GermplasmList Button";
+	public final static String CLOSE_ALL_GERMPLASMDETAIL_TAB_ID = "Close all GermplasmDetail Tab Button";
 
-    private VerticalLayout mainLayout;
-    private HorizontalLayout searchFormLayout;
-    private Table resultTable;
-    private TabSheet tabSheet = new TabSheet();
-    private GermplasmIndexContainer dataResultIndexContainer;
+	public static final String INSTANCE_OPTION_CENTRAL = "Central";
+	public static final String INSTANCE_OPTION_LOCAL = "Local";
 
-    private GermplasmQueries qQuery;
-    private String searchChoice;
-    private String searchValue;
+	private VerticalLayout mainLayout;
+	private HorizontalLayout searchFormLayout;
+	private Table resultTable;
+	private TabSheet tabSheet = new TabSheet();
+	private GermplasmIndexContainer dataResultIndexContainer;
 
-    private Button btnSearch;
-    private Button btnSaveGermplasmList;
-    private Button btnCloseAllGermplamDetailTab;
+	private GermplasmQueries qQuery;
+	private String searchChoice;
+	private String searchValue;
 
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+	private Button btnSearch;
+	private Button btnSaveGermplasmList;
+	private Button btnCloseAllGermplamDetailTab;
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
-    private GermplasmSearchFormComponent searchOption;
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
-    private HorizontalLayout hLayoutForButtons;
+	private GermplasmSearchFormComponent searchOption;
 
-    private Window saveGermplasmListDialog;
-    
-    private boolean forGermplasmWindow;         //this is true if this component is created for the germplasm browser only window
+	private HorizontalLayout hLayoutForButtons;
 
-    public GermplasmBrowserMain(boolean forGermplasmWindow) throws InternationalizableException {
-        this.forGermplasmWindow = forGermplasmWindow;
-        qQuery = new GermplasmQueries();
-        dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
-    }
+	private Window saveGermplasmListDialog;
 
-    private void displayGermplasmDetailTab(int gid) throws InternationalizableException {
+	private boolean forGermplasmWindow;         //this is true if this component is created for the germplasm browser only window
 
-        hLayoutForButtons.setVisible(true);
+	public GermplasmBrowserMain(boolean forGermplasmWindow) throws InternationalizableException {
+		this.forGermplasmWindow = forGermplasmWindow;
+		qQuery = new GermplasmQueries();
+		dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
+	}
 
-        VerticalLayout detailLayout = new VerticalLayout();
-        detailLayout.setSpacing(true);
+	private void displayGermplasmDetailTab(final int gid) throws InternationalizableException {
 
-        if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-            GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, false);
-            if (germplasmDetail.getGermplasmDetailModel().getGid() != 0){  // Germplasm found
-                detailLayout.addComponent(germplasmDetail);
-                Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
-                tab.setClosable(true);
-                tabSheet.setSelectedTab(detailLayout);
-                mainLayout.addComponent(tabSheet);
-            } 
-            // If germplasm is not found, no details tab is displayed
-        } else {
-            Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
-            tabSheet.setSelectedTab(tab.getComponent());
-        }
-    }
+		hLayoutForButtons.setVisible(true);
 
-    public void searchButtonClickAction() throws InternationalizableException {
+		VerticalLayout detailLayout = new VerticalLayout();
+		detailLayout.setSpacing(true);
 
-        searchChoice = searchOption.getChoice();
-        searchValue = searchOption.getSearchValue();
+		if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
+			GermplasmDetail germplasmDetail = new GermplasmDetail(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, false);
+			if (germplasmDetail.getGermplasmDetailModel().getGid() != 0){  // Germplasm found
+				detailLayout.addComponent(germplasmDetail);
+				Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
+				tab.setClosable(true);
+				tabSheet.setSelectedTab(detailLayout);
+				tabSheet.setCloseHandler(new CloseHandler() {
 
-        boolean withNoError = true;
-        if (searchValue.length() > 0) {
-            if ("GID".equals(searchChoice)) {
-                try {
-                    int gid = Integer.parseInt(searchValue);
-                    displayGermplasmDetailTab(gid);
-                } catch (NumberFormatException e) {
-                    LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    e.printStackTrace();
-                    withNoError = false;
-                    if (getWindow() != null) {
-                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                                messageSource.getMessage(Message.ERROR_INVALID_INPUT_MUST_BE_NUMERIC));
-                    }
-                }
-            } 
-            if (withNoError) {
-                LazyQueryContainer dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);                                        
-                resultTable.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
-                resultTable.setContainerDataSource(dataSourceResultLazy);
-                mainLayout.requestRepaintAll();
-            }
-               
-        } else {
-            MessageNotifier.showError(getWindow(), "Error", "Please input search string.");
-        }
-    }
+					private static final long serialVersionUID = 1L;
 
-    // Called by GermplasmItemClickListener
-    public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
-        sourceTable.select(itemId);
-        int gid = Integer.valueOf(item.getItemProperty(GID).toString());
-        displayGermplasmDetailTab(gid);
-    }
+					@Override
+					public void onTabClose(TabSheet tabsheet,Component tabContent) {
+						if(tabsheet.getComponentCount() > 1){
+							String tabCaption=tabsheet.getTab(tabContent).getCaption();
+							Tab tab = Util.getTabBefore(tabsheet, tabCaption);
+							tabsheet.removeTab(tabsheet.getTab(tabContent));
+							tabsheet.setSelectedTab(tab.getComponent());
+						}else{
+							tabsheet.removeTab(tabsheet.getTab(tabContent));
+						}
+						tabsheet.requestRepaintAll();
+					}
+				});
 
-    @Override
-    public void afterPropertiesSet() throws Exception { 
+				mainLayout.addComponent(tabSheet);
+			} 
+			// If germplasm is not found, no details tab is displayed
+		} else {
+			Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
+			tabSheet.setSelectedTab(tab.getComponent());
+		}
+	}
 
-        setSpacing(true);
+	public void searchButtonClickAction() throws InternationalizableException {
 
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
+		searchChoice = searchOption.getChoice();
+		searchValue = searchOption.getSearchValue();
 
-        Label applicationTitle = new Label("<h1>Germplasm Browser " + VERSION + "</h1>");
-        applicationTitle.setContentMode(Label.CONTENT_XHTML);
-        mainLayout.addComponent(applicationTitle);
-        
-        searchFormLayout = new HorizontalLayout();
+		boolean withNoError = true;
+		if (searchValue.length() > 0) {
+			if ("GID".equals(searchChoice)) {
+				try {
+					int gid = Integer.parseInt(searchValue);
+					displayGermplasmDetailTab(gid);
+				} catch (NumberFormatException e) {
+					LOG.error(e.toString() + "\n" + e.getStackTrace());
+					e.printStackTrace();
+					withNoError = false;
+					if (getWindow() != null) {
+						MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+								messageSource.getMessage(Message.ERROR_INVALID_INPUT_MUST_BE_NUMERIC));
+					}
+				}
+			} 
+			if (withNoError) {
+				LazyQueryContainer dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);                                        
+				resultTable.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
+				resultTable.setContainerDataSource(dataSourceResultLazy);
+				mainLayout.requestRepaintAll();
+			}
 
-        searchOption = new GermplasmSearchFormComponent();
-        searchFormLayout.addComponent(searchOption);
+		} else {
+			MessageNotifier.showError(getWindow(), "Error", "Please input search string.");
+		}
+	}
 
-        btnSearch = new Button();
-        btnSearch.setData(SEARCH_BUTTON_ID);
-        btnSearch.addStyleName("addTopSpace");
+	// Called by GermplasmItemClickListener
+	public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
+		sourceTable.select(itemId);
+		int gid = Integer.valueOf(item.getItemProperty(GID).toString());
+		displayGermplasmDetailTab(gid);
+	}
 
-        btnSearch.addListener(new GermplasmButtonClickListener(this));
-        searchFormLayout.addComponent(btnSearch);
+	@Override
+	public void afterPropertiesSet() throws Exception { 
 
-        mainLayout.addComponent(searchFormLayout);
+		setSpacing(true);
 
-        resultTable = new GermplasmSearchResultComponent(germplasmDataManager, NAMES, "");
-        mainLayout.addComponent(resultTable);
+		mainLayout = new VerticalLayout();
+		mainLayout.setSpacing(true);
+		mainLayout.setMargin(true);
 
-        resultTable.addListener(new GermplasmItemClickListener(this));
+		Label applicationTitle = new Label("<h1>Germplasm Browser " + VERSION + "</h1>");
+		applicationTitle.setContentMode(Label.CONTENT_XHTML);
+		mainLayout.addComponent(applicationTitle);
 
-        hLayoutForButtons = new HorizontalLayout();
-        hLayoutForButtons.setSpacing(true);
+		searchFormLayout = new HorizontalLayout();
 
-        // save germplasmlist button
-        btnSaveGermplasmList = new Button();
-        btnSaveGermplasmList.setData(SAVE_GERMPLASMLIST_ID);
-        btnSaveGermplasmList.addListener(new GermplasmButtonClickListener(this));
-        hLayoutForButtons.addComponent(btnSaveGermplasmList);
+		searchOption = new GermplasmSearchFormComponent();
+		searchFormLayout.addComponent(searchOption);
 
-        // close all GermplasmDetail tab button
-        btnCloseAllGermplamDetailTab = new Button();
-        btnCloseAllGermplamDetailTab.setData(CLOSE_ALL_GERMPLASMDETAIL_TAB_ID);
-        btnCloseAllGermplamDetailTab.addListener(new GermplasmButtonClickListener(this));
-        hLayoutForButtons.addComponent(btnCloseAllGermplamDetailTab);
+		btnSearch = new Button();
+		btnSearch.setData(SEARCH_BUTTON_ID);
+		btnSearch.addStyleName("addTopSpace");
 
-        hLayoutForButtons.setVisible(false);
-        mainLayout.addComponent(hLayoutForButtons);
+		btnSearch.addListener(new GermplasmButtonClickListener(this));
+		searchFormLayout.addComponent(btnSearch);
 
-        addComponent(mainLayout);
+		mainLayout.addComponent(searchFormLayout);
 
-    }
+		resultTable = new GermplasmSearchResultComponent(germplasmDataManager, NAMES, "");
+		mainLayout.addComponent(resultTable);
 
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
+		resultTable.addListener(new GermplasmItemClickListener(this));
 
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(btnSearch, Message.SEARCH_LABEL);
-        messageSource.setCaption(btnSaveGermplasmList, Message.SAVE_GERMPLASM_LIST_BUTTON_LABEL);
-        messageSource.setCaption(btnCloseAllGermplamDetailTab, Message.CLOSE_ALL_GERMPLASM_DETAIL_TAB_LABEL);
-    }
+		hLayoutForButtons = new HorizontalLayout();
+		hLayoutForButtons.setSpacing(true);
 
-    @SuppressWarnings("deprecation")
-    private void openDialogSaveList() {
-        saveGermplasmListDialog = new Window(messageSource.getMessage(Message.SAVE_GERMPLASM_LIST_WINDOW_LABEL));
-        saveGermplasmListDialog.setModal(true);
-        saveGermplasmListDialog.setWidth(700);
-        saveGermplasmListDialog.setHeight(350);
-        if(this.forGermplasmWindow) {
-            saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME)
-                    , saveGermplasmListDialog, tabSheet));
-            this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME).addWindow(saveGermplasmListDialog);
-        } else {
-            saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(), saveGermplasmListDialog,
-                    tabSheet));
-            this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);
-        }
-    }
+		// save germplasmlist button
+		btnSaveGermplasmList = new Button();
+		btnSaveGermplasmList.setData(SAVE_GERMPLASMLIST_ID);
+		btnSaveGermplasmList.addListener(new GermplasmButtonClickListener(this));
+		hLayoutForButtons.addComponent(btnSaveGermplasmList);
 
-    public void closeAllGermplasmDetailTabButtonClickAction() {
-        Util.closeAllTab(tabSheet);
-        hLayoutForButtons.setVisible(false);
-        mainLayout.removeComponent(tabSheet);
-        mainLayout.requestRepaintAll();
-    }
+		// close all GermplasmDetail tab button
+		btnCloseAllGermplamDetailTab = new Button();
+		btnCloseAllGermplamDetailTab.setData(CLOSE_ALL_GERMPLASMDETAIL_TAB_ID);
+		btnCloseAllGermplamDetailTab.addListener(new GermplasmButtonClickListener(this));
+		hLayoutForButtons.addComponent(btnCloseAllGermplamDetailTab);
 
-    public void saveGermplasmListButtonClickAction() {
-        openDialogSaveList();
-    }
+		hLayoutForButtons.setVisible(false);
+		mainLayout.addComponent(hLayoutForButtons);
+
+		addComponent(mainLayout);
+
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		updateLabels();
+	}
+
+	@Override
+	public void updateLabels() {
+		messageSource.setCaption(btnSearch, Message.SEARCH_LABEL);
+		messageSource.setCaption(btnSaveGermplasmList, Message.SAVE_GERMPLASM_LIST_BUTTON_LABEL);
+		messageSource.setCaption(btnCloseAllGermplamDetailTab, Message.CLOSE_ALL_GERMPLASM_DETAIL_TAB_LABEL);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void openDialogSaveList() {
+		saveGermplasmListDialog = new Window(messageSource.getMessage(Message.SAVE_GERMPLASM_LIST_WINDOW_LABEL));
+		saveGermplasmListDialog.setModal(true);
+		saveGermplasmListDialog.setWidth(700);
+		saveGermplasmListDialog.setHeight(350);
+		if(this.forGermplasmWindow) {
+			saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME)
+					, saveGermplasmListDialog, tabSheet));
+			this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME).addWindow(saveGermplasmListDialog);
+		} else {
+			saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getMainWindow(), saveGermplasmListDialog,
+					tabSheet));
+			this.getApplication().getMainWindow().addWindow(saveGermplasmListDialog);
+		}
+	}
+
+	public void closeAllGermplasmDetailTabButtonClickAction() {
+		Util.closeAllTab(tabSheet);
+		hLayoutForButtons.setVisible(false);
+		mainLayout.removeComponent(tabSheet);
+		mainLayout.requestRepaintAll();
+	}
+
+	public void saveGermplasmListButtonClickAction() {
+		openDialogSaveList();
+	}
 }

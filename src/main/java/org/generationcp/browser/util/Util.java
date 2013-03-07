@@ -70,6 +70,19 @@ public class Util{
 
     }
     
+    public static Tab getTabBefore(TabSheet tabSheet, String tabCaption) {
+    	Tab tabBefore=tabSheet.getTab(0);;
+        for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+            Tab tab = tabSheet.getTab(i);
+            if (tab.getCaption().equals(tabCaption)) {
+                return tabBefore;
+            }
+            tabBefore=tab;
+        }
+        return null;
+
+    }
+    
     public static void closeAllTab(TabSheet tabSheet){
     	
     	 for (int i =  tabSheet.getComponentCount()-1; i >=0; i--) {
