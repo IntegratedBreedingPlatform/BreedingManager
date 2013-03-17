@@ -46,7 +46,9 @@ public class CreatePedigreeGraph
 	 */
 	public void create(String graphName) throws FileNotFoundException, URISyntaxException, MiddlewareQueryException 
 	{
-		gv = new GraphVizUtility(this.window);
+		gv = new GraphVizUtility();
+		gv.initialize();
+		gv.setImageOutputPath(GraphVizUtility.createImageOutputPathForWindow(window));
 		gv.addln(gv.start_graph());
 
 		// used for testing

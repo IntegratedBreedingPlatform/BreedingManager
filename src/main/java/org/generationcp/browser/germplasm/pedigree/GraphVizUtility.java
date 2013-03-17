@@ -10,9 +10,16 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
+import org.generationcp.commons.util.StringUtil;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.WorkbenchSetting;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import com.vaadin.ui.Window;
 
-
+@Configurable
 public class GraphVizUtility
 {
 
@@ -22,27 +29,60 @@ public class GraphVizUtility
 	/**
 	 * Where is your dot program located? It will be called externally.
 	 */
-	private static String DOT = "C:/Program Files (x86)/Graphviz 2.28/bin/dot.exe";	// Windows
+	private String dotPath = null;
 
 	/**
 	 * The source of the graph written in dot language.
 	 */
 	private StringBuilder graph = new StringBuilder();
 
+	private String imageOutputPath = null;
 
-	private Window window;
-
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
+	
 	/**
 	 * Constructor: creates a new GraphViz object that will contain
 	 * a graph.
 	 * @throws URISyntaxException 
 	 * @throws FileNotFoundException 
 	 */
-	public GraphVizUtility(Window window) throws URISyntaxException, FileNotFoundException {
-		this.window=window;
+	public GraphVizUtility() throws URISyntaxException, FileNotFoundException {
 	}
+	
+    /**
+     * Initialize this GraphVizUtility instance.
+     * 
+     * This method should set the path of GraphViz dot executable.
+     */
+    public void initialize() {
+        // set the GraphViz' dot executable path
+        String graphvizPath = "tools/graphviz/bin/dot.exe";
 
-	/**
+        File dotFile = new File(graphvizPath).getAbsoluteFile();
+        try {
+            // use the GraphViz dot executable included in the workbench if it is available.
+            WorkbenchSetting workbenchSetting = workbenchDataManager.getWorkbenchSetting();
+            if (workbenchSetting != null && !StringUtil.isEmpty(workbenchSetting.getInstallationDirectory())) {
+                dotFile = new File(workbenchSetting.getInstallationDirectory(), graphvizPath).getAbsoluteFile();
+            }
+        }
+        catch (MiddlewareQueryException e) {
+            // intentionally empty
+        }
+
+        dotPath = dotFile.getAbsolutePath();
+    }
+    
+	public String getImageOutputPath() {
+        return imageOutputPath;
+    }
+
+    public void setImageOutputPath(String imageOutputPath) {
+        this.imageOutputPath = imageOutputPath;
+    }
+
+    /**
 	 * Returns the graph's source description in dot language.
 	 * @return Source of the graph in dot language.
 	 */
@@ -62,7 +102,6 @@ public class GraphVizUtility
 	 */
 	public void addln(String line) {
 		graph.append(line + "\n");
-		System.out.println(line + "\n");
 	}
 
 	/**
@@ -141,7 +180,7 @@ public class GraphVizUtility
 		try {
 			img = File.createTempFile("graph_", "."+type, new File(GraphVizUtility.TEMP_DIR));
 			Runtime rt = Runtime.getRuntime();
-			String[] args = {DOT, "-T"+type, dot.getAbsolutePath(), "-o", img.getAbsolutePath()};
+			String[] args = {dotPath, "-T"+type, dot.getAbsolutePath(), "-o", img.getAbsolutePath()};
 			Process p = rt.exec(args);
 			p.waitFor();
 
@@ -233,14 +272,14 @@ public class GraphVizUtility
 		this.graph = sb;
 	}
 
+    public static String createImageOutputPathForWindow(Window window) {
+        String BSLASH = "\\";
+        String FSLASH = "/";
+        return window.getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH) + "/WEB-INF/image";
+    }
+	
 	public String graphVizOutputPath(String fileName) throws URISyntaxException{
-		// Load the directory as a resource
-		String BSLASH = "\\";
-		String FSLASH = "/";
-		String basepath = window.getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH)+"/WEB-INF/image";
-		return basepath+"/"+fileName;
-
-
+		return imageOutputPath + File.separator +fileName;
 	}
 
 } // end of class GraphViz
