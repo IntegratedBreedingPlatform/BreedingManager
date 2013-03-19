@@ -119,7 +119,7 @@ public class CreatePedigreeGraph
 
 					gv.addln(leafNodeGID+" [shape=box];");
 					gv.addln(leafNodeGID+" [label=\""+leafNodeLabel+"\"];");
-					gv.addln(leafNodeGID+" [URL=http://google.com];");
+//					gv.addln(leafNodeGID+" [URL=http://google.com];");
 
 					String parentNodeGID=node.getGermplasm().getGid().toString();
 					String parentNodeLabel=node.getGermplasm().getPreferredName().getNval()+"("+node.getGermplasm().getGid().toString()+")";
@@ -138,13 +138,13 @@ public class CreatePedigreeGraph
 					}
 					gv.addln(parentNodeGID+"->"+leafNodeGID+";");
 					
-					if(parent.getLinkedNodes().isEmpty()){
-						
-						gv.addln(leafNodeGID+level+"[shape=none];");
-						gv.addln(leafNodeGID+level+"[label=\"\"];");
-//						gv.addln(leafNodeGID+level+"[URL=\"http://google.com\"];");
-						gv.addln(leafNodeGID+"->"+leafNodeGID+level +" [style=\"dashed\"];");
-					}
+//					if(parent.getLinkedNodes().isEmpty()){
+//						
+//						gv.addln(leafNodeGID+level+"[shape=none];");
+//						gv.addln(leafNodeGID+level+"[label=\"\"];");
+////						gv.addln(leafNodeGID+level+"[URL=\"http://google.com\"];");
+//						gv.addln(leafNodeGID+"->"+leafNodeGID+level +" [style=\"dashed\"];");
+//					}
 				}
 				addNode(parent, level + 1);
 			}catch(Exception e){
