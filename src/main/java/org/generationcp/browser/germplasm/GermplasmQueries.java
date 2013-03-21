@@ -69,8 +69,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             long count;
 
             if (searchString.contains("%")) {
-                count = germplasmDataManager.countGermplasmByName(searchString, GetGermplasmByNameModes.NORMAL, Operation.LIKE, null,
-                        null, databaseInstance);
+                count = germplasmDataManager.countGermplasmByName(searchString, GetGermplasmByNameModes.NORMAL, Operation.LIKE, null, null,
+                        databaseInstance);
                 germplasmList = germplasmDataManager.getGermplasmByName(searchString, 0, (int) count, GetGermplasmByNameModes.NORMAL,
                         Operation.LIKE, null, null, databaseInstance);
             } else {
@@ -92,10 +92,9 @@ public class GermplasmQueries implements Serializable, InitializingBean{
                     Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
         }
     }
-    
 
-
-    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchString) throws InternationalizableException {
+    public ArrayList<GermplasmSearchResultModel> getGermplasmListResultByPrefStandardizedName(String searchString)
+            throws InternationalizableException {
         try {
             List<Germplasm> germplasmList;
             long count;
@@ -122,36 +121,44 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     }
 
     public GermplasmSearchResultModel getGermplasmResultByGID(String gid) throws InternationalizableException {
-        Germplasm gData = germplasmDataManager.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
-        GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
-        
-        if (gData != null) {
-            return this.germplasmResultByGID = setGermplasmSearchResult(gResult, gData);
-        } else {
-            return null; // not found
-        }        
+        try {
+            Germplasm gData = germplasmDataManager.getGermplasmByGID(new Integer(Integer.valueOf(gid)));
+            GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+
+            if (gData != null) {
+                return this.germplasmResultByGID = setGermplasmSearchResult(gResult, gData);
+            } else {
+                return null; // not found
+            }
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
+        }
     }
 
     private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
             throws InternationalizableException {
-        gResult.setGid(gData.getGid());
-        gResult.setNames(getGermplasmNames(gData.getGid()));
+        try {
+            gResult.setGid(gData.getGid());
+            gResult.setNames(getGermplasmNames(gData.getGid()));
 
-        Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
-        if (method != null) {
-            gResult.setMethod(method.getMname());
-        } else {
-            gResult.setMethod("");
+            Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
+            if (method != null) {
+                gResult.setMethod(method.getMname());
+            } else {
+                gResult.setMethod("");
+            }
+
+            Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
+            if (loc != null) {
+                gResult.setLocation(loc.getLname());
+            } else {
+                gResult.setLocation("");
+            }
+
+            return gResult;
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
         }
-
-        Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
-        if (loc != null) {
-            gResult.setLocation(loc.getLname());
-        } else {
-            gResult.setLocation("");
-        }
-
-        return gResult;
     }
 
     public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
@@ -160,7 +167,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
             Name name = germplasmDataManager.getPreferredNameByGID(gid);
 
-            if (g != null){
+            if (g != null) {
                 germplasmDetail.setGid(g.getGid());
                 germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
                 germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
@@ -168,7 +175,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
                 germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
                 germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
                 germplasmDetail.setReference(getReference(g.getReferenceId()));
-            } 
+            }
             return germplasmDetail;
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_DETAILS);
@@ -293,7 +300,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
-    private String getReference(int refId) {
+    private String getReference(int refId) throws MiddlewareQueryException{
         Bibref bibRef = germplasmDataManager.getBibliographicReferenceByID(refId);
         if (bibRef != null) {
             return bibRef.getAnalyt();

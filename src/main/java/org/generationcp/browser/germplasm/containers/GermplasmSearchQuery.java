@@ -148,21 +148,26 @@ public class GermplasmSearchQuery implements Query{
         gResult.setGid(gData.getGid());
         gResult.setNames(getGermplasmNames(gData.getGid()));
 
-        Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
-        if (method != null) {
-            gResult.setMethod(method.getMname());
-        } else {
-            gResult.setMethod("");
+        try{
+            Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
+            if (method != null) {
+                gResult.setMethod(method.getMname());
+            } else {
+                gResult.setMethod("");
+            }
+    
+            Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
+            if (loc != null) {
+                gResult.setLocation(loc.getLname());
+            } else {
+                gResult.setLocation("");
+            }
+    
+            return gResult;
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
         }
 
-        Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
-        if (loc != null) {
-            gResult.setLocation(loc.getLname());
-        } else {
-            gResult.setLocation("");
-        }
-
-        return gResult;
     }
 
     private String getGermplasmNames(int gid) throws InternationalizableException {

@@ -121,7 +121,12 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
                     messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
+        }catch (MiddlewareQueryException e){
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
         }
+        
     }
 
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
@@ -147,7 +152,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         }
     }
 
-    private void createGermplasmListInfoTab(int germplasmListId) throws InternationalizableException {
+    private void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetGermplasmList, getGermplasmListName(germplasmListId))) {
@@ -164,7 +169,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         }
     }
 
-    private String getGermplasmListName(int germplasmListId) throws InternationalizableException {
+    private String getGermplasmListName(int germplasmListId) throws MiddlewareQueryException {
         return this.germplasmListManager.getGermplasmListById(germplasmListId).getName();
     }
 
@@ -185,7 +190,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         return !listChildren.isEmpty();
     }
 
-    private boolean isEmptyFolder(int listId) {
+    private boolean isEmptyFolder(int listId) throws MiddlewareQueryException{
         boolean isFolder = germplasmListManager.getGermplasmListById(listId).getType().equalsIgnoreCase("FOLDER");
         return isFolder && !hasChildList(listId);
     }
