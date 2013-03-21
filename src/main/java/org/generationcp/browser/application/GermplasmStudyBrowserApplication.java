@@ -265,7 +265,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      int listId = Integer.parseInt(gListIdPart);
                      Window germplasmListDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASMLIST_DETAILS_TEXT) + " " + listId);  // "Germplasm List Details"
                      germplasmListDetailsWindow.setSizeUndefined();
-                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(listId));
+                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(listId, true));
                      this.addWindow(germplasmListDetailsWindow);
                      return germplasmListDetailsWindow;
                  } catch (Exception ex) {

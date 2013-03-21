@@ -29,17 +29,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class RepresentationDatasetGidButtonClickListener implements Button.ClickListener {
+public class GidLinkButtonClickListener implements Button.ClickListener {
 
     private static final long serialVersionUID = -6751894969990825730L;
-    private final static Logger LOG = LoggerFactory.getLogger(RepresentationDatasetGidButtonClickListener.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
     private String gid;
 
-    public RepresentationDatasetGidButtonClickListener(String gid) {
+    public GidLinkButtonClickListener(String gid) {
         this.gid = gid;
     }
 
@@ -81,6 +81,8 @@ public class RepresentationDatasetGidButtonClickListener implements Button.Click
         germplasmWindow.setHeight("600px");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
+        
+        germplasmWindow.setModal(true);
         
         mainWindow.addWindow(germplasmWindow);
     }

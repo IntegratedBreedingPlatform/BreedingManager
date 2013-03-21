@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.browser.study.listeners.RepresentationDatasetGidButtonClickListener;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.CharacterDataElement;
@@ -51,7 +51,7 @@ public class RepresentationDataSetQuery implements Query{
     private StudyDataManager dataManager;
     private Integer representationId;
     private List<String> columnIds;
-    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;	//this is true if this component is created by accessing the Study Details page directly from the URL
     
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -151,13 +151,12 @@ public class RepresentationDataSetQuery implements Query{
                         itemMap.put(numericLevel.getOunitId(), item);
                     }
                     
-                   	String gid = String.format("%.0f",numericLevel.getValue());
-
-                   	Button gidButton = new Button(gid, new RepresentationDatasetGidButtonClickListener(gid));
+                    String gid = String.format("%.0f",numericLevel.getValue());
+                    Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid));
                     gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                     gidButton.setDescription("Click to view Germplasm information");
-
                     item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
+                    
                 //end GID link creation
                 } else {
                     // get Item for ounitid

@@ -42,6 +42,8 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private GermplasmListDetailComponent germplasmListDetailComponent;
     
     private VerticalLayout layoutListData;
+    
+    private boolean fromUrl;	//this is true if this component is created by accessing the Germplasm List Details page directly from the URL
    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -49,8 +51,9 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Autowired
 	private GermplasmListManager germplasmListManager;
 
-    public GermplasmListAccordionMenu(int germplasmListId) {
+    public GermplasmListAccordionMenu(int germplasmListId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
+        this.fromUrl = fromUrl;
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
@@ -59,7 +62,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         if (tab.getComponent() instanceof VerticalLayout) {
             if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
                 if (layoutListData.getComponentCount() == 0) {
-                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId));
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId, fromUrl));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }

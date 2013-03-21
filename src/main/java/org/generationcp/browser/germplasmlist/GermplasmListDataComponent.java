@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -26,9 +27,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
@@ -49,13 +52,16 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     
     private GermplasmListManager germplasmListManager;
     private int germplasmListId;
+    
+    private boolean fromUrl;	//this is true if this component is created by accessing the Germplasm List Details page directly from the URL
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public GermplasmListDataComponent(GermplasmListManager germplasmListManager, int germplasmListId){
+    public GermplasmListDataComponent(GermplasmListManager germplasmListManager, int germplasmListId, boolean fromUrl){
     	this.germplasmListManager = germplasmListManager;
     	this.germplasmListId = germplasmListId;
+    	this.fromUrl = fromUrl;
     }
     
     @Override
@@ -75,7 +81,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.setPageLength(15); // number of rows to display in the Table
             listDataTable.setSizeFull(); // to make scrollbars appear on the Table component
             
-            listDataTable.addContainerProperty(GID, Integer.class, null);
+            //make GID as link only if the page wasn't directly accessed from the URL
+            if (!fromUrl) {
+        	listDataTable.addContainerProperty(GID, Button.class, null);
+            } else {
+        	listDataTable.addContainerProperty(GID, Integer.class, null);
+            }
+            
             listDataTable.addContainerProperty(ENTRY_ID, Integer.class, null);
             listDataTable.addContainerProperty(ENTRY_CODE, String.class, null);
             listDataTable.addContainerProperty(SEED_SOURCE, String.class, null);
@@ -92,8 +104,22 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
             
             for (GermplasmListData data : listData) {
-                listDataTable.addItem(new Object[] {
-                        data.getGid(), data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
+        	Object gidObject;
+        	
+        	if (!fromUrl) {
+        	    // make GID as link only if the page wasn't directly accessed from the URL
+                    String gid = String.format("%s", data.getGid().toString());
+                    Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid));
+                    gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                    gidButton.setDescription("Click to view Germplasm information");
+                    gidObject = gidButton;
+                    //item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
+        	} else {
+        	    gidObject = data.getGid();
+        	}
+        	
+        	listDataTable.addItem(new Object[] {
+                        gidObject, data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
                         data.getDesignation(), data.getGroupName(), data.getStatusString()
                 }, data.getId());
             }
