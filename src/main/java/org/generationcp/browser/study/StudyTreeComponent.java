@@ -19,6 +19,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
+import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -40,6 +41,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -183,6 +185,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             studyBrowserMainLayout.addComponent(tabSheetStudy);
             studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
             tabSheetStudy.setSelectedTab(layout);
+            tabSheetStudy.setCloseHandler(new SelectedTabCloseHandler());
+            
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
             tabSheetStudy.setSelectedTab(tab.getComponent());

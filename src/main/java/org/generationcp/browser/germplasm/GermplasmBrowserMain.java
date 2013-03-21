@@ -16,6 +16,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
+import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -114,24 +115,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 				Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
 				tab.setClosable(true);
 				tabSheet.setSelectedTab(detailLayout);
-				tabSheet.setCloseHandler(new CloseHandler() {
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void onTabClose(TabSheet tabsheet,Component tabContent) {
-						if(tabsheet.getComponentCount() > 1){
-							String tabCaption=tabsheet.getTab(tabContent).getCaption();
-							Tab tab = Util.getTabBefore(tabsheet, tabCaption);
-							tabsheet.removeTab(tabsheet.getTab(tabContent));
-							tabsheet.setSelectedTab(tab.getComponent());
-						}else{
-							tabsheet.removeTab(tabsheet.getTab(tabContent));
-						}
-						tabsheet.requestRepaintAll();
-					}
-				});
-
+				tabSheet.setCloseHandler(new SelectedTabCloseHandler());
 				mainLayout.addComponent(tabSheet);
 			} 
 			// If germplasm is not found, no details tab is displayed

@@ -19,6 +19,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListTreeExpandListener;
+import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -39,6 +40,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.CloseHandler;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -66,6 +69,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
     
     public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
@@ -163,6 +167,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             germplasmListBrowserMainLayout.addComponent(tabSheetGermplasmList);
             germplasmListBrowserMainLayout.setExpandRatio(tabSheetGermplasmList, 1.0f);
             tabSheetGermplasmList.setSelectedTab(layout);
+            tabSheetGermplasmList.setCloseHandler(new SelectedTabCloseHandler());
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, getGermplasmListName(germplasmListId));
             tabSheetGermplasmList.setSelectedTab(tab.getComponent());
