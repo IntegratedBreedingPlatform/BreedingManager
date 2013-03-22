@@ -93,7 +93,14 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
         for (GermplasmPedigreeTreeNode parent : node.getLinkedNodes()) {
             int leafNodeId = node.getGermplasm().getGid();
-            String parentNodeLabel = parent.getGermplasm().getPreferredName().getNval() + "(" + parent.getGermplasm().getGid() + ")";
+            String preferredName="";
+            try{
+            	preferredName= parent.getGermplasm().getPreferredName().getNval();
+            }catch(Exception e){
+            	preferredName=String.valueOf(parent.getGermplasm().getGid());
+            }
+
+            String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";
             int parentNodeId = parent.getGermplasm().getGid();
             this.addItem(parentNodeId);
             this.setItemCaption(parentNodeId, parentNodeLabel);
