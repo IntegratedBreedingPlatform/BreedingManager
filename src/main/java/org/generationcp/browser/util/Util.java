@@ -70,14 +70,24 @@ public class Util{
 
     }
     
-    public static Tab getTabBefore(TabSheet tabSheet, String tabCaption) {
-    	Tab tabBefore=tabSheet.getTab(0);;
+    public static Tab getTabToFocus(TabSheet tabSheet, String tabCaption) {
+    	Tab tabToFocus=tabSheet.getTab(0);
+    	boolean rightTab=false;
         for (int i = 0; i < tabSheet.getComponentCount(); i++) {
             Tab tab = tabSheet.getTab(i);
-            if (tab.getCaption().equals(tabCaption)) {
-                return tabBefore;
+            if(rightTab){
+            	tabToFocus=tab;
+            	return tabToFocus;
             }
-            tabBefore=tab;
+            if (tab.getCaption().equals(tabCaption)) {
+            	if(i==(tabSheet.getComponentCount()-1)){
+            		return tabToFocus;
+            	}else{
+            		rightTab=true;
+            	}
+            }
+           
+            tabToFocus=tab;
         }
         return null;
 
