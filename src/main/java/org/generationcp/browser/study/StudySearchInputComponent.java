@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -169,6 +170,7 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         ButtonClickListener buttonClickListener = new ButtonClickListener();
         searchButton.addListener(buttonClickListener);
         clearButton.addListener(buttonClickListener);
+        searchButton.setClickShortcut(KeyCode.ENTER);
         
         buttonLayout.addComponent(searchButton);
         buttonLayout.addComponent(clearButton);
