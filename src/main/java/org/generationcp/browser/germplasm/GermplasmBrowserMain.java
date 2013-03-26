@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -186,6 +187,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		btnSearch = new Button();
 		btnSearch.setData(SEARCH_BUTTON_ID);
 		btnSearch.addStyleName("addTopSpace");
+		btnSearch.setClickShortcut(KeyCode.ENTER);
 
 		btnSearch.addListener(new GermplasmButtonClickListener(this));
 		searchFormLayout.addComponent(btnSearch);
