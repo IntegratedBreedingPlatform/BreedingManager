@@ -29,7 +29,7 @@ public class GermplasmGenerationHistoryComponent extends Table implements Initia
     private static final long serialVersionUID = 1L;
     
     private static final String  GID = "GID";
-    private static final String PREF_NAME = "Prefname";
+    private static final String PREF_NAME = "Preferred Name";
     
     GermplasmIndexContainer dataIndexContainer;
     GermplasmDetailModel gDetailModel;
