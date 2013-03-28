@@ -18,15 +18,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+
 
 import com.vaadin.ui.TabSheet;
 
@@ -41,6 +48,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+	
 	/**
 	 * Instantiates a new SaveGermplasmListAction.
 	 */
@@ -68,7 +78,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 			int userId = 1;
 			GermplasmList parent = null;
 			int statusListName = 1;
-
+	        String GIDListString = "";
+			
 			if(listId=="null"){
 				GermplasmList listNameData = new GermplasmList(null, listName, currentDate, type, userId, description, parent, statusListName);
 
@@ -90,6 +101,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
 					germplasmListManager.addGermplasmListData(germplasmListData);
 					entryid++;
+					
+					GIDListString = GIDListString + ", " + Integer.toString(gid);
+					
 				}
 			}else{
 				
@@ -116,10 +130,38 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 						germplasmListManager.addGermplasmListData(germplasmListData);
 						
 					}
-					
+					GIDListString = GIDListString + ", " + Integer.toString(gid);
 				}
 				
 			}
+			
+			//Save Project Activity
+	        GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
+	        GIDListString = GIDListString.substring(2); //remove ", ";
+	        
+	        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+	        
+	        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+	        		                                      workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+	        		                                      "Saved a germplasm list.", 
+	        		                                      "Used germplasm browser to save a list - " + GIDListString,
+	        		                                      user,
+	        		                                      new Date());
+	        
+	        try {
+	        	workbenchDataManager.addProjectActivity(projAct);
+	        	System.out.println("DEBUG - addProjectActivity invoked, and successful");
+	        	System.out.println("ProjectActivityId: " + workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().toString());
+	        	System.out.println("Action: Saved a germplasm list.");
+	        	System.out.println("Description: " + "Used germplasm browser to save a list - " + GIDListString);
+	        } catch (MiddlewareQueryException e) {
+	        	e.printStackTrace();
+	        	System.out.println("DEBUG - addProjectActivity FAILED");
+	        	System.out.println("ProjectActivityId: " + workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().toString());
+	        	System.out.println("Action: Saved a germplasm list.");
+	        	System.out.println("Description: " + "Used germplasm browser to save a list - " + GIDListString);
+			}
+			
 		} catch (MiddlewareQueryException e) {
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_ADDING_GERMPLASM_LIST);
 		}
