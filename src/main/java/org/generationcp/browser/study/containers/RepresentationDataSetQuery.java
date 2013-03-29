@@ -168,7 +168,12 @@ public class RepresentationDataSetQuery implements Query{
                     }
                     
                     if(numericLevel.getValue() != null){
-                        item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
+                	// remove decimal portion if there is no value after the decimal point
+                	if (numericLevel.getValue() % 1.0 > 0) {
+                	    item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
+                	} else {
+                	    item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",numericLevel.getValue())));
+                	}
                     } else{
                         item.addItemProperty(columnId, null);
                     }
@@ -219,7 +224,12 @@ public class RepresentationDataSetQuery implements Query{
                 }
 
                 if(numericData.getValue() != null){
-                    item.addItemProperty(columnId, new ObjectProperty<String>(numericData.getValue().toString()));
+                    // remove decimal portion if there is no value after the decimal point
+            	    if (numericData.getValue() % 1.0 > 0) {
+            	        item.addItemProperty(columnId, new ObjectProperty<String>(numericData.getValue().toString()));
+            	    } else {
+                	    item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",numericData.getValue())));
+            	    }
                 } else{
                     item.addItemProperty(columnId, null);
                 }

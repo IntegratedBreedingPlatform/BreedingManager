@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -86,20 +86,20 @@ public class ListsForGermplasmQuery implements Query{
     public List<Item> loadItems(int start, int numOfRows) {
         List<Item> items = new ArrayList<Item>();
 
-        List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
+        List<GermplasmList> germplasmLists = new ArrayList<GermplasmList>();
         try {
-            listDatas.addAll(this.dataManager.getGermplasmListDataByGID(gid, start, numOfRows));
+            germplasmLists.addAll(this.dataManager.getGermplasmListByGID(gid, start, numOfRows));
         } catch (MiddlewareQueryException ex) {
-            LOG.error("Error with getting list data for gid = " + gid + ": " + ex.getMessage());
+            LOG.error("Error with getting lists for gid = " + gid + ": " + ex.getMessage());
             return new ArrayList<Item>();
         }
-
-        for (GermplasmListData listData : listDatas) {
+        
+        for (GermplasmList list : germplasmLists) {
             PropertysetItem item = new PropertysetItem();
-            item.addItemProperty(GERMPLASMLIST_ID, new ObjectProperty<String>(listData.getList().getId().toString()));
-            item.addItemProperty(GERMPLASMLIST_NAME, new ObjectProperty<String>(listData.getList().getName()));
-            item.addItemProperty(GERMPLASMLIST_DATE, new ObjectProperty<String>(String.valueOf(listData.getList().getDate())));
-            item.addItemProperty(GERMPLASMLIST_DESCRIPTION, new ObjectProperty<String>(listData.getList().getDescription()));
+            item.addItemProperty(GERMPLASMLIST_ID, new ObjectProperty<String>(list.getId().toString()));
+            item.addItemProperty(GERMPLASMLIST_NAME, new ObjectProperty<String>(list.getName()));
+            item.addItemProperty(GERMPLASMLIST_DATE, new ObjectProperty<String>(String.valueOf(list.getDate())));
+            item.addItemProperty(GERMPLASMLIST_DESCRIPTION, new ObjectProperty<String>(list.getDescription()));
             items.add(item);
         }
 
