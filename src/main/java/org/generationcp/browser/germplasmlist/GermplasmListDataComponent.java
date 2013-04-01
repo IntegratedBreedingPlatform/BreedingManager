@@ -49,6 +49,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private static final String STATUS = "status";
 
     private Table listDataTable;
+    private Button selectAllButton;
     
     private GermplasmListManager germplasmListManager;
     private int germplasmListId;
@@ -136,6 +137,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             
             setSpacing(true);
             addComponent(listDataTable);
+            
+            selectAllButton = new Button("Select All",new Button.ClickListener() {
+            	public void buttonClick(Button.ClickEvent event) {
+            		listDataTable.setValue(listDataTable.getItemIds());
+            	}
+            });
+            addComponent(selectAllButton);
+            
         }
     }
     
