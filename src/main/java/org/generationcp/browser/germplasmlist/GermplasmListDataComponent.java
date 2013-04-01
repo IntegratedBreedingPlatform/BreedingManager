@@ -76,6 +76,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             
             // create the Vaadin Table to display the Germplasm List Data
             listDataTable = new Table("");
+            
+            listDataTable.setSelectable(true);
+            listDataTable.setMultiSelect(true);
             listDataTable.setColumnCollapsingAllowed(true);
             listDataTable.setColumnReorderingAllowed(true);
             listDataTable.setPageLength(15); // number of rows to display in the Table
@@ -126,6 +129,11 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             
             listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
     
+            //listDataTable.setValue(6);  //e(listDataTable.firstItemId());
+            System.out.println("DEBUG : Get firstItemId() of listDataTable");
+            System.out.println(listDataTable.firstItemId());
+            //System.out.println(data.getEntryId());
+            
             setSpacing(true);
             addComponent(listDataTable);
         }
