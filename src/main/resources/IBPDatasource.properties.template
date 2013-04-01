@@ -1,0 +1,16 @@
+#IBPMiddleware hibernate configuration 
+local.driver = com.mysql.jdbc.Driver
+local.url =  jdbc:mysql://localhost:3306/ibdbv1_rice_local
+local.host = localhost
+local.port = 3306
+local.dbname = ibdbv1_rice_local
+local.username = root
+local.password = password
+
+central.driver = com.mysql.jdbc.Driver
+central.url =  jdbc:mysql://localhost:3306/ibdbv1_rice_central
+central.host = localhost
+central.port = 3306
+central.dbname = ibdbv1_rice_central
+central.username = root
+central.password = password

@@ -1,0 +1,19 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+    <!--
+    Weaver Options can be found here:
+        http://www.eclipse.org/aspectj/doc/released/devguide/ltw-configuration.html#weaver-options
+    -->
+    <weaver options="-Xlint:ignore -Xset:weaveJavaxPackages=false">
+        <!-- exclude classes that we know we don't need to weave -->
+        <exclude within="com.vaadin.*"/>
+        <exclude within="com.google.*"/>
+        <exclude within="javax.*"/>
+    </weaver>
+
+    <!--
+    <aspects>
+        <aspect name="org.dellroad.stuff.vaadin.VaadinConfigurableAspect"/>
+    </aspects>
+    -->
+  </aspectj>
