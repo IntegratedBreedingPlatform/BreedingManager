@@ -141,7 +141,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
 
     private void populateComboBoxListName() throws MiddlewareQueryException {
         // TODO Auto-generated method stub
-        germplasmList = germplasmListManager.getAllGermplasmLists(0, 100, Database.LOCAL);
+        germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
         mapExistingList = new HashMap<String, Integer>();
         comboBoxListName.addItem("");
         for (GermplasmList gList : germplasmList) {
