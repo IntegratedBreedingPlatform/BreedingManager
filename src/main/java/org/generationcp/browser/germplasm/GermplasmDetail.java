@@ -52,6 +52,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private static final int NINE_TAB = 9;
 	private static final int TEN_TAB = 10;
 	private static final int ELEVEN_TAB = 11;
+	private static final int TWELVE_TAB = 12;
 	public final static String VIEW_PEDIGREE_GRAPH_ID = "View Pedigree Graph";
 	private GermplasmIndexContainer dataIndexContainer;
 	private GermplasmQueries qQuery;
@@ -66,6 +67,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private VerticalLayout layoutManagementNeighbors;
 	private VerticalLayout layoutInventoryInformation;
 	private VerticalLayout layoutDerivativeNeighborhood;
+	private VerticalLayout layoutMaintenanceNeighborhood;
 	private VerticalLayout layoutGermplasmStudyInformation;
 	private VerticalLayout mainLayout;
 	private int gid;
@@ -156,6 +158,10 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 					layoutGermplasmStudyInformation.addComponent(new GermplasmStudyInfoComponent(dataIndexContainer, gDetailModel, fromUrl));
 					layoutGermplasmStudyInformation.setMargin(true);
 				}
+			}else if (((VerticalLayout) tab.getComponent()).getData().equals(TWELVE_TAB)) {
+				if (layoutMaintenanceNeighborhood.getComponentCount() == 0) {
+					layoutMaintenanceNeighborhood.addComponent(new GermplasmMaintenanceNeighborhoodComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
+				}
 			}
 		}
 	}
@@ -199,6 +205,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		
 		layoutGermplasmStudyInformation = new VerticalLayout();
 		layoutGermplasmStudyInformation.setData(ELEVEN_TAB);
+		
+		layoutMaintenanceNeighborhood = new VerticalLayout();
+		layoutMaintenanceNeighborhood.setData(TWELVE_TAB);
 
 		layoutPedigreeTree.setMargin(true);
 
@@ -211,6 +220,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 		this.addTab(layoutGroupRelatives, messageSource.getMessage(Message.GROUP_RELATIVES_LABEL));
 		this.addTab(layoutManagementNeighbors, messageSource.getMessage(Message.MANAGEMENT_NEIGHBORS_LABEL));
 		this.addTab(layoutDerivativeNeighborhood, messageSource.getMessage(Message.DERIVATIVE_NEIGHBORHOOD_LABEL));
+		this.addTab(layoutMaintenanceNeighborhood, messageSource.getMessage(Message.MAINTENANCE_NEIGHBORHOOD_LABEL));
 		this.addTab(layoutInventoryInformation, messageSource.getMessage(Message.INVENTORY_INFORMATION_LABEL));
 		this.addTab(layoutGermplasmStudyInformation, messageSource.getMessage(Message.GERMPLASM_STUDY_INFORMATION_LABEL));
 		

@@ -336,6 +336,15 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         }
     }
 
+    
+    public GermplasmPedigreeTree getMaintenanceNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward)
+            throws InternationalizableException {
+        try {
+            return germplasmDataManager.getMaintenanceNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DERIVATIVE_NEIGHBORHOOD);
+        }
+    }
     /**
         public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
                 int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
