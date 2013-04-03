@@ -19,6 +19,7 @@ import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodComponent;
 import org.generationcp.browser.germplasm.GermplasmDetail;
+import org.generationcp.browser.germplasm.GermplasmMaintenanceNeighborhoodComponent;
 import org.generationcp.browser.germplasm.SaveGermplasmListDialog;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
@@ -129,6 +130,16 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             }
+            
+        } else if (source instanceof GermplasmMaintenanceNeighborhoodComponent
+                && event.getButton().getData().equals(GermplasmMaintenanceNeighborhoodComponent.DISPLAY_BUTTON_ID)) {
+            try {
+                ((GermplasmMaintenanceNeighborhoodComponent) source).displayButtonClickAction();
+            }catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+            }    
         } else if (source instanceof GermplasmDetail
                 && event.getButton().getData().equals(GermplasmDetail.VIEW_PEDIGREE_GRAPH_ID)) {
             try {

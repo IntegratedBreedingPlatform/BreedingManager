@@ -14,6 +14,7 @@ package org.generationcp.browser.germplasm.listeners;
 
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodComponent;
+import org.generationcp.browser.germplasm.GermplasmMaintenanceNeighborhoodComponent;
 import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -99,6 +100,18 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 					MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
 				}
 			}
+			
+		}else if (sourceClass instanceof GermplasmMaintenanceNeighborhoodComponent) {
+			if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+				try {
+					((GermplasmMaintenanceNeighborhoodComponent) sourceClass).displayNewGermplasmDetailTab((Integer) event.getItemId());
+				} catch (InternationalizableException e) {
+					LOG.error("Error in GermplasmItemClickListener: " + e.toString() + "\n" + e.getStackTrace());
+					e.printStackTrace();
+					MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
+				}
+			}
+			
 		}
 	}
 

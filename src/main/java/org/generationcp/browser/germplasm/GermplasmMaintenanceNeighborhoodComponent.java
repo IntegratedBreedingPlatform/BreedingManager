@@ -43,7 +43,7 @@ import com.vaadin.ui.VerticalLayout;
 public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
 
     private static final long serialVersionUID = 1L;
-    private GermplasmPedigreeTree germplasmDerivativeNeighborhood;
+    private GermplasmPedigreeTree germplasmMaintenanceNeighborhood;
     private GermplasmQueries qQuery;
     private VerticalLayout mainLayout;
     private TabSheet tabSheet;
@@ -132,7 +132,7 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
         
         btnDisplay = new Button();
         btnDisplay.setData(DISPLAY_BUTTON_ID);
-        btnDisplay.setDescription("Display Germplasm Derivative Neighborhood ");
+        btnDisplay.setDescription("Display Germplasm Maintenance Neighborhood ");
         btnDisplay.addListener(new GermplasmButtonClickListener(this));
         
         hLayout.addComponent(labelNumberOfStepsBackward);
@@ -190,9 +190,9 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
 		int numberOfStepsBackward=Integer.valueOf(selectNumberOfStepBackward.getValue().toString());
 		int numberOfStepsForward=Integer.valueOf(selectNumberOfStepForward.getValue().toString());
 		
-		germplasmDerivativeNeighborhood = qQuery.getMaintenanceNeighborhood(Integer.valueOf(gid), numberOfStepsBackward,numberOfStepsForward); // throws QueryException
-        if (germplasmDerivativeNeighborhood != null) {
-            addNode(germplasmDerivativeNeighborhood.getRoot(), 1);
+		germplasmMaintenanceNeighborhood = qQuery.getMaintenanceNeighborhood(Integer.valueOf(gid), numberOfStepsBackward,numberOfStepsForward); // throws QueryException
+        if (germplasmMaintenanceNeighborhood != null) {
+            addNode(germplasmMaintenanceNeighborhood.getRoot(), 1);
         }
         
         addComponent(maintenanceNeighborhoodTree);
