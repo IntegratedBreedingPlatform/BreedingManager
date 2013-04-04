@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.study;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +20,15 @@ import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.RepresentationDatasetQueryFactory;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
+import org.generationcp.browser.study.util.DatasetExporter;
+import org.generationcp.browser.study.util.DatasetExporterException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.pojos.Factor;
 import org.generationcp.middleware.pojos.Variate;
 import org.slf4j.Logger;
@@ -75,6 +80,10 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+	private TraitDataManager traitDataManager;
+
     
     public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId,
     		boolean forStudyWindow, boolean fromUrl) {
@@ -107,21 +116,26 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     @SuppressWarnings("deprecation")
     public void exportToExcelAction() {
         
-        saveFieldBookExcelFileDialog = new Window(messageSource.getMessage(Message.EXPORT_TO_EXCEL_LABEL));        
-        saveFieldBookExcelFileDialog.setModal(true);
-        saveFieldBookExcelFileDialog.setWidth(700);
-        saveFieldBookExcelFileDialog.setHeight(350);
-
-        if(this.forStudyWindow){
-            saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
-                    this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME)
-                    , saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
-            this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME).addWindow(saveFieldBookExcelFileDialog);
-        } else{
-            saveFieldBookExcelFileDialog.addComponent(new SaveRepresentationDatasetExcelDialog(
-                    this.getApplication().getMainWindow(), saveFieldBookExcelFileDialog, studyIdHolder, representationId, this.getApplication()));
-            this.getApplication().getMainWindow().addWindow(saveFieldBookExcelFileDialog);
-        }
+    	String tempFilename = System.getProperty( "user.home" ) + "/temp.xls";
+    	
+        DatasetExporter datasetExporter;
+        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyIdHolder, representationId);
+        try {
+            datasetExporter.exportToFieldBookExcel(tempFilename);
+            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFilename), this.getApplication());
+            fileDownloadResource.setFilename("export.xls");
+            
+            Window downloadWindow = new Window();
+            downloadWindow.setWidth(0);
+            downloadWindow.setHeight(0);
+            downloadWindow.open(fileDownloadResource);
+            this.getWindow().addWindow(downloadWindow);
+            
+            File tempFile = new File(tempFilename);
+            tempFile.delete();
+        } catch (DatasetExporterException e) {
+            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME), e.getMessage(), "");
+        }    	
         
     }
     
