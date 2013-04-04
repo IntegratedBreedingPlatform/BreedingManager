@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
@@ -55,6 +56,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 	private int gid;
 	private Button btnDisplay;
 	private Component pedigree_level_label;
+	private CheckBox pedigreeDerivativeCheckbox;
 	private Panel panelPedigree;
 	private static final String PEDIGREE_IMAGE_PATH = "../gcp-default/graph/";
 	private String BSLASH = "\\";
@@ -75,6 +77,9 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 		pedigree_level_label = new Label();
 		txtLevel = new TextField();
 		txtLevel.setWidth("50px");
+		
+		pedigreeDerivativeCheckbox = new CheckBox();
+		
 		btnDisplay = new Button("Display");
 		btnDisplay.setData(UPDATE_PEDIGREE_GRAPH_BUTTON_ID);
 		btnDisplay.setWidth("80px");
@@ -82,6 +87,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
 		hLayout.addComponent(pedigree_level_label);
 		hLayout.addComponent(txtLevel);
+		hLayout.addComponent(pedigreeDerivativeCheckbox);
 		hLayout.addComponent(btnDisplay);
 
 		addComponent(hLayout);
@@ -104,16 +110,24 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(pedigree_level_label, Message.PEDIGREE_LEVEL_LABEL);
+		messageSource.setCaption(pedigreeDerivativeCheckbox, Message.INCLUDE_DERIVATIVE_LINES);
 	}
 
 	public void updatePedigreeGraphButtonClickAction() throws FileNotFoundException, URISyntaxException, MiddlewareQueryException {
+
+		//System.out.println("DEBUG ==== value of checkbox: "+pedigreeDerivativeCheckbox.getValue());
 		
 		panelPedigree.removeAllComponents();
+		try {
+			Thread.sleep(350);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		panelPedigree.requestRepaint();
 
 //		String graphName="Pedigree_"+String.valueOf(this.gid)+"_"+String.valueOf(txtLevel.getValue().toString()+"_"+cal.getTimeInMillis());
 		String graphName="Pedigree";
-		CreatePedigreeGraph pedigree= new CreatePedigreeGraph(this.gid,Integer.valueOf(txtLevel.getValue().toString()),this.getWindow(),this.qQuery);
+		CreatePedigreeGraph pedigree= new CreatePedigreeGraph(this.gid,Integer.valueOf(txtLevel.getValue().toString()),(Boolean) pedigreeDerivativeCheckbox.getValue(),this.getWindow(),this.qQuery);
 		pedigree.create(graphName);
 
 		String basepath = getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH)+"/WEB-INF/image/";

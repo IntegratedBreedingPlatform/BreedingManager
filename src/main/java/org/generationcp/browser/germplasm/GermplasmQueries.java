@@ -326,6 +326,14 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
         }
     }
+    
+    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines) throws InternationalizableException {
+        try {
+            return germplasmDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
+        }
+	}    
 
     public GermplasmPedigreeTree getDerivativeNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward)
             throws InternationalizableException {
@@ -382,4 +390,6 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     @Override
     public void afterPropertiesSet() throws Exception {
     }
+
+
 }

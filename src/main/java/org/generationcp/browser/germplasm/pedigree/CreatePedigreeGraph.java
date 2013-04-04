@@ -26,15 +26,23 @@ public class CreatePedigreeGraph
 	private int gid;
 	private int level;
 	private Window window;
+	private boolean includeDerivativeLines;
 
 
+	public CreatePedigreeGraph(int gid, int level, Boolean includeDerivativeLines, Window window,GermplasmQueries qQuery){
+		this.qQuery=qQuery;
+		this.gid=gid;
+		this.level=level;
+		this.window=window;
+		this.includeDerivativeLines=includeDerivativeLines;
+	}	
+	
 	public CreatePedigreeGraph(int gid, int level,Window window,GermplasmQueries qQuery){
 		this.qQuery=qQuery;
 		this.gid=gid;
 		this.level=level;
 		this.window=window;
 	}
-
 
 	/**
 	 * Construct a DOT graph in memory, convert it
@@ -93,7 +101,7 @@ public class CreatePedigreeGraph
 	}
 
 	private void createDiGraphNode() throws MiddlewareQueryException {
-		GermplasmPedigreeTree germplasmPedigreeTree = this.qQuery.generatePedigreeTree(Integer.valueOf(gid), level);
+		GermplasmPedigreeTree germplasmPedigreeTree = this.qQuery.generatePedigreeTree(Integer.valueOf(gid), level, includeDerivativeLines);
 
 		if(level==1){
 			String leafNodeGIDRoot=germplasmPedigreeTree.getRoot().getGermplasm().getGid().toString();

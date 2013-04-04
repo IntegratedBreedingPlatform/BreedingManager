@@ -224,6 +224,7 @@ public enum Message {
      ,ERROR_MONTH_OUT_OF_RANGE
      ,NO_STUDIES_FOUND
      ,STUDY_NAME
+     ,INCLUDE_DERIVATIVE_LINES
 
 
 
