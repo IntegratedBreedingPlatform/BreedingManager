@@ -13,8 +13,11 @@
 package org.generationcp.browser.germplasm.pedigree;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.UUID;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.GermplasmQueries;
@@ -126,13 +129,31 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 		panelPedigree.requestRepaint();
 
 //		String graphName="Pedigree_"+String.valueOf(this.gid)+"_"+String.valueOf(txtLevel.getValue().toString()+"_"+cal.getTimeInMillis());
-		String graphName="Pedigree";
+		//String graphName="Pedigree";
+		
+		String basepath = getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH)+"/WEB-INF/image/";
+		UUID randomUUID = UUID.randomUUID();
+		
+		File directory = new File(basepath);  
+		File[] toBeDeleted = directory.listFiles(new FileFilter() {  
+			public boolean accept(File theFile) {  
+				if (theFile.isFile()) {  
+					return theFile.getName().endsWith("_tree.png");  
+				}  
+				return false;  
+			}  
+		});  
+		   
+		System.out.println(Arrays.toString(toBeDeleted));  
+		for(File deletableFile:toBeDeleted){  
+			deletableFile.delete();  
+		}		
+		
+		String graphName = randomUUID.toString()+"_tree";
 		CreatePedigreeGraph pedigree= new CreatePedigreeGraph(this.gid,Integer.valueOf(txtLevel.getValue().toString()),(Boolean) pedigreeDerivativeCheckbox.getValue(),this.getWindow(),this.qQuery);
 		pedigree.create(graphName);
 
-		String basepath = getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH)+"/WEB-INF/image/";
-
-		FileResource resource =new FileResource(new File(basepath +graphName+".png"),this.getApplication());
+		FileResource resource =new FileResource(new File(basepath + graphName + ".png"),this.getApplication());
 
 		Embedded em = new Embedded("", resource);
 		em.setMimeType("image/png");
