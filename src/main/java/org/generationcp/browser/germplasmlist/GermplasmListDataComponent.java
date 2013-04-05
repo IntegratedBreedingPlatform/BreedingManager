@@ -13,12 +13,17 @@
 package org.generationcp.browser.germplasmlist;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -27,7 +32,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -47,12 +54,16 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
     private static final String STATUS = "status";
+    
+    public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
 
     private Table listDataTable;
     private Button selectAllButton;
+    private Button saveSortingButton;
     
     private GermplasmListManager germplasmListManager;
     private int germplasmListId;
+    private List<GermplasmListData> listDatas;
     
     private boolean fromUrl;	//this is true if this component is created by accessing the Germplasm List Details page directly from the URL
 
@@ -67,13 +78,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     
     @Override
     public void afterPropertiesSet() throws Exception{
-        List<GermplasmListData> listData = new ArrayList<GermplasmListData>();
+        listDatas = new ArrayList<GermplasmListData>();
         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
         if (listDataCount == 0) {
             addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
         } else {
             
-            listData = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
+            listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
             
             // create the Vaadin Table to display the Germplasm List Data
             listDataTable = new Table("");
@@ -107,7 +118,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             messageSource.setColumnHeader(listDataTable, GROUP_NAME, Message.LISTDATA_GROUPNAME_HEADER);
             messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
             
-            for (GermplasmListData data : listData) {
+            for (GermplasmListData data : listDatas) {
         	Object gidObject;
         	
         	if (!fromUrl) {
@@ -133,12 +144,24 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             setSpacing(true);
             addComponent(listDataTable);
             
+            HorizontalLayout buttonArea = new HorizontalLayout();
+            buttonArea.setSpacing(true);
+            
             selectAllButton = new Button("Select All",new Button.ClickListener() {
             	public void buttonClick(Button.ClickEvent event) {
             		listDataTable.setValue(listDataTable.getItemIds());
             	}
             });
-            addComponent(selectAllButton);
+            buttonArea.addComponent(selectAllButton);
+            
+            // Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID). 
+            if (germplasmListId < 0) {
+                saveSortingButton = new Button("Save Sorting", new GermplasmListButtonClickListener(this));
+                saveSortingButton.setData(SORTING_BUTTON_ID);
+                buttonArea.addComponent(saveSortingButton);
+            }
+            
+            addComponent(buttonArea);
             
         }
     }
@@ -151,6 +174,40 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
     @Override
     public void updateLabels() {
+    }
+    
+    // called by GermplasmListButtonClickListener
+    public void saveSortingAction() throws InternationalizableException {
+        int entryId = 1;
+        //re-assign "Entry ID" field based on table's sorting
+        for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+            
+            //update table item's entryId
+            Item item = listDataTable.getItem(listDataId);
+            item.getItemProperty(ENTRY_ID).setValue(entryId);
+            
+            //then find the corresponding ListData and assign a new entryId to it
+            for (GermplasmListData listData : listDatas) {
+                if (listData.getId().equals(listDataId)) {
+                    listData.setEntryId(entryId);
+                    break;
+                }
+            }
+            entryId += 1;
+        }
+        //save the list of Germplasm List Data to the database
+        try {
+            germplasmListManager.updateGermplasmListData(listDatas);
+            listDataTable.requestRepaint();
+            MessageNotifier.showMessage(this.getWindow(), 
+                    messageSource.getMessage(Message.SUCCESS), 
+                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SORTING_SUCCESS));
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_SORTING);
+        }
+        
     }
 
 }
