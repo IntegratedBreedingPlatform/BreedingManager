@@ -116,9 +116,16 @@ public class CreatePedigreeGraph
 
 	private void addNode(GermplasmPedigreeTreeNode node, int level) {
 
+		if(node.getLinkedNodes().size()==0){
+			String leafNodeGIDRoot=node.getGermplasm().getGid().toString();
+			String leafNodeLabelRoot=node.getGermplasm().getPreferredName().getNval()+ "("+node.getGermplasm().getGid().toString()+")";
+			gv.addln(leafNodeGIDRoot+" [shape=box];");
+			gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\"];");
+			gv.addln(leafNodeGIDRoot+";");		
+		}
 		
-
 		for (GermplasmPedigreeTreeNode parent : node.getLinkedNodes()) {
+			
 			try{
 
 				if(!parent.getGermplasm().getGid().toString().equals("0")){
@@ -137,6 +144,8 @@ public class CreatePedigreeGraph
 					
 
 					if(level==1){
+						
+						System.out.println("I'm at level 1");
 						String leafNodeGIDRoot=node.getGermplasm().getGid().toString();
 						String leafNodeLabelRoot=node.getGermplasm().getPreferredName().getNval()+ "("+node.getGermplasm().getGid().toString()+")";
 						gv.addln(leafNodeGIDRoot+" [shape=box];");
