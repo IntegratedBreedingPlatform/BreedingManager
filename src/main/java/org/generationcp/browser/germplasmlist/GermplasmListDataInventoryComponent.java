@@ -40,11 +40,10 @@ public class GermplasmListDataInventoryComponent extends VerticalLayout implemen
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
-
-
+	
+	@Autowired
 	private GermplasmListManager germplasmListManager;
 
 	private int germplasmListId;
@@ -55,8 +54,7 @@ public class GermplasmListDataInventoryComponent extends VerticalLayout implemen
 	private static final String GERMPLASM_INVENTORY_SCALE_NAME = "scale";
 	private static final String GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
 
-	public GermplasmListDataInventoryComponent(GermplasmListManager germplasmListManager, int germplasmListId) {
-		this.germplasmListManager = germplasmListManager;
+	public GermplasmListDataInventoryComponent(int germplasmListId) {
 		this.germplasmListId = germplasmListId;
 	}
 

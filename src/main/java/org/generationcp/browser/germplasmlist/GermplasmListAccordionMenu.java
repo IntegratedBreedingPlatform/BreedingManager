@@ -40,6 +40,8 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private static final String LIST_DATA_INVENTORY = "List Data Inventory";
     
     private int germplasmListId;
+    private String listName;
+    private int userId;
     private GermplasmListDetailComponent germplasmListDetailComponent;
     
     private VerticalLayout layoutListData;
@@ -52,10 +54,13 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     
     @Autowired
 	private GermplasmListManager germplasmListManager;
+	
 
-    public GermplasmListAccordionMenu(int germplasmListId, boolean fromUrl) {
+    public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
+        this.listName=listName;
+        this.userId=userId;
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
@@ -64,13 +69,13 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         if (tab.getComponent() instanceof VerticalLayout) {
             if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
                 if (layoutListData.getComponentCount() == 0) {
-                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListManager, germplasmListId, fromUrl));
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA_INVENTORY)) {
             	if (layoutListDataInventory.getComponentCount() == 0) {
-            		layoutListDataInventory.addComponent(new GermplasmListDataInventoryComponent(germplasmListManager, germplasmListId));
+            		layoutListDataInventory.addComponent(new GermplasmListDataInventoryComponent(germplasmListId));
             		layoutListDataInventory.setMargin(true);
 				}
             }

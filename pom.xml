@@ -176,7 +176,7 @@
 		<dependency>
 			<groupId>org.generationcp</groupId>
 			<artifactId>middleware</artifactId>
-			<version>1.8.0</version>
+			<version>1.8.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -225,6 +225,12 @@
 			<version>1.0.1</version>
 			<type>pom</type>
 			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>confirmdialog</artifactId>
+			<version>1.2.1</version>
 		</dependency>
 
 		<!-- 

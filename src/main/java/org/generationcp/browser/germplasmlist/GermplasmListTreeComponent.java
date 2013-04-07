@@ -159,9 +159,11 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     private void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
         VerticalLayout layout = new VerticalLayout();
 
-        if (!Util.isTabExist(tabSheetGermplasmList, getGermplasmListName(germplasmListId))) {
-            layout.addComponent(new GermplasmListAccordionMenu(germplasmListId, false));
-            Tab tab = tabSheetGermplasmList.addTab(layout, getGermplasmListName(germplasmListId), null);
+        GermplasmList germplasmList=getGermplasmList(germplasmListId);
+        
+        if (!Util.isTabExist(tabSheetGermplasmList, germplasmList.getName())) {
+            layout.addComponent(new GermplasmListAccordionMenu(germplasmListId,germplasmList.getName(),germplasmList.getUserId(), false));
+            Tab tab = tabSheetGermplasmList.addTab(layout, germplasmList.getName(), null);
             tab.setClosable(true);
 
             germplasmListBrowserMainLayout.addComponent(tabSheetGermplasmList);
@@ -169,15 +171,16 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             tabSheetGermplasmList.setSelectedTab(layout);
             tabSheetGermplasmList.setCloseHandler(new SelectedTabCloseHandler());
         } else {
-            Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, getGermplasmListName(germplasmListId));
+            Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, germplasmList.getName());
             tabSheetGermplasmList.setSelectedTab(tab.getComponent());
         }
     }
 
-    private String getGermplasmListName(int germplasmListId) throws MiddlewareQueryException {
-        return this.germplasmListManager.getGermplasmListById(germplasmListId).getName();
+    private GermplasmList getGermplasmList(int germplasmListId) throws MiddlewareQueryException {
+        return this.germplasmListManager.getGermplasmListById(germplasmListId);
     }
-
+   
+    
     private boolean hasChildList(int listId) {
 
         List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
