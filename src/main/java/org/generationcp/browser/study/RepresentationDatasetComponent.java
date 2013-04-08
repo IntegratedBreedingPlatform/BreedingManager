@@ -116,7 +116,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     @SuppressWarnings("deprecation")
     public void exportToExcelAction() {
         
-    	String tempFilename = System.getProperty( "user.home" ) + "/temp.xls";
+    	String tempFilename = "dataset-temp.xls";
     	
         DatasetExporter datasetExporter;
         datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyIdHolder, representationId);
