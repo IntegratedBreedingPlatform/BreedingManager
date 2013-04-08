@@ -131,8 +131,9 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
             downloadWindow.open(fileDownloadResource);
             this.getWindow().addWindow(downloadWindow);
             
-            File tempFile = new File(tempFilename);
-            tempFile.delete();
+            //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+            //File tempFile = new File(tempFilename);
+            //tempFile.delete();
         } catch (DatasetExporterException e) {
             MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME), e.getMessage(), "");
         }    	
