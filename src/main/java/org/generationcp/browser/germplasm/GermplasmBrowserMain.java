@@ -173,7 +173,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
-		mainLayout.setMargin(true);
+		mainLayout.setMargin(false, true, true, true);
 
 		Label applicationTitle = new Label("<h1>Germplasm Browser " + VERSION + "</h1>");
 		applicationTitle.setContentMode(Label.CONTENT_XHTML);

@@ -46,7 +46,7 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
     @Override
     public void afterPropertiesSet() {
         this.setSpacing(true);
-        this.setMargin(true);
+        this.setMargin(false, true, true, true);
         
         Label applicationTitle = new Label("<h1>Germplasm List Browser " + VERSION + "</h1>");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);

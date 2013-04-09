@@ -49,7 +49,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     @Override
     public void afterPropertiesSet() {
         this.setSpacing(true);
-        this.setMargin(true);
+        this.setMargin(false, true, true, true);
         
         Label applicationTitle = new Label("<h1>Study Browser " + VERSION + "</h1>");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);
