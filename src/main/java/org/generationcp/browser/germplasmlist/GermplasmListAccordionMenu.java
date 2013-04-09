@@ -37,7 +37,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     
     private static final String LIST_DETAILS = "List Details";
     private static final String LIST_DATA = "List Data";
-    private static final String LIST_DATA_INVENTORY = "List Data Inventory";
+    private static final String LIST_SEED_INVENTORY = "List Seed Inventory";
     
     private int germplasmListId;
     private String listName;
@@ -73,7 +73,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }
-            }else if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA_INVENTORY)) {
+            }else if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_SEED_INVENTORY)) {
             	if (layoutListDataInventory.getComponentCount() == 0) {
             		layoutListDataInventory.addComponent(new GermplasmListDataInventoryComponent(germplasmListId));
             		layoutListDataInventory.setMargin(true);
@@ -93,11 +93,11 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         layoutListData.setData(LIST_DATA);
         
         layoutListDataInventory = new VerticalLayout();
-        layoutListDataInventory.setData(LIST_DATA_INVENTORY);
+        layoutListDataInventory.setData(LIST_SEED_INVENTORY);
         
         this.addTab(germplasmListDetailComponent, messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_TAB)); // "Germplasm List Details"
         this.addTab(layoutListData, messageSource.getMessage(Message.GERMPLASM_LIST_DATA_TAB)); // "Germplasm List Data"
-        this.addTab(layoutListDataInventory, messageSource.getMessage(Message.GERMPLASM_LIST_DATA_INVENTORY_TAB)); // "List Data Inventory"
+        this.addTab(layoutListDataInventory, messageSource.getMessage(Message.GERMPLASM_LIST_SEED_INVENTORY_TAB)); // "List Data Inventory"
         
         this.addListener(new GermplasmListSelectedTabChangeListener(this));    	
     }
