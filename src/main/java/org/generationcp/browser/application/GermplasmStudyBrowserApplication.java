@@ -63,7 +63,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
     private static final long serialVersionUID = 1L;
     
-    public static final String GERMPLASM_WINDOW_NAME = "germplasm"; 
+    public static final String GERMPLASM_WINDOW_NAME = "germplasm";
+    public static final String GERMPLASMLIST_WINDOW_NAME = "germplasmlist";
     public static final String STUDY_WINDOW_NAME = "study";
     public static final String STUDY_DETAILS_PREFIX = "study-";
     public static final String GERMPLASM_DETAILS_PREFIX = "germplasm-";
@@ -202,7 +203,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                         MessageNotifier.showError(getMainWindow(), e.getCaption(), e.getDescription());
                     }
                 }
-            } else if("germplasmlist".equals(name)) {
+            } else if(GERMPLASMLIST_WINDOW_NAME.equals(name)) {
                 Window germplasmListBrowserWindow = new Window(messageSource.getMessage(Message.GERMPLASM_LIST_BROWSER_TITLE)); // "Germplasm List Browser"
                 germplasmListBrowserWindow.setName("germplasmlist");
                 germplasmListBrowserWindow.setSizeUndefined();
