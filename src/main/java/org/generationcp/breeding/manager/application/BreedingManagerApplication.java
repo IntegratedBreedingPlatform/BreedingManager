@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
+import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -17,7 +19,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.vaadin.terminal.Terminal;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 
@@ -26,7 +29,11 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     private static final long serialVersionUID = 1L;
     
+    public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import"; 
+    
     private Window window;
+    
+    private VerticalLayout rootLayoutForImportGermplasmList;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -46,13 +53,30 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     @Override
     public void initSpringApplication(ConfigurableWebApplicationContext arg0) {
-
+        
+        messageSourceListener = new UpdateComponentLabelsAction(this);
+        messageSource.addListener(messageSourceListener);
+        
+        this.rootLayoutForImportGermplasmList = new VerticalLayout();
+        rootLayoutForImportGermplasmList.setSizeFull();
+        
         window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION)); // "Breeding Manager"
         setMainWindow(window);
         setTheme("gcp-default");
         window.setSizeUndefined();
 
-        window.addComponent(new Label("Hello World!"));
+        TabSheet tabSheet = new TabSheet();
+        
+        VerticalLayout layouts[] = new VerticalLayout[1];
+        layouts[0] = this.rootLayoutForImportGermplasmList;
+        
+        WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
+        
+        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_TAB_LABEL)); // "Welcome"
+        tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL)); // "Import Germlasm List"
+        tabSheet.addListener(new MainApplicationSelectedTabChangeListener(this));
+        
+        window.addComponent(tabSheet);
         
         // Override the existing error handler that shows the stack trace
         setErrorHandler(this);
@@ -62,9 +86,29 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public Window getWindow(String name) {
         // dynamically create other application-level windows which is associated with specific URLs
         // these windows are the jumping on points to parts of the application
+        if(super.getWindow(name) == null){
+            if(name.equals(GERMPLASM_IMPORT_WINDOW_NAME)){
+                Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+                germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
+                germplasmImportWindow.setSizeUndefined();
+                germplasmImportWindow.addComponent(new GermplasmImportMain());
+                this.addWindow(germplasmImportWindow);
+                return germplasmImportWindow;
+            }
+        }
         
         return super.getWindow(name);
     }
+    
+    public void tabSheetSelectedTabChangeAction(TabSheet source) throws InternationalizableException {
+
+        if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
+            if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
+                rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain());
+            }
+        } 
+    }
+
 
     /** 
      * Override terminalError() to handle terminal errors, to avoid showing the stack trace in the application 

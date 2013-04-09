@@ -1,0 +1,179 @@
+package org.generationcp.breeding.manager.listimport;
+
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Table;
+
+@Configurable
+public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+
+    private static final long serialVersionUID = 2762965368037453497L;
+    private final static Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
+    
+    public static final String NEXT_BUTTON_ID = "next button";
+    public static final String BACK_BUTTON_ID = "back button";
+    
+    private Label breedingMethodLabel;
+    private Label germplasmDateLabel;
+    private Label locationLabel;
+    private Label nameTypeLabel;
+    private Label germplasmDetailsLabel;
+    private Label pedigreeOptionsLabel;
+    
+    private ComboBox breedingMethodComboBox;
+    private ComboBox locationComboBox;
+    private ComboBox nameTypeComboBox;
+    
+    private DateField germplasmDateField;
+    
+    private Table germplasmDetailsTable;
+    
+    private OptionGroup pedigreeOptionGroup;
+    
+    private Button backButton;
+    private Button nextButton;
+    
+    private Accordion accordion;
+    private Component nextScreen;
+    private Component previousScreen;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
+    
+    public SpecifyGermplasmDetailsComponent(Accordion accordion){
+        this.accordion = accordion;
+    }
+    
+    public void setNextScreen(Component nextScreen){
+        this.nextScreen = nextScreen;
+    }
+    
+    public void setPreviousScreen(Component previousScreen){
+        this.previousScreen = previousScreen;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setHeight("510px");
+        setWidth("800px");
+        
+        breedingMethodLabel = new Label();
+        addComponent(breedingMethodLabel, "top:30px;left:20px");
+        
+        breedingMethodComboBox = new ComboBox();
+        breedingMethodComboBox.setWidth("400px");
+        addComponent(breedingMethodComboBox, "top:10px;left:200px");
+        
+        germplasmDateLabel = new Label();
+        addComponent(germplasmDateLabel, "top:60px;left:20px");
+        
+        germplasmDateField =  new DateField();
+        germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
+        germplasmDateField.setDateFormat("yyyy-MM-dd");
+        addComponent(germplasmDateField, "top:40px;left:200px");
+        
+        locationLabel = new Label();
+        addComponent(locationLabel, "top:90px;left:20px");
+        
+        locationComboBox = new ComboBox();
+        locationComboBox.setWidth("400px");
+        addComponent(locationComboBox, "top:70px;left:200px");
+        
+        nameTypeLabel = new Label();
+        addComponent(nameTypeLabel, "top:120px;left:20px");
+        
+        nameTypeComboBox = new ComboBox();
+        nameTypeComboBox.setWidth("400px");
+        addComponent(nameTypeComboBox, "top:100px;left:200px");
+        
+        germplasmDetailsLabel = new Label();
+        addComponent(germplasmDetailsLabel, "top:150px;left:20px");
+        
+        germplasmDetailsTable = new Table();
+        germplasmDetailsTable.addContainerProperty(1, Integer.class, null);
+        germplasmDetailsTable.addContainerProperty(2, String.class, null);
+        germplasmDetailsTable.addContainerProperty(3, String.class, null);
+        germplasmDetailsTable.addContainerProperty(4, String.class, null);
+        germplasmDetailsTable.addContainerProperty(5, String.class, null);
+        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry ID", "Entry CD", "Desgination", "Cross", "Source"});
+        germplasmDetailsTable.setHeight("200px");
+        germplasmDetailsTable.setWidth("700px");
+        addComponent(germplasmDetailsTable, "top:160px;left:20px");
+        
+        pedigreeOptionsLabel = new Label();
+        addComponent(pedigreeOptionsLabel, "top:380px;left:20px");
+        
+        pedigreeOptionGroup = new OptionGroup();
+        pedigreeOptionGroup.addItem(1);
+        pedigreeOptionGroup.addItem(2);
+        pedigreeOptionGroup.addItem(3);
+        pedigreeOptionGroup.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
+        pedigreeOptionGroup.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
+        pedigreeOptionGroup.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+        pedigreeOptionGroup.select(1);
+        pedigreeOptionGroup.setNullSelectionAllowed(false);
+        addComponent(pedigreeOptionGroup, "top:390px;left:20px");
+        
+        GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
+        
+        backButton = new Button();
+        backButton.setData(BACK_BUTTON_ID);
+        backButton.addListener(clickListener);
+        addComponent(backButton, "top:450px;left:600px");
+        
+        nextButton = new Button();
+        nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.addListener(clickListener);
+        addComponent(nextButton, "top:450px;left:670px");
+    }
+    
+    @Override
+    public void attach() {
+        super.attach();
+        updateLabels();
+    }
+    
+    @Override
+    public void updateLabels() {
+        messageSource.setCaption(breedingMethodLabel, Message.GERMPLASM_BREEDING_METHOD_LABEL);
+        messageSource.setCaption(germplasmDateLabel, Message.GERMPLASM_DATE_LABEL);
+        messageSource.setCaption(locationLabel, Message.GERMPLASM_LOCATION_LABEL);
+        messageSource.setCaption(nameTypeLabel, Message.GERMPLASM_NAME_TYPE_LABEL);
+        messageSource.setCaption(germplasmDetailsLabel, Message.GERMPLASM_DETAILS_LABEL);
+        messageSource.setCaption(pedigreeOptionsLabel, Message.PEDIGREE_OPTIONS_LABEL);
+        messageSource.setCaption(backButton, Message.BACK);
+        messageSource.setCaption(nextButton, Message.NEXT);
+    }
+    
+    public void nextButtonClickAction(){
+        if(this.nextScreen != null){
+            this.accordion.setSelectedTab(this.nextScreen);
+        } else {
+            this.nextButton.setEnabled(false);
+        }
+    }
+    
+    public void backButtonClickAction(){
+        if(this.previousScreen != null){
+            this.accordion.setSelectedTab(previousScreen);
+        } else{
+            this.backButton.setEnabled(false);
+        }
+    }
+}
