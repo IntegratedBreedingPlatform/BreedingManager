@@ -33,6 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.hibernate.type.ListType;
 
 
 import com.vaadin.ui.TabSheet;
@@ -144,7 +145,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 	        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
 	        		                                      workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
 	        		                                      "Saved a germplasm list.", 
-	        		                                      "Used germplasm browser to save a list - " + GIDListString,
+	        		                                      "Saved list - "+listName + " with type - "+ type,
 	        		                                      user,
 	        		                                      new Date());
 	        
