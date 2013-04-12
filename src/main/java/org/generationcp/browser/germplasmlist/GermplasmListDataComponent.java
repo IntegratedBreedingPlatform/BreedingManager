@@ -277,12 +277,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 		String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
 
-		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListManager, germplasmListId);
+		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
 
 		try {
 			listExporter.exportGermplasmListExcel(tempFileName);
 			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-			fileDownloadResource.setFilename("export.xls");
+			fileDownloadResource.setFilename(listName + ".xls");
 
 			Window downloadWindow = new Window();
 			downloadWindow.setWidth(0);
@@ -290,8 +290,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			downloadWindow.open(fileDownloadResource);
 			this.getWindow().addWindow(downloadWindow);
 
-			//            File tempFile = new File(tempFileName);
-			//            tempFile.delete();
+			//TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+		        //File tempFile = new File(tempFileName);
+		        //tempFile.delete();
 		} catch (GermplasmListExporterException e) {
 			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
 		} 
