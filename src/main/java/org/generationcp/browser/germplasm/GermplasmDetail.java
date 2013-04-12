@@ -28,9 +28,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -54,6 +60,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private static final int ELEVEN_TAB = 11;
 	private static final int TWELVE_TAB = 12;
 	public final static String VIEW_PEDIGREE_GRAPH_ID = "View Pedigree Graph";
+	public final static String INCLUDE_DERIVATIVE_LINES = "Include Derivative Lines";
+	public final static String REFRESH_BUTTON_ID = "Refresh";
 	private GermplasmIndexContainer dataIndexContainer;
 	private GermplasmQueries qQuery;
 	private GermplasmDetailModel gDetailModel;
@@ -75,6 +83,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	private GermplasmIndexContainer dataResultIndexContainer;
 	private boolean fromUrl;				//this is true if this component is created by accessing the Germplasm Details page directly from the URL
 
+	private GermplasmPedigreeTreeComponent germplasmPedigreeTreeComponent;
+	private CheckBox pedigreeDerivativeCheckbox;
+	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
@@ -127,7 +138,33 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 					btnViewPedigreeGraph.setData(VIEW_PEDIGREE_GRAPH_ID);
 					btnViewPedigreeGraph.addListener(new GermplasmButtonClickListener(this));
 					layoutPedigreeTree.addComponent(btnViewPedigreeGraph);
-                    layoutPedigreeTree.addComponent(new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet));
+					
+					HorizontalLayout derivativeHorizontalLayout = new HorizontalLayout();
+					derivativeHorizontalLayout.setMargin(true);
+					
+					pedigreeDerivativeCheckbox = new CheckBox();
+					pedigreeDerivativeCheckbox.setCaption("Include Derivative Lines");
+					pedigreeDerivativeCheckbox.setData(INCLUDE_DERIVATIVE_LINES);
+					//pedigreeDerivativeCheckbox.addListener(new GermplasmButtonClickListener(this));
+					//pedigreeDerivativeCheckbox.addListener(new Button.ClickListener(){
+					//	private static final long serialVersionUID = 1L;
+					//	@Override
+					//	public void buttonClick(ClickEvent event) {
+					//		System.out.println("DEBUG - event fired, value:"+pedigreeDerivativeCheckbox.getValue());
+					//		refreshPedigreeTree();							
+					//	}
+					//});
+					derivativeHorizontalLayout.addComponent(pedigreeDerivativeCheckbox);
+					
+					Button refreshButton = new Button("Apply");
+					refreshButton.setData(REFRESH_BUTTON_ID);
+					refreshButton.addListener(new GermplasmButtonClickListener(this));
+					derivativeHorizontalLayout.addComponent(refreshButton);
+					
+					layoutPedigreeTree.addComponent(derivativeHorizontalLayout);
+					
+					germplasmPedigreeTreeComponent = new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, (Boolean) pedigreeDerivativeCheckbox.getValue());
+                    layoutPedigreeTree.addComponent(germplasmPedigreeTreeComponent);
 				}
 			} else if (((VerticalLayout) tab.getComponent()).getData().equals(SIX_TAB)) {
 				if (layoutGermplasmList.getComponentCount() == 0) {
@@ -265,4 +302,13 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	        }
 	    }
 
+	 public void refreshPedigreeTree() {
+		 System.out.println("DEBUG - checkbox value:"+pedigreeDerivativeCheckbox.getValue());
+		 if(germplasmPedigreeTreeComponent != null){
+			 layoutPedigreeTree.removeComponent(germplasmPedigreeTreeComponent);
+		 }
+		 germplasmPedigreeTreeComponent = new GermplasmPedigreeTreeComponent(gid, qQuery, dataResultIndexContainer, mainLayout, tabSheet, (Boolean) pedigreeDerivativeCheckbox.getValue());
+         layoutPedigreeTree.addComponent(germplasmPedigreeTreeComponent);
+	 }
+	 
 }

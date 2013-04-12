@@ -44,6 +44,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     private VerticalLayout mainLayout;
     private TabSheet tabSheet;
     private GermplasmIndexContainer dataIndexContainer;
+    private Boolean includeDerivativeLines;
     @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
 
@@ -60,6 +61,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         this.qQuery = qQuery;
         this.dataIndexContainer = dataResultIndexContainer;
         // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
+        this.includeDerivativeLines = false;
 
         this.setSizeFull();
         germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1); // throws QueryException
@@ -80,6 +82,38 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         });
     }
 
+    public GermplasmPedigreeTreeComponent(int gid, GermplasmQueries qQuery, GermplasmIndexContainer dataResultIndexContainer,
+            VerticalLayout mainLayout, TabSheet tabSheet, Boolean includeDerivativeLines) throws InternationalizableException {
+
+        super();
+
+        this.mainLayout = mainLayout;
+        this.tabSheet = tabSheet;
+        this.qQuery = qQuery;
+        this.dataIndexContainer = dataResultIndexContainer;
+        // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
+        this.includeDerivativeLines = includeDerivativeLines;
+
+        this.setSizeFull();
+        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1, includeDerivativeLines); // throws QueryException
+        addNode(germplasmPedigreeTree.getRoot(), 1);
+        this.setImmediate(false);
+
+        this.addListener(new GermplasmItemClickListener(this));
+        this.addListener(new GermplasmTreeExpandListener(this));
+
+        this.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+            private static final long serialVersionUID = 3442425534732855473L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return messageSource.getMessage(Message.CLICK_TO_VIEW_GERMPLASM_DETAILS);
+            }
+        });
+    }
+    
+    
     private void addNode(GermplasmPedigreeTreeNode node, int level) {
         if (level == 1) {
             String leafNodeLabel = node.getGermplasm().getPreferredName().getNval() + "(" + node.getGermplasm().getGid() + ")";
@@ -113,7 +147,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     }
 
     public void pedigreeTreeExpandAction(int gid) throws InternationalizableException {
-        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 2);
+        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 2, includeDerivativeLines);
         addNode(germplasmPedigreeTree.getRoot(), 2);
 
     }

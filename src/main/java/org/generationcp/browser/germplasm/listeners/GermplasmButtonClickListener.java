@@ -167,6 +167,11 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+            
+        } else if (source instanceof GermplasmDetail
+                && event.getButton().getData().equals(GermplasmDetail.REFRESH_BUTTON_ID)) {
+            ((GermplasmDetail) source).refreshPedigreeTree();
+            
         } else {
             LOG.error("GermplasmButtonClickListener: Error with buttonClick action. Source not identified.");
         }
