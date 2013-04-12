@@ -89,6 +89,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     
     @Autowired
     private TraitDataManager traitDataManager;
+
+    private GermplasmListBrowserMain germplasmListBrowserMain;
     
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -208,7 +210,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 germplasmListBrowserWindow.setName("germplasmlist");
                 germplasmListBrowserWindow.setSizeUndefined();
                 try {
-                    germplasmListBrowserWindow.addComponent(new GermplasmListBrowserMain());
+                	germplasmListBrowserMain = new GermplasmListBrowserMain(this);
+                    germplasmListBrowserWindow.addComponent(germplasmListBrowserMain);
                     this.addWindow(germplasmListBrowserWindow);
                     return germplasmListBrowserWindow;
                 } catch (InternationalizableException e) {
@@ -266,7 +269,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      int listId = Integer.parseInt(gListIdPart);
                      Window germplasmListDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASMLIST_DETAILS_TEXT) + " " + listId);  // "Germplasm List Details"
                      germplasmListDetailsWindow.setSizeUndefined();
-                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(listId,null,0,true));
+                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(this,listId,null,0,true));
                      this.addWindow(germplasmListDetailsWindow);
                      return germplasmListDetailsWindow;
                  } catch (Exception ex) {
@@ -312,7 +315,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
             }
         } else if (source.getSelectedTab() == rootLayoutForGermplasmListBrowser) {
             if (rootLayoutForGermplasmListBrowser.getComponentCount() == 0) {
-                rootLayoutForGermplasmListBrowser.addComponent(new GermplasmListBrowserMain());
+            	germplasmListBrowserMain = new GermplasmListBrowserMain(this);
+                rootLayoutForGermplasmListBrowser.addComponent(germplasmListBrowserMain);
             }
         }
     }
@@ -367,5 +371,9 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         synchronized (this) {
             HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
         }
+    }
+    
+    public GermplasmListBrowserMain getGermplasmListBrowserMain(){
+    	return germplasmListBrowserMain;
     }
 }

@@ -12,17 +12,25 @@
 
 package org.generationcp.browser.germplasmlist.listeners;
 
+
 import org.generationcp.browser.application.WelcomeTab;
+import org.generationcp.browser.germplasmlist.GermplasmListDetailComponent;
 import org.generationcp.browser.germplasmlist.GermplasmListDataComponent;
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Window;
 
 public class GermplasmListButtonClickListener implements Button.ClickListener {
 
@@ -30,11 +38,18 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     private static final long serialVersionUID = 2185217915388685523L;
 
     private Layout source;
+    private GermplasmList germplasmList = null;
 
     public GermplasmListButtonClickListener(Layout source) {
         this.source = source;
     }
-
+    
+    public GermplasmListButtonClickListener(Layout source, GermplasmList germplasmList) {
+        this.source = source;
+        this.germplasmList = germplasmList;	
+    }
+    
+    
     @Override
     public void buttonClick(ClickEvent event) {
         
@@ -45,6 +60,26 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(GermplasmListTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof GermplasmListTreeComponent)) {
             ((GermplasmListTreeComponent) source).createTree();
+            
+        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.LOCK_BUTTON_ID) 
+        		&& (source instanceof GermplasmListDetailComponent)) { // "Lock Germplasm List"
+        	((GermplasmListDetailComponent) source).lockGermplasmList();
+
+        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.UNLOCK_BUTTON_ID) 
+        		&& (source instanceof GermplasmListDetailComponent)) { // "Unlock Germplasm List"
+        	((GermplasmListDetailComponent) source).unlockGermplasmList();        	
+        	
+        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.DELETE_BUTTON_ID)
+        		&& (source instanceof GermplasmListDetailComponent)) { // "Delete Germplasm List"
+        	((GermplasmListDetailComponent) source).deleteGermplasmList();
+
+        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.CONFIRM_DELETE_BUTTON_ID)
+        		&& (source instanceof GermplasmListDetailComponent)) { // "Yes"
+        	((GermplasmListDetailComponent) source).deleteGermplasmListConfirmed();
+
+        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.CANCEL_DELETE_BUTTON_ID)
+        		&& (source instanceof GermplasmListDetailComponent)) { // "Yes"
+        	((GermplasmListDetailComponent) source).closeConfirmationWindow();
             
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.SORTING_BUTTON_ID) // "Save Sorting"
                 && (source instanceof GermplasmListDataComponent)) {
@@ -73,7 +108,9 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
+
         } else {
+        	System.out.println("DEBUG - button pressed is '" + event.getButton().getData() + "'");
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
     }

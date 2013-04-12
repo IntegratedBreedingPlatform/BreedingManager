@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.germplasmlist;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -35,12 +36,20 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
     private TabSheet tabSheetGermplasmListDatabaseInstance;
+    private GermplasmStudyBrowserApplication germplasmStudyBrowserApplication;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
+    private GermplasmListTreeComponent localGermplasmListTreeComponent;
+    private GermplasmListTreeComponent centralGermplasmListTreeComponent;
+    
     public GermplasmListBrowserMain() {
     	
+    }
+    
+    public GermplasmListBrowserMain(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication) {
+    	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
     }
     
     @Override
@@ -66,8 +75,12 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
         tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
         tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabCentralInstance);
-        tabCentralInstance.addComponent(new GermplasmListTreeComponent(mainLayout, Database.CENTRAL));
-        tabLocalInstance.addComponent(new GermplasmListTreeComponent(mainLayout, Database.LOCAL));
+        
+        centralGermplasmListTreeComponent = new GermplasmListTreeComponent(mainLayout, Database.CENTRAL);
+        localGermplasmListTreeComponent = new GermplasmListTreeComponent(this,mainLayout, Database.LOCAL);
+        
+        tabCentralInstance.addComponent(centralGermplasmListTreeComponent);
+        tabLocalInstance.addComponent(localGermplasmListTreeComponent);
 
         mainLayout.addComponent(tabSheetGermplasmListDatabaseInstance);
         mainLayout.setExpandRatio(tabSheetGermplasmListDatabaseInstance, .40f);
@@ -87,4 +100,15 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
         messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
     }
     
+    public GermplasmStudyBrowserApplication getGermplasmStudyBrowserApplication() {
+    	return germplasmStudyBrowserApplication;
+    }
+    
+    public GermplasmListTreeComponent getCentralGermplasmListTreeComponent() {
+    	return centralGermplasmListTreeComponent;
+    }
+    
+    public GermplasmListTreeComponent getLocalGermplasmListTreeComponent() {
+    	return localGermplasmListTreeComponent;
+    }
 }

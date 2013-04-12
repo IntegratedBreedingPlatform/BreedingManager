@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListTreeExpandListener;
@@ -70,12 +71,19 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
+    private GermplasmListBrowserMain germplasmListBrowserMain;
     
     public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.database = database;
     }
 
+    public GermplasmListTreeComponent(GermplasmListBrowserMain germplasmListBrowserMain, HorizontalLayout germplasmListBrowserMainLayout, Database database) {
+    	this.germplasmListBrowserMain = germplasmListBrowserMain;
+        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
+        this.database = database;
+    }    
+    
     // Called by GermplasmListButtonClickListener
     public void createTree() {
         this.removeComponent(germplasmListTree);
@@ -156,13 +164,13 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         }
     }
 
-    private void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
+    public void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
         VerticalLayout layout = new VerticalLayout();
 
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
         
         if (!Util.isTabExist(tabSheetGermplasmList, germplasmList.getName())) {
-            layout.addComponent(new GermplasmListAccordionMenu(germplasmListId,germplasmList.getName(),germplasmList.getUserId(), false));
+            layout.addComponent(new GermplasmListAccordionMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getUserId(), false));
             Tab tab = tabSheetGermplasmList.addTab(layout, germplasmList.getName(), null);
             tab.setClosable(true);
 
@@ -243,6 +251,10 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     @Override
     public void updateLabels() {
         messageSource.setCaption(refreshButton, Message.REFRESH_LABEL);
+    }
+    
+    public TabSheet getTabSheetGermplasmList() {
+    	return tabSheetGermplasmList;
     }
 
 }

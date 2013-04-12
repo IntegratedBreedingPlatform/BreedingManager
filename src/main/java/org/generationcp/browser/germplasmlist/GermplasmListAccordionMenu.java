@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.germplasmlist;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListSelectedTabChangeListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -49,6 +50,9 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     
     private boolean fromUrl;	//this is true if this component is created by accessing the Germplasm List Details page directly from the URL
    
+    private GermplasmStudyBrowserApplication germplasmStudyBrowserApplication;
+    private GermplasmListTreeComponent germplasmListTreeComponent;
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -57,12 +61,31 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 	
 
     public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
+    	System.out.println("DEBUG | GermplasmListAccordionMenu - old constructor was invoked.");
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.userId=userId;
     }
 
+    public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName,int userId, boolean fromUrl) {
+    	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
+    	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
+        this.germplasmListId = germplasmListId;
+        this.fromUrl = fromUrl;
+        this.listName=listName;
+        this.userId=userId;
+    }
+    
+    public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int userId, boolean fromUrl) {
+    	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
+    	this.germplasmListTreeComponent = germplasmListTreeComponent;
+        this.germplasmListId = germplasmListId;
+        this.fromUrl = fromUrl;
+        this.listName=listName;
+        this.userId=userId;
+    }    
+    
     public void selectedTabChangeAction() throws InternationalizableException{
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
@@ -86,7 +109,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     public void afterPropertiesSet() {
         this.setSizeFull();
         
-        germplasmListDetailComponent = new GermplasmListDetailComponent(germplasmListManager, germplasmListId);
+        germplasmListDetailComponent = new GermplasmListDetailComponent(this, germplasmListManager, germplasmListId);
         germplasmListDetailComponent.setData(LIST_DETAILS);
 
         layoutListData = new VerticalLayout();
@@ -111,5 +134,16 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Override
     public void updateLabels() {
     }
+    
+    public GermplasmListDetailComponent getGermplasmListDetailComponent() {
+    	return germplasmListDetailComponent;
+    }
 
+    public GermplasmStudyBrowserApplication getGermplasmStudyBrowserApplication() {
+    	return germplasmStudyBrowserApplication;
+    }
+
+    public GermplasmListTreeComponent getGermplasmListTreeComponent() {
+    	return germplasmListTreeComponent;
+    }
 }
