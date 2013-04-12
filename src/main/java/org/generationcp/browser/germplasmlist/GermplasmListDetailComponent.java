@@ -13,7 +13,6 @@
 package org.generationcp.browser.germplasmlist;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
@@ -31,12 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.terminal.Paintable;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
@@ -64,13 +61,10 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     private Button lockButton;
     private Button unlockButton;
     private Button deleteButton;
-    Window confirmDeleteWindow;
     
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
     public static String DELETE_BUTTON_ID = "Delete Germplasm List";
-    public static String CONFIRM_DELETE_BUTTON_ID = "Yes";
-    public static String CANCEL_DELETE_BUTTON_ID = "No";
 
     private GermplasmListManager germplasmListManager;
     private int germplasmListId;
@@ -127,8 +121,18 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         addComponent(listCreationDate, 2, 3);
         addComponent(listType, 2, 4);
         addComponent(listStatus, 2, 5);
-                
-        if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
+        
+		Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+		workbenchDataManager.getWorkbenchRuntimeData();
+		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
+        
+		System.out.println("DEBUG - IBDBUserId:"+IBDBUserId);
+		System.out.println("DEBUG - germplasmListUID:"+germplasmList.getUserId());
+		System.out.println("DEBUG - germplasmListId:"+germplasmList.getId());
+		
+        //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
+		if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
             if(germplasmList.getStatus()>=100){
             	unlockButton = new Button("Unlock");
             	unlockButton.setData(UNLOCK_BUTTON_ID);
@@ -148,7 +152,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
             }
 
         }
-    }
+    } 
     
     @Override
     public void attach() {
@@ -205,6 +209,13 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 			try {
 				germplasmListManager.updateGermplasmList(germplasmList);
 
+	        	Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+        		germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+	        	
+	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+	        	tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+	        	
 				User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                         workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
@@ -213,53 +224,25 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
                         user,
                         new Date());
 	        	workbenchDataManager.addProjectActivity(projAct);
-
-	        	Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
-	        	
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-	        	tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
-	        	
-	        	//Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	//tab.getComponent().requestRepaint();
-	        	
-	        	//getWindow().getWindow().showNotification("Germplasm List", "Successfully Unlocked", Notification.TYPE_WARNING_MESSAGE);
 	        } catch (MiddlewareQueryException e) {
 	        	e.printStackTrace();
 			}
 		}
-		
-    	deleteButton.setEnabled(false);    	    	
     }    
     
     
     @SuppressWarnings("deprecation")
 	public void deleteGermplasmList() {
-    	// confirmation window
-    	confirmDeleteWindow = new Window("Confirm Delete");
-    	confirmDeleteWindow.setWidth(280);
-    	confirmDeleteWindow.setHeight(140);
-    	confirmDeleteWindow.center();
+    	ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
+					private static final long serialVersionUID = 1L;
+
+			public void onClose(ConfirmDialog dialog) {
+				if (dialog.isConfirmed()) {
+					deleteGermplasmListConfirmed();
+				}
+    		}
+    	});
     	
-    	Label deleteConfirmationLabel = new Label(); 
-    	deleteConfirmationLabel.setCaption("Do you want to delete the list " + germplasmList.getName() + "?");
-    	confirmDeleteWindow.addComponent(deleteConfirmationLabel);
-    	
-    	HorizontalLayout actionsLayout = new HorizontalLayout();
-    	
-    	Button confirmButton = new Button(CONFIRM_DELETE_BUTTON_ID);
-    	confirmButton.setData(CONFIRM_DELETE_BUTTON_ID);
-    	confirmButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-    	actionsLayout.addComponent(confirmButton);
-    	
-    	Button cancelButton = new Button(CANCEL_DELETE_BUTTON_ID);    	
-    	cancelButton.setData(CANCEL_DELETE_BUTTON_ID);
-    	cancelButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-    	actionsLayout.addComponent(cancelButton);    	
-    	
-    	confirmDeleteWindow.addComponent(actionsLayout);
-    	getWindow().addWindow(confirmDeleteWindow);
     }
     
     public void deleteGermplasmListConfirmed() {
@@ -279,7 +262,6 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 	        	deleteButton.setEnabled(false);
 	        	getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
 	        	//Close confirmation window
-	        	closeConfirmationWindow();
 	        	
 	        	//Re-use refresh action on GermplasmListTreeComponent
 	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createTree();
@@ -296,9 +278,4 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 			}
 		}
     }				
-    
-    public void closeConfirmationWindow() {
-    	getWindow().removeWindow(confirmDeleteWindow);
-    }
-    
 }

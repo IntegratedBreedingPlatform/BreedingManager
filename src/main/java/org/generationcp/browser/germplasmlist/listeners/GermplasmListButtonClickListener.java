@@ -73,14 +73,6 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         		&& (source instanceof GermplasmListDetailComponent)) { // "Delete Germplasm List"
         	((GermplasmListDetailComponent) source).deleteGermplasmList();
 
-        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.CONFIRM_DELETE_BUTTON_ID)
-        		&& (source instanceof GermplasmListDetailComponent)) { // "Yes"
-        	((GermplasmListDetailComponent) source).deleteGermplasmListConfirmed();
-
-        } else if (event.getButton().getData().equals(GermplasmListDetailComponent.CANCEL_DELETE_BUTTON_ID)
-        		&& (source instanceof GermplasmListDetailComponent)) { // "Yes"
-        	((GermplasmListDetailComponent) source).closeConfirmationWindow();
-            
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.SORTING_BUTTON_ID) // "Save Sorting"
                 && (source instanceof GermplasmListDataComponent)) {
             try {
