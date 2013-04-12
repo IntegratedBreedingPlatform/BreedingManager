@@ -300,7 +300,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 	public void deleteListButtonClickAction()  throws InternationalizableException {
 
-		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you want to delete the list entries?",
+		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Do you want to delete the list entries?",
 				"Ok", "Cancel", new ConfirmDialog.Listener() {
 
 			public void onClose(ConfirmDialog dialog) {
