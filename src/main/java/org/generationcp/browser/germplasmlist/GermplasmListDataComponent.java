@@ -46,6 +46,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -84,10 +85,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private Button deleteListEntriesButton;
 	private String listEntriesDeleted="";
 	private int userId;
-
+	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_DELETE = new Action("Delete selected entries");
-	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_DELETE };
-
+	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
+	
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
 
 	@Autowired
@@ -133,6 +134,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				public void handleAction(Action action, Object sender, Object target) {
 					if (ACTION_DELETE == action) {
 						deleteListButtonClickAction();
+					} else if (ACTION_SELECT_ALL == action) {
+						listDataTable.setValue(listDataTable.getItemIds());
 					}
 				}
 			});
@@ -173,7 +176,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				}
 			});
 			buttonArea.addComponent(selectAllButton);
-
+			
 			exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
 			exportListButton.setData(EXPORT_BUTTON_ID);
 			buttonArea.addComponent(exportListButton);
