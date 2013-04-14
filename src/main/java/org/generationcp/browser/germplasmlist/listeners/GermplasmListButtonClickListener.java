@@ -14,23 +14,19 @@ package org.generationcp.browser.germplasmlist.listeners;
 
 
 import org.generationcp.browser.application.WelcomeTab;
-import org.generationcp.browser.germplasmlist.GermplasmListDetailComponent;
+import org.generationcp.browser.germplasmlist.GermplasmListCopyToNewListDialog;
 import org.generationcp.browser.germplasmlist.GermplasmListDataComponent;
+import org.generationcp.browser.germplasmlist.GermplasmListDetailComponent;
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Window;
 
 public class GermplasmListButtonClickListener implements Button.ClickListener {
 
@@ -95,6 +91,33 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 && (source instanceof GermplasmListDataComponent)) {
             try {
                 ((GermplasmListDataComponent) source).exportListAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(GermplasmListDataComponent.COPY_TO_NEW_LIST_BUTTON_ID) // "Copy to New List"
+                && (source instanceof GermplasmListDataComponent)) {
+            try {
+                ((GermplasmListDataComponent) source).copyToNewListAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(GermplasmListCopyToNewListDialog.SAVE_BUTTON_ID) // "Save to New List"
+                && (source instanceof GermplasmListCopyToNewListDialog)) {
+            try {
+                ((GermplasmListCopyToNewListDialog) source).saveGermplasmListButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(GermplasmListCopyToNewListDialog.CANCEL_BUTTON_ID) // "Save to New List"
+                && (source instanceof GermplasmListCopyToNewListDialog)) {
+            try {
+                ((GermplasmListCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();

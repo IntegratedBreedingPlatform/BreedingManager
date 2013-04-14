@@ -46,7 +46,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -63,6 +62,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private static final long serialVersionUID = -6487623269938610915L;
 
 	private static final String GID = "gid";
+	private static final String GID_VALUE = "gidValue";
 	private static final String ENTRY_ID = "entryId";
 	private static final String ENTRY_CODE = "entryCode";
 	private static final String SEED_SOURCE = "seedSource";
@@ -73,21 +73,24 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
 	public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
 	public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
+	public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
 
 	private Table listDataTable;
 	private Button selectAllButton;
 	private Button saveSortingButton;
 	private Button exportListButton;
+	private Button copyToNewListButton;
 
 	private int germplasmListId;
 	private String listName;
 	private List<GermplasmListData> listDatas;
 	private Button deleteListEntriesButton;
-	private String listEntriesDeleted="";
+	private String designationOfListEntriesDeleted="";
 	private int userId;
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_DELETE = new Action("Delete selected entries");
 	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
+	private Window germplasmListCopyToNewListDialog;
 	
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
 
@@ -99,7 +102,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-
+	
 	public GermplasmListDataComponent(int germplasmListId,String listName,int userId, boolean fromUrl){
 		this.germplasmListId = germplasmListId;
 		this.fromUrl = fromUrl;
@@ -147,13 +150,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				listDataTable.addContainerProperty(GID, Integer.class, null);
 			}
 
+			listDataTable.addContainerProperty(GID_VALUE, Integer.class, null);
 			listDataTable.addContainerProperty(ENTRY_ID, Integer.class, null);
 			listDataTable.addContainerProperty(ENTRY_CODE, String.class, null);
 			listDataTable.addContainerProperty(SEED_SOURCE, String.class, null);
 			listDataTable.addContainerProperty(DESIGNATION, String.class, null);
 			listDataTable.addContainerProperty(GROUP_NAME, String.class, null);
 			listDataTable.addContainerProperty(STATUS, String.class, null);
-
+		
 			messageSource.setColumnHeader(listDataTable, GID, Message.LISTDATA_GID_HEADER);
 			messageSource.setColumnHeader(listDataTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
 			messageSource.setColumnHeader(listDataTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
@@ -161,9 +165,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			messageSource.setColumnHeader(listDataTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
 			messageSource.setColumnHeader(listDataTable, GROUP_NAME, Message.LISTDATA_GROUPNAME_HEADER);
 			messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
-
+			
 			populateTable();
-
+			
 			setSpacing(true);
 			addComponent(listDataTable);
 
@@ -180,6 +184,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
 			exportListButton.setData(EXPORT_BUTTON_ID);
 			buttonArea.addComponent(exportListButton);
+			
+			copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
+			copyToNewListButton.setData(COPY_TO_NEW_LIST_BUTTON_ID);
+			buttonArea.addComponent(copyToNewListButton);
 
 			// Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID).
 			// and when not accessed directly from URL or popup window
@@ -221,12 +229,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			}
 
 			listDataTable.addItem(new Object[] {
-					gidObject, data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
+					gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
 					data.getDesignation(), data.getGroupName(), data.getStatusString()
 			}, data.getId());
 		}
 
 		listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
+		listDataTable.setVisibleColumns(new String[] {GID,ENTRY_ID,ENTRY_CODE,SEED_SOURCE,DESIGNATION,GROUP_NAME,STATUS});
 	}
 
 
@@ -303,7 +312,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 	public void deleteListButtonClickAction()  throws InternationalizableException {
 
-		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Do you want to delete the list entries?",
+		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
 				"Ok", "Cancel", new ConfirmDialog.Listener() {
 
 			public void onClose(ConfirmDialog dialog) {
@@ -312,22 +321,22 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 					try {
 						if(workbenchDataManager.getWorkbenchRuntimeData().getUserId() == userId) {
 							Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
-							listEntriesDeleted="";
+							designationOfListEntriesDeleted="";
 							for (final Object itemId : selectedIds) {
-								Property p = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
+								Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
+								Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
 								try {
-									int entryId=Integer.valueOf(p.getValue().toString());
-									listEntriesDeleted+=String.valueOf(entryId)+",";
+									int entryId=Integer.valueOf(pEntryId.getValue().toString());
+									designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
 									germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
+									listDataTable.removeItem(itemId);
 								} catch (MiddlewareQueryException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
-							listEntriesDeleted=listEntriesDeleted.substring(0,listEntriesDeleted.length()-1);
-							listDataTable.removeAllItems();
+							designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
 							try {
-								populateTable();
 								logDeletedListEntriesToWorkbenchProjectActivity();
 							} catch (MiddlewareQueryException e) {
 								// TODO Auto-generated catch block
@@ -359,7 +368,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
 				workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
 				"Deleted list entries.", 
-				"Deleted the following list entries " + listEntriesDeleted + " from the list id " + germplasmListId + " - " + listName,user,new Date());
+				"Deleted the following list entries " + designationOfListEntriesDeleted + " from the list id " + germplasmListId + " - " + listName,user,new Date());
 		try {
 			workbenchDataManager.addProjectActivity(projAct);
 		} catch (MiddlewareQueryException e) {
@@ -371,6 +380,16 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		MessageNotifier.showMessage(this.getWindow(), 
 				messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES), 
 				messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES) + " "+listName);
+	}
+
+	public void copyToNewListAction() {
+		germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+		germplasmListCopyToNewListDialog.setModal(true);
+		germplasmListCopyToNewListDialog.setWidth(700);
+		germplasmListCopyToNewListDialog.setHeight(350);
+		germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable));
+		this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+	
 	}
 
 
