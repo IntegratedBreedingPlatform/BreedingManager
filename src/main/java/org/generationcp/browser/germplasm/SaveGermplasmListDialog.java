@@ -206,6 +206,9 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
             saveGermplasmAction.addGermplasListNameAndData(listName, listNameId, this.tabSheet, txtDescription.getValue().toString(),
                     selectType.getValue().toString());
             closeSavingGermplasmListDialog();
+            // display notification message
+            MessageNotifier.showMessage(this.mainWindow, messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL),
+                    messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_SUCCESS));
         }
     }
 
