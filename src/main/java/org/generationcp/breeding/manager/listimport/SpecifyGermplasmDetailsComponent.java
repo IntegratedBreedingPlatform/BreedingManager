@@ -1,5 +1,9 @@
 package org.generationcp.breeding.manager.listimport;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -10,6 +14,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property.ConversionException;
+import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -25,6 +32,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     private static final long serialVersionUID = 2762965368037453497L;
     private final static Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
+    
+    private GermplasmImportMain source;
     
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
@@ -56,7 +65,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public SpecifyGermplasmDetailsComponent(Accordion accordion){
+    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
+    	this.source = source;
         this.accordion = accordion;
     }
     
@@ -175,5 +185,30 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         } else{
             this.backButton.setEnabled(false);
         }
+    }
+    
+    public GermplasmImportMain getSource() {
+    	return source;
+    }
+    
+    public void setGermplasmBreedingMethod(String breedingMethod){
+    	breedingMethodComboBox.setNullSelectionAllowed(false);
+    	breedingMethodComboBox.addItem(breedingMethod);
+    	breedingMethodComboBox.setValue(breedingMethod);
+    }
+    public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException{
+    	germplasmDateField.setValue(germplasmDate);
+    }
+    public void setGermplasmLocation(String germplasmLocation){
+    	locationComboBox.setNullSelectionAllowed(false);
+    	locationComboBox.addItem(germplasmLocation);
+    	locationComboBox.setValue(germplasmLocation);
+    }
+    public void setGermplasmListType(String germplasmListType){
+    	nameTypeComboBox.setNullSelectionAllowed(false);
+    	nameTypeComboBox.addItem(germplasmListType);
+    	nameTypeComboBox.setValue(germplasmListType);
+    }
+    public void setGermplasmListDataTable(){
     }
 }

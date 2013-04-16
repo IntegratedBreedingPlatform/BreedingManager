@@ -25,6 +25,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private static final long serialVersionUID = -2761199444687629112L;
     private final static Logger LOG = LoggerFactory.getLogger(SaveGermplasmListComponent.class);
     
+    private GermplasmImportMain source;
+    
     public static final String BACK_BUTTON_ID = "back button";
     
     private Label listNameLabel;
@@ -48,7 +50,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public SaveGermplasmListComponent(Accordion accordion){
+    public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
+    	this.source = source;
         this.accordion = accordion;
     }
     
@@ -124,4 +127,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
             this.backButton.setEnabled(false);
         }
     }
+    
+    public GermplasmImportMain getSource() {
+    	return source;
+    }    
 }

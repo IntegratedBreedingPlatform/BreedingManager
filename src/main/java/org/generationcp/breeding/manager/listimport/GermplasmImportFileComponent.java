@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,6 +24,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
+    
+    private GermplasmImportMain source;
 
     public static final String NEXT_BUTTON_ID = "next button";
     private Label selectFileLabel;
@@ -34,7 +37,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public GermplasmImportFileComponent(Accordion accordion){
+    public GermplasmImportFileComponent(GermplasmImportMain source, Accordion accordion){
+    	this.source = source;
         this.accordion = accordion;
         this.nextScreen = null;
     }
@@ -54,6 +58,10 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         uploadComponents = new Upload();
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
+        
+	    GermplasmListUploader germplasmListUploader = new GermplasmListUploader(this); 
+	    uploadComponents.setReceiver(germplasmListUploader);
+	    uploadComponents.addListener(germplasmListUploader);        
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
@@ -79,5 +87,17 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         } else {
             this.nextButton.setEnabled(false);
         }
+    }
+    
+    public Accordion getAccordion() {
+    	return accordion;
+    }
+    
+    public Component getNextScreen() {
+    	return nextScreen;
+    }
+    
+    public GermplasmImportMain getSource() {
+    	return source;
     }
 }

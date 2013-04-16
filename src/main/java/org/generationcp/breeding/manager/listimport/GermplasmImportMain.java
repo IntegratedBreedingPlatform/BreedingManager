@@ -22,6 +22,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     private final static String VERSION = "1.1.1.0";
     
+    private GermplasmImportFileComponent wizardScreenOne;
+    private SpecifyGermplasmDetailsComponent wizardScreenTwo;
+    private SaveGermplasmListComponent wizardScreenThree;
+    
     private Label importToolTitle;
     private Accordion accordion;
     
@@ -44,9 +48,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         accordion = new Accordion();
         accordion.setWidth("800px");
         
-        GermplasmImportFileComponent wizardScreenOne = new GermplasmImportFileComponent(accordion);
-        SpecifyGermplasmDetailsComponent wizardScreenTwo = new SpecifyGermplasmDetailsComponent(accordion);
-        SaveGermplasmListComponent wizardScreenThree = new SaveGermplasmListComponent(accordion);
+        wizardScreenOne = new GermplasmImportFileComponent(this, accordion);
+        wizardScreenTwo = new SpecifyGermplasmDetailsComponent(this, accordion);
+        wizardScreenThree = new SaveGermplasmListComponent(this, accordion);
         
         wizardScreenOne.setNextScreen(wizardScreenTwo);
         wizardScreenTwo.setNextScreen(wizardScreenThree);
@@ -70,4 +74,16 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     public void updateLabels() {
         
     }
+    
+    public GermplasmImportFileComponent getWizardScreenOne() {
+    	return wizardScreenOne;
+    }
+    public SpecifyGermplasmDetailsComponent getWizardScreenTwo() {
+    	return wizardScreenTwo;
+    }
+    public SaveGermplasmListComponent getWizardScreenThree() {
+    	return wizardScreenThree;
+    }
+    
+    
 }
