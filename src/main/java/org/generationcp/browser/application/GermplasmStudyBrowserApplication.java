@@ -210,7 +210,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 germplasmListBrowserWindow.setName("germplasmlist");
                 germplasmListBrowserWindow.setSizeUndefined();
                 try {
-                	germplasmListBrowserMain = new GermplasmListBrowserMain(this);
+                	germplasmListBrowserMain = new GermplasmListBrowserMain(this,true);
                     germplasmListBrowserWindow.addComponent(germplasmListBrowserMain);
                     this.addWindow(germplasmListBrowserWindow);
                     return germplasmListBrowserWindow;
@@ -269,7 +269,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      int listId = Integer.parseInt(gListIdPart);
                      Window germplasmListDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASMLIST_DETAILS_TEXT) + " " + listId);  // "Germplasm List Details"
                      germplasmListDetailsWindow.setSizeUndefined();
-                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(this,listId,null,0,true));
+                     germplasmListDetailsWindow.addComponent(new GermplasmListAccordionMenu(this,listId,null,0,true,false));
                      this.addWindow(germplasmListDetailsWindow);
                      return germplasmListDetailsWindow;
                  } catch (Exception ex) {
@@ -315,7 +315,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
             }
         } else if (source.getSelectedTab() == rootLayoutForGermplasmListBrowser) {
             if (rootLayoutForGermplasmListBrowser.getComponentCount() == 0) {
-            	germplasmListBrowserMain = new GermplasmListBrowserMain(this);
+            	germplasmListBrowserMain = new GermplasmListBrowserMain(this,false);
                 rootLayoutForGermplasmListBrowser.addComponent(germplasmListBrowserMain);
             }
         }

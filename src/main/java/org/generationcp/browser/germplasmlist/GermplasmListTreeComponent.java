@@ -72,16 +72,20 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     private SimpleResourceBundleMessageSource messageSource;
 
     private GermplasmListBrowserMain germplasmListBrowserMain;
+
+	private boolean forGermplasmListWindow;
     
-    public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database) {
+    public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.database = database;
+        this.forGermplasmListWindow=forGermplasmListWindow;
     }
 
-    public GermplasmListTreeComponent(GermplasmListBrowserMain germplasmListBrowserMain, HorizontalLayout germplasmListBrowserMainLayout, Database database) {
+    public GermplasmListTreeComponent(GermplasmListBrowserMain germplasmListBrowserMain, HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
     	this.germplasmListBrowserMain = germplasmListBrowserMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.database = database;
+        this.forGermplasmListWindow=forGermplasmListWindow;
     }    
     
     // Called by GermplasmListButtonClickListener
@@ -170,7 +174,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
         
         if (!Util.isTabExist(tabSheetGermplasmList, germplasmList.getName())) {
-            layout.addComponent(new GermplasmListAccordionMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getUserId(), false));
+            layout.addComponent(new GermplasmListAccordionMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getUserId(), false,forGermplasmListWindow));
             Tab tab = tabSheetGermplasmList.addTab(layout, germplasmList.getName(), null);
             tab.setClosable(true);
 

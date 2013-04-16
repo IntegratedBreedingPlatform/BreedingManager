@@ -58,6 +58,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     
     @Autowired
 	private GermplasmListManager germplasmListManager;
+	private boolean forGermplasmListWindow;
 	
 
     public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
@@ -68,22 +69,25 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.userId=userId;
     }
 
-    public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName,int userId, boolean fromUrl) {
+    public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
     	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
     	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.userId=userId;
+        this.forGermplasmListWindow=forGermplasmListWindow;
+        
     }
     
-    public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int userId, boolean fromUrl) {
+    public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
     	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
     	this.germplasmListTreeComponent = germplasmListTreeComponent;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.userId=userId;
+        this.forGermplasmListWindow=forGermplasmListWindow;
     }    
     
     public void selectedTabChangeAction() throws InternationalizableException{
@@ -92,7 +96,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         if (tab.getComponent() instanceof VerticalLayout) {
             if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
                 if (layoutListData.getComponentCount() == 0) {
-                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl));
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }

@@ -91,7 +91,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	static final Action ACTION_DELETE = new Action("Delete selected entries");
 	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
 	private Window germplasmListCopyToNewListDialog;
-	
+
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
 
 	@Autowired
@@ -102,12 +102,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+	private boolean forGermplasmListWindow;
 	
-	public GermplasmListDataComponent(int germplasmListId,String listName,int userId, boolean fromUrl){
+	public GermplasmListDataComponent(int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow){
 		this.germplasmListId = germplasmListId;
 		this.fromUrl = fromUrl;
 		this.listName=listName;
 		this.userId=userId;
+		this.forGermplasmListWindow=forGermplasmListWindow;
 	}
 
 	@Override
@@ -387,8 +389,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		germplasmListCopyToNewListDialog.setModal(true);
 		germplasmListCopyToNewListDialog.setWidth(700);
 		germplasmListCopyToNewListDialog.setHeight(350);
-		germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable));
-		this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+		
+		if(forGermplasmListWindow) {
+			germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), germplasmListCopyToNewListDialog,listName,listDataTable));
+			this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME).addWindow(germplasmListCopyToNewListDialog);
+		} else {
+			germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable));
+			this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+		}
 	
 	}
 
