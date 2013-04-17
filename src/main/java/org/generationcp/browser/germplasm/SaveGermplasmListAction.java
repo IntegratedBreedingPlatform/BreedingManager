@@ -181,33 +181,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
             try {
                 workbenchDataManager.addProjectActivity(projAct);
-                System.out
-                        .println("DEBUG - addProjectActivity invoked, and successful");
-                System.out.println("ProjectActivityId: "
-                        + workbenchDataManager
-                                .getLastOpenedProject(
-                                        workbenchDataManager
-                                                .getWorkbenchRuntimeData()
-                                                .getUserId()).getProjectId()
-                                .toString());
-                System.out.println("Action: Saved a germplasm list.");
-                System.out.println("Description: "
-                        + "Used germplasm browser to save a list - "
-                        + GIDListString);
             } catch (MiddlewareQueryException e) {
                 e.printStackTrace();
-                System.out.println("DEBUG - addProjectActivity FAILED");
-                System.out.println("ProjectActivityId: "
-                        + workbenchDataManager
-                                .getLastOpenedProject(
-                                        workbenchDataManager
-                                                .getWorkbenchRuntimeData()
-                                                .getUserId()).getProjectId()
-                                .toString());
-                System.out.println("Action: Saved a germplasm list.");
-                System.out.println("Description: "
-                        + "Used germplasm browser to save a list - "
-                        + GIDListString);
             }
 
         } catch (MiddlewareQueryException e) {
