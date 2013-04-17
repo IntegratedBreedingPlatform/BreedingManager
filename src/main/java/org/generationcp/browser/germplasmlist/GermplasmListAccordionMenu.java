@@ -62,7 +62,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 	
 
     public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
-    	System.out.println("DEBUG | GermplasmListAccordionMenu - old constructor was invoked.");
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
@@ -70,7 +69,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     }
 
     public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-    	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
     	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
@@ -81,7 +79,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     }
     
     public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-    	System.out.println("DEBUG | GermplasmListAccordionMenu - new one was invoked.");
     	this.germplasmListTreeComponent = germplasmListTreeComponent;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
