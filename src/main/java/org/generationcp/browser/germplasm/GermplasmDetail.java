@@ -145,15 +145,6 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 					pedigreeDerivativeCheckbox = new CheckBox();
 					pedigreeDerivativeCheckbox.setCaption("Include Derivative Lines");
 					pedigreeDerivativeCheckbox.setData(INCLUDE_DERIVATIVE_LINES);
-					//pedigreeDerivativeCheckbox.addListener(new GermplasmButtonClickListener(this));
-					//pedigreeDerivativeCheckbox.addListener(new Button.ClickListener(){
-					//	private static final long serialVersionUID = 1L;
-					//	@Override
-					//	public void buttonClick(ClickEvent event) {
-					//		System.out.println("DEBUG - event fired, value:"+pedigreeDerivativeCheckbox.getValue());
-					//		refreshPedigreeTree();							
-					//	}
-					//});
 					derivativeHorizontalLayout.addComponent(pedigreeDerivativeCheckbox);
 					
 					Button refreshButton = new Button("Apply");
@@ -303,7 +294,6 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
 	    }
 
 	 public void refreshPedigreeTree() {
-		 System.out.println("DEBUG - checkbox value:"+pedigreeDerivativeCheckbox.getValue());
 		 if(germplasmPedigreeTreeComponent != null){
 			 layoutPedigreeTree.removeComponent(germplasmPedigreeTreeComponent);
 		 }
