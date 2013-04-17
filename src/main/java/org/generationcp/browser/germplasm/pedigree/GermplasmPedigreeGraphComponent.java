@@ -118,7 +118,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
 	public void updatePedigreeGraphButtonClickAction() throws FileNotFoundException, URISyntaxException, MiddlewareQueryException {
 
-		//System.out.println("DEBUG ==== value of checkbox: "+pedigreeDerivativeCheckbox.getValue());
 		
 		panelPedigree.removeAllComponents();
 		try {
@@ -144,7 +143,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 			}  
 		});  
 		   
-		System.out.println(Arrays.toString(toBeDeleted));  
 		for(File deletableFile:toBeDeleted){  
 			deletableFile.delete();  
 		}		
