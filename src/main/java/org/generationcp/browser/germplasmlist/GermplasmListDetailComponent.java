@@ -127,10 +127,6 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 		Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
         
-		System.out.println("DEBUG - IBDBUserId:"+IBDBUserId);
-		System.out.println("DEBUG - germplasmListUID:"+germplasmList.getUserId());
-		System.out.println("DEBUG - germplasmListId:"+germplasmList.getId());
-		
         //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
 		if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
             if(germplasmList.getStatus()>=100){
