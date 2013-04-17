@@ -125,7 +125,6 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
             }
 
         } else {
-        	System.out.println("DEBUG - button pressed is '" + event.getButton().getData() + "'");
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
     }
