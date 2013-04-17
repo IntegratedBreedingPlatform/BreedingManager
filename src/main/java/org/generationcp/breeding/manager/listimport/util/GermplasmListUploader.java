@@ -24,9 +24,6 @@ import org.generationcp.breeding.manager.listimport.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.listimport.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.listimport.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.listimport.pojos.ImportedVariate;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
@@ -58,12 +55,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	private Workbook wb;
 	
 	private ImportedGermplasmList importedGermplasmList;
-	
-	@Autowired
-	private GermplasmListManager germplasmListManager;
-	
-	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
 	
 	private Boolean fileIsValid;
 	
@@ -109,13 +100,13 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		} catch (IOException e) {
-			showInvalidFileError();
+			showInvalidFileError(e.getMessage());
 		} catch (ReadOnlyException e) {
 			showInvalidFileTypeError();
 		} catch (ConversionException e) {
 			showInvalidFileTypeError();
 		} catch (OfficeXmlFileException e){
-			showInvalidFileError();
+			showInvalidFileError(e.getMessage());
 		}
     }
 
@@ -146,7 +137,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				desigColumnIsPresent = true;
 		}
 		if(entryColumnIsPresent==false || desigColumnIsPresent==false){
-			showInvalidFileError();
+			showInvalidFileError("ENTRY or DESIG column missing from Observation sheet.");
 			System.out.println("DEBUG | Invalid file on missing ENTRY or DESIG on readSheet2");
 		}
     	
@@ -213,7 +204,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     		|| !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
     		|| !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
     		|| !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")){
-    		showInvalidFileError();
+    		showInvalidFileError("Incorrect headers for conditions.");
     		System.out.println("DEBUG | Invalid file on readConditions header");
     		System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
     	}
@@ -249,7 +240,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         	|| !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
         	|| !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
         	|| !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")) {
-        	showInvalidFileError();
+        	showInvalidFileError("Incorrect headers for factors.");
         	System.out.println("DEBUG | Invalid file on readFactors header");
         }
     	//If file is still valid (after checking headers), proceed
@@ -290,7 +281,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 
     	//If ENTRY or DESIG is not present on Factors, return error
     	if(entryColumnIsPresent == false || desigColumnIsPresent == false){
-    		showInvalidFileError();
+    		showInvalidFileError("There is no ENTRY or DESIG factor.");
     		System.out.println("DEBUG | Invalid file on missing ENTRY or DESIG on readFactors");
     	}
     }
@@ -304,7 +295,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         	|| !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
         	|| !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
         	|| !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")) {
-        	showInvalidFileError();
+        	showInvalidFileError("Incorrect headers for constants.");
         	System.out.println("DEBUG | Invalid file on readConstants header");
         }
     	//If file is still valid (after checking headers), proceed
@@ -334,7 +325,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         	|| !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
         	|| !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
         	|| !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")) {
-        	showInvalidFileError();
+        	showInvalidFileError("Incorrect headers for variates.");
         	System.out.println("DEBUG | Invalid file on readVariates header");
         }
     	//If file is still valid (after checking headers), proceed
@@ -399,9 +390,9 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     	}
     }
     
-    private void showInvalidFileError(){
+    private void showInvalidFileError(String message){
     	if(fileIsValid){
-    		source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File", Notification.TYPE_ERROR_MESSAGE);
+    		source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
     		fileIsValid = false;
     	}
     }
