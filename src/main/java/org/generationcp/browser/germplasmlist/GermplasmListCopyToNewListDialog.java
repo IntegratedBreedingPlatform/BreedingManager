@@ -81,6 +81,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	private String designationOfListEntriesCopied;
 	private int newListid;
 	private String listNameValue;
+	private int ibdbUserId;
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -91,11 +92,12 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
-	public GermplasmListCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable) {
+	public GermplasmListCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId) {
 		this.dialogWindow = dialogWindow;
 		this.mainWindow = mainWindow;
 		this.listEntriesTable=listEntriesTable;
 		this.listName=listName;
+		this.ibdbUserId=ibdbUserId;
 	}
 
 	@Override
@@ -205,10 +207,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 			Date date = new Date();
 			Format formatter = new SimpleDateFormat("yyyyMMdd");
 			Long currentDate = Long.valueOf(formatter.format(date));
-			int userId = 1;
 			GermplasmList parent = null;
 			int statusListName = 1;
-			GermplasmList listNameData = new GermplasmList(null, listNameValue, currentDate, selectType.getValue().toString(), userId, description, parent, statusListName);
+			GermplasmList listNameData = new GermplasmList(null, listNameValue, currentDate, selectType.getValue().toString(), ibdbUserId, description, parent, statusListName);
 
 			try {
 				newListid = germplasmListManager.addGermplasmList(listNameData);

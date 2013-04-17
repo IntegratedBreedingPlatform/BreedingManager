@@ -35,6 +35,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,13 +87,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private List<GermplasmListData> listDatas;
 	private Button deleteListEntriesButton;
 	private String designationOfListEntriesDeleted="";
-	private int userId;
+	private int germplasListUserId;
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_DELETE = new Action("Delete selected entries");
 	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
 	private Window germplasmListCopyToNewListDialog;
 
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
+	private int currentUserLocalId;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -104,11 +106,11 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private GermplasmListManager germplasmListManager;
 	private boolean forGermplasmListWindow;
 	
-	public GermplasmListDataComponent(int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow){
+	public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow){
 		this.germplasmListId = germplasmListId;
 		this.fromUrl = fromUrl;
 		this.listName=listName;
-		this.userId=userId;
+		this.germplasListUserId=germplasListUserId;
 		this.forGermplasmListWindow=forGermplasmListWindow;
 	}
 
@@ -321,7 +323,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				if (dialog.isConfirmed()) {
 					// Confirmed to continue
 					try {
-						if(workbenchDataManager.getWorkbenchRuntimeData().getUserId() == userId) {
+						if(getCurrentUserLocalId()==germplasListUserId) {
 							Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 							designationOfListEntriesDeleted="";
 							for (final Object itemId : selectedIds) {
@@ -362,6 +364,17 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		});
 	}
 
+    private int getCurrentUserLocalId() throws MiddlewareQueryException {
+        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
+        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+        if (localIbdbUserId != null) {
+            return localIbdbUserId;
+        } else {
+            return 1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+        }
+    }
+
 	private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
 		GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
 
@@ -384,22 +397,28 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES) + " "+listName);
 	}
 
-	public void copyToNewListAction() {
+	public void copyToNewListAction(){
+		
 		germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
 		germplasmListCopyToNewListDialog.setModal(true);
 		germplasmListCopyToNewListDialog.setWidth(700);
 		germplasmListCopyToNewListDialog.setHeight(350);
 		
-		if(forGermplasmListWindow) {
-			germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), germplasmListCopyToNewListDialog,listName,listDataTable));
-			this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME).addWindow(germplasmListCopyToNewListDialog);
-		} else {
-			germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable));
-			this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+		try {
+			if(forGermplasmListWindow) {
+				germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+				this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME).addWindow(germplasmListCopyToNewListDialog);
+			} else {
+
+				germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+
+				this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+			}
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	
 	}
-
-
 
 }
