@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -93,11 +94,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     	currentRow = 0;
     	currentColumn = 0;
         
+    	fileIsValid = true;
+    	
 		try {
 			inp = new FileInputStream(tempFileName);
 			wb = new HSSFWorkbook(inp);
-			
-			fileIsValid = true;
 			
         	readSheet1();
         	readSheet2();
@@ -110,9 +111,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 		} catch (IOException e) {
 			showInvalidFileError();
 		} catch (ReadOnlyException e) {
-			e.printStackTrace();
+			showInvalidFileTypeError();
 		} catch (ConversionException e) {
-			e.printStackTrace();
+			showInvalidFileTypeError();
+		} catch (OfficeXmlFileException e){
+			showInvalidFileError();
 		}
     }
 
@@ -155,8 +158,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				System.out.println("");
 				importedGermplasm = new ImportedGermplasm();
 				for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-					System.out.println("DEBUG | " + importedGermplasmList.getImportedFactors().get(col).getFactor() + ": " + getCellStringValue(currentSheet, currentRow, col, true));
+					if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY")){
+						importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+						System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
+					} else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG")){
+						importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
+						System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
+					} else {
+						System.out.println("DEBUG | Unhandled Column - "+importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase()+":"+getCellStringValue(currentSheet, currentRow, col));
+					}
 				}
+				importedGermplasmList.addImportedGermplasm(importedGermplasm);
 				currentRow++;
 			}
     	}
@@ -381,7 +393,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     		Sheet sheet = wb.getSheetAt(sheetNumber);
     		Row row = sheet.getRow(rowNumber);
     		Cell cell = row.getCell(columnNumber);
-    		return String.valueOf(cell.getNumericCellValue());
+    		return String.valueOf(Integer.valueOf((int) cell.getNumericCellValue()));
     	} catch(NullPointerException e) {
     		return "";
     	}
@@ -393,5 +405,12 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     		fileIsValid = false;
     	}
     }
+    
+    private void showInvalidFileTypeError(){
+    	if(fileIsValid){
+    		source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+    		fileIsValid = false;
+    	}
+    }    
     
 };
