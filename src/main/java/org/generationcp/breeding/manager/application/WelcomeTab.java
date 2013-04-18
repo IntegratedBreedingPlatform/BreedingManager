@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.application;
 
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -19,6 +20,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     private static final long serialVersionUID = -355658097734163565L;
 
     public static final Integer IMPORT_GERMPLASM_LIST_BUTTON_ID = 1;
+    public static final Integer IMPORT_CROSSING_MANAGER_DATA_BUTTON_ID = 2;
     
     private TabSheet tabSheet;
     private VerticalLayout rootLayoutsForOtherTabs[];
@@ -27,8 +29,10 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     private Label questionLabel;
     
     private Button importGermplasmListButton;
+    private Button importCrossingManagerButton;
     
     private VerticalLayout rootLayoutForGermplasmImport;
+    private VerticalLayout rootLayoutForCrossingManager;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -56,10 +60,18 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         importGermplasmListButton.setWidth(400, UNITS_PIXELS);
         importGermplasmListButton.setData(IMPORT_GERMPLASM_LIST_BUTTON_ID);
         
+        importCrossingManagerButton = new Button(); // "I want to import crossing manager data."
+        importCrossingManagerButton.setWidth(400, UNITS_PIXELS);
+        importCrossingManagerButton.setData(IMPORT_CROSSING_MANAGER_DATA_BUTTON_ID);
+        
         rootLayoutForGermplasmImport = rootLayoutsForOtherTabs[0];
+        rootLayoutForCrossingManager = rootLayoutsForOtherTabs[1];
         
         importGermplasmListButton.addListener(new WelcomeTabButtonClickListener(this));
+        importCrossingManagerButton.addListener(new WelcomeTabButtonClickListener(this));
+        
         addComponent(importGermplasmListButton);
+        addComponent(importCrossingManagerButton);
     }
     
     @Override
@@ -73,15 +85,26 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         messageSource.setCaption(welcomeLabel, Message.WELCOME_LABEL);
         messageSource.setCaption(questionLabel, Message.WELCOME_QUESTION_LABEL);
         messageSource.setCaption(importGermplasmListButton, Message.I_WANT_TO_IMPORT_GERMPLASM_LIST);
+        messageSource.setCaption(importCrossingManagerButton, Message.I_WANT_TO_IMPORT_CROSSING_MANAGER_DATA);
     }
     
     public void importGermplasmButtonClickAction() throws InternationalizableException {
         if (rootLayoutForGermplasmImport.getComponentCount() == 0) {
             rootLayoutForGermplasmImport.addComponent(new GermplasmImportMain());
             rootLayoutForGermplasmImport.addStyleName("addSpacing");
+            rootLayoutForGermplasmImport.setSizeFull();
         }
 
         tabSheet.setSelectedTab(this.rootLayoutForGermplasmImport);
+    }
+
+    public void importCrossingManagerDataClickAction() throws InternationalizableException {
+        if (rootLayoutForCrossingManager.getComponentCount() == 0) {
+            rootLayoutForCrossingManager.addComponent(new CrossingManagerMain());
+            rootLayoutForCrossingManager.addStyleName("addSpacing");
+            rootLayoutForCrossingManager.setSizeFull();
+        }
+        tabSheet.setSelectedTab(this.rootLayoutForCrossingManager);
     }
 
 }

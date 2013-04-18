@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -29,11 +30,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     private static final long serialVersionUID = 1L;
     
-    public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import"; 
+    public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
+    public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
     
     private Window window;
     
     private VerticalLayout rootLayoutForImportGermplasmList;
+    private VerticalLayout rootLayoutForCrossingManager;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -59,6 +62,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         
         this.rootLayoutForImportGermplasmList = new VerticalLayout();
         rootLayoutForImportGermplasmList.setSizeFull();
+
+        this.rootLayoutForCrossingManager = new VerticalLayout();
+        rootLayoutForCrossingManager.setSizeFull();
         
         window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION)); // "Breeding Manager"
         setMainWindow(window);
@@ -67,13 +73,15 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
         TabSheet tabSheet = new TabSheet();
         
-        VerticalLayout layouts[] = new VerticalLayout[1];
+        VerticalLayout layouts[] = new VerticalLayout[2];
         layouts[0] = this.rootLayoutForImportGermplasmList;
+        layouts[1] = this.rootLayoutForCrossingManager;
         
         WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
         
         tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_TAB_LABEL)); // "Welcome"
         tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL)); // "Import Germlasm List"
+        tabSheet.addTab(rootLayoutForCrossingManager, messageSource.getMessage(Message.CROSSING_MANAGER_LABEL)); // "Crossing Manager"
         tabSheet.addListener(new MainApplicationSelectedTabChangeListener(this));
         
         window.addComponent(tabSheet);
@@ -94,6 +102,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 germplasmImportWindow.addComponent(new GermplasmImportMain());
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
+            } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
+                Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
+                crossingManagerWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
+                crossingManagerWindow.setSizeUndefined();
+                crossingManagerWindow.addComponent(new CrossingManagerMain());
+                this.addWindow(crossingManagerWindow);
+                return crossingManagerWindow;
             }
         }
         
@@ -105,6 +120,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
             if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
                 rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain());
+                rootLayoutForCrossingManager.addStyleName("addSpacing");
+            } 
+        }
+        else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
+            if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
+                rootLayoutForCrossingManager.addComponent(new CrossingManagerMain());
+                rootLayoutForCrossingManager.addStyleName("addSpacing");
             }
         } 
     }

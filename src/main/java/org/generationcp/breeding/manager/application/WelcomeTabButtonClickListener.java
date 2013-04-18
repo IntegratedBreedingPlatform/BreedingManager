@@ -30,6 +30,14 @@ public class WelcomeTabButtonClickListener implements Button.ClickListener{
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
+        } else if (source instanceof WelcomeTab && event.getButton().getData().equals(WelcomeTab.IMPORT_CROSSING_MANAGER_DATA_BUTTON_ID)) {
+            try {
+                ((WelcomeTab) source).importCrossingManagerDataClickAction();
+            }catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
 
         }
     }
