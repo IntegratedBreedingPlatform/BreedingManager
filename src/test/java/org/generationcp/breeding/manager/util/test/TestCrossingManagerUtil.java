@@ -31,13 +31,13 @@ public class TestCrossingManagerUtil{
 	Integer femaleGID=Integer.valueOf(50533);
 	Integer maleGID=Integer.valueOf(456);
 	
-	Germplasm GC = germplasmManager.getGermplasmByGID(gid);
-	System.out.println("Germplasm Cross(" + gid + "): " + GC);
+	Germplasm gc = germplasmManager.getGermplasmByGID(gid);
+	System.out.println("Germplasm Cross(gid " + gid + "): " + gc);
 	
 	CrossingManagerUtil cm= new CrossingManagerUtil(germplasmManager);
-	Germplasm g= cm.setCrossingBreedingMethod(GC, femaleGID, maleGID);
+	Germplasm g= cm.setCrossingBreedingMethod(gc, femaleGID, maleGID);
 	
-	System.out.println("Germplasm object for the cross with assigned value for the methn field(" + gid + "): " + GC);
+	System.out.println("Germplasm for the cross with assigned value for the methn (gid " + gid + "): " + gc);
 
     }
 
