@@ -53,6 +53,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -315,7 +316,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	}
 
 	public void deleteListButtonClickAction()  throws InternationalizableException {
-
+	    final Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
+	    if(selectedIds.size() > 0){
 		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
 				"Ok", "Cancel", new ConfirmDialog.Listener() {
 
@@ -324,7 +326,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 					// Confirmed to continue
 					try {
 						if(getCurrentUserLocalId()==germplasListUserId) {
-							Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 							designationOfListEntriesDeleted="";
 							for (final Object itemId : selectedIds) {
 								Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
@@ -362,6 +363,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			}
 
 		});
+	    }else{
+		
+		getWindow().showNotification("Warning", "No selected list entries to delete",
+			Notification.TYPE_WARNING_MESSAGE);
+	    }
+		
 	}
 
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
