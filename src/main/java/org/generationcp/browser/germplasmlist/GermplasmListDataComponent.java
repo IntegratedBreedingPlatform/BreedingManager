@@ -202,7 +202,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				saveSortingButton.setData(SORTING_BUTTON_ID);
 				buttonArea.addComponent(saveSortingButton);
 
-				deleteListEntriesButton = new Button("Delete List Entries", new GermplasmListButtonClickListener(this));
+				deleteListEntriesButton = new Button("Delete selected entries", new GermplasmListButtonClickListener(this));
 				deleteListEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
 				deleteListEntriesButton.setDescription("Delete list entries");
 				buttonArea.addComponent(deleteListEntriesButton);
