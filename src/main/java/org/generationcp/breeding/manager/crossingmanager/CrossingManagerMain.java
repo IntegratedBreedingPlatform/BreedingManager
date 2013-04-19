@@ -16,6 +16,8 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class CrossingManagerMain extends VerticalLayout implements InitializingBean, InternationalizableComponent{
     
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
+	
     private static final long serialVersionUID = -6656072296236475385L;
 
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
