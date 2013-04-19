@@ -88,6 +88,9 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private StudyDataManager studyDataManager;
     
     @Autowired
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    
+    @Autowired
     private TraitDataManager traitDataManager;
 
     private GermplasmListBrowserMain germplasmListBrowserMain;
@@ -228,7 +231,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     Window studyDetailsWindow = new Window(messageSource.getMessage(Message.STUDY_DETAILS_TEXT) + " " + studyId);  // "Study Details" + study id
                     studyDetailsWindow.setSizeUndefined();
                     //TODO should disable export functions for this screen
-                    studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
+                    studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManagerV2, studyId)
                         , studyDataManager, traitDataManager, false, true));
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;

@@ -29,7 +29,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
-import org.generationcp.middleware.pojos.Study;
+import org.generationcp.middleware.v2.pojos.AbstractNode;
+import org.generationcp.middleware.v2.pojos.FolderNode;
+import org.generationcp.middleware.v2.pojos.StudyDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,7 +43,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -54,9 +55,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private final static Logger LOG = LoggerFactory.getLogger(StudyTreeComponent.class);
     
     public final static String REFRESH_BUTTON_ID = "StudyTreeComponent Refresh Button";
-
+    
     @Autowired
     private StudyDataManager studyDataManager;
+    
+    @Autowired
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
     
     private Tree studyTree;
     private static TabSheet tabSheetStudy;
@@ -93,12 +97,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     private Tree createStudyTree(Database database) {
-        List<Study> studyParent = new ArrayList<Study>();
+        List<FolderNode> rootFolders = new ArrayList<FolderNode>();
 
         try {
-            studyParent = this.studyDataManager.getAllTopLevelStudies(0, 
-                                (int) studyDataManager.countAllTopLevelStudies(database), 
-                                database);
+            rootFolders = this.studyDataManagerV2.getRootFolders(database);
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
@@ -107,12 +109,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
                         messageSource.getMessage(Message.ERROR_DATABASE),
                     messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_STUDIES));
             }
-            studyParent = new ArrayList<Study>();
+            rootFolders = new ArrayList<FolderNode>();
         }
 
         Tree studyTree = new Tree();
 
-        for (Study ps : studyParent) {
+        for (FolderNode ps : rootFolders) {
             studyTree.addItem(ps.getId());
             studyTree.setItemCaption(ps.getId(), ps.getName());
         }
@@ -126,9 +128,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     // Called by StudyItemClickListener
     public void studyTreeItemClickAction(int studyId) throws InternationalizableException{
         try {
-            Study study = this.studyDataManager.getStudyByID(studyId);
+            StudyDetails study = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
             //don't show study details if study record is a Folder ("F")
-            if (!hasChildStudy(studyId) && !study.getType().equals("F")) {
+            String studyType = study.getType();
+            if (!hasChildStudy(studyId) && !isFolderType(studyType)){
                 createStudyInfoTab(studyId);
             }
         } catch (NumberFormatException e) {
@@ -147,20 +150,19 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     public void addStudyNode(int parentStudyId) throws InternationalizableException{
-        List<Study> studyChildren = new ArrayList<Study>();
+        List<AbstractNode> studyChildren = new ArrayList<AbstractNode>();
         try {
-            studyChildren = this.studyDataManager.getStudiesByParentFolderID(parentStudyId, 0, 
-                    (int) studyDataManager.countAllStudyByParentFolderID(parentStudyId, database));
+            studyChildren = this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(parentStudyId), database);
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
-            studyChildren = new ArrayList<Study>();
+            studyChildren = new ArrayList<AbstractNode>();
         }
 
-        for (Study sc : studyChildren) {
+        for (AbstractNode sc : studyChildren) {
             studyTree.addItem(sc.getId());
             studyTree.setItemCaption(sc.getId(), sc.getName());
             studyTree.setParent(sc.getId(), parentStudyId);
@@ -177,7 +179,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId),
                     studyDataManager, traitDataManager, forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
@@ -195,7 +197,13 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
-            return this.studyDataManager.getStudyByID(studyId).getName();
+            StudyDetails studyDetails = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
+            if(studyDetails != null){
+                return studyDetails.getName();
+            } else {
+                return null;
+            }
+            
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID);
         }
@@ -203,16 +211,16 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     private boolean hasChildStudy(int studyId) {
 
-        List<Study> studyChildren = new ArrayList<Study>();
+        List<AbstractNode> studyChildren = new ArrayList<AbstractNode>();
 
         try {
-            studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
+            studyChildren = this.studyDataManagerV2.getChildrenOfFolder(new Integer(studyId), database);
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
-            studyChildren = new ArrayList<Study>();
+            studyChildren = new ArrayList<AbstractNode>();
         }
         if (!studyChildren.isEmpty()) {
             return true;
@@ -268,4 +276,18 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         return tabSheetStudy;
     }
 
+    private boolean isFolderType(String type){
+        if(type != null){
+            type = type.toLowerCase();
+            if(type.equals("f") || type.equals("folder")){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+    }
 }

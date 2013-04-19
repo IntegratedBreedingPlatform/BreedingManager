@@ -19,6 +19,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Study;
+import org.generationcp.middleware.v2.pojos.StudyDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,13 +50,13 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private Label studyStartDate;
     private Label studyEndDate;
     
-    private StudyDataManager studyDataManager;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager;
     private int studyId;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyDetailComponent(StudyDataManager studyDataManager, int studyId){
+    public StudyDetailComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager, int studyId){
     	this.studyDataManager = studyDataManager;
     	this.studyId = studyId;
     }
@@ -75,17 +76,17 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         lblEndDate = new Label(messageSource.getMessage(Message.END_DATE_LABEL)); // "End Date"
         
         // get Study Detail
-        Study study;
+        StudyDetails studyDetails;
 
         try {
-            study = studyDataManager.getStudyByID(studyId);
+            studyDetails = studyDataManager.getStudyDetails(Integer.valueOf(studyId));
 
-            studyName = new Label(study.getName());
-            studyTitle = new Label(study.getTitle());
-            studyObjective = new Label(study.getObjective());
-            studyType = new Label(study.getType());
-            studyStartDate = new Label(String.valueOf(study.getStartDate()));
-            studyEndDate = new Label(String.valueOf(study.getEndDate()));
+            studyName = new Label(studyDetails.getName());
+            studyTitle = new Label(studyDetails.getTitle());
+            studyObjective = new Label(studyDetails.getObjective());
+            studyType = new Label(studyDetails.getType());
+            studyStartDate = new Label(String.valueOf(studyDetails.getStartDate()));
+            studyEndDate = new Label(String.valueOf(studyDetails.getEndDate()));
 
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID, Message.EMPTY_STRING);

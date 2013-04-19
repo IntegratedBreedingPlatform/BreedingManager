@@ -72,6 +72,9 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     @Autowired
     private StudyDataManager studyDataManager;
+    
+    @Autowired
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
 
     @Autowired
     private TraitDataManager traitDataManager;
@@ -189,7 +192,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager,
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager,
                     traitDataManager, forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
