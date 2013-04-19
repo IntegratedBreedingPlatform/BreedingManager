@@ -27,17 +27,16 @@ public class TestCrossingManagerUtil{
 
     @Test
     public void testSetCrossingBreedingMethod() throws Exception {
-	Integer gid = Integer.valueOf(10);
+	Germplasm gc=new Germplasm();
+	Integer gid = Integer.valueOf(-1);
+	gc.setGid(gid);
 	Integer femaleGID=Integer.valueOf(50533);
-	Integer maleGID=Integer.valueOf(456);
-	
-	Germplasm gc = germplasmManager.getGermplasmByGID(gid);
-	System.out.println("Germplasm Cross(gid " + gid + "): " + gc);
-	
+	Integer maleGID=Integer.valueOf(50544);
+
 	CrossingManagerUtil cm= new CrossingManagerUtil(germplasmManager);
 	Germplasm g= cm.setCrossingBreedingMethod(gc, femaleGID, maleGID);
 	
-	System.out.println("Germplasm for the cross with assigned value for the methn (gid " + gid + "): " + gc);
+	System.out.println("Germplasm crossing breeding method  for gid " + gid + "): " + gc);
 
     }
 
