@@ -86,7 +86,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private int germplasmListId;
 	private String listName;
 	private List<GermplasmListData> listDatas;
-	private Button deleteListEntriesButton;
+	private Button deleteSelectedEntriesButton;
 	private String designationOfListEntriesDeleted="";
 	private int germplasListUserId;
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -202,10 +202,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				saveSortingButton.setData(SORTING_BUTTON_ID);
 				buttonArea.addComponent(saveSortingButton);
 
-				deleteListEntriesButton = new Button("Delete selected entries", new GermplasmListButtonClickListener(this));
-				deleteListEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
-				deleteListEntriesButton.setDescription("Delete list entries");
-				buttonArea.addComponent(deleteListEntriesButton);
+				deleteSelectedEntriesButton = new Button("Delete selected entries", new GermplasmListButtonClickListener(this));
+				deleteSelectedEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
+				deleteSelectedEntriesButton.setDescription("Delete list entries");
+				buttonArea.addComponent(deleteSelectedEntriesButton);
 			}
 
 			addComponent(buttonArea);
