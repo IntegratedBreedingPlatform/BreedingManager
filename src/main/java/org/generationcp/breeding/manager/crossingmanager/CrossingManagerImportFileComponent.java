@@ -145,4 +145,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     public CrossingManagerMain getSource() {
     	return source;
     }
+    
+    public void selectManuallyMakeCrosses(){
+    	crossesOptionGroup.setValue(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
+    }
+    public void selectAlreadyDefinedCrossesInNurseryTemplateFile(){
+    	crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
+    }
 }
