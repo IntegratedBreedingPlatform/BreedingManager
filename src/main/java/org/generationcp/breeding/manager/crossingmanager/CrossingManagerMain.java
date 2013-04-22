@@ -1,6 +1,9 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
+import org.generationcp.breeding.manager.listimport.SaveGermplasmListComponent;
+import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
@@ -56,6 +59,8 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardScreenThree = new CrossingManagerAdditionalDetailsComponent(this, accordion);
         wizardScreenFour = new CrossingManagerDetailsComponent(this,accordion);
         
+        wizardScreenOne.setNextScreen(wizardScreenTwo);
+        
         accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
         accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
         accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
@@ -74,6 +79,18 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
     }
     
+    public CrossingManagerImportFileComponent getWizardScreenOne() {
+    	return wizardScreenOne;
+    }
+    public CrossingManagerMakeCrossesComponent getWizardScreenTwo() {
+    	return wizardScreenTwo;
+    }
+    public CrossingManagerAdditionalDetailsComponent getWizardScreenThree() {
+    	return wizardScreenThree;
+    }
+    public CrossingManagerDetailsComponent getWizardScreenFour() {
+    	return wizardScreenFour;
+    }
 
     
     

@@ -1,8 +1,8 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
-import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -19,6 +19,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -38,6 +39,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private Label crossesOptionGroupLabel;
     private OptionGroup crossesOptionGroup;
 
+    public CrossingManagerUploader crossingManagerUploader;
     
     
     @Autowired
@@ -65,13 +67,13 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
         
-        CrossingManagerUploader crossingManagerUploader = new CrossingManagerUploader(this);
+        crossingManagerUploader = new CrossingManagerUploader(this);
         uploadComponents.setReceiver(crossingManagerUploader);
         uploadComponents.addListener(crossingManagerUploader);
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.addListener(new GermplasmImportButtonClickListener(this));
+        nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         addComponent(nextButton, "top:250px;left:700px");
         
         crossesOptionGroupLabel = new Label();
@@ -97,11 +99,17 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
 
     public void nextButtonClickAction() throws InternationalizableException{
-        if(this.nextScreen != null){
-            this.accordion.setSelectedTab(this.nextScreen);
-        } else {
-            this.nextButton.setEnabled(false);
-        }
+    	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
+    		getAccordion().getApplication().getMainWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+    	} else if(crossesOptionGroup.getValue()==null) {
+    		getAccordion().getApplication().getMainWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
+    	} else {
+    		if(this.nextScreen != null){
+    			this.accordion.setSelectedTab(this.nextScreen);
+        	} else {
+        		this.nextButton.setEnabled(false);
+        	}
+    	}
     }
     
     public Accordion getAccordion() {
