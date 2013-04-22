@@ -60,6 +60,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardScreenFour = new CrossingManagerDetailsComponent(this,accordion);
         
         wizardScreenOne.setNextScreen(wizardScreenTwo);
+        wizardScreenOne.setNextNextScreen(wizardScreenThree);
         
         accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
         accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses

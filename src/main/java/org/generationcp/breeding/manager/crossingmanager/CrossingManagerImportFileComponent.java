@@ -35,6 +35,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private Button nextButton;
     private Accordion accordion;
     private Component nextScreen;
+    private Component nextNextScreen;
     
     private Label crossesOptionGroupLabel;
     private OptionGroup crossesOptionGroup;
@@ -49,11 +50,16 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     	this.source = source;
         this.accordion = accordion;
         this.nextScreen = null;
+        this.nextNextScreen = null;
     }
     
     public void setNextScreen(Component nextScreen){
         this.nextScreen = nextScreen;
     }
+    
+    public void setNextNextScreen(Component nextNextScreen){
+        this.nextNextScreen = nextNextScreen;
+    }    
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -104,11 +110,23 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     	} else if(crossesOptionGroup.getValue()==null) {
     		getAccordion().getApplication().getMainWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
     	} else {
-    		if(this.nextScreen != null){
-    			this.accordion.setSelectedTab(this.nextScreen);
-        	} else {
-        		this.nextButton.setEnabled(false);
-        	}
+    		if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
+    			if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
+    				getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
+    			} else {
+    				if(this.nextScreen != null){
+    	    			this.accordion.setSelectedTab(this.nextNextScreen);
+    	        	} else {
+    	        		this.nextButton.setEnabled(false);
+    	        	}
+    			}
+    		} else {
+	    		if(this.nextScreen != null){
+	    			this.accordion.setSelectedTab(this.nextScreen);
+	        	} else {
+	        		this.nextButton.setEnabled(false);
+	        	}
+    		}
     	}
     }
     
@@ -118,6 +136,10 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     
     public Component getNextScreen() {
     	return nextScreen;
+    }
+    
+    public Component getNextNextScreen() {
+    	return nextNextScreen;
     }
     
     public CrossingManagerMain getSource() {
