@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -64,9 +65,9 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
         
-	    //GermplasmListUploader germplasmListUploader = new GermplasmListUploader(this); 
-	    //uploadComponents.setReceiver(germplasmListUploader);
-	    //uploadComponents.addListener(germplasmListUploader);        
+        CrossingManagerUploader crossingManagerUploader = new CrossingManagerUploader(this);
+        uploadComponents.setReceiver(crossingManagerUploader);
+        uploadComponents.addListener(crossingManagerUploader);
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);

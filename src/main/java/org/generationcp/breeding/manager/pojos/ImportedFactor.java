@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listimport.pojos;
+package org.generationcp.breeding.manager.pojos;
 
 public class ImportedFactor {
 	
@@ -8,6 +8,7 @@ public class ImportedFactor {
 	private String scale;
 	private String method;
 	private String dataType;
+	private String nestedIn;
 	private String label;
 
 	public ImportedFactor(){
@@ -23,6 +24,18 @@ public class ImportedFactor {
 		this.dataType = dataType;
 		this.label = label;
 	}
+	
+	public ImportedFactor(String factor, String description, String property, String scale, String method
+			, String dataType, String nestedIn, String label) {
+		this.factor = factor;
+		this.description = description;
+		this.property = property;
+		this.scale = scale;
+		this.method = method;
+		this.dataType = dataType;
+		this.nestedIn = nestedIn;
+		this.label = label;
+	}	
 	
 	public String getFactor() {
 		return factor;
@@ -70,6 +83,14 @@ public class ImportedFactor {
 	
 	public void setDataType(String dataType){
 		this.dataType = dataType;
+	}
+	
+	public String getNestedIn() {
+		return nestedIn;
+	}
+	
+	public void setNestedIn(String nestedIn){
+		this.nestedIn = nestedIn;
 	}
 	
 	public String getLabel() {

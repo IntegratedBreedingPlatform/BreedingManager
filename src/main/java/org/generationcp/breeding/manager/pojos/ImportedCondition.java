@@ -1,36 +1,38 @@
-package org.generationcp.breeding.manager.listimport.pojos;
+package org.generationcp.breeding.manager.pojos;
 
-public class ImportedConstant {
+public class ImportedCondition {
 	
-	private String constant;
+	private String condition;
 	private String description;
 	private String property;
 	private String scale;
 	private String method;
 	private String dataType;
 	private String value;
+	private String label;
 
-	public ImportedConstant(){
+	public ImportedCondition(){
 		
 	}
 	
-	public ImportedConstant(String constant, String description, String property, String scale, String method
-			, String dataType, String value) {
-		this.constant = constant;
+	public ImportedCondition(String condition, String description, String property, String scale, String method
+			, String dataType, String value, String label) {
+		this.condition = condition;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
 		this.method = method;
 		this.dataType = dataType;
 		this.value = value;
+		this.label = label;
 	}
 	
-	public String getConstant() {
-		return constant;
+	public String getCondition() {
+		return condition;
 	}
 	
-	public void setConstant(String constant){
-		this.constant = constant;
+	public void setCondition(String condition){
+		this.condition = condition;
 	}
 	
 	public String getDescription() {
@@ -79,6 +81,14 @@ public class ImportedConstant {
 	
 	public void setValue(String value){
 		this.value = value;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
+	public void setLabel(String label){
+		this.label = label;
 	}
 	
 };

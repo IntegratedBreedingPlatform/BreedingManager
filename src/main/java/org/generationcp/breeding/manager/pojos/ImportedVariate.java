@@ -1,38 +1,46 @@
-package org.generationcp.breeding.manager.listimport.pojos;
+package org.generationcp.breeding.manager.pojos;
 
-public class ImportedCondition {
+public class ImportedVariate {
 	
-	private String condition;
+	private String variate;
 	private String description;
 	private String property;
 	private String scale;
 	private String method;
 	private String dataType;
-	private String value;
-	private String label;
+	private String sampleLevel;
 
-	public ImportedCondition(){
+	public ImportedVariate(){
 		
 	}
 	
-	public ImportedCondition(String condition, String description, String property, String scale, String method
-			, String dataType, String value, String label) {
-		this.condition = condition;
+	public ImportedVariate(String variate, String description, String property, String scale, String method
+			, String dataType) {
+		this.variate = variate;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
 		this.method = method;
 		this.dataType = dataType;
-		this.value = value;
-		this.label = label;
 	}
 	
-	public String getCondition() {
-		return condition;
+	public ImportedVariate(String variate, String description, String property, String scale, String method
+			, String dataType, String sampleLevel) {
+		this.variate = variate;
+		this.description = description;
+		this.property = property;
+		this.scale = scale;
+		this.method = method;
+		this.dataType = dataType;
+		this.sampleLevel = sampleLevel;
+	}	
+	
+	public String getVariate() {
+		return variate;
 	}
 	
-	public void setCondition(String condition){
-		this.condition = condition;
+	public void setVariate(String variate){
+		this.variate = variate;
 	}
 	
 	public String getDescription() {
@@ -75,20 +83,12 @@ public class ImportedCondition {
 		this.dataType = dataType;
 	}
 	
-	public String getValue() {
-		return value;
+	public String getSampleLevel() {
+		return sampleLevel;
 	}
 	
-	public void setValue(String value){
-		this.value = value;
-	}
-	
-	public String getLabel() {
-		return label;
-	}
-	
-	public void setLabel(String label){
-		this.label = label;
+	public void setSampleLevel(String sampleLevel){
+		this.sampleLevel = sampleLevel;
 	}
 	
 };

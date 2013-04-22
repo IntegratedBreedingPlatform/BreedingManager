@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listimport.pojos;
+package org.generationcp.breeding.manager.pojos;
 
 public class ImportedGermplasm {
 	
