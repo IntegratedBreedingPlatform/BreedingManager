@@ -96,6 +96,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         germplasmDateField =  new DateField();
         germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
         germplasmDateField.setDateFormat("yyyy-MM-dd");
+        germplasmDateField.setValue(new Date());
         addComponent(germplasmDateField, "top:40px;left:200px");
         
         locationLabel = new Label();
