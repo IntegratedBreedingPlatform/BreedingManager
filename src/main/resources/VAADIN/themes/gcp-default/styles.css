@@ -75,3 +75,12 @@
 .v-form fieldset {
 	border:1px solid #babfc0;
 }
+
+.v-select-optiongroup .v-select-option {
+  text-indent: -18px;
+  padding-left: 18px;
+}
+
+.v-select-optiongroup .v-select-option label {
+  white-space: normal;
+}
