@@ -19,7 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class CrossingManagerMain extends VerticalLayout implements InitializingBean, InternationalizableComponent{
     
-	public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
 	
     private static final long serialVersionUID = -6656072296236475385L;
 
@@ -32,7 +32,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private CrossingManagerAdditionalDetailsComponent wizardScreenThree;
     private CrossingManagerDetailsComponent wizardScreenFour;
     
-    private Label importToolTitle;
+    private Label crossingManagerTitle;
     private Accordion accordion;
     
     @Autowired
@@ -47,9 +47,9 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         setMargin(false);
         setSpacing(true);
         
-        importToolTitle = new Label("Crossing Manager " + VERSION);
-        importToolTitle.setStyleName("h1");
-        addComponent(importToolTitle);
+        crossingManagerTitle = new Label("Crossing Manager " + VERSION);
+        crossingManagerTitle.setStyleName("h1");
+        addComponent(crossingManagerTitle);
         
         accordion = new Accordion();
         accordion.setWidth("800px");
