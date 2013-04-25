@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
@@ -26,6 +28,7 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
@@ -100,6 +103,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         optionGroupMakeCrosses.addItem(CROSS_OPTIONID_TWO);
         optionGroupMakeCrosses.setItemCaption(CROSS_OPTIONID_TWO, 
         		messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
+        optionGroupMakeCrosses.select(CROSS_OPTIONID_ONE); //first option selected by default
         
         chkBoxMakeReciprocalCrosses = new CheckBox();
 	
@@ -178,29 +182,41 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         
     }
     
+    private void populateGermplasmSelectList(List<GermplasmListEntry> entryList, ListSelect selectList){
+    	for (GermplasmListEntry entry : entryList){
+    		selectList.addItem(entry);
+    		selectList.setItemCaption(entry, entry.getDesignation());
+    	}
+    }
+    
+    //mock data to test Male List
     private void populateMaleList() {
+    	List<GermplasmListEntry> maleEntries = new ArrayList<GermplasmListEntry>();
+    	
 		//mock data to test multiselect
-		String[] maleList = new String[] { "Male one", "Male two",
+    	int[] idList = new int[]{-15,-20,-88,-4,-6};
+		String[] textList = new String[] { "Male one", "Male two",
 		        "Male three", "Male four", "Male five"};
-		for (int i = 0; i < maleList.length; i++) {
-			int j = -(i + 1);			
-            listSelectMale.addItem(j);
-            listSelectMale.setItemCaption(j, maleList[i]);
+		
+		for (int i = 0; i < idList.length; i++) {
+			maleEntries.add(new GermplasmListEntry(idList[i],i+1,textList[i]));
         }
-	
+		
+		populateGermplasmSelectList(maleEntries, listSelectMale);
     }
   
-    //mock data to test multiselect
+    //mock data to test Female List
     private void populateFemaleList() {
-		//mock data to test multiselect
-		String[] femaleList = new String[] { "Female one", "Female two",
+    	List<GermplasmListEntry> femaleEntries = new ArrayList<GermplasmListEntry>();
+    	
+    	int[] idList = new int[]{15,20,88,4,6};
+		String[] textList = new String[] { "Female one", "Female two",
 		        "Female three", "Female four", "Female five"};
-		for (int i = 0; i < femaleList.length; i++) {
-			int j = i + 1;
-            listSelectFemale.addItem(j);
-            listSelectFemale.setItemCaption(j, femaleList[i]);
+		for (int i = 0; i < textList.length; i++) {
+			femaleEntries.add(new GermplasmListEntry(idList[i],i+1,textList[i]));
         }
-	
+		
+		populateGermplasmSelectList(femaleEntries, listSelectFemale);
     }
 
     @Override
@@ -211,13 +227,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     
     @Override
     public void updateLabels() {
-	messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENT);
-	messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENT);
-	messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_LIST_BUTTON_LABEL);
-	messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_LIST_BUTTON_LABEL);
-	messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
-	messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
-	messageSource.setCaption(lblCrossMade, Message.LABEL_CROSS_MADE);
+		messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENT);
+		messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENT);
+		messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_LIST_BUTTON_LABEL);
+		messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_LIST_BUTTON_LABEL);
+		messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
+		messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
+		messageSource.setCaption(lblCrossMade, Message.LABEL_CROSS_MADE);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(nextButton, Message.NEXT);
     }
@@ -225,62 +241,103 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     /*
      * Action handler for Make Cross button
      */
-    public void makeCrosses(){
-    	Object selectedCrossOption = optionGroupMakeCrosses.getValue();
+    @SuppressWarnings("unchecked")
+	public void makeCrosses(){
     	
-    	List<Integer> femaleList = new ArrayList<Integer>();
-    	femaleList.addAll((Collection<Integer>)listSelectFemale.getValue());
+    	List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
+    	femaleList.addAll((Collection<GermplasmListEntry>)listSelectFemale.getValue());
+    	Collections.sort(femaleList);
     	
-    	List<Integer> maleList = new ArrayList<Integer>();
-    	maleList.addAll((Collection<Integer>)listSelectMale.getValue());
-    	//The selected males seem to be returned in reverse order
-    	//so need to reverse list to have them ordered as they appear on screen
-    	Collections.reverse(maleList); 
+    	List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
+    	maleList.addAll((Collection<GermplasmListEntry>)listSelectMale.getValue());
+    	Collections.sort(maleList);
     	
     	
-    	if (selectedCrossOption != null && !femaleList.isEmpty() && !maleList.isEmpty()){
-    		Integer optionId = (Integer) selectedCrossOption;
-    		tableCrossesMade.removeAllItems(); // clear the
+    	if (!femaleList.isEmpty() && !maleList.isEmpty()){
+    		Integer optionId = (Integer) optionGroupMakeCrosses.getValue();
     		
     		// Female - Male Multiplication
     		if (CROSS_OPTIONID_ONE.equals(optionId)){
-    			multiplyParents(femaleList, maleList, true);
+    			tableCrossesMade.removeAllItems(); // clear previous entries
+    			multiplyParents(femaleList, maleList);
     			if (chkBoxMakeReciprocalCrosses.booleanValue()){
-    				multiplyParents(maleList, femaleList, false);
+    				multiplyParents(maleList, femaleList);
     			}   			
     			
     		// Top to Bottom Crossing	
     		} else if (CROSS_OPTIONID_TWO.equals(optionId)){
-    			
+    			if (femaleList.size() == maleList.size()){
+    				tableCrossesMade.removeAllItems(); // clear previous entries
+    				makeTopToBottomCrosses(femaleList, maleList);
+    				if (chkBoxMakeReciprocalCrosses.booleanValue()){
+    					makeTopToBottomCrosses(maleList, femaleList);
+    				}
+    			} else {
+    				accordion.getApplication().getMainWindow()
+    					.showNotification("The number of male and female parents should be equal.", 
+    							Notification.TYPE_ERROR_MESSAGE);
+    			}
     		}
     	}
     }
+
+    /**
+     * Crosses each item on first list with its counterpart (same index or position) 
+     * on second list. Assumes that checking if list sizes are equal was done beforehand.
+     * The generated crossings are then added to Crossings Table.
+     * 
+     * @param parents1 - list of GermplasmList entries as first parents
+     * @param parents2 - list of GermplasmList entries as second parents
+     */
+	private void makeTopToBottomCrosses(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2) {
+		
+    	ListIterator<GermplasmListEntry> iterator1 = parents1.listIterator();
+    	ListIterator<GermplasmListEntry> iterator2 = parents2.listIterator();
+    	
+    	while (iterator1.hasNext()){
+    		GermplasmListEntry parent1 = iterator1.next();
+			GermplasmListEntry parent2 = iterator2.next();
+			String caption1 = parent1.getDesignation();
+			String caption2 = parent2.getDesignation();
+			tableCrossesMade.addItem(new Object[] {
+					getCrossingText(caption1, caption2), caption1, caption2 
+					}, 
+					getCrossingID(parent1.getGid(), parent2.getGid())); 
+    	}
+
+	}
     
     /**
      * Multiplies each item on first list with each item on second list.
-     * The generated crossings are then added to tableCrossesMade Table.
+     * The generated crossings are then added to Crossings Table.
      * 
-     * @param parents1 - list of IDs of parents 1
-     * @param parents2 - list of IDs of parents 2
-     * @param isFemaleFirst - true if parents1 list is the female list
+     * @param parents1 - list of GermplasmList entries as first parents
+     * @param parents2 - list of GermplasmList entries as second parents
      */
-    private void multiplyParents(List<Integer> parents1, List<Integer> parents2, boolean isFemaleFirst){
-    	ListSelect select1 = isFemaleFirst ? listSelectFemale : listSelectMale;
-    	ListSelect select2 = isFemaleFirst ? listSelectMale : listSelectFemale;
+    private void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2){
     	
-    	for (Integer parent1 : parents1){
-			String caption1 = select1.getItemCaption(parent1);
+    	for (GermplasmListEntry parent1 : parents1){
+			String caption1 = parent1.getDesignation();
 			
-			for (Integer parent2 : parents2){
-				String caption2 = select2.getItemCaption(parent2);
+			for (GermplasmListEntry parent2 : parents2){
+				String caption2 = parent2.getDesignation();
 				tableCrossesMade.addItem(new Object[] {
-							caption1 + "/" + caption2, caption1, caption2 
+						getCrossingText(caption1, caption2), caption1, caption2 
 						}, 
-						//table entry ID = the GIDs of parents separated by delimiter (eg. 1,2)
-						parent1 + PARENTS_DELIMITER + parent2); 
+						getCrossingID(parent1.getGid(), parent2.getGid())); 
 			}
 		}
     }
+
+    // Concatenation of male and female parents' item caption
+	private String getCrossingText(String caption1, String caption2) {
+		return caption1 + "/" + caption2;
+	}
+
+    // Crossing ID = the GIDs of parents separated by delimiter (eg. 1,2)
+	private String getCrossingID(Integer parent1, Integer parent2) {
+		return parent1 + PARENTS_DELIMITER + parent2;
+	}
 
     public CrossingManagerMain getSource() {
     	return source;
