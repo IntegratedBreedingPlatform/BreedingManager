@@ -18,14 +18,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
-import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 
 import com.vaadin.data.Property.ConversionException;
@@ -69,7 +66,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	}
 	
 	public OutputStream receiveUpload(String filename, String mimeType) { 
-		tempFileName = source.getAccordion().getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_germplasmlist.xls";
+		tempFileName = source.getAccordion().getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_nurserytemplate.xls";
 		FileOutputStream fos = null;
         try {
         	file = new File(tempFileName);
@@ -125,7 +122,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
 
     private void readSheet1(){
-    	readGermplasmListFileInfo();
+    	readNurseryTemplateFileInfo();
     	readConditions();
     	readFactors();
     	readConstants();
@@ -184,7 +181,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     	}
     }
 
-    private void readGermplasmListFileInfo(){
+    private void readNurseryTemplateFileInfo(){
     	try {
     		study = getCellStringValue(0,0,1,true);
         	title = getCellStringValue(0,1,1,true);
