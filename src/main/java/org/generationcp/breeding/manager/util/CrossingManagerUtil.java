@@ -3,12 +3,10 @@ package org.generationcp.breeding.manager.util;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class CrossingManagerUtil{
 
-    @Autowired
     private GermplasmDataManager germplasmDataManager;
 
 
