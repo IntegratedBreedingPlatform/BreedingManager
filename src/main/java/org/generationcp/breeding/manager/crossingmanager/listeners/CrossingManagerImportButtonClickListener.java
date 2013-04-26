@@ -24,13 +24,21 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
     public void buttonClick(ClickEvent event) {
         Object eventButtonData = event.getButton().getData();
         
-		if (eventButtonData.equals(CrossingManagerImportFileComponent.NEXT_BUTTON_ID) 
+	if (eventButtonData.equals(CrossingManagerImportFileComponent.NEXT_BUTTON_ID) 
                 && (source instanceof CrossingManagerImportFileComponent)) {
             ((CrossingManagerImportFileComponent) source).nextButtonClickAction();
             
+        } else if (CrossingManagerMakeCrossesComponent.SELECT_FEMALE_PARENT_BUTTON_ID.equals(eventButtonData)
+                && (source instanceof CrossingManagerMakeCrossesComponent)) {
+            ((CrossingManagerMakeCrossesComponent) source).selectFemaleParentList();
+            
+        } else if (CrossingManagerMakeCrossesComponent.SELECT_MALE_PARENT_BUTTON_ID.equals(eventButtonData)
+                && (source instanceof CrossingManagerMakeCrossesComponent)) {
+            ((CrossingManagerMakeCrossesComponent) source).selectMaleParentList();
+            
         } else  if (CrossingManagerMakeCrossesComponent.MAKE_CROSS_BUTTON_ID.equals(eventButtonData) 
                 && (source instanceof CrossingManagerMakeCrossesComponent)) {
-            ((CrossingManagerMakeCrossesComponent) source).makeCrosses();
+            ((CrossingManagerMakeCrossesComponent) source).makeCrosses();            
             
         } else {
             LOG.error("GermplasmImportButtonClickListener: Error with buttonClick action. Source not identified.");

@@ -11,8 +11,6 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -41,7 +39,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	public static final String PARENTS_DELIMITER = ",";
 	
     private static final long serialVersionUID = 9097810121003895303L;
-    private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
     
     private static final Integer CROSS_OPTIONID_ONE = 1;
     private static final Integer CROSS_OPTIONID_TWO = 2;
@@ -68,11 +65,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     private Button nextButton;
     private HorizontalLayout layoutButtonArea;
     
-
+    private Integer lastOpenedListId;
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
     	this.source = source;
         this.accordion = accordion;
+        lastOpenedListId = null;
     }
     
     
@@ -92,7 +90,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         listSelectFemale.setNullSelectionAllowed(true);
         listSelectFemale.setMultiSelect(true);
         listSelectFemale.setImmediate(true);
-        populateFemaleList();
+        //populateFemaleList();
 
         optionGroupMakeCrosses = new OptionGroup();
         optionGroupMakeCrosses.setWidth("300px");
@@ -123,8 +121,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         listSelectMale.setNullSelectionAllowed(true);
         listSelectMale.setMultiSelect(true);
         listSelectMale.setImmediate(true);
-        populateMaleList();
-        
+        //populateMaleList();
         
         lblCrossMade=new Label();
         tableCrossesMade = new Table();
@@ -242,7 +239,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
      * Action handler for Make Cross button
      */
     @SuppressWarnings("unchecked")
-	public void makeCrosses(){
+    public void makeCrosses(){
     	
     	List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
     	femaleList.addAll((Collection<GermplasmListEntry>)listSelectFemale.getValue());
@@ -279,6 +276,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     			}
     		}
     	}
+    }
+    
+    public void selectFemaleParentList() {
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectFemale, this);
+        this.getWindow().addWindow(selectListWindow);
+    }
+    
+    public void selectMaleParentList() {
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectMale, this);
+        this.getWindow().addWindow(selectListWindow);
     }
 
     /**
@@ -341,5 +348,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
     public CrossingManagerMain getSource() {
     	return source;
+    }
+    
+    public Integer getLastOpenedListId() {
+        return this.lastOpenedListId;
+    }
+    
+    public void setLastOpenedListId(Integer lastOpenedListId) {
+        this.lastOpenedListId = lastOpenedListId;
     }
 }
