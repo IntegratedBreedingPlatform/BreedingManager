@@ -259,6 +259,10 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 	}
 
 	public void saveGermplasmListButtonClickAction() {
-		openDialogSaveList();
+		if (tabSheet.getComponentCount() > 0){
+			openDialogSaveList();
+		} else if (getWindow() != null) {
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED),"");
+		}
 	}
 }

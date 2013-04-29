@@ -318,55 +318,55 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	public void deleteListButtonClickAction()  throws InternationalizableException {
 	    final Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 	    if(selectedIds.size() > 0){
-		ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
+	    	
+	    	ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
 				"Ok", "Cancel", new ConfirmDialog.Listener() {
 
-			public void onClose(ConfirmDialog dialog) {
-				if (dialog.isConfirmed()) {
-					// Confirmed to continue
-					try {
-						if(getCurrentUserLocalId()==germplasListUserId) {
-							designationOfListEntriesDeleted="";
-							for (final Object itemId : selectedIds) {
-								Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
-								Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						// Confirmed to continue
+						try {
+							if(getCurrentUserLocalId()==germplasListUserId) {
+								designationOfListEntriesDeleted="";
+								for (final Object itemId : selectedIds) {
+									Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
+									Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
+									try {
+										int entryId=Integer.valueOf(pEntryId.getValue().toString());
+										designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
+										germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
+										listDataTable.removeItem(itemId);
+									} catch (MiddlewareQueryException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+								designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
 								try {
-									int entryId=Integer.valueOf(pEntryId.getValue().toString());
-									designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
-									germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
-									listDataTable.removeItem(itemId);
+									logDeletedListEntriesToWorkbenchProjectActivity();
 								} catch (MiddlewareQueryException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+							} else {
+								showMessageInvalidDeletingListEntries();
 							}
-							designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
-							try {
-								logDeletedListEntriesToWorkbenchProjectActivity();
-							} catch (MiddlewareQueryException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} else {
-							showMessageInvalidDeletingListEntries();
+						} catch (NumberFormatException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (MiddlewareQueryException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (MiddlewareQueryException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} else {
+						// User did not confirm
 					}
-				} else {
-					// User did not confirm
 				}
-			}
-
-		});
+	    	});
+	    	
 	    }else{
 		
-		getWindow().showNotification("Warning", "No selected list entries to delete",
-			Notification.TYPE_WARNING_MESSAGE);
+	    	MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
 	    }
 		
 	}
@@ -405,26 +405,32 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	}
 
 	public void copyToNewListAction(){
-		
-		germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-		germplasmListCopyToNewListDialog.setModal(true);
-		germplasmListCopyToNewListDialog.setWidth(700);
-		germplasmListCopyToNewListDialog.setHeight(350);
-		
-		try {
-			if(forGermplasmListWindow) {
-				germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-				this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME).addWindow(germplasmListCopyToNewListDialog);
-			} else {
-
-				germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-
-				this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+		Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
+		if (listEntries == null || listEntries.isEmpty()){
+			MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
+			
+		} else {
+			germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+			germplasmListCopyToNewListDialog.setModal(true);
+			germplasmListCopyToNewListDialog.setWidth(700);
+			germplasmListCopyToNewListDialog.setHeight(350);
+			
+			try {
+				if(forGermplasmListWindow) {
+					germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+					this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME).addWindow(germplasmListCopyToNewListDialog);
+				} else {
+					
+					germplasmListCopyToNewListDialog.addComponent(new GermplasmListCopyToNewListDialog(this.getApplication().getMainWindow(), germplasmListCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+					
+					this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
+				}
+			} catch (MiddlewareQueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
 	
 	}
 
