@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 /**
  * POJO for storing basic information about a Germplasm List Entry.
- * Comparison logic is by entryId field (ascending order)
+ * This class was created to implement a sorting logic for Germplasm List entries
+ * of a Germplasm List by entryId;
  * 
  * @author Darla Ani
  *
