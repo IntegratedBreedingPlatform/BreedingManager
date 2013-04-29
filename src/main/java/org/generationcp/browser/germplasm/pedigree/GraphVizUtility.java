@@ -57,7 +57,7 @@ public class GraphVizUtility
      */
     public void initialize() {
         // set the GraphViz' dot executable path
-        String graphvizPath = "tools/graphviz/bin/dot.exe";
+        String graphvizPath = "infrastructure/graphviz/bin/dot.exe";
 
         File dotFile = new File(graphvizPath).getAbsoluteFile();
         try {
