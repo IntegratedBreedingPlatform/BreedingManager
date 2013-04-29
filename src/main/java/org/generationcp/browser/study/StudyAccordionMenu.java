@@ -18,7 +18,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,7 +45,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private VerticalLayout layoutEffect;
 
     private StudyDataManager studyDataManager;
-    private TraitDataManager traitDataManager;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private StudyDetailComponent studyDetailComponent;
 
     private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
@@ -56,10 +55,11 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
-            TraitDataManager traitDataManager, boolean forStudyWindow, boolean fromUrl) {
+            org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2,
+            boolean forStudyWindow, boolean fromUrl) {
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
-        this.traitDataManager = traitDataManager;
+        this.studyDataManagerv2 = studyDataManagerv2;
         this.studyDetailComponent = studyDetailComponent;
         this.forStudyWindow = forStudyWindow;
         this.fromUrl = fromUrl;
@@ -72,14 +72,14 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             //if (tab.getCaption().equals(layoutFactor.getCaption())) { // "Factors"
             if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_FACTORS)) {
                 if (layoutFactor.getComponentCount() == 0) {
-                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, traitDataManager, studyId));
+                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManagerv2, studyId));
                     layoutFactor.setMargin(true);
                     layoutFactor.setSpacing(true);
                 }
             }// else if (tab.getCaption().equals(layoutVariate.getCaption())) { // "Variates"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_VARIATES)) {
                 if (layoutVariate.getComponentCount() == 0) {
-                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, traitDataManager, studyId));
+                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManagerv2, studyId));
                     layoutVariate.setMargin(true);
                     layoutVariate.setSpacing(true);
                 }

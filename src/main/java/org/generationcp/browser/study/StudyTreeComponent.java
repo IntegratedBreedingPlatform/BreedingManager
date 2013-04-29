@@ -28,7 +28,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.v2.domain.AbstractNode;
 import org.generationcp.middleware.v2.domain.FolderNode;
 import org.generationcp.middleware.v2.domain.StudyDetails;
@@ -65,9 +64,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private Tree studyTree;
     private static TabSheet tabSheetStudy;
     private HorizontalLayout studyBrowserMainLayout;
-    
-    @Autowired
-    private TraitDataManager traitDataManager;
     
     private Button refreshButton;
     
@@ -180,7 +176,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
             layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId),
-                    studyDataManager, traitDataManager, forStudyWindow, false));
+                    studyDataManager, studyDataManagerV2, forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

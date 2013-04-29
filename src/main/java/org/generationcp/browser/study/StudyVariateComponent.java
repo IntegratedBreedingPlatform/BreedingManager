@@ -16,8 +16,6 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,8 +32,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     private static final Logger LOG = LoggerFactory.getLogger(StudyVariateComponent.class);
     private static final long serialVersionUID = -3225098517785018744L;
     
-    private StudyDataManager studyDataManager;
-    private TraitDataManager traitDataManager;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private int studyId;
     
     private static final String NAME = "NAME";
@@ -48,16 +45,15 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyVariateComponent(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {
-    	this.studyDataManager = studyDataManager;
-    	this.traitDataManager = traitDataManager;
+    public StudyVariateComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) {
+    	this.studyDataManagerv2 = studyDataManagerv2;
     	this.studyId = studyId;
     }
     
 
     @Override
     public void afterPropertiesSet() throws Exception{
-        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, traitDataManager, studyId);
+        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManagerv2, studyId);
         IndexedContainer dataStudyFactor;
         
         dataStudyFactor = dataIndexContainer.getStudyVariate();

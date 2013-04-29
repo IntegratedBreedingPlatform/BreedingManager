@@ -17,18 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
-import org.generationcp.middleware.pojos.Study;
+import org.generationcp.middleware.v2.domain.AbstractNode;
+import org.generationcp.middleware.v2.domain.StudyDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,9 +77,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Autowired
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
 
-    @Autowired
-    private TraitDataManager traitDataManager;
-
     public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout, boolean forStudyWindow) throws InternationalizableException {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
         this.forStudyWindow = forStudyWindow;
@@ -87,7 +85,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Override
     public void afterPropertiesSet() throws Exception { 
 
-        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, null, 0);
+        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManagerV2, 0);
         tabSheetStudy = StudyTreeComponent.getTabSheetStudy();
 
         setSpacing(true);
@@ -139,12 +137,13 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     }
     
     public void studyItemClickAction(Integer studyId) {
-        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, null, studyId);
+        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManagerV2, studyId);
 
         try {
-            Study study = this.studyDataManager.getStudyByID(studyId);
+            StudyDetails study = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
             //don't show study details if study record is a Folder ("F")
-            if (!hasChildStudy(studyId) && !study.getType().equals("F")) {
+            String studyType = study.getType();
+            if (!hasChildStudy(studyId) && !isFolderType(studyType)){
                 createStudyInfoTab(studyId);
             }
         } catch (NumberFormatException e) {
@@ -164,7 +163,12 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
-            return this.studyDataManager.getStudyByID(studyId).getName();
+            StudyDetails studyDetails = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
+            if(studyDetails != null){
+                return studyDetails.getName();
+            } else {
+                return null;
+            }
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID);
         }
@@ -172,15 +176,16 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private boolean hasChildStudy(int studyId) {
 
-        List<Study> studyChildren = new ArrayList<Study>();
+        List<AbstractNode> studyChildren = new ArrayList<AbstractNode>();
 
         try {
-            studyChildren = this.studyDataManager.getStudiesByParentFolderID(studyId, 0, 1);
+            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId), Database.CENTRAL));
+            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId), Database.LOCAL));
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
-            studyChildren = new ArrayList<Study>();
+            studyChildren = new ArrayList<AbstractNode>();
         }
         if (!studyChildren.isEmpty()) {
             return true;
@@ -192,8 +197,8 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager,
-                    traitDataManager, forStudyWindow, false));
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager, studyDataManagerV2,
+                    forStudyWindow, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
@@ -206,5 +211,18 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         }
     }
 
-    
+    private boolean isFolderType(String type){
+        if(type != null){
+            type = type.toLowerCase();
+            if(type.equals("f") || type.equals("folder")){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+    }
 }

@@ -13,21 +13,17 @@
 package org.generationcp.browser.study.containers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
-import org.generationcp.middleware.pojos.Factor;
-import org.generationcp.middleware.pojos.Scale;
 import org.generationcp.middleware.pojos.Study;
-import org.generationcp.middleware.pojos.Trait;
-import org.generationcp.middleware.pojos.TraitMethod;
-import org.generationcp.middleware.pojos.Variate;
+import org.generationcp.middleware.v2.domain.FactorDetails;
+import org.generationcp.middleware.v2.domain.ObservationDetails;
+import org.generationcp.middleware.v2.domain.StudyNode;
+import org.generationcp.middleware.v2.domain.StudyQueryFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +48,11 @@ public class StudyDataIndexContainer{
     public static final String STUDY_ID = "ID";
     public static final String STUDY_NAME = "NAME";
 
-    private StudyDataManager studyDataManager;
-    private TraitDataManager traitDataManager;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private int studyId;
 
-    public StudyDataIndexContainer(StudyDataManager studyDataManager, TraitDataManager traitDataManager, int studyId) {
-        this.studyDataManager = studyDataManager;
-        this.traitDataManager = traitDataManager;
+    public StudyDataIndexContainer(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) {
+        this.studyDataManagerv2 = studyDataManagerv2;
         this.studyId = studyId;
     }
 
@@ -74,17 +68,18 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
 
-            ArrayList<Factor> query = (ArrayList<Factor>) studyDataManager.getFactorsByStudyID(studyId);
-
-            for (Factor f : query) {
-
-                String description = getFactorDescription(f.getTraitId());
-                String propertyName = getProperty(f.getTraitId());
-                String scaleName = getScaleName(f.getScaleId());
-                String methodName = getMethodName(f.getMethodId());
-
-                addFactorData(container, f.getName(), description, propertyName, scaleName, methodName, f.getDataType());
+            List<FactorDetails> factorDetails = studyDataManagerv2.getFactors(Integer.valueOf(studyId));
+            for(FactorDetails factorDetail : factorDetails){
+                String name = factorDetail.getName();
+                String description = factorDetail.getDescription();
+                String propertyName = factorDetail.getProperty();
+                String scaleName = factorDetail.getScale();
+                String methodName = factorDetail.getMethod();
+                String dataType = factorDetail.getDataType();
+                
+                addFactorData(container, name, description, propertyName, scaleName, methodName, dataType);
             }
+
             return container;
 
         } catch (MiddlewareQueryException e) {
@@ -116,18 +111,18 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
 
-            ArrayList<Variate> query;
-            query = (ArrayList<Variate>) studyDataManager.getVariatesByStudyID(studyId);
-
-            for (Variate v : query) {
-
-                String description = getFactorDescription(v.getTraitId());
-                String propertyName = getProperty(v.getTraitId());
-                String scaleName = getScaleName(v.getScaleId());
-                String methodName = getMethodName(v.getMethodId());
-
-                addVariateData(container, v.getName(), description, propertyName, scaleName, methodName, v.getDataType());
+            List<ObservationDetails> variateDetails = studyDataManagerv2.getObservations(Integer.valueOf(studyId));
+            for(ObservationDetails variateDetail : variateDetails){
+                String name = variateDetail.getName();
+                String description = variateDetail.getDescription();
+                String propertyName = variateDetail.getProperty();
+                String scaleName = variateDetail.getScale();
+                String methodName = variateDetail.getMethod();
+                String dataType = variateDetail.getDataType();
+                
+                addVariateData(container, name, description, propertyName, scaleName, methodName, dataType);
             }
+            
             return container;
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_STUDY_VARIATE);
@@ -146,42 +141,6 @@ public class StudyDataIndexContainer{
         item.getItemProperty(DATATYPE).setValue(datatype);
     }
 
-    private String getFactorDescription(int traitId) throws MiddlewareQueryException{
-        String factorDescription = "";
-        Trait trait = traitDataManager.getTraitById(traitId);
-        if (!(trait == null)) {
-            factorDescription = trait.getDescripton();
-        }
-        return factorDescription;
-    }
-
-    private String getProperty(int traitId) throws MiddlewareQueryException {
-        String propertyName = "";
-        Trait trait = traitDataManager.getTraitById(traitId);
-        if (!(trait == null)) {
-            propertyName = trait.getName();
-        }
-        return propertyName;
-    }
-
-    private String getScaleName(int scaleId) throws MiddlewareQueryException {
-        String scaleName = "";
-        Scale scale = traitDataManager.getScaleByID(scaleId);
-        if (!(scale == null)) {
-            scaleName = scale.getName();
-        }
-        return scaleName;
-    }
-
-    private String getMethodName(int methodId)  throws MiddlewareQueryException{
-        String methodName = "";
-        TraitMethod method = traitDataManager.getTraitMethodById(methodId);
-        if (!(method == null)) {
-            methodName = method.getName();
-        }
-        return methodName;
-    }
-
     public IndexedContainer getStudies(String name, String country, Season season, Integer date) throws InternationalizableException {
         IndexedContainer container = new IndexedContainer();
 
@@ -190,53 +149,22 @@ public class StudyDataIndexContainer{
         container.addContainerProperty(STUDY_NAME, String.class, "");
         
         ArrayList<Study> studies = new ArrayList<Study>();
-
+        
         try {
-            if (date != null) {
+            StudyQueryFilter filter = new StudyQueryFilter();
+            filter.setName(name);
+            filter.setCountry(country);
+            filter.setSeason(season);
+            filter.setStartDate(date);
+            filter.setStart(0);
+            filter.setNumOfRows(Integer.MAX_VALUE);
+            List<StudyNode> studyNodes = studyDataManagerv2.searchStudies(filter);
 
-                // Get from central
-                studies.addAll(studyDataManager.getStudyBySDate(date, 0,
-                        (int) studyDataManager.countStudyBySDate(date, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL,
-                        Database.CENTRAL));
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyBySDate(date, 0,
-                        (int) studyDataManager.countStudyBySDate(date, Operation.EQUAL, Database.LOCAL), Operation.EQUAL, Database.LOCAL));
-            }
-
-            if (name != null) {
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyByName(name, 0,
-                        (int) studyDataManager.countStudyByName(name, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL, Database.CENTRAL));
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyByName(name, 0,
-                        (int) studyDataManager.countStudyByName(name, Operation.EQUAL, Database.LOCAL), Operation.EQUAL, Database.LOCAL));
-
-            }
-
-            if (country != null) {
-                // Get from central
-                studies.addAll(studyDataManager.getStudyByCountry(country, 0,
-                        (int) studyDataManager.countStudyByCountry(country, Operation.EQUAL, Database.CENTRAL), Operation.EQUAL,
-                        Database.CENTRAL));
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyByCountry(country, 0,
-                        (int) studyDataManager.countStudyByCountry(country, Operation.EQUAL, Database.LOCAL), Operation.EQUAL,
-                        Database.LOCAL));
-            }
-
-            if (season != null) {
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyBySeason(season, 0,
-                        (int) studyDataManager.countStudyBySeason(season, Database.CENTRAL), Database.CENTRAL));
-
-                // Get from central
-                studies.addAll(studyDataManager.getStudyBySeason(season, 0,
-                        (int) studyDataManager.countStudyBySeason(season, Database.LOCAL), Database.LOCAL));
+            for(StudyNode node : studyNodes){
+                Study study = new Study();
+                study.setId(node.getId());
+                study.setName(node.getName());
+                studies.add(study);
             }
 
         } catch (MiddlewareQueryException e) {
