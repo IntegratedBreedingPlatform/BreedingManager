@@ -24,6 +24,11 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
@@ -60,9 +65,15 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	private ImportedGermplasmCrosses importedGermplasmCrosses;
 	
 	private Boolean fileIsValid;
+
+	private GermplasmListManager germplasmListManager;
 	
-	public CrossingManagerUploader(CrossingManagerImportFileComponent crossingManagerImportFileComponent) {
+	private GermplasmList maleGermplasmList;
+	private GermplasmList femaleGermplasmList;	
+	
+	public CrossingManagerUploader(CrossingManagerImportFileComponent crossingManagerImportFileComponent, GermplasmListManager germplasmListManager) {
 		this.source = crossingManagerImportFileComponent;
+		this.germplasmListManager = germplasmListManager;
 	}
 	
 	public OutputStream receiveUpload(String filename, String mimeType) { 
@@ -101,7 +112,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         		importedGermplasmCrosses = null;
         	}
         	
-        	if(importedGermplasmCrosses.getImportedGermplasmCrosses().size()==0){
+        	if(importedGermplasmCrosses==null || importedGermplasmCrosses.getImportedGermplasmCrosses().size()==0){
         		source.selectManuallyMakeCrosses();
         	} else {
         		source.selectAlreadyDefinedCrossesInNurseryTemplateFile();
@@ -110,13 +121,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		} catch (IOException e) {
-			showInvalidFileError(e.getMessage());
+			showInvalidFileTypeError();
 		} catch (ReadOnlyException e) {
 			showInvalidFileTypeError();
 		} catch (ConversionException e) {
 			showInvalidFileTypeError();
 		} catch (OfficeXmlFileException e){
-			showInvalidFileError(e.getMessage());
+			showInvalidFileTypeError();
 		}
     }
 
@@ -135,6 +146,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     	currentColumn = 0;
     	    	
     	ImportedGermplasmCross importedGermplasmCross;
+    	Boolean germplasmListDataAreValid = true;
     
 		if(fileIsValid){
 			currentRow++;
@@ -153,10 +165,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 						importedGermplasmCross.setMaleEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
 						System.out.println("DEBUG | MALE ENTRY ID:"+getCellStringValue(currentSheet, currentRow, col));
 					} else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("FGID")){
-						importedGermplasmCross.setFemaleGId(Long.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+						importedGermplasmCross.setFemaleGId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
 						System.out.println("DEBUG | FEMALE GID:"+getCellStringValue(currentSheet, currentRow, col));
 					} else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("MGID")){
-						importedGermplasmCross.setMaleGId(Long.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+						importedGermplasmCross.setMaleGId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
 						System.out.println("DEBUG | MALE GID:"+getCellStringValue(currentSheet, currentRow, col));
 					} else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSSING DATE")){
 						try {
@@ -176,9 +188,42 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 					}
 				}
 				importedGermplasmCrosses.addImportedGermplasmCross(importedGermplasmCross);
+				
+				//Check if male entryID and GID are valid
+				Boolean maleFound = true; //set true for cases wherein there is no list id
+				if(maleGermplasmList!=null){
+					maleFound = false;
+					for(int gd=0;gd<maleGermplasmList.getListData().size();gd++){
+						GermplasmListData germplasmListData = maleGermplasmList.getListData().get(gd);
+					    if(germplasmListData.getEntryId().equals(importedGermplasmCross.getMaleEntryId())
+					    		&& germplasmListData.getGid().equals(importedGermplasmCross.getMaleGId())){ 
+					    	maleFound = true;
+						}
+					}
+				}
+				
+				//Check if female entryID and GID are valid
+				Boolean femaleFound = true; //set true for cases wherein there is no list id
+				if(maleGermplasmList!=null){
+					femaleFound = false;				
+					for(int gd=0;gd<maleGermplasmList.getListData().size();gd++){
+						GermplasmListData germplasmListData = femaleGermplasmList.getListData().get(gd);
+					    if(germplasmListData.getEntryId().equals(importedGermplasmCross.getFemaleEntryId())
+					    		&& germplasmListData.getGid().equals(importedGermplasmCross.getFemaleGId())){
+					    	femaleFound = true;
+					    }
+					}
+				}
+				
+				if(maleFound==false || femaleFound==false)
+					germplasmListDataAreValid = false;				
+				
 				currentRow++;
 			}
     	}
+		if(germplasmListDataAreValid==false){
+			showInvalidFileError("Invalid germplasm list data on sheet 2.");
+		}
     }
 
     private void readNurseryTemplateFileInfo(){
@@ -214,6 +259,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     }
     
     private void readConditions(){
+    
+    	Boolean femaleListIDPresent = false;
+    	Boolean maleListIDPresent = false;
     	
     	currentRow++; //Skip row from file info
     	
@@ -244,6 +292,36 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     				,getCellStringValue(currentSheet,currentRow,6,true)
     				,getCellStringValue(currentSheet,currentRow,7,true));
     			importedGermplasmCrosses.addImportedCondition(importedCondition);
+    	
+    	    	//If male list ID is preset, set flag
+    			if(importedCondition.getCondition().toUpperCase().equals("MALE LIST ID")){
+    				maleListIDPresent = true;
+    				
+    				if(importedCondition.getValue()!=null && importedCondition.getValue()!=""){
+	    				try {
+	   						maleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						} catch (MiddlewareQueryException e) {
+							e.printStackTrace();
+						}
+    				}
+    			}
+    			//If female list ID is preset, set flag
+    			else if(importedCondition.getCondition().toUpperCase().equals("FEMALE LIST ID")){
+    				femaleListIDPresent = true;
+    				if(importedCondition.getValue()!=null && importedCondition.getValue()!=""){
+	    				try {
+							femaleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
+						} catch (NumberFormatException e) {
+							showInvalidFileError("System Error");
+							e.printStackTrace();
+						} catch (MiddlewareQueryException e) {
+							showInvalidFileError("System Error");
+							e.printStackTrace();
+						}
+    				}
+    			}    			
     			
     			System.out.println("");
     			System.out.println("DEBUG | Condition:"+getCellStringValue(currentSheet,currentRow,0));
@@ -258,6 +336,12 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     			currentRow++;
     		}
     	}
+    	
+    	//Check if male & female list ID's are present
+    	if(femaleListIDPresent==false || maleListIDPresent==false){
+    		showInvalidFileError("Male and Female List ID's should be present under the conditions.");
+    	}
+    	
     	currentRow++;
     }
 
@@ -442,7 +526,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     
     private void showInvalidFileError(String message){
     	if(fileIsValid){
-    		source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE); // + message, Notification.TYPE_ERROR_MESSAGE);
+    		source.getAccordion().getApplication().getMainWindow().showNotification(message, Notification.TYPE_ERROR_MESSAGE);
     		fileIsValid = false;
     	}
     }

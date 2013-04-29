@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUpl
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,9 +43,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
     public CrossingManagerUploader crossingManagerUploader;
     
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
     
     public CrossingManagerImportFileComponent(CrossingManagerMain source, Accordion accordion){
     	this.source = source;
@@ -73,7 +76,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
         
-        crossingManagerUploader = new CrossingManagerUploader(this);
+        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
         uploadComponents.setReceiver(crossingManagerUploader);
         uploadComponents.addListener(crossingManagerUploader);
         

@@ -7,8 +7,8 @@ public class ImportedGermplasmCross {
 	private Integer cross;
 	private Integer femaleEntryId;
 	private Integer maleEntryId;
-	private Long femaleGId;
-	private Long maleGId;
+	private Integer femaleGId;
+	private Integer maleGId;
 	private Date crossingDate;
 	private String seedsHarvested;
 	private String notes;
@@ -17,7 +17,7 @@ public class ImportedGermplasmCross {
 		
 	}
 	
-	public ImportedGermplasmCross(Integer cross, Integer femaleEntryId, Integer maleEntryId, Long femaleGId, Long maleGId, Date crossingDate, String seedsHarvested, String notes){
+	public ImportedGermplasmCross(Integer cross, Integer femaleEntryId, Integer maleEntryId, Integer femaleGId, Integer maleGId, Date crossingDate, String seedsHarvested, String notes){
 		this.cross = cross;
 		this.femaleEntryId = femaleEntryId;
 		this.maleEntryId = maleEntryId;
@@ -52,19 +52,19 @@ public class ImportedGermplasmCross {
 		this.maleEntryId = maleEntryId;
 	}
 	
-	public Long getFemaleGId(){
+	public Integer getFemaleGId(){
 		return femaleGId;
 	}
 	
-	public void setFemaleGId(Long femaleGId){
+	public void setFemaleGId(Integer femaleGId){
 		this.femaleGId = femaleGId;
 	}
 	
-	public Long getMaleGId(){
+	public Integer getMaleGId(){
 		return maleGId;
 	}
 	
-	public void setMaleGId(Long maleGId){
+	public void setMaleGId(Integer maleGId){
 		this.maleGId = maleGId;
 	}	
 	
