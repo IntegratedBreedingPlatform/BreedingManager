@@ -11,10 +11,12 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.Action;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,6 +44,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     
     private static final Integer CROSS_OPTIONID_ONE = 1;
     private static final Integer CROSS_OPTIONID_TWO = 2;
+    private static final Action ACTION_SELECT_ALL = new Action("Select All");
+	private static final Action ACTION_DELETE = new Action("Delete selected crosses");
+	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -126,12 +131,27 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         lblCrossMade=new Label();
         tableCrossesMade = new Table();
         tableCrossesMade.setSizeFull();
+        tableCrossesMade.setSelectable(true);	
         tableCrossesMade.setMultiSelect(true);
+        
         tableCrossesMade.addContainerProperty(1, String.class, null);
         tableCrossesMade.addContainerProperty(2, String.class, null);
         tableCrossesMade.addContainerProperty(3, String.class, null);
         tableCrossesMade.setColumnHeaders(new String[]{"Cross Name", "Female Parent", "Male Parent"});
-        
+        tableCrossesMade.addActionHandler(new Action.Handler() {
+			public Action[] getActions(Object target, Object sender) {
+					return ACTIONS_TABLE_CONTEXT_MENU;
+			}
+
+			public void handleAction(Action action, Object sender, Object target) {
+				if (ACTION_DELETE == action) {
+					deleteCrossAction();
+				} else if (ACTION_SELECT_ALL == action) {
+					tableCrossesMade.setValue(tableCrossesMade.getItemIds());
+				}
+			}
+		});
+
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
        
@@ -176,44 +196,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         
         addComponent(layoutButtonArea);
         setComponentAlignment(layoutButtonArea, Alignment.BOTTOM_RIGHT);
-        
-    }
-    
-    private void populateGermplasmSelectList(List<GermplasmListEntry> entryList, ListSelect selectList){
-    	for (GermplasmListEntry entry : entryList){
-    		selectList.addItem(entry);
-    		selectList.setItemCaption(entry, entry.getDesignation());
-    	}
-    }
-    
-    //mock data to test Male List
-    private void populateMaleList() {
-    	List<GermplasmListEntry> maleEntries = new ArrayList<GermplasmListEntry>();
-    	
-		//mock data to test multiselect
-    	int[] idList = new int[]{-15,-20,-88,-4,-6};
-		String[] textList = new String[] { "Male one", "Male two",
-		        "Male three", "Male four", "Male five"};
-		
-		for (int i = 0; i < idList.length; i++) {
-			maleEntries.add(new GermplasmListEntry(idList[i],i+1,textList[i]));
-        }
-		
-		populateGermplasmSelectList(maleEntries, listSelectMale);
-    }
-  
-    //mock data to test Female List
-    private void populateFemaleList() {
-    	List<GermplasmListEntry> femaleEntries = new ArrayList<GermplasmListEntry>();
-    	
-    	int[] idList = new int[]{15,20,88,4,6};
-		String[] textList = new String[] { "Female one", "Female two",
-		        "Female three", "Female four", "Female five"};
-		for (int i = 0; i < textList.length; i++) {
-			femaleEntries.add(new GermplasmListEntry(idList[i],i+1,textList[i]));
-        }
-		
-		populateGermplasmSelectList(femaleEntries, listSelectFemale);
     }
 
     @Override
@@ -335,6 +317,18 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			}
 		}
     }
+    
+    // Action handler for Delete Selected Crosses context menu option
+    private void deleteCrossAction(){
+    	final Collection<?> selectedIds = (Collection<?>) tableCrossesMade.getValue();
+    	if (!selectedIds.isEmpty()){
+    		for (Object itemId : selectedIds){
+				tableCrossesMade.removeItem(itemId);
+			}
+    	} else {
+    		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), "");
+    	}
+    }
 
     // Concatenation of male and female parents' item caption
 	private String getCrossingText(String caption1, String caption2) {
@@ -345,6 +339,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private String getCrossingID(Integer parent1, Integer parent2) {
 		return parent1 + PARENTS_DELIMITER + parent2;
 	}
+	
+	
 
     public CrossingManagerMain getSource() {
     	return source;
