@@ -237,7 +237,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     		
     		// Female - Male Multiplication
     		if (CROSS_OPTIONID_ONE.equals(optionId)){
-    			tableCrossesMade.removeAllItems(); // clear previous entries
     			multiplyParents(femaleList, maleList);
     			if (chkBoxMakeReciprocalCrosses.booleanValue()){
     				multiplyParents(maleList, femaleList);
@@ -246,7 +245,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     		// Top to Bottom Crossing	
     		} else if (CROSS_OPTIONID_TWO.equals(optionId)){
     			if (femaleList.size() == maleList.size()){
-    				tableCrossesMade.removeAllItems(); // clear previous entries
     				makeTopToBottomCrosses(femaleList, maleList);
     				if (chkBoxMakeReciprocalCrosses.booleanValue()){
     					makeTopToBottomCrosses(maleList, femaleList);
@@ -288,10 +286,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			GermplasmListEntry parent2 = iterator2.next();
 			String caption1 = parent1.getDesignation();
 			String caption2 = parent2.getDesignation();
-			tableCrossesMade.addItem(new Object[] {
-					getCrossingText(caption1, caption2), caption1, caption2 
-					}, 
-					getCrossingID(parent1.getGid(), parent2.getGid())); 
+			String crossingId = getCrossingID(parent1.getGid(), parent2.getGid());
+			
+			if (!crossAlreadyExists(crossingId)){
+				tableCrossesMade.addItem(new Object[] {
+					getCrossingText(caption1, caption2), caption1, caption2 }, 
+					crossingId); 
+			}
     	}
 
 	}
@@ -310,13 +311,27 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			
 			for (GermplasmListEntry parent2 : parents2){
 				String caption2 = parent2.getDesignation();
-				tableCrossesMade.addItem(new Object[] {
-						getCrossingText(caption1, caption2), caption1, caption2 
-						}, 
-						getCrossingID(parent1.getGid(), parent2.getGid())); 
+				String crossingId = getCrossingID(parent1.getGid(), parent2.getGid());
+				
+				if (!crossAlreadyExists(crossingId)){
+					tableCrossesMade.addItem(new Object[] {
+							getCrossingText(caption1, caption2), caption1, caption2 }, 
+							crossingId); 					
+				}
 			}
 		}
     }
+
+    // Checks if crossing ID already exists in Crossing Made table
+	private boolean crossAlreadyExists(String crossingId) {
+		for (Object itemId : tableCrossesMade.getItemIds()){
+			String idString = (String) itemId;
+			if (idString.equals(crossingId)){
+				return true;
+			}
+		}
+		return false;
+	}
     
     // Action handler for Delete Selected Crosses context menu option
     private void deleteCrossAction(){
