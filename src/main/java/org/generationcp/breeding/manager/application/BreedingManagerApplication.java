@@ -104,7 +104,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return germplasmImportWindow;
             } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
                 Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
-                crossingManagerWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
+                crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
                 crossingManagerWindow.setSizeUndefined();
                 crossingManagerWindow.addComponent(new CrossingManagerMain());
                 this.addWindow(crossingManagerWindow);
