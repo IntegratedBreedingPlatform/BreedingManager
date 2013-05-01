@@ -43,6 +43,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private static final String LIST_SEED_INVENTORY = "List Seed Inventory";
     
     private int germplasmListId;
+    private int germplasmListStatus;
     private String listName;
     private int userId;
     private GermplasmListDetailComponent germplasmListDetailComponent;
@@ -64,28 +65,31 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 	private GermplasmList germplasmList;
 	
 
-    public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
+    public GermplasmListAccordionMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
+        this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
     }
 
-    public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+    public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
     	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
+        this.germplasmListStatus = 101;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
         
     }
     
-    public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+    public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
     	this.germplasmListTreeComponent = germplasmListTreeComponent;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
+        this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
     }    
@@ -118,7 +122,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Override
     public void afterPropertiesSet() {
         this.setSizeFull();
-        
         germplasmListDetailComponent = new GermplasmListDetailComponent(this, germplasmListManager, germplasmListId);
         germplasmListDetailComponent.setData(LIST_DETAILS);
 
