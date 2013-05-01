@@ -92,6 +92,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_DELETE = new Action("Delete selected entries");
 	static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
+	static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
 	private Window germplasmListCopyToNewListDialog;
 
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
@@ -136,7 +137,11 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			
 			listDataTable.addActionHandler(new Action.Handler() {
 				public Action[] getActions(Object target, Object sender) {
+				    if (germplasmListId < 0){
 						return ACTIONS_TABLE_CONTEXT_MENU;
+				    }else{
+						return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
+				    }
 				}
 
 				public void handleAction(Action action, Object sender, Object target) {
