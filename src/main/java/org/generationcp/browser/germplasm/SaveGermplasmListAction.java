@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
@@ -33,7 +34,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * The Class SaveGermplasmListAction.
@@ -103,8 +107,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
                 int entryid = 1;
 
                 for (int i = 0; i < tabSheet.getComponentCount(); i++) {
-                    int gid = Integer.valueOf(tabSheet.getTab(i).getCaption()
+                    Tab currentTab = tabSheet.getTab(i);
+                    int gid = Integer.valueOf(currentTab.getCaption()
                             .toString());
+                    
+                    // save germplasm's preferred name as designation
+                    designation = getDesignationFromTab(currentTab);
+                    
                     GermplasmListData germplasmListData = new GermplasmListData(
                             null, germList, gid, entryid, entryCode,
                             seedSource, designation, groupName, status,
@@ -132,7 +141,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
                         .countGermplasmListDataByListId(Integer.valueOf(listId));
 
                 for (int i = 0; i < tabSheet.getComponentCount(); i++) {
-                    int gid = Integer.valueOf(tabSheet.getTab(i).getCaption()
+                    Tab currentTab = tabSheet.getTab(i);
+                    int gid = Integer.valueOf(currentTab.getCaption()
                             .toString());
 
                     // check if there is existing gid in the list
@@ -142,6 +152,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
                     if (germplasmList.size() < 1) {
                         ++entryid;
+                        
+                        // save germplasm's preferred name as designation
+                        designation = getDesignationFromTab(currentTab);
+                        
                         GermplasmListData germplasmListData = new GermplasmListData(
                                 null, germList, gid, entryid, entryCode,
                                 seedSource, designation, groupName, status,
@@ -203,6 +217,20 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
         } else {
             return 1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
         }
+    }
+    
+    private String getDesignationFromTab(Tab currentTab) {
+        // save germplasm's preferred name as designation
+        VerticalLayout tabLayout = (VerticalLayout) currentTab.getComponent();
+        for (final Iterator<Component> iterator = tabLayout.getComponentIterator(); iterator.hasNext();) {
+            Component component = iterator.next();
+            //retrieve preferred name from the germplasm details tab
+            if (component instanceof GermplasmDetail) {
+                GermplasmDetail germplasmDetail = (GermplasmDetail) component;
+                return germplasmDetail.getGermplasmDetailModel().getGermplasmPreferredName();
+            }
+        }
+        return "-";
     }
 
     @Override
