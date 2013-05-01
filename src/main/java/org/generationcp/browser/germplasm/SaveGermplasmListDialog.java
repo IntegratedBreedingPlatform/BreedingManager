@@ -26,6 +26,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -151,23 +152,18 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         comboBoxListName.select("");
     }
 
-    private void populateSelectType(Select selectType) {
-        selectType.addItem("LST");
-        selectType.addItem("HB");
-        selectType.addItem("F1");
-        selectType.addItem("F2");
-        selectType.addItem("PN");
-        selectType.addItem("OYT");
-        selectType.addItem("RYT");
-        selectType.addItem("FOLDER");
-        selectType.addItem("EXTACQ");
-        selectType.addItem("EXTREQ");
-        selectType.addItem("INTREQ");
-        selectType.addItem("COLLMIS");
-        selectType.addItem("INTACQ");
-        selectType.addItem("SI");
-        selectType.addItem("SEEDSTCK");
-        selectType.addItem("TRNGENC");
+    private void populateSelectType(Select selectType) throws MiddlewareQueryException {
+        List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
+        
+        for (UserDefinedField listType : listTypes) {
+            String typeCode = listType.getFcode();
+            selectType.addItem(typeCode);
+            selectType.setItemCaption(typeCode, listType.getFname());
+            //set "GERMPLASMLISTS" as the default value
+            if ("LST".equals(typeCode)) {
+                selectType.setValue(typeCode);
+            }
+        }
     }
 
     @Override
