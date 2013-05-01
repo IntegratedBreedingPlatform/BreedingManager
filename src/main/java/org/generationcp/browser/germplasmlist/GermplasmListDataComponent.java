@@ -213,17 +213,19 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				deleteSelectedEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
 				deleteSelectedEntriesButton.setDescription("Delete list entries");
 				buttonArea.addComponent(deleteSelectedEntriesButton);
+				
+				//if(germplasmListStatus>=100){
+				//    deleteSelectedEntriesButton.setEnabled(false); 
+				//    saveSortingButton.setEnabled(false);
+				//}else{
+				    deleteSelectedEntriesButton.setEnabled(true); 
+				    saveSortingButton.setEnabled(true);
+				//}
+
 			}
 
 			addComponent(buttonArea);
 
-			if(germplasmListStatus>=100){
-			    deleteSelectedEntriesButton.setEnabled(false); 
-			    saveSortingButton.setEnabled(false);
-			}else{
-			    deleteSelectedEntriesButton.setEnabled(true); 
-			    saveSortingButton.setEnabled(true);
-			}
 
 		}
 	}
@@ -314,11 +316,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
 			fileDownloadResource.setFilename(listName + ".xls");
 
-			Window downloadWindow = new Window();
-			downloadWindow.setWidth(0);
-			downloadWindow.setHeight(0);
-			downloadWindow.open(fileDownloadResource);
-			this.getWindow().addWindow(downloadWindow);
+			//Window downloadWindow = new Window();
+			//downloadWindow.setWidth(0);
+			//downloadWindow.setHeight(0);
+			//downloadWindow.open(fileDownloadResource);
+			//this.getWindow().addWindow(downloadWindow);
+			this.getWindow().open(fileDownloadResource);
 
 			//TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
 		        //File tempFile = new File(tempFileName);
