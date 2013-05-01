@@ -18,7 +18,9 @@ import org.generationcp.browser.germplasmlist.listeners.GermplasmListSelectedTab
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -59,6 +61,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Autowired
 	private GermplasmListManager germplasmListManager;
 	private boolean forGermplasmListWindow;
+	private GermplasmList germplasmList;
 	
 
     public GermplasmListAccordionMenu(int germplasmListId,String listName,int userId, boolean fromUrl) {
@@ -92,8 +95,14 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         Tab tab = this.getTab(selected);
         if (tab.getComponent() instanceof VerticalLayout) {
             if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
+        	try {
+		    germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+		} catch (MiddlewareQueryException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
                 if (layoutListData.getComponentCount() == 0) {
-                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow));
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }

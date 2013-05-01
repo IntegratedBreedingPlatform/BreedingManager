@@ -107,13 +107,15 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	private boolean forGermplasmListWindow;
+	private Integer germplasmListStatus;
 	
-	public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow){
+	public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus){
 		this.germplasmListId = germplasmListId;
 		this.fromUrl = fromUrl;
 		this.listName=listName;
 		this.germplasListUserId=germplasListUserId;
 		this.forGermplasmListWindow=forGermplasmListWindow;
+		this.germplasmListStatus=germplasmListStatus;
 	}
 
 	@Override
@@ -137,7 +139,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			
 			listDataTable.addActionHandler(new Action.Handler() {
 				public Action[] getActions(Object target, Object sender) {
-				    if (germplasmListId < 0){
+				    if (germplasmListId < 0 &&  germplasmListStatus < 100){
 						return ACTIONS_TABLE_CONTEXT_MENU;
 				    }else{
 						return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
@@ -215,7 +217,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 			addComponent(buttonArea);
 
-
+			if(germplasmListStatus>=100){
+			    deleteSelectedEntriesButton.setEnabled(false); 
+			    saveSortingButton.setEnabled(false);
+			}else{
+			    deleteSelectedEntriesButton.setEnabled(true); 
+			    saveSortingButton.setEnabled(true);
+			}
 
 		}
 	}
