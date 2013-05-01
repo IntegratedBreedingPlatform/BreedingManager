@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerAdditionalDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.slf4j.Logger;
@@ -24,10 +25,26 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
     public void buttonClick(ClickEvent event) {
         Object eventButtonData = event.getButton().getData();
         
-	if (eventButtonData.equals(CrossingManagerImportFileComponent.NEXT_BUTTON_ID) 
+        if (eventButtonData.equals(CrossingManagerImportFileComponent.NEXT_BUTTON_ID) 
                 && (source instanceof CrossingManagerImportFileComponent)) {
             ((CrossingManagerImportFileComponent) source).nextButtonClickAction();
             
+        } else if (CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID.equals(eventButtonData) 
+                && (source instanceof CrossingManagerMakeCrossesComponent)) {
+            ((CrossingManagerMakeCrossesComponent) source).backButtonClickAction();
+            
+        } else if (CrossingManagerMakeCrossesComponent.NEXT_BUTTON_ID.equals(eventButtonData) 
+            && (source instanceof CrossingManagerMakeCrossesComponent)) {
+        	((CrossingManagerMakeCrossesComponent) source).nextButtonClickAction();
+        	
+        } else if (CrossingManagerAdditionalDetailsComponent.BACK_BUTTON_ID.equals(eventButtonData) 
+                && (source instanceof CrossingManagerAdditionalDetailsComponent)) {
+            ((CrossingManagerAdditionalDetailsComponent) source).backButtonClickAction();
+            
+        } else if (CrossingManagerAdditionalDetailsComponent.NEXT_BUTTON_ID.equals(eventButtonData) 
+            && (source instanceof CrossingManagerAdditionalDetailsComponent)) {
+        	((CrossingManagerAdditionalDetailsComponent) source).nextButtonClickAction();
+        	
         } else if (CrossingManagerMakeCrossesComponent.SELECT_FEMALE_PARENT_BUTTON_ID.equals(eventButtonData)
                 && (source instanceof CrossingManagerMakeCrossesComponent)) {
             ((CrossingManagerMakeCrossesComponent) source).selectFemaleParentList();
@@ -38,7 +55,7 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
             
         } else  if (CrossingManagerMakeCrossesComponent.MAKE_CROSS_BUTTON_ID.equals(eventButtonData) 
                 && (source instanceof CrossingManagerMakeCrossesComponent)) {
-            ((CrossingManagerMakeCrossesComponent) source).makeCrosses();            
+            ((CrossingManagerMakeCrossesComponent) source).makeCrossButtonAction();            
             
         } else {
             LOG.error("GermplasmImportButtonClickListener: Error with buttonClick action. Source not identified.");

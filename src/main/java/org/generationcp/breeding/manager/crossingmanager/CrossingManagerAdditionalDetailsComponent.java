@@ -1,6 +1,14 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.Germplasm;
+import org.generationcp.breeding.manager.crossingmanager.pojos.Name;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
@@ -15,7 +23,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Form;
 
 @Configurable
-public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout 
+														implements InitializingBean, InternationalizableComponent, StoresCrossesMade{
     
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
@@ -25,6 +34,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout im
     
     private CrossingManagerMain source;
     private Accordion accordion;
+    private Map<Germplasm, Name> crossesMap;
     
     //Used Form to make use of fieldset HTML element to render section border
     private Form breedingMethodForm;
@@ -42,39 +52,55 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout im
         this.accordion = accordion;
     }
     
+    public CrossingManagerMain getSource() {
+    	return source;
+    }
+
+	public Accordion getAccordion() {
+		return accordion;
+	}
+
+	@Override
+	public void setCrossesMadeMap(Map<Germplasm, Name> crossesMap) {
+		this.crossesMap = crossesMap;
+	}
+    
     
     @Override
     public void afterPropertiesSet() throws Exception {
         setHeight("640px");
         setWidth("800px");
         
-        // Breeding Method section
         breedingMethodForm = new Form(new AdditionalDetailsBreedingMethodComponent());
         breedingMethodForm.setHeight("210px"); // make form size bigger than layout component layout
         breedingMethodForm.setWidth("740px");
         breedingMethodForm.setCaption(messageSource.getMessage(Message.BREEDING_METHOD));
-		addComponent(breedingMethodForm, "top:30px;left:30px");
 		
-		// Cross Name section
         crossNameForm = new Form(new AdditionalDetailsCrossNameComponent());
         crossNameForm.setHeight("240px");  // make form size bigger than component layout
         crossNameForm.setWidth("740px");
         crossNameForm.setCaption(messageSource.getMessage(Message.CROSS_NAME));
-		addComponent(crossNameForm, "top:200px;left:30px");
 		
-		// Cross Info section
 		crossInfoForm = new Form(new AdditionalDetailsCrossInfoComponent());
 		crossInfoForm.setHeight("120px");  // make form size bigger than layout component layout
 		crossInfoForm.setWidth("740px");
 		crossInfoForm.setCaption(messageSource.getMessage(Message.CROSS_INFO));
-		addComponent(crossInfoForm, "top:440px;left:30px");
+		
+		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
-        addComponent(backButton, "top:585px;left:600px");
+        backButton.addListener(listener);
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.addListener(listener);
+        
+        // Layout Components
+        addComponent(breedingMethodForm, "top:30px;left:30px");
+        addComponent(crossNameForm, "top:200px;left:30px");
+        addComponent(crossInfoForm, "top:440px;left:30px");
+        addComponent(backButton, "top:585px;left:600px");
         addComponent(nextButton, "top:585px;left:670px");
     }
     
@@ -89,13 +115,19 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout im
     	messageSource.setCaption(backButton, Message.BACK);
     	messageSource.setCaption(nextButton, Message.NEXT);
     }
-
-    public CrossingManagerMain getSource() {
-    	return source;
+    
+    public void nextButtonClickAction(){
+    	
+    }
+    
+    //TODO replace with actual back button logic. 
+    // For now, just displays Crossing Made map from previous screen
+    public void backButtonClickAction(){
+       if (crossesMap != null){
+    	   for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+    		   System.out.println(entry.getKey() + " >>> " + entry.getValue());
+    	   }
+       }
     }
 
-
-	public Accordion getAccordion() {
-		return accordion;
-	}
 }

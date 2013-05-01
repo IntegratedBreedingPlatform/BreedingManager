@@ -62,6 +62,9 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardScreenOne.setNextScreen(wizardScreenTwo);
         wizardScreenOne.setNextNextScreen(wizardScreenThree);
         
+        wizardScreenTwo.setNextScreen(wizardScreenThree);
+        wizardScreenTwo.setPreviousScreen(wizardScreenOne);
+        
         accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
         accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
         accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
