@@ -21,9 +21,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.pojos.Study;
 import org.generationcp.middleware.v2.domain.FactorDetails;
-import org.generationcp.middleware.v2.domain.ObservationDetails;
 import org.generationcp.middleware.v2.domain.StudyNode;
 import org.generationcp.middleware.v2.domain.StudyQueryFilter;
+import org.generationcp.middleware.v2.domain.VariateDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +111,8 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
 
-            List<ObservationDetails> variateDetails = studyDataManagerv2.getObservations(Integer.valueOf(studyId));
-            for(ObservationDetails variateDetail : variateDetails){
+            List<VariateDetails> variateDetails = studyDataManagerv2.getVariates(Integer.valueOf(studyId));
+            for(VariateDetails variateDetail : variateDetails){
                 String name = variateDetail.getName();
                 String description = variateDetail.getDescription();
                 String propertyName = variateDetail.getProperty();
