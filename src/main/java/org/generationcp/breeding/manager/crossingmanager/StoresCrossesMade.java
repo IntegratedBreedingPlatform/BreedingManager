@@ -14,8 +14,9 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.Map;
 
-import org.generationcp.breeding.manager.crossingmanager.pojos.Germplasm;
-import org.generationcp.breeding.manager.crossingmanager.pojos.Name;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
+
 
 /**
  * A class should implement this interface if it will store the map

@@ -7,10 +7,10 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.Germplasm;
-import org.generationcp.breeding.manager.crossingmanager.pojos.Name;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -77,7 +77,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         breedingMethodForm.setCaption(messageSource.getMessage(Message.BREEDING_METHOD));
 		
         crossNameForm = new Form(new AdditionalDetailsCrossNameComponent());
-        crossNameForm.setHeight("240px");  // make form size bigger than component layout
+        crossNameForm.setHeight("235px");  // make form size bigger than component layout
         crossNameForm.setWidth("740px");
         crossNameForm.setCaption(messageSource.getMessage(Message.CROSS_NAME));
 		
@@ -99,7 +99,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         // Layout Components
         addComponent(breedingMethodForm, "top:30px;left:30px");
         addComponent(crossNameForm, "top:200px;left:30px");
-        addComponent(crossInfoForm, "top:440px;left:30px");
+        addComponent(crossInfoForm, "top:450px;left:30px");
         addComponent(backButton, "top:585px;left:600px");
         addComponent(nextButton, "top:585px;left:670px");
     }

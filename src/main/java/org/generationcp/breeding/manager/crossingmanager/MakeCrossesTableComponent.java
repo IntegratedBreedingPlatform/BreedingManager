@@ -19,14 +19,14 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.pojos.Germplasm;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.pojos.Name;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,7 +239,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     	}
     }
     
-    public Map<Germplasm, Name> generateCrossesMadeMap(){
+    public Map<Germplasm, Name > generateCrossesMadeMap(){
     	Map<Germplasm, Name> crossesMadeMap = new HashMap<Germplasm, Name>();
     	
     	int ctr = 1;
@@ -252,8 +252,14 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			Integer gpId1 = Integer.parseInt(parentIDs[0]);
 			Integer gpId2 = Integer.parseInt(parentIDs[1]);
 						
-			Germplasm germplasm = new Germplasm(ctr++, gpId1, gpId2);
-			Name name = new Name(crossName, crossingNameTypeId);
+			Germplasm germplasm = new Germplasm();
+			germplasm.setGid(ctr++);
+			germplasm.setGpid1(gpId1);
+			germplasm.setGpid2(gpId2);
+			
+			Name name = new Name();
+			name.setNval(crossName);
+			name.setTypeId(crossingNameTypeId);
 			
 			crossesMadeMap.put(germplasm, name);
 		}
