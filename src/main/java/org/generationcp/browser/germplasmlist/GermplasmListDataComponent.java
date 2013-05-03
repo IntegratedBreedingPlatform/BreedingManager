@@ -192,9 +192,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 				}
 			});
 			buttonArea.addComponent(selectAllButton);
-			
 			exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
-			exportListButton.setData(EXPORT_BUTTON_ID);
+			exportListButton.setData(EXPORT_BUTTON_ID);			
+			if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
+				exportListButton.setEnabled(true);
+			} else {
+				exportListButton.setEnabled(false);
+			}
 			buttonArea.addComponent(exportListButton);
 			
 			copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
