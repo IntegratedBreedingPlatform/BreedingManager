@@ -81,7 +81,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.germplasmListStatus = 101;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
-        
     }
     
     public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
@@ -105,7 +104,8 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
-                if (layoutListData.getComponentCount() == 0) {
+        	    
+            if (layoutListData.getComponentCount() == 0) {
                     layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);

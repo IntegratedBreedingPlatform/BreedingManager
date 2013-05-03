@@ -362,12 +362,39 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 									}
 								}
 								designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
+								
+                                //Change entry IDs on listData
+                                listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) germplasmListManager.countGermplasmListDataByListId(germplasmListId));
+                                Integer entryId = 1;
+                                for (GermplasmListData listData : listDatas) {
+                                    listData.setEntryId(entryId);
+                                    entryId++;
+                                }
+                                germplasmListManager.updateGermplasmListData(listDatas);
+                                
+                                //Change entry IDs on table
+                                entryId = 1;
+                                for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+                                    int listDataId = (Integer) i.next();
+                                    Item item = listDataTable.getItem(listDataId);
+                                    item.getItemProperty(ENTRY_ID).setValue(entryId);
+                                    for (GermplasmListData listData : listDatas) {
+                                        if (listData.getId().equals(listDataId)) {
+                                            listData.setEntryId(entryId);
+                                            break;
+                                        }
+                                    }
+                                    entryId += 1;
+                                }
+                                listDataTable.requestRepaint();
+                                
 								try {
 									logDeletedListEntriesToWorkbenchProjectActivity();
 								} catch (MiddlewareQueryException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+								
 							} else {
 								showMessageInvalidDeletingListEntries();
 							}
