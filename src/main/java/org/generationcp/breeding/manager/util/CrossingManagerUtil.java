@@ -93,6 +93,10 @@ public class CrossingManagerUtil{
 	return gc;
 
     }
+    
+    public static String generateFemaleandMaleCrossName(String femaleName, String maleName){
+    	return femaleName + "/" + maleName;
+    }
 
 
 }
