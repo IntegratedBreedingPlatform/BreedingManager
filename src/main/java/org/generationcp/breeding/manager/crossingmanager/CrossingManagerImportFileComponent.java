@@ -38,6 +38,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private Component nextScreen;
     private Component nextNextScreen;
     
+    private Label filenameLabel;
+    
     private Label crossesOptionGroupLabel;
     private OptionGroup crossesOptionGroup;
 
@@ -85,13 +87,16 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         addComponent(nextButton, "top:250px;left:700px");
         
+        filenameLabel = new Label();
+        addComponent(filenameLabel, "top:110px;left:30px;");
+        
         crossesOptionGroupLabel = new Label();
-        addComponent(crossesOptionGroupLabel, "top:140px;left:30px;");
+        addComponent(crossesOptionGroupLabel, "top:156px;left:30px;");
         
         crossesOptionGroup = new OptionGroup();
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
-        addComponent(crossesOptionGroup, "top:155px;left:30px;");
+        addComponent(crossesOptionGroup, "top:175px;left:30px;");
     }
     
     @Override
@@ -105,6 +110,13 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         messageSource.setCaption(selectFileLabel, Message.SELECT_NURSERY_TEMPLATE_FILE);
         messageSource.setCaption(nextButton, Message.NEXT);
         messageSource.setCaption(crossesOptionGroupLabel,Message.SELECT_AN_OPTION_FOR_SPECIFYING_CROSSES);
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+        filenameLabel.setCaption(filenameLabel.getCaption()+": ");
+    }
+    
+    public void updateFilenameLabelValue(String filename){
+    	messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+    	filenameLabel.setCaption(filenameLabel.getCaption()+": "+filename);
     }
 
     public void nextButtonClickAction() throws InternationalizableException{

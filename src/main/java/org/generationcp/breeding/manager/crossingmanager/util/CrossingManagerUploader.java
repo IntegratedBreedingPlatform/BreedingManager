@@ -238,6 +238,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 			
 			importedGermplasmCrosses = new ImportedGermplasmCrosses(originalFilename, study, title, pmKey, objective, startDate, endDate, studyType); 
 			
+			source.updateFilenameLabelValue(originalFilename);
+			
 	    	System.out.println("DEBUG | Original Filename:" + originalFilename);
 	    	System.out.println("DEBUG | Study:" + study);
 	    	System.out.println("DEBUG | Title:" + title);
