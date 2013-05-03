@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -122,11 +123,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		messageSource.setCaption(lblCrossMade, Message.LABEL_CROSS_MADE);
 	}
 	
-    // Concatenation of male and female parents' item caption
-	private String getCrossingText(String caption1, String caption2) {
-		return caption1 + "/" + caption2;
-	}
-
     // Crossing ID = the GIDs of parents separated by delimiter (eg. 1,2)
 	private String getCrossingID(Integer parent1, Integer parent2) {
 		return parent1 + PARENTS_DELIMITER + parent2;
@@ -184,7 +180,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			
 			if (!crossAlreadyExists(crossingId)){
 				tableCrossesMade.addItem(new Object[] {
-					getCrossingText(caption1, caption2), caption1, caption2 }, 
+						CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
+					}, 
 					crossingId); 
 			}
     	}
@@ -209,7 +206,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 				
 				if (!crossAlreadyExists(crossingId)){
 					tableCrossesMade.addItem(new Object[] {
-							getCrossingText(caption1, caption2), caption1, caption2 }, 
+								CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
+							}, 
 							crossingId); 					
 				}
 			}
