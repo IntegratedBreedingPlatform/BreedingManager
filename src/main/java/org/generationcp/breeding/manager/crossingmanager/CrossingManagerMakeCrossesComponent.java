@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -25,7 +26,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
@@ -235,9 +235,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     					crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList);
     				}
     			} else {
-    				accordion.getApplication().getMainWindow()
-    					.showNotification("The number of male and female parents should be equal.", 
-    							Notification.TYPE_ERROR_MESSAGE);
+    				MessageNotifier.showError(getWindow(), 
+    						messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL), "");
     			}
     		}
     	}

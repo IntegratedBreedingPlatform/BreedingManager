@@ -77,7 +77,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         breedingMethodForm.setCaption(messageSource.getMessage(Message.BREEDING_METHOD));
 		
         crossNameForm = new Form(new AdditionalDetailsCrossNameComponent());
-        crossNameForm.setHeight("235px");  // make form size bigger than component layout
+        crossNameForm.setHeight("260px");  // make form size bigger than component layout
         crossNameForm.setWidth("740px");
         crossNameForm.setCaption(messageSource.getMessage(Message.CROSS_NAME));
 		
@@ -97,8 +97,8 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         nextButton.addListener(listener);
         
         // Layout Components
-        addComponent(breedingMethodForm, "top:30px;left:30px");
-        addComponent(crossNameForm, "top:200px;left:30px");
+        addComponent(breedingMethodForm, "top:20px;left:30px");
+        addComponent(crossNameForm, "top:180px;left:30px");
         addComponent(crossInfoForm, "top:450px;left:30px");
         addComponent(backButton, "top:585px;left:600px");
         addComponent(nextButton, "top:585px;left:670px");
