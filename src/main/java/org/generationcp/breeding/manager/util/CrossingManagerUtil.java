@@ -1,11 +1,22 @@
 package org.generationcp.breeding.manager.util;
 
+import java.util.List;
+
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.UserDefinedField;
+
+import com.vaadin.ui.Window;
 
 
 public class CrossingManagerUtil{
+	
+	public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 
     private GermplasmDataManager germplasmDataManager;
 
@@ -97,6 +108,72 @@ public class CrossingManagerUtil{
     public static String generateFemaleandMaleCrossName(String femaleName, String maleName){
     	return femaleName + "/" + maleName;
     }
+    
+    /**
+     * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
+	 * (matches upper case of UserDefinedField either fCode or fName). Query is:
+	 * <b>
+	 *	SELECT fldno
+     *	  FROM udflds
+     *   WHERE UPPER(fname) IN ('CROSSING NAME', 'CROSS NAME')
+     *      OR UPPER(fcode) IN ('CROSSING NAME', 'CROSS NAME');
+	 * </b>
+	 * 
+     * @param germplasmListManager
+     * @return
+     * @throws MiddlewareQueryException 
+     */
+	public static Integer getIDForUserDefinedFieldCrossingName(GermplasmListManager germplasmListManager) throws MiddlewareQueryException  {
+	    	
+		List<UserDefinedField> nameTypes = germplasmListManager.getGermplasmNameTypes();
+		for (UserDefinedField type : nameTypes){
+			for (String crossNameValue : USER_DEF_FIELD_CROSS_NAME){
+				if (crossNameValue.equals(type.getFcode().toUpperCase()) || 
+						crossNameValue.equals(type.getFname().toUpperCase())){
+					return type.getFldno();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
+	 * (matches upper case of UserDefinedField either fCode or fName). Query is:
+	 * <b>
+	 *	SELECT fldno
+     *	  FROM udflds
+     *   WHERE UPPER(fname) IN ('CROSSING NAME', 'CROSS NAME')
+     *      OR UPPER(fcode) IN ('CROSSING NAME', 'CROSS NAME');
+	 * </b>
+	 * If any error occurs, shows error message in passed in Window instance
+	 * @param germplasmListManager - instance of GermplasmListManager
+	 * @param window - window where error message will be shown
+	 * @param messageSource - resource bundle where the error message will be retrieved from
+	 * @return
+	 */
+	public static Integer getIDForUserDefinedFieldCrossingName(GermplasmListManager germplasmListManager, 
+			Window window, SimpleResourceBundleMessageSource messageSource){
+		
+		try {
+			
+			return getIDForUserDefinedFieldCrossingName(germplasmListManager);
+		
+		} catch (MiddlewareQueryException e) {
+            e.printStackTrace();
+            
+            if (window != null && messageSource != null){
+                MessageNotifier.showWarning(window, 
+                		messageSource.getMessage(Message.ERROR_DATABASE),
+                		messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE));
+            }
+		}
+		
+		return null;
+	}
+	
+	
 
 
 }
