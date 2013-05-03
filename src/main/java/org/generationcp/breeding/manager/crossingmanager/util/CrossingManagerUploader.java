@@ -24,6 +24,7 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -528,14 +529,16 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     
     private void showInvalidFileError(String message){
     	if(fileIsValid){
-    		source.getAccordion().getApplication().getMainWindow().showNotification(message, Notification.TYPE_ERROR_MESSAGE);
+    	    MessageNotifier.showError(source.getWindow(), "", message);
+    		//source.getAccordion().getApplication().getMainWindow().showNotification(message, Notification.TYPE_ERROR_MESSAGE);
     		fileIsValid = false;
     	}
     }
     
     private void showInvalidFileTypeError(){
     	if(fileIsValid){
-    		source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+    	    MessageNotifier.showError(source.getWindow(), "", "Invalid Import File Type, you need to upload an XLS file");
+    		//source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
     		fileIsValid = false;
     	}
     }    
