@@ -29,14 +29,12 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.Window.Notification;
 
 public class CrossingManagerUploader implements Receiver, SucceededListener {
 	
@@ -198,6 +196,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 						GermplasmListData germplasmListData = maleGermplasmList.getListData().get(gd);
 					    if(germplasmListData.getEntryId().equals(importedGermplasmCross.getMaleEntryId())
 					    		&& germplasmListData.getGid().equals(importedGermplasmCross.getMaleGId())){ 
+					    	importedGermplasmCross.setMaleDesignation(germplasmListData.getDesignation());
 					    	maleFound = true;
 						}
 					}
@@ -211,6 +210,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 						GermplasmListData germplasmListData = femaleGermplasmList.getListData().get(gd);
 					    if(germplasmListData.getEntryId().equals(importedGermplasmCross.getFemaleEntryId())
 					    		&& germplasmListData.getGid().equals(importedGermplasmCross.getFemaleGId())){
+					    	importedGermplasmCross.setFemaleDesignation(germplasmListData.getDesignation());
 					    	femaleFound = true;
 					    }
 					}

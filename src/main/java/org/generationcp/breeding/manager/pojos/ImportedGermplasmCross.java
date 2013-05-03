@@ -12,6 +12,10 @@ public class ImportedGermplasmCross {
 	private Date crossingDate;
 	private String seedsHarvested;
 	private String notes;
+	
+	//these fields are NOT part of template, but filled up during validation from middleware
+	private String femaleDesignation;
+	private String maleDesignation;
     
 	public ImportedGermplasmCross(){
 		
@@ -90,6 +94,22 @@ public class ImportedGermplasmCross {
 	
 	public void setNotes(String notes){
 		this.notes = notes;
+	}
+
+	public String getFemaleDesignation() {
+		return femaleDesignation;
+	}
+
+	public void setFemaleDesignation(String femaleDesignation) {
+		this.femaleDesignation = femaleDesignation;
+	}
+
+	public String getMaleDesignation() {
+		return maleDesignation;
+	}
+
+	public void setMaleDesignation(String maleDesignation) {
+		this.maleDesignation = maleDesignation;
 	}
 	
 };

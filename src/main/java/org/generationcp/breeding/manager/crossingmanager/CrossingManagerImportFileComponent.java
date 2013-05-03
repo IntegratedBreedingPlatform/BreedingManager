@@ -1,18 +1,27 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
+import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -129,8 +138,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     			if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
     				getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
     			} else {
-    				if(this.nextScreen != null){
-    	    			this.accordion.setSelectedTab(this.nextNextScreen);
+    				if(this.nextNextScreen != null){
+    					assert this.nextNextScreen instanceof StoresCrossesMade;
+    		        	((StoresCrossesMade) nextNextScreen).setCrossesMadeMap(generateCrossesMadeMap());
+    	    			
+    		        	this.accordion.setSelectedTab(this.nextNextScreen);
     	        	} else {
     	        		this.nextButton.setEnabled(false);
     	        	}
@@ -143,6 +155,33 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 	        	}
     		}
     	}
+    }
+    
+    public Map<Germplasm, Name > generateCrossesMadeMap(){
+    	Map<Germplasm, Name> crossesMadeMap = new HashMap<Germplasm, Name>();
+    	List<ImportedGermplasmCross> importedGermplasmCrosses = 
+    		crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
+    	
+    	int ctr = 1;
+    	for (ImportedGermplasmCross cross : importedGermplasmCrosses){
+						
+			Germplasm germplasm = new Germplasm();
+			germplasm.setGid(ctr++);
+			germplasm.setGpid1(cross.getFemaleGId());
+			germplasm.setGpid2(cross.getMaleGId());
+			
+			Name name = new Name();
+			name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
+							cross.getFemaleDesignation(), cross.getMaleDesignation()));
+			//get ID of User Defined Field for Crossing Name
+			Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+					germplasmListManager, getWindow(), messageSource);
+			name.setTypeId(crossingNameTypeId);
+			
+			crossesMadeMap.put(germplasm, name);
+		}
+    	
+    	return crossesMadeMap;
     }
     
     public Accordion getAccordion() {
