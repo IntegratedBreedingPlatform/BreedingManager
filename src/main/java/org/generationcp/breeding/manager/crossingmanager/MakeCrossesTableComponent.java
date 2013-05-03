@@ -24,11 +24,9 @@ import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,7 +53,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	public static final String CROSS_NAME_COLUMN = "Cross Name Column" ;
 	public static final String FEMALE_PARENT_COLUMN = "Female Parent Column" ;
 	public static final String MALE_PARENT_COLUMN = "Male Parent Column" ;
-	public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 	
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
@@ -73,9 +70,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	private Table tableCrossesMade;
     private Label lblCrossMade;
     
-    private Integer crossingNameTypeId;
-    
-  
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		lblCrossMade = new Label();
@@ -115,7 +109,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	public void attach() {
 		super.attach();
 		updateLabels();
-		retrieveCrossingNameUserDefinedFieldType();
+//		retrieveCrossingNameUserDefinedFieldType();
 	}
 	
 	@Override
@@ -126,35 +120,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     // Crossing ID = the GIDs of parents separated by delimiter (eg. 1,2)
 	private String getCrossingID(Integer parent1, Integer parent2) {
 		return parent1 + PARENTS_DELIMITER + parent2;
-	}
-	
-	/*
-	 * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
-	 * (matches upper case of UserDefinedField either fCode or fName)
-	 * 
-	 */
-	private void retrieveCrossingNameUserDefinedFieldType(){
-	    	
-    	try {
-			List<UserDefinedField> nameTypes = germplasmListManager.getGermplasmNameTypes();
-			for (UserDefinedField type : nameTypes){
-				for (String crossNameValue : USER_DEF_FIELD_CROSS_NAME){
-					if (crossNameValue.equals(type.getFcode().toUpperCase()) || 
-							crossNameValue.equals(type.getFname().toUpperCase())){
-						crossingNameTypeId = type.getFldno();
-						break;
-					}
-				}
-			}
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
-            if (getWindow() != null){
-                MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.ERROR_DATABASE),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE));
-            }
-		}
 	}
 	
   
@@ -245,6 +210,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     		Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(CROSS_NAME_COLUMN);
     		String crossName = String.valueOf(crossNameProp.toString());
     		
+    		// parse GIDs of female and male parents
 			String idString = (String) itemId;
 			String[] parentIDs = idString.split(PARENTS_DELIMITER);
 			Integer gpId1 = Integer.parseInt(parentIDs[0]);
@@ -257,6 +223,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			
 			Name name = new Name();
 			name.setNval(crossName);
+			//get ID of User Defined Field for Crossing Name
+			Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+					germplasmListManager, getWindow(), messageSource);
 			name.setTypeId(crossingNameTypeId);
 			
 			crossesMadeMap.put(germplasm, name);
