@@ -205,7 +205,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 				
 				//Check if female entryID and GID are valid
 				Boolean femaleFound = true; //set true for cases wherein there is no list id
-				if(maleGermplasmList!=null){
+				if(femaleGermplasmList!=null){
 					femaleFound = false;				
 					for(int gd=0;gd<maleGermplasmList.getListData().size();gd++){
 						GermplasmListData germplasmListData = femaleGermplasmList.getListData().get(gd);
