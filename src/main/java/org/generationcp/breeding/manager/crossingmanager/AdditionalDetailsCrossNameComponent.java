@@ -52,9 +52,12 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
 	private static final Integer MAX_LEADING_ZEROS = 10;
 	
-    private static final Integer CROSS_NAME_OPTIONID_ONE = 1;
-	private static final Integer CROSS_NAME_OPTIONID_TWO = 2;
-
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+	private GermplasmDataManager germplasmManager;
+	
     private Label specifyPrefixLabel;
     private Label specifySuffixLabel;
     private Label howManyDigitsLabel; 
@@ -71,11 +74,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
     private AbstractComponent[] otherToggableComponents = new AbstractComponent[8];
     
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
-    @Autowired
-    private GermplasmDataManager germplasmManager;
+    private enum CrossNameOption{
+    	USE_DEFAULT, SPECIFY_CROSS_NAME
+    };
     
     
 	@Override
@@ -124,20 +125,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 
 	private void initializeCrossNameOptionGroup() {
 		crossNameOptionGroup = new OptionGroup();
-		crossNameOptionGroup.addItem(CROSS_NAME_OPTIONID_ONE);
-		crossNameOptionGroup.setItemCaption(CROSS_NAME_OPTIONID_ONE, 
+		crossNameOptionGroup.addItem(CrossNameOption.USE_DEFAULT);
+		crossNameOptionGroup.setItemCaption(CrossNameOption.USE_DEFAULT, 
 				messageSource.getMessage(Message.USE_DEFAULT_CROSS_NAME_FOR_ALL));
-		crossNameOptionGroup.addItem(CROSS_NAME_OPTIONID_TWO);
-		crossNameOptionGroup.setItemCaption(CROSS_NAME_OPTIONID_TWO, 
+		crossNameOptionGroup.addItem(CrossNameOption.SPECIFY_CROSS_NAME);
+		crossNameOptionGroup.setItemCaption(CrossNameOption.SPECIFY_CROSS_NAME, 
 				messageSource.getMessage(Message.SPECIFY_CROSS_NAME_TEMPLATE_FOR_ALL));
 		
 		crossNameOptionGroup.setImmediate(true);
-		crossNameOptionGroup.select(CROSS_NAME_OPTIONID_ONE); //first option selected by default
+		crossNameOptionGroup.select(CrossNameOption.USE_DEFAULT); //first option selected by default
 		crossNameOptionGroup.addListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				Integer optionId = (Integer) crossNameOptionGroup.getValue();
-				enableSpecifyCrossNameComponents(CROSS_NAME_OPTIONID_TWO.equals(optionId));
+				enableSpecifyCrossNameComponents(specifyCrossNameOptionSelected());
 			}
 		});
 	}
@@ -247,6 +247,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     		}
     	}
     	return sb.toString();
+    }
+    
+    public boolean specifyCrossNameOptionSelected(){
+    	CrossNameOption optionId = (CrossNameOption) crossNameOptionGroup.getValue();
+    	return CrossNameOption.SPECIFY_CROSS_NAME.equals(optionId);
     }
     
 	
