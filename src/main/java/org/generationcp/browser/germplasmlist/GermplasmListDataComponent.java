@@ -194,11 +194,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			buttonArea.addComponent(selectAllButton);
 			exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
 			exportListButton.setData(EXPORT_BUTTON_ID);			
-			if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-				exportListButton.setEnabled(true);
-			} else {
-				exportListButton.setEnabled(false);
-			}
+			exportListButton.setEnabled(true);
 			buttonArea.addComponent(exportListButton);
 			
 			copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
@@ -311,28 +307,33 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	//called by GermplasmListButtonClickListener
 	public void exportListAction() throws InternationalizableException {
 
-		String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
-
-		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
-
-		try {
-			listExporter.exportGermplasmListExcel(tempFileName);
-			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-			fileDownloadResource.setFilename(listName + ".xls");
-
-			//Window downloadWindow = new Window();
-			//downloadWindow.setWidth(0);
-			//downloadWindow.setHeight(0);
-			//downloadWindow.open(fileDownloadResource);
-			//this.getWindow().addWindow(downloadWindow);
-			this.getWindow().open(fileDownloadResource);
-
-			//TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-		        //File tempFile = new File(tempFileName);
-		        //tempFile.delete();
-		} catch (GermplasmListExporterException e) {
-			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
-		} 
+        if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
+	    
+    		String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+    
+    		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
+    
+    		try {
+    			listExporter.exportGermplasmListExcel(tempFileName);
+    			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+    			fileDownloadResource.setFilename(listName + ".xls");
+    
+    			//Window downloadWindow = new Window();
+    			//downloadWindow.setWidth(0);
+    			//downloadWindow.setHeight(0);
+    			//downloadWindow.open(fileDownloadResource);
+    			//this.getWindow().addWindow(downloadWindow);
+    			this.getWindow().open(fileDownloadResource);
+    
+    			//TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+    		        //File tempFile = new File(tempFileName);
+    		        //tempFile.delete();
+    		} catch (GermplasmListExporterException e) {
+    			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
+    		}
+        } else {
+            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
+        }
 	}
 
 	public void deleteListButtonClickAction()  throws InternationalizableException {
