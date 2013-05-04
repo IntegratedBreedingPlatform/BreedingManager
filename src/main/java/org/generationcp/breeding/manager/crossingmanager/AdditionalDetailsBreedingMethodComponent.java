@@ -39,16 +39,18 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 	private static final long serialVersionUID = 2539886412902509326L;
 	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsBreedingMethodComponent.class);
 
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
+    
     private Label selectOptionLabel;
     private Label selectBreedingMethodLabel;
     
     private OptionGroup breedingMethodOptionGroup;
     private ComboBox breedingMethodComboBox;
     
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
+    private enum BreedingMethodOption{
+    	SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
+    };
     
 	@Override
 	public void afterPropertiesSet() throws Exception {  
@@ -56,18 +58,25 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
         setWidth("700px");
         
         selectOptionLabel = new Label();
-		addComponent(selectOptionLabel, "top:25px;left:20px");
 		
 		breedingMethodOptionGroup = new OptionGroup();
-		breedingMethodOptionGroup.addItem(messageSource.getMessage(Message.BREEDING_METHOD_WILL_BE_THE_SAME_FOR_ALL_CROSSES));
-		breedingMethodOptionGroup.addItem(messageSource.getMessage(Message.BREEDING_METHOD_WILL_BE_SET_BASED_ON_STATUS_OF_PARENTAL_LINES));
-		addComponent(breedingMethodOptionGroup, "top:35px;left:20px");
+		breedingMethodOptionGroup.addItem(BreedingMethodOption.SAME_FOR_ALL_CROSSES);
+		breedingMethodOptionGroup.setItemCaption(BreedingMethodOption.SAME_FOR_ALL_CROSSES, 
+				messageSource.getMessage(Message.BREEDING_METHOD_WILL_BE_THE_SAME_FOR_ALL_CROSSES));
+		breedingMethodOptionGroup.addItem(BreedingMethodOption.BASED_ON_PARENTAL_LINES);
+		breedingMethodOptionGroup.setItemCaption(BreedingMethodOption.BASED_ON_PARENTAL_LINES, 
+				messageSource.getMessage(Message.BREEDING_METHOD_WILL_BE_SET_BASED_ON_STATUS_OF_PARENTAL_LINES));
+		
 		
 		selectBreedingMethodLabel = new Label();
-		addComponent(selectBreedingMethodLabel, "top:105px;left:20px");
 		
 		breedingMethodComboBox = new ComboBox();
 		breedingMethodComboBox.setWidth("400px");
+
+		//layout components
+		addComponent(selectOptionLabel, "top:25px;left:20px");
+		addComponent(breedingMethodOptionGroup, "top:35px;left:20px");
+		addComponent(selectBreedingMethodLabel, "top:105px;left:20px");
 		addComponent(breedingMethodComboBox, "top:85px;left:180px");
 	}
 	
@@ -82,5 +91,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 		messageSource.setCaption(selectOptionLabel, Message.SELECT_AN_OPTION);
 		messageSource.setCaption(selectBreedingMethodLabel, Message.SELECT_BREEDING_METHOD);
 	}
+	
+	
 
 }
