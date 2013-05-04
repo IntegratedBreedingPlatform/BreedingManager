@@ -210,7 +210,8 @@ public class GermplasmListExporter {
         listUserRow.createCell(3).setCellValue("DBCV");
         listUserRow.createCell(4).setCellValue("ASSIGNED");
         listUserRow.createCell(5).setCellValue("C");
-        listUserRow.createCell(6).setCellValue(listUser.getName());
+        if(listUser!=null && listUser.getName()!=null)
+            listUserRow.createCell(6).setCellValue(listUser.getName());
         listUserRow.createCell(7).setCellValue("LIST");
         
         HSSFRow listUserIdRow = descriptionSheet.createRow(actualRow + 2); 
