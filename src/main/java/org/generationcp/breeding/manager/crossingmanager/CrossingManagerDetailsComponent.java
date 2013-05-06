@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.middleware.manager.GermplasmListManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -121,13 +122,19 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
             Date date = (Date)germplasmListDate.getValue();
             String nGermplasmListType = (String)germplasmListType.getValue();
         	if(nGermplasmListName==null || nGermplasmListName.trim().equalsIgnoreCase("")){
-        		getAccordion().getApplication().getMainWindow().showNotification("Germplasm List Name is required.", Window.Notification.TYPE_WARNING_MESSAGE);
+        		//getSource().getApplication().getMainWindow().showNotification(, Window.Notification.TYPE_WARNING_MESSAGE);
+                //MessageNotifier.showWarning(this.getWindow(), "Germplasm List Name is required.", "");
+                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_NAME_REQUIRED), "");
+
         	} else if(nGermplasmListDescription==null || nGermplasmListDescription.trim().equalsIgnoreCase("")) {
-        		getAccordion().getApplication().getMainWindow().showNotification("Germplasm List Description is required.", Window.Notification.TYPE_WARNING_MESSAGE);
+                //getSource().getApplication().getMainWindow().showNotification("Germplasm List Description is required.", Window.Notification.TYPE_WARNING_MESSAGE);
+                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_DESCRIPTION_REQUIRED), "");
         	} else if(nGermplasmListType == null || nGermplasmListType.equalsIgnoreCase("")){
-                getAccordion().getApplication().getMainWindow().showNotification("Please choose a germplasm list type.", Window.Notification.TYPE_WARNING_MESSAGE);
+                //getSource().getApplication().getMainWindow().showNotification(, Window.Notification.TYPE_WARNING_MESSAGE);
+                MessageNotifier.showWarning(this.getWindow(),  messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_TYPE_REQUIRED), "");
             } else if(date==null) {
-                getAccordion().getApplication().getMainWindow().showNotification("Please choose a correct date", Window.Notification.TYPE_WARNING_MESSAGE);
+                //getSource().getApplication().getMainWindow().showNotification("Please choose a correct date", Window.Notification.TYPE_WARNING_MESSAGE);
+                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_DATE_REQUIRED), "");
         	}
         }
 

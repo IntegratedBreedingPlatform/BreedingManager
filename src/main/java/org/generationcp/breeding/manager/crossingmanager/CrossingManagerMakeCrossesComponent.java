@@ -286,12 +286,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         listSelectMale.removeAllItems();
         listSelectFemale.removeAllItems();
         if(crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+            //getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+
+            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_BOTH_ID_REQUIRED), "");
+
         }else if(crossingManagerUploader.getFemaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+            //getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_FEMALE_ID_REQUIRED), "");
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
         }else if(crossingManagerUploader.getMaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+            //getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_MALE_ID_REQUIRED), "");
             loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
         }else{
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
