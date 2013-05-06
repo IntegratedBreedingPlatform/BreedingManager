@@ -287,4 +287,42 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     public void setLastOpenedListId(Integer lastOpenedListId) {
         this.lastOpenedListId = lastOpenedListId;
     }
+    
+    public void setupDefaultListFromFile(CrossingManagerUploader crossingManagerUploader){
+        this.crossingManagerUploader = crossingManagerUploader;
+        // retrieve list entries and add them to the parent ListSelect component
+        //add checking to provide error
+        listSelectMale.removeAllItems();
+        listSelectFemale.removeAllItems();
+        if(crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
+            getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+        }else if(crossingManagerUploader.getFemaleGermplasmList() == null){
+            getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+            loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
+        }else if(crossingManagerUploader.getMaleGermplasmList() == null){
+            getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+            loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
+        }else{
+            loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
+            loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
+        }
+
+
+        listSelectMale.requestRepaint();
+        listSelectFemale.requestRepaint();
+    }
+	private void loadListFromUpload(ListSelect listSelect, GermplasmList germplasmList){
+        if(germplasmList != null){
+            for (Iterator<?> i = germplasmList.getListData().iterator(); i.hasNext();) {
+                // retrieve entries from the table
+                GermplasmListData germplasmListData = (GermplasmListData)i.next();
+
+                // add entries to the parent ListSelect
+                GermplasmListEntry entry = new GermplasmListEntry(germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation());
+                listSelect.addItem(entry);
+                listSelect.setItemCaption(entry, entry.getDesignation());
+            }
+            listSelect.requestRepaint();
+        }
+    }
 }
