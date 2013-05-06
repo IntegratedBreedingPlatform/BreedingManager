@@ -546,5 +546,12 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     public ImportedGermplasmCrosses getImportedGermplasmCrosses(){
     	return importedGermplasmCrosses;
     }
-    
+
+    public GermplasmList getMaleGermplasmList() {
+        return maleGermplasmList;
+    }
+
+    public GermplasmList getFemaleGermplasmList() {
+        return femaleGermplasmList;
+    }
 };
