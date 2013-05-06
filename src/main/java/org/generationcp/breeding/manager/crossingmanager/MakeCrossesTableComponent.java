@@ -205,31 +205,32 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     public Map<Germplasm, Name > generateCrossesMadeMap(){
     	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
     	
+    	//get ID of User Defined Field for Crossing Name
+        Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+                        germplasmListManager, getWindow(), messageSource);
+        
     	int ctr = 1;
     	for (Object itemId : tableCrossesMade.getItemIds()){
     		Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(CROSS_NAME_COLUMN);
     		String crossName = String.valueOf(crossNameProp.toString());
     		
     		// parse GIDs of female and male parents
-			String idString = (String) itemId;
-			String[] parentIDs = idString.split(PARENTS_DELIMITER);
-			Integer gpId1 = Integer.parseInt(parentIDs[0]);
-			Integer gpId2 = Integer.parseInt(parentIDs[1]);
+		String idString = (String) itemId;
+		String[] parentIDs = idString.split(PARENTS_DELIMITER);
+		Integer gpId1 = Integer.parseInt(parentIDs[0]);
+		Integer gpId2 = Integer.parseInt(parentIDs[1]);
 						
-			Germplasm germplasm = new Germplasm();
-			germplasm.setGid(ctr++);
-			germplasm.setGpid1(gpId1);
-			germplasm.setGpid2(gpId2);
-			
-			Name name = new Name();
-			name.setNval(crossName);
-			//get ID of User Defined Field for Crossing Name
-			Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
-					germplasmListManager, getWindow(), messageSource);
-			name.setTypeId(crossingNameTypeId);
-			
-			crossesMadeMap.put(germplasm, name);
-		}
+		Germplasm germplasm = new Germplasm();
+		germplasm.setGid(ctr++);
+		germplasm.setGpid1(gpId1);
+		germplasm.setGpid2(gpId2);
+		
+		Name name = new Name();
+		name.setNval(crossName);
+		name.setTypeId(crossingNameTypeId);
+		
+		crossesMadeMap.put(germplasm, name);
+	}
     	
     	return crossesMadeMap;
     }
