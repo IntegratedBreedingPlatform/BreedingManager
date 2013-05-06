@@ -166,6 +166,10 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     	List<ImportedGermplasmCross> importedGermplasmCrosses = 
     		crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
     	
+    	//get ID of User Defined Field for Crossing Name
+        Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+                        germplasmListManager, getWindow(), messageSource);
+        
     	int ctr = 1;
     	for (ImportedGermplasmCross cross : importedGermplasmCrosses){
 						
@@ -177,9 +181,6 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 			Name name = new Name();
 			name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
 							cross.getFemaleDesignation(), cross.getMaleDesignation()));
-			//get ID of User Defined Field for Crossing Name
-			Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
-					germplasmListManager, getWindow(), messageSource);
 			name.setTypeId(crossingNameTypeId);
 			
 			crossesMadeMap.put(germplasm, name);
