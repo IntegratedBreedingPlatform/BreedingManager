@@ -1,32 +1,21 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
@@ -65,6 +54,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     
     private MakeCrossesTableComponent crossesTableComponent;
     private Integer lastOpenedListId;
+
+    private CrossingManagerUploader crossingManagerUploader;
     
     private enum CrossType { 
     	MULTIPLY, TOP_TO_BOTTOM
@@ -211,7 +202,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     public void makeCrossButtonAction(){
     	
     	List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
-    	femaleList.addAll((Collection<GermplasmListEntry>)listSelectFemale.getValue());
+    	femaleList.addAll((Collection<GermplasmListEntry>) listSelectFemale.getValue());
     	Collections.sort(femaleList);
     	
     	List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
@@ -295,12 +286,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         listSelectMale.removeAllItems();
         listSelectFemale.removeAllItems();
         if(crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+            getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
         }else if(crossingManagerUploader.getFemaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+            getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
         }else if(crossingManagerUploader.getMaleGermplasmList() == null){
-            getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Notification.TYPE_WARNING_MESSAGE);
+            getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
             loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
         }else{
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
