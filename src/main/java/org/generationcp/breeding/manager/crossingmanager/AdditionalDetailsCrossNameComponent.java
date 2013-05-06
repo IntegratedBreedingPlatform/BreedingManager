@@ -220,6 +220,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     			prefix += getLeadingZeroesAsString();
     			StringBuilder sb = new StringBuilder();
     			sb.append(prefix);
+    			sb.append(" ");
     			sb.append(germplasmManager.getNextSequenceNumberForCrossName(prefix));
     			if (!StringUtils.isEmpty(suffix)){
     				sb.append(" ");

@@ -23,7 +23,7 @@ import com.vaadin.ui.Form;
 
 @Configurable
 public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout 
-														implements InitializingBean, InternationalizableComponent, CrossesMadeContainer{
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainer{
     
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
@@ -88,16 +88,16 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         breedingMethodForm.setWidth("740px");
 		
         crossNameComponent = new AdditionalDetailsCrossNameComponent();
-		crossNameForm = new Form(crossNameComponent);
+	crossNameForm = new Form(crossNameComponent);
         crossNameForm.setHeight("260px");
         crossNameForm.setWidth("740px");
 		
-		crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
-		crossInfoForm = new Form(crossInfoComponent);
-		crossInfoForm.setHeight("120px");
-		crossInfoForm.setWidth("740px");
+	crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
+	crossInfoForm = new Form(crossInfoComponent);
+	crossInfoForm.setHeight("120px");
+	crossInfoForm.setWidth("740px");
 		
-		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
+	CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
