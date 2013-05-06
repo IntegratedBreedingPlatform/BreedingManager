@@ -132,11 +132,13 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     	messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
     }
     
+    /**
     private void setUpdateListeners(){
     	updateListeners[0] = breedingMethodComponent;
     	updateListeners[1] = crossNameComponent;
     	updateListeners[2] = crossInfoComponent;
     }
+    */
     
     public void nextButtonClickAction(){
     	for (CrossesMadeContainerUpdateListener listener : updateListeners){
