@@ -153,6 +153,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     		} else {
 	    		if(this.nextScreen != null){
 	    			this.accordion.setSelectedTab(this.nextScreen);
+                    ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile(crossingManagerUploader);
 	        	} else {
 	        		this.nextButton.setEnabled(false);
 	        	}
