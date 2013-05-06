@@ -1,11 +1,12 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -139,8 +139,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     				getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
     			} else {
     				if(this.nextNextScreen != null){
-    					assert this.nextNextScreen instanceof StoresCrossesMade;
-    		        	((StoresCrossesMade) nextNextScreen).setCrossesMadeMap(generateCrossesMadeMap());
+    					assert this.nextNextScreen instanceof CrossesMadeContainer;
+    					
+    					CrossesMade crossesMade = new CrossesMade();
+    					crossesMade.setCrossesMap(generateCrossesMadeMap());
+    		        	((CrossesMadeContainer) nextNextScreen).setCrossesMade(crossesMade);
     	    			
     		        	this.accordion.setSelectedTab(this.nextNextScreen);
     	        	} else {
@@ -158,7 +161,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     public Map<Germplasm, Name > generateCrossesMadeMap(){
-    	Map<Germplasm, Name> crossesMadeMap = new HashMap<Germplasm, Name>();
+    	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
     	List<ImportedGermplasmCross> importedGermplasmCrosses = 
     		crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
     	

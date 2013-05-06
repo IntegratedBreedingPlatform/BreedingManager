@@ -13,7 +13,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -203,7 +203,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     }
     
     public Map<Germplasm, Name > generateCrossesMadeMap(){
-    	Map<Germplasm, Name> crossesMadeMap = new HashMap<Germplasm, Name>();
+    	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
     	
     	int ctr = 1;
     	for (Object itemId : tableCrossesMade.getItemIds()){

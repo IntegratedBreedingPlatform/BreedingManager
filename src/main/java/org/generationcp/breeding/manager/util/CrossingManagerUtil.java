@@ -24,6 +24,23 @@ public class CrossingManagerUtil{
     public CrossingManagerUtil(GermplasmDataManager germplasmDataManager) {
 	this.germplasmDataManager = germplasmDataManager;
     }
+    
+    /**
+     * Sets Breeding Method of Germplasm based on status of parental lines
+     * 
+     * @param germplasmDataManager
+     * @param germplasm
+     * @param femaleGid
+     * @param maleGid
+     * @return
+     * @throws MiddlewareQueryException
+     */
+    public static Germplasm setCrossingBreedingMethod(GermplasmDataManager germplasmDataManager, Germplasm germplasm,
+    													Integer femaleGid, Integer maleGid) throws MiddlewareQueryException{
+    	
+    	CrossingManagerUtil util = new CrossingManagerUtil(germplasmDataManager);
+    	return util.setCrossingBreedingMethod(germplasm, femaleGid, maleGid);
+    }
 
 
     public Germplasm setCrossingBreedingMethod(Germplasm gc,Integer femaleGid, Integer maleGid) throws MiddlewareQueryException{

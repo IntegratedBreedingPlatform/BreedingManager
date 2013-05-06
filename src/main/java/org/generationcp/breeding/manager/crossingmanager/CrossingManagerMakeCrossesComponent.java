@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -39,9 +40,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	
     private static final long serialVersionUID = 9097810121003895303L;
     
-    private static final Integer CROSS_OPTIONID_ONE = 1;
-    private static final Integer CROSS_OPTIONID_TWO = 2;
-
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -67,6 +65,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     
     private MakeCrossesTableComponent crossesTableComponent;
     private Integer lastOpenedListId;
+    
+    private enum CrossType { 
+    	MULTIPLY, TOP_TO_BOTTOM
+    };
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
     	this.source = source;
@@ -106,13 +108,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         optionGroupMakeCrosses = new OptionGroup();
         optionGroupMakeCrosses.setWidth("300px");
         optionGroupMakeCrosses.addStyleName("wrapOptionGroupText");
-        optionGroupMakeCrosses.addItem(CROSS_OPTIONID_ONE);
-        optionGroupMakeCrosses.setItemCaption(CROSS_OPTIONID_ONE, 
+        optionGroupMakeCrosses.addItem(CrossType.MULTIPLY);
+        optionGroupMakeCrosses.setItemCaption(CrossType.MULTIPLY, 
         		messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
-        optionGroupMakeCrosses.addItem(CROSS_OPTIONID_TWO);
-        optionGroupMakeCrosses.setItemCaption(CROSS_OPTIONID_TWO, 
+        optionGroupMakeCrosses.addItem(CrossType.TOP_TO_BOTTOM);
+        optionGroupMakeCrosses.setItemCaption(CrossType.TOP_TO_BOTTOM, 
         		messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
-        optionGroupMakeCrosses.select(CROSS_OPTIONID_ONE); //first option selected by default
+        optionGroupMakeCrosses.select(CrossType.MULTIPLY); //first option selected by default
         
         chkBoxMakeReciprocalCrosses = new CheckBox();
 	
@@ -218,17 +220,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     	
     	
     	if (!femaleList.isEmpty() && !maleList.isEmpty()){
-    		Integer optionId = (Integer) optionGroupMakeCrosses.getValue();
+    		CrossType optionId = (CrossType) optionGroupMakeCrosses.getValue();
     		
     		// Female - Male Multiplication
-    		if (CROSS_OPTIONID_ONE.equals(optionId)){
+    		if (CrossType.MULTIPLY.equals(optionId)){
     			crossesTableComponent.multiplyParents(femaleList, maleList);
     			if (chkBoxMakeReciprocalCrosses.booleanValue()){
     				crossesTableComponent.multiplyParents(maleList, femaleList);
     			}   			
     			
     		// Top to Bottom Crossing	
-    		} else if (CROSS_OPTIONID_TWO.equals(optionId)){
+    		} else if (CrossType.TOP_TO_BOTTOM.equals(optionId)){
     			if (femaleList.size() == maleList.size()){
     				crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList);
     				if (chkBoxMakeReciprocalCrosses.booleanValue()){
@@ -256,8 +258,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     public void nextButtonClickAction(){
     	
         if(this.nextScreen != null){
-        	assert this.nextScreen instanceof StoresCrossesMade;
-        	((StoresCrossesMade) nextScreen).setCrossesMadeMap(crossesTableComponent.generateCrossesMadeMap());
+        	assert this.nextScreen instanceof CrossesMadeContainer;
+        	
+        	CrossesMade crossesMade = new CrossesMade();
+        	crossesMade.setCrossesMap(crossesTableComponent.generateCrossesMadeMap());
+        	((CrossesMadeContainer) nextScreen).setCrossesMade(crossesMade);
         	
         	this.accordion.setSelectedTab(this.nextScreen);
         	

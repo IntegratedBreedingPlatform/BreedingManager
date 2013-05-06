@@ -12,21 +12,17 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.Map;
-
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
 
 
 /**
- * A class should implement this interface if it will store the map
- * of new Germplasm crosses created in Breeding Manager - Make Crosses screen
+ * A class should implement this interface if it will perform updates on
+ * Crosses Made information on a CrossesMadeContainer instance
  * 
  * @author Darla Ani
  *
  */
-public interface StoresCrossesMade {
+public interface CrossesMadeContainerUpdateListener {
 	
-	public void setCrossesMadeMap(Map<Germplasm, Name> crossesMap);
+	public void updateCrossesMadeContainer(CrossesMadeContainer container);
 	
 }

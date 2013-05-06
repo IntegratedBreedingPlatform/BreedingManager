@@ -1,12 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -24,7 +23,7 @@ import com.vaadin.ui.Form;
 
 @Configurable
 public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout 
-														implements InitializingBean, InternationalizableComponent, StoresCrossesMade{
+														implements InitializingBean, InternationalizableComponent, CrossesMadeContainer{
     
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
@@ -34,15 +33,23 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     
     private CrossingManagerMain source;
     private Accordion accordion;
-    private Map<Germplasm, Name> crossesMap;
+    private CrossesMade crossesMade;
     
     //Used Form to make use of fieldset HTML element to render section border
     private Form breedingMethodForm;
     private Form crossNameForm;
     private Form crossInfoForm;
     
+    private AdditionalDetailsBreedingMethodComponent breedingMethodComponent;
+    private AdditionalDetailsCrossNameComponent crossNameComponent;
+    private AdditionalDetailsCrossInfoComponent crossInfoComponent;
+    
     private Button backButton;
     private Button nextButton;
+
+    private CrossesMadeContainerUpdateListener[] updateListeners = new CrossesMadeContainerUpdateListener[3];
+    
+    
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -59,32 +66,36 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
 	public Accordion getAccordion() {
 		return accordion;
 	}
-
+	
 	@Override
-	public void setCrossesMadeMap(Map<Germplasm, Name> crossesMap) {
-		this.crossesMap = crossesMap;
+	public void setCrossesMade(CrossesMade crossesMade) {
+		this.crossesMade = crossesMade;
 	}
-    
+	
+	@Override
+	public CrossesMade getCrossesMade() {
+		return this.crossesMade;
+	}
     
     @Override
     public void afterPropertiesSet() throws Exception {
         setHeight("640px");
         setWidth("800px");
         
-        breedingMethodForm = new Form(new AdditionalDetailsBreedingMethodComponent());
-        breedingMethodForm.setHeight("210px"); // make form size bigger than layout component layout
+        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
+        breedingMethodForm = new Form(breedingMethodComponent);
+        breedingMethodForm.setHeight("210px");
         breedingMethodForm.setWidth("740px");
-        breedingMethodForm.setCaption(messageSource.getMessage(Message.BREEDING_METHOD));
 		
-        crossNameForm = new Form(new AdditionalDetailsCrossNameComponent());
-        crossNameForm.setHeight("260px");  // make form size bigger than component layout
+        crossNameComponent = new AdditionalDetailsCrossNameComponent();
+		crossNameForm = new Form(crossNameComponent);
+        crossNameForm.setHeight("260px");
         crossNameForm.setWidth("740px");
-        crossNameForm.setCaption(messageSource.getMessage(Message.CROSS_NAME));
 		
-		crossInfoForm = new Form(new AdditionalDetailsCrossInfoComponent());
-		crossInfoForm.setHeight("120px");  // make form size bigger than layout component layout
+		crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
+		crossInfoForm = new Form(crossInfoComponent);
+		crossInfoForm.setHeight("120px");
 		crossInfoForm.setWidth("740px");
-		crossInfoForm.setCaption(messageSource.getMessage(Message.CROSS_INFO));
 		
 		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		
@@ -102,6 +113,8 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         addComponent(crossInfoForm, "top:450px;left:30px");
         addComponent(backButton, "top:585px;left:600px");
         addComponent(nextButton, "top:585px;left:670px");
+        
+        //setUpdateListeners();
     }
     
     @Override
@@ -114,20 +127,45 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     public void updateLabels() {
     	messageSource.setCaption(backButton, Message.BACK);
     	messageSource.setCaption(nextButton, Message.NEXT);
+    	messageSource.setCaption(breedingMethodForm, Message.BREEDING_METHOD);
+    	messageSource.setCaption(crossNameForm, Message.CROSS_NAME);
+    	messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
+    }
+    
+    private void setUpdateListeners(){
+    	updateListeners[0] = breedingMethodComponent;
+    	updateListeners[1] = crossNameComponent;
+    	updateListeners[2] = crossInfoComponent;
     }
     
     public void nextButtonClickAction(){
-    	
+    	for (CrossesMadeContainerUpdateListener listener : updateListeners){
+    		if (listener != null){
+    			listener.updateCrossesMadeContainer(this);
+    		}
+    	}
     }
     
     //TODO replace with actual back button logic. 
-    // For now, just displays Crossing Made map from previous screen
+    // For now, just displays CrossesMade information
     public void backButtonClickAction(){
-       if (crossesMap != null){
-    	   for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
-    		   System.out.println(entry.getKey() + " >>> " + entry.getValue());
-    	   }
-       }
+    	displayCrossesMadeInformation();
     }
+
+	private void displayCrossesMadeInformation() {
+		if (crossesMade != null){
+    		Map<Germplasm,Name> crossesMap = crossesMade.getCrossesMap();
+    		if (crossesMap != null){
+    			for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+    				System.out.println(entry.getKey() + " >>> " + entry.getValue());
+    				if (crossesMade.getOldCrossNames() != null){
+    					System.out.println(crossesMade.findOldCrossNameEntry(entry.getKey()));
+    				}
+    			}
+    		}
+
+    	}
+	}
+
 
 }
