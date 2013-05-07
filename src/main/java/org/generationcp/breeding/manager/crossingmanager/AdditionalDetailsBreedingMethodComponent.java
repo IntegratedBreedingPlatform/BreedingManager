@@ -16,10 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,8 @@ import com.vaadin.ui.OptionGroup;
  *
  */
 @Configurable
-public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout 
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener{
 
 	private static final long serialVersionUID = 2539886412902509326L;
 	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsBreedingMethodComponent.class);
@@ -59,19 +63,19 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
     private OptionGroup breedingMethodOptionGroup;
     private ComboBox breedingMethodComboBox;
     private HashMap<String, Integer> mapMethods;
-    private CrossingManagerImportFileComponent wizardScreenOne;
+    
+    private CrossesMadeContainer container;
     
     private enum BreedingMethodOption{
     	SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
     
-	public AdditionalDetailsBreedingMethodComponent(
-	    CrossingManagerImportFileComponent wizardScreenOne) {
-	this.wizardScreenOne=wizardScreenOne;
-    }
-
-	@SuppressWarnings("serial")
 	@Override
+	public void setCrossesMadeContainer(CrossesMadeContainer container) {
+		this.container = container;
+	}
+    
+    @Override
 	public void afterPropertiesSet() throws Exception {  
 		setHeight("130px");
         setWidth("700px");
@@ -95,7 +99,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 				breedingMethodComboBox.setEnabled(true);
 				
 				try {
-				    populateBreedinMethod();
+				    populateBreedingMethod();
 				} catch (MiddlewareQueryException e) {
 				    // TODO Auto-generated catch block
 				    e.printStackTrace();
@@ -106,8 +110,9 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 				breedingMethodComboBox.removeAllItems();
 			    }
 			}
-		
 		});
+		
+		
 		selectBreedingMethodLabel = new Label();
 		selectBreedingMethodLabel.setEnabled(false);
 		
@@ -122,20 +127,21 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 		addComponent(breedingMethodComboBox, "top:85px;left:180px");
 	}
 	
-    private void populateBreedinMethod() throws MiddlewareQueryException {
-	    // TODO Auto-generated method stub
+    //TODO put call to germplasmDataManager in afterProperties of attach method
+    //so that it's not always called when you go back to this tab
+    public void populateBreedingMethod() throws MiddlewareQueryException {
 	
 	List<Method> methods = germplasmDataManager.getMethodsByType("GEN");
 
 	mapMethods = new HashMap<String, Integer>();
-	String breedingMethod=wizardScreenOne.getCrossingManagerUploader().getBreedingMethod();
-	String beedingMethodId=wizardScreenOne.getCrossingManagerUploader().getBreedingMethodId();
+	String breedingMethod = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethod();
+	String beedingMethodId = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethodId();
 	if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
-	    breedingMethodComboBox.addItem(breedingMethod);
-	    mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
-	    breedingMethodComboBox.select(breedingMethod);
+		breedingMethodComboBox.addItem(breedingMethod);
+		mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
+		breedingMethodComboBox.select(breedingMethod);
 	}else{
-	    breedingMethodComboBox.select("");
+		breedingMethodComboBox.select("");
 	}
 	for (Method m : methods) {
 	    breedingMethodComboBox.addItem(m.getMname());
@@ -157,7 +163,57 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout imp
 		messageSource.setCaption(selectOptionLabel, Message.SELECT_AN_OPTION);
 		messageSource.setCaption(selectBreedingMethodLabel, Message.SELECT_BREEDING_METHOD);
 	}
+	
+	private boolean sameBreedingMethodForAllSelected(){
+		BreedingMethodOption option = (BreedingMethodOption) breedingMethodOptionGroup.getValue();
+		return BreedingMethodOption.SAME_FOR_ALL_CROSSES.equals(option);
+	}
+	
+	private boolean validateBreedingMethod(){
+		if (sameBreedingMethodForAllSelected()){
+			return CrossingManagerUtil.validateRequiredField(getWindow(), breedingMethodComboBox, messageSource, 
+					messageSource.getMessage(Message.BREEDING_METHOD));
+		}
+		return true;
+	}
 
-
+	@Override
+	public boolean updateCrossesMadeContainer() {
+		
+		if (this.container != null && validateBreedingMethod()){
+			
+			//Use same breeding method for all crosses
+			if (sameBreedingMethodForAllSelected()){
+				Integer breedingMethodSelected = mapMethods.get(breedingMethodComboBox.getValue());
+				for (Germplasm germplasm : container.getCrossesMade().getCrossesMap().keySet()){
+					germplasm.setMethodId(breedingMethodSelected);
+				}
+			
+			// Use CrossingManagerUtil to set breeding method based on parents	
+			} else {
+				for (Germplasm germplasm : container.getCrossesMade().getCrossesMap().keySet()){
+					Integer femaleGid = germplasm.getGpid1();
+					Integer maleGid = germplasm.getGpid2();
+					
+					try {
+						CrossingManagerUtil.setCrossingBreedingMethod(germplasmDataManager, germplasm, femaleGid, maleGid);
+					} catch (MiddlewareQueryException e) {
+						LOG.error(e.toString() + "\n" + e.getStackTrace());
+			            e.printStackTrace();
+		                MessageNotifier.showWarning(getWindow(), 
+		                        messageSource.getMessage(Message.ERROR_DATABASE),
+		                        messageSource.getMessage(Message.ERROR_IN_GETTING_BREEDING_METHOD_BASED_ON_PARENTAL_LINES));
+		                return false;
+					}
+				
+				}
+			}
+			return true;
+			
+		}
+		
+		return false;
+	}
+	
 
 }

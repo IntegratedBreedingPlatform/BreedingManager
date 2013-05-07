@@ -12,14 +12,21 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,6 +43,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 /**
  * This class contains the absolute layout of UI elements in Cross Name section
@@ -45,7 +53,9 @@ import com.vaadin.ui.TextField;
  *
  */
 @Configurable
-public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout 
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener{
+	
 	public static final String GENERATE_BUTTON_ID = "Generate Next Name Id";
 
 	private static final long serialVersionUID = -1197900610042529900L;
@@ -70,15 +80,24 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     private CheckBox sequenceNumCheckBox;
     private Select leadingZerosSelect;
     private Button generateButton;
-
+    
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
     private AbstractComponent[] otherToggableComponents = new AbstractComponent[8];
+
+    private String lastPrefixUsed; //store prefix used for MW method including zeros, if any
+    private Integer nextNumberInSequence;
     
+    private CrossesMadeContainer container;
+        
     private enum CrossNameOption{
     	USE_DEFAULT, SPECIFY_CROSS_NAME
     };
     
-    
+	@Override
+	public void setCrossesMadeContainer(CrossesMadeContainer container) {
+		this.container = container;
+	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {  
 		setHeight("240px");
@@ -104,6 +123,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		for (int i = 1; i <= MAX_LEADING_ZEROS; i++){
 			leadingZerosSelect.addItem(Integer.valueOf(i));
 		}
+		leadingZerosSelect.setNullSelectionAllowed(false);
 		leadingZerosSelect.select(Integer.valueOf(1));
 		leadingZerosSelect.setWidth("50px");
 		
@@ -204,29 +224,15 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     
 	// Action handler for Generation button
     public void generateNextNameButtonAction(){
-    	String prefix = (String) prefixTextField.getValue();
-    	String suffix = (String) suffixTextField.getValue();
-    	prefix = prefix.trim();
-    	suffix = suffix.trim();
-    	
-    	if (StringUtils.isEmpty(prefix)){
-    		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), "");
-    	
-    	} else if (prefix.contains(" ")){
-    		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), "");
-        	
-    	} else {
+    	if (validateCrossNameFields()) {
+    		String suffix = ((String) suffixTextField.getValue()).trim();
+    		
     		try {
-    			prefix += getLeadingZeroesAsString();
-    			StringBuilder sb = new StringBuilder();
-    			sb.append(prefix);
-    			sb.append(" ");
-    			sb.append(germplasmManager.getNextSequenceNumberForCrossName(prefix));
-    			if (!StringUtils.isEmpty(suffix)){
-    				sb.append(" ");
-    				sb.append(suffix);
-    			}
-    			generatedNameLabel.setCaption(sb.toString());
+    			lastPrefixUsed = buildPrefixString();
+    			String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(lastPrefixUsed);
+    			
+    			nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
+    			generatedNameLabel.setCaption(buildNextNameInSequence(lastPrefixUsed, suffix, nextNumberInSequence));
     			
     		} catch (MiddlewareQueryException e) {
     			LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -237,6 +243,61 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     	}
     	
     }
+    
+    private boolean validateCrossNameFields(){
+    	Window window = getWindow();
+    	String prefix = ((String) prefixTextField.getValue()).trim();
+    	
+    	if (StringUtils.isEmpty(prefix)){
+    		MessageNotifier.showWarning(window, messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), "");
+    		return false;
+    	
+    	} else if (prefix.contains(" ")){
+    		MessageNotifier.showWarning(window, messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), "");
+        	return false;
+    	} 
+    	
+    	return true;
+    }
+    
+    private boolean validateGeneratedName(){
+    	
+    	// if Generate button never pressed
+    	if (nextNumberInSequence == null ){
+    		MessageNotifier.showWarning(getWindow(), MessageFormat.format(
+    				messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""
+    				), "");
+    		return false;
+
+    	// if prefix specifications were changed and next name in sequence not generated first
+    	} else {
+    		String currentPrefixString = buildPrefixString();
+			if (!currentPrefixString.equals(lastPrefixUsed)){
+    			MessageNotifier.showWarning(getWindow(), MessageFormat.format(
+    					messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString +")"
+    					), "");
+    			return false;
+    		}
+    	}
+    	
+    	return true;
+    }
+    
+    private String buildPrefixString(){
+    	return ((String) prefixTextField.getValue()).trim() + getLeadingZeroesAsString();
+    }
+
+	private String buildNextNameInSequence(String prefix, String suffix,
+			Integer number) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(prefix);
+		sb.append(number);
+		if (!StringUtils.isEmpty(suffix)){
+			sb.append(" ");
+			sb.append(suffix);
+		}
+		return sb.toString();
+	}
     
     
     private String getLeadingZeroesAsString(){
@@ -250,10 +311,47 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
     	return sb.toString();
     }
     
-    public boolean specifyCrossNameOptionSelected(){
+    private boolean specifyCrossNameOptionSelected(){
     	CrossNameOption optionId = (CrossNameOption) crossNameOptionGroup.getValue();
     	return CrossNameOption.SPECIFY_CROSS_NAME.equals(optionId);
     }
     
+	@Override
+	public boolean updateCrossesMadeContainer() {
+		
+		// Do nothing if "Use Default" option chosen. 
+		if (!specifyCrossNameOptionSelected()){
+			return true;
+		
+		//Else, perform validations and update CrossesMadeContainer
+		} else if (this.container != null && validateCrossNameFields() && validateGeneratedName()) { 
+			
+			int ctr = nextNumberInSequence;
+			String suffix = (String) suffixTextField.getValue();
+			
+			Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
+			Map<Germplasm, GermplasmListEntry> oldCrossNames = new HashMap<Germplasm, GermplasmListEntry>();
+			
+			// Store old cross name and generate new names based on prefix, suffix specifications
+			for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+				Name nameObject = entry.getValue();
+				String oldCrossName = nameObject.getNval();
+				nameObject.setNval(buildNextNameInSequence(lastPrefixUsed, suffix, ctr++));
+				
+				Germplasm germplasm = entry.getKey();
+				Integer tempGid = germplasm.getGid();
+				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, oldCrossName);
+				
+				oldCrossNames.put(germplasm, oldNameEntry);
+			}
+			this.container.getCrossesMade().setOldCrossNames(oldCrossNames);
+			
+			return true;
+				
+		}
+		
+		return false;
+	}
+
 	
 }

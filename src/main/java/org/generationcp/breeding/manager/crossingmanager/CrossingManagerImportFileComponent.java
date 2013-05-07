@@ -141,8 +141,10 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     				if(this.nextNextScreen != null){
     					assert this.nextNextScreen instanceof CrossesMadeContainer;
     					
+    					//pass uploaded info and Crosses (if any) to next screen
     					CrossesMade crossesMade = new CrossesMade();
     					crossesMade.setCrossesMap(generateCrossesMadeMap());
+    					crossesMade.setCrossingManagerUploader(crossingManagerUploader);
     		        	((CrossesMadeContainer) nextNextScreen).setCrossesMade(crossesMade);
     	    			
     		        	this.accordion.setSelectedTab(this.nextNextScreen);

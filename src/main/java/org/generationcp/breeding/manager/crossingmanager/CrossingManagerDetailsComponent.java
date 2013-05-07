@@ -1,17 +1,20 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerDoneButtonClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
-import org.generationcp.middleware.manager.GermplasmListManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +22,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.Date;
-import java.util.List;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 
 @Configurable
-public class CrossingManagerDetailsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class CrossingManagerDetailsComponent extends AbsoluteLayout 
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerDetailsComponent.class);
@@ -43,6 +52,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
     private Button doneButton;
 
     public static final String DONE_BUTTON_ID = "done button";
+    public static final String BACK_BUTTON_ID = "back button";
     public static final String DEFAULT_GERMPLASM_LIST_TYPE = "F1";
 
     @Autowired
@@ -50,6 +60,8 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    private CrossesMade crossesMade;
         
     
     public CrossingManagerDetailsComponent(CrossingManagerMain source, Accordion accordion){
@@ -57,7 +69,18 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
         this.accordion = accordion;
         
     }
-    
+
+	@Override
+	public CrossesMade getCrossesMade() {
+		return this.crossesMade;
+	}
+
+
+	@Override
+	public void setCrossesMade(CrossesMade crossesMade) {
+		this.crossesMade = crossesMade;
+		
+	}
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -72,7 +95,9 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
         germplasmListDescription = new TextField();
         germplasmListType = new ComboBox();
         germplasmListDate = new DateField();
+        
         backButton = new Button();
+        backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
         
         germplasmListName.setWidth("450px");
@@ -112,7 +137,9 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setValue(new Date());
 
-        doneButton.addListener(new CrossingManagerDoneButtonClickListener(this));
+        CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
+		doneButton.addListener(listener);
+		backButton.addListener(listener);
         //end DJ: GCP-3799
     }
 
@@ -161,4 +188,25 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout implements I
     public CrossingManagerMain getSource() {
     	return source;
     }
+	
+	//TODO replace with actual back button logic. 
+    // For now, just displays CrossesMade information
+    public void backButtonClickAction(){
+    	displayCrossesMadeInformation();
+    }
+
+	private void displayCrossesMadeInformation() {
+		if (crossesMade != null){
+    		Map<Germplasm,Name> crossesMap = crossesMade.getCrossesMap();
+    		if (crossesMap != null){
+    			for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+    				System.out.println(entry.getKey() + " >>> " + entry.getValue());
+    				if (crossesMade.getOldCrossNames() != null){
+    					System.out.println(crossesMade.getOldCrossNames().get(entry.getKey()));
+    				}
+    			}
+    		}
+
+    	}
+	}
 }

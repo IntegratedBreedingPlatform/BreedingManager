@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 
 
+
 /**
  * A class should implement this interface if it will perform updates on
  * Crosses Made information on a CrossesMadeContainer instance
@@ -23,6 +24,19 @@ package org.generationcp.breeding.manager.crossingmanager;
  */
 public interface CrossesMadeContainerUpdateListener {
 	
-	public void updateCrossesMadeContainer(CrossesMadeContainer container);
+	/**
+	 * Sets the CrossesMadeContainer that it will update (and get
+	 * Crosses Made information from)
+	 * 
+	 * @param container to update
+	 */
+	public void setCrossesMadeContainer(CrossesMadeContainer container);
+	
+	/**
+	 * Validate fields and updates CrossesMadeContainer.
+	 * 
+	 * @return true if validation and update successful. Else, return false.
+	 */
+	public boolean updateCrossesMadeContainer();
 	
 }

@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerAdditionalDetailsComponent;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.slf4j.Logger;
@@ -62,8 +63,16 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
                 && (source instanceof AdditionalDetailsCrossNameComponent)) {
             ((AdditionalDetailsCrossNameComponent) source).generateNextNameButtonAction();            
             
+        } else if (eventButtonData.equals(CrossingManagerDetailsComponent.DONE_BUTTON_ID)
+                && (source instanceof CrossingManagerDetailsComponent)) {
+            ((CrossingManagerDetailsComponent) source).doneButtonClickAction();
+        
+        } else if (eventButtonData.equals(CrossingManagerDetailsComponent.BACK_BUTTON_ID)
+                && (source instanceof CrossingManagerDetailsComponent)) {
+            ((CrossingManagerDetailsComponent) source).backButtonClickAction();
+        
         } else {
-            LOG.error("GermplasmImportButtonClickListener: Error with buttonClick action. Source not identified.");
+            LOG.error("CrossingManagerButtonClickListener: Error with buttonClick action. Source not identified.");
         }
     }
 }

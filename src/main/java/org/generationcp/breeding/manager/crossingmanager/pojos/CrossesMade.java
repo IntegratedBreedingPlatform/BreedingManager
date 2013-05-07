@@ -12,9 +12,9 @@
 package org.generationcp.breeding.manager.crossingmanager.pojos;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 
@@ -32,12 +32,14 @@ public class CrossesMade implements Serializable{
 	private Map<Germplasm, Name> crossesMap;
 	
 	//for storing old cross names when generated name is chosen by user
-	private List<GermplasmListEntry> oldCrossNames; 
+	private Map<Germplasm, GermplasmListEntry> oldCrossNames; 
+	
+	private CrossingManagerUploader crossingManagerUploader;
 	
 	public CrossesMade(){
 	}
 	
-	public CrossesMade(Map<Germplasm, Name> crossesMap, List<GermplasmListEntry> oldCrosses){
+	public CrossesMade(Map<Germplasm, Name> crossesMap, Map<Germplasm, GermplasmListEntry> oldCrosses){
 		this.setCrossesMap(crossesMap);
 		this.setOldCrossNames(oldCrosses);
 	}
@@ -50,29 +52,21 @@ public class CrossesMade implements Serializable{
 		return crossesMap;
 	}
 
-	public void setOldCrossNames(List<GermplasmListEntry> oldCrosses) {
+	public void setOldCrossNames(Map<Germplasm, GermplasmListEntry> oldCrosses) {
 		this.oldCrossNames = oldCrosses;
 	}
 
-	public List<GermplasmListEntry> getOldCrossNames() {
+	public Map<Germplasm, GermplasmListEntry> getOldCrossNames() {
 		return oldCrossNames;
 	}
 	
-	/**
-	 * Finds GermplasmListEntry for a Germplasm by matching GIDs.
-	 * 
-	 * @param germplasm
-	 * @return GermplasmListEntry containing the old Cross Name. Returns null if no match found.
-	 */
-	public GermplasmListEntry findOldCrossNameEntry(Germplasm germplasm){
-		if (getOldCrossNames() != null){
-			for (GermplasmListEntry entry : getOldCrossNames()){
-				if (entry.getGid().equals(germplasm.getGid())){
-					return entry;
-				}
-			}
-		}
-		return null;
+	public CrossingManagerUploader getCrossingManagerUploader() {
+		return crossingManagerUploader;
 	}
 
+	public void setCrossingManagerUploader(
+			CrossingManagerUploader crossingManagerUploader) {
+		this.crossingManagerUploader = crossingManagerUploader;
+	}
+	
 }

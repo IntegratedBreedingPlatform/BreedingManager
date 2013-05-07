@@ -58,7 +58,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
         wizardScreenOne = new CrossingManagerImportFileComponent(this, accordion);
         wizardScreenTwo = new CrossingManagerMakeCrossesComponent(this, accordion);
-        wizardScreenThree = new CrossingManagerAdditionalDetailsComponent(this, accordion,wizardScreenOne);
+        wizardScreenThree = new CrossingManagerAdditionalDetailsComponent(this, accordion);
         wizardScreenFour = new CrossingManagerDetailsComponent(this,accordion);
         
         wizardScreenOne.setNextScreen(wizardScreenTwo);
@@ -66,6 +66,8 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
         wizardScreenTwo.setNextScreen(wizardScreenThree);
         wizardScreenTwo.setPreviousScreen(wizardScreenOne);
+        
+        wizardScreenThree.setNextScreen(wizardScreenFour);
         
         accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
         accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
@@ -79,7 +81,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
 		Tab tab = accordion.getTab(selected);
 		if(tab.getCaption().equals(messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES))){
 		    try {
-			wizardScreenThree.getAdditionalDetailsCrossInfoComponent().populateHarvestLocation();
+		    	wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
 		    } catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Form;
 
 @Configurable
@@ -49,19 +50,33 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
 
     private CrossesMadeContainerUpdateListener[] updateListeners = new CrossesMadeContainerUpdateListener[3];
     
-    
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    private CrossingManagerImportFileComponent wizardScreenOne;
     
-    public CrossingManagerAdditionalDetailsComponent(CrossingManagerMain source, Accordion accordion, CrossingManagerImportFileComponent wizardScreenOne){
+    private Component nextScreen;
+    
+    public CrossingManagerAdditionalDetailsComponent(CrossingManagerMain source, Accordion accordion){
     	this.source = source;
         this.accordion = accordion;
-        this.wizardScreenOne=wizardScreenOne;
     }
     
-    public CrossingManagerMain getSource() {
+    public void setNextScreen(Component nextScreen) {
+		this.nextScreen = nextScreen;
+	}
+
+	public AdditionalDetailsBreedingMethodComponent getBreedingMethodComponent() {
+		return breedingMethodComponent;
+	}
+
+	public AdditionalDetailsCrossNameComponent getCrossNameComponent() {
+		return crossNameComponent;
+	}
+
+	public AdditionalDetailsCrossInfoComponent getCrossInfoComponent() {
+		return crossInfoComponent;
+	}
+
+	public CrossingManagerMain getSource() {
     	return source;
     }
 
@@ -84,22 +99,22 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         setHeight("640px");
         setWidth("800px");
         
-        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent(wizardScreenOne);
+        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
         breedingMethodForm = new Form(breedingMethodComponent);
         breedingMethodForm.setHeight("210px");
         breedingMethodForm.setWidth("740px");
 		
         crossNameComponent = new AdditionalDetailsCrossNameComponent();
-	crossNameForm = new Form(crossNameComponent);
+		crossNameForm = new Form(crossNameComponent);
         crossNameForm.setHeight("260px");
         crossNameForm.setWidth("740px");
 		
-	crossInfoComponent = new AdditionalDetailsCrossInfoComponent(wizardScreenOne);
-	crossInfoForm = new Form(crossInfoComponent);
-	crossInfoForm.setHeight("120px");
-	crossInfoForm.setWidth("740px");
+		crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
+		crossInfoForm = new Form(crossInfoComponent);
+		crossInfoForm.setHeight("120px");
+		crossInfoForm.setWidth("740px");
 		
-	CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
+		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
@@ -116,7 +131,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         addComponent(backButton, "top:585px;left:600px");
         addComponent(nextButton, "top:585px;left:670px");
         
-        //setUpdateListeners();
+        setUpdateListeners();
     }
     
     @Override
@@ -134,19 +149,33 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     	messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
     }
     
-    /**
     private void setUpdateListeners(){
+    	breedingMethodComponent.setCrossesMadeContainer(this);
+    	crossNameComponent.setCrossesMadeContainer(this);
+    	crossInfoComponent.setCrossesMadeContainer(this);
+    	
     	updateListeners[0] = breedingMethodComponent;
     	updateListeners[1] = crossNameComponent;
     	updateListeners[2] = crossInfoComponent;
     }
-    */
     
     public void nextButtonClickAction(){
+    	boolean allValidationsPassed = true;
+    	//perform validations and update CrossesMade instance
     	for (CrossesMadeContainerUpdateListener listener : updateListeners){
     		if (listener != null){
-    			listener.updateCrossesMadeContainer(this);
+    			if (!listener.updateCrossesMadeContainer()){
+    				allValidationsPassed = false;
+    				break;
+    			}
     		}
+    	}
+    	
+    	if (this.nextScreen != null && allValidationsPassed){
+    		assert this.nextScreen instanceof CrossesMadeContainer;
+    		((CrossesMadeContainer) this.nextScreen).setCrossesMade(getCrossesMade());
+    		
+    		this.accordion.setSelectedTab(this.nextScreen);
     	}
     }
     
@@ -163,16 +192,12 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     			for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
     				System.out.println(entry.getKey() + " >>> " + entry.getValue());
     				if (crossesMade.getOldCrossNames() != null){
-    					System.out.println(crossesMade.findOldCrossNameEntry(entry.getKey()));
+    					System.out.println(crossesMade.getOldCrossNames().get(entry.getKey()));
     				}
     			}
     		}
 
     	}
-	}
-
-	public AdditionalDetailsCrossInfoComponent getAdditionalDetailsCrossInfoComponent() {
-	    return crossInfoComponent;
 	}
 
 
