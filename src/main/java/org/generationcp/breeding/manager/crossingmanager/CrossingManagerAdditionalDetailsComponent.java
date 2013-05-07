@@ -53,10 +53,12 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    private CrossingManagerImportFileComponent wizardScreenOne;
     
-    public CrossingManagerAdditionalDetailsComponent(CrossingManagerMain source, Accordion accordion){
+    public CrossingManagerAdditionalDetailsComponent(CrossingManagerMain source, Accordion accordion, CrossingManagerImportFileComponent wizardScreenOne){
     	this.source = source;
         this.accordion = accordion;
+        this.wizardScreenOne=wizardScreenOne;
     }
     
     public CrossingManagerMain getSource() {
@@ -82,7 +84,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         setHeight("640px");
         setWidth("800px");
         
-        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
+        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent(wizardScreenOne);
         breedingMethodForm = new Form(breedingMethodComponent);
         breedingMethodForm.setHeight("210px");
         breedingMethodForm.setWidth("740px");
@@ -92,7 +94,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         crossNameForm.setHeight("260px");
         crossNameForm.setWidth("740px");
 		
-	crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
+	crossInfoComponent = new AdditionalDetailsCrossInfoComponent(wizardScreenOne);
 	crossInfoForm = new Form(crossInfoComponent);
 	crossInfoForm.setHeight("120px");
 	crossInfoForm.setWidth("740px");
@@ -167,6 +169,10 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     		}
 
     	}
+	}
+
+	public AdditionalDetailsCrossInfoComponent getAdditionalDetailsCrossInfoComponent() {
+	    return crossInfoComponent;
 	}
 
 

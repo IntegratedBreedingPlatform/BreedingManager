@@ -211,4 +211,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     public void selectAlreadyDefinedCrossesInNurseryTemplateFile(){
     	crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
     }
+
+    public CrossingManagerUploader getCrossingManagerUploader() {
+	return crossingManagerUploader;
+    }
 }

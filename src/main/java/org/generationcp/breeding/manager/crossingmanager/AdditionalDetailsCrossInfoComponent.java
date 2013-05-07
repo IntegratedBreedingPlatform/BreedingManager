@@ -12,9 +12,16 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,12 +51,22 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout implemen
     
     private DateField harvestDtDateField;
     private ComboBox harvestLocComboBox;
+    private Map<String, Integer> mapLocation;
     
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
+  
+    private CrossingManagerImportFileComponent wizardScreenOne;
     
+    
+	public AdditionalDetailsCrossInfoComponent(CrossingManagerImportFileComponent wizardScreenOne) {
+	    this.wizardScreenOne=wizardScreenOne;
+    }
+
 	@Override
 	public void afterPropertiesSet() throws Exception {  
 		setHeight("95px");
@@ -70,9 +87,36 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout implemen
 		harvestLocComboBox = new ComboBox();
 		harvestLocComboBox.setWidth("400px");
 		addComponent(harvestLocComboBox, "top:40px;left:140px");
+		populateHarvestLocation();
 		
 	}
 	
+	public void populateHarvestLocation() throws MiddlewareQueryException {
+	    // TODO Auto-generated method stub
+	    harvestLocComboBox.removeAllItems();
+	    List<Location> locations = germplasmDataManager.getAllBreedingLocations();
+
+	    mapLocation = new HashMap<String, Integer>();
+	    String site=wizardScreenOne.getCrossingManagerUploader().getSite();
+	    String siteId=wizardScreenOne.getCrossingManagerUploader().getSiteId();
+	    if(site.length() > 0 && siteId.length() > 0){
+		harvestLocComboBox.addItem(site);
+		mapLocation.put(site, Integer.valueOf(siteId));
+		harvestLocComboBox.select(site);
+	    }else{
+		harvestLocComboBox.select("");
+	    }
+	    for (Location loc : locations) {
+		harvestLocComboBox.addItem(loc.getLname());
+		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
+	    }
+
+
+	    //Integer locId = mapLocation.get(harvestLocComboBox.getValue());
+
+
+	}
+
     @Override
     public void attach() {
         super.attach();
@@ -84,6 +128,11 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout implemen
 		messageSource.setCaption(harvestDateLabel, Message.HARVEST_DATE);
 		messageSource.setCaption(harvestLocationLabel, Message.HARVEST_LOCATION);
 		
+	}
+
+	
+	public ComboBox getHarvestLocComboBox() {
+	    return harvestLocComboBox;
 	}
 
 }

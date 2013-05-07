@@ -58,6 +58,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	private Date endDate;
 	private String studyType;
 	
+	private String siteId="";
+	private String site="";
+	private String breedingMethod="";
+	private String breedingMethodId="";
+	
 	private InputStream inp;
 	private Workbook wb;
 	
@@ -324,7 +329,31 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 							e.printStackTrace();
 						}
     				}
-    			}    			
+    			}  
+    			//set the siteid
+    			else if(importedCondition.getCondition().toUpperCase().equals("SITE")){
+    			    if(getCellStringValue(currentSheet,currentRow,6).length() > 0){
+    				site=getCellStringValue(currentSheet,currentRow,6);
+    			    }
+    			}
+    			
+    			else if(importedCondition.getCondition().toUpperCase().equals("SITE ID")){
+    			    if(getCellStringValue(currentSheet,currentRow,6).length() > 0){
+    				siteId=getCellStringValue(currentSheet,currentRow,6);
+    			    }
+    			}
+    			
+    			else if(importedCondition.getCondition().toUpperCase().equals("BREEDING METHOD")){
+    			    if(getCellStringValue(currentSheet,currentRow,6).length() > 0){
+    				breedingMethod=getCellStringValue(currentSheet,currentRow,6);
+    			    }
+    			}
+    			
+    			else if(importedCondition.getCondition().toUpperCase().equals("BREEDING METHOD ID")){
+    			    if(getCellStringValue(currentSheet,currentRow,6).length() > 0){
+    				breedingMethodId=getCellStringValue(currentSheet,currentRow,6);
+    			    }
+    			}
     			
     			System.out.println("");
     			System.out.println("DEBUG | Condition:"+getCellStringValue(currentSheet,currentRow,0));
@@ -554,4 +583,26 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     public GermplasmList getFemaleGermplasmList() {
         return femaleGermplasmList;
     }
+
+    
+    public String getSiteId() {
+        return siteId;
+    }
+
+    
+    public String getSite() {
+        return site;
+    }
+
+    
+    public String getBreedingMethod() {
+        return breedingMethod;
+    }
+
+    
+    public String getBreedingMethodId() {
+        return breedingMethodId;
+    }
+    
+    
 };

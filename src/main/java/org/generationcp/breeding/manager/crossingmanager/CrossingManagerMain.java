@@ -1,11 +1,9 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
-import org.generationcp.breeding.manager.listimport.SaveGermplasmListComponent;
-import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -56,7 +58,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
         wizardScreenOne = new CrossingManagerImportFileComponent(this, accordion);
         wizardScreenTwo = new CrossingManagerMakeCrossesComponent(this, accordion);
-        wizardScreenThree = new CrossingManagerAdditionalDetailsComponent(this, accordion);
+        wizardScreenThree = new CrossingManagerAdditionalDetailsComponent(this, accordion,wizardScreenOne);
         wizardScreenFour = new CrossingManagerDetailsComponent(this,accordion);
         
         wizardScreenOne.setNextScreen(wizardScreenTwo);
@@ -69,6 +71,22 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
         accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
         accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
+   
+        accordion.addListener(new SelectedTabChangeListener() {
+	    @Override
+	    public void selectedTabChange(SelectedTabChangeEvent event) {
+		Component selected =accordion.getSelectedTab();
+		Tab tab = accordion.getTab(selected);
+		if(tab.getCaption().equals(messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES))){
+		    try {
+			wizardScreenThree.getAdditionalDetailsCrossInfoComponent().populateHarvestLocation();
+		    } catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+		}
+	    }
+	});
         addComponent(accordion);
     }
     
@@ -97,5 +115,6 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
 
     
+  
     
 }
