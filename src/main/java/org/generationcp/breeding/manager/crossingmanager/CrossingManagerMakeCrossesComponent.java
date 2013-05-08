@@ -143,7 +143,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
         backButton.addListener(listener);
-       
+        
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(listener);
@@ -259,7 +259,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 
      
     public void nextButtonClickAction(){
-    	
+        nextScreen = source.getWizardScreenThree();
+        
         if(this.nextScreen != null){
         	assert this.nextScreen instanceof CrossesMadeContainer;
         	assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
@@ -268,8 +269,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         	listener.setCrossesMadeContainer(this);
         	listener.updateCrossesMadeContainer();
         	((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
-        	
+        
+        	source.getWizardScreenThree().setPreviousScreen(this);
+        	source.enableWizardTabs();
         	this.accordion.setSelectedTab(this.nextScreen);
+        	if(nextScreen instanceof CrossingManagerAdditionalDetailsComponent)
+        	    source.enableOnlyWizardTabThree();
         	
         } else {
             this.nextButton.setEnabled(false);
@@ -279,7 +284,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
     public void backButtonClickAction(){
         if(this.previousScreen != null){
+            source.enableWizardTabs();
             this.accordion.setSelectedTab(this.previousScreen);
+            if(previousScreen instanceof CrossingManagerImportFileComponent)
+                source.enableOnlyWizardTabOne();
         } else {
             this.backButton.setEnabled(false);
         }

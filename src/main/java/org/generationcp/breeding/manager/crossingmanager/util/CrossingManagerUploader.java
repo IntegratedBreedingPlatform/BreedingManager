@@ -122,6 +122,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         		source.selectAlreadyDefinedCrossesInNurseryTemplateFile();
         	}
         	
+        	source.getSource().setImportedGermplasmCrosses(importedGermplasmCrosses);
+        	
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		} catch (IOException e) {

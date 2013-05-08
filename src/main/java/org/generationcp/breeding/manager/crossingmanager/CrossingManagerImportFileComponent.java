@@ -44,6 +44,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private Upload uploadComponents;
     private Button nextButton;
     private Accordion accordion;
+    private Component previousScreen;
     private Component nextScreen;
     private Component nextNextScreen;
     
@@ -106,12 +107,14 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
         addComponent(crossesOptionGroup, "top:175px;left:30px;");
+        
     }
     
     @Override
     public void attach() {
         super.attach();
         updateLabels();
+        source.enableOnlyWizardTabOne();
     }
     
     @Override
@@ -129,6 +132,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
 
     public void nextButtonClickAction() throws InternationalizableException{
+        source.enableWizardTabs();
     	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
     		getAccordion().getApplication().getMainWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
     	} else if(crossesOptionGroup.getValue()==null) {
@@ -169,8 +173,18 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 			crossesMade.setCrossesMap(generateCrossesMadeMap());
 		}
 		((CrossesMadeContainer) nextStep).setCrossesMade(crossesMade);
+		source.getWizardScreenTwo().setPreviousScreen(this);
+		source.getWizardScreenThree().setPreviousScreen(this);
 		
+		source.enableWizardTabs();
     	this.accordion.setSelectedTab(nextStep);
+    	if(nextStep instanceof CrossingManagerMakeCrossesComponent){
+    	    source.getWizardScreenTwo().setPreviousScreen(this);
+            source.enableOnlyWizardTabTwo();
+    	} else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
+            source.getWizardScreenThree().setPreviousScreen(this);
+            source.enableOnlyWizardTabThree();
+        }
     }
     
     public Map<Germplasm, Name > generateCrossesMadeMap(){
@@ -225,6 +239,6 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
 
     public CrossingManagerUploader getCrossingManagerUploader() {
-	return crossingManagerUploader;
+        return crossingManagerUploader;
     }
 }

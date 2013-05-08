@@ -54,6 +54,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     private SimpleResourceBundleMessageSource messageSource;
     
     private Component nextScreen;
+    private Component previousScreen;
     
     public CrossingManagerAdditionalDetailsComponent(CrossingManagerMain source, Accordion accordion){
     	this.source = source;
@@ -159,6 +160,10 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     	updateListeners[2] = crossInfoComponent;
     }
     
+    public void setPreviousScreen(Component backScreen){
+        this.previousScreen = backScreen;
+    }    
+    
     public void nextButtonClickAction(){
     	boolean allValidationsPassed = true;
     	//perform validations and update CrossesMade instance
@@ -169,20 +174,35 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     				break;
     			}
     		}
-    	}
+    	}  
+    	
+    	nextScreen = source.getWizardScreenFour();
+    	source.getWizardScreenFour().setPreviousScreen(this);
     	
     	if (this.nextScreen != null && allValidationsPassed){
+    	    source.enableWizardTabs();
     		assert this.nextScreen instanceof CrossesMadeContainer;
     		((CrossesMadeContainer) this.nextScreen).setCrossesMade(getCrossesMade());
+    		source.setCrossesMade(getCrossesMade());
     		
-    		this.accordion.setSelectedTab(this.nextScreen);
+    		if(nextScreen instanceof CrossingManagerDetailsComponent)
+    		    source.enableOnlyWizardTabFour();
+    		this.accordion.setSelectedTab(nextScreen);
     	}
     }
     
-    //TODO replace with actual back button logic. 
-    // For now, just displays CrossesMade information
     public void backButtonClickAction(){
-    	displayCrossesMadeInformation();
+        if (this.previousScreen != null){
+            source.enableWizardTabs();
+            this.accordion.setSelectedTab(this.previousScreen);
+            if(previousScreen instanceof CrossingManagerImportFileComponent)
+                source.enableOnlyWizardTabOne();
+            else if(previousScreen instanceof CrossingManagerMakeCrossesComponent){
+                source.enableOnlyWizardTabTwo();
+            }
+            
+        }
+        
     }
 
 	private void displayCrossesMadeInformation() {
@@ -199,6 +219,5 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
 
     	}
 	}
-
 
 }

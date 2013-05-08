@@ -1,6 +1,8 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -34,8 +36,17 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private CrossingManagerAdditionalDetailsComponent wizardScreenThree;
     private CrossingManagerDetailsComponent wizardScreenFour;
     
+    private Tab wizardTabOne;
+    private Tab wizardTabTwo;
+    private Tab wizardTabThree;
+    private Tab wizardTabFour;
+    
     private Label crossingManagerTitle;
     private Accordion accordion;
+    
+    //Data from wizard steps
+    private ImportedGermplasmCrosses importedGermplasmCrosses;
+    private CrossesMade crossesMade;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -69,24 +80,22 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
         wizardScreenThree.setNextScreen(wizardScreenFour);
         
-        accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
-        accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
-        accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
-        accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
-   
+        wizardTabOne = accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
+        wizardTabTwo = accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
+        wizardTabThree = accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
+        wizardTabFour = accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
+        
         accordion.addListener(new SelectedTabChangeListener() {
 	    @Override
 	    public void selectedTabChange(SelectedTabChangeEvent event) {
-		Component selected =accordion.getSelectedTab();
-		Tab tab = accordion.getTab(selected);
-		if(tab.getCaption().equals(messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES))){
-		    try {
-		    	wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
-		    } catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-		}
+	        Component selected =accordion.getSelectedTab();
+	        Tab tab = accordion.getTab(selected);
+            try {
+                wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
+            } catch (MiddlewareQueryException e) {
+                //TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 	    }
 	});
         addComponent(accordion);
@@ -104,6 +113,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
     
     public CrossingManagerImportFileComponent getWizardScreenOne() {
+
     	return wizardScreenOne;
     }
     public CrossingManagerMakeCrossesComponent getWizardScreenTwo() {
@@ -112,11 +122,59 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     public CrossingManagerAdditionalDetailsComponent getWizardScreenThree() {
     	return wizardScreenThree;
     }
+    
     public CrossingManagerDetailsComponent getWizardScreenFour() {
     	return wizardScreenFour;
     }
 
+    public void enableWizardTabs() {
+        wizardTabOne.setEnabled(true);
+        wizardTabTwo.setEnabled(true);
+        wizardTabThree.setEnabled(true);
+        wizardTabFour.setEnabled(true);
+    }
     
+    public void enableOnlyWizardTabOne() {
+        wizardTabOne.setEnabled(true);
+        wizardTabTwo.setEnabled(false);
+        wizardTabThree.setEnabled(false);
+        wizardTabFour.setEnabled(false);
+    }
+    
+    public void enableOnlyWizardTabTwo() {
+        wizardTabOne.setEnabled(false);
+        wizardTabTwo.setEnabled(true);
+        wizardTabThree.setEnabled(false);
+        wizardTabFour.setEnabled(false);
+    }
+    
+    public void enableOnlyWizardTabThree() {
+        wizardTabOne.setEnabled(false);
+        wizardTabTwo.setEnabled(false);
+        wizardTabThree.setEnabled(true);
+        wizardTabFour.setEnabled(false);
+    }    
   
+    public void enableOnlyWizardTabFour() {
+        wizardTabOne.setEnabled(false);
+        wizardTabTwo.setEnabled(false);
+        wizardTabThree.setEnabled(false);
+        wizardTabFour.setEnabled(true);
+    }    
     
+    public void setImportedGermplasmCrosses(ImportedGermplasmCrosses importedGermplasmCrosses){
+        this.importedGermplasmCrosses = importedGermplasmCrosses;
+    }
+    
+    public ImportedGermplasmCrosses getImportedGermplasmCrosses(){
+        return importedGermplasmCrosses;
+    }
+    
+    public void setCrossesMade(CrossesMade crossesMade){
+        this.crossesMade = crossesMade;
+    }
+    
+    public CrossesMade getCrossesMade(){
+        return crossesMade;
+    }
 }

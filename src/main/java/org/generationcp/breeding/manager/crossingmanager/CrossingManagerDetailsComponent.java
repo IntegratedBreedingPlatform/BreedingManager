@@ -26,6 +26,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -39,6 +40,8 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     
     private CrossingManagerMain source;
     private Accordion accordion;
+    
+    private Component previousScreen;
     
     private Label germplasmListNameLabel;
     private Label germplasmListDescriptionLabel;
@@ -189,10 +192,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     	return source;
     }
 	
-	//TODO replace with actual back button logic. 
-    // For now, just displays CrossesMade information
     public void backButtonClickAction(){
-    	displayCrossesMadeInformation();
+        source.enableWizardTabs();
+        accordion.setSelectedTab(previousScreen);
+        if(previousScreen instanceof CrossingManagerAdditionalDetailsComponent)
+            source.enableOnlyWizardTabThree();
     }
 
 	private void displayCrossesMadeInformation() {
@@ -209,4 +213,9 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 
     	}
 	}
+	
+    public void setPreviousScreen(Component backScreen){
+        this.previousScreen = backScreen;
+    }
+	
 }
