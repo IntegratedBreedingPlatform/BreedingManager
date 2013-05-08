@@ -67,6 +67,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    private List<Location> locations;
   
     private CrossesMadeContainer container;
     
@@ -104,32 +105,31 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		addComponent(harvestDtDateField, "top:10px;left:140px");
 		addComponent(harvestLocationLabel, "top:60px;left:20px");
 		addComponent(harvestLocComboBox, "top:40px;left:140px");
+
+		locations = germplasmDataManager.getAllBreedingLocations();
 	}
 	
-	//TODO put call to germplasmDataManager in afterProperties of attach method
-    //so that it's not always called when you go back to this tab
 	public void populateHarvestLocation() throws MiddlewareQueryException {
 	    harvestLocComboBox.removeAllItems();
-	    List<Location> locations = germplasmDataManager.getAllBreedingLocations();
 
 	    mapLocation = new HashMap<String, Integer>();
-	    String site = this.container.getCrossesMade().getCrossingManagerUploader().getSite();
-	    String siteId = this.container.getCrossesMade().getCrossingManagerUploader().getSiteId();
-	    if(site.length() > 0 && siteId.length() > 0){
-		harvestLocComboBox.addItem(site);
-		mapLocation.put(site, Integer.valueOf(siteId));
-		harvestLocComboBox.select(site);
-	    }else{
-		harvestLocComboBox.select("");
+	    if (this.container != null && this.container.getCrossesMade() != null && 
+				this.container.getCrossesMade().getCrossingManagerUploader() !=null){
+	    	String site = this.container.getCrossesMade().getCrossingManagerUploader().getSite();
+	    	String siteId = this.container.getCrossesMade().getCrossingManagerUploader().getSiteId();
+	    	if(site.length() > 0 && siteId.length() > 0){
+	    		harvestLocComboBox.addItem(site);
+	    		mapLocation.put(site, Integer.valueOf(siteId));
+	    		harvestLocComboBox.select(site);
+	    	}else{
+	    		harvestLocComboBox.select("");
+	    	}
 	    }
+	    
 	    for (Location loc : locations) {
 		harvestLocComboBox.addItem(loc.getLname());
 		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
 	    }
-
-
-	    //Integer locId = mapLocation.get(harvestLocComboBox.getValue());
-
 
 	}
 
@@ -149,7 +149,9 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	public boolean updateCrossesMadeContainer() {
 		if (validateRequiredFields()){
 			
-			if (container != null && container.getCrossesMade() != null) {
+			if (this.container != null && this.container.getCrossesMade() != null && 
+					this.container.getCrossesMade().getCrossesMap()!= null) {
+				
 				Date harvestDate = (Date) harvestDtDateField.getValue();
 				Integer harvestLocationId = mapLocation.get(harvestLocComboBox.getValue());
 			

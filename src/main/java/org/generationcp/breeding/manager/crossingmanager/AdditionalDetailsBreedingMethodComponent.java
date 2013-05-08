@@ -66,6 +66,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     private CrossesMadeContainer container;
     
+    private List<Method> methods;
+    
     private enum BreedingMethodOption{
     	SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
@@ -125,24 +127,27 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 		addComponent(breedingMethodOptionGroup, "top:35px;left:20px");
 		addComponent(selectBreedingMethodLabel, "top:105px;left:20px");
 		addComponent(breedingMethodComboBox, "top:85px;left:180px");
+		
+		methods = germplasmDataManager.getMethodsByType("GEN");
 	}
 	
-    //TODO put call to germplasmDataManager in afterProperties of attach method
-    //so that it's not always called when you go back to this tab
+    
     public void populateBreedingMethod() throws MiddlewareQueryException {
-	
-	List<Method> methods = germplasmDataManager.getMethodsByType("GEN");
 
 	mapMethods = new HashMap<String, Integer>();
-	String breedingMethod = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethod();
-	String beedingMethodId = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethodId();
-	if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
-		breedingMethodComboBox.addItem(breedingMethod);
-		mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
-		breedingMethodComboBox.select(breedingMethod);
-	}else{
-		breedingMethodComboBox.select("");
+	if (this.container != null && this.container.getCrossesMade() != null && 
+			this.container.getCrossesMade().getCrossingManagerUploader() !=null){
+		String breedingMethod = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethod();
+		String beedingMethodId = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethodId();
+		if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
+			breedingMethodComboBox.addItem(breedingMethod);
+			mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
+			breedingMethodComboBox.select(breedingMethod);
+		}else{
+			breedingMethodComboBox.select("");
+		}
 	}
+	
 	for (Method m : methods) {
 	    breedingMethodComboBox.addItem(m.getMname());
 	    mapMethods.put(m.getMname(), new Integer(m.getMid()));
@@ -180,7 +185,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 	@Override
 	public boolean updateCrossesMadeContainer() {
 		
-		if (this.container != null && validateBreedingMethod()){
+		if (this.container != null && this.container.getCrossesMade() != null && 
+				this.container.getCrossesMade().getCrossesMap()!= null && validateBreedingMethod()){
 			
 			//Use same breeding method for all crosses
 			if (sameBreedingMethodForAllSelected()){

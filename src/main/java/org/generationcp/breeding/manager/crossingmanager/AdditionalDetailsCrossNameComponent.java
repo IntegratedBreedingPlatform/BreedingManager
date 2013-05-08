@@ -324,7 +324,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			return true;
 		
 		//Else, perform validations and update CrossesMadeContainer
-		} else if (this.container != null && validateCrossNameFields() && validateGeneratedName()) { 
+		} else if (this.container != null && this.container.getCrossesMade() != null && 
+				this.container.getCrossesMade().getCrossesMap()!= null && validateCrossNameFields() 
+					&& validateGeneratedName()) { 
 			
 			int ctr = nextNumberInSequence;
 			String suffix = (String) suffixTextField.getValue();
@@ -344,7 +346,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 				
 				oldCrossNames.put(germplasm, oldNameEntry);
 			}
-			this.container.getCrossesMade().setOldCrossNames(oldCrossNames);
+			// Only store the "original" cross names, would not store previous names on 2nd, 3rd, ... change
+			if (this.container.getCrossesMade().getOldCrossNames()== null ||
+					this.container.getCrossesMade().getOldCrossNames().isEmpty()){
+				this.container.getCrossesMade().setOldCrossNames(oldCrossNames);				
+			}
 			
 			return true;
 				

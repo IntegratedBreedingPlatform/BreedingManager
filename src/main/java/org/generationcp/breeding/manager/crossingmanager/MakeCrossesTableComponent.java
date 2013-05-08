@@ -47,7 +47,8 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @Configurable
-public class MakeCrossesTableComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
+public class MakeCrossesTableComponent extends VerticalLayout 
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
 
 	public static final String PARENTS_DELIMITER = ",";
 	public static final String CROSS_NAME_COLUMN = "Cross Name Column" ;
@@ -69,6 +70,21 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	 
 	private Table tableCrossesMade;
     private Label lblCrossMade;
+    
+    private CrossesMadeContainer container;
+    
+	@Override
+	public void setCrossesMadeContainer(CrossesMadeContainer container) {
+		this.container = container;
+		
+	}
+
+	@Override
+	public boolean updateCrossesMadeContainer() {
+		this.container.getCrossesMade().setCrossesMap(generateCrossesMadeMap());
+		
+		return true;
+	}
     
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -202,7 +218,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
     	}
     }
     
-    public Map<Germplasm, Name > generateCrossesMadeMap(){
+    private Map<Germplasm, Name > generateCrossesMadeMap(){
     	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
     	
     	//get ID of User Defined Field for Crossing Name

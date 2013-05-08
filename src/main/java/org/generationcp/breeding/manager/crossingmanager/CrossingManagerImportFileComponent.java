@@ -137,30 +137,40 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     		if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
     			if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
     				getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
+    			
+				//pass uploaded info and Crosses (if any) to next screen
     			} else {
+    				CrossesMade crossesMade = new CrossesMade();
+    				crossesMade.setCrossingManagerUploader(crossingManagerUploader);
     				if(this.nextNextScreen != null){
-    					assert this.nextNextScreen instanceof CrossesMadeContainer;
-    					
-    					//pass uploaded info and Crosses (if any) to next screen
-    					CrossesMade crossesMade = new CrossesMade();
-    					crossesMade.setCrossesMap(generateCrossesMadeMap());
-    					crossesMade.setCrossingManagerUploader(crossingManagerUploader);
-    		        	((CrossesMadeContainer) nextNextScreen).setCrossesMade(crossesMade);
-    	    			
-    		        	this.accordion.setSelectedTab(this.nextNextScreen);
+    					saveCrossesInfoToNextWizardStep(this.nextNextScreen, true);
     	        	} else {
     	        		this.nextButton.setEnabled(false);
     	        	}
     			}
     		} else {
 	    		if(this.nextScreen != null){
-	    			this.accordion.setSelectedTab(this.nextScreen);
-                    ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile(crossingManagerUploader);
+                    saveCrossesInfoToNextWizardStep(this.nextScreen, false);
+                    ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
+                    
 	        	} else {
 	        		this.nextButton.setEnabled(false);
 	        	}
     		}
     	}
+    }
+    
+    private void saveCrossesInfoToNextWizardStep(Component nextStep, boolean crossesUploaded){
+    	assert nextStep instanceof CrossesMadeContainer;
+    	
+    	CrossesMade crossesMade = new CrossesMade();
+		crossesMade.setCrossingManagerUploader(crossingManagerUploader);
+		if (crossesUploaded){
+			crossesMade.setCrossesMap(generateCrossesMadeMap());
+		}
+		((CrossesMadeContainer) nextStep).setCrossesMade(crossesMade);
+		
+    	this.accordion.setSelectedTab(nextStep);
     }
     
     public Map<Germplasm, Name > generateCrossesMadeMap(){

@@ -18,7 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
+public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
 	public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
 	public static final String SELECT_MALE_PARENT_BUTTON_ID = "Male Parent Button";
@@ -55,7 +56,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     private MakeCrossesTableComponent crossesTableComponent;
     private Integer lastOpenedListId;
 
-    private CrossingManagerUploader crossingManagerUploader;
+    private CrossesMade crossesMade;
     
     private enum CrossType { 
     	MULTIPLY, TOP_TO_BOTTOM
@@ -78,6 +79,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     public void setPreviousScreen(Component backScreen){
     	this.previousScreen = backScreen;
     }
+    
+    @Override
+	public CrossesMade getCrossesMade() {
+		return this.crossesMade;
+	}
+
+	@Override
+	public void setCrossesMade(CrossesMade crossesMade) {
+		this.crossesMade = crossesMade;
+		
+	}
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -250,10 +262,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
     	
         if(this.nextScreen != null){
         	assert this.nextScreen instanceof CrossesMadeContainer;
+        	assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
         	
-        	CrossesMade crossesMade = new CrossesMade();
-        	crossesMade.setCrossesMap(crossesTableComponent.generateCrossesMadeMap());
-        	((CrossesMadeContainer) nextScreen).setCrossesMade(crossesMade);
+        	CrossesMadeContainerUpdateListener listener = ((CrossesMadeContainerUpdateListener) crossesTableComponent);
+        	listener.setCrossesMadeContainer(this);
+        	listener.updateCrossesMadeContainer();
+        	((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
         	
         	this.accordion.setSelectedTab(this.nextScreen);
         	
@@ -279,8 +293,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         this.lastOpenedListId = lastOpenedListId;
     }
     
-    public void setupDefaultListFromFile(CrossingManagerUploader crossingManagerUploader){
-        this.crossingManagerUploader = crossingManagerUploader;
+    public void setupDefaultListFromFile(){
+        CrossingManagerUploader crossingManagerUploader = crossesMade.getCrossingManagerUploader();
         // retrieve list entries and add them to the parent ListSelect component
         //add checking to provide error
         listSelectMale.removeAllItems();

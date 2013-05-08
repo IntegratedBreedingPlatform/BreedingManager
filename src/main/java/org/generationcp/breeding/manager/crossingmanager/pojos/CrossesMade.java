@@ -46,6 +46,9 @@ public class CrossesMade implements Serializable{
 
 	public void setCrossesMap(Map<Germplasm, Name> crossesMap) {
 		this.crossesMap = crossesMap;
+		if (this.oldCrossNames != null){
+			this.oldCrossNames.clear();
+		}
 	}
 
 	public Map<Germplasm, Name> getCrossesMap() {
