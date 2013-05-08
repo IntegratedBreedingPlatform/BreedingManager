@@ -178,7 +178,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 						System.out.println("DEBUG | MALE GID:"+getCellStringValue(currentSheet, currentRow, col));
 					} else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSSING DATE")){
 						try {
-							importedGermplasmCross.setCrossingDate(new SimpleDateFormat("yyyymmdd").parse(getCellStringValue(currentSheet, currentRow, col, true)));
+							importedGermplasmCross.setCrossingDate(new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(currentSheet, currentRow, col, true)));
 						} catch (ParseException e) {
 							System.out.println("ERROR | Unable to parse date - " + getCellStringValue(currentSheet, currentRow, col));
 						}
@@ -240,8 +240,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         	title = getCellStringValue(0,1,1,true);
         	pmKey = getCellStringValue(0,2,1,true);
         	objective = getCellStringValue(0,3,1,true);
-			startDate = new SimpleDateFormat("yyyymmdd").parse(getCellStringValue(0,4,1,true));
-			endDate = new SimpleDateFormat("yyyymmdd").parse(getCellStringValue(0,5,1,true));
+			startDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,4,1,true));
+			endDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,5,1,true));
         	studyType = getCellStringValue(0,6,1,true);
 			
 			importedGermplasmCrosses = new ImportedGermplasmCrosses(originalFilename, study, title, pmKey, objective, startDate, endDate, studyType); 

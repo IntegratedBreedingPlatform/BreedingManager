@@ -170,7 +170,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     		listName = getCellStringValue(0,0,1,true);
         	listTitle = getCellStringValue(0,1,1,true);
         	listType = getCellStringValue(0,2,1,true);
-			listDate = new SimpleDateFormat("yyyymmdd").parse(getCellStringValue(0,3,1,true));
+			listDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,3,1,true));
         	
 			importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
 			
