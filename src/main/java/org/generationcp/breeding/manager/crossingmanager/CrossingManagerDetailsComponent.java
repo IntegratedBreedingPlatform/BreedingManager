@@ -1,26 +1,38 @@
+/*******************************************************************************
+ * Copyright (c) 2012, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
@@ -33,7 +45,7 @@ import com.vaadin.ui.TextField;
 
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
-		implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+	implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerDetailsComponent.class);
@@ -84,6 +96,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		this.crossesMade = crossesMade;
 		
 	}
+	
+	public void setPreviousScreen(Component backScreen){
+	        this.previousScreen = backScreen; 
+	}
+
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -102,6 +119,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
+        doneButton.setData(DONE_BUTTON_ID);
         
         germplasmListName.setWidth("450px");
         germplasmListDescription.setWidth("450px");
@@ -121,56 +139,16 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         addComponent(doneButton, "top:260px; left: 700px;");
         
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
-		germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
-
-        //start DJ: GCP-3799
-        //germplasmListName.setRequired(true);
-        //germplasmListDescription.setRequired(true);
-        doneButton.setData(DONE_BUTTON_ID);
-        List<UserDefinedField> germplasmListTypes = germplasmListManager.getGermplasmListTypes();
-        for(int i = 0 ; i < germplasmListTypes.size() ; i++){
-            UserDefinedField userDefinedField = germplasmListTypes.get(i);
-            germplasmListType.addItem(userDefinedField.getFcode());
-            germplasmListType.setItemCaption(userDefinedField.getFcode(), userDefinedField.getFname());
-            if(DEFAULT_GERMPLASM_LIST_TYPE.equalsIgnoreCase(userDefinedField.getFcode())){
-                germplasmListType.setValue(userDefinedField.getFcode());
-            }
-        }
-        germplasmListDate.setDateFormat("yyyy-MM-dd");
+        germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setValue(new Date());
+
+        initializeListTypeComboBox();
 
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		doneButton.addListener(listener);
 		backButton.addListener(listener);
-        //end DJ: GCP-3799
     }
-
-    public void doneButtonClickAction() throws InternationalizableException{
-            String nGermplasmListName = (String) germplasmListName.getValue();
-            String nGermplasmListDescription= (String) germplasmListDescription.getValue();
-            Date date = (Date)germplasmListDate.getValue();
-            String nGermplasmListType = (String)germplasmListType.getValue();
-        	if(nGermplasmListName==null || nGermplasmListName.trim().equalsIgnoreCase("")){
-        		//getSource().getApplication().getMainWindow().showNotification(, Window.Notification.TYPE_WARNING_MESSAGE);
-                //MessageNotifier.showWarning(this.getWindow(), "Germplasm List Name is required.", "");
-                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_NAME_REQUIRED), "");
-
-        	} else if(nGermplasmListDescription==null || nGermplasmListDescription.trim().equalsIgnoreCase("")) {
-                //getSource().getApplication().getMainWindow().showNotification("Germplasm List Description is required.", Window.Notification.TYPE_WARNING_MESSAGE);
-                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_DESCRIPTION_REQUIRED), "");
-        	} else if(nGermplasmListType == null || nGermplasmListType.equalsIgnoreCase("")){
-                //getSource().getApplication().getMainWindow().showNotification(, Window.Notification.TYPE_WARNING_MESSAGE);
-                MessageNotifier.showWarning(this.getWindow(),  messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_TYPE_REQUIRED), "");
-            } else if(date==null) {
-                //getSource().getApplication().getMainWindow().showNotification("Please choose a correct date", Window.Notification.TYPE_WARNING_MESSAGE);
-                MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_DATE_REQUIRED), "");
-        	}
-        }
-
-        public Accordion getAccordion() {
-        	return accordion;
-        }
     
     @Override
     public void attach() {
@@ -188,9 +166,93 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     	messageSource.setCaption(doneButton, Message.DONE);
     }
 
-    public CrossingManagerMain getSource() {
-    	return source;
+
+    private void initializeListTypeComboBox() throws MiddlewareQueryException {
+    	List<UserDefinedField> germplasmListTypes = germplasmListManager.getGermplasmListTypes();
+        for(int i = 0 ; i < germplasmListTypes.size() ; i++){
+            UserDefinedField userDefinedField = germplasmListTypes.get(i);
+            germplasmListType.addItem(userDefinedField.getFcode());
+            germplasmListType.setItemCaption(userDefinedField.getFcode(), userDefinedField.getFname());
+            if(DEFAULT_GERMPLASM_LIST_TYPE.equalsIgnoreCase(userDefinedField.getFcode())){
+                germplasmListType.setValue(userDefinedField.getFcode());
+            }
+        }
     }
+
+    @SuppressWarnings("serial")
+    public void doneButtonClickAction() throws InternationalizableException{
+    	if (validateRequiredFields()){
+    	    updateCrossesMadeContainer();
+    	
+    	    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
+	    		messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
+	    		messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+	    		new ConfirmDialog.Listener() {
+	    			
+	        		public void onClose(ConfirmDialog dialog) {
+	        		    if (dialog.isConfirmed()) {
+	        			saveRecords();
+	        		    }
+	        		}
+	        		
+    	    	}
+    	    );
+    	}
+    }
+    
+    //Save records into DB and redirects to GermplasmListBrowser to view created list
+    private void saveRecords() {
+		SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
+
+		try {
+		    Integer listId = saveAction.saveRecords(crossesMade);
+		    MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+		    		messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY));
+		    
+		    this.source.viewGermplasmListCreated(listId);
+		    
+		} catch (MiddlewareQueryException e) {
+		    LOG.error(e.getMessage() + " " + e.getStackTrace());
+		    e.printStackTrace();
+		    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+			    messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
+		}
+    	
+    }
+    
+    //save GermplasmList info to CrossesMadeContainer
+    private void updateCrossesMadeContainer(){
+    	String listName = ((String) germplasmListName.getValue()).trim();
+    	String listDescription = ((String) germplasmListDescription.getValue()).trim();
+    	SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+    	Date date = (Date)germplasmListDate.getValue();
+    	
+    	GermplasmList list = new GermplasmList();
+    	list.setName(listName);
+    	list.setDescription(listDescription);
+		list.setDate(Long.parseLong(formatter.format(date)));
+		list.setType((String) germplasmListType.getValue()); // value = fCOde
+		list.setUserId(0);
+		
+		this.crossesMade.setGermplasmList(list);
+    }
+
+    
+    private boolean validateRequiredFields(){
+    	return 
+    	CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListName, 
+    		messageSource, (String) germplasmListNameLabel.getCaption())
+		
+		&& CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListDescription, 
+			messageSource, 	(String) germplasmListDescriptionLabel.getCaption())
+			
+		&& CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListType, 
+			messageSource, (String) germplasmListTypeLabel.getCaption())
+			
+		&& CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListDate, 
+			messageSource, (String) germplasmListDateLabel.getCaption());
+    }
+
 	
     public void backButtonClickAction(){
         source.enableWizardTabs();
@@ -199,23 +261,5 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
             source.enableOnlyWizardTabThree();
     }
 
-	private void displayCrossesMadeInformation() {
-		if (crossesMade != null){
-    		Map<Germplasm,Name> crossesMap = crossesMade.getCrossesMap();
-    		if (crossesMap != null){
-    			for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
-    				System.out.println(entry.getKey() + " >>> " + entry.getValue());
-    				if (crossesMade.getOldCrossNames() != null){
-    					System.out.println(crossesMade.getOldCrossNames().get(entry.getKey()));
-    				}
-    			}
-    		}
 
-    	}
-	}
-	
-    public void setPreviousScreen(Component backScreen){
-        this.previousScreen = backScreen;
-    }
-	
 }

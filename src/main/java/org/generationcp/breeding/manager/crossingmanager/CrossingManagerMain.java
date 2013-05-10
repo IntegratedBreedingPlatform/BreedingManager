@@ -5,7 +5,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -24,6 +24,8 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMain extends VerticalLayout implements InitializingBean, InternationalizableComponent{
     
     public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+	
 	
     private static final long serialVersionUID = -6656072296236475385L;
 
@@ -48,14 +50,17 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private ImportedGermplasmCrosses importedGermplasmCrosses;
     private CrossesMade crossesMade;
     
+    private ComponentContainer parent;
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public CrossingManagerMain(){
-        
+    public CrossingManagerMain(ComponentContainer parent){
+    	this.parent = parent;
     }
 
-    @Override
+    @SuppressWarnings("serial")
+	@Override
     public void afterPropertiesSet() throws Exception {
         setMargin(false);
         setSpacing(true);
@@ -86,18 +91,15 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardTabFour = accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
         
         accordion.addListener(new SelectedTabChangeListener() {
-	    @Override
-	    public void selectedTabChange(SelectedTabChangeEvent event) {
-	        Component selected =accordion.getSelectedTab();
-	        Tab tab = accordion.getTab(selected);
-            try {
-                wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
-            } catch (MiddlewareQueryException e) {
-                //TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-	    }
-	});
+		    @Override
+		    public void selectedTabChange(SelectedTabChangeEvent event) {
+		        Component selected =accordion.getSelectedTab();
+		        Tab tab = accordion.getTab(selected);
+		    	if(tab.getCaption().equals(messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES))){
+		    		wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
+		    	}	
+		    }
+		});
         addComponent(accordion);
     }
     
@@ -173,8 +175,19 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     public void setCrossesMade(CrossesMade crossesMade){
         this.crossesMade = crossesMade;
     }
-    
     public CrossesMade getCrossesMade(){
         return crossesMade;
+    }
+    
+    public void viewGermplasmListCreated(Integer listId){
+		EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
+		    new EmbeddedGermplasmListDetailComponent(this, listId);
+		
+		this.removeComponent(this.accordion);
+		this.addComponent(germplasmListBrowser);
+    }
+    
+    public void reset(){
+    	this.parent.replaceComponent(this, new CrossingManagerMain(this.parent));
     }
 }

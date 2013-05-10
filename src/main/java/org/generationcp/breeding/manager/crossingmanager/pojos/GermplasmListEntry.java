@@ -83,4 +83,32 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 		return builder.toString();
 	}
 
+	@Override
+	public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((gid == null) ? 0 : gid.hashCode());
+	    return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj)
+	    	return true;
+	    if (obj == null)
+	    	return false;
+	    if (getClass() != obj.getClass())
+	    	return false;
+	    GermplasmListEntry other = (GermplasmListEntry) obj;
+	    if (gid == null) {
+			if (other.gid != null)
+			    return false;
+	    } else if (!gid.equals(other.gid))
+	    	return false;
+	    
+	    return true;
+	}
+	
+	
+
 }

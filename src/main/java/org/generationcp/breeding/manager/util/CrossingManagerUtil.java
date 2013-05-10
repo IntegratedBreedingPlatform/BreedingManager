@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.util;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -213,6 +214,30 @@ public class CrossingManagerUtil{
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Displays a warning in window if field's string value is null: "<fieldName> must be specified."
+	 * 
+	 * @param window - window where error message will be shown
+	 * @param field - field to check if empty string. If empty, display warning
+	 * @param messageSource - resource bundle where the error message will be retrieved from
+	 * @param fieldName - name of the required Field which will appear in error message. 
+	 * 						If this is null, gets the field's caption as field name.
+	 * @return false if field is null. Else, return true;
+	 */
+	public static boolean validateRequiredStringField(Window window, AbstractField field,
+			SimpleResourceBundleMessageSource messageSource, String fieldName){
+		
+		if (validateRequiredField(window, field, messageSource, fieldName)){
+			if (StringUtils.isEmpty(((String) field.getValue()).trim())){
+				showFieldIsRequiredMessage(window, messageSource, fieldName != null ? fieldName : field.getCaption());
+				return false;
+			}
+			return true;
+		}
+
+		return false;
 	}
 	
 	/**

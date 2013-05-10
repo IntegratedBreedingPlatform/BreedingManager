@@ -12,6 +12,7 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -86,6 +88,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return true;
 	}
     
+	@SuppressWarnings("serial")
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		lblCrossMade = new Label();
@@ -133,11 +136,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		messageSource.setCaption(lblCrossMade, Message.LABEL_CROSS_MADE);
 	}
 	
-    // Crossing ID = the GIDs of parents separated by delimiter (eg. 1,2)
-	private String getCrossingID(Integer parent1, Integer parent2) {
-		return parent1 + PARENTS_DELIMITER + parent2;
-	}
-	
   
 	/**
      * Crosses each item on first list with its counterpart (same index or position) 
@@ -157,13 +155,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			GermplasmListEntry parent2 = iterator2.next();
 			String caption1 = parent1.getDesignation();
 			String caption2 = parent2.getDesignation();
-			String crossingId = getCrossingID(parent1.getGid(), parent2.getGid());
 			
-			if (!crossAlreadyExists(crossingId)){
+			CrossParents parents = new CrossParents(parent1, parent2);
+			if (!crossAlreadyExists(parents)){
 				tableCrossesMade.addItem(new Object[] {
 						CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
-					}, 
-					crossingId); 
+					}, parents); 
 			}
     	}
 
@@ -183,23 +180,22 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			
 			for (GermplasmListEntry parent2 : parents2){
 				String caption2 = parent2.getDesignation();
-				String crossingId = getCrossingID(parent1.getGid(), parent2.getGid());
+				CrossParents parents = new CrossParents(parent1, parent2);
 				
-				if (!crossAlreadyExists(crossingId)){
+				if (!crossAlreadyExists(parents)){
 					tableCrossesMade.addItem(new Object[] {
 								CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
-							}, 
-							crossingId); 					
+							}, parents); 					
 				}
 			}
 		}
     }
 
-    // Checks if crossing ID already exists in Crossing Made table
-	private boolean crossAlreadyExists(String crossingId) {
+    // Checks if combination of female and male parents already exists in Crossing Made table
+	private boolean crossAlreadyExists(CrossParents parents) {
 		for (Object itemId : tableCrossesMade.getItemIds()){
-			String idString = (String) itemId;
-			if (idString.equals(crossingId)){
+			CrossParents rowId = (CrossParents) itemId;
+			if (rowId.equals(parents)){
 				return true;
 			}
 		}
@@ -220,6 +216,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     private Map<Germplasm, Name > generateCrossesMadeMap(){
     	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
+    	List<ImportedGermplasmCross> crossesToExport = new ArrayList<ImportedGermplasmCross>();
     	
     	//get ID of User Defined Field for Crossing Name
         Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
@@ -230,25 +227,84 @@ public class MakeCrossesTableComponent extends VerticalLayout
     		Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(CROSS_NAME_COLUMN);
     		String crossName = String.valueOf(crossNameProp.toString());
     		
-    		// parse GIDs of female and male parents
-		String idString = (String) itemId;
-		String[] parentIDs = idString.split(PARENTS_DELIMITER);
-		Integer gpId1 = Integer.parseInt(parentIDs[0]);
-		Integer gpId2 = Integer.parseInt(parentIDs[1]);
+	    		// get GIDs and entryIDs of female and male parents
+			CrossParents parents = (CrossParents) itemId;
+			Integer gpId1 = parents.getFemaleParent().getGid();
+			Integer gpId2 = parents.getMaleParent().getGid();
+			Integer entryId1 = parents.getFemaleParent().getEntryId();
+			Integer entryId2 = parents.getMaleParent().getEntryId();
 						
-		Germplasm germplasm = new Germplasm();
-		germplasm.setGid(ctr++);
-		germplasm.setGpid1(gpId1);
-		germplasm.setGpid2(gpId2);
-		
-		Name name = new Name();
-		name.setNval(crossName);
-		name.setTypeId(crossingNameTypeId);
-		
-		crossesMadeMap.put(germplasm, name);
-	}
+			Germplasm germplasm = new Germplasm();
+			germplasm.setGid(ctr);
+			germplasm.setGpid1(gpId1);
+			germplasm.setGpid2(gpId2);
+			
+			Name name = new Name();
+			name.setNval(crossName);
+			name.setTypeId(crossingNameTypeId);
+			
+			ImportedGermplasmCross cross = new ImportedGermplasmCross();
+			cross.setCross(ctr);
+			cross.setFemaleGId(gpId1);
+			cross.setMaleGId(gpId2);
+			cross.setFemaleEntryId(entryId1);
+			cross.setMaleEntryId(entryId2);
+			
+			crossesMadeMap.put(germplasm, name);
+			crossesToExport.add(cross);
+			ctr++;
+		}
+    	
+    	//update list of crosses to export in CrossingManagerUploader
+    	this.container.getCrossesMade().getCrossingManagerUploader()
+    			.getImportedGermplasmCrosses().setImportedGermplasmCross(crossesToExport);
     	
     	return crossesMadeMap;
+    }
+    
+    //internal POJO for ad ID of each row in Crosses Made table (need both GID and entryid of parents)
+    private class CrossParents{
+	
+		private GermplasmListEntry femaleParent;
+		
+		private GermplasmListEntry maleParent;
+		
+		public CrossParents(GermplasmListEntry femaleParent, GermplasmListEntry maleParent){
+		    this.femaleParent = femaleParent;
+		    this.maleParent = maleParent;
+		}
+		
+		public GermplasmListEntry getFemaleParent() {
+		    return femaleParent;
+		}
+		
+		public GermplasmListEntry getMaleParent() {
+		    return maleParent;
+		}
+	
+		@Override
+		public boolean equals(Object obj) {
+		    if (this == obj)
+		    	return true;
+		    if (obj == null)
+		    	return false;
+		    if (getClass() != obj.getClass())
+		    	return false;
+		    CrossParents other = (CrossParents) obj;
+		    if (femaleParent == null) {
+				if (other.femaleParent != null)
+				    return false;
+			    } else if (!femaleParent.equals(other.femaleParent))
+			    	return false;
+		    if (maleParent == null) {
+				if (other.maleParent != null)
+				    return false;
+			 } else if (!maleParent.equals(other.maleParent))
+				return false;
+		    
+		    return true;
+		}
+
     }
 
 }

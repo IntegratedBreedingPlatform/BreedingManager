@@ -106,7 +106,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
                 crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
                 crossingManagerWindow.setSizeUndefined();
-                crossingManagerWindow.addComponent(new CrossingManagerMain());
+                crossingManagerWindow.addComponent(new CrossingManagerMain(crossingManagerWindow));
                 this.addWindow(crossingManagerWindow);
                 return crossingManagerWindow;
             }
@@ -125,7 +125,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         }
         else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
             if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
-                rootLayoutForCrossingManager.addComponent(new CrossingManagerMain());
+                rootLayoutForCrossingManager.addComponent(new CrossingManagerMain(rootLayoutForCrossingManager));
                 rootLayoutForCrossingManager.addStyleName("addSpacing");
             }
         } 

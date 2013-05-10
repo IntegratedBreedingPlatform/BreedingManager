@@ -13,7 +13,8 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -98,6 +99,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.container = container;
 	}
 	
+	@SuppressWarnings("serial")
 	@Override
 	public void afterPropertiesSet() throws Exception {  
 		setHeight("240px");
@@ -143,6 +145,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		initializeToggableComponents();
 	}
 
+	@SuppressWarnings("serial")
 	private void initializeCrossNameOptionGroup() {
 		crossNameOptionGroup = new OptionGroup();
 		crossNameOptionGroup.addItem(CrossNameOption.USE_DEFAULT);
@@ -332,7 +335,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			String suffix = (String) suffixTextField.getValue();
 			
 			Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
-			Map<Germplasm, GermplasmListEntry> oldCrossNames = new HashMap<Germplasm, GermplasmListEntry>();
+			List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
 			
 			// Store old cross name and generate new names based on prefix, suffix specifications
 			for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
@@ -344,7 +347,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 				Integer tempGid = germplasm.getGid();
 				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, oldCrossName);
 				
-				oldCrossNames.put(germplasm, oldNameEntry);
+				oldCrossNames.add(oldNameEntry);
 			}
 			// Only store the "original" cross names, would not store previous names on 2nd, 3rd, ... change
 			if (this.container.getCrossesMade().getOldCrossNames()== null ||

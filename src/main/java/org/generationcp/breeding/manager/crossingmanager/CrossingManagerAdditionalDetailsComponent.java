@@ -1,15 +1,10 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -204,20 +199,5 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         }
         
     }
-
-	private void displayCrossesMadeInformation() {
-		if (crossesMade != null){
-    		Map<Germplasm,Name> crossesMap = crossesMade.getCrossesMap();
-    		if (crossesMap != null){
-    			for (Entry<Germplasm, Name> entry : crossesMap.entrySet()){
-    				System.out.println(entry.getKey() + " >>> " + entry.getValue());
-    				if (crossesMade.getOldCrossNames() != null){
-    					System.out.println(crossesMade.getOldCrossNames().get(entry.getKey()));
-    				}
-    			}
-    		}
-
-    	}
-	}
 
 }

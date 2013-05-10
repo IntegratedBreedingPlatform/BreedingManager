@@ -116,7 +116,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
 
     public void importCrossingManagerDataClickAction() throws InternationalizableException {
         if (rootLayoutForCrossingManager.getComponentCount() == 0) {
-            rootLayoutForCrossingManager.addComponent(new CrossingManagerMain());
+            rootLayoutForCrossingManager.addComponent(new CrossingManagerMain(rootLayoutForCrossingManager));
             rootLayoutForCrossingManager.addStyleName("addSpacing");
             rootLayoutForCrossingManager.setSizeFull();
         }

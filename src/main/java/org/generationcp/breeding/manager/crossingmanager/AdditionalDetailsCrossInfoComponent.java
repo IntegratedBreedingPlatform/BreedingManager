@@ -109,7 +109,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		locations = germplasmDataManager.getAllBreedingLocations();
 	}
 	
-	public void populateHarvestLocation() throws MiddlewareQueryException {
+	public void populateHarvestLocation() {
 	    harvestLocComboBox.removeAllItems();
 
 	    mapLocation = new HashMap<String, Integer>();
@@ -154,14 +154,19 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 				
 				Date harvestDate = (Date) harvestDtDateField.getValue();
 				Integer harvestLocationId = mapLocation.get(harvestLocComboBox.getValue());
-			
-				Integer dateIntValue = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(harvestDate));
-				
+
+				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+	    		Integer dateIntValue = Integer.parseInt(formatter.format(harvestDate));
+	    						
 				Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();
 				for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
 					Germplasm germplasm = entry.getKey();
 					germplasm.setLocationId(harvestLocationId);
 					germplasm.setGdate(dateIntValue);
+					
+					Name name = entry.getValue();
+	    			name.setLocationId(harvestLocationId);
+	    			name.setNdate(dateIntValue);
 				}
 				return true;
 			}

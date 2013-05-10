@@ -605,6 +605,41 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     public String getBreedingMethodId() {
         return breedingMethodId;
     }
+
+    
+    public String getStudy() {
+        return study;
+    }
+
+    
+    public String getTitle() {
+        return title;
+    }
+
+    
+    public String getPmKey() {
+        return pmKey;
+    }
+
+    
+    public String getObjective() {
+        return objective;
+    }
+
+    
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    
+    public String getStudyType() {
+        return studyType;
+    }
     
     
 };
