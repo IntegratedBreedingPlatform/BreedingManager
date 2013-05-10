@@ -73,28 +73,17 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         setSpacing(true);
         setWidth("800px");
         
-        Tool tool = null;
-        try {
-            tool = workbenchDataManager.getToolWithName(ToolName.germplasm_list_browser.toString());
-        } catch (MiddlewareQueryException qe) {
-            LOG.error("QueryException", qe);
-        }
-        
-        ExternalResource listBrowserLink = null;
-        if (tool == null) {
-            listBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
-        } else {
-            listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
-        }
+        ExternalResource listBrowserLink = 
+        	new ExternalResource("http://localhost:8080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
         
         VerticalLayout layoutForList = new VerticalLayout();
         layoutForList.setMargin(false);
-        layoutForList.setWidth("640px");
-        layoutForList.setHeight("560px");
+        layoutForList.setSpacing(false);
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
-        listInfoPage.setSizeFull();
+        listInfoPage.setWidth("800px");
+        layoutForList.setHeight("500px");
         layoutForList.addComponent(listInfoPage);
   
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
