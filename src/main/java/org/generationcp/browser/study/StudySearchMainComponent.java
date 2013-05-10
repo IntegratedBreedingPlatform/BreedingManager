@@ -25,11 +25,10 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.v2.domain.AbstractNode;
-import org.generationcp.middleware.v2.domain.StudyDetails;
+import org.generationcp.middleware.v2.domain.Reference;
+import org.generationcp.middleware.v2.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,8 +65,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private StudyDataIndexContainer studyDataIndexContainer;
     
-    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
-
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
@@ -77,9 +74,8 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Autowired
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
 
-    public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout, boolean forStudyWindow) throws InternationalizableException {
+    public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout) throws InternationalizableException {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
-        this.forStudyWindow = forStudyWindow;
     }
 
     @Override
@@ -140,7 +136,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         studyDataIndexContainer = new StudyDataIndexContainer(studyDataManagerV2, studyId);
 
         try {
-            StudyDetails study = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
+            Study study = this.studyDataManagerV2.getStudy(Integer.valueOf(studyId));
             //don't show study details if study record is a Folder ("F")
             String studyType = study.getType();
             if (!hasChildStudy(studyId) && !isFolderType(studyType)){
@@ -163,7 +159,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
-            StudyDetails studyDetails = this.studyDataManagerV2.getStudyDetails(Integer.valueOf(studyId));
+            Study studyDetails = this.studyDataManagerV2.getStudy(Integer.valueOf(studyId));
             if(studyDetails != null){
                 return studyDetails.getName();
             } else {
@@ -176,16 +172,15 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private boolean hasChildStudy(int studyId) {
 
-        List<AbstractNode> studyChildren = new ArrayList<AbstractNode>();
+        List<Reference> studyChildren = new ArrayList<Reference>();
 
         try {
-            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId), Database.CENTRAL));
-            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId), Database.LOCAL));
+            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId)));
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
-            studyChildren = new ArrayList<AbstractNode>();
+            studyChildren = new ArrayList<Reference>();
         }
         if (!studyChildren.isEmpty()) {
             return true;
@@ -197,8 +192,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager, studyDataManagerV2,
-                    forStudyWindow, false));
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager, studyDataManagerV2, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

@@ -19,11 +19,9 @@ import java.util.Map;
 
 import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.CharacterDataElement;
-import org.generationcp.middleware.pojos.CharacterLevelElement;
-import org.generationcp.middleware.pojos.NumericDataElement;
-import org.generationcp.middleware.pojos.NumericLevelElement;
+import org.generationcp.middleware.v2.domain.Experiment;
+import org.generationcp.middleware.v2.domain.Variable;
+import org.generationcp.middleware.v2.domain.VariableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -48,25 +46,28 @@ public class RepresentationDataSetQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDataSetQuery.class);
 
-    private StudyDataManager dataManager;
-    private Integer representationId;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private Integer datasetId;
     private List<String> columnIds;
     private boolean fromUrl;	//this is true if this component is created by accessing the Study Details page directly from the URL
+    private int size;
     
     /**
      * These parameters are passed by the QueryFactory which instantiates
      * objects of this class.
      * 
      * @param dataManager
-     * @param representationId
+     * @param datasetId
      * @param columnIds
      */
-    public RepresentationDataSetQuery(StudyDataManager dataManager, Integer representationId, List<String> columnIds, boolean fromUrl) {
+    public RepresentationDataSetQuery(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2, Integer datasetId, 
+            List<String> columnIds, boolean fromUrl) {
         super();
-        this.dataManager = dataManager;
-        this.representationId = representationId;
+        this.studyDataManagerv2 = studyDataManagerV2;
+        this.datasetId = datasetId;
         this.columnIds = columnIds;
         this.fromUrl = fromUrl;
+        this.size = -1;
     }
 
     /**
@@ -94,144 +95,82 @@ public class RepresentationDataSetQuery implements Query{
     public List<Item> loadItems(int start, int numOfRows) {
         List<Item> items = new ArrayList<Item>();
         Map<Integer, Item> itemMap = new HashMap<Integer, Item>();
-        List<Integer> ounitids = new ArrayList<Integer>();
-
+        List<Experiment> experiments = new ArrayList<Experiment>();
+        
         try {
-            ounitids = dataManager.getOunitIDsByRepresentationId(representationId, start, numOfRows);
+            experiments = studyDataManagerv2.getExperiments(datasetId, start, numOfRows);
         } catch (MiddlewareQueryException ex) {
             // Log error in log file
-            LOG.error("Error with getting ounitids for representation: " + representationId + "\n" + ex.toString());
-            ounitids = new ArrayList<Integer>();
+            LOG.error("Error with getting ounitids for representation: " + datasetId + "\n" + ex.toString());
+            experiments = new ArrayList<Experiment>();
         }
 
-        if (!ounitids.isEmpty()) {
-            // get character levels
-            List<CharacterLevelElement> charLevels = new ArrayList<CharacterLevelElement>();
-
-            try {
-                charLevels = dataManager.getCharacterLevelValuesByOunitIdList(ounitids);
-            } catch (MiddlewareQueryException ex) {
-                LOG.error("Error with getting character level values" + "\n" + ex.toString());
-                charLevels = new ArrayList<CharacterLevelElement>();
-            }
-
-            for (CharacterLevelElement charLevel : charLevels) {
-                String columnId = new StringBuffer().append(charLevel.getFactorId()).append("-").append(charLevel.getFactorName()).toString();
-                // get Item for ounitid
-                Item item = itemMap.get(charLevel.getOunitId());
-                if (item == null) {
-                    // not yet in map so create a new Item and add to map
-                    item = new PropertysetItem();
-                    itemMap.put(charLevel.getOunitId(), item);
+        if (!experiments.isEmpty()) {
+            
+            for(Experiment experiment : experiments){
+                List<Variable> variables = new ArrayList<Variable>();
+                
+                VariableList factors = experiment.getFactors();
+                if(factors != null){
+                    variables.addAll(factors.getVariables());
                 }
-
-                item.addItemProperty(columnId, new ObjectProperty<String>(charLevel.getValue()));
-            }
-
-            // get numeric levels
-            List<NumericLevelElement> numericLevels = new ArrayList<NumericLevelElement>();
-
-            try {
-                numericLevels = dataManager.getNumericLevelValuesByOunitIdList(ounitids);
-            } catch (MiddlewareQueryException ex) {
-                LOG.error("Error with getting numeric level values" + "\n" + ex.toString());
-                numericLevels = new ArrayList<NumericLevelElement>();
-            }
-
-            for (NumericLevelElement numericLevel : numericLevels) {
-                String columnId = new StringBuffer().append(numericLevel.getFactorId()).append("-").append(numericLevel.getFactorName()).toString();
-                //check factor name, if it's a GID, then make the GID as a link. else, show it as a value only
-                //make GID as link only if the page wasn't directly accessed from the URL
-                if ("GID".equals(numericLevel.getFactorName().trim()) && !fromUrl) {
-                    // get Item for ounitid
-                    Item item = itemMap.get(numericLevel.getOunitId());
-                    if (item == null) {
-                        // not yet in map so create a new Item and add to map
-                        item = new PropertysetItem();
-                        itemMap.put(numericLevel.getOunitId(), item);
-                    }
+                
+                VariableList variates = experiment.getVariates();
+                if(variates != null){
+                    variables.addAll(variates.getVariables());
+                }
+                
+                for(Variable variable : variables){
+                    String columnId = new StringBuffer().append(variable.getVariableType().getId()).append("-")
+                            .append(variable.getVariableType().getLocalName()).toString();
                     
-                    String gid = String.format("%.0f",numericLevel.getValue());
-                    Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid));
-                    gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-                    gidButton.setDescription("Click to view Germplasm information");
-                    item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
-                    
-                //end GID link creation
-                } else {
-                    // get Item for ounitid
-                    Item item = itemMap.get(numericLevel.getOunitId());
-                    if (item == null) {
-                        // not yet in map so create a new Item and add to map
-                        item = new PropertysetItem();
-                        itemMap.put(numericLevel.getOunitId(), item);
+                    //check factor name, if it's a GID, then make the GID as a link. else, show it as a value only
+                    //make GID as link only if the page wasn't directly accessed from the URL
+                    if ("GID".equals(variable.getVariableType().getLocalName().trim()) && !fromUrl) {
+                        // get Item for ounitid
+                        Item item = itemMap.get(Integer.valueOf(experiment.getId()));
+                        if (item == null) {
+                            // not yet in map so create a new Item and add to map
+                            item = new PropertysetItem();
+                            itemMap.put(Integer.valueOf(experiment.getId()), item);
+                        }
+                        
+                        String value = variable.getValue();
+                        if(value != null){
+                            Button gidButton = new Button(value.trim(), new GidLinkButtonClickListener(value.trim()));
+                            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                            gidButton.setDescription("Click to view Germplasm information");
+                            item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
+                        } else{
+                            item.addItemProperty(columnId, null);
+                        }
+                    //end GID link creation
+                    } else {
+                        Item item = itemMap.get(Integer.valueOf(experiment.getId()));
+                        if (item == null) {
+                            // not yet in map so create a new Item and add to map
+                            item = new PropertysetItem();
+                            itemMap.put(Integer.valueOf(experiment.getId()), item);
+                        }
+    
+                        //check if the variable value is a number to remove decimal portion if there is no value after the decimal point
+                        String value = variable.getValue();
+                        if(value != null){
+                            try{
+                                Double doubleValue = Double.valueOf(value);
+                                if (doubleValue % 1.0 > 0) {
+                                    item.addItemProperty(columnId, new ObjectProperty<String>(value));
+                                } else {
+                                    item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",doubleValue)));
+                                }
+                            } catch(NumberFormatException ex){
+                                //add value as String
+                                item.addItemProperty(columnId, new ObjectProperty<String>(value));
+                            }
+                        } else{
+                            item.addItemProperty(columnId, null);
+                        }
                     }
-                    
-                    if(numericLevel.getValue() != null){
-                	// remove decimal portion if there is no value after the decimal point
-                	if (numericLevel.getValue() % 1.0 > 0) {
-                	    item.addItemProperty(columnId, new ObjectProperty<String>(numericLevel.getValue().toString()));
-                	} else {
-                	    item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",numericLevel.getValue())));
-                	}
-                    } else{
-                        item.addItemProperty(columnId, null);
-                    }
-                }
-            }
-
-            // get character data
-            List<CharacterDataElement> characterDatas = new ArrayList<CharacterDataElement>();
-
-            try {
-                characterDatas = dataManager.getCharacterDataValuesByOunitIdList(ounitids);
-            } catch (MiddlewareQueryException ex) {
-                LOG.error("Error with getting character data values" + "\n" + ex.toString());
-                characterDatas = new ArrayList<CharacterDataElement>();
-            }
-
-            for (CharacterDataElement characterData : characterDatas) {
-                String columnId = characterData.getVariateId().toString();
-                // get Item for ounitid
-                Item item = itemMap.get(characterData.getOunitId());
-                if (item == null) {
-                    // not yet in map so create a new Item and add to map
-                    item = new PropertysetItem();
-                    itemMap.put(characterData.getOunitId(), item);
-                }
-
-                item.addItemProperty(columnId, new ObjectProperty<String>(characterData.getValue()));
-            }
-
-            // get numeric data
-            List<NumericDataElement> numericDatas = new ArrayList<NumericDataElement>();
-
-            try {
-                numericDatas = dataManager.getNumericDataValuesByOunitIdList(ounitids);
-            } catch (MiddlewareQueryException ex) {
-                LOG.error("Error with getting character data values" + "\n" + ex.toString());
-                numericDatas = new ArrayList<NumericDataElement>();
-            }
-
-            for (NumericDataElement numericData : numericDatas) {
-                String columnId = numericData.getVariateId().toString();
-                // get Item for ounitid
-                Item item = itemMap.get(numericData.getOunitId());
-                if (item == null) {
-                    // not yet in map so create a new Item and add to map
-                    item = new PropertysetItem();
-                    itemMap.put(numericData.getOunitId(), item);
-                }
-
-                if(numericData.getValue() != null){
-                    // remove decimal portion if there is no value after the decimal point
-            	    if (numericData.getValue() % 1.0 > 0) {
-            	        item.addItemProperty(columnId, new ObjectProperty<String>(numericData.getValue().toString()));
-            	    } else {
-                	    item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",numericData.getValue())));
-            	    }
-                } else{
-                    item.addItemProperty(columnId, null);
                 }
             }
         }
@@ -250,13 +189,17 @@ public class RepresentationDataSetQuery implements Query{
      */
     @Override
     public int size() {
-        int size = 0;
-        try {
-            size = ((Long) dataManager.countOunitIDsByRepresentationId(representationId)).intValue();
-        } catch (MiddlewareQueryException ex) {
-            LOG.error("Error with getting number of ounitids for representation: " + representationId + "\n" + ex.toString());
+        if(this.size == -1){
+            try {
+                Long count = Long.valueOf(studyDataManagerv2.countExperiments(this.datasetId));
+                this.size = count.intValue(); 
+            } catch (MiddlewareQueryException ex) {
+                LOG.error("Error with getting experiments for dataset: " + datasetId + "\n" + ex.toString());
+            
+            }
         }
-        return size;
+        
+        return this.size;
     }
 
 }

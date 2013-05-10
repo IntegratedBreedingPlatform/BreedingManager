@@ -14,7 +14,6 @@ package org.generationcp.browser.study.containers;
 
 import java.util.List;
 
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
@@ -32,8 +31,8 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
  */
 public class RepresentationDatasetQueryFactory implements QueryFactory{
 
-    private StudyDataManager dataManager;
-    private Integer representationId;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private Integer datasetId;
     private List<String> columnIds;
     @SuppressWarnings("unused")
     private QueryDefinition definition;
@@ -45,16 +44,17 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      * using the Middleware.
      * 
      * @param dataManager
-     * @param representationId
+     * @param datasetId
      *            - id of the selected Representation of a Study
      * @param columnIds
      *            - List of column ids used for the Vaadin Table displaying the
      *            dataset
      */
-    public RepresentationDatasetQueryFactory(StudyDataManager dataManager, Integer representationId, List<String> columnIds, boolean fromUrl) {
+    public RepresentationDatasetQueryFactory(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2
+            , Integer datasetId, List<String> columnIds, boolean fromUrl) {
         super();
-        this.dataManager = dataManager;
-        this.representationId = representationId;
+        this.studyDataManagerV2 = studyDataManagerV2;
+        this.datasetId = datasetId;
         this.columnIds = columnIds;
         this.fromUrl = fromUrl;
     }
@@ -65,7 +65,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      */
     @Override
     public Query constructQuery(Object[] sortPropertyIds, boolean[] sortStates) {
-        return new RepresentationDataSetQuery(dataManager, representationId, columnIds, fromUrl);
+        return new RepresentationDataSetQuery(studyDataManagerV2, datasetId, columnIds, fromUrl);
     }
 
     @Override

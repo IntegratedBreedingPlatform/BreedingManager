@@ -48,20 +48,17 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private StudyDetailComponent studyDetailComponent;
 
-    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
     private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
-            org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2,
-            boolean forStudyWindow, boolean fromUrl) {
+            org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, boolean fromUrl) {
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.studyDataManagerv2 = studyDataManagerv2;
         this.studyDetailComponent = studyDetailComponent;
-        this.forStudyWindow = forStudyWindow;
         this.fromUrl = fromUrl;
     }
 
@@ -86,7 +83,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
                 if (layoutEffect.getComponentCount() == 0) {
-                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, forStudyWindow, fromUrl));
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyDataManagerv2, studyId, this, fromUrl));
                 }
             }
         }

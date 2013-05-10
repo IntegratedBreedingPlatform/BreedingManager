@@ -12,18 +12,17 @@
 
 package org.generationcp.browser.study.containers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.pojos.Study;
-import org.generationcp.middleware.v2.domain.FactorDetails;
-import org.generationcp.middleware.v2.domain.StudyNode;
-import org.generationcp.middleware.v2.domain.StudyQueryFilter;
-import org.generationcp.middleware.v2.domain.VariateDetails;
+import org.generationcp.middleware.v2.domain.StudyReference;
+import org.generationcp.middleware.v2.domain.VariableType;
+import org.generationcp.middleware.v2.domain.VariableTypeList;
+import org.generationcp.middleware.v2.search.StudyResultSet;
+import org.generationcp.middleware.v2.search.filter.BrowseStudyQueryFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,14 +67,15 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
 
-            List<FactorDetails> factorDetails = studyDataManagerv2.getFactors(Integer.valueOf(studyId));
-            for(FactorDetails factorDetail : factorDetails){
-                String name = factorDetail.getName();
-                String description = factorDetail.getDescription();
-                String propertyName = factorDetail.getProperty();
-                String scaleName = factorDetail.getScale();
-                String methodName = factorDetail.getMethod();
-                String dataType = factorDetail.getDataType();
+            VariableTypeList factors = studyDataManagerv2.getAllStudyFactors(Integer.valueOf(studyId));
+            List<VariableType> factorDetails = factors.getVariableTypes();
+            for(VariableType factorDetail : factorDetails){
+                String name = factorDetail.getLocalName();
+                String description = factorDetail.getStandardVariable().getDescription();
+                String propertyName = factorDetail.getStandardVariable().getName();
+                String scaleName = factorDetail.getStandardVariable().getScale().getName();
+                String methodName = factorDetail.getStandardVariable().getMethod().getName();
+                String dataType = factorDetail.getStandardVariable().getDataType().getName();
                 
                 addFactorData(container, name, description, propertyName, scaleName, methodName, dataType);
             }
@@ -111,14 +111,15 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
 
-            List<VariateDetails> variateDetails = studyDataManagerv2.getVariates(Integer.valueOf(studyId));
-            for(VariateDetails variateDetail : variateDetails){
-                String name = variateDetail.getName();
-                String description = variateDetail.getDescription();
-                String propertyName = variateDetail.getProperty();
-                String scaleName = variateDetail.getScale();
-                String methodName = variateDetail.getMethod();
-                String dataType = variateDetail.getDataType();
+            VariableTypeList variates = studyDataManagerv2.getAllStudyVariates(Integer.valueOf(studyId));
+            List<VariableType> variateDetails = variates.getVariableTypes(); 
+            for(VariableType variateDetail : variateDetails){
+                String name = variateDetail.getLocalName();
+                String description = variateDetail.getStandardVariable().getDescription();
+                String propertyName = variateDetail.getStandardVariable().getName();
+                String scaleName = variateDetail.getStandardVariable().getScale().getName();
+                String methodName = variateDetail.getStandardVariable().getMethod().getName();
+                String dataType = variateDetail.getStandardVariable().getDataType().getName();
                 
                 addVariateData(container, name, description, propertyName, scaleName, methodName, dataType);
             }
@@ -148,33 +149,23 @@ public class StudyDataIndexContainer{
         container.addContainerProperty(STUDY_ID, Integer.class, "");
         container.addContainerProperty(STUDY_NAME, String.class, "");
         
-        ArrayList<Study> studies = new ArrayList<Study>();
-        
         try {
-            StudyQueryFilter filter = new StudyQueryFilter();
+            BrowseStudyQueryFilter filter = new BrowseStudyQueryFilter();
             filter.setName(name);
             filter.setCountry(country);
             filter.setSeason(season);
             filter.setStartDate(date);
-            filter.setStart(0);
-            filter.setNumOfRows(Integer.MAX_VALUE);
-            List<StudyNode> studyNodes = studyDataManagerv2.searchStudies(filter);
+            StudyResultSet studyResultSet = studyDataManagerv2.searchStudies(filter, 50);
 
-            for(StudyNode node : studyNodes){
-                Study study = new Study();
-                study.setId(node.getId());
-                study.setName(node.getName());
-                studies.add(study);
+            while(studyResultSet.hasMore()){
+                StudyReference studyRef = studyResultSet.next();
+                addStudyData(container, studyRef.getId(), studyRef.getName()); 
             }
-
         } catch (MiddlewareQueryException e) {
             LOG.error("Error encountered while searching for studies", e);
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_PLEASE_CONTACT_ADMINISTRATOR);
         }
-
-        for (Study study : studies) {
-            addStudyData(container, study.getId(), study.getName()); 
-        }
+        
         return container;
     }
 

@@ -23,8 +23,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.Factor;
-import org.generationcp.middleware.pojos.Representation;
+import org.generationcp.middleware.v2.domain.DatasetReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,39 +50,39 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     
     private final Accordion studyInfoAccordion;
     private final StudyDataManager studyDataManager;
+    private final org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
     private final Integer studyId;
     private final Accordion accordion;
     private ListSelect datasetList;
     
-    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
     private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion, boolean forStudyWindow, boolean fromUrl) {
+    public StudyEffectComponent(StudyDataManager studyDataManager, org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2, int studyId, Accordion accordion, boolean fromUrl) {
         this.studyInfoAccordion = accordion;
         this.studyDataManager = studyDataManager;
+        this.studyDataManagerV2 = studyDataManagerV2;
         this.studyId = studyId;
         this.accordion = accordion;
-        this.forStudyWindow = forStudyWindow;
         this.fromUrl = fromUrl;
     }
 
     // called by StudyValueChangedListener.valueChange()
     public void datasetListValueChangeAction(String datasetLabel) throws InternationalizableException{
         String[] parts = datasetLabel.split("->");
-        Integer repId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
-        String repName = parts[1].trim();
+        Integer datasetId = Integer.valueOf(parts[0].replaceAll(messageSource.getMessage(Message.DATASET_TEXT), "").trim()); // "Dataset"
+        String datasetName = parts[1].trim();
 
         // if repName is null or empty, use repId in dataset tab title
-        repName = ((repName == null || repName.equals("")) ? repId.toString() : repName);
+        datasetName = ((datasetName == null || datasetName.equals("")) ? datasetId.toString() : datasetName);
         
-        String tabTitle = messageSource.getMessage(Message.DATASET_OF_TEXT) + repName; // "Dataset of "
+        String tabTitle = messageSource.getMessage(Message.DATASET_OF_TEXT) + datasetName; // "Dataset of "
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
-            RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, repId, tabTitle,
-            		studyId, forStudyWindow, fromUrl);
+            RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, studyDataManagerV2, datasetId, tabTitle,
+            		studyId, fromUrl);
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
         } else {
@@ -101,44 +100,20 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     @Override
     public void afterPropertiesSet() throws Exception{
     	
-        List<Representation> representations = new ArrayList<Representation>();
+        List<DatasetReference> datasetNodes = new ArrayList<DatasetReference>();
         try {
-            representations = studyDataManager.getRepresentationByStudyID(studyId);
+            datasetNodes = studyDataManagerV2.getDatasetReferences(studyId);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_REPRESENTATION_BY_STUDY_ID);
         }
 
-        if (representations.isEmpty()) {
+        if (datasetNodes.isEmpty()) {
             addComponent(new Label(messageSource.getMessage(Message.NO_DATASETS_RETRIEVED_LABEL))); // "No datasets retrieved."
         } else {
             List<String> datasets = new ArrayList<String>();
-
-            for (Representation rep : representations) {
-                if (rep.getName() != null) {
-                    if (!rep.getName().equals(messageSource.getMessage(Message.STUDY_EFFECT_HEADER))) { // "STUDY EFFECT"
-                        
-                        List<Factor> factors = studyDataManager.getFactorsByRepresentationId(rep.getId());
-                        
-                        int count = factors.size();
-                        
-                        if (count>1) {
-                            
-                            datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName());
-                            
-                        } else if (count == 1) {
-                            
-                            Factor factor = factors.get(0);
-                            
-                            if (!factor.getName().toUpperCase().equals(messageSource.getMessage(Message.STUDY_NAME).toUpperCase())) {
-                                
-                                datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName());
-                                
-                            }
-                        } 
-                    }
-                } else {
-                    datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + rep.getId() + " -> " + rep.getName()); // Dataset
-                }
+            
+            for(DatasetReference node : datasetNodes){
+                datasets.add(messageSource.getMessage(Message.DATASET_TEXT) + " " + node.getId() + " -> " + node.getName()); // Dataset
             }
 
             this.datasetList = new ListSelect("", datasets);

@@ -12,14 +12,21 @@
 
 package org.generationcp.browser.study;
 
+import java.util.List;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.Study;
-import org.generationcp.middleware.v2.domain.StudyDetails;
+import org.generationcp.middleware.v2.domain.StandardVariable;
+import org.generationcp.middleware.v2.domain.Study;
+import org.generationcp.middleware.v2.domain.Term;
+import org.generationcp.middleware.v2.domain.TermId;
+import org.generationcp.middleware.v2.domain.Variable;
+import org.generationcp.middleware.v2.domain.VariableList;
+import org.generationcp.middleware.v2.domain.VariableType;
+import org.generationcp.middleware.v2.manager.api.OntologyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,6 +61,9 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private int studyId;
 
     @Autowired
+    private OntologyDataManager ontologyDataManager;
+    
+    @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     public StudyDetailComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager, int studyId){
@@ -75,18 +85,18 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         lblStartDate = new Label(messageSource.getMessage(Message.START_DATE_LABEL)); // "Start Date"
         lblEndDate = new Label(messageSource.getMessage(Message.END_DATE_LABEL)); // "End Date"
         
-        // get Study Detail
-        StudyDetails studyDetails;
+        // get Study
+        Study study;
 
         try {
-            studyDetails = studyDataManager.getStudyDetails(Integer.valueOf(studyId));
-
-            studyName = new Label(studyDetails.getName());
-            studyTitle = new Label(studyDetails.getTitle());
-            studyObjective = new Label(studyDetails.getObjective());
-            studyType = new Label(studyDetails.getType());
-            studyStartDate = new Label(String.valueOf(studyDetails.getStartDate()));
-            studyEndDate = new Label(String.valueOf(studyDetails.getEndDate()));
+            study = studyDataManager.getStudy(Integer.valueOf(studyId));
+            
+            studyName = new Label(study.getName());
+            studyTitle = new Label(study.getTitle());
+            studyObjective = new Label(study.getObjective());
+            studyType = new Label(study.getType());
+            studyStartDate = new Label(String.valueOf(study.getStartDate()));
+            studyEndDate = new Label(String.valueOf(study.getEndDate()));
 
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID, Message.EMPTY_STRING);

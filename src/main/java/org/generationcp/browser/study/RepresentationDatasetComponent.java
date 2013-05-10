@@ -22,15 +22,16 @@ import org.generationcp.browser.study.containers.RepresentationDatasetQueryFacto
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.util.DatasetExporter;
 import org.generationcp.browser.study.util.DatasetExporterException;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.TraitDataManager;
-import org.generationcp.middleware.pojos.Factor;
-import org.generationcp.middleware.pojos.Variate;
+import org.generationcp.middleware.v2.domain.DataSet;
+import org.generationcp.middleware.v2.domain.TermId;
+import org.generationcp.middleware.v2.domain.VariableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,17 +66,15 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Table datasetTable;
     private String reportName;
     private Integer studyIdHolder;
-    private Integer representationId;
+    private Integer datasetId;
 
     private Button exportCsvButton;
     private Button exportExcelButton;
     private StringBuffer reportTitle;
     
     private StudyDataManager studyDataManager;
+    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
     
-    private Window saveFieldBookExcelFileDialog;
-    
-    private boolean forStudyWindow;         //this is true if this component is created for the study browser only window
     private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
 
     @Autowired
@@ -85,13 +84,13 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 	private TraitDataManager traitDataManager;
 
     
-    public RepresentationDatasetComponent(StudyDataManager studyDataManager, Integer representationId, String datasetTitle, Integer studyId,
-    		boolean forStudyWindow, boolean fromUrl) {
+    public RepresentationDatasetComponent(StudyDataManager studyDataManager, org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2,
+            Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
-        this.representationId = representationId;
+        this.datasetId = datasetId;
         this.studyDataManager = studyDataManager;
-        this.forStudyWindow = forStudyWindow;
+        this.studyDataManagerV2 = studyDataManagerV2;
         this.fromUrl = fromUrl;
     }
 
@@ -100,7 +99,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         CsvExport csvExport;
         // reportTitle = "Dataset-Study[" + studyIdHolder + "]-Rep[" + repIdHolder + "]";
         reportTitle = new StringBuffer().append(messageSource.getMessage(Message.REPORT_TITLE1_TEXT)).append("[").append(studyIdHolder)
-                   .append("]-").append(messageSource.getMessage(Message.REPORT_TITLE2_TEXT)).append("[").append(representationId).append("]-");
+                   .append("]-").append(messageSource.getMessage(Message.REPORT_TITLE2_TEXT)).append("[").append(datasetId).append("]-");
         
         StringBuffer fileName = new StringBuffer();
         
@@ -119,7 +118,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     	String tempFilename = "dataset-temp.xls";
     	
         DatasetExporter datasetExporter;
-        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyIdHolder, representationId);
+        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyIdHolder, datasetId);
         try {
             datasetExporter.exportToFieldBookExcel(tempFilename);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFilename), this.getApplication());
@@ -144,50 +143,35 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public void afterPropertiesSet() throws Exception{
     	
     	 // set the column header ids
-        List<Factor> factors = new ArrayList<Factor>();
-        List<Variate> variates = new ArrayList<Variate>();
+        List<VariableType> variables = new ArrayList<VariableType>();
         List<String> columnIds = new ArrayList<String>();
 
         try {
-            factors = studyDataManager.getFactorsByRepresentationId(representationId);
+            DataSet dataset = studyDataManagerV2.getDataSet(datasetId);
+            variables = dataset.getVariableTypes().getVariableTypes();
         } catch (MiddlewareQueryException e) {
-            LOG.error("Error in getting factors of representation: "
-                            + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
+            LOG.error("Error in getting variables of dataset: "
+                            + datasetId + "\n" + e.toString() + "\n" + e.getStackTrace());
             e.printStackTrace();
-            factors = new ArrayList<Factor>();
+            variables = new ArrayList<VariableType>();
             if (getWindow() != null) {
                 MessageNotifier.showWarning(getWindow(), 
                         messageSource.getMessage(Message.ERROR_DATABASE), 
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_FACTORS_OF_REPRESENTATION)  + " " + representationId); 
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_VARIABLES_OF_DATASET)  + " " + datasetId); 
             }
         }
-
-        try {
-            variates = studyDataManager.getVariatesByRepresentationId(representationId);
-        } catch (MiddlewareQueryException e) {
-            LOG.error("Error in getting variates of representation: " 
-                            + representationId + "\n" + e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
-            variates = new ArrayList<Variate>();
-            if (getWindow() != null) {
-                MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.ERROR_DATABASE), 
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_VARIATES_OF_REPRESENTATION)  + " " + representationId);
+        
+        for(VariableType variable : variables)
+        {
+            if(variable.getStandardVariable().getStoredIn().getId() != TermId.STUDY_INFORMATION.getId()
+                    && variable.getStandardVariable().getStoredIn().getId() != TermId.TRIAL_ENVIRONMENT_EXPERIMENT.getId()){
+                String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
+                columnIds.add(columnId);
             }
-        }
-
-        for (Factor factor : factors) {
-            String columnId = new StringBuffer().append(factor.getFactorId()).append("-").append(factor.getName()).toString();
-            columnIds.add(columnId);
-        }
-
-        for (Variate variate : variates) {
-            String columnId = variate.getId().toString();
-            columnIds.add(columnId);
         }
 
         // create item container for dataset table
-        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManager, representationId, columnIds, fromUrl);
+        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManagerV2, datasetId, columnIds, fromUrl);
         LazyQueryContainer datasetContainer = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
@@ -209,18 +193,12 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         datasetTable.setSizeFull(); // to make scrollbars appear on the Table component
 
         // set column headers for the Table
-        for (Factor factor : factors) {
-            String columnId = new StringBuffer().append(factor.getFactorId()).append("-").append(factor.getName()).toString();
-            String columnHeader = factor.getName();
+        for (VariableType variable : variables) {
+            String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
+            String columnHeader = variable.getLocalName();
             datasetTable.setColumnHeader(columnId, columnHeader);
         }
-
-        for (Variate variate : variates) {
-            String columnId = variate.getId().toString();
-            String columnHeader = variate.getName();
-            datasetTable.setColumnHeader(columnId, columnHeader);
-        }
-
+        
         setMargin(true);
         setSpacing(true);
         addComponent(datasetTable);
