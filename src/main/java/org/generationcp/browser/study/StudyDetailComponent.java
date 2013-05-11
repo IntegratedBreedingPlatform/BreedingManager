@@ -12,20 +12,12 @@
 
 package org.generationcp.browser.study;
 
-import java.util.List;
-
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.v2.domain.StandardVariable;
 import org.generationcp.middleware.v2.domain.Study;
-import org.generationcp.middleware.v2.domain.Term;
-import org.generationcp.middleware.v2.domain.TermId;
-import org.generationcp.middleware.v2.domain.Variable;
-import org.generationcp.middleware.v2.domain.VariableList;
-import org.generationcp.middleware.v2.domain.VariableType;
 import org.generationcp.middleware.v2.manager.api.OntologyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

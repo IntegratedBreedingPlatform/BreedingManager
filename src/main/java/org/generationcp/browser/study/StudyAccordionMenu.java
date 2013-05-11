@@ -17,7 +17,6 @@ import org.generationcp.browser.study.listeners.StudySelectedTabChangeListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,7 +43,6 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private VerticalLayout layoutFactor;
     private VerticalLayout layoutEffect;
 
-    private StudyDataManager studyDataManager;
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private StudyDetailComponent studyDetailComponent;
 
@@ -53,10 +51,9 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent, StudyDataManager studyDataManager,
+    public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent,
             org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, boolean fromUrl) {
         this.studyId = studyId;
-        this.studyDataManager = studyDataManager;
         this.studyDataManagerv2 = studyDataManagerv2;
         this.studyDetailComponent = studyDetailComponent;
         this.fromUrl = fromUrl;
@@ -83,7 +80,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
                 if (layoutEffect.getComponentCount() == 0) {
-                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyDataManagerv2, studyId, this, fromUrl));
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManagerv2, studyId, this, fromUrl));
                 }
             }
         }

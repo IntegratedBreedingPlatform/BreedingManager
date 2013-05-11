@@ -27,8 +27,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.generationcp.middleware.v2.domain.DataSet;
 import org.generationcp.middleware.v2.domain.TermId;
 import org.generationcp.middleware.v2.domain.VariableType;
@@ -72,7 +70,6 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Button exportExcelButton;
     private StringBuffer reportTitle;
     
-    private StudyDataManager studyDataManager;
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
     
     private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
@@ -80,16 +77,11 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	@Autowired
-	private TraitDataManager traitDataManager;
-
-    
-    public RepresentationDatasetComponent(StudyDataManager studyDataManager, org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2,
+    public RepresentationDatasetComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2,
             Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.datasetId = datasetId;
-        this.studyDataManager = studyDataManager;
         this.studyDataManagerV2 = studyDataManagerV2;
         this.fromUrl = fromUrl;
     }
@@ -118,9 +110,9 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     	String tempFilename = "dataset-temp.xls";
     	
         DatasetExporter datasetExporter;
-        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyIdHolder, datasetId);
+        datasetExporter = new DatasetExporter(studyDataManagerV2, studyIdHolder, datasetId);
         try {
-            datasetExporter.exportToFieldBookExcel(tempFilename);
+            datasetExporter.exportToFieldBookExcelUsingIBDBv2(tempFilename);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFilename), this.getApplication());
             fileDownloadResource.setFilename("export.xls");
             

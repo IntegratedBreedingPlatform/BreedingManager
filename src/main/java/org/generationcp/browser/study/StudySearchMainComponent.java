@@ -26,7 +26,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.v2.domain.Reference;
 import org.generationcp.middleware.v2.domain.Study;
 import org.slf4j.Logger;
@@ -68,9 +67,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    @Autowired
-    private StudyDataManager studyDataManager;
-    
     @Autowired
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
 
@@ -192,7 +188,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManager, studyDataManagerV2, false));
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManagerV2, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
