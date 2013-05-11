@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.application;
 
+import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
@@ -22,7 +23,8 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
 
     public static final Integer IMPORT_GERMPLASM_LIST_BUTTON_ID = 1;
     public static final Integer IMPORT_CROSSING_MANAGER_DATA_BUTTON_ID = 2;
-    public static final Integer SELECT_GERMPLASM_LIST_BUTTON_ID = 3;
+    public static final Integer NURSERY_TEMPLATE_BUTTON_ID = 3;
+    public static final Integer SELECT_GERMPLASM_LIST_BUTTON_ID = 4;
     
     private TabSheet tabSheet;
     private VerticalLayout rootLayoutsForOtherTabs[];
@@ -32,10 +34,12 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     
     private Button importGermplasmListButton;
     private Button importCrossingManagerButton;
+    private Button nurseryTemplateButton;
     private Button selectGermplasmListButton;
     
     private VerticalLayout rootLayoutForGermplasmImport;
     private VerticalLayout rootLayoutForCrossingManager;
+    private VerticalLayout rootLayoutForNurseryTemplate;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -67,19 +71,26 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         importCrossingManagerButton.setWidth(400, UNITS_PIXELS);
         importCrossingManagerButton.setData(IMPORT_CROSSING_MANAGER_DATA_BUTTON_ID);
         
+        nurseryTemplateButton = new Button(); // "I want to write a nursery template file."
+        nurseryTemplateButton.setWidth(400, UNITS_PIXELS);
+        nurseryTemplateButton.setData(NURSERY_TEMPLATE_BUTTON_ID);
+        
         selectGermplasmListButton = new Button(); // "I want to select a Germplasm List."
         selectGermplasmListButton.setWidth(400, UNITS_PIXELS);
         selectGermplasmListButton.setData(SELECT_GERMPLASM_LIST_BUTTON_ID);
         
         rootLayoutForGermplasmImport = rootLayoutsForOtherTabs[0];
         rootLayoutForCrossingManager = rootLayoutsForOtherTabs[1];
+        rootLayoutForNurseryTemplate = rootLayoutsForOtherTabs[2];
         
         importGermplasmListButton.addListener(new WelcomeTabButtonClickListener(this));
         importCrossingManagerButton.addListener(new WelcomeTabButtonClickListener(this));
+        nurseryTemplateButton.addListener(new WelcomeTabButtonClickListener(this));
         selectGermplasmListButton.addListener(new WelcomeTabButtonClickListener(this));
         
         addComponent(importGermplasmListButton);
         addComponent(importCrossingManagerButton);
+        addComponent(nurseryTemplateButton);
         addComponent(selectGermplasmListButton);
     }
     
@@ -95,6 +106,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         messageSource.setCaption(questionLabel, Message.WELCOME_QUESTION_LABEL);
         messageSource.setCaption(importGermplasmListButton, Message.I_WANT_TO_IMPORT_GERMPLASM_LIST);
         messageSource.setCaption(importCrossingManagerButton, Message.I_WANT_TO_IMPORT_CROSSING_MANAGER_DATA);
+        messageSource.setCaption(nurseryTemplateButton, Message.I_WANT_TO_WRITE_NURSERY_TEMPLATE_FILES);
         messageSource.setCaption(selectGermplasmListButton, Message.I_WANT_TO_SELECT_GERMPLASM_LIST);
     }
     
@@ -121,6 +133,15 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
             rootLayoutForCrossingManager.setSizeFull();
         }
         tabSheet.setSelectedTab(this.rootLayoutForCrossingManager);
+    }
+    
+    public void nurseryTemplateClickAction() {
+        if (rootLayoutForNurseryTemplate.getComponentCount() == 0) {
+            rootLayoutForNurseryTemplate.addComponent(new NurseryTemplateMain());
+            rootLayoutForNurseryTemplate.addStyleName("addSpacing");
+            rootLayoutForNurseryTemplate.setSizeFull();
+        }
+        tabSheet.setSelectedTab(this.rootLayoutForNurseryTemplate);
     }
 
 }

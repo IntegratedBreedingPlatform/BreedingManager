@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -29,6 +30,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.FinishedListener;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -78,9 +81,17 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        setHeight("300px");
-        setWidth("800px");
-        
+        assemble();
+    }
+    
+    protected void assemble() {
+        initializeComponents();
+        initializeValues();
+        initializeLayout();
+        initializeActions();
+    }
+    
+    protected void initializeComponents() {
         selectFileLabel = new Label();
         addComponent(selectFileLabel, "top:40px;left:30px");
         
@@ -88,13 +99,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
         
-        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
-        uploadComponents.setReceiver(crossingManagerUploader);
-        uploadComponents.addListener(crossingManagerUploader);
-        
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         addComponent(nextButton, "top:250px;left:700px");
         
         filenameLabel = new Label();
@@ -108,6 +114,40 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
         addComponent(crossesOptionGroup, "top:175px;left:30px;");
         
+    }
+    
+    protected void initializeValues() {
+            
+    }
+    
+    protected void initializeLayout() {
+        setHeight("300px");
+        setWidth("800px");
+    }
+    
+    protected void initializeActions() {
+        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
+        uploadComponents.setReceiver(crossingManagerUploader);
+        uploadComponents.addListener(crossingManagerUploader);
+        
+        uploadComponents.addListener(new FinishedListener() {
+            private static final long serialVersionUID = -4478757144863256507L;
+
+            @Override
+            public void uploadFinished(FinishedEvent event) {
+                updateFilenameLabelValue(crossingManagerUploader.getOriginalFilename());
+                
+                // select default selected option based on file
+                ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
+                if(importedGermplasmCrosses==null || importedGermplasmCrosses.getImportedGermplasmCrosses().size()==0){
+                    selectManuallyMakeCrosses();
+                } else {
+                    selectAlreadyDefinedCrossesInNurseryTemplateFile();
+                }
+            }
+        });
+        
+        nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
     }
     
     @Override
@@ -133,86 +173,84 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
     public void nextButtonClickAction() throws InternationalizableException{
         source.enableWizardTabs();
-    	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-    		getAccordion().getApplication().getMainWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
-    	} else if(crossesOptionGroup.getValue()==null) {
-    		getAccordion().getApplication().getMainWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
-    	} else {
-    		if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
-    			if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
-    				getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
-    			
-				//pass uploaded info and Crosses (if any) to next screen
-    			} else {
-    				CrossesMade crossesMade = new CrossesMade();
-    				crossesMade.setCrossingManagerUploader(crossingManagerUploader);
-    				if(this.nextNextScreen != null){
-    					saveCrossesInfoToNextWizardStep(this.nextNextScreen, true);
-    	        	} else {
-    	        		this.nextButton.setEnabled(false);
-    	        	}
-    			}
-    		} else {
-	    		if(this.nextScreen != null){
+        if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
+            getAccordion().getApplication().getMainWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+        } else if(crossesOptionGroup.getValue()==null) {
+            getAccordion().getApplication().getMainWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
+        } else {
+            if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
+                if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
+                    getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
+                //pass uploaded info and Crosses (if any) to next screen
+                } else {
+                    CrossesMade crossesMade = new CrossesMade();
+                    crossesMade.setCrossingManagerUploader(crossingManagerUploader);
+                    if(this.nextNextScreen != null){
+                        saveCrossesInfoToNextWizardStep(this.nextNextScreen, true);
+                    } else {
+                        this.nextButton.setEnabled(false);
+                    }
+                }
+            } else {
+                if(this.nextScreen != null){
                     saveCrossesInfoToNextWizardStep(this.nextScreen, false);
                     ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
-                    
-	        	} else {
-	        		this.nextButton.setEnabled(false);
-	        	}
-    		}
-    	}
+                } else {
+                    this.nextButton.setEnabled(false);
+                }
+            }
+        }
     }
-    
+
     private void saveCrossesInfoToNextWizardStep(Component nextStep, boolean crossesUploaded){
-    	assert nextStep instanceof CrossesMadeContainer;
-    	
-    	CrossesMade crossesMade = new CrossesMade();
-		crossesMade.setCrossingManagerUploader(crossingManagerUploader);
-		if (crossesUploaded){
-			crossesMade.setCrossesMap(generateCrossesMadeMap());
-		}
-		((CrossesMadeContainer) nextStep).setCrossesMade(crossesMade);
-		source.getWizardScreenTwo().setPreviousScreen(this);
-		source.getWizardScreenThree().setPreviousScreen(this);
-		
-		source.enableWizardTabs();
-    	this.accordion.setSelectedTab(nextStep);
-    	if(nextStep instanceof CrossingManagerMakeCrossesComponent){
-    	    source.getWizardScreenTwo().setPreviousScreen(this);
+        assert nextStep instanceof CrossesMadeContainer;
+
+        CrossesMade crossesMade = new CrossesMade();
+        crossesMade.setCrossingManagerUploader(crossingManagerUploader);
+        if (crossesUploaded){
+            crossesMade.setCrossesMap(generateCrossesMadeMap());
+        }
+        ((CrossesMadeContainer) nextStep).setCrossesMade(crossesMade);
+        source.getWizardScreenTwo().setPreviousScreen(this);
+        source.getWizardScreenThree().setPreviousScreen(this);
+
+        source.enableWizardTabs();
+        this.accordion.setSelectedTab(nextStep);
+        if(nextStep instanceof CrossingManagerMakeCrossesComponent){
+            source.getWizardScreenTwo().setPreviousScreen(this);
             source.enableOnlyWizardTabTwo();
-    	} else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
+        } else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
             source.getWizardScreenThree().setPreviousScreen(this);
             source.enableOnlyWizardTabThree();
         }
     }
-    
+
     public Map<Germplasm, Name > generateCrossesMadeMap(){
-    	Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
-    	List<ImportedGermplasmCross> importedGermplasmCrosses = 
-    		crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
-    	
-    	//get ID of User Defined Field for Crossing Name
+        Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
+        List<ImportedGermplasmCross> importedGermplasmCrosses = 
+                crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
+
+        //get ID of User Defined Field for Crossing Name
         Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
-                        germplasmListManager, getWindow(), messageSource);
-        
-    	int ctr = 1;
-    	for (ImportedGermplasmCross cross : importedGermplasmCrosses){
-						
-			Germplasm germplasm = new Germplasm();
-			germplasm.setGid(ctr++);
-			germplasm.setGpid1(cross.getFemaleGId());
-			germplasm.setGpid2(cross.getMaleGId());
-			
-			Name name = new Name();
-			name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
-							cross.getFemaleDesignation(), cross.getMaleDesignation()));
-			name.setTypeId(crossingNameTypeId);
-			
-			crossesMadeMap.put(germplasm, name);
-		}
-    	
-    	return crossesMadeMap;
+                germplasmListManager, getWindow(), messageSource);
+
+        int ctr = 1;
+        for (ImportedGermplasmCross cross : importedGermplasmCrosses){
+
+            Germplasm germplasm = new Germplasm();
+            germplasm.setGid(ctr++);
+            germplasm.setGpid1(cross.getFemaleGId());
+            germplasm.setGpid2(cross.getMaleGId());
+
+            Name name = new Name();
+            name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
+                    cross.getFemaleDesignation(), cross.getMaleDesignation()));
+            name.setTypeId(crossingNameTypeId);
+
+            crossesMadeMap.put(germplasm, name);
+        }
+
+        return crossesMadeMap;
     }
     
     public Accordion getAccordion() {
