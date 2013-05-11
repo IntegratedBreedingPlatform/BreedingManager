@@ -135,7 +135,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
             @Override
             public void uploadFinished(FinishedEvent event) {
-                updateFilenameLabelValue(crossingManagerUploader.getOriginalFilename());
+                updateFilenameLabelValue(crossingManagerUploader.getImportedGermplasmCrosses().getFilename());
                 
                 // select default selected option based on file
                 ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
