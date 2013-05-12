@@ -331,9 +331,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     				    	try {
 	   						maleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
 						} catch (NumberFormatException e) {
-							e.printStackTrace();
+							maleGermplasmList = null;
+							maleListIdIsSpecified = false;
 						} catch (MiddlewareQueryException e) {
-							e.printStackTrace();
+						        maleGermplasmList = null;
+                                                        maleListIdIsSpecified = false;
 						}
     				}
     			}
@@ -345,11 +347,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	    				try {
 							femaleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
 						} catch (NumberFormatException e) {
-							showInvalidFileError("System Error");
-							e.printStackTrace();
+							femaleGermplasmList = null;
+							femaleListIdIsSpecified = false;
 						} catch (MiddlewareQueryException e) {
-							showInvalidFileError("System Error");
-							e.printStackTrace();
+						        femaleGermplasmList = null;
+                                                        femaleListIdIsSpecified = false;
 						}
     				}
     			}  
