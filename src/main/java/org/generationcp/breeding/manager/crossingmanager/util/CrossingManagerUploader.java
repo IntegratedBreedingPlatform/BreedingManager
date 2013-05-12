@@ -73,7 +73,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	private GermplasmListManager germplasmListManager;
 	
 	private GermplasmList maleGermplasmList;
-	private GermplasmList femaleGermplasmList;	
+	private boolean maleListIdIsSpecified = false;
+	private GermplasmList femaleGermplasmList;
+	private boolean femaleListIdIsSpecified = false;
 	
 	public CrossingManagerUploader(CrossingManagerImportFileComponent crossingManagerImportFileComponent, GermplasmListManager germplasmListManager) {
 		this.source = crossingManagerImportFileComponent;
@@ -102,6 +104,23 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     	currentSheet = 0;
     	currentRow = 0;
     	currentColumn = 0;
+    	
+    	maleGermplasmList = null;
+    	maleListIdIsSpecified = false;
+    	femaleGermplasmList = null;
+    	femaleListIdIsSpecified = false;
+    	importedGermplasmCrosses = null;
+    	siteId="";
+        site="";
+        breedingMethod="";
+        breedingMethodId="";
+        study = "";
+        title = "";
+        pmKey = "";
+        objective = "";
+        startDate = null;
+        endDate = null;
+        studyType = "";
         
     	fileIsValid = true;
     	
@@ -308,7 +327,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     				maleListIDPresent = true;
     				
     				if(importedCondition.getValue()!=null && importedCondition.getValue()!=""){
-	    				try {
+    				    maleListIdIsSpecified = true;
+    				    	try {
 	   						maleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
 						} catch (NumberFormatException e) {
 							e.printStackTrace();
@@ -321,6 +341,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     			else if(importedCondition.getCondition().toUpperCase().equals("FEMALE LIST ID")){
     				femaleListIDPresent = true;
     				if(importedCondition.getValue()!=null && importedCondition.getValue()!=""){
+    				    femaleListIdIsSpecified = true;
 	    				try {
 							femaleGermplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(importedCondition.getValue()));
 						} catch (NumberFormatException e) {
@@ -641,5 +662,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         return studyType;
     }
     
+    public boolean isMaleListIdSpecified(){
+        return maleListIdIsSpecified;
+    }
     
+    public boolean isFemaleListIdSpecified(){
+        return femaleListIdIsSpecified;
+    }
 };

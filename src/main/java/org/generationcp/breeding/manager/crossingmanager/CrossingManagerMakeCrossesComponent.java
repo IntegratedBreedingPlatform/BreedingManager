@@ -307,20 +307,18 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         //add checking to provide error
         listSelectMale.removeAllItems();
         listSelectFemale.removeAllItems();
-        if(crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
-            //getSource().getApplication().getMainWindow().showNotification("Specified ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
-
+        if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified() &&
+                crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
             MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_BOTH_ID_REQUIRED), "");
-
-        }else if(crossingManagerUploader.getFemaleGermplasmList() == null){
-            //getSource().getApplication().getMainWindow().showNotification("Specified Female List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+        }else if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.getFemaleGermplasmList() == null &&
+                crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() != null){
             MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_FEMALE_ID_REQUIRED), "");
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
-        }else if(crossingManagerUploader.getMaleGermplasmList() == null){
-            //getSource().getApplication().getMainWindow().showNotification("Specified Male List ID does not identify any list record in the database.", Window.Notification.TYPE_WARNING_MESSAGE);
+        }else if(crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() == null &&
+                crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.getFemaleGermplasmList() != null){
             MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_MALE_ID_REQUIRED), "");
             loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
-        }else{
+        }else if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified()){
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
             loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
         }
@@ -338,7 +336,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 // add entries to the parent ListSelect
                 GermplasmListEntry entry = new GermplasmListEntry(germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation());
                 listSelect.addItem(entry);
-                listSelect.setItemCaption(entry, entry.getDesignation());
+                String itemCaption = entry.getDesignation() + " -> " + entry.getEntryId(); 
+                listSelect.setItemCaption(entry, itemCaption);
             }
             listSelect.requestRepaint();
         }

@@ -97,6 +97,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         
         uploadComponents = new Upload();
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
+        uploadComponents.setWidth("600px");
         addComponent(uploadComponents, "top:60px;left:30px");
         
         nextButton = new Button();
@@ -174,13 +175,13 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     public void nextButtonClickAction() throws InternationalizableException{
         source.enableWizardTabs();
         if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-            getAccordion().getApplication().getMainWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+            getWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
         } else if(crossesOptionGroup.getValue()==null) {
-            getAccordion().getApplication().getMainWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
+            getWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
         } else {
             if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
                 if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
-                    getAccordion().getApplication().getMainWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
+                    getWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
                 //pass uploaded info and Crosses (if any) to next screen
                 } else {
                     CrossesMade crossesMade = new CrossesMade();
