@@ -23,6 +23,11 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * 
+ * @author Mark Agarrado
+ *
+ */
 @Configurable
 public class NurseryTemplateMain extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 

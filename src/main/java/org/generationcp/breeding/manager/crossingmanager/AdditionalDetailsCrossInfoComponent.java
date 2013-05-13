@@ -19,10 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
@@ -115,8 +116,9 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	    mapLocation = new HashMap<String, Integer>();
 	    if (this.container != null && this.container.getCrossesMade() != null && 
 				this.container.getCrossesMade().getCrossingManagerUploader() !=null){
-	    	String site = this.container.getCrossesMade().getCrossingManagerUploader().getSite();
-	    	String siteId = this.container.getCrossesMade().getCrossingManagerUploader().getSiteId();
+	        ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
+	    	String site = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE.getValue());
+	    	String siteId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE_ID.getValue());
 	    	if(site.length() > 0 && siteId.length() > 0){
 	    		harvestLocComboBox.addItem(site);
 	    		mapLocation.put(site, Integer.valueOf(siteId));

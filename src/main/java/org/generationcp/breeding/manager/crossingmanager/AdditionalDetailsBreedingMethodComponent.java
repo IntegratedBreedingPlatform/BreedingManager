@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -134,11 +136,13 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     public void populateBreedingMethod() throws MiddlewareQueryException {
 
-	mapMethods = new HashMap<String, Integer>();
-	if (this.container != null && this.container.getCrossesMade() != null && 
-			this.container.getCrossesMade().getCrossingManagerUploader() !=null){
-		String breedingMethod = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethod();
-		String beedingMethodId = this.container.getCrossesMade().getCrossingManagerUploader().getBreedingMethodId();
+        mapMethods = new HashMap<String, Integer>();
+        if (this.container != null && this.container.getCrossesMade() != null && 
+                this.container.getCrossesMade().getCrossingManagerUploader() !=null){
+
+            ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
+            String breedingMethod = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD.getValue());
+            String beedingMethodId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue());
 		if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
 			breedingMethodComboBox.addItem(breedingMethod);
 			mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));

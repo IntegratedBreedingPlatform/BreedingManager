@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.crosses;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -27,8 +28,15 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.FinishedListener;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * 
+ * @author Mark Agarrado
+ *
+ */
 @Configurable
 public class NurseryTemplateImportFileComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
 
@@ -43,6 +51,8 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     private Upload uploadComponents;
     private Button nextButton;
     private Component buttonArea;
+    
+    private Label filenameLabel;
     
     private CrossingManagerUploader crossingManagerUploader;
     
@@ -76,6 +86,9 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents);
         
+        filenameLabel = new Label();
+        addComponent(filenameLabel);
+        
         buttonArea = layoutButtonArea();
         addComponent(buttonArea);
     }
@@ -87,14 +100,32 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     protected void initializeLayout() {
         setMargin(true);
         setSpacing(true);
+        setSizeFull();
+        uploadComponents.setWidth("600px");
         setComponentAlignment(buttonArea, Alignment.MIDDLE_RIGHT);
     }
     
     protected void initializeActions() {
-        //TODO: uncomment after tweaking/refactoring CrossingManagerUploader.java
-//        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
-//        uploadComponents.setReceiver(crossingManagerUploader);
-//        uploadComponents.addListener(crossingManagerUploader);
+        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
+        uploadComponents.setReceiver(crossingManagerUploader);
+        uploadComponents.addListener(crossingManagerUploader);
+        
+        uploadComponents.addListener(new FinishedListener() {
+            private static final long serialVersionUID = -1145331690007735485L;
+
+            @Override
+            public void uploadFinished(FinishedEvent event) {
+                ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
+
+                // display uploaded filename
+                if (importedGermplasmCrosses != null) {
+                    updateFilenameLabelValue(importedGermplasmCrosses.getFilename());
+                } else {
+                    updateFilenameLabelValue("");
+                }
+
+            }
+        });
     }
     
     protected Component layoutButtonArea() {
@@ -107,6 +138,11 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
         return buttonLayout;
     }
     
+    public void updateFilenameLabelValue(String filename){
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+        filenameLabel.setCaption(filenameLabel.getCaption()+": "+filename);
+    }
+    
     @Override
     public void attach() {
         super.attach();
@@ -116,7 +152,12 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     @Override
     public void updateLabels() {
         messageSource.setCaption(selectFileLabel, Message.SELECT_NURSERY_TEMPLATE_FILE);
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
         messageSource.setCaption(nextButton, Message.NEXT);
+    }
+    
+    public CrossingManagerUploader getCrossingManagerUploader() {
+        return crossingManagerUploader;
     }
 
 }

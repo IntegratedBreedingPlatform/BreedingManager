@@ -37,6 +37,7 @@ import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
@@ -354,35 +355,37 @@ public class CrossingManagerExporter{
     
     private void setStudyDetailCellValue(CrossingManagerUploader uploader, TemplateStudyDetails studyDetail, Cell cell){
 	
+        ImportedGermplasmCrosses importedCrosses = uploader.getImportedGermplasmCrosses();
+	
 		switch (studyDetail){
 		    case STUDY : {
-				cell.setCellValue(uploader.getStudy());
+				cell.setCellValue(importedCrosses.getStudy());
 				break;
 		    }
 		    case TITLE : {
-				cell.setCellValue(uploader.getTitle());
+				cell.setCellValue(importedCrosses.getTitle());
 				break;
 		    }
 		    case PMKEY : {
-				cell.setCellValue(uploader.getPmKey());
+				cell.setCellValue(importedCrosses.getPMKey());
 				break;
 		    }
 		    case OBJECTIVE : {
-				cell.setCellValue(uploader.getObjective());
+				cell.setCellValue(importedCrosses.getObjective());
 				break;
 		    }
 		    case START_DATE : {
 				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-				cell.setCellValue(formatter.format(uploader.getStartDate()));
+				cell.setCellValue(formatter.format(importedCrosses.getStartDate()));
 				break;
 		    }
 		    case END_DATE : {
 				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-				cell.setCellValue(formatter.format(uploader.getEndDate()));
+				cell.setCellValue(formatter.format(importedCrosses.getEndDate()));
 				break;
 		    }
 		    case STUDY_TYPE : {
-				cell.setCellValue(uploader.getStudyType());
+				cell.setCellValue(importedCrosses.getType());
 				break;
 		    }
 		}

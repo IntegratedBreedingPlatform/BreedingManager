@@ -26,6 +26,8 @@ public class ImportedGermplasmCrosses {
 	private List<ImportedVariate> ImportedVariates;
 	private List<ImportedGermplasmCross> importedGermplasmCrosses;
 
+	//TODO: consider renaming this class to something else (e.g. NurseryTemplateUploadInformation or something)
+	// because ImportedGermplasmCrosses.importedGermplasmCrosses is confusing
 	public ImportedGermplasmCrosses (String filename, String study, String title, String pmKey, String objective, Date startDate, Date endDate, String type){
 		this.filename = filename;
 		this.study = study;
@@ -124,7 +126,17 @@ public class ImportedGermplasmCrosses {
 	
 	public void setEndDate(Date endDate){
 		this.endDate = endDate;
-	}	
+	}
+	
+	public String getImportedConditionValue(String conditionName) {
+	    for (ImportedCondition cond : ImportedConditions) {
+	        if (cond.getCondition() != null
+	                && cond.getCondition().equals(conditionName)) {
+	            return cond.getValue();
+	        }
+	    }
+            return "";
+	}
 	
 	public List<ImportedCondition> getImportedConditions(){
 		return ImportedConditions;
