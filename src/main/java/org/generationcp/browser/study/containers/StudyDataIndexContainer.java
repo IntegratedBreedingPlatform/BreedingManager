@@ -156,10 +156,12 @@ public class StudyDataIndexContainer{
             filter.setSeason(season);
             filter.setStartDate(date);
             StudyResultSet studyResultSet = studyDataManagerv2.searchStudies(filter, 50);
-
-            while(studyResultSet.hasMore()){
-                StudyReference studyRef = studyResultSet.next();
-                addStudyData(container, studyRef.getId(), studyRef.getName()); 
+            
+            if(studyResultSet != null){
+                while(studyResultSet.hasMore()){
+                    StudyReference studyRef = studyResultSet.next();
+                    addStudyData(container, studyRef.getId(), studyRef.getName()); 
+                }
             }
         } catch (MiddlewareQueryException e) {
             LOG.error("Error encountered while searching for studies", e);
