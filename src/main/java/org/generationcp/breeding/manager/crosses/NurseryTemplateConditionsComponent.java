@@ -12,13 +12,27 @@
 
 package org.generationcp.breeding.manager.crosses;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -56,9 +70,28 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private Component buttonArea;
     private Button backButton;
     private Button doneButton;
+    private ComboBox comboBoxSiteName;
+    private TextField siteId;
+    private ComboBox comboBoxBreedersName;
+    private TextField breederId;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+    
+    @Autowired
+    private UserDataManager userDataManager;
+    
+    private List<Location> locations;
+    private List<User> users;
+
+    private HashMap<String, Integer> mapSiteName;
+    private HashMap<String, Integer> mapBreedersName;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -73,11 +106,25 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeComponents() {
-        generateConditionsTable();
+	
+	comboBoxSiteName= new ComboBox();
+	comboBoxSiteName.setImmediate(true);
+	
+	siteId=new TextField();
+	siteId.setImmediate(true);
+	
+	comboBoxBreedersName= new ComboBox();
+	comboBoxBreedersName.setImmediate(true);
+	
+	breederId=new TextField();
+	breederId.setImmediate(true);
+	
+	generateConditionsTable();
         addComponent(nurseryConditionsTable);
         
         buttonArea = layoutButtonArea();
         addComponent(buttonArea);
+        
     }
     
     protected void initializeValues() {
@@ -129,22 +176,22 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         "nid");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "BREEDER NAME", "PRINCIPAL INVESTIGATOR", "PERSON", "DBCV", new ComboBox()
+                "BREEDER NAME", "PRINCIPAL INVESTIGATOR", "PERSON", "DBCV", getComboBoxBreedersName()
         }, 
         "breederName");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "BREEDER ID", "PRINCIPAL INVESTIGATOR", "PERSON", "DBID", new TextField()
+                "BREEDER ID", "PRINCIPAL INVESTIGATOR", "PERSON", "DBID", getTextFieldBreederId()
         }, 
         "breederId");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "SITE", "NURSERY SITE NAME", "LOCATION", "DBCV", new ComboBox()
+                "SITE", "NURSERY SITE NAME", "LOCATION", "DBCV", getComboBoxSiteName()
         }, 
         "site");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "SITE ID", "NURSERY SITE ID", "LOCATION", "DBID", new TextField()
+                "SITE ID", "NURSERY SITE ID", "LOCATION", "DBID", getTextFieldSiteId()
         }, 
         "siteId");
         
@@ -177,6 +224,169 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                 "MALE LIST ID", "MALE LIST ID", "GERMPLASM LIST", "DBID", new TextField()
         }, 
         "maleListId");
+    }
+    
+    private ComboBox getComboBoxSiteName() {
+
+	mapSiteName = new HashMap<String, Integer>();
+	try {
+	    locations=germplasmDataManager.getAllBreedingLocations();
+	} catch (MiddlewareQueryException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	comboBoxSiteName.addItem("");
+	for (Location loc : locations) {
+	    if(loc.getLname().length()>0){
+		comboBoxSiteName.addItem(loc.getLname());
+		mapSiteName.put(loc.getLname(), new Integer(loc.getLocid()));
+	    }
+	}
+	
+	comboBoxSiteName.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		siteId.setValue(String.valueOf(mapSiteName.get(comboBoxSiteName.getValue())));
+	    }
+	});
+	return comboBoxSiteName;
+    }
+    
+    private TextField getTextFieldSiteId(){
+
+	siteId.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		Location loc = new Location();
+		boolean noError=true;
+
+		try {
+		    loc = germplasmDataManager.getLocationByID(Integer.valueOf(siteId.getValue().toString()));
+		} catch (NumberFormatException e) {
+		    noError=false;
+		} catch (MiddlewareQueryException e) {
+		    noError=false;
+		}
+
+		if(loc!=null && noError){
+		    comboBoxSiteName.setValue(loc.getLname());
+		}else{
+		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_SITE_ID));
+		    comboBoxSiteName.select("");
+		    siteId.setValue("");
+		}
+	    }
+	});
+
+	return siteId;
+    }
+    
+    
+    private ComboBox getComboBoxBreedersName() {
+
+	mapBreedersName = new HashMap<String, Integer>();
+	try {
+	    users=userDataManager.getAllUsers();
+	} catch (MiddlewareQueryException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	comboBoxBreedersName.addItem("");
+	setComboBoxBreederDefaultValue();
+	for (User u : users) {
+	    Person p = new Person();
+	    try {
+		p = userDataManager.getPersonById(u.getPersonid());
+	    } catch (MiddlewareQueryException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    String name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	    comboBoxBreedersName.addItem(name);
+	    mapBreedersName.put(name, new Integer(u.getUserid()));
+	}
+	
+	comboBoxBreedersName.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		breederId.setValue(String.valueOf(mapBreedersName.get(comboBoxBreedersName.getValue())));
+	    }
+	});
+	return comboBoxBreedersName;
+    }
+    
+    
+    private void setComboBoxBreederDefaultValue() {
+	try {
+	    User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+	    Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+	    Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
+
+	    User u=userDataManager.getUserById(ibdbUserId);
+	    Person p=userDataManager.getPersonById(u.getPersonid());
+	    
+	    String name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	    comboBoxBreedersName.addItem(name);
+	    mapBreedersName.put(name, new Integer(u.getUserid()));
+	    comboBoxBreedersName.select(name);
+	    breederId.setValue(String.valueOf(u.getUserid()));
+	    
+	} catch (MiddlewareQueryException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+    }
+
+    private TextField getTextFieldBreederId(){
+
+	breederId.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		Person p = new Person();
+		User u= new User();
+		String name="";
+		boolean noError=true;
+
+		try {
+		    u=userDataManager.getUserById(Integer.valueOf(breederId.getValue().toString()));
+		} catch (NumberFormatException e) {
+		    noError=false;
+		} catch (MiddlewareQueryException e) {
+		    noError=false;
+		}
+
+		if(u!=null && noError){
+		    try {
+			p = userDataManager.getPersonById(u.getPersonid());
+			name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+		    } catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+		    comboBoxBreedersName.setValue(name);
+		}else{
+		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_BREEDER_ID));
+		    comboBoxBreedersName.select("");
+		    breederId.setValue("");
+		}
+	    }
+
+	});
+
+	return breederId;
     }
     
     @Override
