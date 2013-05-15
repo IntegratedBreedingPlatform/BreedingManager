@@ -102,6 +102,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.setEnabled(false);
+        nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         addComponent(nextButton, "top:250px;left:700px");
         
         filenameLabel = new Label();
@@ -161,7 +163,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     public void attach() {
         super.attach();
         updateLabels();
-        source.enableOnlyWizardTabOne();
+        //source.enableOnlyWizardTabOne();
     }
     
     @Override
@@ -202,11 +204,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                 if(this.nextScreen != null){
                     saveCrossesInfoToNextWizardStep(this.nextScreen, false);
                     ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
-                } else {
-                    this.nextButton.setEnabled(false);
-                }
-            }
-        }
+	        	} else {
+	        		this.nextButton.setEnabled(false);
+	        	}
+    		}
+    	}
     }
 
     private void saveCrossesInfoToNextWizardStep(Component nextStep, boolean crossesUploaded){
@@ -225,10 +227,16 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         this.accordion.setSelectedTab(nextStep);
         if(nextStep instanceof CrossingManagerMakeCrossesComponent){
             source.getWizardScreenTwo().setPreviousScreen(this);
-            source.enableOnlyWizardTabTwo();
+    	    this.accordion.setSelectedTab(nextStep);
+            //source.enableOnlyWizardTabTwo();
+            //source.enableWizardTabOne();
         } else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
+    	    System.out.println("DEBUG - Should go to additional details");
             source.getWizardScreenThree().setPreviousScreen(this);
-            source.enableOnlyWizardTabThree();
+            this.accordion.setSelectedTab(nextStep);
+            //source.enableOnlyWizardTabThree();
+        } else {
+            System.out.println("DEBUG - I am lost");
         }
     }
 
@@ -285,5 +293,13 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
     public CrossingManagerUploader getCrossingManagerUploader() {
         return crossingManagerUploader;
+    }
+    
+    public void disableNextButton(){
+        nextButton.setEnabled(false);
+    }
+    
+    public void enableNextButton(){
+        nextButton.setEnabled(true);
     }
 }

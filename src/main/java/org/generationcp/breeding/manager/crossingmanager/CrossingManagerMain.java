@@ -91,15 +91,28 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardTabFour = accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
         
         accordion.addListener(new SelectedTabChangeListener() {
-		    @Override
-		    public void selectedTabChange(SelectedTabChangeEvent event) {
-		        Component selected =accordion.getSelectedTab();
-		        Tab tab = accordion.getTab(selected);
-		    	if(tab.getCaption().equals(messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES))){
-		    		wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
-		    	}	
-		    }
-		});
+    	    @Override
+    	    public void selectedTabChange(SelectedTabChangeEvent event) {
+    	        Component selected =accordion.getSelectedTab();
+    	        Tab tab = accordion.getTab(selected);
+    	        
+    	        //This part decides which tabs to enable/disable on change event. 
+    	        //  All tabs are enabled everytime tab is changed, so all this has to do 
+    	        //  is to disable the non-related tabs
+    	        if(tab!=null && tab.equals(wizardTabOne)){
+    	            enableOnlyWizardTabOne();
+    	        } else if(tab!=null && tab.equals(wizardTabTwo)){    
+    	            enableOnlyWizardTabTwo();
+    	            enableWizardTabOne();
+                } else if(tab!=null && tab.equals(wizardTabThree)){    
+                    enableOnlyWizardTabThree();
+                    wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
+                } else if(tab!=null && tab.equals(wizardTabFour)){    
+                    enableOnlyWizardTabFour();
+                }
+    	                    
+    	    }
+    	});
         addComponent(accordion);
     }
     
@@ -163,6 +176,23 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardTabThree.setEnabled(false);
         wizardTabFour.setEnabled(true);
     }    
+
+    public void enableWizardTabOne() {
+        wizardTabOne.setEnabled(true);
+    }
+    
+    public void enableWizardTabTwo() {
+        wizardTabTwo.setEnabled(true);
+    }
+    
+    public void enableWizardTabThree() {
+        wizardTabThree.setEnabled(true);
+    }    
+  
+    public void enableWizardTabFour() {
+        wizardTabFour.setEnabled(true);
+    }    
+
     
     public void setImportedGermplasmCrosses(ImportedGermplasmCrosses importedGermplasmCrosses){
         this.importedGermplasmCrosses = importedGermplasmCrosses;

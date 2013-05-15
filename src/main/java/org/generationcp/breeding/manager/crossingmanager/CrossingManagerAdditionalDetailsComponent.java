@@ -180,8 +180,8 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     		((CrossesMadeContainer) this.nextScreen).setCrossesMade(getCrossesMade());
     		source.setCrossesMade(getCrossesMade());
     		
-    		if(nextScreen instanceof CrossingManagerDetailsComponent)
-    		    source.enableOnlyWizardTabFour();
+    		//if(nextScreen instanceof CrossingManagerDetailsComponent)
+    		//    source.enableOnlyWizardTabFour();
     		this.accordion.setSelectedTab(nextScreen);
     	}
     }
@@ -190,11 +190,11 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         if (this.previousScreen != null){
             source.enableWizardTabs();
             this.accordion.setSelectedTab(this.previousScreen);
-            if(previousScreen instanceof CrossingManagerImportFileComponent)
-                source.enableOnlyWizardTabOne();
-            else if(previousScreen instanceof CrossingManagerMakeCrossesComponent){
-                source.enableOnlyWizardTabTwo();
-            }
+            //if(previousScreen instanceof CrossingManagerImportFileComponent)
+            //    source.enableOnlyWizardTabOne();
+            //else if(previousScreen instanceof CrossingManagerMakeCrossesComponent){
+            //    source.enableOnlyWizardTabTwo();
+            //}
             
         }
         

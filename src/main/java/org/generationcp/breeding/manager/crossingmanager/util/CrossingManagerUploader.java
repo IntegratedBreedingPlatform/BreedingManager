@@ -175,7 +175,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             if(fileIsValid==false){
                 importedGermplasmCrosses = null;
             }
-                
+          
+            if(source instanceof CrossingManagerImportFileComponent)
+                ((CrossingManagerImportFileComponent) source).enableNextButton();
+            
             // <macky>: moved "selectManuallyMakeCrosses() / selectAlreadyDefinedCrossesInNurseryTemplateFile()"
             // code block to CrossingManagerImportFileComponent.uploadComponents.FinishedListener
                 

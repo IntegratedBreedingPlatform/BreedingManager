@@ -147,6 +147,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(listener);
+        nextButton.setEnabled(false);
 
         //Widget Layout
         gridLayoutSelectingParents = new GridLayout(4,5);
@@ -244,6 +245,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     						messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL), "");
     			}
     		}
+    		this.nextButton.setEnabled(true);
     	}
     }
     
@@ -273,8 +275,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         	source.getWizardScreenThree().setPreviousScreen(this);
         	source.enableWizardTabs();
         	this.accordion.setSelectedTab(this.nextScreen);
-        	if(nextScreen instanceof CrossingManagerAdditionalDetailsComponent)
-        	    source.enableOnlyWizardTabThree();
+        	//if(nextScreen instanceof CrossingManagerAdditionalDetailsComponent)
+        	//    source.enableOnlyWizardTabThree();
         	
         } else {
             this.nextButton.setEnabled(false);
@@ -286,8 +288,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         if(this.previousScreen != null){
             source.enableWizardTabs();
             this.accordion.setSelectedTab(this.previousScreen);
-            if(previousScreen instanceof CrossingManagerImportFileComponent)
-                source.enableOnlyWizardTabOne();
+            //if(previousScreen instanceof CrossingManagerImportFileComponent)
+            //    source.enableOnlyWizardTabOne();
         } else {
             this.backButton.setEnabled(false);
         }
@@ -342,4 +344,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
             listSelect.requestRepaint();
         }
     }
+	
+    public void disableNextButton(){
+        nextButton.setEnabled(false);
+    }
+
 }
