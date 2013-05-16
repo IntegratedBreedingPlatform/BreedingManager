@@ -146,7 +146,8 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
             // add entries to the parent ListSelect
             GermplasmListEntry entry = new GermplasmListEntry(gid, entryId, designation);
             parentList.addItem(entry);
-            parentList.setItemCaption(entry, entry.getDesignation());
+            String itemCaption = entry.getEntryId()+"-"+entry.getDesignation(); 
+            parentList.setItemCaption(entry, itemCaption);
         }
         // remember selected List ID 
         Object listId = listEntryValues.getData();
