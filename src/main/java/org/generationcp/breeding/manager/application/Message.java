@@ -141,4 +141,5 @@ public enum Message{
     ,VALUE_HEADER 
     ,INVALID_SITE_ID
     ,INVALID_BREEDER_ID
+    ,PARENTAGE
 }

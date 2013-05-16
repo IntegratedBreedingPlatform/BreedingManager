@@ -53,7 +53,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
 
 	public static final String PARENTS_DELIMITER = ",";
-	public static final String CROSS_NAME_COLUMN = "Cross Name Column" ;
+	public static final String PARENTAGE = "Parentage Column" ;
 	public static final String FEMALE_PARENT_COLUMN = "Female Parent Column" ;
 	public static final String MALE_PARENT_COLUMN = "Male Parent Column" ;
 	
@@ -98,11 +98,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setSelectable(true);	
         tableCrossesMade.setMultiSelect(true);
         
-        tableCrossesMade.addContainerProperty(CROSS_NAME_COLUMN, String.class, null);
+        tableCrossesMade.addContainerProperty(PARENTAGE, String.class, null);
         tableCrossesMade.addContainerProperty(FEMALE_PARENT_COLUMN, String.class, null);
         tableCrossesMade.addContainerProperty(MALE_PARENT_COLUMN, String.class, null);
         
-        tableCrossesMade.setColumnHeader(CROSS_NAME_COLUMN, messageSource.getMessage(Message.CROSS_NAME));
+        tableCrossesMade.setColumnHeader(PARENTAGE, messageSource.getMessage(Message.PARENTAGE));
         tableCrossesMade.setColumnHeader(FEMALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
         tableCrossesMade.setColumnHeader(MALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_MALE_PARENT));
         
@@ -227,7 +227,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
     	int ctr = 1;
     	for (Object itemId : tableCrossesMade.getItemIds()){
-    		Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(CROSS_NAME_COLUMN);
+    		Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(PARENTAGE);
     		String crossName = String.valueOf(crossNameProp.toString());
     		
 	    		// get GIDs and entryIDs of female and male parents
