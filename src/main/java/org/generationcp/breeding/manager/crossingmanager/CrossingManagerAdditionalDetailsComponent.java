@@ -32,11 +32,11 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     private CrossesMade crossesMade;
     
     //Used Form to make use of fieldset HTML element to render section border
-    private Form breedingMethodForm;
+    private Form crossingMethodForm;
     private Form crossNameForm;
     private Form crossInfoForm;
     
-    private AdditionalDetailsBreedingMethodComponent breedingMethodComponent;
+    private AdditionalDetailsBreedingMethodComponent crossingMethodComponent;
     private AdditionalDetailsCrossNameComponent crossNameComponent;
     private AdditionalDetailsCrossInfoComponent crossInfoComponent;
     
@@ -61,7 +61,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
 	}
 
 	public AdditionalDetailsBreedingMethodComponent getBreedingMethodComponent() {
-		return breedingMethodComponent;
+		return crossingMethodComponent;
 	}
 
 	public AdditionalDetailsCrossNameComponent getCrossNameComponent() {
@@ -95,10 +95,10 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         setHeight("640px");
         setWidth("800px");
         
-        breedingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
-        breedingMethodForm = new Form(breedingMethodComponent);
-        breedingMethodForm.setHeight("210px");
-        breedingMethodForm.setWidth("740px");
+        crossingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
+        crossingMethodForm = new Form(crossingMethodComponent);
+        crossingMethodForm.setHeight("210px");
+        crossingMethodForm.setWidth("740px");
 		
         crossNameComponent = new AdditionalDetailsCrossNameComponent();
 		crossNameForm = new Form(crossNameComponent);
@@ -121,7 +121,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         nextButton.addListener(listener);
         
         // Layout Components
-        addComponent(breedingMethodForm, "top:20px;left:30px");
+        addComponent(crossingMethodForm, "top:20px;left:30px");
         addComponent(crossNameForm, "top:180px;left:30px");
         addComponent(crossInfoForm, "top:450px;left:30px");
         addComponent(backButton, "top:585px;left:600px");
@@ -140,17 +140,17 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     public void updateLabels() {
     	messageSource.setCaption(backButton, Message.BACK);
     	messageSource.setCaption(nextButton, Message.NEXT);
-    	messageSource.setCaption(breedingMethodForm, Message.BREEDING_METHOD);
+    	messageSource.setCaption(crossingMethodForm, Message.CROSSING_METHOD);
     	messageSource.setCaption(crossNameForm, Message.CROSS_NAME);
     	messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
     }
     
     private void setUpdateListeners(){
-    	breedingMethodComponent.setCrossesMadeContainer(this);
+    	crossingMethodComponent.setCrossesMadeContainer(this);
     	crossNameComponent.setCrossesMadeContainer(this);
     	crossInfoComponent.setCrossesMadeContainer(this);
     	
-    	updateListeners[0] = breedingMethodComponent;
+    	updateListeners[0] = crossingMethodComponent;
     	updateListeners[1] = crossNameComponent;
     	updateListeners[2] = crossInfoComponent;
     }
