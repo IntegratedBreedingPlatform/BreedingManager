@@ -23,10 +23,9 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -70,6 +69,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private Component buttonArea;
     private Button backButton;
     private Button doneButton;
+    private ComboBox comboBoxBreedingMethod;
+    private TextField methodId;
     private ComboBox comboBoxSiteName;
     private TextField siteId;
     private ComboBox comboBoxBreedersName;
@@ -87,9 +88,11 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     @Autowired
     private UserDataManager userDataManager;
     
+    private List<Method> method;
     private List<Location> locations;
     private List<User> users;
 
+    private HashMap<String, Integer> mapBreedingMethod;
     private HashMap<String, Integer> mapSiteName;
     private HashMap<String, Integer> mapBreedersName;
 
@@ -106,6 +109,12 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeComponents() {
+	
+	comboBoxBreedingMethod= new ComboBox();
+	comboBoxBreedingMethod.setImmediate(true);
+	
+	methodId=new TextField();
+	methodId.setImmediate(true);
 	
 	comboBoxSiteName= new ComboBox();
 	comboBoxSiteName.setImmediate(true);
@@ -196,12 +205,12 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         "siteId");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "BREEDING METHOD", "Breeding method to be applied to this nursery", "METHOD", "DBCV", new ComboBox()
+                "BREEDING METHOD", "Breeding method to be applied to this nursery", "METHOD", "DBCV", getComboBoxBreedingMethod()
         }, 
         "breedingMethod");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "BREEDING METHOD ID", "ID of Breeding Method", "METHOD", "DBID", new TextField()
+                "BREEDING METHOD ID", "ID of Breeding Method", "METHOD", "DBID", getTextFieldMethodId()
         }, 
         "breedingMethodId");
         
@@ -387,6 +396,67 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	});
 
 	return breederId;
+    }
+    
+    private ComboBox getComboBoxBreedingMethod() {
+
+	mapBreedingMethod = new HashMap<String, Integer>();
+	try {
+	    method=germplasmDataManager.getMethodsByType("GEN");
+	} catch (MiddlewareQueryException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	comboBoxBreedingMethod.addItem("");
+	for (Method m : method) {
+	    if(m.getMname().length()>0){
+		comboBoxBreedingMethod.addItem(m.getMname());
+		mapBreedingMethod.put(m.getMname(), new Integer(m.getMid()));
+	    }
+	}
+	
+	comboBoxBreedingMethod.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
+	    }
+	});
+	return comboBoxBreedingMethod;
+    }
+    
+    private TextField getTextFieldMethodId(){
+
+	methodId.addListener(new Property.ValueChangeListener() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		Method m = new Method();
+		boolean noError=true;
+
+		try {
+		    m=germplasmDataManager.getMethodByID(Integer.valueOf(methodId.getValue().toString()));
+		} catch (NumberFormatException e) {
+		    noError=false;
+		} catch (MiddlewareQueryException e) {
+		    noError=false;
+		}
+
+		if(m!=null && noError){
+		    comboBoxBreedingMethod.setValue(m.getMname());
+		}else{
+		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_METHOD_ID));
+		    comboBoxBreedingMethod.select("");
+		    methodId.setValue("");
+		}
+	    }
+	});
+
+	return methodId;
     }
     
     @Override
