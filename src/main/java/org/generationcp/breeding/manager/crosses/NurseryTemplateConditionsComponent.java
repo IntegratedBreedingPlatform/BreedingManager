@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -96,6 +98,12 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private HashMap<String, Integer> mapSiteName;
     private HashMap<String, Integer> mapBreedersName;
 
+    private NurseryTemplateMain source;
+
+    public NurseryTemplateConditionsComponent(NurseryTemplateMain source) {
+	this.source=source;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         assemble();
@@ -147,7 +155,9 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeActions() {
-        
+	
+	backButton.addListener(new NurseryTemplateButtonClickListener(this));
+	doneButton.addListener(new NurseryTemplateButtonClickListener(this));
     }
     
     protected Component layoutButtonArea() {
@@ -156,8 +166,10 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         buttonLayout.setMargin(true, false, false, false);
 
         backButton = new Button();
+        backButton.setData(BACK_BUTTON_ID);
         buttonLayout.addComponent(backButton);
         doneButton = new Button();
+        doneButton.setData(DONE_BUTTON_ID);
         buttonLayout.addComponent(doneButton);
         return buttonLayout;
     }
@@ -475,6 +487,15 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(doneButton, Message.DONE);
+    }
+
+    public void backButtonClickAction() {
+	source.disableNurseryTemplateConditionsComponent();
+    }
+
+    public void doneButtonClickAction() {
+	// TODO Auto-generated method stub
+	
     }
 
 }

@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.crosses;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -31,6 +33,7 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.FinishedListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * 
@@ -61,8 +64,13 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+
+    private NurseryTemplateMain source;
+    private Accordion accordion;
     
-    public NurseryTemplateImportFileComponent() {
+    public NurseryTemplateImportFileComponent(NurseryTemplateMain source, Accordion accordion) {
+	this.source=source;
+	this.accordion=accordion;
         
     }
     
@@ -116,16 +124,18 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
             @Override
             public void uploadFinished(FinishedEvent event) {
                 ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
-
+                nextButton.setEnabled(false);
                 // display uploaded filename
                 if (importedGermplasmCrosses != null) {
                     updateFilenameLabelValue(importedGermplasmCrosses.getFilename());
+                    enableNextButton();
                 } else {
                     updateFilenameLabelValue("");
                 }
 
             }
         });
+        nextButton.addListener(new NurseryTemplateButtonClickListener(this));
     }
     
     protected Component layoutButtonArea() {
@@ -134,7 +144,10 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
         buttonLayout.setMargin(true, false, false, false);
 
         nextButton = new Button();
+        nextButton.setData(NEXT_BUTTON_ID);
+        disableNextButton();
         buttonLayout.addComponent(nextButton);
+        
         return buttonLayout;
     }
     
@@ -158,6 +171,26 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     
     public CrossingManagerUploader getCrossingManagerUploader() {
         return crossingManagerUploader;
+    }
+
+    public void nextButtonClickAction() {
+	
+	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
+	    getWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+	}else{
+	    source.enableNurseryTemplateConditionsComponent();
+	    this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());
+	    System.out.println(crossingManagerUploader.getImportedGermplasmCrosses().getStudy());
+	}
+	
+    }
+    
+    public void disableNextButton(){
+        nextButton.setEnabled(false);
+    }
+    
+    public void enableNextButton(){
+        nextButton.setEnabled(true);
     }
 
 }
