@@ -85,6 +85,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private List<String> requiredConditionRows;
     private List<String> requiredFactorRows;
     private Boolean fileIsValid;
+    private Boolean hasInvalidData=false;
 
     private GermplasmListManager germplasmListManager;
 
@@ -617,7 +618,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             }
         }
         if(germplasmListDataAreValid==false){
-            showInvalidFileError("", "Invalid germplasm list data on sheet 2.");
+//            showInvalidFileError("", "Invalid germplasm list data on sheet 2.");
+            hasInvalidData=true;
+        }else{
+            hasInvalidData=false;
         }
     }
 
@@ -700,4 +704,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         return femaleListIdIsSpecified;
     }
 
+    public Boolean hasInvalidData() {
+        return hasInvalidData;
+    }
+    
 };

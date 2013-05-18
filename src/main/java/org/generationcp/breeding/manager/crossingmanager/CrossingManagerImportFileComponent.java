@@ -138,6 +138,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
             @Override
             public void uploadFinished(FinishedEvent event) {
+             if(!crossingManagerUploader.hasInvalidData()){
                 ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
                 
                 // display uploaded filename
@@ -153,6 +154,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                 } else {
                     selectAlreadyDefinedCrossesInNurseryTemplateFile();
                 }
+             }else{
+        	getWindow().showNotification(messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE));
+     	    	updateFilenameLabelValue("");
+     	    	nextButton.setEnabled(false);
+             }
             }
         });
         
