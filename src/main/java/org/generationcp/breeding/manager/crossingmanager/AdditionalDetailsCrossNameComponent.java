@@ -150,10 +150,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		crossNameOptionGroup = new OptionGroup();
 		crossNameOptionGroup.addItem(CrossNameOption.USE_DEFAULT);
 		crossNameOptionGroup.setItemCaption(CrossNameOption.USE_DEFAULT, 
-				messageSource.getMessage(Message.USE_DEFAULT_CROSS_NAME_FOR_ALL));
+				messageSource.getMessage(Message.USE_DEFAULT_CROSS_CODE_FOR_ALL));
 		crossNameOptionGroup.addItem(CrossNameOption.SPECIFY_CROSS_NAME);
 		crossNameOptionGroup.setItemCaption(CrossNameOption.SPECIFY_CROSS_NAME, 
-				messageSource.getMessage(Message.SPECIFY_CROSS_NAME_TEMPLATE_FOR_ALL));
+				messageSource.getMessage(Message.SPECIFY_CROSS_CODE_TEMPLATE_FOR_ALL));
 		
 		crossNameOptionGroup.setImmediate(true);
 		crossNameOptionGroup.select(CrossNameOption.USE_DEFAULT); //first option selected by default

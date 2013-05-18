@@ -141,7 +141,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     	messageSource.setCaption(backButton, Message.BACK);
     	messageSource.setCaption(nextButton, Message.NEXT);
     	messageSource.setCaption(crossingMethodForm, Message.CROSSING_METHOD);
-    	messageSource.setCaption(crossNameForm, Message.CROSS_NAME);
+    	messageSource.setCaption(crossNameForm, Message.CROSS_CODE);
     	messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
     }
     
