@@ -294,6 +294,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			Integer number) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(prefix);
+		sb.append(" ");
 		sb.append(number);
 		if (!StringUtils.isEmpty(suffix)){
 			sb.append(" ");
