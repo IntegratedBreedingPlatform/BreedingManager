@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 import java.util.Iterator;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crosses.NurseryTemplateConditionsComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectListButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -59,7 +60,15 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
+
+    private Object listId;
+
+    private NurseryTemplateConditionsComponent nurseryTemplateConditionComponent;
+
+    private String germplasmListFor;
+
+    private boolean nurseryTemplateCall=false;
+
     public SelectGermplasmListWindow() {
         this.parentList = new ListSelect();
         this.makeCrossesComponent = null;
@@ -70,6 +79,15 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         this.makeCrossesComponent = makeCrossesComponent;
     }
     
+    public SelectGermplasmListWindow(NurseryTemplateConditionsComponent nurseryTemplateConditionComponent,String germplasmListFor) {
+	// TODO Auto-generated constructor stub
+	this.nurseryTemplateCall=true;
+	this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
+	this.germplasmListFor=germplasmListFor;
+	this.parentList = new ListSelect();
+        this.makeCrossesComponent = null;
+    }
+
     protected void assemble() {
         initializeComponents();
         initializeValues();
@@ -150,14 +168,28 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
             parentList.setItemCaption(entry, itemCaption);
         }
         // remember selected List ID 
-        Object listId = listEntryValues.getData();
+        listId = listEntryValues.getData();
         if (listId != null && makeCrossesComponent != null) {
             makeCrossesComponent.setLastOpenedListId((Integer) listId);
         }
         
         parentList.requestRepaint();
+        
+        if(nurseryTemplateCall){
+            setValuesOnGermplasmNurseryConditionGermplasmList();
+        }
     }
     
+    private void setValuesOnGermplasmNurseryConditionGermplasmList() {
+	if(germplasmListFor.equals("Female")){
+	    nurseryTemplateConditionComponent.getFemaleListId().setValue(String.valueOf(listId));
+	    nurseryTemplateConditionComponent.getFemaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
+	}else{
+	    nurseryTemplateConditionComponent.getMaleListId().setValue(String.valueOf(listId));
+	    nurseryTemplateConditionComponent.getMaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
+	}
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         assemble();
@@ -174,4 +206,6 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
         messageSource.setCaption(doneButton, Message.DONE_LABEL);
     }
+
+
 }

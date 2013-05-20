@@ -61,6 +61,7 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     private Label descriptionValue;
     private Label listEntriesLabel;
     private Table listEntryValues;
+    private String listName="";
     
     private Integer lastOpenedListId;
     
@@ -150,7 +151,6 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     }
     
     public void displayListInfo(GermplasmList germplasmList) throws MiddlewareQueryException {
-        String listName = "";
         String listDesc = "";
         if (germplasmList != null) {
             listName = germplasmList.getName();
@@ -209,5 +209,9 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     public Table getEntriesTable() {
         return listEntryValues;
     }
-
+    
+    public String getListName() {
+        return listName;
+    }
+    
 }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
 import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -33,6 +34,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -64,6 +67,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     public static final String PROPERTY_COLUMN = "Property Column";
     public static final String SCALE_COLUMN = "Scale Column";
     public static final String VALUE_COLUMN = "Value Column";
+    public static final String FEMALE_LIST="Female";
+    public static final String MALE_LIST="Male";
     
     
     private Table nurseryConditionsTable;
@@ -77,6 +82,11 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private TextField siteId;
     private ComboBox comboBoxBreedersName;
     private TextField breederId;
+    private TextField femaleListName;
+    private TextField femaleListId;
+    private TextField maleListName;
+    private TextField maleListId;
+    
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -135,6 +145,11 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	
 	breederId=new TextField();
 	breederId.setImmediate(true);
+	
+	femaleListName=new TextField();
+	femaleListId=new TextField();
+	maleListName=new TextField();
+	maleListId=new TextField();
 	
 	generateConditionsTable();
         addComponent(nurseryConditionsTable);
@@ -227,22 +242,22 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         "breedingMethodId");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "FEMALE LIST NAME", "FEMALE LIST NAME", "GERMPLASM LIST", "DBCV", new TextField()
+                "FEMALE LIST NAME", "FEMALE LIST NAME", "GERMPLASM LIST", "DBCV", getLayoutGermplasmListTextField(femaleListName,FEMALE_LIST)
         }, 
         "femaleListName");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "FEMALE LIST ID", "FEMALE LIST ID", "GERMPLASM LIST", "DBID", new TextField()
+                "FEMALE LIST ID", "FEMALE LIST ID", "GERMPLASM LIST", "DBID", getLayoutGermplasmListTextField(femaleListId,FEMALE_LIST)
         }, 
         "femaleListId");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "MALE LIST NAME", "MALE LIST NAME", "GERMPLASM LIST", "DBCV", new TextField()
+                "MALE LIST NAME", "MALE LIST NAME", "GERMPLASM LIST", "DBCV", getLayoutGermplasmListTextField(maleListName,MALE_LIST)
         }, 
         "maleListName");
         
         nurseryConditionsTable.addItem(new Object[] {
-                "MALE LIST ID", "MALE LIST ID", "GERMPLASM LIST", "DBID", new TextField()
+                "MALE LIST ID", "MALE LIST ID", "GERMPLASM LIST", "DBID", getLayoutGermplasmListTextField(maleListId,MALE_LIST)
         }, 
         "maleListId");
     }
@@ -471,6 +486,23 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	return methodId;
     }
     
+    private VerticalLayout getLayoutGermplasmListTextField(final TextField txtField,final String germplasmListFor){
+	VerticalLayout germplasmListTextFieldLayout = new VerticalLayout();
+	germplasmListTextFieldLayout.addComponent(txtField);
+	germplasmListTextFieldLayout.addListener(new LayoutClickListener() {
+
+	    public void layoutClick(LayoutClickEvent event) {
+	        if (event.getChildComponent() == txtField) {
+	            SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
+	            getWindow().addWindow(selectListWindow);
+	        }
+	    }
+	});
+	
+	return germplasmListTextFieldLayout;
+    }
+    
+    
     @Override
     public void attach() {
         super.attach();
@@ -496,6 +528,26 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     public void doneButtonClickAction() {
 	// TODO Auto-generated method stub
 	
+    }
+    
+    private NurseryTemplateConditionsComponent getMainClass(){
+	return this;
+    }
+
+    public TextField getFemaleListName() {
+        return femaleListName;
+    }
+    
+    public TextField getFemaleListId() {
+        return femaleListId;
+    }
+    
+    public TextField getMaleListName() {
+        return maleListName;
+    }
+    
+    public TextField getMaleListId() {
+        return maleListId;
     }
 
 }
