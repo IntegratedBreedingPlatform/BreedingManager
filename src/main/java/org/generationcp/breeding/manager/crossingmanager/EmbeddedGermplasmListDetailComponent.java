@@ -73,8 +73,19 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         setSpacing(true);
         setWidth("800px");
         
-        ExternalResource listBrowserLink = 
-        	new ExternalResource("http://localhost:8080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(ToolName.germplasm_list_browser.toString());
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource listBrowserLink = null;
+        if (tool == null) {
+            listBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
+        } else {
+            listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
+        }
         
         VerticalLayout layoutForList = new VerticalLayout();
         layoutForList.setMargin(false);
