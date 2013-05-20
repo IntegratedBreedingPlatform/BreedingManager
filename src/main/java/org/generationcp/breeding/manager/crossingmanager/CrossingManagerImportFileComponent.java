@@ -155,7 +155,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                     selectAlreadyDefinedCrossesInNurseryTemplateFile();
                 }
              }else{
-        	getWindow().showNotification(messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE));
+        	getWindow().showNotification(messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE), Notification.TYPE_ERROR_MESSAGE);
      	    	updateFilenameLabelValue("");
      	    	nextButton.setEnabled(false);
              }
