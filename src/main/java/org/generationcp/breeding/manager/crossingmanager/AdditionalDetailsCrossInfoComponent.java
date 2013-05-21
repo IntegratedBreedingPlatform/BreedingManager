@@ -96,7 +96,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		
 		harvestLocComboBox = new ComboBox();
 		harvestLocComboBox.setWidth("400px");
-
+		
 		//sets required fields
 		requiredFields[0] = harvestDtDateField;
 		requiredFields[1] = harvestLocComboBox;
@@ -108,9 +108,10 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		addComponent(harvestLocComboBox, "top:40px;left:140px");
 
 		locations = germplasmDataManager.getAllBreedingLocations();
+		populateHarvestLocation();
 	}
 	
-	public void populateHarvestLocation() {
+	private void populateHarvestLocation() {
 	    harvestLocComboBox.removeAllItems();
 
 	    mapLocation = new HashMap<String, Integer>();

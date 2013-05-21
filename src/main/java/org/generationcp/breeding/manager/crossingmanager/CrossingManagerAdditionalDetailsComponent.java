@@ -159,6 +159,10 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         this.previousScreen = backScreen;
     }    
     
+    public Component getPreviousScreen(){
+        return this.previousScreen;
+    }
+    
     public void nextButtonClickAction(){
     	boolean allValidationsPassed = true;
     	//perform validations and update CrossesMade instance
@@ -180,9 +184,14 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     		((CrossesMadeContainer) this.nextScreen).setCrossesMade(getCrossesMade());
     		source.setCrossesMade(getCrossesMade());
     		
-    		//if(nextScreen instanceof CrossingManagerDetailsComponent)
-    		//    source.enableOnlyWizardTabFour();
     		this.accordion.setSelectedTab(nextScreen);
+    		if(this.getPreviousScreen() instanceof CrossingManagerMakeCrossesComponent){
+    		    source.enableWizardTabs();
+    		} else{
+    		    source.enableOnlyWizardTabFour();
+    		    source.enableWizardTabThree();
+    		    source.enableWizardTabOne();
+    		}
     	}
     }
     
@@ -190,12 +199,6 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         if (this.previousScreen != null){
             source.enableWizardTabs();
             this.accordion.setSelectedTab(this.previousScreen);
-            //if(previousScreen instanceof CrossingManagerImportFileComponent)
-            //    source.enableOnlyWizardTabOne();
-            //else if(previousScreen instanceof CrossingManagerMakeCrossesComponent){
-            //    source.enableOnlyWizardTabTwo();
-            //}
-            
         }
         
     }

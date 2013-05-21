@@ -257,8 +257,6 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     public void backButtonClickAction(){
         source.enableWizardTabs();
         accordion.setSelectedTab(previousScreen);
-        //if(previousScreen instanceof CrossingManagerAdditionalDetailsComponent)
-        //    source.enableOnlyWizardTabThree();
     }
 
 

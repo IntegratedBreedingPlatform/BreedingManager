@@ -106,14 +106,25 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     	            enableWizardTabOne();
                 } else if(tab!=null && tab.equals(wizardTabThree)){    
                     enableOnlyWizardTabThree();
-                    wizardScreenThree.getCrossInfoComponent().populateHarvestLocation();
+                    enableWizardTabOne();
+                    if(wizardScreenThree.getPreviousScreen() instanceof CrossingManagerMakeCrossesComponent){
+                        enableWizardTabTwo();
+                    } 
                 } else if(tab!=null && tab.equals(wizardTabFour)){    
-                    enableOnlyWizardTabFour();
+                    if(wizardScreenThree.getPreviousScreen() instanceof CrossingManagerMakeCrossesComponent){
+                        enableWizardTabs();
+                    } else{
+                        enableOnlyWizardTabFour();
+                        enableWizardTabThree();
+                        enableWizardTabOne();
+                    }
                 }
     	                    
     	    }
     	});
         addComponent(accordion);
+        
+        enableOnlyWizardTabOne();
     }
     
     @Override

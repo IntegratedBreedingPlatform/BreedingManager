@@ -275,9 +275,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         	source.getWizardScreenThree().setPreviousScreen(this);
         	source.enableWizardTabs();
         	this.accordion.setSelectedTab(this.nextScreen);
-        	//if(nextScreen instanceof CrossingManagerAdditionalDetailsComponent)
-        	//    source.enableOnlyWizardTabThree();
-        	
+        	source.enableOnlyWizardTabThree();
+        	source.enableWizardTabOne();
+        	source.enableWizardTabTwo();
         } else {
             this.nextButton.setEnabled(false);
         }

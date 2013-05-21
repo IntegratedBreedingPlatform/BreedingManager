@@ -198,8 +198,6 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                     getWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
                 //pass uploaded info and Crosses (if any) to next screen
                 } else {
-                    CrossesMade crossesMade = new CrossesMade();
-                    crossesMade.setCrossingManagerUploader(crossingManagerUploader);
                     if(this.nextNextScreen != null){
                         saveCrossesInfoToNextWizardStep(this.nextNextScreen, true);
                     } else {
@@ -230,20 +228,17 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         source.getWizardScreenThree().setPreviousScreen(this);
 
         source.enableWizardTabs();
-        this.accordion.setSelectedTab(nextStep);
         if(nextStep instanceof CrossingManagerMakeCrossesComponent){
             source.getWizardScreenTwo().setPreviousScreen(this);
     	    this.accordion.setSelectedTab(nextStep);
-            //source.enableOnlyWizardTabTwo();
-            //source.enableWizardTabOne();
+    	    source.enableOnlyWizardTabTwo();
+    	    source.enableWizardTabOne();
         } else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
-    	    System.out.println("DEBUG - Should go to additional details");
-            source.getWizardScreenThree().setPreviousScreen(this);
+    	    source.getWizardScreenThree().setPreviousScreen(this);
             this.accordion.setSelectedTab(nextStep);
-            //source.enableOnlyWizardTabThree();
-        } else {
-            System.out.println("DEBUG - I am lost");
-        }
+            source.enableOnlyWizardTabThree();
+            source.enableWizardTabOne();
+        } 
     }
 
     public Map<Germplasm, Name > generateCrossesMadeMap(){
