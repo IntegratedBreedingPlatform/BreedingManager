@@ -55,21 +55,21 @@ public class CrossingManagerUtil{
 	Germplasm gmf = germplasmDataManager.getGermplasmByGID(gm.getGpid1()); //  paternal female grand parent (mommy of male parent)
 	Germplasm gmm =  germplasmDataManager.getGermplasmByGID(gm.getGpid2()); // paternal male grand parent (daddy of male parent)
 
-	if(gf.getGnpgs()<0)
+	if(gf != null && gf.getGnpgs()<0)
 	{
-	    if(gm.getGnpgs()<0)
+	    if(gm != null && gm.getGnpgs()<0)
 	    {
 		gc.setMethodId(101);
 	    }
 	    else
 	    {
-		if(gm.getGnpgs()==1)
+		if(gm != null && gm.getGnpgs()==1)
 		{
 		    gc.setMethodId(101);
 		}
-		else if(gm.getGnpgs()==2)
+		else if(gm != null && gm.getGnpgs()==2)
 		{
-		    if(gmf.getGid()==gf.getGid() || gmm.getGid()==gf.getGid())
+		    if((gmf != null && gmf.getGid()==gf.getGid()) || (gmm != null && gmm.getGid()==gf.getGid()))
 		    {
 			gc.setMethodId(107);
 		    }
@@ -86,15 +86,15 @@ public class CrossingManagerUtil{
 	}
 	else
 	{
-	    if(gm.getGnpgs()<0)
+	    if(gm != null && gm.getGnpgs()<0)
 	    {
-		if(gf.getGnpgs()==1)
+		if(gf != null && gf.getGnpgs()==1)
 		{
 		    gc.setMethodId(101);
 		}
-		else if(gf.getGnpgs()==2)
+		else if(gf != null && gf.getGnpgs()==2)
 		{
-		    if(gff.getGid()==gm.getGid() || gfm.getGid()==gm.getGid())
+		    if((gff != null && gff.getGid()==gm.getGid()) || (gfm != null && gfm.getGid()==gm.getGid()))
 		    {
 			gc.setMethodId(107);
 		    }
@@ -110,7 +110,7 @@ public class CrossingManagerUtil{
 	    }
 	    else
 	    {
-		if(gf.getMethodId()==101 && gm.getMethodId()==101)
+		if((gf != null && gf.getMethodId()==101) && (gm != null && gm.getMethodId()==101))
 		{
 		    gc.setMethodId(103);
 		}
@@ -121,6 +121,9 @@ public class CrossingManagerUtil{
 	    }
 	}
 
+	if(gc.getMethodId() == null){
+	    gc.setMethodId(101);
+	}
 	return gc;
 
     }
