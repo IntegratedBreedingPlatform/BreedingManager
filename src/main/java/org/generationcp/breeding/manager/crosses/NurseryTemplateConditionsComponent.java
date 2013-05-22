@@ -354,7 +354,10 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
-	    String name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	    String name= u.getName();
+	    if(p != null){
+	        name = p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	    }
 	    comboBoxBreedersName.addItem(name);
 	    mapBreedersName.put(name, new Integer(u.getUserid()));
 	}
