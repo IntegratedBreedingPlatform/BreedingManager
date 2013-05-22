@@ -12,14 +12,20 @@
 
 package org.generationcp.breeding.manager.crosses;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
+import org.generationcp.breeding.manager.nurserytemplate.util.NurseryTemplateManagerExporter;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -31,12 +37,12 @@ import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -76,6 +82,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private Component buttonArea;
     private Button backButton;
     private Button doneButton;
+    private TextField nid;
     private ComboBox comboBoxBreedingMethod;
     private TextField methodId;
     private ComboBox comboBoxSiteName;
@@ -127,6 +134,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeComponents() {
+	
+	nid=new TextField();
 	
 	comboBoxBreedingMethod= new ComboBox();
 	comboBoxBreedingMethod.setImmediate(true);
@@ -207,7 +216,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private void addConditionRows() {
         //TODO: populate this table using values read from the Nursery Template file
         nurseryConditionsTable.addItem(new Object[] {
-                "NID", "NURSERY SEQUENCE NUMBER", "NURSERY", "NUMBER", new TextField()
+                "NID", "NURSERY SEQUENCE NUMBER", "NURSERY", "NUMBER", nid
         }, 
         "nid");
         
@@ -288,6 +297,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		siteId.setValue(String.valueOf(mapSiteName.get(comboBoxSiteName.getValue())));
 	    }
 	});
+	comboBoxSiteName.select("");
+	siteId.setValue("");
 	return comboBoxSiteName;
     }
     
@@ -357,6 +368,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		breederId.setValue(String.valueOf(mapBreedersName.get(comboBoxBreedersName.getValue())));
 	    }
 	});
+	
 	return comboBoxBreedersName;
     }
     
@@ -451,6 +463,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
 	    }
 	});
+	comboBoxBreedingMethod.select("");
+	methodId.setValue("");
 	return comboBoxBreedingMethod;
     }
     
@@ -526,10 +540,62 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
 
     public void doneButtonClickAction() {
-	// TODO Auto-generated method stub
-	
+	String confirmDialogCaption=messageSource.getMessage(Message.CONFIRM_DIALOG_CAPTION_EXPORT_NURSERY_FILE);
+	String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_EXPORT_NURSERY_FILE);
+
+	ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
+		messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+		private static final long serialVersionUID = 1L;
+
+		public void onClose(ConfirmDialog dialog) {
+		    if (dialog.isConfirmed()) {
+			createAndDownloadNurseryTemplateFile();
+		    }
+		}
+	});
+
     }
     
+    protected void createAndDownloadNurseryTemplateFile() {
+	// TODO Auto-generated method stub
+	ImportedGermplasmCrosses nurseryTemplateData=source.getSelectNurseryTemplateScreen().getCrossingManagerUploader().getImportedGermplasmCrosses();
+
+	String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+	NurseryTemplateManagerExporter exporter = new NurseryTemplateManagerExporter(nurseryTemplateData,getNurseryConditionValue());
+
+	try {
+	    exporter.exportNurseryTemplateManagerExcel(tempFileName);
+	    FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+	    fileDownloadResource.setFilename(nurseryTemplateData.getFilename());
+
+	    this.getWindow().open(fileDownloadResource);
+
+	} catch (CrossingManagerExporterException e) {
+	    MessageNotifier.showError(getWindow(), e.getMessage(), "");
+	}
+
+
+    }
+
+    private HashMap<String, String> getNurseryConditionValue() {
+	
+	HashMap<String, String> conditionValue=new HashMap<String,String>();
+	conditionValue.put("NID", nid.getValue().toString());
+	conditionValue.put("BREEDER NAME", comboBoxBreedersName.getValue().toString());
+	conditionValue.put("BREEDER ID", breederId.getValue().toString());
+	conditionValue.put("SITE", comboBoxSiteName.getValue().toString());
+	conditionValue.put("SITE ID", siteId.getValue().toString());
+	conditionValue.put("BREEDING METHOD", comboBoxBreedingMethod.getValue().toString());
+	conditionValue.put("BREEDING METHOD ID", methodId.getValue().toString());
+	conditionValue.put("FEMALE LIST NAME", femaleListName.getValue().toString());
+	conditionValue.put("FEMALE LIST ID", femaleListId.getValue().toString());
+	conditionValue.put("MALE LIST NAME", maleListName.getValue().toString());
+	conditionValue.put("MALE LIST ID", maleListId.getValue().toString());
+	
+	return conditionValue;
+    }
+
+
     private NurseryTemplateConditionsComponent getMainClass(){
 	return this;
     }

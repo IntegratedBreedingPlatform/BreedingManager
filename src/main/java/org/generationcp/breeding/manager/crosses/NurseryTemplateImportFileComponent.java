@@ -180,7 +180,6 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
 	}else{
 	    source.enableNurseryTemplateConditionsComponent();
 	    this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());
-	    System.out.println(crossingManagerUploader.getImportedGermplasmCrosses().getStudy());
 	}
 	
     }
