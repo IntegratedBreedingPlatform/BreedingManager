@@ -138,8 +138,8 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 					int gid = Integer.parseInt(searchValue);
 					displayGermplasmDetailTab(gid);
 				} catch (NumberFormatException e) {
-					LOG.error(e.toString() + "\n" + e.getStackTrace());
-					e.printStackTrace();
+					//LOG.error(e.toString() + "\n" + e.getStackTrace());
+					//e.printStackTrace();
 					withNoError = false;
 					if (getWindow() != null) {
 						MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
