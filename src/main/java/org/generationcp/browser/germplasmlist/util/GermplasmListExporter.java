@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class GermplasmListExporter {
 
-    private static final int conditionListHeaderRowIndex = 8;
-    
     @Autowired
     private GermplasmListManager germplasmListManager;
     
@@ -417,4 +415,104 @@ public class GermplasmListExporter {
         
     }
     
+    public FileOutputStream exportListForKBioScienceGenotypingOrder(String filename, int plateSize) throws GermplasmListExporterException{
+        String wellLetters[] = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        HSSFWorkbook wb = new HSSFWorkbook();
+        
+        HSSFSheet sheet = wb.createSheet("List"); 
+        
+        try {
+            germplasmList = this.germplasmListManager.getGermplasmListById(this.listId);
+        } catch (MiddlewareQueryException e) {
+            throw new GermplasmListExporterException("Error with getting Germplasm List with id: " + this.listId, e);
+        }
+        
+        if(germplasmList == null){
+            throw new GermplasmListExporterException("There is no Germplasm List with id: " + this.listId);
+        }
+        
+        String listName = germplasmList.getName();
+        
+        HSSFRow header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Subject ID");
+        header.createCell(1).setCellValue("Plate ID");
+        header.createCell(2).setCellValue("Well");
+        header.createCell(3).setCellValue("Sample type");
+        header.createCell(4).setCellValue(plateSize);
+        header.createCell(5).setCellValue("Primer");
+        header.createCell(6).setCellValue("Subject BC");
+        header.createCell(7).setCellValue("Plate BC");
+        
+        try {
+            long listDataCount = germplasmListManager.countGermplasmListDataByListId(listId);
+            List<GermplasmListData> listDatas = germplasmListManager.getGermplasmListDataByListId(listId, 0, (int) listDataCount);
+            
+            String plateName = listName;
+            int plateNum = 0;
+            if(plateSize == 96){
+                if(listDataCount > 95){
+                    plateNum = 1;
+                    plateName = plateName + "-" + plateNum;
+                }
+            }
+            
+            int wellLetterIndex = 0;
+            int wellNumberIndex = 1; 
+            int rowNum = 1;
+            for(GermplasmListData listData : listDatas){
+                if(wellLetterIndex == 7 && wellNumberIndex == 12){
+                    //skip H12
+                    wellLetterIndex = 0;
+                    wellNumberIndex = 1;
+                    if(plateNum != 0){
+                        plateNum++;
+                        plateName = listName + "-" + plateNum;
+                    }
+                }
+                
+                if(wellNumberIndex == 13){
+                    wellLetterIndex++;
+                    wellNumberIndex = 1;
+                }
+                
+                String well = wellLetters[wellLetterIndex];
+                if(wellNumberIndex < 10){
+                    well = well + "0" + wellNumberIndex;
+                } else {
+                    well = well + wellNumberIndex;
+                }
+                
+                String nullString = null;
+                HSSFRow row = sheet.createRow(rowNum);
+                row.createCell(0).setCellValue(listData.getEntryId());
+                row.createCell(1).setCellValue(plateName);
+                row.createCell(2).setCellValue(well);
+                row.createCell(3).setCellValue(nullString);
+                row.createCell(4).setCellValue(nullString);
+                row.createCell(5).setCellValue(nullString);
+                row.createCell(6).setCellValue(nullString);
+                row.createCell(7).setCellValue(nullString);
+                
+                rowNum++;
+                wellNumberIndex++;
+            }
+            
+        } catch (MiddlewareQueryException e) {
+            throw new GermplasmListExporterException("Error with getting germplasm list entries for list id: " + this.listId, e);
+        }
+        
+        for(int ctr = 0; ctr < 8; ctr++) {
+            sheet.autoSizeColumn(ctr);
+        }
+        
+        try {
+            //write the excel file
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            wb.write(fileOutputStream);
+            fileOutputStream.close();
+            return fileOutputStream;
+        } catch(Exception ex) {
+            throw new GermplasmListExporterException("Error with writing to: " + filename, ex);
+        }
+    }
 }

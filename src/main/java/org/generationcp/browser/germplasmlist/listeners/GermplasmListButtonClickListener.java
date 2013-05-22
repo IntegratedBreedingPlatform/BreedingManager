@@ -96,6 +96,15 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
+        } else if (event.getButton().getData().equals(GermplasmListDataComponent.EXPORT_FOR_GENOTYPING_BUTTON_ID) // "Export List For Genotyping Order"
+                && (source instanceof GermplasmListDataComponent)) {
+            try {
+                ((GermplasmListDataComponent) source).exportListForGenotypingOrderAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.COPY_TO_NEW_LIST_BUTTON_ID) // "Copy to New List"
                 && (source instanceof GermplasmListDataComponent)) {
             try {

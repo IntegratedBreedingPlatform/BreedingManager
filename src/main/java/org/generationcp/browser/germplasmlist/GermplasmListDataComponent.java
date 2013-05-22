@@ -75,12 +75,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
 	public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
 	public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
+	public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
 	public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
 
 	private Table listDataTable;
 	private Button selectAllButton;
 	private Button saveSortingButton;
 	private Button exportListButton;
+	private Button exportForGenotypingButton;
 	private Button copyToNewListButton;
 
 	private int germplasmListId;
@@ -196,6 +198,11 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			exportListButton.setData(EXPORT_BUTTON_ID);			
 			exportListButton.setEnabled(true);
 			buttonArea.addComponent(exportListButton);
+			
+			exportForGenotypingButton = new Button("Export List for Genotyping Order", new GermplasmListButtonClickListener(this));
+			exportForGenotypingButton.setData(EXPORT_FOR_GENOTYPING_BUTTON_ID);
+			exportForGenotypingButton.setEnabled(true);
+			buttonArea.addComponent(exportForGenotypingButton);
 			
 			copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
 			copyToNewListButton.setData(COPY_TO_NEW_LIST_BUTTON_ID);
@@ -336,6 +343,31 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         }
 	}
 
+	//called by GermplasmListButtonClickListener
+	public void exportListForGenotypingOrderAction() throws InternationalizableException {
+	    if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
+	        String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+	        
+                GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
+    
+                try {
+                        listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
+                        FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                        fileDownloadResource.setFilename(listName + "ForGenotyping.xls");
+    
+                        this.getWindow().open(fileDownloadResource);
+    
+                        //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                        //File tempFile = new File(tempFileName);
+                        //tempFile.delete();
+                } catch (GermplasmListExporterException e) {
+                        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
+                }
+	    } else {
+	        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
+	    }
+	}
+	
 	public void deleteListButtonClickAction()  throws InternationalizableException {
 	    final Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 	    if(selectedIds.size() > 0){
