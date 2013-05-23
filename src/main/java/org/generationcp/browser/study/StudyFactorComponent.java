@@ -38,6 +38,7 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
     private static final String SCA = "SCALE";
     private static final String METH = "METHOD";
     private static final String DTYPE = "DATATYPE";
+    private static final String VALUE = "VALUE";
 
     private int studyId;
 
@@ -66,7 +67,7 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
         setSizeFull();
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE });
+        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE, VALUE });
     }
 
     @Override
@@ -83,6 +84,7 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
         messageSource.setColumnHeader(this, "SCALE", Message.SCALE_HEADER);
         messageSource.setColumnHeader(this, "METHOD", Message.METHOD_HEADER);
         messageSource.setColumnHeader(this, "DATATYPE", Message.DATATYPE_HEADER);
+        messageSource.setColumnHeader(this, "VALUE", Message.VALUE_HEADER);
     }
 
 }

@@ -18,7 +18,10 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
+import org.generationcp.middleware.v2.domain.Study;
 import org.generationcp.middleware.v2.domain.StudyReference;
+import org.generationcp.middleware.v2.domain.Variable;
+import org.generationcp.middleware.v2.domain.VariableList;
 import org.generationcp.middleware.v2.domain.VariableType;
 import org.generationcp.middleware.v2.domain.VariableTypeList;
 import org.generationcp.middleware.v2.search.StudyResultSet;
@@ -42,6 +45,7 @@ public class StudyDataIndexContainer{
     private static final Object SCALE_NAME = "scaleName";
     private static final Object METHOD_NAME = "methodName";
     private static final Object DATATYPE = "dataType";
+    private static final Object VALUE = "value";
     
     
     public static final String STUDY_ID = "ID";
@@ -66,7 +70,11 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(SCALE_NAME, String.class, "");
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
+            container.addContainerProperty(VALUE, String.class, "");
 
+            Study study = studyDataManagerv2.getStudy(studyId);
+            VariableList variableList = study.getConditions();
+            List<Variable> conditions = variableList.getVariables();
             VariableTypeList factors = studyDataManagerv2.getAllStudyFactors(Integer.valueOf(studyId));
             List<VariableType> factorDetails = factors.getVariableTypes();
             for(VariableType factorDetail : factorDetails){
@@ -76,8 +84,16 @@ public class StudyDataIndexContainer{
                 String scaleName = factorDetail.getStandardVariable().getScale().getName();
                 String methodName = factorDetail.getStandardVariable().getMethod().getName();
                 String dataType = factorDetail.getStandardVariable().getDataType().getName();
+                String value = null;
                 
-                addFactorData(container, name, description, propertyName, scaleName, methodName, dataType);
+                for(Variable condition : conditions){
+                    String conditionName = condition.getVariableType().getLocalName();
+                    if(name.equals(conditionName)){
+                        value = condition.getDisplayValue();
+                    }
+                }
+                
+                addFactorData(container, name, description, propertyName, scaleName, methodName, dataType, value);
             }
 
             return container;
@@ -88,7 +104,7 @@ public class StudyDataIndexContainer{
     }
 
     private static void addFactorData(Container container, String factorName, String description, String propertyName, String scale,
-            String method, String datatype) {
+            String method, String datatype, String value) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(FACTOR_NAME).setValue(factorName);
@@ -97,6 +113,7 @@ public class StudyDataIndexContainer{
         item.getItemProperty(SCALE_NAME).setValue(scale);
         item.getItemProperty(METHOD_NAME).setValue(method);
         item.getItemProperty(DATATYPE).setValue(datatype);
+        item.getItemProperty(VALUE).setValue(value);
     }
 
     public IndexedContainer getStudyVariate() throws InternationalizableException {
