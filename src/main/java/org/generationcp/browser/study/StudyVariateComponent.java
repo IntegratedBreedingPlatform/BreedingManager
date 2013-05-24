@@ -41,6 +41,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     private static final String SCA = "SCALE";
     private static final String METH = "METHOD";
     private static final String DTYPE = "DATATYPE";
+    private static final String VALUE = "VALUE";
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -65,7 +66,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
         setSizeFull();
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE });    	
+        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE, VALUE });    	
     }
     
     @Override
@@ -82,6 +83,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
         messageSource.setColumnHeader(this, "SCALE", Message.SCALE_HEADER);
         messageSource.setColumnHeader(this, "METHOD", Message.METHOD_HEADER);
         messageSource.setColumnHeader(this, "DATATYPE", Message.DATATYPE_HEADER);
+        messageSource.setColumnHeader(this, "VALUE", Message.VALUE_HEADER);
     }
 
 }

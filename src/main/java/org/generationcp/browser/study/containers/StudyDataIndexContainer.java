@@ -127,7 +127,11 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(SCALE_NAME, String.class, "");
             container.addContainerProperty(METHOD_NAME, String.class, "");
             container.addContainerProperty(DATATYPE, String.class, "");
+            container.addContainerProperty(VALUE, String.class, "");
 
+            Study study = studyDataManagerv2.getStudy(studyId);
+            VariableList variableList = study.getConstants();
+            List<Variable> constants = variableList.getVariables();
             VariableTypeList variates = studyDataManagerv2.getAllStudyVariates(Integer.valueOf(studyId));
             List<VariableType> variateDetails = variates.getVariableTypes(); 
             for(VariableType variateDetail : variateDetails){
@@ -137,8 +141,16 @@ public class StudyDataIndexContainer{
                 String scaleName = variateDetail.getStandardVariable().getScale().getName();
                 String methodName = variateDetail.getStandardVariable().getMethod().getName();
                 String dataType = variateDetail.getStandardVariable().getDataType().getName();
+                String value = null;
                 
-                addVariateData(container, name, description, propertyName, scaleName, methodName, dataType);
+                for(Variable constant : constants){
+                    String constantName = constant.getVariableType().getLocalName();
+                    if(name.equals(constantName)){
+                        value = constant.getDisplayValue();
+                    }
+                }
+                
+                addVariateData(container, name, description, propertyName, scaleName, methodName, dataType, value);
             }
             
             return container;
@@ -148,7 +160,7 @@ public class StudyDataIndexContainer{
     }
 
     private static void addVariateData(Container container, String variateName, String description, String propertyName, String scale,
-            String method, String datatype) {
+            String method, String datatype, String value) {
         Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(VARIATE_NAME).setValue(variateName);
@@ -157,6 +169,7 @@ public class StudyDataIndexContainer{
         item.getItemProperty(SCALE_NAME).setValue(scale);
         item.getItemProperty(METHOD_NAME).setValue(method);
         item.getItemProperty(DATATYPE).setValue(datatype);
+        item.getItemProperty(VALUE).setValue(value);
     }
 
     public IndexedContainer getStudies(String name, String country, Season season, Integer date) throws InternationalizableException {
