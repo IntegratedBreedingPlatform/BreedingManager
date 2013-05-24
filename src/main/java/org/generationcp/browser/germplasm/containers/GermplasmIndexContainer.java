@@ -23,6 +23,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.report.LotReportRow;
+import org.generationcp.middleware.v2.domain.StudyReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
@@ -58,8 +59,7 @@ public final class GermplasmIndexContainer{
     public static final String STUDY_ID = "studyid";
     public static final String STUDY_NAME = "studyname";
     public static final String STUDY_DESCRIPTION = "description";
-    public static final String STUDY_NUMBER_OF_ROWS = "rowCount";
-
+    
     @SuppressWarnings("unused")
     private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
@@ -261,23 +261,20 @@ public final class GermplasmIndexContainer{
         container.addContainerProperty(STUDY_ID, Integer.class, 0);
         container.addContainerProperty(STUDY_NAME, String.class, "");
         container.addContainerProperty(STUDY_DESCRIPTION, String.class, "");
-        container.addContainerProperty(STUDY_NUMBER_OF_ROWS, Integer.class, 0);
-
-        final ArrayList<StudyInfo> query = (ArrayList<StudyInfo>) qQuery.getGermplasmStudyInfo(Integer.valueOf(G.getGid()));
-        for (StudyInfo info : query) {
-            addGermplasmStudyInformation(container, info);
+        
+        final ArrayList<StudyReference> studies = (ArrayList<StudyReference>) qQuery.getGermplasmStudyInfo(Integer.valueOf(G.getGid()));
+        for (StudyReference study : studies) {
+            addGermplasmStudyInformation(container, study);
         }
         return container;
     }
 
-    private static void addGermplasmStudyInformation(Container container, StudyInfo info) {
-    	StudyInfo studyInfo = info;
-        Object itemId = container.addItem();
+    private static void addGermplasmStudyInformation(Container container, StudyReference study) {
+    	Object itemId = container.addItem();
         Item item = container.getItem(itemId);
-        item.getItemProperty(STUDY_ID).setValue(studyInfo.getId());
-        item.getItemProperty(STUDY_NAME).setValue(studyInfo.getName());
-        item.getItemProperty(STUDY_DESCRIPTION).setValue(studyInfo.getTitle());
-        item.getItemProperty(STUDY_NUMBER_OF_ROWS).setValue(studyInfo.getRowCount());
+        item.getItemProperty(STUDY_ID).setValue(study.getId());
+        item.getItemProperty(STUDY_NAME).setValue(study.getName());
+        item.getItemProperty(STUDY_DESCRIPTION).setValue(study.getDescription());
     }
 
 }

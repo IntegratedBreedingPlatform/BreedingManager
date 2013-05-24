@@ -44,7 +44,6 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     private static final String STUDY_ID = "Study ID";
     private static final String STUDY_NAME = "Study Name";
     private static final String DESCRIPTION = "Description";
-    private static final String NUM_ROWS = "Number of Rows";
     
     private GermplasmIndexContainer dataIndexContainer;
     
@@ -74,8 +73,8 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
         setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { STUDY_ID, STUDY_NAME, DESCRIPTION, NUM_ROWS});
-        setVisibleColumns(new String[] { GermplasmIndexContainer.STUDY_NAME, GermplasmIndexContainer.STUDY_DESCRIPTION, GermplasmIndexContainer.STUDY_NUMBER_OF_ROWS});
+        setColumnHeaders(new String[] { STUDY_ID, STUDY_NAME, DESCRIPTION});
+        setVisibleColumns(new String[] { GermplasmIndexContainer.STUDY_NAME, GermplasmIndexContainer.STUDY_DESCRIPTION});
         
         if (!fromUrl) {
         	addListener(new StudyItemClickListener(this));
@@ -93,8 +92,6 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     	messageSource.setColumnHeader(this, STUDY_ID, Message.STUDY_ID_LABEL);
         messageSource.setColumnHeader(this, STUDY_NAME, Message.STUDY_NAME_LABEL);
         messageSource.setColumnHeader(this, DESCRIPTION, Message.DESCRIPTION_LABEL);
-        messageSource.setColumnHeader(this, NUM_ROWS, Message.NUMBER_OF_ROWS);
-
     }
     
     public void studyItemClickAction(ItemClickEvent event, Integer studyId) {

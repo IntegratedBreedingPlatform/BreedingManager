@@ -24,7 +24,6 @@ import org.generationcp.middleware.manager.GetGermplasmByNameModes;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -35,6 +34,10 @@ import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.report.LotReportRow;
+import org.generationcp.middleware.v2.domain.StudyReference;
+import org.generationcp.middleware.v2.manager.api.StudyDataManager;
+import org.generationcp.middleware.v2.search.StudyResultSet;
+import org.generationcp.middleware.v2.search.filter.GidStudyQueryFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -53,7 +56,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     private GermplasmDataManager germplasmDataManager;
 
     @Autowired
-    private StudyDataManager studyManager;
+    private StudyDataManager studyDataManagerV2;
 
     @Autowired
     private InventoryDataManager inventoryDataManager;
@@ -377,14 +380,19 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         return result;
     }
 
-    public List<StudyInfo> getGermplasmStudyInfo(int gid) throws InternationalizableException {
-        List<StudyInfo> result = new ArrayList<StudyInfo>();
+    public List<StudyReference> getGermplasmStudyInfo(int gid) throws InternationalizableException {
+        List<StudyReference> results = new ArrayList<StudyReference>();
         try {
-            result = studyManager.getStudyInformationByGID(Long.valueOf(gid));
+            GidStudyQueryFilter gidFilter = new GidStudyQueryFilter(gid);
+            StudyResultSet resultSet = studyDataManagerV2.searchStudies(gidFilter, 50);
+            while(resultSet.hasMore()){
+                StudyReference reference = resultSet.next();
+                results.add(reference);
+            }
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GERMPLASM_STUDY_INFORMATION_BY_GERMPLASM_ID);
         }
-        return result;
+        return results;
     }
 
     @Override
