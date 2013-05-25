@@ -131,6 +131,7 @@ public enum Message {
      ,MAINTENANCE_NEIGHBORHOOD_LABEL  
      ,DESCRIPTION_LABEL
      ,STATUS_LABEL
+     ,LIST_OWNER_LABEL
      ,HIDDEN_LABEL
      ,LOCKED_LABEL
      ,FINAL_LABEL
@@ -243,5 +244,4 @@ public enum Message {
      
      //TEST MESSAGES
      ,TEST_BUTTON
-
 }

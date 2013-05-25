@@ -21,10 +21,12 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,7 +37,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.Notification;
 
@@ -51,12 +52,14 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     private Label lblCreationDate;
     private Label lblType;
     private Label lblStatus;
+    private Label lblListOwner;
     
     private Label listName;
     private Label listDescription;
     private Label listCreationDate;
     private Label listType;
     private Label listStatus;
+    private Label listOwner;
     
     private Button lockButton;
     private Button unlockButton;
@@ -73,6 +76,9 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     private SimpleResourceBundleMessageSource messageSource;
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    @Autowired
+    private UserDataManager userDataManager;
+    
 
     public GermplasmList germplasmList;
     public GermplasmListAccordionMenu germplasmListAccordionMenu;
@@ -90,7 +96,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     
 	@Override
     public void afterPropertiesSet() throws Exception{
-        setRows(7);
+        setRows(8);
         setColumns(3);
         setSpacing(true);
         setMargin(true);
@@ -100,6 +106,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL)); // "Creation Date"
         lblType = new Label(messageSource.getMessage(Message.TYPE_LABEL)); // "Type"
         lblStatus = new Label(messageSource.getMessage(Message.STATUS_LABEL)); // "Status"
+        lblListOwner = new Label(messageSource.getMessage(Message.LIST_OWNER_LABEL)); // "List Owner"
         
         // get GermplasmList Detail
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
@@ -109,18 +116,21 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         listCreationDate = new Label(String.valueOf(germplasmList.getDate()));
         listType = new Label(germplasmList.getType());
         listStatus = new Label(germplasmList.getStatusString());
+        listOwner= new Label(getOwnerListName(germplasmList.getUserId()));
 		
         addComponent(lblName, 1, 1);
         addComponent(lblDescription, 1, 2);
         addComponent(lblCreationDate, 1, 3);
         addComponent(lblType, 1, 4);
         addComponent(lblStatus, 1, 5);
+        addComponent(lblListOwner, 1, 6);
         
         addComponent(listName, 2, 1);
         addComponent(listDescription, 2, 2);
         addComponent(listCreationDate, 2, 3);
         addComponent(listType, 2, 4);
         addComponent(listStatus, 2, 5);
+        addComponent(listOwner, 2, 6);
         
 		Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
 		workbenchDataManager.getWorkbenchRuntimeData();
@@ -133,23 +143,35 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
             	unlockButton = new Button("Unlock");
             	unlockButton.setData(UNLOCK_BUTTON_ID);
             	unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                addComponent(unlockButton, 1, 6);
+                addComponent(unlockButton, 1, 7);
             } else if(germplasmList.getStatus()==1) {
             	lockButton = new Button("Lock");
             	lockButton.setData(LOCK_BUTTON_ID);
             	lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-            	addComponent(lockButton, 1, 6);
+            	addComponent(lockButton, 1, 7);
             	
             	deleteButton = new Button("Delete");
             	deleteButton.setData(DELETE_BUTTON_ID);
             	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                
-                addComponent(deleteButton, 2, 6);
+                addComponent(deleteButton, 2, 7);
             }
 
         }
     } 
     
+    private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
+	    User user=userDataManager.getUserById(userId);
+	    int personId=user.getPersonid();
+	    Person p =userDataManager.getPersonById(personId);
+
+	    if(p!=null){
+		return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	    }else{
+		return "";
+	    }
+    }
+
     @Override
     public void attach() {
         super.attach();
