@@ -160,6 +160,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
                 detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, false));
                 Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
+                tab.setDescription(String.valueOf(gid));
                 tab.setClosable(true);
                 tabSheet.setSelectedTab(detailLayout);
                 mainLayout.addComponent(tabSheet);

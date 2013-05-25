@@ -33,11 +33,9 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import com.vaadin.data.Item;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -102,7 +100,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		dataResultIndexContainer = new GermplasmIndexContainer(qQuery);
 	}
 
-	private void displayGermplasmDetailTab(final int gid) throws InternationalizableException {
+	private void displayGermplasmDetailTab(final int gid,String searchString) throws InternationalizableException {
 
 		hLayoutForButtons.setVisible(true);
 
@@ -115,6 +113,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 				detailLayout.addComponent(germplasmDetail);
 				Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
 				tab.setClosable(true);
+				tab.setDescription(searchString);
 				tabSheet.setSelectedTab(detailLayout);
 				tabSheet.setCloseHandler(new SelectedTabCloseHandler());
 				mainLayout.addComponent(tabSheet);
@@ -136,7 +135,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 			if ("GID".equals(searchChoice)) {
 				try {
 					int gid = Integer.parseInt(searchValue);
-					displayGermplasmDetailTab(gid);
+					displayGermplasmDetailTab(gid,searchValue);
 				} catch (NumberFormatException e) {
 					//LOG.error(e.toString() + "\n" + e.getStackTrace());
 					//e.printStackTrace();
@@ -163,7 +162,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 	public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
 		sourceTable.select(itemId);
 		int gid = Integer.valueOf(item.getItemProperty(GID).toString());
-		displayGermplasmDetailTab(gid);
+		displayGermplasmDetailTab(gid,searchValue);
 	}
 
 	@Override

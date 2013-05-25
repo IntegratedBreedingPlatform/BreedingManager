@@ -15,14 +15,17 @@ package org.generationcp.browser.germplasm;
 import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -49,6 +52,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
@@ -98,8 +104,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
                 GermplasmList germList = germplasmListManager
                         .getGermplasmListById(listid);
-                String entryCode = "-";
-                String seedSource = "-";
+
                 String groupName = "-";
                 String designation = "-";
                 int status = 0;
@@ -113,7 +118,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
                     
                     // save germplasm's preferred name as designation
                     designation = getDesignationFromTab(currentTab);
-                    
+                    String entryCode = getPreferredId(tabSheet,gid);
+                    String seedSource= "Browse for "+currentTab.getDescription();
                     GermplasmListData germplasmListData = new GermplasmListData(
                             null, germList, gid, entryid, entryCode,
                             seedSource, designation, groupName, status,
@@ -131,8 +137,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
                 GermplasmList germList = germplasmListManager
                         .getGermplasmListById(Integer.valueOf(listId));
-                String entryCode = "-";
-                String seedSource = "-";
                 String groupName = "-";
                 String designation = "-";
                 int status = 0;
@@ -145,6 +149,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
                     int gid = Integer.valueOf(currentTab.getCaption()
                             .toString());
 
+                    String entryCode = getPreferredId(tabSheet,gid);
+                    String seedSource="Browse for "+currentTab.getDescription();
                     // check if there is existing gid in the list
                     List<GermplasmListData> germplasmList = germplasmListManager
                             .getGermplasmListDataByListIdAndGID(
@@ -203,6 +209,25 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
                     Message.ERROR_IN_ADDING_GERMPLASM_LIST);
         }
+    }
+
+
+    private String getPreferredId(TabSheet tabSheet, int gid) throws MiddlewareQueryException {
+	List<Integer> gids = new ArrayList<Integer>();
+	
+	for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+	    Tab currentTab = tabSheet.getTab(i);
+	    int g = Integer.valueOf(currentTab.getCaption().toString());
+	    gids.add(g);
+	}
+
+	Map<Integer, String> results = germplasmDataManager.getPrefferedIdsByGIDs(gids);
+	
+	if(results.get(gid)!=null){
+	    return results.get(gid);
+	}else{
+	    return "-";
+	}
     }
 
     private Integer getCurrentUserLocalId() throws MiddlewareQueryException {
