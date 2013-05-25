@@ -33,6 +33,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -110,6 +111,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private GermplasmListManager germplasmListManager;
 	private boolean forGermplasmListWindow;
 	private Integer germplasmListStatus;
+	private GermplasmList germplasmList;
 	
 	public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus){
 		this.germplasmListId = germplasmListId;
@@ -339,9 +341,28 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
     		}
         } else {
-            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
-        }
+//            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
+            ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be lock first. Would you like to lock it?",
+        	    "Yes", "No", new ConfirmDialog.Listener() {
+
+        	public void onClose(ConfirmDialog dialog) {
+        	    if (dialog.isConfirmed()) {
+        		try {
+			    lockList();
+			    germplasmListStatus=germplasmList.getStatus();
+			    exportListAction();
+			} catch (MiddlewareQueryException e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
+			}
+        		
+        	    }else{
+
+        	    }
+        	}
+            });
 	}
+        }
 
 	//called by GermplasmListButtonClickListener
 	public void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -512,6 +533,25 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		}
 		
 	
+	}
+	
+	public void lockList() throws MiddlewareQueryException{
+	    germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+	    germplasmList.setStatus(germplasmList.getStatus()+100);
+	    try {
+		germplasmListManager.updateGermplasmList(germplasmList);
+
+		User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+			workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+			"Locked a germplasm list.", 
+			"Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+			user,
+			new Date());
+		workbenchDataManager.addProjectActivity(projAct);
+	    }catch (MiddlewareQueryException e) {
+		e.printStackTrace();
+	    }
 	}
 
 }

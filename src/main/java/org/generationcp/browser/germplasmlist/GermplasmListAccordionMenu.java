@@ -15,6 +15,7 @@ package org.generationcp.browser.germplasmlist;
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListSelectedTabChangeListener;
+import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.TabSheet.Tab;
 
 @Configurable
 public class GermplasmListAccordionMenu extends Accordion implements InitializingBean, InternationalizableComponent {
@@ -117,6 +119,22 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
 				}
             }
         }
+        
+        if(tab.getCaption().equals(messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_TAB))){
+            Tab tabInfo = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+            this.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tabInfo);
+
+            try {
+		this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+	    } catch (MiddlewareQueryException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+            tab = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+            this.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+        }
+        
+        
     }
     
     @Override
