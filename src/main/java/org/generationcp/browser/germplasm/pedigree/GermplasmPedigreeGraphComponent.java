@@ -64,6 +64,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 	private static final String PEDIGREE_IMAGE_PATH = "../gcp-default/graph/";
 	private String BSLASH = "\\";
 	private String FSLASH = "/";
+	private static final int DEFAULT_TREE_LEVEL=3;
 
 	public GermplasmPedigreeGraphComponent(int gid, GermplasmQueries qQuery) throws InternationalizableException {
 		super();
@@ -107,6 +108,18 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 	public void attach() {
 		super.attach();
 		updateLabels();
+		try {
+		    updatePedigreeGraphButtonClickAction();
+		} catch (FileNotFoundException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		} catch (URISyntaxException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		} catch (MiddlewareQueryException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 	}
 
 
@@ -118,7 +131,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
 	public void updatePedigreeGraphButtonClickAction() throws FileNotFoundException, URISyntaxException, MiddlewareQueryException {
 
-		
+		int treeLevel;
 		panelPedigree.removeAllComponents();
 		try {
 			Thread.sleep(350);
@@ -147,8 +160,14 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 			deletableFile.delete();  
 		}		
 		
+		if(txtLevel.getValue().toString().length() > 0){
+		    treeLevel=Integer.valueOf(txtLevel.getValue().toString());
+		}else{
+		    treeLevel=DEFAULT_TREE_LEVEL;
+		}
+		
 		String graphName = randomUUID.toString()+"_tree";
-		CreatePedigreeGraph pedigree= new CreatePedigreeGraph(this.gid,Integer.valueOf(txtLevel.getValue().toString()),(Boolean) pedigreeDerivativeCheckbox.getValue(),this.getWindow(),this.qQuery);
+		CreatePedigreeGraph pedigree= new CreatePedigreeGraph(this.gid,treeLevel,(Boolean) pedigreeDerivativeCheckbox.getValue(),this.getWindow(),this.qQuery);
 		pedigree.create(graphName);
 
 		FileResource resource =new FileResource(new File(basepath + graphName + ".png"),this.getApplication());
