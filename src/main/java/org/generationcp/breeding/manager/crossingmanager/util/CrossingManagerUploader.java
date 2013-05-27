@@ -678,7 +678,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), "", "Invalid Import File Type, you need to upload an XLS file");
+            MessageNotifier.showError(source.getWindow(), "", "Invalid import file type, you need to upload the correct XLS file.");
             //source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
             fileIsValid = false;
         }
