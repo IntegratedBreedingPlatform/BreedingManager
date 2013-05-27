@@ -93,8 +93,8 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
-        listInfoPage.setWidth("800px");
-        layoutForList.setHeight("500px");
+        listInfoPage.setSizeFull();
+        layoutForList.setHeight("600px");
         layoutForList.addComponent(listInfoPage);
   
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
