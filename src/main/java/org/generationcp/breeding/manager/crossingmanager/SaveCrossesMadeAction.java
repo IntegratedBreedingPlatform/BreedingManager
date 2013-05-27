@@ -60,7 +60,7 @@ public class SaveCrossesMadeAction implements Serializable, InitializingBean {
     public static final Integer LIST_DATA_STATUS = 0;
     public static final Integer LIST_DATA_LRECID = 0;
     
-    public static final String WB_ACTIVITY_NAME = "Create a list of crosses";
+    public static final String WB_ACTIVITY_NAME = "Created a list of crosses";
     public static final String WB_ACTIVITY_DESCRIPTION = "List cross id = ";
     
     private static final long serialVersionUID = -6273933938066390358L;
