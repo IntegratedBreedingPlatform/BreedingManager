@@ -83,15 +83,20 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     public GermplasmList germplasmList;
     public GermplasmListAccordionMenu germplasmListAccordionMenu;
     
-    public GermplasmListDetailComponent(GermplasmListManager germplasmListManager, int germplasmListId){
+    private boolean usedForDetailsOnly;
+    
+    public GermplasmListDetailComponent(GermplasmListManager germplasmListManager, int germplasmListId, boolean usedForDetailsOnly){
     	this.germplasmListManager = germplasmListManager;
     	this.germplasmListId = germplasmListId;
+    	this.usedForDetailsOnly = usedForDetailsOnly;
     }
 
-    public GermplasmListDetailComponent(GermplasmListAccordionMenu germplasmListAccordionMenu, GermplasmListManager germplasmListManager, int germplasmListId){
+    public GermplasmListDetailComponent(GermplasmListAccordionMenu germplasmListAccordionMenu, GermplasmListManager germplasmListManager, int germplasmListId
+            , boolean usedForDetailsOnly){
     	this.germplasmListAccordionMenu = germplasmListAccordionMenu;
     	this.germplasmListManager = germplasmListManager;
     	this.germplasmListId = germplasmListId;
+    	this.usedForDetailsOnly = usedForDetailsOnly;
     }
     
 	@Override
@@ -138,26 +143,27 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 		Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
         
         //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
-		if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
-            if(germplasmList.getStatus()>=100){
-            	unlockButton = new Button("Unlock");
-            	unlockButton.setData(UNLOCK_BUTTON_ID);
-            	unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                addComponent(unlockButton, 1, 7);
-            } else if(germplasmList.getStatus()==1) {
-            	lockButton = new Button("Lock");
-            	lockButton.setData(LOCK_BUTTON_ID);
-            	lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-            	addComponent(lockButton, 1, 7);
-            	
-            	deleteButton = new Button("Delete");
-            	deleteButton.setData(DELETE_BUTTON_ID);
-            	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-               
-                addComponent(deleteButton, 2, 7);
+	if(!usedForDetailsOnly){
+    	if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
+                if(germplasmList.getStatus()>=100){
+                	unlockButton = new Button("Unlock");
+                	unlockButton.setData(UNLOCK_BUTTON_ID);
+                	unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    addComponent(unlockButton, 1, 7);
+                } else if(germplasmList.getStatus()==1) {
+                	lockButton = new Button("Lock");
+                	lockButton.setData(LOCK_BUTTON_ID);
+                	lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                	addComponent(lockButton, 1, 7);
+                	
+                	deleteButton = new Button("Delete");
+                	deleteButton.setData(DELETE_BUTTON_ID);
+                	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                   
+                    addComponent(deleteButton, 2, 7);
+                }
             }
-
-        }
+	}
     } 
     
     private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
@@ -249,8 +255,8 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     }    
     
     
-    @SuppressWarnings("deprecation")
-	public void deleteGermplasmList() {
+    
+    public void deleteGermplasmList() {
     	ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
 					private static final long serialVersionUID = 1L;
 
@@ -260,7 +266,6 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 				}
     		}
     	});
-    	
     }
     
     public void deleteGermplasmListConfirmed() {

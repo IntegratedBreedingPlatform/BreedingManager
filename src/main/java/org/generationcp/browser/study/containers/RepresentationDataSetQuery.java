@@ -154,7 +154,7 @@ public class RepresentationDataSetQuery implements Query{
                         }
     
                         //check if the variable value is a number to remove decimal portion if there is no value after the decimal point
-                        String value = variable.getValue();
+                        String value = variable.getDisplayValue();
                         if(value != null){
                             try{
                                 Double doubleValue = Double.valueOf(value);

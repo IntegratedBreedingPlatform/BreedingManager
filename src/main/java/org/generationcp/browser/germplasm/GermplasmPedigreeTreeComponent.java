@@ -116,7 +116,13 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     
     private void addNode(GermplasmPedigreeTreeNode node, int level) {
         if (level == 1) {
-            String leafNodeLabel = node.getGermplasm().getPreferredName().getNval() + "(" + node.getGermplasm().getGid() + ")";
+            String preferredName="";
+            try{
+                preferredName= node.getGermplasm().getPreferredName().getNval();
+            }catch(Exception e){
+                preferredName=String.valueOf(node.getGermplasm().getGid());
+            }
+            String leafNodeLabel = preferredName + "(" + node.getGermplasm().getGid() + ")";
             int leafNodeId = node.getGermplasm().getGid();
             this.addItem(leafNodeId);
             this.setItemCaption(leafNodeId, leafNodeLabel);

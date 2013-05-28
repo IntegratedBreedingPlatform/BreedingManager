@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.TabSheet.Tab;
 
 @Configurable
 public class GermplasmListAccordionMenu extends Accordion implements InitializingBean, InternationalizableComponent {
@@ -120,18 +119,20 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
             }
         }
         
-        if(tab.getCaption().equals(messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_TAB))){
-            Tab tabInfo = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-            this.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tabInfo);
-
-            try {
-		this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-	    } catch (MiddlewareQueryException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-            tab = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-            this.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+        if(!fromUrl){
+            if(tab.getCaption().equals(messageSource.getMessage(Message.GERMPLASM_LIST_DETAILS_TAB))){
+                Tab tabInfo = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                this.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tabInfo);
+    
+                try {
+    		this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+    	    } catch (MiddlewareQueryException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	    }
+                tab = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                this.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+            }
         }
         
         
@@ -140,7 +141,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     @Override
     public void afterPropertiesSet() {
         this.setSizeFull();
-        germplasmListDetailComponent = new GermplasmListDetailComponent(this, germplasmListManager, germplasmListId);
+        germplasmListDetailComponent = new GermplasmListDetailComponent(this, germplasmListManager, germplasmListId, fromUrl);
         germplasmListDetailComponent.setData(LIST_DETAILS);
 
         layoutListData = new VerticalLayout();

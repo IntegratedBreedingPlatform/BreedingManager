@@ -54,7 +54,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -342,7 +341,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     		}
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
-            ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be lock first. Would you like to lock it?",
+            ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
         	    "Yes", "No", new ConfirmDialog.Listener() {
 
         	public void onClose(ConfirmDialog dialog) {

@@ -420,7 +420,7 @@ public class DatasetExporter {
                                         cell.setCellValue(nullValue);
                                     }
                                 } else{
-                                    String value = factorVariable.getValue();
+                                    String value = factorVariable.getDisplayValue();
                                     if(value != null) {
                                         value = value.trim();
                                     }
@@ -459,7 +459,7 @@ public class DatasetExporter {
                                         cell.setCellValue(nullValue);
                                     }
                                 } else{
-                                    String value = variateVariable.getValue();
+                                    String value = variateVariable.getDisplayValue();
                                     if(value != null) {
                                         value = value.trim();
                                     }
