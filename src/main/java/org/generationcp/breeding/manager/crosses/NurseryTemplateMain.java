@@ -71,7 +71,7 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     protected void initializeComponents() {
-        nurseryTemplateTitle = new Label("Crossing Manager " + VERSION);
+        nurseryTemplateTitle = new Label("Crossing Manager: Nursery Template File " + VERSION);
         nurseryTemplateTitle.setStyleName("h1");
         addComponent(nurseryTemplateTitle);
         

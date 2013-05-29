@@ -65,7 +65,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         setMargin(false);
         setSpacing(true);
         
-        crossingManagerTitle = new Label("Crossing Manager " + VERSION);
+        crossingManagerTitle = new Label("Crossing Manager: Make Crosses " + VERSION);
         crossingManagerTitle.setStyleName("h1");
         addComponent(crossingManagerTitle);
         
