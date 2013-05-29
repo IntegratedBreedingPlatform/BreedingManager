@@ -65,8 +65,11 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         setMargin(false);
         setSpacing(true);
         
-        crossingManagerTitle = new Label("Crossing Manager: Make Crosses " + VERSION);
-        crossingManagerTitle.setStyleName("h1");
+        String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
+        crossingManagerTitle = new Label();
+        crossingManagerTitle.setStyleName("gcp-window-title");
+        crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
+        crossingManagerTitle.setValue(title);
         addComponent(crossingManagerTitle);
         
         accordion = new Accordion();

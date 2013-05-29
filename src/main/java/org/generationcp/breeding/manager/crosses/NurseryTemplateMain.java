@@ -71,8 +71,11 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     protected void initializeComponents() {
-        nurseryTemplateTitle = new Label("Crossing Manager: Nursery Template File " + VERSION);
-        nurseryTemplateTitle.setStyleName("h1");
+        String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
+        nurseryTemplateTitle = new Label();
+        nurseryTemplateTitle.setStyleName("gcp-window-title");
+        nurseryTemplateTitle.setContentMode(Label.CONTENT_XHTML);
+        nurseryTemplateTitle.setValue(title);
         addComponent(nurseryTemplateTitle);
         
         accordion = new Accordion();
