@@ -168,13 +168,17 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     
     private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
 	    User user=userDataManager.getUserById(userId);
-	    int personId=user.getPersonid();
-	    Person p =userDataManager.getPersonById(personId);
-
-	    if(p!=null){
-		return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-	    }else{
-		return "";
+	    if(user != null){
+        	    int personId=user.getPersonid();
+        	    Person p =userDataManager.getPersonById(personId);
+        
+        	    if(p!=null){
+        		return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+        	    }else{
+        		return "";
+        	    }
+	    } else {
+	        return "";
 	    }
     }
 
