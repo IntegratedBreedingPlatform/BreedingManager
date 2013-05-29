@@ -175,7 +175,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         	    if(p!=null){
         		return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
         	    }else{
-        		return "";
+        		return user.getName();
         	    }
 	    } else {
 	        return "";
