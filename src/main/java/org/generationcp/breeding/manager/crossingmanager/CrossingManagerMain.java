@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
@@ -31,16 +34,16 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
     private static final String VERSION = "1.1.1.0";
-    private static final String STEP_1_GUIDE = "This tool will help in defining crosses.  You can either use a nursery template file or " +
+    private static final String STEP_1_GUIDE_MESSAGE = "This tool will help in defining crosses.  You can either use a nursery template file or " +
     		"proceed to the next step without using a nursery template file.";
-    private static final String STEP_2_GUIDE = "In this screen you must first select a list for the female and male parents, " +
-    		"then select list entries, next you should seect an option for how you want to cross your selections, " +
+    private static final String STEP_2_GUIDE_MESSAGE = "In this screen you must first select a list for the female and male parents, " +
+    		"then select list entries, next you should select an option for how you want to cross your list entries, " +
                 "then press the Make Cross button.  You can select and delete crosses you have made on the crosses " +
                 "made table.";
-    private static final String STEP_3_GUIDE = "This screen allows you to specify additional details for the germplasm records " +
+    private static final String STEP_3_GUIDE_MESSAGE = "This screen allows you to specify additional details for the germplasm records " +
     		"which will be made for the crosses you have specified.";
-    private static final String STEP_4_GUIDE = "This screen allows you to specify details for the list which will be created " +
-    		"for the crosses.";
+    private static final String STEP_4_GUIDE_MESSAGE = "This screen allows you to specify details for the list which will be created " +
+    		"for the crosses.  You should specify values for all the fields here.";
     
     private CrossingManagerImportFileComponent wizardScreenOne;
     private CrossingManagerMakeCrossesComponent wizardScreenTwo;
@@ -54,6 +57,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     
     private Label crossingManagerTitle;
     private Accordion accordion;
+    private HorizontalLayout titleLayout;
     
     //Data from wizard steps
     private ImportedGermplasmCrosses importedGermplasmCrosses;
@@ -74,12 +78,10 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         setMargin(false);
         setSpacing(true);
         
-        String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
-        crossingManagerTitle = new Label();
-        crossingManagerTitle.setStyleName("gcp-window-title");
-        crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
-        crossingManagerTitle.setValue(title);
-        addComponent(crossingManagerTitle);
+        titleLayout = new HorizontalLayout();
+        titleLayout.setSpacing(true);
+        setTitleContent(STEP_1_GUIDE_MESSAGE);
+        addComponent(titleLayout);
         
         accordion = new Accordion();
         accordion.setWidth("800px");
@@ -113,10 +115,10 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     	        //  is to disable the non-related tabs
     	        if(tab!=null && tab.equals(wizardTabOne)){
     	            enableOnlyWizardTabOne();
-    	        } else if(tab!=null && tab.equals(wizardTabTwo)){    
+    	        } else if(tab!=null && tab.equals(wizardTabTwo)){
     	            enableOnlyWizardTabTwo();
     	            enableWizardTabOne();
-                } else if(tab!=null && tab.equals(wizardTabThree)){    
+                } else if(tab!=null && tab.equals(wizardTabThree)){   
                     enableOnlyWizardTabThree();
                     enableWizardTabOne();
                     if(wizardScreenThree.getPreviousScreen() instanceof CrossingManagerMakeCrossesComponent){
@@ -166,6 +168,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
 
     public void enableWizardTabs() {
+        setTitleContent(STEP_4_GUIDE_MESSAGE);
         wizardTabOne.setEnabled(true);
         wizardTabTwo.setEnabled(true);
         wizardTabThree.setEnabled(true);
@@ -173,6 +176,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
     
     public void enableOnlyWizardTabOne() {
+        setTitleContent(STEP_1_GUIDE_MESSAGE);
         wizardTabOne.setEnabled(true);
         wizardTabTwo.setEnabled(false);
         wizardTabThree.setEnabled(false);
@@ -180,6 +184,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
     
     public void enableOnlyWizardTabTwo() {
+        setTitleContent(STEP_2_GUIDE_MESSAGE);
         wizardTabOne.setEnabled(false);
         wizardTabTwo.setEnabled(true);
         wizardTabThree.setEnabled(false);
@@ -187,6 +192,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
     
     public void enableOnlyWizardTabThree() {
+        setTitleContent(STEP_3_GUIDE_MESSAGE);
         wizardTabOne.setEnabled(false);
         wizardTabTwo.setEnabled(false);
         wizardTabThree.setEnabled(true);
@@ -194,6 +200,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }    
   
     public void enableOnlyWizardTabFour() {
+        setTitleContent(STEP_4_GUIDE_MESSAGE);
         wizardTabOne.setEnabled(false);
         wizardTabTwo.setEnabled(false);
         wizardTabThree.setEnabled(false);
@@ -242,5 +249,25 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     
     public void reset(){
     	this.parent.replaceComponent(this, new CrossingManagerMain(this.parent));
+    }
+    
+    public void setTitleContent(String guideMessage){
+        titleLayout.removeAllComponents();
+        
+        String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
+        crossingManagerTitle = new Label();
+        crossingManagerTitle.setStyleName("gcp-window-title");
+        crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
+        crossingManagerTitle.setValue(title);
+        titleLayout.addComponent(crossingManagerTitle);
+        
+        Label descLbl = new Label(guideMessage);
+        descLbl.setWidth("300px");
+        
+        PopupView popup = new PopupView("?",descLbl);
+        popup.setStyleName("gcp-popup-view");
+        titleLayout.addComponent(popup);
+        
+        titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
     }
 }
