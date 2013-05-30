@@ -5,7 +5,9 @@ import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchFormComponent;
 import org.generationcp.browser.germplasm.GermplasmSearchResultComponent;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
+import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
+import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -16,10 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -42,6 +46,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
+    private Window parentWindow;
     private VerticalLayout mainLayout;
     private AddEntryDialogSource source;
     private GermplasmSearchFormComponent searchForm;
@@ -54,8 +59,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private GermplasmQueries gQuery;
     private GermplasmIndexContainer dataResultIndexContainer;
 
-    public AddEntryDialog(AddEntryDialogSource source){
+    public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
+        this.parentWindow = parentWindow;
         gQuery = new GermplasmQueries();
         dataResultIndexContainer = new GermplasmIndexContainer(gQuery);
     }
@@ -92,6 +98,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         mainLayout.addComponent(searchFormLayout);
         
         resultComponent = new GermplasmSearchResultComponent(germplasmDataManager, GID, "0");
+        resultComponent.addListener(new GermplasmListItemClickListener(this));
         mainLayout.addComponent(resultComponent);
         
         Label step2Label = new Label("2. Select how you want to add the germplasm to the list.");
@@ -107,6 +114,18 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         optionGroup.select(OPTION_1_ID);
         optionGroup.setImmediate(true);
         mainLayout.addComponent(optionGroup);
+        
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        
+        cancelButton = new Button("Cancel");
+        cancelButton.addListener(new CloseWindowAction());
+        buttonLayout.addComponent(cancelButton);
+        
+        nextButton = new Button("Next");
+        buttonLayout.addComponent(nextButton);
+        
+        mainLayout.addComponent(buttonLayout);
         
         addComponent(mainLayout);
     }
@@ -140,6 +159,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         } else {
             MessageNotifier.showError(getWindow(), "Error", "Please input search string.");
         }
+    }
+    
+    public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
+        sourceTable.select(itemId);
+        int gid = Integer.valueOf(item.getItemProperty(GID).toString());
     }
     
     @Override

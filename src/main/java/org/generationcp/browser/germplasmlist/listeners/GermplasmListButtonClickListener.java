@@ -146,7 +146,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.ADD_ENTRIES_BUTTON_ID)
                 && (source instanceof GermplasmListDataComponent)){
             try {
-                ((GermplasmListDataComponent) source).addEntriesButtonClickAction();
+                ((GermplasmListDataComponent) source).addEntryButtonClickAction();
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();

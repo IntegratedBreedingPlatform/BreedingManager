@@ -571,8 +571,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         // TODO Auto-generated method stub
     }
     
-    public void addEntriesButtonClickAction(){
-        AddEntryDialog addEntriesDialog = new AddEntryDialog(this);
-        this.getWindow().addWindow(addEntriesDialog);
+    public void addEntryButtonClickAction(){
+        Window parentWindow = this.getWindow();
+        AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+        parentWindow.addWindow(addEntriesDialog);
     }
 }
