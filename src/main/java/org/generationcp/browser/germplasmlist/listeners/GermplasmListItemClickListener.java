@@ -67,7 +67,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
         }
         
         if (source instanceof AddEntryDialog) {
-            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+            if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
                 try {
                     ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
                 } catch (InternationalizableException e) {  

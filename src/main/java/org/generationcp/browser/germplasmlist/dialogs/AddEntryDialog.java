@@ -8,18 +8,27 @@ import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -32,6 +41,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     private static final long serialVersionUID = -1627453790001229325L;
     
+    private final static Logger LOG = LoggerFactory.getLogger(AddEntryDialog.class);
+    
     public static final String SEARCH_BUTTON_ID = "AddEntryDialog Search Button";
     public static final String OPTION_1_ID = "AddEntryDialog Option 1";
     public static final String OPTION_2_ID = "AddEntryDialog Option 2";
@@ -42,6 +53,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -164,6 +178,42 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
         sourceTable.select(itemId);
         int gid = Integer.valueOf(item.getItemProperty(GID).toString());
+        
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource germplasmBrowserLink = null;
+        if (tool == null) {
+            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+        } else {
+            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
+        }
+        
+        Window germplasmWindow = new Window("Germplasm Information - " + gid);
+        
+        VerticalLayout layoutForGermplasm = new VerticalLayout();
+        layoutForGermplasm.setMargin(false);
+        layoutForGermplasm.setWidth("640px");
+        layoutForGermplasm.setHeight("560px");
+        
+        Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
+        germplasmInfo.setType(Embedded.TYPE_BROWSER);
+        germplasmInfo.setSizeFull();
+        layoutForGermplasm.addComponent(germplasmInfo);
+        
+        germplasmWindow.setContent(layoutForGermplasm);
+        germplasmWindow.setWidth("645px");
+        germplasmWindow.setHeight("600px");
+        germplasmWindow.center();
+        germplasmWindow.setResizable(false);
+        
+        germplasmWindow.setModal(true);
+        
+        this.parentWindow.addWindow(germplasmWindow);
     }
     
     @Override
