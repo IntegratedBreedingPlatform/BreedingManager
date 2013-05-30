@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialog;
+import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialogSource;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.util.GermplasmListExporter;
 import org.generationcp.browser.germplasmlist.util.GermplasmListExporterException;
@@ -57,7 +59,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
+public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListDataComponent.class);
@@ -77,6 +79,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
 	public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
 	public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
+	public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
 
 	private Table listDataTable;
 	private Button selectAllButton;
@@ -84,6 +87,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private Button exportListButton;
 	private Button exportForGenotypingButton;
 	private Button copyToNewListButton;
+	private Button addEntriesButton;
 
 	private int germplasmListId;
 	private String listName;
@@ -209,32 +213,41 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			copyToNewListButton.setData(COPY_TO_NEW_LIST_BUTTON_ID);
 			buttonArea.addComponent(copyToNewListButton);
 
+			addComponent(buttonArea);
+			
 			// Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID).
 			// and when not accessed directly from URL or popup window
 			if (germplasmListId < 0
 					&& !fromUrl) {
-				saveSortingButton = new Button("Save Sorting", new GermplasmListButtonClickListener(this));
-				saveSortingButton.setData(SORTING_BUTTON_ID);
-				buttonArea.addComponent(saveSortingButton);
+			    HorizontalLayout buttonArea2 = new HorizontalLayout();
+                            buttonArea2.setSpacing(true);
+			    
+			    addEntriesButton = new Button("Add Entry", new GermplasmListButtonClickListener(this));
+			    addEntriesButton.setData(ADD_ENTRIES_BUTTON_ID);
+			    buttonArea2.addComponent(addEntriesButton);
+			    
+			    saveSortingButton = new Button("Save Sorting", new GermplasmListButtonClickListener(this));
+			    saveSortingButton.setData(SORTING_BUTTON_ID);
+			    buttonArea2.addComponent(saveSortingButton);
 
-				deleteSelectedEntriesButton = new Button("Delete selected entries", new GermplasmListButtonClickListener(this));
-				deleteSelectedEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
-				deleteSelectedEntriesButton.setDescription("Delete list entries");
-				buttonArea.addComponent(deleteSelectedEntriesButton);
+			    
+			    deleteSelectedEntriesButton = new Button("Delete selected entries", new GermplasmListButtonClickListener(this));
+			    deleteSelectedEntriesButton.setData(DELETE_LIST_ENTRIES_BUTTON_ID);
+			    deleteSelectedEntriesButton.setDescription("Delete list entries");
+			    buttonArea2.addComponent(deleteSelectedEntriesButton);
 				
-				if(germplasmListStatus>=100){
-				    deleteSelectedEntriesButton.setEnabled(false); 
-				    saveSortingButton.setEnabled(false);
-				}else{
-				    deleteSelectedEntriesButton.setEnabled(true); 
-				    saveSortingButton.setEnabled(true);
-				}
+			    if(germplasmListStatus>=100){
+			        deleteSelectedEntriesButton.setEnabled(false); 
+			        saveSortingButton.setEnabled(false);
+			        addEntriesButton.setEnabled(false);
+			    }else{
+			        deleteSelectedEntriesButton.setEnabled(true); 
+			        saveSortingButton.setEnabled(true);
+			        addEntriesButton.setEnabled(true);
+			    }
 
+			    addComponent(buttonArea2);
 			}
-
-			addComponent(buttonArea);
-
-
 		}
 	}
 
@@ -553,4 +566,13 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	    }
 	}
 
+    @Override
+    public void finishAddingEntries() {
+        // TODO Auto-generated method stub
+    }
+    
+    public void addEntriesButtonClickAction(){
+        AddEntryDialog addEntriesDialog = new AddEntryDialog(this);
+        this.getWindow().addWindow(addEntriesDialog);
+    }
 }

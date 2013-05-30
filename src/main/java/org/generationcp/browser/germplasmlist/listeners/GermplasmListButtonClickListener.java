@@ -18,6 +18,7 @@ import org.generationcp.browser.germplasmlist.GermplasmListCopyToNewListDialog;
 import org.generationcp.browser.germplasmlist.GermplasmListDataComponent;
 import org.generationcp.browser.germplasmlist.GermplasmListDetailComponent;
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;
+import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
 public class GermplasmListButtonClickListener implements Button.ClickListener {
@@ -33,10 +35,10 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     private static final Logger LOG = LoggerFactory.getLogger(GermplasmListButtonClickListener.class);
     private static final long serialVersionUID = 2185217915388685523L;
 
-    private Layout source;
+    private Component source;
     private GermplasmList germplasmList = null;
 
-    public GermplasmListButtonClickListener(Layout source) {
+    public GermplasmListButtonClickListener(Component source) {
         this.source = source;
     }
     
@@ -132,7 +134,24 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-
+        } else if (event.getButton().getData().equals(AddEntryDialog.SEARCH_BUTTON_ID)
+                && (source instanceof AddEntryDialog)){
+            try {
+                ((AddEntryDialog) source).searchButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(GermplasmListDataComponent.ADD_ENTRIES_BUTTON_ID)
+                && (source instanceof GermplasmListDataComponent)){
+            try {
+                ((GermplasmListDataComponent) source).addEntriesButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
         } else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }

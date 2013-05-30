@@ -30,7 +30,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 
     private static final long serialVersionUID = 1L;
     
-    private final static String VERSION = "1.1.2.6";
+    private final static String VERSION = "2.2.1.0";
     
     private VerticalLayout tabLocalInstance;
     private VerticalLayout tabCentralInstance;
@@ -49,8 +49,11 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         this.setSpacing(true);
         this.setMargin(false, true, true, true);
         
-        Label applicationTitle = new Label("<h1>Study Browser " + VERSION + "</h1>");
+        String title =  "<h1>Study Browser</h1> <h2>:" + VERSION + "</h2>";
+        Label applicationTitle = new Label();
+        applicationTitle.setStyleName("gcp-window-title");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);
+        applicationTitle.setValue(title);
         this.addComponent(applicationTitle);
         
         HorizontalLayout mainLayout = new HorizontalLayout();

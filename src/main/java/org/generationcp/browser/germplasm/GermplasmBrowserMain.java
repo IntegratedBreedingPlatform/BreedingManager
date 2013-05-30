@@ -51,7 +51,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
 	private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
-	private final static String VERSION = "1.1.2.6";
+	private final static String VERSION = "2.2.1.0";
 
 	private final static String NAMES = "Names";
 	private final static String GID = "gid";
@@ -174,8 +174,11 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(false, true, true, true);
 
-		Label applicationTitle = new Label("<h1>Germplasm Browser " + VERSION + "</h1>");
+		String title =  "<h1>Germplasm Browser</h1> <h2>:" + VERSION + "</h2>";
+		Label applicationTitle = new Label();
+		applicationTitle.setStyleName("gcp-window-title");
 		applicationTitle.setContentMode(Label.CONTENT_XHTML);
+		applicationTitle.setValue(title);
 		mainLayout.addComponent(applicationTitle);
 
 		searchFormLayout = new HorizontalLayout();
@@ -193,7 +196,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
 		mainLayout.addComponent(searchFormLayout);
 
-		resultTable = new GermplasmSearchResultComponent(germplasmDataManager, NAMES, "");
+		resultTable = new GermplasmSearchResultComponent(germplasmDataManager, GID, "0");
 		mainLayout.addComponent(resultTable);
 
 		resultTable.addListener(new GermplasmItemClickListener(this));
