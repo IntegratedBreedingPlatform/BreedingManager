@@ -20,8 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -40,13 +43,18 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
      */
     private static final long serialVersionUID = 4701041621872315948L;
     
-    private final static String VERSION = "1.1.1.0";
+    private static final String VERSION = "1.1.1.0";
+    private static final String STEP_1_GUIDE_MESSAGE = "This allows you to write a nursery template file with values for the conditions on the first screen. "
+            + "First you need to select and upload a blank nursery template file.";
+    private static final String STEP_2_GUIDE_MESSAGE = "Filling up the values on this screen is optional.  The values specified here will get written on the file" 
+    	    + " you will get when you click on the Done button.";
     
     private NurseryTemplateImportFileComponent selectNurseryTemplateTab;
     private NurseryTemplateConditionsComponent specifyNurseryConditionsTab;
     
     private Label nurseryTemplateTitle;
     private Accordion accordion;
+    private HorizontalLayout titleLayout;
     
     private Tab wizardTabOne;
     private Tab wizardTabTwo;
@@ -71,12 +79,10 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     protected void initializeComponents() {
-        String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
-        nurseryTemplateTitle = new Label();
-        nurseryTemplateTitle.setStyleName("gcp-window-title");
-        nurseryTemplateTitle.setContentMode(Label.CONTENT_XHTML);
-        nurseryTemplateTitle.setValue(title);
-        addComponent(nurseryTemplateTitle);
+        titleLayout = new HorizontalLayout();
+        titleLayout.setSpacing(true);
+        setTitleContent(STEP_1_GUIDE_MESSAGE);
+        addComponent(titleLayout);
         
         accordion = new Accordion();
         accordion.setImmediate(true);
@@ -93,7 +99,8 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     	        Tab tab = accordion.getTab(selected);
     	        
     	        if(tab!=null && tab.equals(wizardTabOne)){
-    	           disableNurseryTemplateConditionsComponent();
+    	            setTitleContent(STEP_1_GUIDE_MESSAGE);
+    	            disableNurseryTemplateConditionsComponent();
                 }
     	                    
     	    }
@@ -144,7 +151,27 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     public void enableNurseryTemplateConditionsComponent(){
+        setTitleContent(STEP_2_GUIDE_MESSAGE);
 	wizardTabTwo.setEnabled(true);
     }
 
+    public void setTitleContent(String guideMessage){
+        titleLayout.removeAllComponents();
+        
+        String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
+        nurseryTemplateTitle = new Label();
+        nurseryTemplateTitle.setStyleName("gcp-window-title");
+        nurseryTemplateTitle.setContentMode(Label.CONTENT_XHTML);
+        nurseryTemplateTitle.setValue(title);
+        titleLayout.addComponent(nurseryTemplateTitle);
+        
+        Label descLbl = new Label(guideMessage);
+        descLbl.setWidth("300px");
+        
+        PopupView popup = new PopupView("?",descLbl);
+        popup.setStyleName("gcp-popup-view");
+        titleLayout.addComponent(popup);
+        
+        titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
+    }
 }

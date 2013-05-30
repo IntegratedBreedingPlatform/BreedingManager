@@ -26,12 +26,21 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
-	
     private static final long serialVersionUID = -6656072296236475385L;
 
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
-    private final static String VERSION = "1.1.1.0";
+    private static final String VERSION = "1.1.1.0";
+    private static final String STEP_1_GUIDE = "This tool will help in defining crosses.  You can either use a nursery template file or " +
+    		"proceed to the next step without using a nursery template file.";
+    private static final String STEP_2_GUIDE = "In this screen you must first select a list for the female and male parents, " +
+    		"then select list entries, next you should seect an option for how you want to cross your selections, " +
+                "then press the Make Cross button.  You can select and delete crosses you have made on the crosses " +
+                "made table.";
+    private static final String STEP_3_GUIDE = "This screen allows you to specify additional details for the germplasm records " +
+    		"which will be made for the crosses you have specified.";
+    private static final String STEP_4_GUIDE = "This screen allows you to specify details for the list which will be created " +
+    		"for the crosses.";
     
     private CrossingManagerImportFileComponent wizardScreenOne;
     private CrossingManagerMakeCrossesComponent wizardScreenTwo;

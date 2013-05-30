@@ -122,8 +122,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         doneButton.setData(DONE_BUTTON_ID);
         
         germplasmListName.setWidth("450px");
+        germplasmListName.setRequired(true);
         germplasmListDescription.setWidth("450px");
+        germplasmListDescription.setRequired(true);
         germplasmListType.setWidth("450px");
+        germplasmListType.setNullSelectionAllowed(false);
         
         addComponent(germplasmListNameLabel, "top:50px; left:30px;");
         addComponent(germplasmListDescriptionLabel, "top:80px; left:30px;");
