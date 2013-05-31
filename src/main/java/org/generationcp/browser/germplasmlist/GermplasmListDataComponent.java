@@ -33,10 +33,13 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
@@ -51,6 +54,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -112,6 +116,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+	
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+	
 	private boolean forGermplasmListWindow;
 	private Integer germplasmListStatus;
 	private GermplasmList germplasmList;
@@ -252,6 +260,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	}
 
 	private void populateTable() throws MiddlewareQueryException {
+	    listDataTable.removeAllItems();
 		long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
 		listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
 		for (GermplasmListData data : listDatas) {
@@ -567,8 +576,104 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	}
 
     @Override
-    public void finishAddingEntries() {
-        // TODO Auto-generated method stub
+    public void finishAddingEntry(Integer gid) {
+        GermplasmList list = null; 
+        Germplasm germplasm = null;
+        try {
+            list = germplasmListManager.getGermplasmListById(germplasmListId);
+            germplasm = germplasmDataManager.getGermplasmWithPrefName(gid);
+        } catch(MiddlewareQueryException ex){
+            
+        }
+        
+        Integer maxEntryId = Integer.valueOf(1);
+        for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+
+            //update table item's entryId
+            Item item = listDataTable.getItem(listDataId);
+            Integer entryId = (Integer) item.getItemProperty(ENTRY_ID).getValue();
+            if(maxEntryId < entryId){
+                maxEntryId = entryId;
+            }
+        }
+        
+        
+        GermplasmListData listData = new GermplasmListData();
+        listData.setList(list);
+        if(germplasm.getPreferredName() != null){
+            listData.setDesignation(germplasm.getPreferredName().getNval());
+        } else {
+            listData.setDesignation("-");
+        }
+        listData.setEntryId(maxEntryId+1);
+        listData.setGid(gid);
+        listData.setLocalRecordId(Integer.valueOf(0));
+        listData.setStatus(Integer.valueOf(0));
+        
+        String preferredId = "-";
+        try{
+            Name nameRecord = this.germplasmDataManager.getPreferredIdByGID(gid);
+            if(nameRecord != null){
+                preferredId = nameRecord.getNval();
+            }
+        } catch(MiddlewareQueryException ex){
+            preferredId = "-";
+        }
+        listData.setEntryCode(preferredId);
+        
+        listData.setSeedSource("From Add Entry Feature of Germplasm List Browser");
+        
+        String groupName = "-";
+        try{
+            groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
+        } catch(MiddlewareQueryException ex){
+            groupName = "-";
+        }
+        listData.setGroupName(groupName);
+            
+        Integer listDataId = null;
+        try {
+            listDataId = this.germplasmListManager.addGermplasmListData(listData);
+            
+            Object gidObject;
+
+            if (!fromUrl) {
+                    // make GID as link only if the page wasn't directly accessed from the URL
+                    String gidString = String.format("%s", gid.toString());
+                    Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString));
+                    gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                    gidButton.setDescription("Click to view Germplasm information");
+                    gidObject = gidButton;
+            } else {
+                    gidObject = gid;
+            }
+
+            listDataTable.addItem(new Object[] {
+                            gidObject,gid,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
+                            listData.getDesignation(), listData.getGroupName(), listData.getStatusString()
+                    }, listDataId);
+            listDataTable.requestRepaint();
+            MessageNotifier.showMessage(this.getWindow(), 
+                    messageSource.getMessage(Message.SUCCESS), 
+                    "Successful in adding a list entry.");
+            
+            User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+
+            ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                            workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+                            "Added list entry.", 
+                            "Added " + gid + " as list entry to " + list.getId() + ":" + list.getName(),user,new Date());
+            try {
+                    workbenchDataManager.addProjectActivity(projAct);
+            } catch (MiddlewareQueryException e) {
+                    e.printStackTrace();
+            }
+        } catch (MiddlewareQueryException ex) {
+            // TODO: handle exception
+            return;
+        }
     }
     
     public void addEntryButtonClickAction(){
@@ -576,4 +681,5 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
         parentWindow.addWindow(addEntriesDialog);
     }
+    
 }
