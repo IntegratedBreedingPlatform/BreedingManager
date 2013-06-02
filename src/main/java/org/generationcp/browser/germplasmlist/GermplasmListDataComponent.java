@@ -570,6 +570,11 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			user,
 			new Date());
 		workbenchDataManager.addProjectActivity(projAct);
+		
+		deleteSelectedEntriesButton.setEnabled(false); 
+	        saveSortingButton.setEnabled(false);
+	        addEntriesButton.setEnabled(false);
+	        
 	    }catch (MiddlewareQueryException e) {
 		e.printStackTrace();
 	    }
