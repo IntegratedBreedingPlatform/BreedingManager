@@ -54,12 +54,12 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -327,7 +327,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			listDataTable.requestRepaint();
 			MessageNotifier.showMessage(this.getWindow(), 
 					messageSource.getMessage(Message.SUCCESS), 
-					messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SORTING_SUCCESS));
+					messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SORTING_SUCCESS)
+					,3000, Notification.POSITION_CENTERED);
 		} catch (MiddlewareQueryException e) {
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_SORTING);
 		}
@@ -359,7 +360,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     		        //File tempFile = new File(tempFileName);
     		        //tempFile.delete();
     		} catch (GermplasmListExporterException e) {
-    			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
+    			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage()
+    					, "", Notification.POSITION_CENTERED);
     		}
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
@@ -403,10 +405,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                         //File tempFile = new File(tempFileName);
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage(), "");
+                        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage()
+                        		, "", Notification.POSITION_CENTERED);
                 }
 	    } else {
-	        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
+	        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it"
+	        		, "", Notification.POSITION_CENTERED);
 	    }
 	}
 	
@@ -488,7 +492,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	    	
 	    }else{
 		
-	    	MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
+	    	MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
 	    }
 		
 	}
@@ -500,7 +504,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         if (localIbdbUserId != null) {
             return localIbdbUserId;
         } else {
-            return 1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
         }
     }
 
@@ -529,7 +533,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	public void copyToNewListAction(){
 		Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
 		if (listEntries == null || listEntries.isEmpty()){
-			MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
+			MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
 			
 		} else {
 			germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
@@ -560,23 +564,26 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	    germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
 	    germplasmList.setStatus(germplasmList.getStatus()+100);
 	    try {
-		germplasmListManager.updateGermplasmList(germplasmList);
-
-		User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-			workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-			"Locked a germplasm list.", 
-			"Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
-			user,
-			new Date());
-		workbenchDataManager.addProjectActivity(projAct);
+			germplasmListManager.updateGermplasmList(germplasmList);
+	
+			User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+			ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+				workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+				"Locked a germplasm list.", 
+				"Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+				user,
+				new Date());
+			workbenchDataManager.addProjectActivity(projAct);
 		
 		deleteSelectedEntriesButton.setEnabled(false); 
-	        saveSortingButton.setEnabled(false);
-	        addEntriesButton.setEnabled(false);
+	    saveSortingButton.setEnabled(false);
+	    addEntriesButton.setEnabled(false);
 	        
 	    }catch (MiddlewareQueryException e) {
-		e.printStackTrace();
+	    	LOG.error("Error with locking list.", e);
+    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. Please report to IBWS developers."
+    				, Notification.POSITION_CENTERED);
+    		return;
 	    }
 	}
 
@@ -586,9 +593,22 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         Germplasm germplasm = null;
         try {
             list = germplasmListManager.getGermplasmListById(germplasmListId);
+        } catch(MiddlewareQueryException ex){
+        	LOG.error("Error with getting germplasm list with id: " + germplasmListId, ex);
+    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm list with id: " + germplasmListId  
+    				+ ". Please report to IBWS developers."
+    				, Notification.POSITION_CENTERED);
+    		return;
+        }
+        
+        try {
             germplasm = germplasmDataManager.getGermplasmWithPrefName(gid);
         } catch(MiddlewareQueryException ex){
-            
+        	LOG.error("Error with getting germplasm with id: " + gid, ex);
+    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
+    				+ ". Please report to IBWS developers."
+    				, Notification.POSITION_CENTERED);
+    		return;
         }
         
         Integer maxEntryId = Integer.valueOf(1);
@@ -662,7 +682,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.requestRepaint();
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
-                    "Successful in adding a list entry.");
+                    "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
             
             User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
@@ -671,12 +691,16 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                             "Added list entry.", 
                             "Added " + gid + " as list entry to " + list.getId() + ":" + list.getName(),user,new Date());
             try {
-                    workbenchDataManager.addProjectActivity(projAct);
+            	workbenchDataManager.addProjectActivity(projAct);
             } catch (MiddlewareQueryException e) {
-                    e.printStackTrace();
+            	LOG.error("Error with adding workbench activity log.", e);
+        		MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. Please report to IBWS developers."
+        				, Notification.POSITION_CENTERED);
             }
         } catch (MiddlewareQueryException ex) {
-            // TODO: handle exception
+        	LOG.error("Error with adding list entry.", ex);
+    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. Please report to IBWS developers."
+    				, Notification.POSITION_CENTERED);
             return;
         }
     }
