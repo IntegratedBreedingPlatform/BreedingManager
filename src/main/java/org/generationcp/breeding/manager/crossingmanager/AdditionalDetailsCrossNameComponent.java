@@ -102,11 +102,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	@SuppressWarnings("serial")
 	@Override
 	public void afterPropertiesSet() throws Exception {  
-		setHeight("240px");
+		setHeight("200px");
         setWidth("700px");
         	
-		initializeCrossNameOptionGroup();
-		
+		crossNameOptionGroup = new OptionGroup();
 		sequenceNumCheckBox = new CheckBox();
 		sequenceNumCheckBox.setImmediate(true);
 		sequenceNumCheckBox.addListener(new Property.ValueChangeListener() {
@@ -145,25 +144,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		initializeToggableComponents();
 	}
 
-	@SuppressWarnings("serial")
-	private void initializeCrossNameOptionGroup() {
-		crossNameOptionGroup = new OptionGroup();
-		crossNameOptionGroup.addItem(CrossNameOption.USE_DEFAULT);
-		crossNameOptionGroup.setItemCaption(CrossNameOption.USE_DEFAULT, 
-				messageSource.getMessage(Message.USE_DEFAULT_CROSS_CODE_FOR_ALL));
-		crossNameOptionGroup.addItem(CrossNameOption.SPECIFY_CROSS_NAME);
-		crossNameOptionGroup.setItemCaption(CrossNameOption.SPECIFY_CROSS_NAME, 
-				messageSource.getMessage(Message.SPECIFY_CROSS_CODE_TEMPLATE_FOR_ALL));
-		
-		crossNameOptionGroup.setImmediate(true);
-		crossNameOptionGroup.select(CrossNameOption.USE_DEFAULT); //first option selected by default
-		crossNameOptionGroup.addListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				enableSpecifyCrossNameComponents(specifyCrossNameOptionSelected());
-			}
-		});
-	}
 
     @Override
     public void attach() {
@@ -183,16 +163,16 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     
     private void layoutComponents() {
 		addComponent(crossNameOptionGroup, "top:10px;left:20px");
-		addComponent(specifyPrefixLabel, "top:80px;left:20px");
-		addComponent(prefixTextField, "top:60px;left:180px");
-		addComponent(sequenceNumCheckBox, "top:97px;left:20px");
-		addComponent(howManyDigitsLabel, "top:113px;left:400px");
-		addComponent(leadingZerosSelect, "top:95px;left:520px");
-		addComponent(specifySuffixLabel, "top:150px;left:20px");
-		addComponent(suffixTextField, "top:130px;left:180px");
-		addComponent(nextNameInSequenceLabel, "top:185px;left:20px");
-		addComponent(generatedNameLabel, "top:185px;left:237px");
-		addComponent(generateButton, "top:195px;left:20px");
+		addComponent(specifyPrefixLabel, "top:40px;left:20px");
+		addComponent(prefixTextField, "top:25px;left:180px");
+		addComponent(sequenceNumCheckBox, "top:57px;left:20px");
+		addComponent(howManyDigitsLabel, "top:73px;left:400px");
+		addComponent(leadingZerosSelect, "top:55px;left:520px");
+		addComponent(specifySuffixLabel, "top:110px;left:20px");
+		addComponent(suffixTextField, "top:90px;left:180px");
+		addComponent(nextNameInSequenceLabel, "top:145px;left:20px");
+		addComponent(generatedNameLabel, "top:145px;left:237px");
+		addComponent(generateButton, "top:155px;left:20px");
 	}
     
     private void initializeToggableComponents(){
@@ -208,7 +188,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	otherToggableComponents[6] = generatedNameLabel;
     	otherToggableComponents[7] = generateButton;
     	
-    	enableSpecifyCrossNameComponents(false);
+    	enableSpecifyCrossNameComponents(true);
     }
     
     // Enables / disables UI elements for specifying Cross Name details
