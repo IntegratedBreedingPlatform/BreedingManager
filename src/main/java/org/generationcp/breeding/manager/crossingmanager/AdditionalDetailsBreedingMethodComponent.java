@@ -34,6 +34,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -101,13 +103,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 			    if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
 				selectCrossingMethodLabel.setEnabled(true);
 				crossingMethodComboBox.setEnabled(true);
-				
-				try {
-				    populateBreedingMethod();
-				} catch (MiddlewareQueryException e) {
-				    // TODO Auto-generated catch block
-				    e.printStackTrace();
-				}
+				crossingMethodComboBox.focus();
 			    }else{
 				selectCrossingMethodLabel.setEnabled(false);
 				crossingMethodComboBox.setEnabled(false);
@@ -123,6 +119,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 		crossingMethodComboBox = new ComboBox();
 		crossingMethodComboBox.setWidth("400px");
 		crossingMethodComboBox.setEnabled(false);
+		// Change ComboBox back to TextField when it loses focus
+		crossingMethodComboBox.addListener(crossingMethodComboboxFocusListener);
 
 		//layout components
 		addComponent(selectOptionLabel, "top:25px;left:20px");
@@ -132,7 +130,18 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 		
 		methods = germplasmDataManager.getMethodsByType("GEN");
 	}
-	
+
+    private FocusListener crossingMethodComboboxFocusListener = new FocusListener() {
+
+        public void focus(FocusEvent event) {
+            try {
+		    populateBreedingMethod();
+		} catch (MiddlewareQueryException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+        }
+    };
     
     public void populateBreedingMethod() throws MiddlewareQueryException {
 
