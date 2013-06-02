@@ -51,6 +51,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * 
@@ -283,7 +284,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	
+	comboBoxSiteName.addItem("");
 	for (Location loc : locations) {
 	    if(loc.getLname().length()>0){
 		comboBoxSiteName.addItem(loc.getLname());
@@ -327,11 +328,11 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		if(loc!=null && noError){
 		    comboBoxSiteName.setValue(loc.getLname());
 		}else{
-		    if(comboBoxSiteName.getValue()!=null || loc==null){
-			getWindow().showNotification(messageSource.getMessage(Message.INVALID_SITE_ID));
-		    }
-		    comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
-		    siteId.setValue("");
+			if(comboBoxSiteName.getValue()!=null || loc==null){
+				MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID), Notification.POSITION_CENTERED);
+			}
+			comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
+			siteId.setValue("");
 		}
 	    }
 	});
@@ -438,8 +439,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		    }
 		    comboBoxBreedersName.setValue(name);
 		}else{
-		    if(comboBoxBreedersName.getValue()!=null || u==null){
-			getWindow().showNotification(messageSource.getMessage(Message.INVALID_BREEDER_ID));
+			if(comboBoxBreedersName.getValue()!=null || u==null){
+				MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID), Notification.POSITION_CENTERED);
 		    }
 		    comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
 		    breederId.setValue("");
@@ -476,6 +477,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
 	    }
 	});
+	comboBoxBreedingMethod.select("");
 	methodId.setValue("");
 	return comboBoxBreedingMethod;
     }
@@ -502,9 +504,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		if(m!=null && noError){
 		    comboBoxBreedingMethod.setValue(m.getMname());
 		}else{
-		   
-		    if(comboBoxBreedingMethod.getValue()!=null || m==null){
-			getWindow().showNotification(messageSource.getMessage(Message.INVALID_METHOD_ID));
+			if(comboBoxBreedingMethod.getValue()!=null || m==null){
+		    	MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID), Notification.POSITION_CENTERED);
 		    }
 		    comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
 		    methodId.setValue("");
@@ -586,7 +587,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	    this.getWindow().open(fileDownloadResource);
 
 	} catch (CrossingManagerExporterException e) {
-	    MessageNotifier.showError(getWindow(), e.getMessage(), "");
+	    MessageNotifier.showError(getWindow(), e.getMessage(), "", Notification.POSITION_CENTERED);
 	}
 
 

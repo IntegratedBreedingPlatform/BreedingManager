@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTempla
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,7 +177,7 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     public void nextButtonClickAction() {
 	
 	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-	    getWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+		MessageNotifier.showError(getWindow(), "Error with file.", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
 	}else{
 	    source.enableNurseryTemplateConditionsComponent();
 	    this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());
