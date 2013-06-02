@@ -139,18 +139,21 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	
 	comboBoxBreedingMethod= new ComboBox();
 	comboBoxBreedingMethod.setImmediate(true);
+	comboBoxBreedingMethod.setNullSelectionAllowed(true);
 	
 	methodId=new TextField();
 	methodId.setImmediate(true);
 	
 	comboBoxSiteName= new ComboBox();
 	comboBoxSiteName.setImmediate(true);
+	comboBoxSiteName.setNullSelectionAllowed(true);
 	
 	siteId=new TextField();
 	siteId.setImmediate(true);
 	
 	comboBoxBreedersName= new ComboBox();
 	comboBoxBreedersName.setImmediate(true);
+	comboBoxBreedersName.setNullSelectionAllowed(true);
 	
 	breederId=new TextField();
 	breederId.setImmediate(true);
@@ -280,7 +283,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	comboBoxSiteName.addItem("");
+	
 	for (Location loc : locations) {
 	    if(loc.getLname().length()>0){
 		comboBoxSiteName.addItem(loc.getLname());
@@ -297,7 +300,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		siteId.setValue(String.valueOf(mapSiteName.get(comboBoxSiteName.getValue())));
 	    }
 	});
-	comboBoxSiteName.select("");
+	
 	siteId.setValue("");
 	return comboBoxSiteName;
     }
@@ -324,8 +327,10 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		if(loc!=null && noError){
 		    comboBoxSiteName.setValue(loc.getLname());
 		}else{
-		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_SITE_ID));
-		    comboBoxSiteName.select("");
+		    if(comboBoxSiteName.getValue()!=null || loc==null){
+			getWindow().showNotification(messageSource.getMessage(Message.INVALID_SITE_ID));
+		    }
+		    comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
 		    siteId.setValue("");
 		}
 	    }
@@ -344,7 +349,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	comboBoxBreedersName.addItem("");
 	setComboBoxBreederDefaultValue();
 	for (User u : users) {
 	    Person p = new Person();
@@ -422,15 +426,22 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		if(u!=null && noError){
 		    try {
 			p = userDataManager.getPersonById(u.getPersonid());
-			name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+			if(p!=null){
+			    name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+			}else{
+			    comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
+			    breederId.setValue("");
+			}
 		    } catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		    }
 		    comboBoxBreedersName.setValue(name);
 		}else{
-		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_BREEDER_ID));
-		    comboBoxBreedersName.select("");
+		    if(comboBoxBreedersName.getValue()!=null || u==null){
+			getWindow().showNotification(messageSource.getMessage(Message.INVALID_BREEDER_ID));
+		    }
+		    comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
 		    breederId.setValue("");
 		}
 	    }
@@ -449,7 +460,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	comboBoxBreedingMethod.addItem("");
 	for (Method m : method) {
 	    if(m.getMname().length()>0){
 		comboBoxBreedingMethod.addItem(m.getMname());
@@ -466,7 +476,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
 	    }
 	});
-	comboBoxBreedingMethod.select("");
 	methodId.setValue("");
 	return comboBoxBreedingMethod;
     }
@@ -493,8 +502,11 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 		if(m!=null && noError){
 		    comboBoxBreedingMethod.setValue(m.getMname());
 		}else{
-		    getWindow().showNotification(messageSource.getMessage(Message.INVALID_METHOD_ID));
-		    comboBoxBreedingMethod.select("");
+		   
+		    if(comboBoxBreedingMethod.getValue()!=null || m==null){
+			getWindow().showNotification(messageSource.getMessage(Message.INVALID_METHOD_ID));
+		    }
+		    comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
 		    methodId.setValue("");
 		}
 	    }
@@ -582,13 +594,29 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 
     private HashMap<String, String> getNurseryConditionValue() {
 	
+	String breederName="";
+	String breedingMethod="";
+	String siteName="";
+	
+	if(comboBoxBreedersName.getValue()!=null){
+	    breederName=comboBoxBreedersName.getValue().toString();
+	}
+	
+	if(comboBoxBreedingMethod.getValue()!=null){
+	    breedingMethod=comboBoxBreedingMethod.getValue().toString();  
+	}
+	
+	if(comboBoxSiteName.getValue()!=null){
+	    siteName=comboBoxSiteName.getValue().toString();
+	}
+	
 	HashMap<String, String> conditionValue=new HashMap<String,String>();
 	conditionValue.put("NID", nid.getValue().toString());
-	conditionValue.put("BREEDER NAME", comboBoxBreedersName.getValue().toString());
+	conditionValue.put("BREEDER NAME",breederName );
 	conditionValue.put("BREEDER ID", breederId.getValue().toString());
-	conditionValue.put("SITE", comboBoxSiteName.getValue().toString());
+	conditionValue.put("SITE", siteName);
 	conditionValue.put("SITE ID", siteId.getValue().toString());
-	conditionValue.put("BREEDING METHOD", comboBoxBreedingMethod.getValue().toString());
+	conditionValue.put("BREEDING METHOD",breedingMethod );
 	conditionValue.put("BREEDING METHOD ID", methodId.getValue().toString());
 	conditionValue.put("FEMALE LIST NAME", femaleListName.getValue().toString());
 	conditionValue.put("FEMALE LIST ID", femaleListId.getValue().toString());
