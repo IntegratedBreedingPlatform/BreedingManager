@@ -165,6 +165,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         return fos; // Return the output stream to write to
     }
 
+    public void setTempFileName(){
+        tempFileName = source.getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_nurserytemplate.xls";
+    }
+    
     @Override
     public void uploadSucceeded(SucceededEvent event) {
         System.out.println("DEBUG | "+tempFileName);

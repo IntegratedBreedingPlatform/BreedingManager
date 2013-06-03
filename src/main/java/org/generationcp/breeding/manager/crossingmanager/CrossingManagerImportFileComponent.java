@@ -24,6 +24,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -33,6 +35,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.FinishedListener;
+import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -44,6 +47,9 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private CrossingManagerMain source;
 
     public static final String NEXT_BUTTON_ID = "next button";
+    public static final String TEMPLATE_FILE_USAGE_OPTION_1_ID = "CrossingManagerImportFileComponent Option 1";
+    public static final String TEMPLATE_FILE_USAGE_OPTION_2_ID = "CrossingManagerImportFileComponent Option 2";
+    
     private Label selectFileLabel;
     private Upload uploadComponents;
     private Button nextButton;
@@ -56,6 +62,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     
     private Label crossesOptionGroupLabel;
     private OptionGroup crossesOptionGroup;
+    private OptionGroup templateFileUsageOptionGroup;
 
     public CrossingManagerUploader crossingManagerUploader;
     
@@ -93,30 +100,65 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     protected void initializeComponents() {
+        templateFileUsageOptionGroup = new OptionGroup();
+        templateFileUsageOptionGroup.setImmediate(true);
+        templateFileUsageOptionGroup.addItem(TEMPLATE_FILE_USAGE_OPTION_1_ID);
+        templateFileUsageOptionGroup.setItemCaption(TEMPLATE_FILE_USAGE_OPTION_1_ID, "Manually specify parent lists and crosses.");
+        templateFileUsageOptionGroup.addItem(TEMPLATE_FILE_USAGE_OPTION_2_ID);
+        templateFileUsageOptionGroup.setItemCaption(TEMPLATE_FILE_USAGE_OPTION_2_ID, "Use a template file to specify parents " +
+        		"and (optionally) crosses.");
+        templateFileUsageOptionGroup.select(TEMPLATE_FILE_USAGE_OPTION_1_ID);
+        templateFileUsageOptionGroup.addListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if(templateFileUsageOptionGroup.getValue().equals(TEMPLATE_FILE_USAGE_OPTION_1_ID)){
+                    selectFileLabel.setEnabled(false);
+                    uploadComponents.setEnabled(false);
+                    nextButton.setEnabled(true);
+                    filenameLabel.setEnabled(false);
+                    crossesOptionGroupLabel.setEnabled(false);
+                    crossesOptionGroup.setEnabled(false);
+                } else{
+                    selectFileLabel.setEnabled(true);
+                    uploadComponents.setEnabled(true);
+                    filenameLabel.setEnabled(true);
+                    crossesOptionGroupLabel.setEnabled(true);
+                    crossesOptionGroup.setEnabled(true);
+                }
+            }
+        });
+        addComponent(templateFileUsageOptionGroup, "top:20px;left:30px");    
+        
         selectFileLabel = new Label();
-        addComponent(selectFileLabel, "top:40px;left:30px");
+        selectFileLabel.setEnabled(false);
+        addComponent(selectFileLabel, "top:90px;left:80px");
         
         uploadComponents = new Upload();
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         uploadComponents.setWidth("600px");
-        addComponent(uploadComponents, "top:60px;left:30px");
+        uploadComponents.setEnabled(false);
+        addComponent(uploadComponents, "top:110px;left:80px");
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.setEnabled(false);
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
-        addComponent(nextButton, "top:250px;left:700px");
+        addComponent(nextButton, "top:300px;left:700px");
         
         filenameLabel = new Label();
-        addComponent(filenameLabel, "top:110px;left:30px;");
+        filenameLabel.setEnabled(false);
+        addComponent(filenameLabel, "top:160px;left:80px;");
         
         crossesOptionGroupLabel = new Label();
-        addComponent(crossesOptionGroupLabel, "top:156px;left:30px;");
+        crossesOptionGroupLabel.setEnabled(false);
+        addComponent(crossesOptionGroupLabel, "top:206px;left:80px;");
         
         crossesOptionGroup = new OptionGroup();
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
-        addComponent(crossesOptionGroup, "top:175px;left:30px;");
+        crossesOptionGroup.setEnabled(false);
+        addComponent(crossesOptionGroup, "top:225px;left:80px;");
         
     }
     
@@ -125,7 +167,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     protected void initializeLayout() {
-        setHeight("300px");
+        setHeight("350px");
         setWidth("800px");
     }
     
@@ -190,6 +232,19 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
     public void nextButtonClickAction() throws InternationalizableException{
         source.enableWizardTabs();
+        if(templateFileUsageOptionGroup.getValue().equals(TEMPLATE_FILE_USAGE_OPTION_1_ID)){
+            //mimic reading of template file
+            crossingManagerUploader.setTempFileName();
+            crossingManagerUploader.uploadSucceeded(null);
+            if(this.nextScreen != null){
+                saveCrossesInfoToNextWizardStep(this.nextScreen, false);
+                ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
+            } else {
+                this.nextButton.setEnabled(false);
+            }
+            return;
+        }
+        
         if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
         	MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
         } else if(crossesOptionGroup.getValue()==null) {

@@ -34,7 +34,9 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
     private static final String VERSION = "1.1.1.0";
-    private static final String STEP_1_GUIDE_MESSAGE = "This tool will help in defining crosses.  You can either use a nursery template file or " +
+    private static final String STEP_1_GUIDE_MESSAGE = "Crossing Manager facilitates " +
+    		"the dynamic specification of cross combinations or input of cross combinations " +
+    		"from a crossing nursery template.  You can either use a nursery template file or " +
     		"proceed to the next step without using a nursery template file.";
     private static final String STEP_2_GUIDE_MESSAGE = "In this screen you must first select a list for the female and male parents, " +
     		"then select list entries, next you should select an option for how you want to cross your list entries, " +
