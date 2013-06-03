@@ -38,6 +38,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class SelectGermplasmListTreeComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
@@ -125,7 +126,8 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
                         messageSource.getMessage(Message.ERROR_DATABASE),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS)
+                    , Notification.POSITION_CENTERED);
             }
             germplasmListParent = new ArrayList<GermplasmList>();
         }
@@ -160,7 +162,8 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT),
+                    Notification.POSITION_CENTERED);
         } catch (MiddlewareQueryException e){
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
@@ -192,7 +195,8 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID),
+                    Notification.POSITION_CENTERED);
             germplasmListChildren = new ArrayList<GermplasmList>();
         }
         
@@ -213,7 +217,8 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID),
+                    Notification.POSITION_CENTERED);
             listChildren = new ArrayList<GermplasmList>();
         }
         return !listChildren.isEmpty();

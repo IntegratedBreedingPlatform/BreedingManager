@@ -3,6 +3,8 @@ package org.generationcp.breeding.manager.crossingmanager;
 import java.util.*;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Window.Notification;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
@@ -241,8 +243,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     					crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList);
     				}
     			} else {
-    				MessageNotifier.showError(getWindow(), 
-    						messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL), "");
+    				MessageNotifier.showError(getWindow(), "Error with selecting parents."
+    						,messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL)
+    						, Notification.POSITION_CENTERED);
     			}
     		}
     		this.nextButton.setEnabled(true);
@@ -311,14 +314,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         listSelectFemale.removeAllItems();
         if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified() &&
                 crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
-            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_BOTH_ID_REQUIRED), "");
+            MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_BOTH_ID_REQUIRED)
+                    , Notification.POSITION_CENTERED);
         }else if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.getFemaleGermplasmList() == null &&
                 crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() != null){
-            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_FEMALE_ID_REQUIRED), "");
+            MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_FEMALE_ID_REQUIRED)
+                    , Notification.POSITION_CENTERED);
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
         }else if(crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() == null &&
                 crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.getFemaleGermplasmList() != null){
-            MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_MALE_ID_REQUIRED), "");
+            MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_MALE_ID_REQUIRED)
+                    , Notification.POSITION_CENTERED);
             loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
         }else if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified()){
             loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());

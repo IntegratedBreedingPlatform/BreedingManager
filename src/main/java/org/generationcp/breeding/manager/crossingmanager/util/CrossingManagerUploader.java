@@ -56,6 +56,7 @@ import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.Window.Notification;
 
 public class CrossingManagerUploader implements Receiver, SucceededListener {
         
@@ -670,16 +671,14 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     private void showInvalidFileError(String header, String message){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), header, message);
-            //source.getAccordion().getApplication().getMainWindow().showNotification(message, Notification.TYPE_ERROR_MESSAGE);
+            MessageNotifier.showError(source.getWindow(), header, message, Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
     }
 
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), "", "Invalid import file type, you need to upload the correct XLS file.");
-            //source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+            MessageNotifier.showError(source.getWindow(), "Error with file uploaded.", "Invalid import file type, you need to upload the correct XLS file.", Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
     }    

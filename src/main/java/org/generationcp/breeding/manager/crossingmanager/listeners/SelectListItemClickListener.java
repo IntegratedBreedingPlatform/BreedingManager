@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Window.Notification;
 
 public class SelectListItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -43,7 +44,7 @@ public class SelectListItemClickListener implements ItemClickEvent.ItemClickList
                 } catch (InternationalizableException e) {
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();
-                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
                 }
             }
         }

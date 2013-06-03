@@ -40,6 +40,7 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * This class contains UI components and functions related to
@@ -210,7 +211,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				tableCrossesMade.removeItem(itemId);
 			}
     	} else {
-    		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), "");
+    		MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
     	}
     	if(tableCrossesMade.size()==0 && getParent() instanceof CrossingManagerMakeCrossesComponent)
     	    ((CrossingManagerMakeCrossesComponent) getParent()).disableNextButton();

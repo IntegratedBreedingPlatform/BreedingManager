@@ -39,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
@@ -162,7 +163,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
 				this.getWindow().open(fileDownloadResource);
 		
 			} catch (CrossingManagerExporterException e) {
-				MessageNotifier.showError(getWindow(), e.getMessage(), "");
+				MessageNotifier.showError(getWindow(), "Error with exporting nursery file.", e.getMessage(), Notification.POSITION_CENTERED);
 			}
         } 
 	

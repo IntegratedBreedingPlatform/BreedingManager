@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -32,17 +31,12 @@ import org.generationcp.breeding.manager.constants.TemplateFactorHeader;
 import org.generationcp.breeding.manager.constants.TemplateStudyDetails;
 import org.generationcp.breeding.manager.constants.TemplateVariateHeader;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
 
 
 public class NurseryTemplateManagerExporter{

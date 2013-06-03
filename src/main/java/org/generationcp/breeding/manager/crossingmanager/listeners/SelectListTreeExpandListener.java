@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandEvent;
+import com.vaadin.ui.Window.Notification;
 
 public class SelectListTreeExpandListener implements Tree.ExpandListener{
     
@@ -41,7 +42,7 @@ public class SelectListTreeExpandListener implements Tree.ExpandListener{
             } catch (InternationalizableException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
             }
         }
     }
