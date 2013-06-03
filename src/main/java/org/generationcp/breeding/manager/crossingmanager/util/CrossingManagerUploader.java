@@ -110,9 +110,23 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private void initializeUploadBehavior() {
         if (TemplateUploadSource.CROSSING_MANAGER.equals(this.uploadSourceType)) {
             requiredConditionRows = new ArrayList<String>(Arrays.asList(new String[] {
-                    TemplateCrossingCondition.FEMALE_LIST_ID.getValue()
+                    TemplateCrossingCondition.NID.getValue()
+                    ,TemplateCrossingCondition.BREEDER_NAME.getValue()
+                    ,TemplateCrossingCondition.BREEDER_ID.getValue()
+                    ,TemplateCrossingCondition.SITE.getValue()
+                    ,TemplateCrossingCondition.SITE_ID.getValue()
+                    ,TemplateCrossingCondition.BREEDING_METHOD.getValue()
+                    ,TemplateCrossingCondition.BREEDING_METHOD_ID.getValue()
+                    ,TemplateCrossingCondition.FEMALE_LIST_NAME.getValue()
+                    ,TemplateCrossingCondition.FEMALE_LIST_ID.getValue()
+                    ,TemplateCrossingCondition.MALE_LIST_NAME.getValue()
                     ,TemplateCrossingCondition.MALE_LIST_ID.getValue()}));
-            requiredFactorRows = new ArrayList<String>();
+            requiredFactorRows = new ArrayList<String>(Arrays.asList(new String[] {
+                    TemplateCrossingFactor.CROSS.getValue()
+                    ,TemplateCrossingFactor.FEMALE_ENTRY_ID.getValue()
+                    ,TemplateCrossingFactor.MALE_ENTRY_ID.getValue()
+                    ,TemplateCrossingFactor.FGID.getValue()
+                    ,TemplateCrossingFactor.MGID.getValue()}));
         } else if (TemplateUploadSource.NURSERY_TEMPLATE.equals(this.uploadSourceType)) {
             requiredConditionRows = new ArrayList<String>(Arrays.asList(new String[] {
                     TemplateCrossingCondition.NID.getValue()
