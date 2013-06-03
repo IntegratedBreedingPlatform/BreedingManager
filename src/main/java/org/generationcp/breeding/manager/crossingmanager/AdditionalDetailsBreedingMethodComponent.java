@@ -40,6 +40,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * This class contains the absolute layout of UI elements in Breeding Method section
@@ -137,8 +138,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             try {
 		    populateBreedingMethod();
 		} catch (MiddlewareQueryException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
+		    LOG.error("Error in getting breeding methods.", e);
 		}
         }
     };
@@ -219,9 +219,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 					} catch (MiddlewareQueryException e) {
 						LOG.error(e.toString() + "\n" + e.getStackTrace());
 			            e.printStackTrace();
-		                MessageNotifier.showWarning(getWindow(), 
+		                MessageNotifier.showError(getWindow(), 
 		                        messageSource.getMessage(Message.ERROR_DATABASE),
-		                        messageSource.getMessage(Message.ERROR_IN_GETTING_BREEDING_METHOD_BASED_ON_PARENTAL_LINES));
+		                        messageSource.getMessage(Message.ERROR_IN_GETTING_BREEDING_METHOD_BASED_ON_PARENTAL_LINES),
+		                        Notification.POSITION_CENTERED);
 		                return false;
 					}
 				

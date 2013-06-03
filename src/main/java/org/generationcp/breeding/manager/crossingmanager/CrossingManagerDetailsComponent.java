@@ -42,6 +42,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
@@ -210,7 +211,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		try {
 		    Integer listId = saveAction.saveRecords(crossesMade);
 		    MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-		    		messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY));
+		    		messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
 		    
 		    this.source.viewGermplasmListCreated(listId);
 		    
@@ -218,7 +219,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		    LOG.error(e.getMessage() + " " + e.getStackTrace());
 		    e.printStackTrace();
 		    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-			    messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
+			    messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
 		}
     	
     }

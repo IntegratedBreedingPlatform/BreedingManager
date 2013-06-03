@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.util.CrossingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
@@ -155,9 +156,10 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                     selectAlreadyDefinedCrossesInNurseryTemplateFile();
                 }
              }else{
-        	getWindow().showNotification(messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE), Notification.TYPE_ERROR_MESSAGE);
-     	    	updateFilenameLabelValue("");
-     	    	nextButton.setEnabled(false);
+            	 MessageNotifier.showError(getWindow(), "Error with nursery template file.", messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE)
+            			 , Notification.POSITION_CENTERED);
+            	 updateFilenameLabelValue("");
+     	    	 nextButton.setEnabled(false);
              }
             }
         });
@@ -189,13 +191,14 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     public void nextButtonClickAction() throws InternationalizableException{
         source.enableWizardTabs();
         if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-            getWindow().showNotification("You must upload a nursery template file before clicking on next.", Notification.TYPE_ERROR_MESSAGE);
+        	MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
         } else if(crossesOptionGroup.getValue()==null) {
-            getWindow().showNotification("You should select an option for specifying crosses.", Notification.TYPE_ERROR_MESSAGE);
+        	MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.", Notification.POSITION_CENTERED);
         } else {
             if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
                 if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
-                    getWindow().showNotification("The nursery template file you uploaded doesn't contain any data on the second sheet.", Notification.TYPE_ERROR_MESSAGE);
+                	MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet."
+                			, Notification.POSITION_CENTERED);
                 //pass uploaded info and Crosses (if any) to next screen
                 } else {
                     if(this.nextNextScreen != null){

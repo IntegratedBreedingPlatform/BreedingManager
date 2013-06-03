@@ -15,6 +15,7 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 
 public class CrossingManagerUtil{
@@ -187,9 +188,9 @@ public class CrossingManagerUtil{
             e.printStackTrace();
             
             if (window != null && messageSource != null){
-                MessageNotifier.showWarning(window, 
+                MessageNotifier.showError(window, 
                 		messageSource.getMessage(Message.ERROR_DATABASE),
-                		messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE));
+                		messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE), Notification.POSITION_CENTERED);
             }
 		}
 		
@@ -197,7 +198,7 @@ public class CrossingManagerUtil{
 	}
 	
 	/**
-	 * Displays a warning in window if field's value is null: "<fieldName> must be specified."
+	 * Displays an error in window if field's value is null: "<fieldName> must be specified."
 	 * 
 	 * @param window - window where error message will be shown
 	 * @param field - field to check if null. If null, displays warning.
@@ -220,7 +221,7 @@ public class CrossingManagerUtil{
 	}
 	
 	/**
-	 * Displays a warning in window if field's string value is null: "<fieldName> must be specified."
+	 * Displays an error in window if field's string value is null: "<fieldName> must be specified."
 	 * 
 	 * @param window - window where error message will be shown
 	 * @param field - field to check if empty string. If empty, display warning
@@ -244,7 +245,7 @@ public class CrossingManagerUtil{
 	}
 	
 	/**
-	 * Displays a warning in window: "<fieldName> must be specified."
+	 * Displays a error in window: "<fieldName> must be specified."
 	 * 
 	 * @param window - window where error message will be shown
 	 * @param field - field to check if null. If null, displays warning.
@@ -259,8 +260,8 @@ public class CrossingManagerUtil{
 		assert messageSource != null;
 		
 		if (window != null){
-			MessageNotifier.showWarning(window, MessageFormat.format(
-					messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "");
+			MessageNotifier.showError(window, MessageFormat.format(
+					messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "", Notification.POSITION_CENTERED);
 		}
 
 	}

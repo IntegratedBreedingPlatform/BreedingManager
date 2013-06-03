@@ -45,6 +45,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * This class contains the absolute layout of UI elements in Cross Name section
@@ -221,7 +222,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     			LOG.error(e.toString() + "\n" + e.getStackTrace());
     			e.printStackTrace();
     			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-    					messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
+    					messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE), Notification.POSITION_CENTERED);
     		}
     	}
     	
@@ -232,11 +233,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	String prefix = ((String) prefixTextField.getValue()).trim();
     	
     	if (StringUtils.isEmpty(prefix)){
-    		MessageNotifier.showWarning(window, messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), "");
+    		MessageNotifier.showError(window, "Error with Cross Code", messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), Notification.POSITION_CENTERED);
     		return false;
     	
     	} else if (prefix.contains(" ")){
-    		MessageNotifier.showWarning(window, messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), "");
+    		MessageNotifier.showError(window, "Error with Cross Code", messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), Notification.POSITION_CENTERED);
         	return false;
     	} 
     	
@@ -247,18 +248,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	
     	// if Generate button never pressed
     	if (nextNumberInSequence == null ){
-    		MessageNotifier.showWarning(getWindow(), MessageFormat.format(
+    		MessageNotifier.showError(getWindow(), "Error with Cross Code", MessageFormat.format(
     				messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""
-    				), "");
+    				), Notification.POSITION_CENTERED);
     		return false;
 
     	// if prefix specifications were changed and next name in sequence not generated first
     	} else {
     		String currentPrefixString = buildPrefixString();
 			if (!currentPrefixString.equals(lastPrefixUsed)){
-    			MessageNotifier.showWarning(getWindow(), MessageFormat.format(
+    			MessageNotifier.showError(getWindow(), "Error with Cross Code", MessageFormat.format(
     					messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString +")"
-    					), "");
+    					), Notification.POSITION_CENTERED);
     			return false;
     		}
     	}
