@@ -33,7 +33,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.aspectj.asm.IModelFilter;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateUploadSource;
@@ -197,6 +196,23 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         try {
             inp = new FileInputStream(tempFileName);
             wb = new HSSFWorkbook(inp);
+            
+            Sheet sheet1 = wb.getSheetAt(0);
+            Sheet sheet2 = wb.getSheetAt(0);
+            
+            if(sheet1 == null || sheet1.getSheetName() == null || sheet1.getSheetName().equals("Description")){
+                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                        , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                fileIsValid = false;
+                return;
+            }
+            
+            if(sheet2 == null || sheet2.getSheetName() == null || sheet2.getSheetName().equals("Observation")){
+                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                        , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                fileIsValid = false;
+                return;
+            }
             
             readExcelSheets();
             
