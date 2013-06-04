@@ -65,7 +65,6 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListDataComponent.class);
 	private static final long serialVersionUID = -6487623269938610915L;
 
@@ -106,8 +105,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	private Window germplasmListCopyToNewListDialog;
 
 	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
-	private int currentUserLocalId;
-
+	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -360,8 +358,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     		        //File tempFile = new File(tempFileName);
     		        //tempFile.delete();
     		} catch (GermplasmListExporterException e) {
-    			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage()
-    					, "", Notification.POSITION_CENTERED);
+    		        LOG.error("Error with exporting list.", e);
+    			MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME)
+    			            , "Error with exporting list."    
+    			            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
     		}
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
@@ -375,7 +375,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			    germplasmListStatus=germplasmList.getStatus();
 			    exportListAction();
 			} catch (MiddlewareQueryException e) {
-			    // TODO Auto-generated catch block
+			    LOG.error("Error with exporting list.", e);
 			    e.printStackTrace();
 			}
         		
@@ -405,96 +405,95 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                         //File tempFile = new File(tempFileName);
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), e.getMessage()
-                        		, "", Notification.POSITION_CENTERED);
+                        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME) 
+                                    , "Error with exporting list."
+                                    , e.getMessage(), Notification.POSITION_CENTERED);
                 }
 	    } else {
-	        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it"
-	        		, "", Notification.POSITION_CENTERED);
+	        MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME)
+	                    , "Error with exporting list."    
+	                    , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
+	        		
 	    }
 	}
 	
 	public void deleteListButtonClickAction()  throws InternationalizableException {
 	    final Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 	    if(selectedIds.size() > 0){
-	    	
-	    	ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
-				"Ok", "Cancel", new ConfirmDialog.Listener() {
-
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						// Confirmed to continue
+	        ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
+	                "Ok", "Cancel", new ConfirmDialog.Listener() {
+	                    public void onClose(ConfirmDialog dialog) {
+	                        if (dialog.isConfirmed()) {
+	                            // Confirmed to continue
+	                            try {
+	                                if(getCurrentUserLocalId()==germplasListUserId) {
+	                                    designationOfListEntriesDeleted="";
+	                                    for (final Object itemId : selectedIds) {
+						Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
+						Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
 						try {
-							if(getCurrentUserLocalId()==germplasListUserId) {
-								designationOfListEntriesDeleted="";
-								for (final Object itemId : selectedIds) {
-									Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
-									Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
-									try {
-										int entryId=Integer.valueOf(pEntryId.getValue().toString());
-										designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
-										germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
-										listDataTable.removeItem(itemId);
-									} catch (MiddlewareQueryException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-								designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
-								
-                                //Change entry IDs on listData
-                                listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) germplasmListManager.countGermplasmListDataByListId(germplasmListId));
-                                Integer entryId = 1;
-                                for (GermplasmListData listData : listDatas) {
-                                    listData.setEntryId(entryId);
-                                    entryId++;
-                                }
-                                germplasmListManager.updateGermplasmListData(listDatas);
-                                
-                                //Change entry IDs on table
-                                entryId = 1;
-                                for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
-                                    int listDataId = (Integer) i.next();
-                                    Item item = listDataTable.getItem(listDataId);
-                                    item.getItemProperty(ENTRY_ID).setValue(entryId);
-                                    for (GermplasmListData listData : listDatas) {
-                                        if (listData.getId().equals(listDataId)) {
-                                            listData.setEntryId(entryId);
-                                            break;
-                                        }
-                                    }
-                                    entryId += 1;
-                                }
-                                listDataTable.requestRepaint();
-                                
-								try {
-									logDeletedListEntriesToWorkbenchProjectActivity();
-								} catch (MiddlewareQueryException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								
-							} else {
-								showMessageInvalidDeletingListEntries();
-							}
-						} catch (NumberFormatException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						    int entryId=Integer.valueOf(pEntryId.getValue().toString());
+						    designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
+						    germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
+						    listDataTable.removeItem(itemId);
 						} catch (MiddlewareQueryException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						    // TODO Auto-generated catch block
+						    e.printStackTrace();
 						}
+	                                    }
+	                                    designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
+        					
+	                                    //Change entry IDs on listData
+                                            listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0
+                                                    , (int) germplasmListManager.countGermplasmListDataByListId(germplasmListId));
+                                            Integer entryId = 1;
+                                            for (GermplasmListData listData : listDatas) {
+                                                listData.setEntryId(entryId);
+                                                entryId++;
+                                            }
+                                            germplasmListManager.updateGermplasmListData(listDatas);
+                                        
+                                            //Change entry IDs on table
+                                            entryId = 1;
+                                            for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+                                                int listDataId = (Integer) i.next();
+                                                Item item = listDataTable.getItem(listDataId);
+                                                item.getItemProperty(ENTRY_ID).setValue(entryId);
+                                                for (GermplasmListData listData : listDatas) {
+                                                    if (listData.getId().equals(listDataId)) {
+                                                        listData.setEntryId(entryId);
+                                                        break;
+                                                    }
+                                                }
+                                                entryId += 1;
+                                            }
+                                            listDataTable.requestRepaint();
+                                        
+                                            try {
+                                                logDeletedListEntriesToWorkbenchProjectActivity();
+                                            } catch (MiddlewareQueryException e) {
+                                                LOG.error("Error logging workbench activity.", e);
+                                                e.printStackTrace();
+                                            }
 					} else {
-						// User did not confirm
+					    showMessageInvalidDeletingListEntries();
 					}
+				} catch (NumberFormatException e) {
+				    LOG.error("Error with deleting list entries.", e);
+				    e.printStackTrace();
+				} catch (MiddlewareQueryException e) {
+				    LOG.error("Error with deleting list entries.", e);
+				    e.printStackTrace();
 				}
-	    	});
-	    	
+			} else {
+			    // User did not confirm
+			}
+		}
+	    });
 	    }else{
-		
-	    	MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+	        MessageNotifier.showError(this.getWindow(), "Error with deleteting entries." 
+	    	        , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
 	    }
-		
 	}
 
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
@@ -516,19 +515,21 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
 				workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
 				"Deleted list entries.", 
-				"Deleted the following list entries " + designationOfListEntriesDeleted + " from the list id " + germplasmListId + " - " + listName,user,new Date());
+				"Deleted list entries from the list id " + germplasmListId + " - " + listName,user,new Date());
 		try {
 			workbenchDataManager.addProjectActivity(projAct);
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+		    LOG.error("Error with logging workbench activity.", e);
+		    e.printStackTrace();
 		}
 	}
 
-	private void showMessageInvalidDeletingListEntries(){
-		MessageNotifier.showMessage(this.getWindow(), 
-				messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES), 
-				messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES) + " "+listName);
-	}
+    private void showMessageInvalidDeletingListEntries(){
+	MessageNotifier.showError(this.getWindow()
+	    , messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES) 
+	    , messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES)
+	    , Notification.POSITION_CENTERED);
+    }
 
 	public void copyToNewListAction(){
 		Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
@@ -552,8 +553,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 					this.getApplication().getMainWindow().addWindow(germplasmListCopyToNewListDialog);
 				}
 			} catch (MiddlewareQueryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    LOG.error("Error copying list entries.", e);
+			    e.printStackTrace();
 			}
 		}
 		
@@ -564,21 +565,18 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	    germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
 	    germplasmList.setStatus(germplasmList.getStatus()+100);
 	    try {
-			germplasmListManager.updateGermplasmList(germplasmList);
+		germplasmListManager.updateGermplasmList(germplasmList);
 	
-			User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-			ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-				workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-				"Locked a germplasm list.", 
-				"Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
-				user,
-				new Date());
-			workbenchDataManager.addProjectActivity(projAct);
+		User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+		        workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+			"Locked a germplasm list.", 
+			"Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
+		workbenchDataManager.addProjectActivity(projAct);
 		
 		deleteSelectedEntriesButton.setEnabled(false); 
-	    saveSortingButton.setEnabled(false);
-	    addEntriesButton.setEnabled(false);
-	        
+	        saveSortingButton.setEnabled(false);
+	        addEntriesButton.setEnabled(false);
 	    }catch (MiddlewareQueryException e) {
 	    	LOG.error("Error with locking list.", e);
     		MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. Please report to IBWS developers."

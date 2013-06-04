@@ -191,14 +191,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         String description=txtDescription.getValue().toString();
         
         if (listNameValue.trim().length() == 0) {
-            getWindow().showNotification("List Name Input Error...", "Please specify a List Name before saving",
-                    Notification.TYPE_WARNING_MESSAGE);
-
+            MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving", Notification.POSITION_CENTERED);
         } else if (listNameValue.trim().length() > 50) {
-            getWindow().showNotification("List Name Input Error...", "Listname input is too large limit the name only up to 50 characters",
-                    Notification.TYPE_WARNING_MESSAGE);
+            MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters", Notification.POSITION_CENTERED);
             txtListName.setValue("");
-        
         } else {
             Date date = new Date();
             Format formatter = new SimpleDateFormat("yyyyMMdd");
@@ -238,25 +234,30 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                     }
                     designationOfListEntriesCopied=designationOfListEntriesCopied.substring(0,designationOfListEntriesCopied.length()-1);
 					
-                    MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), 
-                            messageSource.getMessage(Message.SUCCESS), 
-                            messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS));
+                    MessageNotifier.showMessage(this.getWindow().getParent().getWindow() 
+                            ,messageSource.getMessage(Message.SUCCESS)
+                            ,messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS)
+                            ,3000
+                            ,Notification.POSITION_CENTERED);
 
                     logCopyToNewListEntriesToWorkbenchProjectActivity();
 
                 } catch (Exception e){
                     germplasmListManager.deleteGermplasmListByListId(newListid);
-                    getWindow().getParent().getWindow().showNotification("Unsuccessful", "Copying of entries to a new list failed",
-                            Notification.TYPE_WARNING_MESSAGE);
+                    LOG.error("Error with copying list entries", e);
+                    MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
+                            , "Copying of entries to a new list failed.  Please report to Workbench developers."
+                            , Notification.POSITION_CENTERED);
                 }
                 this.mainWindow.removeWindow(dialogWindow);
 
             } catch (MiddlewareQueryException e) {
-                // TODO Auto-generated catch block
+                LOG.error("Error with copying list entries", e);
                 e.printStackTrace();
-                MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), 
-                        messageSource.getMessage(Message.UNSUCCESSFUL), 
-                        messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED));
+                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                        , messageSource.getMessage(Message.UNSUCCESSFUL) 
+                        , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
+                        , Notification.POSITION_CENTERED);
             }
         }
     }
@@ -269,10 +270,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                 workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
                 "Copied entries into a new list.", 
-                "Copied entries " +designationOfListEntriesCopied + " to list " +newListid+  " - " + listNameValue,user,new Date());
+                "Copied entries to list " +newListid+  " - " + listNameValue,user,new Date());
         try {
             workbenchDataManager.addProjectActivity(projAct);	
         } catch (MiddlewareQueryException e) {
+            LOG.error("Error with logging workbench activity.", e);
             e.printStackTrace();
         }
     }
@@ -290,9 +292,5 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     public void valueChange(ValueChangeEvent event) {
         // TODO Auto-generated method stub
     }
-
-    /*
-     * Shows a notification when a selection is made.
-     */
 
 }
