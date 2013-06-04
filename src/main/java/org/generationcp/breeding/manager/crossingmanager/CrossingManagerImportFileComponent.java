@@ -202,8 +202,21 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                    } else {
                        selectAlreadyDefinedCrossesInNurseryTemplateFile();
                    }
+                   
+                   nextButton.setEnabled(true);
                 }else{
-                    MessageNotifier.showError(getWindow(), "Error with nursery template file.", messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE)
+                    StringBuffer errorMessage = new StringBuffer();
+                    errorMessage.append("The following entry ids on the second sheet are invalid:<br/>");
+                    errorMessage.append("Male entry ids: ");
+                    for(Integer entryId : crossingManagerUploader.getInvalidMaleEntryIds()){
+                        errorMessage.append(entryId + ", ");
+                    }
+                    errorMessage.append("<br/>");
+                    errorMessage.append("Female entry ids: ");
+                    for(Integer entryId : crossingManagerUploader.getInvalidFemaleEntryIds()){
+                        errorMessage.append(entryId + ", ");
+                    }
+                    MessageNotifier.showError(getWindow(), "Error with nursery template file.", errorMessage.toString()
                         , Notification.POSITION_CENTERED);
                     updateFilenameLabelValue("");
                     nextButton.setEnabled(false);
@@ -239,11 +252,12 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         source.enableWizardTabs();
         if(templateFileUsageOptionGroup.getValue().equals(TEMPLATE_FILE_USAGE_OPTION_1_ID)){
             //mimic reading of template file
-            crossingManagerUploader.setTempFileName();
+            crossingManagerUploader.setTempFileNameForBlankTemplate();
             crossingManagerUploader.uploadSucceeded(null);
             if(this.nextScreen != null){
                 saveCrossesInfoToNextWizardStep(this.nextScreen, false);
                 ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
+                ((CrossingManagerMakeCrossesComponent)this.nextScreen).clearParentsListsAndCrossesTable();
             } else {
                 this.nextButton.setEnabled(false);
             }

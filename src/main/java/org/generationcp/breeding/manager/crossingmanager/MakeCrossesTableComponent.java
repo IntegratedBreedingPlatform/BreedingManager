@@ -310,5 +310,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		}
 
     }
-
+    
+    public void clearCrossesTable(){
+        this.tableCrossesMade.removeAllItems();
+    }
 }

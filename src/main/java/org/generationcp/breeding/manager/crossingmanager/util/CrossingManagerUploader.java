@@ -33,11 +33,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.aspectj.asm.IModelFilter;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateUploadSource;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateImportFileComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
@@ -94,6 +94,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private Boolean hasInvalidData=false;
 
     private GermplasmListManager germplasmListManager;
+    
+    private List<Integer> invalidMaleEntryIdsOnSecondSheet;
+    private List<Integer> invalidFemaleEntryIdsOnSecondSheet;
 
     // TODO: consider renaming class to "NurseryTemplateUploader" or something so that it's a generic uploader utility class
     public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager) {
@@ -170,8 +173,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         return fos; // Return the output stream to write to
     }
 
-    public void setTempFileName(){
-        tempFileName = source.getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_nurserytemplate.xls";
+    public void setTempFileNameForBlankTemplate(){
+        tempFileName = source.getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/nursery_template.xls";
     }
     
     @Override
@@ -199,9 +202,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             
             if(fileIsValid==false){
                 importedGermplasmCrosses = null;
-                
-                if(source instanceof CrossingManagerImportFileComponent)
-                    ((CrossingManagerImportFileComponent) source).enableNextButton();
             } 
             
             // <macky>: moved "selectManuallyMakeCrosses() / selectAlreadyDefinedCrossesInNurseryTemplateFile()"
@@ -571,6 +571,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         
         ImportedGermplasmCross importedGermplasmCross;
         Boolean germplasmListDataAreValid = true;
+        this.invalidMaleEntryIdsOnSecondSheet = new ArrayList<Integer>();
+        this.invalidFemaleEntryIdsOnSecondSheet = new ArrayList<Integer>();
         
         if(fileIsValid){
             currentRow++;
@@ -588,12 +590,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("MALE ENTRY ID")){
                         importedGermplasmCross.setMaleEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | MALE ENTRY ID:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("FGID")){
-                        importedGermplasmCross.setFemaleGId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-                        System.out.println("DEBUG | FEMALE GID:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("MGID")){
-                        importedGermplasmCross.setMaleGId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-                        System.out.println("DEBUG | MALE GID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSSING DATE")){
                         try {
                             importedGermplasmCross.setCrossingDate(new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(currentSheet, currentRow, col, true)));
@@ -619,11 +615,15 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     maleFound = false;
                     for(int gd=0;gd<maleGermplasmList.getListData().size();gd++){
                         GermplasmListData germplasmListData = maleGermplasmList.getListData().get(gd);
-                        if(germplasmListData.getEntryId().equals(importedGermplasmCross.getMaleEntryId())
-                                && germplasmListData.getGid().equals(importedGermplasmCross.getMaleGId())){ 
+                        if(germplasmListData.getEntryId().equals(importedGermplasmCross.getMaleEntryId())){
+                            importedGermplasmCross.setMaleGId(germplasmListData.getGid());
                             importedGermplasmCross.setMaleDesignation(germplasmListData.getDesignation());
                             maleFound = true;
                         }
+                    }
+                    
+                    if(!maleFound){
+                        this.invalidMaleEntryIdsOnSecondSheet.add(importedGermplasmCross.getMaleEntryId());
                     }
                 }
                 
@@ -633,11 +633,15 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     femaleFound = false;                            
                     for(int gd=0;gd<femaleGermplasmList.getListData().size();gd++){
                         GermplasmListData germplasmListData = femaleGermplasmList.getListData().get(gd);
-                        if(germplasmListData.getEntryId().equals(importedGermplasmCross.getFemaleEntryId())
-                                && germplasmListData.getGid().equals(importedGermplasmCross.getFemaleGId())){
+                        if(germplasmListData.getEntryId().equals(importedGermplasmCross.getFemaleEntryId())){
+                            importedGermplasmCross.setFemaleGId(germplasmListData.getGid());
                             importedGermplasmCross.setFemaleDesignation(germplasmListData.getDesignation());
                             femaleFound = true;
                         }
+                    }
+                    
+                    if(!femaleFound){
+                        this.invalidFemaleEntryIdsOnSecondSheet.add(importedGermplasmCross.getFemaleEntryId());
                     }
                 }
                 
@@ -648,7 +652,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             }
         }
         if(germplasmListDataAreValid==false){
-//            showInvalidFileError("", "Invalid germplasm list data on sheet 2.");
             hasInvalidData=true;
         }else{
             hasInvalidData=false;
@@ -707,7 +710,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), "Error with file uploaded.", "Invalid import file type, you need to upload the correct XLS file.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(source.getWindow(), "Error with file uploaded.", "Invalid import file type, you need to upload the correct XLS file."
+                    , Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
     }    
@@ -738,5 +742,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     
     public boolean isFileValid(){
         return fileIsValid;
+    }
+    
+    public List<Integer> getInvalidMaleEntryIds(){
+        return this.invalidMaleEntryIdsOnSecondSheet;
+    }
+    
+    public List<Integer> getInvalidFemaleEntryIds(){
+        return this.invalidFemaleEntryIdsOnSecondSheet;
     }
 };

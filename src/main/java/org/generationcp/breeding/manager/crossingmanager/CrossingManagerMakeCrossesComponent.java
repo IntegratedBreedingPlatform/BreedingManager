@@ -355,4 +355,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         nextButton.setEnabled(false);
     }
 
+    public void clearParentsListsAndCrossesTable(){
+        this.listSelectFemale.removeAllItems();
+        this.listSelectMale.removeAllItems();
+        this.crossesTableComponent.clearCrossesTable();
+    }
 }
