@@ -35,7 +35,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.FinishedListener;
-import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -181,28 +180,34 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
 
             @Override
             public void uploadFinished(FinishedEvent event) {
-             if(!crossingManagerUploader.hasInvalidData()){
-                ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
-                
-                // display uploaded filename
-                if (importedGermplasmCrosses != null) {
-                    updateFilenameLabelValue(importedGermplasmCrosses.getFilename());
-                } else {
+                if(!crossingManagerUploader.isFileValid()){
                     updateFilenameLabelValue("");
+                    nextButton.setEnabled(false);
+                    return;
                 }
                 
-                // select default selected option based on file
-                if(importedGermplasmCrosses==null || importedGermplasmCrosses.getImportedGermplasmCrosses().size()==0){
-                    selectManuallyMakeCrosses();
-                } else {
-                    selectAlreadyDefinedCrossesInNurseryTemplateFile();
+                if(!crossingManagerUploader.hasInvalidData()){
+                   ImportedGermplasmCrosses importedGermplasmCrosses = crossingManagerUploader.getImportedGermplasmCrosses();
+                    
+                   // display uploaded filename
+                   if (importedGermplasmCrosses != null) {
+                       updateFilenameLabelValue(importedGermplasmCrosses.getFilename());
+                   } else {
+                       updateFilenameLabelValue("");
+                   }
+                    
+                   // select default selected option based on file
+                   if(importedGermplasmCrosses==null || importedGermplasmCrosses.getImportedGermplasmCrosses().size()==0){
+                       selectManuallyMakeCrosses();
+                   } else {
+                       selectAlreadyDefinedCrossesInNurseryTemplateFile();
+                   }
+                }else{
+                    MessageNotifier.showError(getWindow(), "Error with nursery template file.", messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE)
+                        , Notification.POSITION_CENTERED);
+                    updateFilenameLabelValue("");
+                    nextButton.setEnabled(false);
                 }
-             }else{
-            	 MessageNotifier.showError(getWindow(), "Error with nursery template file.", messageSource.getMessage(Message.INVALID_NURSERY_TEMPLATE_FILE)
-            			 , Notification.POSITION_CENTERED);
-            	 updateFilenameLabelValue("");
-     	    	 nextButton.setEnabled(false);
-             }
             }
         });
         

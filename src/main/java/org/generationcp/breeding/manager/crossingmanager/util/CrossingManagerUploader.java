@@ -37,6 +37,7 @@ import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateUploadSource;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateImportFileComponent;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
@@ -49,6 +50,8 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
@@ -61,6 +64,8 @@ import com.vaadin.ui.Window.Notification;
 public class CrossingManagerUploader implements Receiver, SucceededListener {
         
     private static final long serialVersionUID = -1740972379887956957L;
+    
+    private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerUploader.class);
     
     public File file;
     
@@ -194,10 +199,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             
             if(fileIsValid==false){
                 importedGermplasmCrosses = null;
-            }
-          
-            if(source instanceof CrossingManagerImportFileComponent)
-                ((CrossingManagerImportFileComponent) source).enableNextButton();
+                
+                if(source instanceof CrossingManagerImportFileComponent)
+                    ((CrossingManagerImportFileComponent) source).enableNextButton();
+            } 
             
             // <macky>: moved "selectManuallyMakeCrosses() / selectAlreadyDefinedCrossesInNurseryTemplateFile()"
             // code block to CrossingManagerImportFileComponent.uploadComponents.FinishedListener
@@ -212,10 +217,14 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 showInvalidFileTypeError();
             } catch (OfficeXmlFileException e){
                 showInvalidFileTypeError();
+            } catch (CrossingManagerUploaderException e){
+                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                        , e.getMessage(), Notification.POSITION_CENTERED);
+                fileIsValid = false;
             }
     }
     
-    private void readExcelSheets() {
+    private void readExcelSheets() throws CrossingManagerUploaderException{
         if (TemplateUploadSource.CROSSING_MANAGER.equals(uploadSourceType)) {
             readSheet1();
             readSheet2();
@@ -224,7 +233,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
     }
 
-    private void readSheet1(){
+    private void readSheet1() throws CrossingManagerUploaderException{
         readNurseryTemplateFileInfo();
         readConditions();
         readFactors();
@@ -232,7 +241,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         readVariates();
     }
 
-    private void readNurseryTemplateFileInfo(){
+    private void readNurseryTemplateFileInfo() throws CrossingManagerUploaderException{
         try {
 
             String study = getCellStringValue(0,0,1,true);
@@ -257,7 +266,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             System.out.println("DEBUG | Study Type:" + studyType);
 
         } catch (ParseException e) {
+            LOG.error("Error with reading nursery basic info.", e);
             e.printStackTrace();
+            throw new CrossingManagerUploaderException("Error with reading nursery basic info.", e);
         }
 
         //Prepare for next set of data
@@ -725,4 +736,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         return hasInvalidData;
     }
     
+    public boolean isFileValid(){
+        return fileIsValid;
+    }
 };
