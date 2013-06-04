@@ -12,6 +12,8 @@
 
 package org.generationcp.browser.germplasm;
 
+import java.util.StringTokenizer;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
@@ -47,6 +49,8 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     private Boolean includeDerivativeLines;
     @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
+    
+    private Integer rootGid;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -67,7 +71,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1); // throws QueryException
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
-
+        
         this.addListener(new GermplasmItemClickListener(this));
         this.addListener(new GermplasmTreeExpandListener(this));
 
@@ -95,6 +99,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         this.includeDerivativeLines = includeDerivativeLines;
 
         this.setSizeFull();
+        rootGid = Integer.valueOf(gid);
         germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1, includeDerivativeLines); // throws QueryException
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
@@ -123,7 +128,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
                 preferredName=String.valueOf(node.getGermplasm().getGid());
             }
             String leafNodeLabel = preferredName + "(" + node.getGermplasm().getGid() + ")";
-            int leafNodeId = node.getGermplasm().getGid();
+            String leafNodeId = node.getGermplasm().getGid().toString();
             this.addItem(leafNodeId);
             this.setItemCaption(leafNodeId, leafNodeLabel);
             this.setParent(leafNodeId, leafNodeId);
@@ -132,7 +137,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         }
 
         for (GermplasmPedigreeTreeNode parent : node.getLinkedNodes()) {
-            int leafNodeId = node.getGermplasm().getGid();
+            String leafNodeId = node.getGermplasm().getGid().toString();
             String preferredName="";
             try{
             	preferredName= parent.getGermplasm().getPreferredName().getNval();
@@ -141,7 +146,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             }
 
             String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";
-            int parentNodeId = parent.getGermplasm().getGid();
+            String parentNodeId = node.getGermplasm().getGid() + "-" + parent.getGermplasm().getGid();
             this.addItem(parentNodeId);
             this.setItemCaption(parentNodeId, parentNodeLabel);
             this.setParent(parentNodeId, leafNodeId);
@@ -152,9 +157,34 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         }
     }
 
-    public void pedigreeTreeExpandAction(int gid) throws InternationalizableException {
-        germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 2, includeDerivativeLines);
-        addNode(germplasmPedigreeTree.getRoot(), 2);
+    private void addNode(GermplasmPedigreeTreeNode node, String itemIdOfParent){
+        for (GermplasmPedigreeTreeNode parent : node.getLinkedNodes()) {
+            String leafNodeId = itemIdOfParent;
+            String preferredName="";
+            try{
+                preferredName= parent.getGermplasm().getPreferredName().getNval();
+            }catch(Exception e){
+                preferredName=String.valueOf(parent.getGermplasm().getGid());
+            }
+
+            String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";
+            String parentNodeId = node.getGermplasm().getGid() + "-" + parent.getGermplasm().getGid();
+            this.addItem(parentNodeId);
+            this.setItemCaption(parentNodeId, parentNodeLabel);
+            this.setParent(parentNodeId, leafNodeId);
+            this.setChildrenAllowed(parentNodeId, true);
+        }
+    }
+    
+    public void pedigreeTreeExpandAction(String itemId) throws InternationalizableException {
+        if(itemId.contains("-")){
+            String gidString = itemId.substring(itemId.indexOf("-")+1, itemId.length());
+            germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gidString), 2, includeDerivativeLines);
+            addNode(germplasmPedigreeTree.getRoot(), itemId);
+        } else {
+            germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(itemId), 2, includeDerivativeLines);
+            addNode(germplasmPedigreeTree.getRoot(), 2);
+        }
 
     }
 
