@@ -78,7 +78,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private GermplasmDataManager germplasmDataManager;
     
     @Autowired
-	private GermplasmListManager germplasmListManager;
+    private GermplasmListManager germplasmListManager;
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
@@ -497,7 +497,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     private void populateLocationComboBox(){
     	try{
-    		List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
+    	        List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
     		for(Location location : locations){
     			Integer locationId = location.getLocid();
     			String locationName = location.getLname();
