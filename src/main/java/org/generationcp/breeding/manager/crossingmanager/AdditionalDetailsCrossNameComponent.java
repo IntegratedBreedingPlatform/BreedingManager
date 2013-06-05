@@ -91,9 +91,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     
     private CrossesMadeContainer container;
         
-    private enum CrossNameOption{
-    	USE_DEFAULT, SPECIFY_CROSS_NAME
-    };
     
 	@Override
 	public void setCrossesMadeContainer(CrossesMadeContainer container) {
@@ -226,6 +223,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     		}
     	}
     	
+    	
     }
     
     private boolean validateCrossNameFields(){
@@ -295,21 +293,12 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	}
     	return sb.toString();
     }
-    
-    private boolean specifyCrossNameOptionSelected(){
-    	CrossNameOption optionId = (CrossNameOption) crossNameOptionGroup.getValue();
-    	return CrossNameOption.SPECIFY_CROSS_NAME.equals(optionId);
-    }
+
     
 	@Override
 	public boolean updateCrossesMadeContainer() {
 		
-		// Do nothing if "Use Default" option chosen. 
-		if (!specifyCrossNameOptionSelected()){
-			return true;
-		
-		//Else, perform validations and update CrossesMadeContainer
-		} else if (this.container != null && this.container.getCrossesMade() != null && 
+		if (this.container != null && this.container.getCrossesMade() != null && 
 				this.container.getCrossesMade().getCrossesMap()!= null && validateCrossNameFields() 
 					&& validateGeneratedName()) { 
 			
