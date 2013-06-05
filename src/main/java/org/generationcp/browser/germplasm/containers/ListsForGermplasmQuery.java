@@ -118,7 +118,7 @@ public class ListsForGermplasmQuery implements Query{
     public int size() {
         try {
             if(this.size == -1){
-                this.size = ((Long) dataManager.countGermplasmListDataByGID(gid)).intValue();
+                this.size = ((Long) dataManager.countGermplasmListByGID(gid)).intValue();
             }
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in countGermplasmListDataByGID in size() " + e.getMessage());
