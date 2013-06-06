@@ -5,46 +5,57 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class HeadToHeadComparisonMain extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
-	private static final long serialVersionUID = -3488805933508882321L;
-	private static final String VERSION = "2.2.1.0";
+    private static final long serialVersionUID = -3488805933508882321L;
+    private static final String VERSION = "2.2.1.0";
 	
-	private Accordion accordion;
+    private Accordion accordion;
 	
-	private HorizontalLayout titleLayout;
+    private HorizontalLayout titleLayout;
 	
-	private Label mainTitle;
+    private Label mainTitle;
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		setMargin(false);
-		setSpacing(true);
+    private SpecifyGermplasmsComponent screenOne;
+    private TraitsAvailableComponent screenTwo;
+
+    private Tab firstTab;
+    private Tab secondTab;
+	
+    @Override
+    public void afterPropertiesSet() throws Exception {
+	setMargin(false);
+	setSpacing(true);
 		
-		titleLayout = new HorizontalLayout();
+	titleLayout = new HorizontalLayout();
         titleLayout.setSpacing(true);
         setTitleContent("");
         addComponent(titleLayout);
-        
+                
         accordion = new Accordion();
         accordion.setWidth("1000px");
-        
-	}
 
-	@Override
-	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
-	}
+        screenOne = new SpecifyGermplasmsComponent();
+        screenTwo = new TraitsAvailableComponent();
+        
+        firstTab = accordion.addTab(screenOne, "Specify the Test and Standard Entries to Compare");
+        secondTab = accordion.addTab(screenTwo, "Review Traits Available for Comparison");
+        
+        addComponent(accordion);
+    }
+
+    @Override
+    public void updateLabels() {
+	// TODO Auto-generated method stub
+    }
 	
-	private void setTitleContent(String guideMessage){
+    private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
         
         String title =  "<h1>Cross Study:</h1> <h1>Head-to-Head Comparison Query</h1> <h2>" + VERSION + "</h2>";
