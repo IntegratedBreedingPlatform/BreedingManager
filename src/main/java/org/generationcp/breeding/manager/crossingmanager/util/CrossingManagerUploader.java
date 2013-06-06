@@ -595,7 +595,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         currentRow++;
     }
     
-    private void readSheet2(){
+    private void readSheet2() throws CrossingManagerUploaderException{
         currentSheet = 1;
         currentRow = 0;
         currentColumn = 0;
@@ -656,6 +656,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     if(!maleFound){
                         this.invalidMaleEntryIdsOnSecondSheet.add(importedGermplasmCross.getMaleEntryId());
                     }
+                } else{
+                    throw new CrossingManagerUploaderException("The male list specified on the Description sheet does not exist.");
                 }
                 
                 //Check if female entryID and GID are valid
@@ -674,6 +676,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     if(!femaleFound){
                         this.invalidFemaleEntryIdsOnSecondSheet.add(importedGermplasmCross.getFemaleEntryId());
                     }
+                } else{
+                    throw new CrossingManagerUploaderException("The female list specified on the Description sheet does not exist.");
                 }
                 
                 if(maleFound==false || femaleFound==false)
