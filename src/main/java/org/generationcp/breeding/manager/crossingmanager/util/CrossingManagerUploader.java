@@ -197,19 +197,33 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             inp = new FileInputStream(tempFileName);
             wb = new HSSFWorkbook(inp);
             
-            Sheet sheet1 = wb.getSheetAt(0);
-            Sheet sheet2 = wb.getSheetAt(1);
-            
-            
-            if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
-                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+            try{
+            	Sheet sheet1 = wb.getSheetAt(0);
+            	
+            	if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
+                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                            , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                    fileIsValid = false;
+                    return;
+                }
+            } catch(Exception ex){
+            	MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
                         , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
                 fileIsValid = false;
                 return;
             }
             
-            if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
-                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+            try{
+            	Sheet sheet2 = wb.getSheetAt(1);
+            	
+            	if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
+                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                            , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                    fileIsValid = false;
+                    return;
+                }
+            } catch(Exception ex){
+            	MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
                         , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
                 fileIsValid = false;
                 return;
