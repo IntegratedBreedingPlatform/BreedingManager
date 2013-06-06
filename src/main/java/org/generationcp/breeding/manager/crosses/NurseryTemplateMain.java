@@ -43,7 +43,7 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
      */
     private static final long serialVersionUID = 4701041621872315948L;
     
-    private static final String VERSION = "1.1.1.0";
+    private static final String VERSION = "2.2.1.0";
     private static final String STEP_1_GUIDE_MESSAGE = "This allows you to write a nursery template file with values for the conditions on the first screen. "
             + "First you need to select and upload a blank nursery template file.";
     private static final String STEP_2_GUIDE_MESSAGE = "Filling up the values on this screen is optional.  The values specified here will get written on the file" 
