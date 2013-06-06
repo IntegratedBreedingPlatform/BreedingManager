@@ -234,7 +234,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                     newListid = germplasmListManager.addGermplasmList(listNameData);
                     try{
         		GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
-        		AddGermplasmListData(germList);
+        		AddGermplasmListData(germList,1);
         	    } catch (Exception e){
         		germplasmListManager.deleteGermplasmListByListId(newListid);
         		LOG.error("Error with copying list entries", e);
@@ -257,7 +257,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 		try {
                     String listId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
                     GermplasmList  germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
-                    AddGermplasmListData(germList);
+                    int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
+                    AddGermplasmListData(germList,countOfExistingList+1);
                     this.mainWindow.removeWindow(dialogWindow);
 		} catch (MiddlewareQueryException e) {
 		    LOG.error("Error with copying list entries", e);
@@ -273,10 +274,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         }
     }
 
-    private void AddGermplasmListData(GermplasmList germList) throws MiddlewareQueryException {
+    private void AddGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
 		int status = 0;
 		int localRecordId = 0;
-		int entryid = 1;
 		designationOfListEntriesCopied="";
 		Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
 		for (final Object itemId : selectedIds) {
