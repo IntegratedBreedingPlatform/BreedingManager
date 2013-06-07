@@ -29,6 +29,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable = new Table();
         traitsTable.setWidth("500px");
         traitsTable.setHeight("400px");
+        traitsTable.setImmediate(true);
         
         traitsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
         traitsTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);

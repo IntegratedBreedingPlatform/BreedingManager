@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.h2h;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 
 @Configurable
@@ -21,10 +23,37 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
     private Table environmentsTable;
 
+    private Button nextButton;
+    private Button backButton;
+    
     @Override
     public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
+    	setHeight("500px");
+        setWidth("1000px");
         
+        environmentsTable = new Table();
+        environmentsTable.setWidth("800px");
+        environmentsTable.setHeight("400px");
+        environmentsTable.setImmediate(true);
+        environmentsTable.setColumnCollapsingAllowed(true);
+        environmentsTable.setColumnReorderingAllowed(true);
+        
+        List<String> traitNames = new ArrayList<String>();
+        traitNames.add("GRAIN_YIELD");
+        traitNames.add("PLANT_HEIGHT");
+        traitNames.add("BLB");
+        traitNames.add("LEAF_COLOR");
+        traitNames.add("NITROGEN");
+        traitNames.add("GRAIN_WEIGHT");
+        createEnvironmentsTable(traitNames);
+        
+        addComponent(environmentsTable, "top:20px;left:30px");
+        
+        nextButton = new Button("Next");
+        addComponent(nextButton, "top:450px;left:900px");
+        
+        backButton = new Button("Back");
+        addComponent(backButton, "top:450px;left:820px");
     }
     
     private void createEnvironmentsTable(List<String> traitNames){
@@ -41,6 +70,15 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
         environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
+        
+        int idNumber = 1;
+        for(String traitName : traitNames){
+        	String traitId = traitName + idNumber;
+        	
+        	environmentsTable.addContainerProperty(traitId, Integer.class, null);
+        	environmentsTable.setColumnHeader(traitId, traitName);
+        	idNumber++;
+        }
     }
     
     @Override

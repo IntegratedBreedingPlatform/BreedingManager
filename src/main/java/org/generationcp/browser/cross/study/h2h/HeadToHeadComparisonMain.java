@@ -24,9 +24,13 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
 	
     private SpecifyGermplasmsComponent screenOne;
     private TraitsAvailableComponent screenTwo;
+    private EnvironmentsAvailableComponent screenThree;
+    private ResultsComponent screenFour;
 
     private Tab firstTab;
     private Tab secondTab;
+    private Tab thirdTab;
+    private Tab fourthTab;
 	
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -43,9 +47,13 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
 
         screenOne = new SpecifyGermplasmsComponent();
         screenTwo = new TraitsAvailableComponent();
+        screenThree = new EnvironmentsAvailableComponent();
+        screenFour = new ResultsComponent();
         
         firstTab = accordion.addTab(screenOne, "Specify the Test and Standard Entries to Compare");
         secondTab = accordion.addTab(screenTwo, "Review Traits Available for Comparison");
+        thirdTab = accordion.addTab(screenThree, "Review Environments Available for Comparison");
+        fourthTab = accordion.addTab(screenFour, "View Results");
         
         addComponent(accordion);
     }
