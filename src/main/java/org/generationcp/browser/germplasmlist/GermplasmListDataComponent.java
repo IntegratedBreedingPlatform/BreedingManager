@@ -150,23 +150,25 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			listDataTable.setPageLength(15); // number of rows to display in the Table
 			listDataTable.setSizeFull(); // to make scrollbars appear on the Table component
 			
-			listDataTable.addActionHandler(new Action.Handler() {
-				public Action[] getActions(Object target, Object sender) {
-				    if (germplasmListId < 0 &&  germplasmListStatus < 100){
-						return ACTIONS_TABLE_CONTEXT_MENU;
-				    }else{
-						return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
-				    }
-				}
-
-				public void handleAction(Action action, Object sender, Object target) {
-					if (ACTION_DELETE == action) {
-						deleteListButtonClickAction();
-					} else if (ACTION_SELECT_ALL == action) {
-						listDataTable.setValue(listDataTable.getItemIds());
-					}
-				}
-			});
+			if(!fromUrl){
+        		    listDataTable.addActionHandler(new Action.Handler() {
+        		        public Action[] getActions(Object target, Object sender) {
+        			    if (germplasmListId < 0 &&  germplasmListStatus < 100){
+        				return ACTIONS_TABLE_CONTEXT_MENU;
+        			    }else{
+        				return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
+        			    }
+        			}
+        
+        			public void handleAction(Action action, Object sender, Object target) {
+        			    if (ACTION_DELETE == action) {
+        				deleteListButtonClickAction();
+        			    } else if (ACTION_SELECT_ALL == action) {
+        				listDataTable.setValue(listDataTable.getItemIds());
+        			    }
+        			}
+        		    });
+			}
 
 			//make GID as link only if the page wasn't directly accessed from the URL
 			if (!fromUrl) {
@@ -196,31 +198,33 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			setSpacing(true);
 			addComponent(listDataTable);
 
-			HorizontalLayout buttonArea = new HorizontalLayout();
-			buttonArea.setSpacing(true);
-
-			selectAllButton = new Button("Select All",new Button.ClickListener() {
-				public void buttonClick(Button.ClickEvent event) {
-					listDataTable.setValue(listDataTable.getItemIds());
-				}
-			});
-			buttonArea.addComponent(selectAllButton);
-			exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
-			exportListButton.setData(EXPORT_BUTTON_ID);			
-			exportListButton.setEnabled(true);
-			buttonArea.addComponent(exportListButton);
-			
-			exportForGenotypingButton = new Button("Export List for Genotyping Order", new GermplasmListButtonClickListener(this));
-			exportForGenotypingButton.setData(EXPORT_FOR_GENOTYPING_BUTTON_ID);
-			exportForGenotypingButton.setEnabled(true);
-			buttonArea.addComponent(exportForGenotypingButton);
-			
-			copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
-			copyToNewListButton.setData(COPY_TO_NEW_LIST_BUTTON_ID);
-			buttonArea.addComponent(copyToNewListButton);
-
-			addComponent(buttonArea);
-			
+			if(!fromUrl){
+			    HorizontalLayout buttonArea = new HorizontalLayout();
+	                    buttonArea.setSpacing(true);
+	    
+	                    selectAllButton = new Button("Select All",new Button.ClickListener() {
+	                            public void buttonClick(Button.ClickEvent event) {
+	                                    listDataTable.setValue(listDataTable.getItemIds());
+	                            }
+	                    });
+	                    buttonArea.addComponent(selectAllButton);
+	                    exportListButton = new Button("Export List", new GermplasmListButtonClickListener(this));
+	                    exportListButton.setData(EXPORT_BUTTON_ID);                     
+	                    exportListButton.setEnabled(true);
+	                    buttonArea.addComponent(exportListButton);
+	                        
+	                    exportForGenotypingButton = new Button("Export List for Genotyping Order", new GermplasmListButtonClickListener(this));
+	                    exportForGenotypingButton.setData(EXPORT_FOR_GENOTYPING_BUTTON_ID);
+	                    exportForGenotypingButton.setEnabled(true);
+	                    buttonArea.addComponent(exportForGenotypingButton);
+	                        
+	                    copyToNewListButton = new Button("Copy to New List", new GermplasmListButtonClickListener(this));
+	                    copyToNewListButton.setData(COPY_TO_NEW_LIST_BUTTON_ID);
+	                    buttonArea.addComponent(copyToNewListButton);
+	    
+	                    addComponent(buttonArea);
+	                }
+    					
 			// Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID).
 			// and when not accessed directly from URL or popup window
 			if (germplasmListId < 0

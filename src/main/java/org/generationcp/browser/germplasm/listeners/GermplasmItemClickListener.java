@@ -17,6 +17,7 @@ import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodCompone
 import org.generationcp.browser.germplasm.GermplasmMaintenanceNeighborhoodComponent;
 import org.generationcp.browser.germplasm.GermplasmPedigreeTreeComponent;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -112,7 +113,25 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
 				}
 			}
 			
-		}
+		} else if (sourceClass instanceof SelectAGermplasmDialog) {
+	            if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
+	                try {
+	                    ((SelectAGermplasmDialog) sourceClass).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+	                } catch (InternationalizableException e) {  
+	                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                    e.printStackTrace();
+	                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	                }
+	            } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+	                try {
+	                    ((SelectAGermplasmDialog) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+	                } catch (InternationalizableException e) {  
+	                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                    e.printStackTrace();
+	                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	                }
+	            }
+	        }
 	}
 
 }

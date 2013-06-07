@@ -231,7 +231,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         firstTabLayout.setSpacing(true);
         firstTabLayout.setMargin(true);
         
-        Label step1Label = new Label("1. Search for Germplasm Record to add as List Entry.  Double click on a row in th result table to view germplasm details.");
+        Label step1Label = new Label("1. Search for Germplasm Record to add as List Entry.  Double click on a row in the result table to view germplasm details.");
         firstTabLayout.addComponent(step1Label);
         
         HorizontalLayout searchFormLayout = new HorizontalLayout();

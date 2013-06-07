@@ -22,6 +22,7 @@ import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmMaintenanceNeighborhoodComponent;
 import org.generationcp.browser.germplasm.SaveGermplasmListDialog;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
+import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -172,6 +173,12 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
                 && event.getButton().getData().equals(GermplasmDetail.REFRESH_BUTTON_ID)) {
             ((GermplasmDetail) source).refreshPedigreeTree();
             
+        } else if (source instanceof SelectAGermplasmDialog
+                && event.getButton().getData().equals(SelectAGermplasmDialog.SEARCH_BUTTON_ID)) {
+            ((SelectAGermplasmDialog) source).searchButtonClickAction();
+        } else if (source instanceof SelectAGermplasmDialog
+                && event.getButton().getData().equals(SelectAGermplasmDialog.DONE_BUTTON_ID)) {
+            ((SelectAGermplasmDialog) source).doneButtonClickAction();
         } else {
             LOG.error("GermplasmButtonClickListener: Error with buttonClick action. Source not identified.");
         }

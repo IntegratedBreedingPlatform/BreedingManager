@@ -38,14 +38,14 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 		addComponent(testEntryLabel, "top:20px;left:30px");
 		
 		testEntryNameLabel = new Label("IR 71692-45-2-2-1");
-		addComponent(testEntryNameLabel, "top:20px;left:150px");
+		addComponent(testEntryNameLabel, "top:20px;left:120px");
 		
 		standardEntryLabel = new Label("<b>Standard Entry:</b>");
 		standardEntryLabel.setContentMode(Label.CONTENT_XHTML);
 		addComponent(standardEntryLabel, "top:20px;left:450px");
 		
 		standardEntryNameLabel = new Label("IR 64");
-		addComponent(standardEntryNameLabel, "top:20px;left:600px");
+		addComponent(standardEntryNameLabel, "top:20px;left:570px");
 		
 		resultsTable = new Table();
 		resultsTable.setWidth("800px");
