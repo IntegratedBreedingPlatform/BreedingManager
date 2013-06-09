@@ -40,8 +40,9 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     		"proceed to the next step without using a nursery template file.";
     private static final String STEP_2_GUIDE_MESSAGE = "In this screen you must first select a list for the female and male parents, " +
     		"then select list entries, next you should select an option for how you want to cross your list entries, " +
-                "then press the Make Cross button.  You can select and delete crosses you have made on the crosses " +
-                "made table.";
+                "then press the Make Cross button.  In selecting male and female parents you can use the Shift and CTRL keys to " +
+                "select multiple items.  You can select and delete crosses you have made on the crosses " +
+                "made table, Shift and CTRL keys may also be used for this.";
     private static final String STEP_3_GUIDE_MESSAGE = "This screen allows you to specify additional details for the germplasm records " +
     		"which will be made for the crosses you have specified.";
     private static final String STEP_4_GUIDE_MESSAGE = "This screen allows you to specify details for the list which will be created " +
