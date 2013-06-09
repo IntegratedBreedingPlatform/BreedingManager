@@ -155,8 +155,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         
         for(VariableType variable : variables)
         {
-            if(variable.getStandardVariable().getStoredIn().getId() != TermId.STUDY_INFORMATION.getId()
-                    && variable.getStandardVariable().getStoredIn().getId() != TermId.TRIAL_ENVIRONMENT_EXPERIMENT.getId()){
+            if(variable.getStandardVariable().getStoredIn().getId() != TermId.STUDY_INFORMATION.getId()){
                 String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
                 columnIds.add(columnId);
             }
