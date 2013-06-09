@@ -64,8 +64,6 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private AbstractComponent[] requiredFields = new AbstractComponent[2];
-    
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     private List<Location> locations;
@@ -96,10 +94,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		
 		harvestLocComboBox = new ComboBox();
 		harvestLocComboBox.setWidth("400px");
-		
-		//sets required fields
-		requiredFields[0] = harvestDtDateField;
-		requiredFields[1] = harvestLocComboBox;
+		harvestLocComboBox.setNullSelectionAllowed(true);
 		
 		// layout components
 		addComponent(harvestDateLabel, "top:30px;left:20px");
@@ -155,13 +150,20 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			if (this.container != null && this.container.getCrossesMade() != null && 
 					this.container.getCrossesMade().getCrossesMap()!= null) {
 				
-				Date harvestDate = (Date) harvestDtDateField.getValue();
-				Integer harvestLocationId = mapLocation.get(harvestLocComboBox.getValue());
-
-				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-	    		Integer dateIntValue = Integer.parseInt(formatter.format(harvestDate));
-	    						
-				Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();
+			        Integer dateIntValue = 0;
+			        Integer harvestLocationId = 0;
+			        
+			        if(harvestLocComboBox.getValue() != null){
+			            harvestLocationId = mapLocation.get(harvestLocComboBox.getValue());
+			        }
+			        
+			        if(harvestDtDateField.getValue() != null){
+			            Date harvestDate = (Date) harvestDtDateField.getValue();
+			            SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+	                            dateIntValue = Integer.parseInt(formatter.format(harvestDate));
+			        }
+				
+			        Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();
 				for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
 					Germplasm germplasm = entry.getKey();
 					germplasm.setLocationId(harvestLocationId);
@@ -178,9 +180,10 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	}
 
 	private boolean validateRequiredFields() {
-		return 
-			CrossingManagerUtil.validateRequiredField(getWindow(), harvestDtDateField, messageSource, (String) harvestDateLabel.getCaption()) &&
-			CrossingManagerUtil.validateRequiredField(getWindow(), harvestLocComboBox, messageSource, (String) harvestLocationLabel.getCaption());
+		return true;
+		        //validation of these fields are removed for now
+			//CrossingManagerUtil.validateRequiredField(getWindow(), harvestDtDateField, messageSource, (String) harvestDateLabel.getCaption()) &&
+			//CrossingManagerUtil.validateRequiredField(getWindow(), harvestLocComboBox, messageSource, (String) harvestLocationLabel.getCaption());
 	}
 
 }

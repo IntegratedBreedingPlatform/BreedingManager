@@ -273,7 +273,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			Integer number) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(prefix);
-		sb.append(" ");
+		if(!(prefix.charAt(prefix.length()-1) == '0')){
+		    sb.append(" ");
+		}
 		sb.append(number);
 		if (!StringUtils.isEmpty(suffix)){
 			sb.append(" ");
@@ -285,6 +287,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     
     private String getLeadingZeroesAsString(){
     	StringBuilder sb = new StringBuilder();
+    	sb.append(" ");
     	if (sequenceNumCheckBox.booleanValue()){
     		Integer numOfZeros = (Integer) leadingZerosSelect.getValue();
     		for (int i = 0; i < numOfZeros; i++){

@@ -95,9 +95,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		lblCrossMade = new Label();
 		
         tableCrossesMade = new Table();
-        tableCrossesMade.setSizeFull();
+        tableCrossesMade.setWidth("100%");
+        tableCrossesMade.setHeight("400px");
+        tableCrossesMade.setImmediate(true);
         tableCrossesMade.setSelectable(true);	
         tableCrossesMade.setMultiSelect(true);
+        tableCrossesMade.setPageLength(0);
         
         tableCrossesMade.addContainerProperty(PARENTAGE, String.class, null);
         tableCrossesMade.addContainerProperty(FEMALE_PARENT_COLUMN, String.class, null);
@@ -117,6 +120,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					deleteCrossAction();
 				} else if (ACTION_SELECT_ALL == action) {
 					tableCrossesMade.setValue(tableCrossesMade.getItemIds());
+					tableCrossesMade.setPageLength(0);
 				}
 			}
 		});
@@ -165,7 +169,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			}
     	}
 
-	}
+    	tableCrossesMade.setPageLength(0);
+    	}
     
     /**
      * Multiplies each item on first list with each item on second list.
@@ -190,6 +195,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				}
 			}
 		}
+    	
+    	tableCrossesMade.setPageLength(0);
     }
 
     // Checks if combination of female and male parents already exists in Crossing Made table
@@ -210,6 +217,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     		for (Object itemId : selectedIds){
 				tableCrossesMade.removeItem(itemId);
 			}
+    		tableCrossesMade.setPageLength(0);
     	} else {
     		MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
     	}
@@ -313,5 +321,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     public void clearCrossesTable(){
         this.tableCrossesMade.removeAllItems();
+        tableCrossesMade.setPageLength(0);
     }
 }
