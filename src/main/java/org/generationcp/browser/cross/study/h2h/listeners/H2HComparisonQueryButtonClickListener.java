@@ -42,6 +42,15 @@ public class H2HComparisonQueryButtonClickListener implements Button.ClickListen
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
+        } else if (event.getButton().getData().equals(SpecifyGermplasmsComponent.NEXT_BUTTON_ID)
+                && (source instanceof SpecifyGermplasmsComponent)){
+            try {
+                ((SpecifyGermplasmsComponent) source).nextButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
         } else {
             LOG.error("H2HComparisonQueryButtonClickListener: Error with buttonClick action. Source not identified.");
         }
