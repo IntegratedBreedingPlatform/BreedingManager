@@ -216,8 +216,16 @@ public class DatasetExporter {
                 
                 Row conditionRow = descriptionSheet.createRow(conditionRowIndex);
                 conditionRow.createCell(0).setCellValue(conditionName);
-                conditionRow.createCell(1).setCellValue(conditionVariable.getVariableType().getStandardVariable().getDescription());
-                conditionRow.createCell(2).setCellValue(conditionVariable.getVariableType().getStandardVariable().getName());
+                if(conditionVariable.getVariableType().getLocalDescription() != null && conditionVariable.getVariableType().getLocalDescription().length() != 0){
+                	conditionRow.createCell(1).setCellValue(conditionVariable.getVariableType().getLocalDescription());
+                } else{
+                	conditionRow.createCell(1).setCellValue(conditionVariable.getVariableType().getStandardVariable().getDescription());
+                }
+                if(conditionVariable.getVariableType().getStandardVariable().getProperty() != null){
+                	conditionRow.createCell(2).setCellValue(conditionVariable.getVariableType().getStandardVariable().getProperty().getName());
+                } else{
+                	conditionRow.createCell(2).setCellValue(conditionVariable.getVariableType().getStandardVariable().getName());
+                }
                 conditionRow.createCell(3).setCellValue(conditionVariable.getVariableType().getStandardVariable().getScale().getName());
                 conditionRow.createCell(4).setCellValue(conditionVariable.getVariableType().getStandardVariable().getMethod().getName());
                 conditionRow.createCell(5).setCellValue(conditionType);
@@ -287,8 +295,16 @@ public class DatasetExporter {
                 if(temp == null && !factorName.equals("STUDY")) {
                     Row factorRow = descriptionSheet.createRow(factorRowIndex);
                     factorRow.createCell(0).setCellValue(factorName);
-                    factorRow.createCell(1).setCellValue(factor.getStandardVariable().getDescription());
-                    factorRow.createCell(2).setCellValue(factor.getStandardVariable().getName());
+                    if(factor.getLocalDescription() != null && factor.getLocalDescription().length() != 0){
+                    	factorRow.createCell(1).setCellValue(factor.getLocalDescription());
+                    } else{
+                    	factorRow.createCell(1).setCellValue(factor.getStandardVariable().getDescription());
+                    }
+                    if(factor.getStandardVariable().getProperty() != null){
+                    	factorRow.createCell(2).setCellValue(factor.getStandardVariable().getProperty().getName());
+                    } else{
+                    	factorRow.createCell(2).setCellValue(factor.getStandardVariable().getName());
+                    }
                     factorRow.createCell(3).setCellValue(factor.getStandardVariable().getScale().getName());
                     factorRow.createCell(4).setCellValue(factor.getStandardVariable().getMethod().getName());
                     factorRow.createCell(5).setCellValue(dataType);
@@ -340,8 +356,16 @@ public class DatasetExporter {
                 
                 Row variateRow = descriptionSheet.createRow(variateRowIndex);
                 variateRow.createCell(0).setCellValue(variateName);
-                variateRow.createCell(1).setCellValue(variate.getStandardVariable().getDescription());
-                variateRow.createCell(2).setCellValue(variate.getStandardVariable().getName());
+                if(variate.getLocalDescription() != null && variate.getLocalDescription().length() != 0){
+                	variateRow.createCell(1).setCellValue(variate.getLocalDescription().trim());
+                } else{
+                	variateRow.createCell(1).setCellValue(variate.getStandardVariable().getDescription());
+                }
+                if(variate.getStandardVariable().getProperty() != null){
+                	variateRow.createCell(2).setCellValue(variate.getStandardVariable().getProperty().getName());
+                } else{
+                	variateRow.createCell(2).setCellValue(variate.getStandardVariable().getName());
+                }
                 variateRow.createCell(3).setCellValue(variate.getStandardVariable().getScale().getName());
                 variateRow.createCell(4).setCellValue(variate.getStandardVariable().getMethod().getName());
                 variateRow.createCell(5).setCellValue(dataType);
