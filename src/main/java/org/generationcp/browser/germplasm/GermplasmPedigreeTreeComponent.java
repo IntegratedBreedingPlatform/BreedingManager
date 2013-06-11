@@ -12,14 +12,12 @@
 
 package org.generationcp.browser.germplasm;
 
-import java.util.StringTokenizer;
-
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmTreeExpandListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.browser.util.Util;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
@@ -146,7 +144,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             }
 
             String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";
-            String parentNodeId = node.getGermplasm().getGid() + "-" + parent.getGermplasm().getGid();
+            String parentNodeId = node.getGermplasm().getGid() + "@" + parent.getGermplasm().getGid();
             this.addItem(parentNodeId);
             this.setItemCaption(parentNodeId, parentNodeLabel);
             this.setParent(parentNodeId, leafNodeId);
@@ -168,7 +166,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             }
 
             String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";
-            String parentNodeId = node.getGermplasm().getGid() + "-" + parent.getGermplasm().getGid();
+            String parentNodeId = node.getGermplasm().getGid() + "@" + parent.getGermplasm().getGid();
             this.addItem(parentNodeId);
             this.setItemCaption(parentNodeId, parentNodeLabel);
             this.setParent(parentNodeId, leafNodeId);
@@ -177,8 +175,8 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     }
     
     public void pedigreeTreeExpandAction(String itemId) throws InternationalizableException {
-        if(itemId.contains("-")){
-            String gidString = itemId.substring(itemId.indexOf("-")+1, itemId.length());
+        if(itemId.contains("@")){
+            String gidString = itemId.substring(itemId.indexOf("@")+1, itemId.length());
             germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gidString), 2, includeDerivativeLines);
             addNode(germplasmPedigreeTree.getRoot(), itemId);
         } else {
