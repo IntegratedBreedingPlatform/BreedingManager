@@ -14,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 public class HeadToHeadComparisonMain extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = -3488805933508882321L;
-    private static final String VERSION = "2.2.1.0";
+    private static final String VERSION = "1.1.1.0";
 	
     private Accordion accordion;
 	
