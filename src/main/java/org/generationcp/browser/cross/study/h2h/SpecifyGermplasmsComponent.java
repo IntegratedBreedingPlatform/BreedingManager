@@ -7,6 +7,8 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -36,9 +38,14 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private HeadToHeadComparisonMain mainScreen;
     private TraitsAvailableComponent nextScreen;
     
+    private Integer lastTestEntryGID;
+    private Integer lastStandardEntryGID;
+    
     public SpecifyGermplasmsComponent(HeadToHeadComparisonMain mainScreen, TraitsAvailableComponent nextScreen){
     	this.mainScreen = mainScreen;
     	this.nextScreen = nextScreen;
+    	this.lastTestEntryGID = null;
+    	this.lastStandardEntryGID = null;
     }
     
     @Override
@@ -51,6 +58,17 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         testEntryText = new TextField();
         testEntryText.setWidth("200px");
+        testEntryText.setImmediate(true);
+        testEntryText.addListener(new Property.ValueChangeListener() {
+            
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                String value = (String) testEntryText.getValue();
+                if(value == null || value.length() == 0){
+                    testEntryText.setData(null);
+                }
+            }
+        });
         addComponent(testEntryText, "top:20px;left:150px");
         
         specifyStandardEntryLabel = new Label("Specify a standard entry:");
@@ -58,6 +76,17 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         standardEntryText = new TextField();
         standardEntryText.setWidth("200px");
+        standardEntryText.setImmediate(true);
+        standardEntryText.addListener(new Property.ValueChangeListener() {
+            
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                String value = (String) standardEntryText.getValue();
+                if(value == null || value.length() == 0){
+                    standardEntryText.setData(null);
+                }
+            }
+        });
         addComponent(standardEntryText, "top:20px;left:600px");
         
         selectTestEntryButton = new Button("Select test entry");
@@ -103,9 +132,23 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	Integer standardEntryGID = (Integer) standardEntryText.getData();
     	
     	if(this.nextScreen != null){
-    		this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
-    		this.mainScreen.selectSecondTab();
+    	    if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
+    	        this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
+    	        this.lastTestEntryGID = testEntryGID;
+    	        this.lastStandardEntryGID = standardEntryGID;
+    	    }
+    	    this.mainScreen.selectSecondTab();
     	}
+    }
+    
+    private boolean areCurrentGIDsDifferentFromLast(Integer currentTestEntryGID, Integer currentStandardEntryGID){
+        if(this.lastTestEntryGID != null && this.lastStandardEntryGID != null){
+            if(this.lastTestEntryGID == currentTestEntryGID && this.lastStandardEntryGID == currentStandardEntryGID){
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     @Override

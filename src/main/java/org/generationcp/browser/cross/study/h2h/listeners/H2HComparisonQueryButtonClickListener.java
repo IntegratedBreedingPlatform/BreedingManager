@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.h2h.listeners;
 
 import org.generationcp.browser.cross.study.h2h.SpecifyGermplasmsComponent;
+import org.generationcp.browser.cross.study.h2h.TraitsAvailableComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -46,6 +47,24 @@ public class H2HComparisonQueryButtonClickListener implements Button.ClickListen
                 && (source instanceof SpecifyGermplasmsComponent)){
             try {
                 ((SpecifyGermplasmsComponent) source).nextButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(TraitsAvailableComponent.BACK_BUTTON_ID)
+                && (source instanceof TraitsAvailableComponent)){
+            try {
+                ((TraitsAvailableComponent) source).backButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (event.getButton().getData().equals(TraitsAvailableComponent.NEXT_BUTTON_ID)
+                && (source instanceof TraitsAvailableComponent)){
+            try {
+                ((TraitsAvailableComponent) source).nextButtonClickAction();
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();

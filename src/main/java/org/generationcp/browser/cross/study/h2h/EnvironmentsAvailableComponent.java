@@ -1,12 +1,21 @@
 package org.generationcp.browser.cross.study.h2h;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.generationcp.browser.cross.study.h2h.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -38,13 +47,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnCollapsingAllowed(true);
         environmentsTable.setColumnReorderingAllowed(true);
         
-        List<String> traitNames = new ArrayList<String>();
-        traitNames.add("GRAIN_YIELD");
-        traitNames.add("PLANT_HEIGHT");
-        traitNames.add("BLB");
-        traitNames.add("LEAF_COLOR");
-        traitNames.add("NITROGEN");
-        traitNames.add("GRAIN_WEIGHT");
+        Set<String> traitNames = new HashSet<String>();
         createEnvironmentsTable(traitNames);
         
         addComponent(environmentsTable, "top:20px;left:30px");
@@ -56,14 +59,50 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         addComponent(backButton, "top:450px;left:820px");
     }
     
-    private void createEnvironmentsTable(List<String> traitNames){
+    public void populateEnvironmentsTable(Integer testEntryGID, Integer standardEntryGID){
+        this.environmentsTable.removeAllItems();
+        
+        List<EnvironmentForComparison> environments = getEnvironmentsForComparison(testEntryGID, standardEntryGID);
+        
+        //get trait names for columns
+        Set<String> traitNames = new HashSet<String>();
+        for(EnvironmentForComparison environment : environments){
+            for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
+                traitNames.add(traitName);
+            }
+        }
+        
+        createEnvironmentsTable(traitNames);
+        
+        for(EnvironmentForComparison environment : environments){
+            Item item = environmentsTable.addItem(environment.getEnvironmentNumber());
+            item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(environment.getEnvironmentNumber());
+            item.getItemProperty(LOCATION_COLUMN_ID).setValue(environment.getLocationName());
+            item.getItemProperty(COUNTRY_COLUMN_ID).setValue(environment.getCountryName());
+            item.getItemProperty(STUDY_COLUMN_ID).setValue(environment.getStudyName());
+            
+            for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
+                Integer numberOfComparable = environment.getTraitAndNumberOfPairsComparableMap().get(traitName);
+                item.getItemProperty(traitName).setValue(numberOfComparable);
+            }
+        }
+        
+        this.environmentsTable.requestRepaint();
+    }
+    
+    private void createEnvironmentsTable(Set<String> traitNames){
+        List<Object> propertyIds = new ArrayList<Object>();
         for(Object propertyId : environmentsTable.getContainerPropertyIds()){
+            propertyIds.add(propertyId);
+        }
+        
+        for(Object propertyId : propertyIds){
             environmentsTable.removeContainerProperty(propertyId);
         }
         
         environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
         environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
-        environmentsTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
+        environmentsTable.addContainerProperty(COUNTRY_COLUMN_ID, String.class, null);
         environmentsTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
         
         environmentsTable.setColumnHeader(ENV_NUMBER_COLUMN_ID, "ENV #");
@@ -71,14 +110,45 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
         
-        int idNumber = 1;
         for(String traitName : traitNames){
-        	String traitId = traitName + idNumber;
-        	
-        	environmentsTable.addContainerProperty(traitId, Integer.class, null);
-        	environmentsTable.setColumnHeader(traitId, traitName);
-        	idNumber++;
+            environmentsTable.addContainerProperty(traitName, Integer.class, null);
+            environmentsTable.setColumnHeader(traitName, traitName);
         }
+    }
+    
+    private List<EnvironmentForComparison> getEnvironmentsForComparison(Integer testEntryGID, Integer standardEntryGID){
+        List<EnvironmentForComparison> toreturn = new ArrayList<EnvironmentForComparison>();
+        
+        Map<String, Integer> mapOne = new HashMap<String, Integer>();
+        mapOne.put("GRAIN_YIELD", 1);
+        mapOne.put("WEIGHT", 2);
+        mapOne.put("BLB", 3);
+        
+        Map<String, Integer> mapTwo = new HashMap<String, Integer>();
+        mapTwo.put("GRAIN_YIELD", 4);
+        mapTwo.put("WEIGHT", 5);
+        mapTwo.put("PLANT_HEIGHT", 6);
+        
+        Map<String, Integer> mapThree = new HashMap<String, Integer>();
+        mapThree.put("LEAF_WEIGHT", 7);
+        mapThree.put("LEAF_LENGTH", 8);
+        mapThree.put("RESISTANCE", 9);
+        
+        if(testEntryGID == 50533 && standardEntryGID == 50532){
+            toreturn.add(new EnvironmentForComparison(1, "IRRI", "Philippines", "Study1", mapOne));
+            toreturn.add(new EnvironmentForComparison(2, "Los Banos", "Philippines", "Study1", mapOne));
+            toreturn.add(new EnvironmentForComparison(3, "Manila", "Philippines", "Study2", mapTwo));
+            toreturn.add(new EnvironmentForComparison(4, "Laguna", "Philippines", "Study2", mapOne));
+        }
+        
+        if(testEntryGID == 1 && standardEntryGID == 2){
+            toreturn.add(new EnvironmentForComparison(1, "ICRISAT", "India", "Study3", mapThree));
+            toreturn.add(new EnvironmentForComparison(2, "CIP", "Peru", "Study3", mapThree));
+            toreturn.add(new EnvironmentForComparison(3, "Saskatoon", "Canada", "Study4", mapThree));
+            toreturn.add(new EnvironmentForComparison(4, "CIMMYT", "Mexico", "Study4", mapThree));
+        }
+        
+        return toreturn;
     }
     
     @Override

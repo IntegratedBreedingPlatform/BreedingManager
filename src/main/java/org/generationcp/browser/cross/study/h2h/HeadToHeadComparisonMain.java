@@ -45,9 +45,9 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         accordion = new Accordion();
         accordion.setWidth("1000px");
 
-        screenTwo = new TraitsAvailableComponent();
-        screenOne = new SpecifyGermplasmsComponent(this, screenTwo);
         screenThree = new EnvironmentsAvailableComponent();
+        screenTwo = new TraitsAvailableComponent(this, screenThree);
+        screenOne = new SpecifyGermplasmsComponent(this, screenTwo);
         screenFour = new ResultsComponent();
         
         firstTab = accordion.addTab(screenOne, "Specify the Test and Standard Entries to Compare");
@@ -85,7 +85,19 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         **/
     }
     
+    public void selectFirstTab(){
+        this.accordion.setSelectedTab(screenOne);
+    }
+    
     public void selectSecondTab(){
     	this.accordion.setSelectedTab(screenTwo);
+    }
+    
+    public void selectThirdTab(){
+        this.accordion.setSelectedTab(screenThree);
+    }
+    
+    public void selectFourthTab(){
+        this.accordion.setSelectedTab(screenFour);
     }
 }

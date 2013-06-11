@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.h2h;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.cross.study.h2h.listeners.H2HComparisonQueryButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,6 +18,9 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 
     private static final long serialVersionUID = 991899235025710803L;
     
+    public static final String BACK_BUTTON_ID = "TraitsAvailableComponent Back Button ID";
+    public static final String NEXT_BUTTON_ID = "TraitsAvailableComponent Next Button ID";
+    
     private static final String TRAIT_COLUMN_ID = "TraitsAvailableComponent Trait Column Id";
     private static final String NUMBER_OF_ENV_COLUMN_ID = "TraitsAvailableComponent Number of Environments Column Id";
     
@@ -24,6 +28,19 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     private Button nextButton;
     private Button backButton;
+    
+    private HeadToHeadComparisonMain mainScreen;
+    private EnvironmentsAvailableComponent nextScreen;
+    
+    private Integer currentTestEntryGID;
+    private Integer currentStandardEntryGID;
+    
+    public TraitsAvailableComponent(HeadToHeadComparisonMain mainScreen, EnvironmentsAvailableComponent nextScreen){
+        this.mainScreen = mainScreen;
+        this.nextScreen = nextScreen;
+        this.currentStandardEntryGID = null;
+        this.currentTestEntryGID = null;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -44,10 +61,14 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         addComponent(traitsTable, "top:20px;left:30px");
         
         nextButton = new Button("Next");
+        nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.addListener(new H2HComparisonQueryButtonClickListener(this));
         nextButton.setEnabled(false);
         addComponent(nextButton, "top:450px;left:900px");
         
         backButton = new Button("Back");
+        backButton.setData(BACK_BUTTON_ID);
+        backButton.addListener(new H2HComparisonQueryButtonClickListener(this));
         addComponent(backButton, "top:450px;left:820px");
     }
 
@@ -56,15 +77,17 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     	
     	List<TraitForComparison> tableItems = getAvailableTraitsForComparison(testEntryGID, standardEntryGID);
     	for(TraitForComparison tableItem : tableItems){
-    		this.traitsTable.addItem(new Object[]{tableItem.getName(), tableItem.getNumberOfEnvironments()}, tableItem.getName());
+    	    this.traitsTable.addItem(new Object[]{tableItem.getName(), tableItem.getNumberOfEnvironments()}, tableItem.getName());
     	}
     	
     	this.traitsTable.requestRepaint();
     	
     	if(traitsTable.getItemIds().isEmpty()){
-    		this.nextButton.setEnabled(false);
+    	    this.nextButton.setEnabled(false);
     	} else{
-    		this.nextButton.setEnabled(true);
+    	    this.currentStandardEntryGID = standardEntryGID;
+    	    this.currentTestEntryGID = testEntryGID;
+    	    this.nextButton.setEnabled(true);
     	}
     }
     
@@ -90,6 +113,15 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     	}
     	
     	return toreturn;
+    }
+    
+    public void nextButtonClickAction(){
+        this.nextScreen.populateEnvironmentsTable(this.currentTestEntryGID, this.currentStandardEntryGID);
+        this.mainScreen.selectThirdTab();
+    }
+    
+    public void backButtonClickAction(){
+        this.mainScreen.selectFirstTab();
     }
     
     @Override
