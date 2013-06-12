@@ -26,23 +26,34 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	
 	private static final long serialVersionUID = 4520653998347266903L;
 	
+	private Integer listDataId;
 	private Integer gid;
 	private Integer entryId;
 	private String designation;
 	
-	public GermplasmListEntry(Integer gid, Integer entryId){
+	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
+	        this.listDataId = listDataId;
 		this.gid = gid;
 		this.entryId = entryId;		
 	}
 	
-	public GermplasmListEntry(Integer gid, Integer entryId, String designation){
+	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
+	        this.listDataId = listDataId;
 		this.gid = gid;
 		this.entryId = entryId;		
 		this.designation = designation;
 	}
 	
-	public Integer getGid() {
-		return gid;
+	public Integer getListDataId() {
+            return listDataId;
+        }
+
+        public void setListDataId(Integer listDataId) {
+            this.listDataId = listDataId;
+        }
+
+        public Integer getGid() {
+            return gid;
 	}
 
 	public void setGid(Integer gid) {
@@ -87,7 +98,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	public int hashCode() {
 	    final int prime = 31;
 	    int result = 1;
-	    result = prime * result + ((gid == null) ? 0 : gid.hashCode());
+	    result = prime * result + ((listDataId == null) ? 0 : listDataId.hashCode());
 	    return result;
 	}
 
@@ -100,10 +111,10 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	    if (getClass() != obj.getClass())
 	    	return false;
 	    GermplasmListEntry other = (GermplasmListEntry) obj;
-	    if (gid == null) {
-			if (other.gid != null)
+	    if (listDataId == null) {
+			if (other.listDataId != null)
 			    return false;
-	    } else if (!gid.equals(other.gid))
+	    } else if (!listDataId.equals(other.listDataId))
 	    	return false;
 	    
 	    return true;

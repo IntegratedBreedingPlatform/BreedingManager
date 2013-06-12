@@ -319,7 +319,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 				
 				Germplasm germplasm = entry.getKey();
 				Integer tempGid = germplasm.getGid();
-				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, oldCrossName);
+				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
 				
 				oldCrossNames.add(oldNameEntry);
 			}

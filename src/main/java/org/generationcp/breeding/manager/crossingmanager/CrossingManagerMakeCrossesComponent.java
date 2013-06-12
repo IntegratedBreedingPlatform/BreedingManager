@@ -342,7 +342,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 GermplasmListData germplasmListData = (GermplasmListData)i.next();
 
                 // add entries to the parent ListSelect
-                GermplasmListEntry entry = new GermplasmListEntry(germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation());
+                GermplasmListEntry entry = new GermplasmListEntry(germplasmListData.getId(), germplasmListData.getGid(), 
+                        germplasmListData.getEntryId(), germplasmListData.getDesignation());
                 listSelect.addItem(entry);
                 String itemCaption = entry.getEntryId()+" -> "+entry.getDesignation(); 
                 listSelect.setItemCaption(entry, itemCaption);

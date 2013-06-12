@@ -156,13 +156,14 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         
         for (Iterator<?> i = listEntryValues.getItemIds().iterator(); i.hasNext();) {
             // retrieve entries from the table
-            Item item = listEntryValues.getItem(i.next());
+            Integer listDataId = (Integer) i.next();
+            Item item = listEntryValues.getItem(listDataId);
             Integer entryId = (Integer) item.getItemProperty(SelectGermplasmListInfoComponent.ENTRY_ID).getValue();
             Integer gid = (Integer) item.getItemProperty(SelectGermplasmListInfoComponent.GID).getValue();
             String designation = (String) item.getItemProperty(SelectGermplasmListInfoComponent.DESIGNATION).getValue();
             
             // add entries to the parent ListSelect
-            GermplasmListEntry entry = new GermplasmListEntry(gid, entryId, designation);
+            GermplasmListEntry entry = new GermplasmListEntry(listDataId, gid, entryId, designation);
             parentList.addItem(entry);
             String itemCaption = entry.getEntryId()+" -> "+entry.getDesignation(); 
             parentList.setItemCaption(entry, itemCaption);
