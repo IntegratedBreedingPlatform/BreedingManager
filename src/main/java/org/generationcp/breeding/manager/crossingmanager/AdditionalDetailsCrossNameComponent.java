@@ -266,17 +266,14 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     }
     
     private String buildPrefixString(){
-    	return ((String) prefixTextField.getValue()).trim() + getLeadingZeroesAsString();
+    	return ((String) prefixTextField.getValue()).trim() + " ";
     }
 
 	private String buildNextNameInSequence(String prefix, String suffix,
 			Integer number) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(prefix);
-		if(!(prefix.charAt(prefix.length()-1) == '0')){
-		    sb.append(" ");
-		}
-		sb.append(number);
+		sb.append(getNumberWithLeadingZeroesAsString(number));
 		if (!StringUtils.isEmpty(suffix)){
 			sb.append(" ");
 			sb.append(suffix);
@@ -285,15 +282,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	}
     
     
-    private String getLeadingZeroesAsString(){
+    private String getNumberWithLeadingZeroesAsString(Integer number){
     	StringBuilder sb = new StringBuilder();
-    	sb.append(" ");
+    	String numberString = number.toString();
     	if (sequenceNumCheckBox.booleanValue()){
     		Integer numOfZeros = (Integer) leadingZerosSelect.getValue();
-    		for (int i = 0; i < numOfZeros; i++){
-    			sb.append("0");
+    		int numOfZerosNeeded = numOfZeros - numberString.length();
+    		if(numOfZerosNeeded > 0){
+    		    for (int i = 0; i < numOfZerosNeeded; i++){
+        		sb.append("0");
+    		    }
     		}
     	}
+    	sb.append(number);
     	return sb.toString();
     }
 
