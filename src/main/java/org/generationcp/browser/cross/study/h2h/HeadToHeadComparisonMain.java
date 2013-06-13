@@ -5,8 +5,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
@@ -45,15 +48,38 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         accordion = new Accordion();
         accordion.setWidth("1000px");
 
-        screenThree = new EnvironmentsAvailableComponent();
+        screenFour = new ResultsComponent(this);
+        screenThree = new EnvironmentsAvailableComponent(this, screenFour);
         screenTwo = new TraitsAvailableComponent(this, screenThree);
-        screenOne = new SpecifyGermplasmsComponent(this, screenTwo);
-        screenFour = new ResultsComponent();
+        screenOne = new SpecifyGermplasmsComponent(this, screenTwo, screenFour);
         
         firstTab = accordion.addTab(screenOne, "Specify the Test and Standard Entries to Compare");
         secondTab = accordion.addTab(screenTwo, "Review Traits Available for Comparison");
         thirdTab = accordion.addTab(screenThree, "Review Environments Available for Comparison");
         fourthTab = accordion.addTab(screenFour, "View Results");
+        
+        secondTab.setEnabled(false);
+        thirdTab.setEnabled(false);
+        fourthTab.setEnabled(false);
+        
+        accordion.addListener(new SelectedTabChangeListener() {
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selected =accordion.getSelectedTab();
+                Tab tab = accordion.getTab(selected);
+                
+                if(tab!=null && tab.equals(firstTab)){
+                    secondTab.setEnabled(false);
+                    thirdTab.setEnabled(false);
+                    fourthTab.setEnabled(false);
+                } else if(tab!=null && tab.equals(secondTab)){
+                    thirdTab.setEnabled(false);
+                    fourthTab.setEnabled(false);
+                } else if(tab!=null && tab.equals(thirdTab)){   
+                    fourthTab.setEnabled(false); 
+                } 
+            }
+        });
         
         addComponent(accordion);
     }
@@ -87,17 +113,26 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
     
     public void selectFirstTab(){
         this.accordion.setSelectedTab(screenOne);
+        secondTab.setEnabled(false);
+        thirdTab.setEnabled(false);
+        fourthTab.setEnabled(false);
     }
     
     public void selectSecondTab(){
+        secondTab.setEnabled(true);
     	this.accordion.setSelectedTab(screenTwo);
+    	thirdTab.setEnabled(false);
+        fourthTab.setEnabled(false);
     }
     
     public void selectThirdTab(){
+        thirdTab.setEnabled(true);
         this.accordion.setSelectedTab(screenThree);
+        fourthTab.setEnabled(false);
     }
     
     public void selectFourthTab(){
+        fourthTab.setEnabled(true);
         this.accordion.setSelectedTab(screenFour);
     }
 }

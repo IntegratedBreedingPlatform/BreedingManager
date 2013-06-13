@@ -1,21 +1,19 @@
 package org.generationcp.browser.cross.study.h2h;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.generationcp.browser.cross.study.h2h.listeners.H2HComparisonQueryButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -30,10 +28,26 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private static final String COUNTRY_COLUMN_ID = "EnvironmentsAvailableComponent Country Column Id";
     private static final String STUDY_COLUMN_ID = "EnvironmentsAvailableComponent Study Column Id";
     
+    public static final String NEXT_BUTTON_ID = "EnvironmentsAvailableComponent Next Button ID";
+    public static final String BACK_BUTTON_ID = "EnvironmentsAvailableComponent Back Button ID";
+    
     private Table environmentsTable;
 
     private Button nextButton;
     private Button backButton;
+    
+    private HeadToHeadComparisonMain mainScreen;
+    private ResultsComponent nextScreen;
+    
+    private Integer currentTestEntryGID;
+    private Integer currentStandardEntryGID;
+    
+    public EnvironmentsAvailableComponent(HeadToHeadComparisonMain mainScreen, ResultsComponent nextScreen){
+        this.mainScreen = mainScreen;
+        this.nextScreen = nextScreen;
+        this.currentStandardEntryGID = null;
+        this.currentTestEntryGID = null;
+    }
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -53,41 +67,66 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         addComponent(environmentsTable, "top:20px;left:30px");
         
         nextButton = new Button("Next");
+        nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.addListener(new H2HComparisonQueryButtonClickListener(this));
+        nextButton.setEnabled(false);
         addComponent(nextButton, "top:450px;left:900px");
         
         backButton = new Button("Back");
+        backButton.setData(BACK_BUTTON_ID);
+        backButton.addListener(new H2HComparisonQueryButtonClickListener(this));
         addComponent(backButton, "top:450px;left:820px");
     }
     
     public void populateEnvironmentsTable(Integer testEntryGID, Integer standardEntryGID){
-        this.environmentsTable.removeAllItems();
-        
-        List<EnvironmentForComparison> environments = getEnvironmentsForComparison(testEntryGID, standardEntryGID);
-        
-        //get trait names for columns
-        Set<String> traitNames = new HashSet<String>();
-        for(EnvironmentForComparison environment : environments){
-            for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
-                traitNames.add(traitName);
-            }
-        }
-        
-        createEnvironmentsTable(traitNames);
-        
-        for(EnvironmentForComparison environment : environments){
-            Item item = environmentsTable.addItem(environment.getEnvironmentNumber());
-            item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(environment.getEnvironmentNumber());
-            item.getItemProperty(LOCATION_COLUMN_ID).setValue(environment.getLocationName());
-            item.getItemProperty(COUNTRY_COLUMN_ID).setValue(environment.getCountryName());
-            item.getItemProperty(STUDY_COLUMN_ID).setValue(environment.getStudyName());
+        if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
+            this.environmentsTable.removeAllItems();
             
-            for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
-                Integer numberOfComparable = environment.getTraitAndNumberOfPairsComparableMap().get(traitName);
-                item.getItemProperty(traitName).setValue(numberOfComparable);
+            List<EnvironmentForComparison> environments = getEnvironmentsForComparison(testEntryGID, standardEntryGID);
+            
+            //get trait names for columns
+            Set<String> traitNames = new HashSet<String>();
+            for(EnvironmentForComparison environment : environments){
+                for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
+                    traitNames.add(traitName);
+                }
+            }
+            
+            createEnvironmentsTable(traitNames);
+            
+            for(EnvironmentForComparison environment : environments){
+                Item item = environmentsTable.addItem(environment.getEnvironmentNumber());
+                item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(environment.getEnvironmentNumber());
+                item.getItemProperty(LOCATION_COLUMN_ID).setValue(environment.getLocationName());
+                item.getItemProperty(COUNTRY_COLUMN_ID).setValue(environment.getCountryName());
+                item.getItemProperty(STUDY_COLUMN_ID).setValue(environment.getStudyName());
+                
+                for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
+                    Integer numberOfComparable = environment.getTraitAndNumberOfPairsComparableMap().get(traitName);
+                    item.getItemProperty(traitName).setValue(numberOfComparable);
+                }
+            }
+            
+            this.environmentsTable.requestRepaint();
+            
+            if(this.environmentsTable.getItemIds().isEmpty()){
+                this.nextButton.setEnabled(false);
+            } else{
+                this.currentStandardEntryGID = standardEntryGID;
+                this.currentTestEntryGID = testEntryGID;
+                this.nextButton.setEnabled(true);
+            }
+        } 
+    }
+    
+    private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){
+        if(this.currentTestEntryGID != null && this.currentStandardEntryGID != null){
+            if(this.currentTestEntryGID == currentTestEntryGID && this.currentStandardEntryGID == currentStandardEntryGID){
+                return false;
             }
         }
         
-        this.environmentsTable.requestRepaint();
+        return true;
     }
     
     private void createEnvironmentsTable(Set<String> traitNames){
@@ -149,6 +188,15 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         }
         
         return toreturn;
+    }
+    
+    public void nextButtonClickAction(){
+        this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID);
+        this.mainScreen.selectFourthTab();
+    }
+    
+    public void backButtonClickAction(){
+        this.mainScreen.selectSecondTab();
     }
     
     @Override

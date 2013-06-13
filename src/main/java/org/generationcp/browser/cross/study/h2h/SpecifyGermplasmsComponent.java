@@ -37,13 +37,16 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     private HeadToHeadComparisonMain mainScreen;
     private TraitsAvailableComponent nextScreen;
+    private ResultsComponent resultsScreen;
     
     private Integer lastTestEntryGID;
     private Integer lastStandardEntryGID;
     
-    public SpecifyGermplasmsComponent(HeadToHeadComparisonMain mainScreen, TraitsAvailableComponent nextScreen){
+    public SpecifyGermplasmsComponent(HeadToHeadComparisonMain mainScreen, TraitsAvailableComponent nextScreen
+            , ResultsComponent resultScreen){
     	this.mainScreen = mainScreen;
     	this.nextScreen = nextScreen;
+    	this.resultsScreen = resultScreen;
     	this.lastTestEntryGID = null;
     	this.lastStandardEntryGID = null;
     }
@@ -119,12 +122,12 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     public void nextButtonClickAction(){
     	if(this.testEntryText.getData() == null){
-    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry.", Notification.POSITION_CENTERED);
+    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry. Please use the Select test entry button.", Notification.POSITION_CENTERED);
     		return;
     	}
     	
     	if(this.standardEntryText.getData() == null){
-    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry.", Notification.POSITION_CENTERED);
+    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry. Please use the Select standard entry button.", Notification.POSITION_CENTERED);
     		return;
     	}
     	
@@ -133,6 +136,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	
     	if(this.nextScreen != null){
     	    if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
+    	        this.resultsScreen.setEntriesLabel((String) testEntryText.getValue(),(String) standardEntryText.getValue());
     	        this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
     	        this.lastTestEntryGID = testEntryGID;
     	        this.lastStandardEntryGID = standardEntryGID;
