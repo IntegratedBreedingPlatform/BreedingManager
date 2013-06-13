@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.h2h.pojos;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -57,6 +58,9 @@ public class EnvironmentForComparison implements Serializable{
     }
     
     public Map<String, Integer> getTraitAndNumberOfPairsComparableMap() {
+        if(traitAndNumberOfPairsComparableMap == null){
+            traitAndNumberOfPairsComparableMap = new HashMap<String, Integer>();
+        }
         return traitAndNumberOfPairsComparableMap;
     }
     

@@ -48,7 +48,7 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         accordion = new Accordion();
         accordion.setWidth("1000px");
 
-        screenFour = new ResultsComponent(this);
+        screenFour = new ResultsComponent();
         screenThree = new EnvironmentsAvailableComponent(this, screenFour);
         screenTwo = new TraitsAvailableComponent(this, screenThree);
         screenOne = new SpecifyGermplasmsComponent(this, screenTwo, screenFour);

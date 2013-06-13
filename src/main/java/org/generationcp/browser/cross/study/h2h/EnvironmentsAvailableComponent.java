@@ -9,19 +9,32 @@ import java.util.Set;
 
 import org.generationcp.browser.cross.study.h2h.listeners.H2HComparisonQueryButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.pojos.EnvironmentForComparison;
+import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class EnvironmentsAvailableComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = -3667517088395779496L;
+    
+    private final static Logger LOG = LoggerFactory.getLogger(EnvironmentsAvailableComponent.class);
     
     private static final String ENV_NUMBER_COLUMN_ID = "EnvironmentsAvailableComponent Env Number Column Id";
     private static final String LOCATION_COLUMN_ID = "EnvironmentsAvailableComponent Location Column Id";
@@ -42,6 +55,11 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Integer currentTestEntryGID;
     private Integer currentStandardEntryGID;
     
+    private List<TraitForComparison> traitsForComparisonList;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
+    
     public EnvironmentsAvailableComponent(HeadToHeadComparisonMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
@@ -55,7 +73,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         setWidth("1000px");
         
         environmentsTable = new Table();
-        environmentsTable.setWidth("800px");
+        environmentsTable.setWidth("950px");
         environmentsTable.setHeight("400px");
         environmentsTable.setImmediate(true);
         environmentsTable.setColumnCollapsingAllowed(true);
@@ -78,8 +96,9 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         addComponent(backButton, "top:450px;left:820px");
     }
     
-    public void populateEnvironmentsTable(Integer testEntryGID, Integer standardEntryGID){
+    public void populateEnvironmentsTable(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){
         if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
+            this.traitsForComparisonList = traitsForComparisonList;
             this.environmentsTable.removeAllItems();
             
             List<EnvironmentForComparison> environments = getEnvironmentsForComparison(testEntryGID, standardEntryGID);
@@ -155,43 +174,86 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         }
     }
     
+    @SuppressWarnings("rawtypes")
     private List<EnvironmentForComparison> getEnvironmentsForComparison(Integer testEntryGID, Integer standardEntryGID){
         List<EnvironmentForComparison> toreturn = new ArrayList<EnvironmentForComparison>();
         
-        Map<String, Integer> mapOne = new HashMap<String, Integer>();
-        mapOne.put("GRAIN_YIELD", 1);
-        mapOne.put("WEIGHT", 2);
-        mapOne.put("BLB", 3);
-        
-        Map<String, Integer> mapTwo = new HashMap<String, Integer>();
-        mapTwo.put("GRAIN_YIELD", 4);
-        mapTwo.put("WEIGHT", 5);
-        mapTwo.put("PLANT_HEIGHT", 6);
-        
-        Map<String, Integer> mapThree = new HashMap<String, Integer>();
-        mapThree.put("LEAF_WEIGHT", 7);
-        mapThree.put("LEAF_LENGTH", 8);
-        mapThree.put("RESISTANCE", 9);
-        
-        if(testEntryGID == 50533 && standardEntryGID == 50532){
-            toreturn.add(new EnvironmentForComparison(1, "IRRI", "Philippines", "Study1", mapOne));
-            toreturn.add(new EnvironmentForComparison(2, "Los Banos", "Philippines", "Study1", mapOne));
-            toreturn.add(new EnvironmentForComparison(3, "Manila", "Philippines", "Study2", mapTwo));
-            toreturn.add(new EnvironmentForComparison(4, "Laguna", "Philippines", "Study2", mapOne));
-        }
-        
-        if(testEntryGID == 1 && standardEntryGID == 2){
-            toreturn.add(new EnvironmentForComparison(1, "ICRISAT", "India", "Study3", mapThree));
-            toreturn.add(new EnvironmentForComparison(2, "CIP", "Peru", "Study3", mapThree));
-            toreturn.add(new EnvironmentForComparison(3, "Saskatoon", "Canada", "Study4", mapThree));
-            toreturn.add(new EnvironmentForComparison(4, "CIMMYT", "Mexico", "Study4", mapThree));
+        try{
+            Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
+            Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
+            
+            String testEntryPrefName = null;
+            if(testEntry.getPreferredName() != null){
+                testEntryPrefName = testEntry.getPreferredName().getNval().trim();
+            } else{
+                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
+                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
+                return new ArrayList<EnvironmentForComparison>();
+            }
+            
+            String standardEntryPrefName = null;
+            if(standardEntry.getPreferredName() != null){
+                standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
+            } else{
+            MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
+                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
+                return new ArrayList<EnvironmentForComparison>();
+            }
+            
+            
+            Map<Integer, EnvironmentForComparison> environmentsMap = new HashMap<Integer, EnvironmentForComparison>();
+            
+            GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
+            String queryString = "select location_id, p.name, trait_name, 1"
+                + " from h2h_details h2h"
+                + " join project p on p.project_id = h2h.study_id"
+                + " where entry_designation in ('"+ testEntryPrefName + "','" + standardEntryPrefName + "')"
+                + " group by trait_name"
+                + " order by 1"; 
+            Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
+            List results = query.list();
+            for(Object result : results){
+                Object resultArray[] = (Object[]) result;
+                Integer locationId = (Integer) resultArray[0];
+                String studyName = (String) resultArray[1];
+                if(studyName != null){
+                    studyName = studyName.trim().toUpperCase();
+                }
+                String traitName = (String) resultArray[2];
+                if(traitName != null){
+                    traitName = traitName.trim().toUpperCase();
+                }
+                
+                EnvironmentForComparison environment = environmentsMap.get(locationId);
+                if(environment == null){
+                    EnvironmentForComparison newEnvironment = new EnvironmentForComparison(locationId, null, null, studyName, null);
+                    environmentsMap.put(locationId, newEnvironment);
+                    environment = newEnvironment;
+                }
+                
+                environment.getTraitAndNumberOfPairsComparableMap().put(traitName, Integer.valueOf(1));
+            }
+            
+            for(Integer key : environmentsMap.keySet()){
+                toreturn.add(environmentsMap.get(key));
+            }
+        } catch(MiddlewareQueryException ex){
+            ex.printStackTrace();
+            LOG.error("Database error!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            return new ArrayList<EnvironmentForComparison>();
+        } catch(Exception ex){
+            ex.printStackTrace();
+            LOG.error("Database error!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            return new ArrayList<EnvironmentForComparison>();
         }
         
         return toreturn;
     }
     
     public void nextButtonClickAction(){
-        this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID);
+        this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
         this.mainScreen.selectFourthTab();
     }
     
