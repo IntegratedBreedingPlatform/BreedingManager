@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.h2h;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -113,6 +114,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
                         , result.getPval()}, result.getTraitName());
             }
             
+            this.resultsTable.setColumnCollapsed(NUM_SUP_COLUMN_ID, true);
+            this.resultsTable.setColumnCollapsed(PVAL_COLUMN_ID, true);
             this.resultsTable.requestRepaint();
         }
     }
@@ -168,14 +171,18 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
                 Integer numberOfEnvironments = getNumberOfEnvironmentsForTrait(traitName, traitsForComparisonList);
                 String entry1 = (String) resultArray1[1];
                 Double averageOfEntry1 = (Double) resultArray1[3];
+                averageOfEntry1 = Math.round(averageOfEntry1 * 100.0) / 100.0;
                 Double averageOfEntry2 = (Double) resultArray2[3];
+                averageOfEntry2 = Math.round(averageOfEntry2 * 100.0) / 100.0;
                 
                 Double meanDiff = null;
                 if(testEntryPrefName.equals(entry1)){
                     meanDiff = averageOfEntry1 - averageOfEntry2;
+                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
                     toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry2, averageOfEntry1, meanDiff, null));
                 } else{
                     meanDiff = averageOfEntry2 - averageOfEntry1;
+                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
                     toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry1, meanDiff, null));
                 }
             }
