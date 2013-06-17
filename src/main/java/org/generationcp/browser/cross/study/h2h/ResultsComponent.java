@@ -1,6 +1,5 @@
 package org.generationcp.browser.cross.study.h2h;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -87,16 +86,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 	resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
 	resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
 	resultsTable.addContainerProperty(NUM_SUP_COLUMN_ID, Integer.class, null);
-	resultsTable.addContainerProperty(MEAN_STD_COLUMN_ID, Double.class, null);
 	resultsTable.addContainerProperty(MEAN_TEST_COLUMN_ID, Double.class, null);
+	resultsTable.addContainerProperty(MEAN_STD_COLUMN_ID, Double.class, null);
 	resultsTable.addContainerProperty(MEAN_DIFF_COLUMN_ID, Double.class, null);
 	resultsTable.addContainerProperty(PVAL_COLUMN_ID, Double.class, null);
 		
 	resultsTable.setColumnHeader(TRAIT_COLUMN_ID, "TRAIT");
 	resultsTable.setColumnHeader(NUM_OF_ENV_COLUMN_ID, "# OF ENV");
 	resultsTable.setColumnHeader(NUM_SUP_COLUMN_ID, "# SUP");
-	resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
 	resultsTable.setColumnHeader(MEAN_TEST_COLUMN_ID, "MEAN TEST");
+	resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
 	resultsTable.setColumnHeader(MEAN_DIFF_COLUMN_ID, "MEAN DIFF");
 	resultsTable.setColumnHeader(PVAL_COLUMN_ID, "PVAL");
 		
@@ -110,7 +109,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
             List<Result> results = getResults(testEntryGID, standardEntryGID, traitsForComparisonList);
             for(Result result : results){
                 this.resultsTable.addItem(new Object[]{result.getTraitName(), result.getNumberOfEnvironments()
-                        , result.getNumberOfSup(), result.getMeanStd(), result.getMeanTest(), result.getMeanDiff()
+                        , result.getNumberOfSup(), result.getMeanTest(), result.getMeanStd(), result.getMeanDiff()
                         , result.getPval()}, result.getTraitName());
             }
             
