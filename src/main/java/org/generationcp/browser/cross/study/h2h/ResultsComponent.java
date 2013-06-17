@@ -183,7 +183,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
                 } else{
                     meanDiff = averageOfEntry2 - averageOfEntry1;
                     meanDiff = Math.round(meanDiff * 100.0) / 100.0;
-                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry1, meanDiff, null));
+                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry2, meanDiff, null));
                 }
             }
         } catch(MiddlewareQueryException ex){
