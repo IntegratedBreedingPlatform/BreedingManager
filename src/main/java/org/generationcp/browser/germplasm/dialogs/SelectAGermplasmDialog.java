@@ -32,8 +32,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -60,7 +60,7 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     private SimpleResourceBundleMessageSource messageSource;
     
     private Component source;
-    private TextField germplasmComponent;
+    private Label germplasmComponent;
     private Window parentWindow;
     
     private VerticalLayout mainLayout;
@@ -76,7 +76,7 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     
     private Integer selectedGid;
     
-    public SelectAGermplasmDialog(Component source, Window parentWindow, TextField germplasmComponent){
+    public SelectAGermplasmDialog(Component source, Window parentWindow, Label germplasmComponent){
         this.source = source;
         this.parentWindow = parentWindow;
         this.germplasmComponent = germplasmComponent;

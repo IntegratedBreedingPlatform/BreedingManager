@@ -7,12 +7,9 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -27,9 +24,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     private Label specifyTestEntryLabel;
     private Label specifyStandardEntryLabel;
-    
-    private TextField testEntryText;
-    private TextField standardEntryText;
+    private Label testEntryLabel;
+    private Label standardEntryLabel;
     
     private Button selectTestEntryButton;
     private Button selectStandardEntryButton;
@@ -59,38 +55,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         specifyTestEntryLabel = new Label("Specify a test entry:");
         addComponent(specifyTestEntryLabel, "top:20px;left:30px");
         
-        testEntryText = new TextField();
-        testEntryText.setWidth("200px");
-        testEntryText.setImmediate(true);
-        testEntryText.addListener(new Property.ValueChangeListener() {
-            
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                String value = (String) testEntryText.getValue();
-                if(value == null || value.length() == 0){
-                    testEntryText.setData(null);
-                }
-            }
-        });
-        addComponent(testEntryText, "top:20px;left:150px");
+        testEntryLabel = new Label();
+        testEntryLabel.setWidth("200px");
+        testEntryLabel.setImmediate(true);
+        addComponent(testEntryLabel, "top:20px;left:150px");
         
         specifyStandardEntryLabel = new Label("Specify a standard entry:");
         addComponent(specifyStandardEntryLabel, "top:20px;left:450px");
         
-        standardEntryText = new TextField();
-        standardEntryText.setWidth("200px");
-        standardEntryText.setImmediate(true);
-        standardEntryText.addListener(new Property.ValueChangeListener() {
-            
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                String value = (String) standardEntryText.getValue();
-                if(value == null || value.length() == 0){
-                    standardEntryText.setData(null);
-                }
-            }
-        });
-        addComponent(standardEntryText, "top:20px;left:600px");
+        standardEntryLabel = new Label();
+        standardEntryLabel.setWidth("200px");
+        standardEntryLabel.setImmediate(true);
+        addComponent(standardEntryLabel, "top:20px;left:600px");
         
         selectTestEntryButton = new Button("Select test entry");
         selectTestEntryButton.setData(SELECT_TEST_ENTRY_BUTTON_ID);
@@ -110,33 +86,33 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 
     public void selectTestEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
-        SelectAGermplasmDialog selectAGermplasmDialog = new SelectAGermplasmDialog(this, parentWindow, testEntryText);
+        SelectAGermplasmDialog selectAGermplasmDialog = new SelectAGermplasmDialog(this, parentWindow, testEntryLabel);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
     public void selectStandardEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
-        SelectAGermplasmDialog selectAGermplasmDialog = new SelectAGermplasmDialog(this, parentWindow, standardEntryText);
+        SelectAGermplasmDialog selectAGermplasmDialog = new SelectAGermplasmDialog(this, parentWindow, standardEntryLabel);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
     public void nextButtonClickAction(){
-    	if(this.testEntryText.getData() == null){
+    	if(this.testEntryLabel.getData() == null){
     		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry. Please use the Select test entry button.", Notification.POSITION_CENTERED);
     		return;
     	}
     	
-    	if(this.standardEntryText.getData() == null){
+    	if(this.standardEntryLabel.getData() == null){
     		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry. Please use the Select standard entry button.", Notification.POSITION_CENTERED);
     		return;
     	}
     	
-    	Integer testEntryGID = (Integer) testEntryText.getData();
-    	Integer standardEntryGID = (Integer) standardEntryText.getData();
+    	Integer testEntryGID = (Integer) testEntryLabel.getData();
+    	Integer standardEntryGID = (Integer) standardEntryLabel.getData();
     	
     	if(this.nextScreen != null){
     	    if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
-    	        this.resultsScreen.setEntriesLabel((String) testEntryText.getValue(),(String) standardEntryText.getValue());
+    	        this.resultsScreen.setEntriesLabel((String) testEntryLabel.getValue(),(String) standardEntryLabel.getValue());
     	        this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
     	        this.lastTestEntryGID = testEntryGID;
     	        this.lastStandardEntryGID = standardEntryGID;
