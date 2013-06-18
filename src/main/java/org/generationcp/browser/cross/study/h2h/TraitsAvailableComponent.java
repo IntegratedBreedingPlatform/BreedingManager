@@ -137,7 +137,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     	    }
     	    
     	    GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-    	    String queryString = "call h2h_traitXenv('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
+    	    String queryString = "call h2h_traitXenv_summary('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
     	    Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
     	    List results = query.list();
     	    for(Object result : results){

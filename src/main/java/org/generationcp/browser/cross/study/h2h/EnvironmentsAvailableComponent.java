@@ -204,29 +204,20 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
             Map<Integer, EnvironmentForComparison> environmentsMap = new HashMap<Integer, EnvironmentForComparison>();
             
             GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-            String queryString = "select location_id, p.name, trait_name, 1"
-                + " from h2h_details h2h"
-                + " join project p on p.project_id = h2h.study_id"
-                + " where entry_designation in ('"+ testEntryPrefName + "','" + standardEntryPrefName + "')"
-                + " group by trait_name"
-                + " order by 1"; 
+            String queryString = "call h2h_traitXenv('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
             Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
             List results = query.list();
             for(Object result : results){
                 Object resultArray[] = (Object[]) result;
                 Integer locationId = (Integer) resultArray[0];
-                String studyName = (String) resultArray[1];
-                if(studyName != null){
-                    studyName = studyName.trim().toUpperCase();
-                }
-                String traitName = (String) resultArray[2];
+                String traitName = (String) resultArray[1];
                 if(traitName != null){
                     traitName = traitName.trim().toUpperCase();
                 }
                 
                 EnvironmentForComparison environment = environmentsMap.get(locationId);
                 if(environment == null){
-                    EnvironmentForComparison newEnvironment = new EnvironmentForComparison(locationId, null, null, studyName, null);
+                    EnvironmentForComparison newEnvironment = new EnvironmentForComparison(locationId, null, null, null, null);
                     environmentsMap.put(locationId, newEnvironment);
                     environment = newEnvironment;
                 }
