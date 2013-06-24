@@ -145,8 +145,8 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
         
         //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
-    if(!usedForDetailsOnly){
-        if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
+        if(!usedForDetailsOnly){
+            if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
                     unlockButton = new Button("Unlock");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
@@ -165,20 +165,20 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
                     addComponent(deleteButton, 1, 7);
                 }
             }
+        }
     }
-    } 
     
     private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
         User user=userDataManager.getUserById(userId);
         if(user != null){
-                int personId=user.getPersonid();
-                Person p =userDataManager.getPersonById(personId);
-        
-                if(p!=null){
+            int personId=user.getPersonid();
+            Person p =userDataManager.getPersonById(personId);
+    
+            if(p!=null){
                 return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-                }else{
+            }else{
                 return user.getName();
-                }
+            }
         } else {
             return "";
         }
