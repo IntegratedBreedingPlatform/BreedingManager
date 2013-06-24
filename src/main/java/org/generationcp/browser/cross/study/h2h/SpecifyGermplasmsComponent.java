@@ -40,11 +40,11 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     public SpecifyGermplasmsComponent(HeadToHeadComparisonMain mainScreen, TraitsAvailableComponent nextScreen
             , ResultsComponent resultScreen){
-    	this.mainScreen = mainScreen;
-    	this.nextScreen = nextScreen;
-    	this.resultsScreen = resultScreen;
-    	this.lastTestEntryGID = null;
-    	this.lastStandardEntryGID = null;
+        this.mainScreen = mainScreen;
+        this.nextScreen = nextScreen;
+        this.resultsScreen = resultScreen;
+        this.lastTestEntryGID = null;
+        this.lastStandardEntryGID = null;
     }
     
     @Override
@@ -97,28 +97,28 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     }
     
     public void nextButtonClickAction(){
-    	if(this.testEntryLabel.getData() == null){
-    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry. Please use the Select test entry button.", Notification.POSITION_CENTERED);
-    		return;
-    	}
-    	
-    	if(this.standardEntryLabel.getData() == null){
-    		MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry. Please use the Select standard entry button.", Notification.POSITION_CENTERED);
-    		return;
-    	}
-    	
-    	Integer testEntryGID = (Integer) testEntryLabel.getData();
-    	Integer standardEntryGID = (Integer) standardEntryLabel.getData();
-    	
-    	if(this.nextScreen != null){
-    	    if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
-    	        this.resultsScreen.setEntriesLabel((String) testEntryLabel.getValue(),(String) standardEntryLabel.getValue());
-    	        this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
-    	        this.lastTestEntryGID = testEntryGID;
-    	        this.lastStandardEntryGID = standardEntryGID;
-    	    }
-    	    this.mainScreen.selectSecondTab();
-    	}
+        if(this.testEntryLabel.getData() == null){
+            MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry. Please use the Select test entry button.", Notification.POSITION_CENTERED);
+            return;
+        }
+        
+        if(this.standardEntryLabel.getData() == null){
+            MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry. Please use the Select standard entry button.", Notification.POSITION_CENTERED);
+            return;
+        }
+        
+        Integer testEntryGID = (Integer) testEntryLabel.getData();
+        Integer standardEntryGID = (Integer) standardEntryLabel.getData();
+        
+        if(this.nextScreen != null){
+            if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
+                this.resultsScreen.setEntriesLabel((String) testEntryLabel.getValue(),(String) standardEntryLabel.getValue());
+                this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
+                this.lastTestEntryGID = testEntryGID;
+                this.lastStandardEntryGID = standardEntryGID;
+            }
+            this.mainScreen.selectSecondTab();
+        }
     }
     
     private boolean areCurrentGIDsDifferentFromLast(Integer currentTestEntryGID, Integer currentStandardEntryGID){

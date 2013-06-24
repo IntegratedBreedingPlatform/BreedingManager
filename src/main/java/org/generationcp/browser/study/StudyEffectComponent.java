@@ -53,7 +53,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private final Accordion accordion;
     private ListSelect datasetList;
     
-    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -79,7 +79,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
             RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManagerV2, datasetId, tabTitle,
-            		studyId, fromUrl);
+                    studyId, fromUrl);
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
         } else {
@@ -96,7 +96,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     
     @Override
     public void afterPropertiesSet() throws Exception{
-    	
+        
         List<DatasetReference> datasetNodes = new ArrayList<DatasetReference>();
         try {
             datasetNodes = studyDataManagerV2.getDatasetReferences(studyId);
@@ -121,11 +121,11 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
             addComponent(this.datasetList);
         }
-    	
+        
     }
     
     @Override
-    public void attach() {    	
+    public void attach() {        
         super.attach();
         updateLabels();
     }

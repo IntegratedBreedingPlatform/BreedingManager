@@ -41,7 +41,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyBrowserMain() {
-    	
+        
     }
     
     @Override

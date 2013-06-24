@@ -44,15 +44,15 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
     private GermplasmListTreeComponent localGermplasmListTreeComponent;
     private GermplasmListTreeComponent centralGermplasmListTreeComponent;
 
-	private boolean forGermplasmListWindow;
+    private boolean forGermplasmListWindow;
     
     public GermplasmListBrowserMain() {
-    	
+        
     }
     
     public GermplasmListBrowserMain(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication,boolean forGermplasmListWindow) {
-    	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
-    	this.forGermplasmListWindow=forGermplasmListWindow;
+        this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
+        this.forGermplasmListWindow=forGermplasmListWindow;
     }
     
     @Override
@@ -107,14 +107,14 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
     }
     
     public GermplasmStudyBrowserApplication getGermplasmStudyBrowserApplication() {
-    	return germplasmStudyBrowserApplication;
+        return germplasmStudyBrowserApplication;
     }
     
     public GermplasmListTreeComponent getCentralGermplasmListTreeComponent() {
-    	return centralGermplasmListTreeComponent;
+        return centralGermplasmListTreeComponent;
     }
     
     public GermplasmListTreeComponent getLocalGermplasmListTreeComponent() {
-    	return localGermplasmListTreeComponent;
+        return localGermplasmListTreeComponent;
     }
 }

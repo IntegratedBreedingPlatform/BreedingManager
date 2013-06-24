@@ -42,8 +42,8 @@ public class GermplasmNamesComponent extends Table implements InitializingBean, 
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmNamesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-    	this.dataIndexContainer = dataIndexContainer;
-    	this.gDetailModel = gDetailModel;
+        this.dataIndexContainer = dataIndexContainer;
+        this.gDetailModel = gDetailModel;
     }
     
     @Override

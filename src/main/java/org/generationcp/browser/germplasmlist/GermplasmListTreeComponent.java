@@ -73,7 +73,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
     private GermplasmListBrowserMain germplasmListBrowserMain;
 
-	private boolean forGermplasmListWindow;
+    private boolean forGermplasmListWindow;
     
     public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
@@ -82,7 +82,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     }
 
     public GermplasmListTreeComponent(GermplasmListBrowserMain germplasmListBrowserMain, HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
-    	this.germplasmListBrowserMain = germplasmListBrowserMain;
+        this.germplasmListBrowserMain = germplasmListBrowserMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.database = database;
         this.forGermplasmListWindow=forGermplasmListWindow;
@@ -217,7 +217,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
     @Override
     public void afterPropertiesSet() {
-    	setSpacing(true);
+        setSpacing(true);
         setMargin(true);
         
         tabSheetGermplasmList = new TabSheet();
@@ -258,7 +258,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     }
     
     public TabSheet getTabSheetGermplasmList() {
-    	return tabSheetGermplasmList;
+        return tabSheetGermplasmList;
     }
 
 }

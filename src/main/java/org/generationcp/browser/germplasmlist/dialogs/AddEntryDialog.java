@@ -273,7 +273,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                     nextButton.setCaption("Done");
                     accordion.getTab(secondTabLayout).setEnabled(false);
                     if(selectedGid == null){
-                    	nextButton.setEnabled(false);
+                        nextButton.setEnabled(false);
                     }
                 }else{
                     nextButton.setCaption("Next");
@@ -356,24 +356,24 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 window.getParent().removeWindow(window);
             }
         } else {
-        	String searchValue = this.searchForm.getSearchValue();
-        	if(searchValue != null && searchValue.length() != 0){
-        		if(this.breedingMethodComboBox.getItemIds().isEmpty()){
-        			populateBreedingMethodComboBox();
-        		}
-        		if(this.nameTypeComboBox.getItemIds().isEmpty()){
-        			populateNameTypeComboBox();
-        		}
-        		if(this.locationComboBox.getItemIds().isEmpty()){
-        			populateLocationComboBox();
-        		}
-        		this.accordion.getTab(secondTabLayout).setEnabled(true);
+            String searchValue = this.searchForm.getSearchValue();
+            if(searchValue != null && searchValue.length() != 0){
+                if(this.breedingMethodComboBox.getItemIds().isEmpty()){
+                    populateBreedingMethodComboBox();
+                }
+                if(this.nameTypeComboBox.getItemIds().isEmpty()){
+                    populateNameTypeComboBox();
+                }
+                if(this.locationComboBox.getItemIds().isEmpty()){
+                    populateLocationComboBox();
+                }
+                this.accordion.getTab(secondTabLayout).setEnabled(true);
                 this.accordion.setSelectedTab(secondTabLayout);
-        	} else {
-        		MessageNotifier.showWarning(this, "Warning!", 
+            } else {
+                MessageNotifier.showWarning(this, "Warning!", 
                         "You must enter a germplasm name in the textbox.",
-        				Notification.POSITION_CENTERED);
-        	}
+                        Notification.POSITION_CENTERED);
+            }
         }
     }
     
@@ -382,156 +382,156 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }
     
     public void doneButtonClickAction(){
-    	Integer breedingMethodId = (Integer) this.breedingMethodComboBox.getValue();
-    	Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
-    	Integer locationId = (Integer) this.locationComboBox.getValue();
-    	Date dateOfCreation = (Date) this.germplasmDateField.getValue();
-    	SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-    	Integer date = Integer.parseInt(formatter.format(dateOfCreation));
-    	String germplasmName = this.searchForm.getSearchValue();
-    	if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-	    	try{
-	    		Integer.parseInt(germplasmName);
-	    	} catch(NumberFormatException ex){
-	    		try{
-	    			Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmWithPrefName(this.selectedGid);
-	    			if(selectedGermplasm.getPreferredName() != null){
-	    				germplasmName = selectedGermplasm.getPreferredName().getNval();
-	    			}
-	    		} catch(MiddlewareQueryException mex){
-	    			LOG.error("Error with getting germplasm with id: " + this.selectedGid, ex);
-	        		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + this.selectedGid 
-	        				+".  Please report to IBWS developers."
-	        				, Notification.POSITION_CENTERED);
-	    		}
-	    	}
-    	}
-    	Integer userId = Integer.valueOf(getCurrentUserLocalId());
-    			
-    	Germplasm germplasm = new Germplasm();
-    	germplasm.setGdate(date);
-    	germplasm.setGnpgs(Integer.valueOf(-1));
-    	germplasm.setGpid1(Integer.valueOf(0));
-    	germplasm.setGrplce(Integer.valueOf(0));
-    	germplasm.setLgid(Integer.valueOf(0));
-    	germplasm.setLocationId(locationId);
-    	germplasm.setMethodId(breedingMethodId);
-    	germplasm.setMgid(Integer.valueOf(0));
-    	germplasm.setReferenceId(Integer.valueOf(0));
-    	germplasm.setUserId(userId);
-    	
-    	if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-    		germplasm.setGpid2(this.selectedGid);
-    	} else {
-    		germplasm.setGpid2(Integer.valueOf(0));
-    	}
-    	
-    	Name name = new Name();
-    	name.setNval(germplasmName);
-    	name.setLocationId(locationId);
-    	name.setNdate(date);
-    	name.setNstat(Integer.valueOf(1));
-    	name.setReferenceId(Integer.valueOf(0));
-    	name.setTypeId(nameTypeId);
-    	name.setUserId(userId);
-    	
-    	try{
-    		Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
-    		this.source.finishAddingEntry(gid);
-    		return;
-    	} catch(MiddlewareQueryException ex){
-    		LOG.error("Error with saving germplasm and name records!", ex);
-    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records.  Please report to IBWS developers."
-    				, Notification.POSITION_CENTERED);
-    		return;
-    	}
+        Integer breedingMethodId = (Integer) this.breedingMethodComboBox.getValue();
+        Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
+        Integer locationId = (Integer) this.locationComboBox.getValue();
+        Date dateOfCreation = (Date) this.germplasmDateField.getValue();
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+        Integer date = Integer.parseInt(formatter.format(dateOfCreation));
+        String germplasmName = this.searchForm.getSearchValue();
+        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
+            try{
+                Integer.parseInt(germplasmName);
+            } catch(NumberFormatException ex){
+                try{
+                    Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmWithPrefName(this.selectedGid);
+                    if(selectedGermplasm.getPreferredName() != null){
+                        germplasmName = selectedGermplasm.getPreferredName().getNval();
+                    }
+                } catch(MiddlewareQueryException mex){
+                    LOG.error("Error with getting germplasm with id: " + this.selectedGid, ex);
+                    MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + this.selectedGid 
+                            +".  Please report to IBWS developers."
+                            , Notification.POSITION_CENTERED);
+                }
+            }
+        }
+        Integer userId = Integer.valueOf(getCurrentUserLocalId());
+                
+        Germplasm germplasm = new Germplasm();
+        germplasm.setGdate(date);
+        germplasm.setGnpgs(Integer.valueOf(-1));
+        germplasm.setGpid1(Integer.valueOf(0));
+        germplasm.setGrplce(Integer.valueOf(0));
+        germplasm.setLgid(Integer.valueOf(0));
+        germplasm.setLocationId(locationId);
+        germplasm.setMethodId(breedingMethodId);
+        germplasm.setMgid(Integer.valueOf(0));
+        germplasm.setReferenceId(Integer.valueOf(0));
+        germplasm.setUserId(userId);
+        
+        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
+            germplasm.setGpid2(this.selectedGid);
+        } else {
+            germplasm.setGpid2(Integer.valueOf(0));
+        }
+        
+        Name name = new Name();
+        name.setNval(germplasmName);
+        name.setLocationId(locationId);
+        name.setNdate(date);
+        name.setNstat(Integer.valueOf(1));
+        name.setReferenceId(Integer.valueOf(0));
+        name.setTypeId(nameTypeId);
+        name.setUserId(userId);
+        
+        try{
+            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
+            this.source.finishAddingEntry(gid);
+            return;
+        } catch(MiddlewareQueryException ex){
+            LOG.error("Error with saving germplasm and name records!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records.  Please report to IBWS developers."
+                    , Notification.POSITION_CENTERED);
+            return;
+        }
     }
     
     private void populateBreedingMethodComboBox(){
-    	try{
-    		List<Method> methods = this.germplasmDataManager.getAllMethods();
-    		for(Method method : methods){
-    			String methodName = method.getMname();
-    			String methodCode = method.getMcode();
-    			Integer methodId = method.getMid();
-    			this.breedingMethodComboBox.addItem(methodId);
-    			this.breedingMethodComboBox.setItemCaption(methodId, methodName);
-    			if(methodCode.equals(DEFAULT_METHOD_CODE)){
-    				this.breedingMethodComboBox.select(methodId);
-    			}
-    		}
-    	} catch (MiddlewareQueryException ex){
-    		LOG.error("Error with getting breeding methods!", ex);
-    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding methods.  Please report to IBWS developers."
-    				, Notification.POSITION_CENTERED);
-    		Integer unknownId = Integer.valueOf(0);
-    		this.breedingMethodComboBox.addItem(unknownId);
-    		this.breedingMethodComboBox.setItemCaption(unknownId, "Unknown");
-    	}
-    	this.breedingMethodComboBox.setNullSelectionAllowed(false);
+        try{
+            List<Method> methods = this.germplasmDataManager.getAllMethods();
+            for(Method method : methods){
+                String methodName = method.getMname();
+                String methodCode = method.getMcode();
+                Integer methodId = method.getMid();
+                this.breedingMethodComboBox.addItem(methodId);
+                this.breedingMethodComboBox.setItemCaption(methodId, methodName);
+                if(methodCode.equals(DEFAULT_METHOD_CODE)){
+                    this.breedingMethodComboBox.select(methodId);
+                }
+            }
+        } catch (MiddlewareQueryException ex){
+            LOG.error("Error with getting breeding methods!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding methods.  Please report to IBWS developers."
+                    , Notification.POSITION_CENTERED);
+            Integer unknownId = Integer.valueOf(0);
+            this.breedingMethodComboBox.addItem(unknownId);
+            this.breedingMethodComboBox.setItemCaption(unknownId, "Unknown");
+        }
+        this.breedingMethodComboBox.setNullSelectionAllowed(false);
     }
     
     private void populateNameTypeComboBox(){
-    	try{
-    		List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
-    		for(UserDefinedField nameType : nameTypes){
-    			Integer nameTypeId = nameType.getFldno();
-    			String nameTypeString = nameType.getFname();
-    			String nameTypeCode = nameType.getFcode();
-    			this.nameTypeComboBox.addItem(nameTypeId);
-    			this.nameTypeComboBox.setItemCaption(nameTypeId, nameTypeString);
-    			if(nameTypeCode.equals(DEFAULT_NAME_TYPE_CODE)){
-    				this.nameTypeComboBox.select(nameTypeId);
-    			}
-    		}
-    	} catch (MiddlewareQueryException ex){
-    		LOG.error("Error with getting germplasm name types!", ex);
-    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm name types.  Please report to IBWS developers."
-    				, Notification.POSITION_CENTERED);
-    		Integer unknownId = Integer.valueOf(0);
-    		this.nameTypeComboBox.addItem(unknownId);
-    		this.nameTypeComboBox.setItemCaption(unknownId, "Unknown");
-    	}
-    	this.nameTypeComboBox.setNullSelectionAllowed(false);
+        try{
+            List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+            for(UserDefinedField nameType : nameTypes){
+                Integer nameTypeId = nameType.getFldno();
+                String nameTypeString = nameType.getFname();
+                String nameTypeCode = nameType.getFcode();
+                this.nameTypeComboBox.addItem(nameTypeId);
+                this.nameTypeComboBox.setItemCaption(nameTypeId, nameTypeString);
+                if(nameTypeCode.equals(DEFAULT_NAME_TYPE_CODE)){
+                    this.nameTypeComboBox.select(nameTypeId);
+                }
+            }
+        } catch (MiddlewareQueryException ex){
+            LOG.error("Error with getting germplasm name types!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm name types.  Please report to IBWS developers."
+                    , Notification.POSITION_CENTERED);
+            Integer unknownId = Integer.valueOf(0);
+            this.nameTypeComboBox.addItem(unknownId);
+            this.nameTypeComboBox.setItemCaption(unknownId, "Unknown");
+        }
+        this.nameTypeComboBox.setNullSelectionAllowed(false);
     }
     
     private void populateLocationComboBox(){
-    	try{
-    	        List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
-    		for(Location location : locations){
-    			Integer locationId = location.getLocid();
-    			String locationName = location.getLname();
-    			this.locationComboBox.addItem(locationId);
-    			this.locationComboBox.setItemCaption(locationId, locationName);
-    			this.locationComboBox.select(locationId);
-    		}
-    	} catch (MiddlewareQueryException ex){
-    		LOG.error("Error with getting breeding locations!", ex);
-    		MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding locations.  Please report to IBWS developers."
-    				, Notification.POSITION_CENTERED);
-    		Integer unknownId = Integer.valueOf(0);
-    		this.locationComboBox.addItem(unknownId);
-    		this.locationComboBox.setItemCaption(unknownId, "Unknown");
-    	}
-    	this.locationComboBox.setNullSelectionAllowed(false);
+        try{
+                List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
+            for(Location location : locations){
+                Integer locationId = location.getLocid();
+                String locationName = location.getLname();
+                this.locationComboBox.addItem(locationId);
+                this.locationComboBox.setItemCaption(locationId, locationName);
+                this.locationComboBox.select(locationId);
+            }
+        } catch (MiddlewareQueryException ex){
+            LOG.error("Error with getting breeding locations!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding locations.  Please report to IBWS developers."
+                    , Notification.POSITION_CENTERED);
+            Integer unknownId = Integer.valueOf(0);
+            this.locationComboBox.addItem(unknownId);
+            this.locationComboBox.setItemCaption(unknownId, "Unknown");
+        }
+        this.locationComboBox.setNullSelectionAllowed(false);
     }
     
     private int getCurrentUserLocalId(){
-    	try{
-	        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-	        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
-	        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
-	        if (localIbdbUserId != null) {
-	            return localIbdbUserId;
-	        } else {
-	            return -1;
-	        }
-	   } catch(MiddlewareQueryException ex){
-		   LOG.error("Error with getting local IBDB user!", ex);
-   			MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting local IBDB user id.  Please report to IBWS developers."
-   					, Notification.POSITION_CENTERED);
-		   return -1;
-	   }
+        try{
+            Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+            Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
+            Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+            if (localIbdbUserId != null) {
+                return localIbdbUserId;
+            } else {
+                return -1;
+            }
+       } catch(MiddlewareQueryException ex){
+           LOG.error("Error with getting local IBDB user!", ex);
+               MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting local IBDB user id.  Please report to IBWS developers."
+                       , Notification.POSITION_CENTERED);
+           return -1;
+       }
     }
     
     @Override

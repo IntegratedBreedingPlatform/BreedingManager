@@ -36,7 +36,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
     private List<String> columnIds;
     @SuppressWarnings("unused")
     private QueryDefinition definition;
-    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
 
     /**
      * The constructor should be given the parameters which are then passed to

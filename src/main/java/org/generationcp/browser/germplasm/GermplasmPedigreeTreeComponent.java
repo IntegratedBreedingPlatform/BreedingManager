@@ -138,9 +138,9 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             String leafNodeId = node.getGermplasm().getGid().toString();
             String preferredName="";
             try{
-            	preferredName= parent.getGermplasm().getPreferredName().getNval();
+                preferredName= parent.getGermplasm().getPreferredName().getNval();
             }catch(Exception e){
-            	preferredName=String.valueOf(parent.getGermplasm().getGid());
+                preferredName=String.valueOf(parent.getGermplasm().getGid());
             }
 
             String parentNodeLabel = preferredName + "(" + parent.getGermplasm().getGid() + ")";

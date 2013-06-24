@@ -45,7 +45,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
     
     private GermplasmListManager dataManager;
     private Integer gid;
-    private boolean fromUrl;				//this is true if this component is created by accessing the Germplasm Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Germplasm Details page directly from the URL
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -54,14 +54,14 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
     private WorkbenchDataManager workbenchDataManager;
 
     public GermplasmListComponent(GermplasmListManager dataManager, Integer gid, boolean fromUrl) {
-    	this.dataManager = dataManager;
-    	this.gid = gid;
-    	this.fromUrl = fromUrl;
+        this.dataManager = dataManager;
+        this.gid = gid;
+        this.fromUrl = fromUrl;
     }
     
     // Called by GermplasmListItemClickListener
     public void listItemClickAction(ItemClickEvent event, Integer listId) {
-    	Window mainWindow = event.getComponent().getWindow();
+        Window mainWindow = event.getComponent().getWindow();
         
         Tool tool = null;
         try {
@@ -127,7 +127,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         setPageLength(15);
         
         if (!fromUrl) {
-        	addListener(new GermplasmListItemClickListener(this));
+            addListener(new GermplasmListItemClickListener(this));
         }
     }
 

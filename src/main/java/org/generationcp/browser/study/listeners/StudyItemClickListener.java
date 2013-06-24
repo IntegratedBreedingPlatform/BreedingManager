@@ -73,8 +73,8 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
         }
         
         if (source instanceof GermplasmStudyInfoComponent) {
-        	int studyId = Integer.valueOf(event.getItem().getItemProperty(GermplasmIndexContainer.STUDY_ID).getValue().toString());
-        	if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+            int studyId = Integer.valueOf(event.getItem().getItemProperty(GermplasmIndexContainer.STUDY_ID).getValue().toString());
+            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
                     ((GermplasmStudyInfoComponent) source).studyItemClickAction(event, studyId);
                 } catch (InternationalizableException e) {

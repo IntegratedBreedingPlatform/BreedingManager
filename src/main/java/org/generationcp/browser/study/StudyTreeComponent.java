@@ -219,7 +219,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     @Override
     public void afterPropertiesSet() {
-    	setSpacing(true);
+        setSpacing(true);
         setMargin(true);
         
         tabSheetStudy = new TabSheet();

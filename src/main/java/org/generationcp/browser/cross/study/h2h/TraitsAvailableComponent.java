@@ -91,77 +91,77 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     }
 
     public void populateTraitsAvailableTable(Integer testEntryGID, Integer standardEntryGID){
-    	this.traitsTable.removeAllItems();
-    	
-    	List<TraitForComparison> tableItems = getAvailableTraitsForComparison(testEntryGID, standardEntryGID);
-    	this.traitsForComparisonList = tableItems;
-    	for(TraitForComparison tableItem : tableItems){
-    	    this.traitsTable.addItem(new Object[]{tableItem.getName(), tableItem.getNumberOfEnvironments()}, tableItem.getName());
-    	}
-    	
-    	this.traitsTable.requestRepaint();
-    	
-    	if(traitsTable.getItemIds().isEmpty()){
-    	    this.nextButton.setEnabled(false);
-    	} else{
-    	    this.currentStandardEntryGID = standardEntryGID;
-    	    this.currentTestEntryGID = testEntryGID;
-    	    this.nextButton.setEnabled(true);
-    	}
+        this.traitsTable.removeAllItems();
+        
+        List<TraitForComparison> tableItems = getAvailableTraitsForComparison(testEntryGID, standardEntryGID);
+        this.traitsForComparisonList = tableItems;
+        for(TraitForComparison tableItem : tableItems){
+            this.traitsTable.addItem(new Object[]{tableItem.getName(), tableItem.getNumberOfEnvironments()}, tableItem.getName());
+        }
+        
+        this.traitsTable.requestRepaint();
+        
+        if(traitsTable.getItemIds().isEmpty()){
+            this.nextButton.setEnabled(false);
+        } else{
+            this.currentStandardEntryGID = standardEntryGID;
+            this.currentTestEntryGID = testEntryGID;
+            this.nextButton.setEnabled(true);
+        }
     }
     
     @SuppressWarnings("rawtypes")
     private List<TraitForComparison> getAvailableTraitsForComparison(Integer testEntryGID, Integer standardEntryGID){
-    	List<TraitForComparison> toreturn = new ArrayList<TraitForComparison>();
-    	
-    	try{
-    	    Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
-    	    Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
-    	    
-    	    String testEntryPrefName = null;
-    	    if(testEntry.getPreferredName() != null){
-    	        testEntryPrefName = testEntry.getPreferredName().getNval().trim();
-    	    } else{
-    	        MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-    	        return new ArrayList<TraitForComparison>();
-    	    }
-    	    
-    	    String standardEntryPrefName = null;
-    	    if(standardEntry.getPreferredName() != null){
-    	        standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
-    	    } else{
-    	    MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
+        List<TraitForComparison> toreturn = new ArrayList<TraitForComparison>();
+        
+        try{
+            Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
+            Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
+            
+            String testEntryPrefName = null;
+            if(testEntry.getPreferredName() != null){
+                testEntryPrefName = testEntry.getPreferredName().getNval().trim();
+            } else{
+                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
                     + "please select a different germplasm.", Notification.POSITION_CENTERED);
                 return new ArrayList<TraitForComparison>();
-    	    }
-    	    
-    	    GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-    	    String queryString = "call h2h_traitXenv_summary('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
-    	    Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
-    	    List results = query.list();
-    	    for(Object result : results){
-    	        Object resultArray[] = (Object[]) result;
-    	        String name = (String) resultArray[0];
-    	        if(name != null){
-    	            name = name.trim().toUpperCase();
-    	        }
-    	        BigInteger numberOfEnvironments = (BigInteger) resultArray[1];
-    	        toreturn.add(new TraitForComparison(name, numberOfEnvironments.intValue()));
-    	    }
-    	} catch(MiddlewareQueryException ex){
-    	    ex.printStackTrace();
-    	    LOG.error("Database error!", ex);
-    	    MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-    	    return new ArrayList<TraitForComparison>();
-    	} catch(Exception ex){
-    	    ex.printStackTrace();
-    	    LOG.error("Database error!", ex);
-    	    MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-    	    return new ArrayList<TraitForComparison>();
-    	}
-    	
-    	return toreturn;
+            }
+            
+            String standardEntryPrefName = null;
+            if(standardEntry.getPreferredName() != null){
+                standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
+            } else{
+            MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
+                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
+                return new ArrayList<TraitForComparison>();
+            }
+            
+            GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
+            String queryString = "call h2h_traitXenv_summary('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
+            Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
+            List results = query.list();
+            for(Object result : results){
+                Object resultArray[] = (Object[]) result;
+                String name = (String) resultArray[0];
+                if(name != null){
+                    name = name.trim().toUpperCase();
+                }
+                BigInteger numberOfEnvironments = (BigInteger) resultArray[1];
+                toreturn.add(new TraitForComparison(name, numberOfEnvironments.intValue()));
+            }
+        } catch(MiddlewareQueryException ex){
+            ex.printStackTrace();
+            LOG.error("Database error!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            return new ArrayList<TraitForComparison>();
+        } catch(Exception ex){
+            ex.printStackTrace();
+            LOG.error("Database error!", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            return new ArrayList<TraitForComparison>();
+        }
+        
+        return toreturn;
     }
     
     public void nextButtonClickAction(){

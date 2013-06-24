@@ -49,7 +49,7 @@ public class RepresentationDataSetQuery implements Query{
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private Integer datasetId;
     private List<String> columnIds;
-    private boolean fromUrl;	//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;    //this is true if this component is created by accessing the Study Details page directly from the URL
     private int size;
     
     /**

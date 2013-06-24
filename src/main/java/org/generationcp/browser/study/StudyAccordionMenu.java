@@ -46,7 +46,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
     private StudyDetailComponent studyDetailComponent;
 
-    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -104,7 +104,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
         this.addTab(layoutVariate, messageSource.getMessage(Message.VARIATES_TEXT)); // "Variates"
         this.addTab(layoutEffect, messageSource.getMessage(Message.DATASETS_TEXT)); // "Datasets"
 
-        this.addListener(new StudySelectedTabChangeListener(this));    	
+        this.addListener(new StudySelectedTabChangeListener(this));        
     }
     
     @Override

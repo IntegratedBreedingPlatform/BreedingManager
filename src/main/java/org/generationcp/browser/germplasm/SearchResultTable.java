@@ -45,7 +45,7 @@ public class SearchResultTable extends VerticalLayout implements InitializingBea
     }
 
     public Table getResultTable() {
-    	
+        
         resultTable = new Table("", this.dataSource);
         resultTable.setWidth("100%");
         resultTable.setHeight("200px");

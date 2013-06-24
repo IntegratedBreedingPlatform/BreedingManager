@@ -37,8 +37,8 @@ public class GermplasmGroupRelativesComponent extends Table implements Initializ
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmGroupRelativesComponent(GermplasmDataManager dataManager, Integer gid) {
-    	this.dataManager = dataManager;
-    	this.gid = gid;
+        this.dataManager = dataManager;
+        this.gid = gid;
     }
 
     @Override

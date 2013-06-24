@@ -86,20 +86,20 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     private boolean usedForDetailsOnly;
     
     public GermplasmListDetailComponent(GermplasmListManager germplasmListManager, int germplasmListId, boolean usedForDetailsOnly){
-    	this.germplasmListManager = germplasmListManager;
-    	this.germplasmListId = germplasmListId;
-    	this.usedForDetailsOnly = usedForDetailsOnly;
+        this.germplasmListManager = germplasmListManager;
+        this.germplasmListId = germplasmListId;
+        this.usedForDetailsOnly = usedForDetailsOnly;
     }
 
     public GermplasmListDetailComponent(GermplasmListAccordionMenu germplasmListAccordionMenu, GermplasmListManager germplasmListManager, int germplasmListId
             , boolean usedForDetailsOnly){
-    	this.germplasmListAccordionMenu = germplasmListAccordionMenu;
-    	this.germplasmListManager = germplasmListManager;
-    	this.germplasmListId = germplasmListId;
-    	this.usedForDetailsOnly = usedForDetailsOnly;
+        this.germplasmListAccordionMenu = germplasmListAccordionMenu;
+        this.germplasmListManager = germplasmListManager;
+        this.germplasmListId = germplasmListId;
+        this.usedForDetailsOnly = usedForDetailsOnly;
     }
     
-	@Override
+    @Override
     public void afterPropertiesSet() throws Exception{
         setRows(8);
         setColumns(4);
@@ -124,7 +124,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         listType = new Label(germplasmList.getType());
         listStatus = new Label(germplasmList.getStatusString());
         listOwner= new Label(getOwnerListName(germplasmList.getUserId()));
-		
+        
         addComponent(lblName, 0, 0, 1, 0);
         addComponent(lblDescription, 0, 1, 1, 1);
         addComponent(lblCreationDate, 0, 2, 1, 2);
@@ -139,49 +139,49 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         addComponent(listStatus, 2, 4, 3, 4);
         addComponent(listOwner, 2, 5, 3, 5);
         
-		Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-		workbenchDataManager.getWorkbenchRuntimeData();
-		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
+        Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+        workbenchDataManager.getWorkbenchRuntimeData();
+        Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
         
         //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
-	if(!usedForDetailsOnly){
-    	if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
+    if(!usedForDetailsOnly){
+        if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
-                	unlockButton = new Button("Unlock");
-                	unlockButton.setData(UNLOCK_BUTTON_ID);
-                	unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    unlockButton = new Button("Unlock");
+                    unlockButton.setData(UNLOCK_BUTTON_ID);
+                    unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                     addComponent(unlockButton, 0, 7);
                 } else if(germplasmList.getStatus()==1) {
-                	lockButton = new Button("Lock");
-                	lockButton.setData(LOCK_BUTTON_ID);
-                	lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                	addComponent(lockButton, 0, 7);
-                	
-                	deleteButton = new Button("Delete");
-                	deleteButton.setData(DELETE_BUTTON_ID);
-                	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    lockButton = new Button("Lock");
+                    lockButton.setData(LOCK_BUTTON_ID);
+                    lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    addComponent(lockButton, 0, 7);
+                    
+                    deleteButton = new Button("Delete");
+                    deleteButton.setData(DELETE_BUTTON_ID);
+                    deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                    
                     addComponent(deleteButton, 1, 7);
                 }
             }
-	}
+    }
     } 
     
     private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
-	    User user=userDataManager.getUserById(userId);
-	    if(user != null){
-        	    int personId=user.getPersonid();
-        	    Person p =userDataManager.getPersonById(personId);
+        User user=userDataManager.getUserById(userId);
+        if(user != null){
+                int personId=user.getPersonid();
+                Person p =userDataManager.getPersonById(personId);
         
-        	    if(p!=null){
-        		return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-        	    }else{
-        		return user.getName();
-        	    }
-	    } else {
-	        return "";
-	    }
+                if(p!=null){
+                return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+                }else{
+                return user.getName();
+                }
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -202,109 +202,109 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 
 
     public void lockGermplasmList() {
-		if(germplasmList.getStatus()<100){
-			germplasmList.setStatus(germplasmList.getStatus()+100);
-			try {
-				germplasmListManager.updateGermplasmList(germplasmList);
+        if(germplasmList.getStatus()<100){
+            germplasmList.setStatus(germplasmList.getStatus()+100);
+            try {
+                germplasmListManager.updateGermplasmList(germplasmList);
 
-				User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+                ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                         workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
                         "Locked a germplasm list.", 
                         "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
                         user,
                         new Date());
-	        	workbenchDataManager.addProjectActivity(projAct);
-	        	
-	        	Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
-	        	
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-	        	tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
-	        	
-	        	//getWindow().getWindow().showNotification("Germplasm List", "Successfully Locked", Notification.TYPE_WARNING_MESSAGE);
-	        } catch (MiddlewareQueryException e) {
-	        	e.printStackTrace();
-			}
-		}
-		lockButton.detach();
+                workbenchDataManager.addProjectActivity(projAct);
+                
+                Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                
+                //getWindow().getWindow().showNotification("Germplasm List", "Successfully Locked", Notification.TYPE_WARNING_MESSAGE);
+            } catch (MiddlewareQueryException e) {
+                e.printStackTrace();
+            }
+        }
+        lockButton.detach();
 
-    	deleteButton.setEnabled(false);    	    	
+        deleteButton.setEnabled(false);                
     }
     
     public void unlockGermplasmList() {
-		if(germplasmList.getStatus()>=100){
-			germplasmList.setStatus(germplasmList.getStatus()-100);
-			try {
-				germplasmListManager.updateGermplasmList(germplasmList);
+        if(germplasmList.getStatus()>=100){
+            germplasmList.setStatus(germplasmList.getStatus()-100);
+            try {
+                germplasmListManager.updateGermplasmList(germplasmList);
 
-	        	Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-        		germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
-	        	
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-	        	tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
-	        	
-				User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                
+                User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+                ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                         workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
                         "Unlocked a germplasm list.", 
                         "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
                         user,
                         new Date());
-	        	workbenchDataManager.addProjectActivity(projAct);
-	        } catch (MiddlewareQueryException e) {
-	        	e.printStackTrace();
-			}
-		}
+                workbenchDataManager.addProjectActivity(projAct);
+            } catch (MiddlewareQueryException e) {
+                e.printStackTrace();
+            }
+        }
     }    
     
     
     
     public void deleteGermplasmList() {
-    	ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
-					private static final long serialVersionUID = 1L;
+        ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
+                    private static final long serialVersionUID = 1L;
 
-			public void onClose(ConfirmDialog dialog) {
-				if (dialog.isConfirmed()) {
-					deleteGermplasmListConfirmed();
-				}
-    		}
-    	});
+            public void onClose(ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
+                    deleteGermplasmListConfirmed();
+                }
+            }
+        });
     }
     
     public void deleteGermplasmListConfirmed() {
-		if(germplasmList.getStatus()<100){ 
-			try {
-				germplasmListManager.deleteGermplasmList(germplasmList);
-				
-				User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+        if(germplasmList.getStatus()<100){ 
+            try {
+                germplasmListManager.deleteGermplasmList(germplasmList);
+                
+                User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+                ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                         workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
                         "Deleted a germplasm list.", 
                         "Deleted germplasm list with id = "+germplasmList.getId()+" and name = "+germplasmList.getName()+".",
                         user,
                         new Date());
-	        	workbenchDataManager.addProjectActivity(projAct);
-	        	lockButton.setEnabled(false);
-	        	deleteButton.setEnabled(false);
-	        	getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
-	        	//Close confirmation window
-	        	
-	        	//Re-use refresh action on GermplasmListTreeComponent
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().createTree();
-	        	
-	        	//Close tab
-	        	Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-	        	germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
-	        	
-	        	
-	        	
-	        } catch (MiddlewareQueryException e) {
-	        	getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
-	        	e.printStackTrace();
-			}
-		}
-    }				
+                workbenchDataManager.addProjectActivity(projAct);
+                lockButton.setEnabled(false);
+                deleteButton.setEnabled(false);
+                getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
+                //Close confirmation window
+                
+                //Re-use refresh action on GermplasmListTreeComponent
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().createTree();
+                
+                //Close tab
+                Tab tab = Util.getTabAlreadyExist(germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
+                germplasmListAccordionMenu.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                
+                
+                
+            } catch (MiddlewareQueryException e) {
+                getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }                
 }

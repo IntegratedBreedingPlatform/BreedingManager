@@ -69,7 +69,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
     @Override
     public void afterPropertiesSet() throws Exception {
-    	setHeight("500px");
+        setHeight("500px");
         setWidth("1000px");
         
         environmentsTable = new Table();

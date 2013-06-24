@@ -52,7 +52,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private VerticalLayout layoutListData;
     private VerticalLayout layoutListDataInventory;
     
-    private boolean fromUrl;	//this is true if this component is created by accessing the Germplasm List Details page directly from the URL
+    private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
    
     private GermplasmStudyBrowserApplication germplasmStudyBrowserApplication;
     private GermplasmListTreeComponent germplasmListTreeComponent;
@@ -61,10 +61,10 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
-	private GermplasmListManager germplasmListManager;
-	private boolean forGermplasmListWindow;
-	private GermplasmList germplasmList;
-	
+    private GermplasmListManager germplasmListManager;
+    private boolean forGermplasmListWindow;
+    private GermplasmList germplasmList;
+    
 
     public GermplasmListAccordionMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
@@ -75,7 +75,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     }
 
     public GermplasmListAccordionMenu(GermplasmStudyBrowserApplication germplasmStudyBrowserApplication, int germplasmListId,String listName, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-    	this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
+        this.germplasmStudyBrowserApplication = germplasmStudyBrowserApplication;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
@@ -85,7 +85,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     }
     
     public GermplasmListAccordionMenu(GermplasmListTreeComponent germplasmListTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-    	this.germplasmListTreeComponent = germplasmListTreeComponent;
+        this.germplasmListTreeComponent = germplasmListTreeComponent;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
@@ -99,23 +99,23 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         Tab tab = this.getTab(selected);
         if (tab.getComponent() instanceof VerticalLayout) {
             if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_DATA)) { // "Germplasm List Data"
-        	try {
-		    germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-		} catch (MiddlewareQueryException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
-        	    
+            try {
+            germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+        } catch (MiddlewareQueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+                
             if (layoutListData.getComponentCount() == 0) {
                     layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(LIST_SEED_INVENTORY)) {
-            	if (layoutListDataInventory.getComponentCount() == 0) {
-            		layoutListDataInventory.addComponent(new GermplasmListDataInventoryComponent(germplasmListId));
-            		layoutListDataInventory.setMargin(true);
-				}
+                if (layoutListDataInventory.getComponentCount() == 0) {
+                    layoutListDataInventory.addComponent(new GermplasmListDataInventoryComponent(germplasmListId));
+                    layoutListDataInventory.setMargin(true);
+                }
             }
         }
         
@@ -125,11 +125,11 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
                 this.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tabInfo);
     
                 try {
-    		this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-    	    } catch (MiddlewareQueryException e) {
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	    }
+            this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+            } catch (MiddlewareQueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            }
                 tab = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
                 this.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
             }
@@ -154,7 +154,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.addTab(layoutListData, messageSource.getMessage(Message.GERMPLASM_LIST_DATA_TAB)); // "Germplasm List Data"
         this.addTab(layoutListDataInventory, messageSource.getMessage(Message.GERMPLASM_LIST_SEED_INVENTORY_TAB)); // "List Data Inventory"
         
-        this.addListener(new GermplasmListSelectedTabChangeListener(this));    	
+        this.addListener(new GermplasmListSelectedTabChangeListener(this));        
     }
     
     @Override
@@ -168,14 +168,14 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     }
     
     public GermplasmListDetailComponent getGermplasmListDetailComponent() {
-    	return germplasmListDetailComponent;
+        return germplasmListDetailComponent;
     }
 
     public GermplasmStudyBrowserApplication getGermplasmStudyBrowserApplication() {
-    	return germplasmStudyBrowserApplication;
+        return germplasmStudyBrowserApplication;
     }
 
     public GermplasmListTreeComponent getGermplasmListTreeComponent() {
-    	return germplasmListTreeComponent;
+        return germplasmListTreeComponent;
     }
 }

@@ -41,12 +41,12 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
     private Label reference;
 
     private GermplasmDetailModel gDetailModel;
-	
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmCharacteristicsComponent(GermplasmDetailModel gDetailModel) {
-    	this.gDetailModel = gDetailModel;
+        this.gDetailModel = gDetailModel;
     }
     
     @Override

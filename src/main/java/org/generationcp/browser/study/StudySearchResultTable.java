@@ -49,7 +49,7 @@ public class StudySearchResultTable extends VerticalLayout implements Initializi
     }
     
     public Table getResultTable() {
-    	
+        
         resultTable = new Table("", this.dataSource);
         resultTable.setWidth("100%");
         resultTable.setHeight("200px");

@@ -30,7 +30,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private static final long serialVersionUID = 2305982279660448571L;
     
     private final static Logger LOG = LoggerFactory.getLogger(ResultsComponent.class);
-	
+    
     private static final String TRAIT_COLUMN_ID = "ResultsComponent Trait Column ID";
     private static final String NUM_OF_ENV_COLUMN_ID = "ResultsComponent Num Of Env Column ID";
     private static final String NUM_SUP_COLUMN_ID = "ResultsComponent Num Sup Column ID";
@@ -40,7 +40,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private static final String PVAL_COLUMN_ID = "ResultsComponent Pval Column ID";
 
     private Table resultsTable;
-	
+    
     private Label testEntryLabel;
     private Label standardEntryLabel;
     private Label testEntryNameLabel;
@@ -56,50 +56,50 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         this.currentStandardEntryGID = null;
         this.currentTestEntryGID = null;
     }
-	
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         setHeight("550px");
         setWidth("1000px");
         
-	testEntryLabel = new Label("<b>Test Entry:</b>");
-	testEntryLabel.setContentMode(Label.CONTENT_XHTML);
-	addComponent(testEntryLabel, "top:20px;left:30px");
-		
-	testEntryNameLabel = new Label();
-	addComponent(testEntryNameLabel, "top:20px;left:100px");
-		
-	standardEntryLabel = new Label("<b>Standard Entry:</b>");
-	standardEntryLabel.setContentMode(Label.CONTENT_XHTML);
-	addComponent(standardEntryLabel, "top:20px;left:450px");
-	
-	standardEntryNameLabel = new Label();
-	addComponent(standardEntryNameLabel, "top:20px;left:550px");
-		
-	resultsTable = new Table();
-	resultsTable.setWidth("800px");
-	resultsTable.setHeight("400px");
-	resultsTable.setImmediate(true);
-	resultsTable.setColumnCollapsingAllowed(true);
-	resultsTable.setColumnReorderingAllowed(true);
-		
-	resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
-	resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
-	resultsTable.addContainerProperty(NUM_SUP_COLUMN_ID, Integer.class, null);
-	resultsTable.addContainerProperty(MEAN_TEST_COLUMN_ID, Double.class, null);
-	resultsTable.addContainerProperty(MEAN_STD_COLUMN_ID, Double.class, null);
-	resultsTable.addContainerProperty(MEAN_DIFF_COLUMN_ID, Double.class, null);
-	resultsTable.addContainerProperty(PVAL_COLUMN_ID, Double.class, null);
-		
-	resultsTable.setColumnHeader(TRAIT_COLUMN_ID, "TRAIT");
-	resultsTable.setColumnHeader(NUM_OF_ENV_COLUMN_ID, "# OF ENV");
-	resultsTable.setColumnHeader(NUM_SUP_COLUMN_ID, "# SUP");
-	resultsTable.setColumnHeader(MEAN_TEST_COLUMN_ID, "MEAN TEST");
-	resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
-	resultsTable.setColumnHeader(MEAN_DIFF_COLUMN_ID, "MEAN DIFF");
-	resultsTable.setColumnHeader(PVAL_COLUMN_ID, "PVAL");
-		
-	addComponent(resultsTable, "top:70px;left:30px");
+    testEntryLabel = new Label("<b>Test Entry:</b>");
+    testEntryLabel.setContentMode(Label.CONTENT_XHTML);
+    addComponent(testEntryLabel, "top:20px;left:30px");
+        
+    testEntryNameLabel = new Label();
+    addComponent(testEntryNameLabel, "top:20px;left:100px");
+        
+    standardEntryLabel = new Label("<b>Standard Entry:</b>");
+    standardEntryLabel.setContentMode(Label.CONTENT_XHTML);
+    addComponent(standardEntryLabel, "top:20px;left:450px");
+    
+    standardEntryNameLabel = new Label();
+    addComponent(standardEntryNameLabel, "top:20px;left:550px");
+        
+    resultsTable = new Table();
+    resultsTable.setWidth("800px");
+    resultsTable.setHeight("400px");
+    resultsTable.setImmediate(true);
+    resultsTable.setColumnCollapsingAllowed(true);
+    resultsTable.setColumnReorderingAllowed(true);
+        
+    resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
+    resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
+    resultsTable.addContainerProperty(NUM_SUP_COLUMN_ID, Integer.class, null);
+    resultsTable.addContainerProperty(MEAN_TEST_COLUMN_ID, Double.class, null);
+    resultsTable.addContainerProperty(MEAN_STD_COLUMN_ID, Double.class, null);
+    resultsTable.addContainerProperty(MEAN_DIFF_COLUMN_ID, Double.class, null);
+    resultsTable.addContainerProperty(PVAL_COLUMN_ID, Double.class, null);
+        
+    resultsTable.setColumnHeader(TRAIT_COLUMN_ID, "TRAIT");
+    resultsTable.setColumnHeader(NUM_OF_ENV_COLUMN_ID, "# OF ENV");
+    resultsTable.setColumnHeader(NUM_SUP_COLUMN_ID, "# SUP");
+    resultsTable.setColumnHeader(MEAN_TEST_COLUMN_ID, "MEAN TEST");
+    resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
+    resultsTable.setColumnHeader(MEAN_DIFF_COLUMN_ID, "MEAN DIFF");
+    resultsTable.setColumnHeader(PVAL_COLUMN_ID, "PVAL");
+        
+    addComponent(resultsTable, "top:70px;left:30px");
     }
 
     public void populateResultsTable(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){

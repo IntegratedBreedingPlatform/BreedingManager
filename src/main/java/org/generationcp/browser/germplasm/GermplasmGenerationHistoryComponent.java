@@ -38,8 +38,8 @@ public class GermplasmGenerationHistoryComponent extends Table implements Initia
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmGenerationHistoryComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-    	this.dataIndexContainer = dataIndexContainer;
-    	this.gDetailModel = gDetailModel;
+        this.dataIndexContainer = dataIndexContainer;
+        this.gDetailModel = gDetailModel;
     }
 
     @Override

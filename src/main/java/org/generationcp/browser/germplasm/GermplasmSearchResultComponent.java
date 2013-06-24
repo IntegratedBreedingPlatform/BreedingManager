@@ -46,7 +46,7 @@ public class GermplasmSearchResultComponent extends Table implements Initializin
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmSearchResultComponent(GermplasmDataManager germplasmDataManager, String searchChoice, String searchValue) {
-    	this.germplasmDataManager = germplasmDataManager;
+        this.germplasmDataManager = germplasmDataManager;
         this.searchChoice = searchChoice;
         this.searchValue = searchValue;
     }

@@ -215,11 +215,11 @@ public final class GermplasmIndexContainer{
         
 
     private static void addGermplasmListContainer(Container container, String name, String date, String description) {
-    	Object itemId = container.addItem();
-    	Item item = container.getItem(itemId);
-    	item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
-    	item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
-    	item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
+        Object itemId = container.addItem();
+        Item item = container.getItem(itemId);
+        item.getItemProperty(GERMPLASMLIST_NAME).setValue(name);
+        item.getItemProperty(GERMPLASMLIST_DATE).setValue(date);
+        item.getItemProperty(GERMPLASMLIST_DESCRIPTION).setValue(description);
     }
         **/
 
@@ -270,7 +270,7 @@ public final class GermplasmIndexContainer{
     }
 
     private static void addGermplasmStudyInformation(Container container, StudyReference study) {
-    	Object itemId = container.addItem();
+        Object itemId = container.addItem();
         Item item = container.getItem(itemId);
         item.getItemProperty(STUDY_ID).setValue(study.getId());
         item.getItemProperty(STUDY_NAME).setValue(study.getName());

@@ -49,7 +49,7 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     
     private GermplasmDetailModel gDetailModel;
     
-    private boolean fromUrl;				//this is true if this component is created by accessing the Germplasm Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Germplasm Details page directly from the URL
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
@@ -58,9 +58,9 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     private SimpleResourceBundleMessageSource messageSource;
 
     public GermplasmStudyInfoComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel, boolean fromUrl) {
-    	this.dataIndexContainer = dataIndexContainer;
-    	this.gDetailModel = gDetailModel;
-    	this.fromUrl = fromUrl;
+        this.dataIndexContainer = dataIndexContainer;
+        this.gDetailModel = gDetailModel;
+        this.fromUrl = fromUrl;
     }
     
     @Override
@@ -77,7 +77,7 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
         setVisibleColumns(new String[] { GermplasmIndexContainer.STUDY_NAME, GermplasmIndexContainer.STUDY_DESCRIPTION});
         
         if (!fromUrl) {
-        	addListener(new StudyItemClickListener(this));
+            addListener(new StudyItemClickListener(this));
         }
     }
     
@@ -89,13 +89,13 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     
     @Override
     public void updateLabels() {
-    	messageSource.setColumnHeader(this, STUDY_ID, Message.STUDY_ID_LABEL);
+        messageSource.setColumnHeader(this, STUDY_ID, Message.STUDY_ID_LABEL);
         messageSource.setColumnHeader(this, STUDY_NAME, Message.STUDY_NAME_LABEL);
         messageSource.setColumnHeader(this, DESCRIPTION, Message.DESCRIPTION_LABEL);
     }
     
     public void studyItemClickAction(ItemClickEvent event, Integer studyId) {
-    	Window mainWindow = event.getComponent().getWindow();
+        Window mainWindow = event.getComponent().getWindow();
         
         Tool tool = null;
         try {

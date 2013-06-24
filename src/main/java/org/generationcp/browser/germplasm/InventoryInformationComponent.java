@@ -40,8 +40,8 @@ public class InventoryInformationComponent extends Table implements Initializing
     private SimpleResourceBundleMessageSource messageSource;
 
     public InventoryInformationComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
-    	this.dataIndexContainer = dataIndexContainer;
-    	this.gDetailModel=gDetailModel;
+        this.dataIndexContainer = dataIndexContainer;
+        this.gDetailModel=gDetailModel;
     }
 
     @Override

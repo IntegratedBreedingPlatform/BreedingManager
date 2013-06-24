@@ -180,7 +180,7 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
             } else{
                 this.germplasmComponent.setValue(selectedGermplasm.getGid());
                 MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected doesn't have a preferred name, "
-                	+ "please select a different germplasm.", Notification.POSITION_CENTERED);
+                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
             }
             this.germplasmComponent.requestRepaint();
         } catch (MiddlewareQueryException ex){

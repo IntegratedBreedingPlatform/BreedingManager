@@ -78,16 +78,16 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
 
     private void addNode(GermplasmPedigreeTreeNode node, int level) {
 
-    	 if (level == 1) {
-    	     String name = node.getGermplasm().getPreferredName() != null ? node.getGermplasm().getPreferredName().getNval() : null;
-	     String rootNodeLabel = name + "(" + node.getGermplasm().getGid() + ")";
-	     int rootNodeId = node.getGermplasm().getGid();
-	     maintenanceNeighborhoodTree.addItem(rootNodeId);
-	     maintenanceNeighborhoodTree.setItemCaption(rootNodeId, rootNodeLabel);
-	     maintenanceNeighborhoodTree.setParent(rootNodeId, rootNodeId);
-	     maintenanceNeighborhoodTree.setChildrenAllowed(rootNodeId, true);
-	     maintenanceNeighborhoodTree.expandItemsRecursively(rootNodeId);
-    	 }
+         if (level == 1) {
+             String name = node.getGermplasm().getPreferredName() != null ? node.getGermplasm().getPreferredName().getNval() : null;
+         String rootNodeLabel = name + "(" + node.getGermplasm().getGid() + ")";
+         int rootNodeId = node.getGermplasm().getGid();
+         maintenanceNeighborhoodTree.addItem(rootNodeId);
+         maintenanceNeighborhoodTree.setItemCaption(rootNodeId, rootNodeLabel);
+         maintenanceNeighborhoodTree.setParent(rootNodeId, rootNodeId);
+         maintenanceNeighborhoodTree.setChildrenAllowed(rootNodeId, true);
+         maintenanceNeighborhoodTree.expandItemsRecursively(rootNodeId);
+         }
         for (GermplasmPedigreeTreeNode child : node.getLinkedNodes()) {
             String name = child.getGermplasm().getPreferredName() != null ? child.getGermplasm().getPreferredName().getNval() : null;
             int parentNodeId = node.getGermplasm().getGid();
@@ -100,8 +100,8 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
             maintenanceNeighborhoodTree.expandItemsRecursively(childNodeId);
             
             if(child.getGermplasm().getGid()==gid){
-            	maintenanceNeighborhoodTree.setValue(childNodeId);
-            	maintenanceNeighborhoodTree.setImmediate(true);
+                maintenanceNeighborhoodTree.setValue(childNodeId);
+                maintenanceNeighborhoodTree.setImmediate(true);
             }
             
             addNode(child, level + 1);
@@ -110,7 +110,7 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
     
     @Override
     public void afterPropertiesSet() {
-    	setSpacing(true);
+        setSpacing(true);
         setMargin(true);
         
         hLayout= new HorizontalLayout();
@@ -160,14 +160,14 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
     }
 
     private void populateSelectSteps(Select select) {
-    	
-    	for(int i=1;i<=10;i++){
-    		select.addItem(String.valueOf(i));
-    	}
-	}
+        
+        for(int i=1;i<=10;i++){
+            select.addItem(String.valueOf(i));
+        }
+    }
 
 
-	@Override
+    @Override
     public void attach() {
 
         super.attach();
@@ -176,46 +176,46 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
 
     @Override
     public void updateLabels() {
-    	
+        
         messageSource.setCaption(labelNumberOfStepsBackward, Message.NUMBER_OF_STEPS_BACKWARD_LABEL);
         messageSource.setCaption(labelNumberOfStepsForward, Message.NUMBER_OF_STEPS_FORWARD_LABEL);
         messageSource.setCaption(btnDisplay, Message.DISPLAY_BUTTON_LABEL);
        
     }
 
-	public void displayButtonClickAction() {
-		
-		this.removeComponent(maintenanceNeighborhoodTree);
-		maintenanceNeighborhoodTree.removeAllItems();
-		int numberOfStepsBackward=Integer.valueOf(selectNumberOfStepBackward.getValue().toString());
-		int numberOfStepsForward=Integer.valueOf(selectNumberOfStepForward.getValue().toString());
-		
-		germplasmMaintenanceNeighborhood = qQuery.getMaintenanceNeighborhood(Integer.valueOf(gid), numberOfStepsBackward,numberOfStepsForward); // throws QueryException
+    public void displayButtonClickAction() {
+        
+        this.removeComponent(maintenanceNeighborhoodTree);
+        maintenanceNeighborhoodTree.removeAllItems();
+        int numberOfStepsBackward=Integer.valueOf(selectNumberOfStepBackward.getValue().toString());
+        int numberOfStepsForward=Integer.valueOf(selectNumberOfStepForward.getValue().toString());
+        
+        germplasmMaintenanceNeighborhood = qQuery.getMaintenanceNeighborhood(Integer.valueOf(gid), numberOfStepsBackward,numberOfStepsForward); // throws QueryException
         if (germplasmMaintenanceNeighborhood != null) {
             addNode(germplasmMaintenanceNeighborhood.getRoot(), 1);
         }
         
         addComponent(maintenanceNeighborhoodTree);
-		
-	}
-	
-	 public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
-	     if(this.mainLayout != null && this.tabSheet != null) {
-	        VerticalLayout detailLayout = new VerticalLayout();
-	        detailLayout.setSpacing(true);
+        
+    }
+    
+     public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
+         if(this.mainLayout != null && this.tabSheet != null) {
+            VerticalLayout detailLayout = new VerticalLayout();
+            detailLayout.setSpacing(true);
 
-	        if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-	            detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, false));
-	            Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
-	            tab.setClosable(true);
-	            tabSheet.setSelectedTab(detailLayout);
-	            mainLayout.addComponent(tabSheet);
+            if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
+                detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, false));
+                Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
+                tab.setClosable(true);
+                tabSheet.setSelectedTab(detailLayout);
+                mainLayout.addComponent(tabSheet);
 
-	        } else {
-	            Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
-	            tabSheet.setSelectedTab(tab.getComponent());
-	        }
+            } else {
+                Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
+                tabSheet.setSelectedTab(tab.getComponent());
+            }
 
-	     }
-	 }
+         }
+     }
 }

@@ -81,11 +81,11 @@ public class StudyDataIndexContainer{
                 String name = factorDetail.getLocalName();
                 String description = factorDetail.getStandardVariable().getDescription();
                 if(factorDetail.getLocalDescription() != null && factorDetail.getLocalDescription().length() != 0){
-                	description = factorDetail.getLocalDescription().trim();
+                    description = factorDetail.getLocalDescription().trim();
                 } 
                 String propertyName = factorDetail.getStandardVariable().getName();
                 if(factorDetail.getStandardVariable().getProperty() != null){
-                	propertyName = factorDetail.getStandardVariable().getProperty().getName();
+                    propertyName = factorDetail.getStandardVariable().getProperty().getName();
                 }
                 String scaleName = factorDetail.getStandardVariable().getScale().getName();
                 String methodName = factorDetail.getStandardVariable().getMethod().getName();
@@ -144,11 +144,11 @@ public class StudyDataIndexContainer{
                 String name = variateDetail.getLocalName();
                 String description = variateDetail.getStandardVariable().getDescription();
                 if(variateDetail.getLocalDescription() != null && variateDetail.getLocalDescription().length() != 0){
-                	description = variateDetail.getLocalDescription().trim();
+                    description = variateDetail.getLocalDescription().trim();
                 }
                 String propertyName = variateDetail.getStandardVariable().getName();
                 if(variateDetail.getStandardVariable().getProperty() != null){
-                	propertyName = variateDetail.getStandardVariable().getProperty().getName();
+                    propertyName = variateDetail.getStandardVariable().getProperty().getName();
                 }
                 String scaleName = variateDetail.getStandardVariable().getScale().getName();
                 String methodName = variateDetail.getStandardVariable().getMethod().getName();

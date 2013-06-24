@@ -72,11 +72,11 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     
     private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
     
-    private boolean fromUrl;				//this is true if this component is created by accessing the Study Details page directly from the URL
+    private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
+    
     public RepresentationDatasetComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2,
             Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl) {
         this.reportName = datasetTitle;
@@ -107,8 +107,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     @SuppressWarnings("deprecation")
     public void exportToExcelAction() {
         
-    	String tempFilename = "dataset-temp.xls";
-    	
+        String tempFilename = "dataset-temp.xls";
+        
         DatasetExporter datasetExporter;
         datasetExporter = new DatasetExporter(studyDataManagerV2, studyIdHolder, datasetId);
         try {
@@ -127,14 +127,14 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
             //tempFile.delete();
         } catch (DatasetExporterException e) {
             MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME), e.getMessage(), "");
-        }    	
+        }        
         
     }
     
     @Override
     public void afterPropertiesSet() throws Exception{
-    	
-    	 // set the column header ids
+        
+         // set the column header ids
         List<VariableType> variables = new ArrayList<VariableType>();
         List<String> columnIds = new ArrayList<String>();
 
@@ -209,14 +209,14 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         //buttonLayout.addComponent(exportCsvButton);
         //only show Fieldbook Export to Excel button if study page not accessed directly from URL
         if (!fromUrl) {
-        	buttonLayout.addComponent(exportExcelButton);
+            buttonLayout.addComponent(exportExcelButton);
         }
 
         addComponent(buttonLayout);
     }
     
     @Override
-    public void attach() {    	
+    public void attach() {        
         super.attach();
         updateLabels();
     }

@@ -150,30 +150,30 @@ public class GermplasmDetailModel {
         this.generationhistory = generationhistory;
     }
 
-	public ArrayList<GermplasmDetailModel> getGroupRelatives() {
-		return groupRelatives;
-	}
+    public ArrayList<GermplasmDetailModel> getGroupRelatives() {
+        return groupRelatives;
+    }
 
-	public void setGroupRelatives(ArrayList<GermplasmDetailModel> groupRelatives) {
-		this.groupRelatives = groupRelatives;
-	}
+    public void setGroupRelatives(ArrayList<GermplasmDetailModel> groupRelatives) {
+        this.groupRelatives = groupRelatives;
+    }
 
-	public ArrayList<GermplasmDetailModel> getManagementNeighbors() {
-		return managementNeighbors;
-	}
+    public ArrayList<GermplasmDetailModel> getManagementNeighbors() {
+        return managementNeighbors;
+    }
 
-	public void setManagementNeighbors(ArrayList<GermplasmDetailModel> managementNeighbors) {
-		this.managementNeighbors = managementNeighbors;
-	}
+    public void setManagementNeighbors(ArrayList<GermplasmDetailModel> managementNeighbors) {
+        this.managementNeighbors = managementNeighbors;
+    }
 
-	public ArrayList<StudyInfo> getGermplasmStudyInfo() {
-		return germplasmStudyInfo;
-	}
+    public ArrayList<StudyInfo> getGermplasmStudyInfo() {
+        return germplasmStudyInfo;
+    }
 
-	public void setGermplasmStudyInfo(ArrayList<StudyInfo> germplasmStudyInfo) {
-		this.germplasmStudyInfo = germplasmStudyInfo;
-	}
+    public void setGermplasmStudyInfo(ArrayList<StudyInfo> germplasmStudyInfo) {
+        this.germplasmStudyInfo = germplasmStudyInfo;
+    }
 
-		
+        
 
 }

@@ -47,8 +47,8 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     private SimpleResourceBundleMessageSource messageSource;
     
     public StudyVariateComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) {
-    	this.studyDataManagerv2 = studyDataManagerv2;
-    	this.studyId = studyId;
+        this.studyDataManagerv2 = studyDataManagerv2;
+        this.studyId = studyId;
     }
     
 
@@ -66,7 +66,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
         setSizeFull();
         setColumnReorderingAllowed(true);
         setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE, VALUE });    	
+        setColumnHeaders(new String[] { NAME, DESC, PROP, SCA, METH, DTYPE, VALUE });        
     }
     
     @Override

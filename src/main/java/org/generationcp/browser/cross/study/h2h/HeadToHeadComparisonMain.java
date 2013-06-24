@@ -18,13 +18,13 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
 
     private static final long serialVersionUID = -3488805933508882321L;
     private static final String VERSION = "1.1.1.0";
-	
+    
     private Accordion accordion;
-	
+    
     private HorizontalLayout titleLayout;
-	
+    
     private Label mainTitle;
-	
+    
     private SpecifyGermplasmsComponent screenOne;
     private TraitsAvailableComponent screenTwo;
     private EnvironmentsAvailableComponent screenThree;
@@ -34,13 +34,13 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
     private Tab secondTab;
     private Tab thirdTab;
     private Tab fourthTab;
-	
+    
     @Override
     public void afterPropertiesSet() throws Exception {
-	setMargin(false);
-	setSpacing(true);
-		
-	titleLayout = new HorizontalLayout();
+    setMargin(false);
+    setSpacing(true);
+        
+    titleLayout = new HorizontalLayout();
         titleLayout.setSpacing(true);
         setTitleContent("");
         addComponent(titleLayout);
@@ -86,9 +86,9 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
 
     @Override
     public void updateLabels() {
-	// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
     }
-	
+    
     private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
         
@@ -120,8 +120,8 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
     
     public void selectSecondTab(){
         secondTab.setEnabled(true);
-    	this.accordion.setSelectedTab(screenTwo);
-    	thirdTab.setEnabled(false);
+        this.accordion.setSelectedTab(screenTwo);
+        thirdTab.setEnabled(false);
         fourthTab.setEnabled(false);
     }
     

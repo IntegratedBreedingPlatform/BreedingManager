@@ -2,7 +2,7 @@ package org.generationcp.browser.application;
 
 
 public enum Message {
-	
+    
      WELCOME_TITLE
      ,WELCOME_LABEL
      ,QUESTION_LABEL

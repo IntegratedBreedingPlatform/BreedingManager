@@ -213,21 +213,21 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
 
     private String getPreferredId(TabSheet tabSheet, int gid) throws MiddlewareQueryException {
-	List<Integer> gids = new ArrayList<Integer>();
-	
-	for (int i = 0; i < tabSheet.getComponentCount(); i++) {
-	    Tab currentTab = tabSheet.getTab(i);
-	    int g = Integer.valueOf(currentTab.getCaption().toString());
-	    gids.add(g);
-	}
+    List<Integer> gids = new ArrayList<Integer>();
+    
+    for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+        Tab currentTab = tabSheet.getTab(i);
+        int g = Integer.valueOf(currentTab.getCaption().toString());
+        gids.add(g);
+    }
 
-	Map<Integer, String> results = germplasmDataManager.getPrefferedIdsByGIDs(gids);
-	
-	if(results.get(gid)!=null){
-	    return results.get(gid);
-	}else{
-	    return "-";
-	}
+    Map<Integer, String> results = germplasmDataManager.getPrefferedIdsByGIDs(gids);
+    
+    if(results.get(gid)!=null){
+        return results.get(gid);
+    }else{
+        return "-";
+    }
     }
 
     private Integer getCurrentUserLocalId() throws MiddlewareQueryException {

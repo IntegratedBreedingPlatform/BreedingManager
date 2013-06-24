@@ -71,20 +71,20 @@ public class Util{
     }
     
     public static Tab getTabToFocus(TabSheet tabSheet, String tabCaption) {
-    	Tab tabToFocus=tabSheet.getTab(0);
-    	boolean rightTab=false;
+        Tab tabToFocus=tabSheet.getTab(0);
+        boolean rightTab=false;
         for (int i = 0; i < tabSheet.getComponentCount(); i++) {
             Tab tab = tabSheet.getTab(i);
             if(rightTab){
-            	tabToFocus=tab;
-            	return tabToFocus;
+                tabToFocus=tab;
+                return tabToFocus;
             }
             if (tab.getCaption().equals(tabCaption)) {
-            	if(i==(tabSheet.getComponentCount()-1)){
-            		return tabToFocus;
-            	}else{
-            		rightTab=true;
-            	}
+                if(i==(tabSheet.getComponentCount()-1)){
+                    return tabToFocus;
+                }else{
+                    rightTab=true;
+                }
             }
            
             tabToFocus=tab;
@@ -94,11 +94,11 @@ public class Util{
     }
     
     public static void closeAllTab(TabSheet tabSheet){
-    	
-    	 for (int i =  tabSheet.getComponentCount()-1; i >=0; i--) {
+        
+         for (int i =  tabSheet.getComponentCount()-1; i >=0; i--) {
             tabSheet.removeTab(tabSheet.getTab(i));
           } 
-    	
+        
     }
 
 
@@ -178,11 +178,11 @@ public class Util{
         String newPath = path;
         
         if (path != null && path.length() > 0){
-        	try{
-        		newPath = path.substring(0, path.lastIndexOf(File.separator));
-        	}catch (StringIndexOutOfBoundsException e){
-        		newPath = "";
-        	}
+            try{
+                newPath = path.substring(0, path.lastIndexOf(File.separator));
+            }catch (StringIndexOutOfBoundsException e){
+                newPath = "";
+            }
         }
             
         if (newPath.equals("")) { // already at the root directory

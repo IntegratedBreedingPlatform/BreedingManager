@@ -159,15 +159,15 @@ public class GermplasmButtonClickListener implements Button.ClickListener{
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  // TESTED
             } catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MiddlewareQueryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (MiddlewareQueryException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             
         } else if (source instanceof GermplasmDetail
                 && event.getButton().getData().equals(GermplasmDetail.REFRESH_BUTTON_ID)) {

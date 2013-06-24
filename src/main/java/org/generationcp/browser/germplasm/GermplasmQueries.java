@@ -336,7 +336,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
         }
-	}    
+    }    
 
     public GermplasmPedigreeTree getDerivativeNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward)
             throws InternationalizableException {

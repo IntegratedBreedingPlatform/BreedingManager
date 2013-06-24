@@ -63,10 +63,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(GermplasmListCopyToNewListDialog.class);
     private static final long serialVersionUID = 1L;
-    	
+        
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
-    	
+        
     private static final String ENTRY_ID = "entryId";
     private static final String GID_VALUE = "gidValue";
     private static final String ENTRY_CODE = "entryCode";
@@ -106,10 +106,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
   
     public GermplasmListCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId) {
         this.dialogWindow = dialogWindow;
-	this.mainWindow = mainWindow;
-	this.listEntriesTable=listEntriesTable;
-	this.listName=listName;
-	this.ibdbUserId=ibdbUserId;
+    this.mainWindow = mainWindow;
+    this.listEntriesTable=listEntriesTable;
+    this.listName=listName;
+    this.ibdbUserId=ibdbUserId;
     }
 
     @Override
@@ -203,8 +203,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         comboBoxListName.addItem("");
         for (GermplasmList gList : germplasmList) {
             if(!gList.getName().equals(listName)){
-        	comboBoxListName.addItem(gList.getName());
-        	mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+            comboBoxListName.addItem(gList.getName());
+            mapExistingList.put(gList.getName(), new Integer(gList.getId()));
             }
         }
         comboBoxListName.select("");
@@ -233,82 +233,82 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 try {
                     newListid = germplasmListManager.addGermplasmList(listNameData);
                     try{
-        		GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
-        		AddGermplasmListData(germList,1);
-        	    } catch (Exception e){
-        		germplasmListManager.deleteGermplasmListByListId(newListid);
-        		LOG.error("Error with copying list entries", e);
-        		MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-        			, "Copying of entries to a new list failed.  Please report to Workbench developers."
-        			, Notification.POSITION_CENTERED);
-        	    }
-        	    this.mainWindow.removeWindow(dialogWindow);
+                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
+                AddGermplasmListData(germList,1);
+                } catch (Exception e){
+                germplasmListManager.deleteGermplasmListByListId(newListid);
+                LOG.error("Error with copying list entries", e);
+                MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
+                    , "Copying of entries to a new list failed.  Please report to Workbench developers."
+                    , Notification.POSITION_CENTERED);
+                }
+                this.mainWindow.removeWindow(dialogWindow);
 
-        	} catch (MiddlewareQueryException e) {
-        	    LOG.error("Error with copying list entries", e);
-        	    e.printStackTrace();
-        	    MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-        		    , messageSource.getMessage(Message.UNSUCCESSFUL) 
-        		    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
-        		    , Notification.POSITION_CENTERED);
-        	}
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error with copying list entries", e);
+                e.printStackTrace();
+                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
+                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
+                    , Notification.POSITION_CENTERED);
+            }
             }else{
-        	
-		try {
+            
+        try {
                     String listId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
                     GermplasmList  germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
                     int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
                     AddGermplasmListData(germList,countOfExistingList+1);
                     this.mainWindow.removeWindow(dialogWindow);
-		} catch (MiddlewareQueryException e) {
-		    LOG.error("Error with copying list entries", e);
-        	    e.printStackTrace();
-        	    MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-        		    , messageSource.getMessage(Message.UNSUCCESSFUL) 
-        		    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED)
-        		    , Notification.POSITION_CENTERED);
-		}
-        	
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error with copying list entries", e);
+                e.printStackTrace();
+                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
+                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED)
+                    , Notification.POSITION_CENTERED);
+        }
+            
 
             }
         }
     }
 
     private void AddGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
-		int status = 0;
-		int localRecordId = 0;
-		designationOfListEntriesCopied="";
-		Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
-		for (final Object itemId : selectedIds) {
-		    Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ENTRY_ID);
-		    Property pGid= listEntriesTable.getItem(itemId).getItemProperty(GID_VALUE);
-		    Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ENTRY_CODE);
-		    Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(DESIGNATION);
-		    Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(GROUP_NAME);
+        int status = 0;
+        int localRecordId = 0;
+        designationOfListEntriesCopied="";
+        Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
+        for (final Object itemId : selectedIds) {
+            Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ENTRY_ID);
+            Property pGid= listEntriesTable.getItem(itemId).getItemProperty(GID_VALUE);
+            Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ENTRY_CODE);
+            Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(DESIGNATION);
+            Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(GROUP_NAME);
 
-		    String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-		    int gid=Integer.valueOf(pGid.getValue().toString());
-		    String entryCode=String.valueOf((pEntryCode.getValue().toString()));
-		    String seedSource=listName+"-"+entryCode;
-		    String designation=String.valueOf((pDesignation.getValue().toString()));
-		    designationOfListEntriesCopied+=designation+",";
-		    String groupName=String.valueOf((pGroupName.getValue().toString()));
+            String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
+            int gid=Integer.valueOf(pGid.getValue().toString());
+            String entryCode=String.valueOf((pEntryCode.getValue().toString()));
+            String seedSource=listName+"-"+entryCode;
+            String designation=String.valueOf((pDesignation.getValue().toString()));
+            designationOfListEntriesCopied+=designation+",";
+            String groupName=String.valueOf((pGroupName.getValue().toString()));
 
-		    GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
-			    designation, groupName, status, localRecordId);
-		    germplasmListManager.addGermplasmListData(germplasmListData);
-		    entryid++;
-		}
-		
-		designationOfListEntriesCopied=designationOfListEntriesCopied.substring(0,designationOfListEntriesCopied.length()-1);
+            GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
+                designation, groupName, status, localRecordId);
+            germplasmListManager.addGermplasmListData(germplasmListData);
+            entryid++;
+        }
+        
+        designationOfListEntriesCopied=designationOfListEntriesCopied.substring(0,designationOfListEntriesCopied.length()-1);
 
-		MessageNotifier.showMessage(this.getWindow().getParent().getWindow() 
-			,messageSource.getMessage(Message.SUCCESS)
-			,messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS)
-			,3000
-			,Notification.POSITION_CENTERED);
+        MessageNotifier.showMessage(this.getWindow().getParent().getWindow() 
+            ,messageSource.getMessage(Message.SUCCESS)
+            ,messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS)
+            ,3000
+            ,Notification.POSITION_CENTERED);
 
-		logCopyToNewListEntriesToWorkbenchProjectActivity();	
+        logCopyToNewListEntriesToWorkbenchProjectActivity();    
     }
 
     private void logCopyToNewListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
@@ -321,7 +321,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 "Copied entries into a new list.", 
                 "Copied entries to list " +newListid+  " - " + listNameValue,user,new Date());
         try {
-            workbenchDataManager.addProjectActivity(projAct);	
+            workbenchDataManager.addProjectActivity(projAct);    
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with logging workbench activity.", e);
             e.printStackTrace();
@@ -334,14 +334,14 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     @Override
     public void addNewItem(String newItemCaption) {
-	 if (!comboBoxListName.containsId(newItemCaption)) {
-	            if (comboBoxListName.containsId("")) {
-	                comboBoxListName.removeItem("");
-	            }
-	            lastAdded = true;
-	            comboBoxListName.addItem(newItemCaption);
-	            comboBoxListName.setValue(newItemCaption);
-	        }
+     if (!comboBoxListName.containsId(newItemCaption)) {
+                if (comboBoxListName.containsId("")) {
+                    comboBoxListName.removeItem("");
+                }
+                lastAdded = true;
+                comboBoxListName.addItem(newItemCaption);
+                comboBoxListName.setValue(newItemCaption);
+            }
 
     }
 

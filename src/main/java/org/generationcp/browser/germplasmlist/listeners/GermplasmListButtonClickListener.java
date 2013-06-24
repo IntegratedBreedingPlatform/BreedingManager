@@ -44,7 +44,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     
     public GermplasmListButtonClickListener(Layout source, GermplasmList germplasmList) {
         this.source = source;
-        this.germplasmList = germplasmList;	
+        this.germplasmList = germplasmList;    
     }
     
     
@@ -60,16 +60,16 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
             ((GermplasmListTreeComponent) source).createTree();
             
         } else if (event.getButton().getData().equals(GermplasmListDetailComponent.LOCK_BUTTON_ID) 
-        		&& (source instanceof GermplasmListDetailComponent)) { // "Lock Germplasm List"
-        	((GermplasmListDetailComponent) source).lockGermplasmList();
+                && (source instanceof GermplasmListDetailComponent)) { // "Lock Germplasm List"
+            ((GermplasmListDetailComponent) source).lockGermplasmList();
 
         } else if (event.getButton().getData().equals(GermplasmListDetailComponent.UNLOCK_BUTTON_ID) 
-        		&& (source instanceof GermplasmListDetailComponent)) { // "Unlock Germplasm List"
-        	((GermplasmListDetailComponent) source).unlockGermplasmList();        	
-        	
+                && (source instanceof GermplasmListDetailComponent)) { // "Unlock Germplasm List"
+            ((GermplasmListDetailComponent) source).unlockGermplasmList();            
+            
         } else if (event.getButton().getData().equals(GermplasmListDetailComponent.DELETE_BUTTON_ID)
-        		&& (source instanceof GermplasmListDetailComponent)) { // "Delete Germplasm List"
-        	((GermplasmListDetailComponent) source).deleteGermplasmList();
+                && (source instanceof GermplasmListDetailComponent)) { // "Delete Germplasm List"
+            ((GermplasmListDetailComponent) source).deleteGermplasmList();
 
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.SORTING_BUTTON_ID) // "Save Sorting"
                 && (source instanceof GermplasmListDataComponent)) {

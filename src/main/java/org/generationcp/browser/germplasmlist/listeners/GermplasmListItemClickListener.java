@@ -54,8 +54,8 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
         }
         
         if (source instanceof GermplasmListComponent) {
-        	int listId = Integer.valueOf(event.getItem().getItemProperty(ListsForGermplasmQuery.GERMPLASMLIST_ID).getValue().toString());
-        	if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+            int listId = Integer.valueOf(event.getItem().getItemProperty(ListsForGermplasmQuery.GERMPLASMLIST_ID).getValue().toString());
+            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
                     ((GermplasmListComponent) source).listItemClickAction(event, listId);
                 } catch (InternationalizableException e) {

@@ -59,8 +59,8 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private SimpleResourceBundleMessageSource messageSource;
     
     public StudyDetailComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager, int studyId){
-    	this.studyDataManager = studyDataManager;
-    	this.studyId = studyId;
+        this.studyDataManager = studyDataManager;
+        this.studyId = studyId;
     }
     
     @Override
@@ -93,7 +93,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID, Message.EMPTY_STRING);
         }
-		
+        
         addComponent(lblName, 1, 1);
         addComponent(lblTitle, 1, 2);
         addComponent(lblObjective, 1, 3);

@@ -179,9 +179,9 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         germplasmByPhenoButton.addListener(new GermplasmButtonClickListener(this));
         this.addComponent(germplasmByPhenoButton);
     }
-	
+    
     @Override
-    public void attach() {    	
+    public void attach() {        
         super.attach();
         updateLabels();
     }
@@ -195,5 +195,5 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         messageSource.setCaption(studyButton, Message.STUDY_BUTTON_LABEL);
         messageSource.setCaption(germplasmByPhenoButton, Message.GERMPLASM_BY_PHENO_LABEL);
     }
-		
+        
 }
