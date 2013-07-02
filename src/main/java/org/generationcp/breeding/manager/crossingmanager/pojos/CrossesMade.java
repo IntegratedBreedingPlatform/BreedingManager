@@ -28,60 +28,60 @@ import org.generationcp.middleware.pojos.Name;
  *
  */
 public class CrossesMade implements Serializable{
-	
-	private static final long serialVersionUID = 8213778974745382283L;
+    
+    private static final long serialVersionUID = 8213778974745382283L;
 
-	private Map<Germplasm, Name> crossesMap;
-	
-	//for storing old cross names when generated name is chosen by user
-	private List<GermplasmListEntry> oldCrossNames; 
-	
-	private CrossingManagerUploader crossingManagerUploader;
-	
-	private GermplasmList germplasmList;
-	
-	public CrossesMade(){
-	}
-	
-	public CrossesMade(Map<Germplasm, Name> crossesMap, List<GermplasmListEntry>  oldCrosses){
-		this.setCrossesMap(crossesMap);
-		this.setOldCrossNames(oldCrosses);
-	}
+    private Map<Germplasm, Name> crossesMap;
+    
+    //for storing old cross names when generated name is chosen by user
+    private List<GermplasmListEntry> oldCrossNames; 
+    
+    private CrossingManagerUploader crossingManagerUploader;
+    
+    private GermplasmList germplasmList;
+    
+    public CrossesMade(){
+    }
+    
+    public CrossesMade(Map<Germplasm, Name> crossesMap, List<GermplasmListEntry>  oldCrosses){
+        this.setCrossesMap(crossesMap);
+        this.setOldCrossNames(oldCrosses);
+    }
 
-	public void setCrossesMap(Map<Germplasm, Name> crossesMap) {
-		this.crossesMap = crossesMap;
-		if (this.oldCrossNames != null){
-			this.oldCrossNames.clear();
-		}
-	}
+    public void setCrossesMap(Map<Germplasm, Name> crossesMap) {
+        this.crossesMap = crossesMap;
+        if (this.oldCrossNames != null){
+            this.oldCrossNames.clear();
+        }
+    }
 
-	public Map<Germplasm, Name> getCrossesMap() {
-		return crossesMap;
-	}
+    public Map<Germplasm, Name> getCrossesMap() {
+        return crossesMap;
+    }
 
-	public void setOldCrossNames(List<GermplasmListEntry> oldCrosses) {
-		this.oldCrossNames = oldCrosses;
-	}
+    public void setOldCrossNames(List<GermplasmListEntry> oldCrosses) {
+        this.oldCrossNames = oldCrosses;
+    }
 
-	public List<GermplasmListEntry> getOldCrossNames() {
-		return oldCrossNames;
-	}
-	
-	public CrossingManagerUploader getCrossingManagerUploader() {
-		return crossingManagerUploader;
-	}
+    public List<GermplasmListEntry> getOldCrossNames() {
+        return oldCrossNames;
+    }
+    
+    public CrossingManagerUploader getCrossingManagerUploader() {
+        return crossingManagerUploader;
+    }
 
-	public void setCrossingManagerUploader(
-			CrossingManagerUploader crossingManagerUploader) {
-		this.crossingManagerUploader = crossingManagerUploader;
-	}
+    public void setCrossingManagerUploader(
+            CrossingManagerUploader crossingManagerUploader) {
+        this.crossingManagerUploader = crossingManagerUploader;
+    }
 
-	public GermplasmList getGermplasmList() {
-		return germplasmList;
-	}
+    public GermplasmList getGermplasmList() {
+        return germplasmList;
+    }
 
-	public void setGermplasmList(GermplasmList germplasmList) {
-		this.germplasmList = germplasmList;
-	}
-	
+    public void setGermplasmList(GermplasmList germplasmList) {
+        this.germplasmList = germplasmList;
+    }
+    
 }

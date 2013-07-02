@@ -16,11 +16,11 @@ public enum TemplateFactorHeader {
     private String header;
     
     private TemplateFactorHeader(String header){
-    	this.header = header;
+        this.header = header;
     }
-	
+    
     public String getHeader(){
-    	return this.header;
+        return this.header;
     }
     
 }

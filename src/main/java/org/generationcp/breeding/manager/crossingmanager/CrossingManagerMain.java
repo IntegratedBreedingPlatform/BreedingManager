@@ -28,25 +28,25 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
-	
+    
     private static final long serialVersionUID = -6656072296236475385L;
 
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
     private static final String VERSION = "1.1.1.0";
     private static final String STEP_1_GUIDE_MESSAGE = "Crossing Manager facilitates " +
-    		"the dynamic specification of cross combinations or input of cross combinations " +
-    		"from a crossing nursery template.  You can either use a nursery template file or " +
-    		"proceed to the next step without using a nursery template file.";
+            "the dynamic specification of cross combinations or input of cross combinations " +
+            "from a crossing nursery template.  You can either use a nursery template file or " +
+            "proceed to the next step without using a nursery template file.";
     private static final String STEP_2_GUIDE_MESSAGE = "In this screen you must first select a list for the female and male parents, " +
-    		"then select list entries, next you should select an option for how you want to cross your list entries, " +
+            "then select list entries, next you should select an option for how you want to cross your list entries, " +
                 "then press the Make Cross button.  In selecting male and female parents you can use the Shift and CTRL keys to " +
                 "select multiple items.  You can select and delete crosses you have made on the crosses " +
                 "made table, Shift and CTRL keys may also be used for this.";
     private static final String STEP_3_GUIDE_MESSAGE = "This screen allows you to specify additional details for the germplasm records " +
-    		"which will be made for the crosses you have specified.";
+            "which will be made for the crosses you have specified.";
     private static final String STEP_4_GUIDE_MESSAGE = "This screen allows you to specify details for the list which will be created " +
-    		"for the crosses.  You should specify values for all the fields here.";
+            "for the crosses.  You should specify values for all the fields here.";
     
     private CrossingManagerImportFileComponent wizardScreenOne;
     private CrossingManagerMakeCrossesComponent wizardScreenTwo;
@@ -72,11 +72,11 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     private SimpleResourceBundleMessageSource messageSource;
     
     public CrossingManagerMain(ComponentContainer parent){
-    	this.parent = parent;
+        this.parent = parent;
     }
 
     @SuppressWarnings("serial")
-	@Override
+    @Override
     public void afterPropertiesSet() throws Exception {
         setMargin(false);
         setSpacing(true);
@@ -108,19 +108,19 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardTabFour = accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross
         
         accordion.addListener(new SelectedTabChangeListener() {
-    	    @Override
-    	    public void selectedTabChange(SelectedTabChangeEvent event) {
-    	        Component selected =accordion.getSelectedTab();
-    	        Tab tab = accordion.getTab(selected);
-    	        
-    	        //This part decides which tabs to enable/disable on change event. 
-    	        //  All tabs are enabled everytime tab is changed, so all this has to do 
-    	        //  is to disable the non-related tabs
-    	        if(tab!=null && tab.equals(wizardTabOne)){
-    	            enableOnlyWizardTabOne();
-    	        } else if(tab!=null && tab.equals(wizardTabTwo)){
-    	            enableOnlyWizardTabTwo();
-    	            enableWizardTabOne();
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selected =accordion.getSelectedTab();
+                Tab tab = accordion.getTab(selected);
+                
+                //This part decides which tabs to enable/disable on change event. 
+                //  All tabs are enabled everytime tab is changed, so all this has to do 
+                //  is to disable the non-related tabs
+                if(tab!=null && tab.equals(wizardTabOne)){
+                    enableOnlyWizardTabOne();
+                } else if(tab!=null && tab.equals(wizardTabTwo)){
+                    enableOnlyWizardTabTwo();
+                    enableWizardTabOne();
                 } else if(tab!=null && tab.equals(wizardTabThree)){   
                     enableOnlyWizardTabThree();
                     enableWizardTabOne();
@@ -136,9 +136,9 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
                         enableWizardTabOne();
                     }
                 }
-    	                    
-    	    }
-    	});
+                            
+            }
+        });
         addComponent(accordion);
         
         enableOnlyWizardTabOne();
@@ -157,17 +157,17 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     
     public CrossingManagerImportFileComponent getWizardScreenOne() {
 
-    	return wizardScreenOne;
+        return wizardScreenOne;
     }
     public CrossingManagerMakeCrossesComponent getWizardScreenTwo() {
-    	return wizardScreenTwo;
+        return wizardScreenTwo;
     }
     public CrossingManagerAdditionalDetailsComponent getWizardScreenThree() {
-    	return wizardScreenThree;
+        return wizardScreenThree;
     }
     
     public CrossingManagerDetailsComponent getWizardScreenFour() {
-    	return wizardScreenFour;
+        return wizardScreenFour;
     }
 
     public void enableWizardTabs() {
@@ -243,15 +243,15 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     }
     
     public void viewGermplasmListCreated(Integer listId){
-		EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
-		    new EmbeddedGermplasmListDetailComponent(this, listId);
-		
-		this.removeComponent(this.accordion);
-		this.addComponent(germplasmListBrowser);
+        EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
+            new EmbeddedGermplasmListDetailComponent(this, listId);
+        
+        this.removeComponent(this.accordion);
+        this.addComponent(germplasmListBrowser);
     }
     
     public void reset(){
-    	this.parent.replaceComponent(this, new CrossingManagerMain(this.parent));
+        this.parent.replaceComponent(this, new CrossingManagerMain(this.parent));
     }
     
     public void setTitleContent(String guideMessage){

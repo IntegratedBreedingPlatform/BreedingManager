@@ -16,11 +16,11 @@ public enum TemplateConditionHeader {
     private String header;
     
     private TemplateConditionHeader(String header){
-    	this.header = header;
+        this.header = header;
     }
-	
+    
     public String getHeader(){
-    	return this.header;
+        return this.header;
     }
     
 }

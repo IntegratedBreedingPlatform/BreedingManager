@@ -19,11 +19,11 @@ public enum TemplateCrossingCondition {
     private String value;
     
     private TemplateCrossingCondition(String value){
-    	this.value = value;
+        this.value = value;
     }
-	
+    
     public String getValue(){
-    	return this.value;
+        return this.value;
     }
     
 }

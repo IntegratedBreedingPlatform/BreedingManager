@@ -119,7 +119,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     private NurseryTemplateMain source;
 
     public NurseryTemplateConditionsComponent(NurseryTemplateMain source) {
-	this.source=source;
+    this.source=source;
     }
 
     @Override
@@ -135,36 +135,36 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeComponents() {
-	
-	nid=new TextField();
-	
-	comboBoxBreedingMethod= new ComboBox();
-	comboBoxBreedingMethod.setImmediate(true);
-	comboBoxBreedingMethod.setNullSelectionAllowed(true);
-	
-	methodId=new TextField();
-	methodId.setImmediate(true);
-	
-	comboBoxSiteName= new ComboBox();
-	comboBoxSiteName.setImmediate(true);
-	comboBoxSiteName.setNullSelectionAllowed(true);
-	
-	siteId=new TextField();
-	siteId.setImmediate(true);
-	
-	comboBoxBreedersName= new ComboBox();
-	comboBoxBreedersName.setImmediate(true);
-	comboBoxBreedersName.setNullSelectionAllowed(true);
-	
-	breederId=new TextField();
-	breederId.setImmediate(true);
-	
-	femaleListName=new TextField();
-	femaleListId=new TextField();
-	maleListName=new TextField();
-	maleListId=new TextField();
-	
-	generateConditionsTable();
+    
+    nid=new TextField();
+    
+    comboBoxBreedingMethod= new ComboBox();
+    comboBoxBreedingMethod.setImmediate(true);
+    comboBoxBreedingMethod.setNullSelectionAllowed(true);
+    
+    methodId=new TextField();
+    methodId.setImmediate(true);
+    
+    comboBoxSiteName= new ComboBox();
+    comboBoxSiteName.setImmediate(true);
+    comboBoxSiteName.setNullSelectionAllowed(true);
+    
+    siteId=new TextField();
+    siteId.setImmediate(true);
+    
+    comboBoxBreedersName= new ComboBox();
+    comboBoxBreedersName.setImmediate(true);
+    comboBoxBreedersName.setNullSelectionAllowed(true);
+    
+    breederId=new TextField();
+    breederId.setImmediate(true);
+    
+    femaleListName=new TextField();
+    femaleListId=new TextField();
+    maleListName=new TextField();
+    maleListId=new TextField();
+    
+    generateConditionsTable();
         addComponent(nurseryConditionsTable);
         
         buttonArea = layoutButtonArea();
@@ -183,9 +183,9 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void initializeActions() {
-	
-	backButton.addListener(new NurseryTemplateButtonClickListener(this));
-	doneButton.addListener(new NurseryTemplateButtonClickListener(this));
+    
+    backButton.addListener(new NurseryTemplateButtonClickListener(this));
+    doneButton.addListener(new NurseryTemplateButtonClickListener(this));
     }
     
     protected Component layoutButtonArea() {
@@ -277,259 +277,259 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     
     private ComboBox getComboBoxSiteName() {
 
-	mapSiteName = new HashMap<String, Integer>();
-	try {
-	    locations=germplasmDataManager.getAllBreedingLocations();
-	} catch (MiddlewareQueryException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	comboBoxSiteName.addItem("");
-	for (Location loc : locations) {
-	    if(loc.getLname().length()>0){
-		comboBoxSiteName.addItem(loc.getLname());
-		mapSiteName.put(loc.getLname(), new Integer(loc.getLocid()));
-	    }
-	}
-	
-	comboBoxSiteName.addListener(new Property.ValueChangeListener() {
+    mapSiteName = new HashMap<String, Integer>();
+    try {
+        locations=germplasmDataManager.getAllBreedingLocations();
+    } catch (MiddlewareQueryException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+    comboBoxSiteName.addItem("");
+    for (Location loc : locations) {
+        if(loc.getLname().length()>0){
+        comboBoxSiteName.addItem(loc.getLname());
+        mapSiteName.put(loc.getLname(), new Integer(loc.getLocid()));
+        }
+    }
+    
+    comboBoxSiteName.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		siteId.setValue(String.valueOf(mapSiteName.get(comboBoxSiteName.getValue())));
-	    }
-	});
-	
-	siteId.setValue("");
-	return comboBoxSiteName;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        siteId.setValue(String.valueOf(mapSiteName.get(comboBoxSiteName.getValue())));
+        }
+    });
+    
+    siteId.setValue("");
+    return comboBoxSiteName;
     }
     
     private TextField getTextFieldSiteId(){
 
-	siteId.addListener(new Property.ValueChangeListener() {
+    siteId.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		Location loc = new Location();
-		boolean noError=true;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        Location loc = new Location();
+        boolean noError=true;
 
-		try {
-		    loc = germplasmDataManager.getLocationByID(Integer.valueOf(siteId.getValue().toString()));
-		} catch (NumberFormatException e) {
-		    noError=false;
-		} catch (MiddlewareQueryException e) {
-		    noError=false;
-		}
+        try {
+            loc = germplasmDataManager.getLocationByID(Integer.valueOf(siteId.getValue().toString()));
+        } catch (NumberFormatException e) {
+            noError=false;
+        } catch (MiddlewareQueryException e) {
+            noError=false;
+        }
 
-		if(loc!=null && noError){
-		    comboBoxSiteName.setValue(loc.getLname());
-		}else{
-			if(comboBoxSiteName.getValue()!=null || loc==null){
-				MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID), Notification.POSITION_CENTERED);
-			}
-			comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
-			siteId.setValue("");
-		}
-	    }
-	});
+        if(loc!=null && noError){
+            comboBoxSiteName.setValue(loc.getLname());
+        }else{
+            if(comboBoxSiteName.getValue()!=null || loc==null){
+                MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID), Notification.POSITION_CENTERED);
+            }
+            comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
+            siteId.setValue("");
+        }
+        }
+    });
 
-	return siteId;
+    return siteId;
     }
     
     
     private ComboBox getComboBoxBreedersName() {
 
-	mapBreedersName = new HashMap<String, Integer>();
-	try {
-	    users=userDataManager.getAllUsers();
-	} catch (MiddlewareQueryException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	setComboBoxBreederDefaultValue();
-	for (User u : users) {
-	    Person p = new Person();
-	    try {
-		p = userDataManager.getPersonById(u.getPersonid());
-	    } catch (MiddlewareQueryException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-	    String name= u.getName();
-	    if(p != null){
-	        name = p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-	    }
-	    comboBoxBreedersName.addItem(name);
-	    mapBreedersName.put(name, new Integer(u.getUserid()));
-	}
-	
-	comboBoxBreedersName.addListener(new Property.ValueChangeListener() {
+    mapBreedersName = new HashMap<String, Integer>();
+    try {
+        users=userDataManager.getAllUsers();
+    } catch (MiddlewareQueryException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+    setComboBoxBreederDefaultValue();
+    for (User u : users) {
+        Person p = new Person();
+        try {
+        p = userDataManager.getPersonById(u.getPersonid());
+        } catch (MiddlewareQueryException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+        }
+        String name= u.getName();
+        if(p != null){
+            name = p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+        }
+        comboBoxBreedersName.addItem(name);
+        mapBreedersName.put(name, new Integer(u.getUserid()));
+    }
+    
+    comboBoxBreedersName.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		breederId.setValue(String.valueOf(mapBreedersName.get(comboBoxBreedersName.getValue())));
-	    }
-	});
-	
-	return comboBoxBreedersName;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        breederId.setValue(String.valueOf(mapBreedersName.get(comboBoxBreedersName.getValue())));
+        }
+    });
+    
+    return comboBoxBreedersName;
     }
     
     
     private void setComboBoxBreederDefaultValue() {
-	try {
-	    User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-	    Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-	    Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
+    try {
+        User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+        Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
 
-	    User u=userDataManager.getUserById(ibdbUserId);
-	    Person p=userDataManager.getPersonById(u.getPersonid());
-	    
-	    String name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-	    comboBoxBreedersName.addItem(name);
-	    mapBreedersName.put(name, new Integer(u.getUserid()));
-	    comboBoxBreedersName.select(name);
-	    breederId.setValue(String.valueOf(u.getUserid()));
-	    
-	} catch (MiddlewareQueryException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+        User u=userDataManager.getUserById(ibdbUserId);
+        Person p=userDataManager.getPersonById(u.getPersonid());
+        
+        String name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+        comboBoxBreedersName.addItem(name);
+        mapBreedersName.put(name, new Integer(u.getUserid()));
+        comboBoxBreedersName.select(name);
+        breederId.setValue(String.valueOf(u.getUserid()));
+        
+    } catch (MiddlewareQueryException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
 
     }
 
     private TextField getTextFieldBreederId(){
 
-	breederId.addListener(new Property.ValueChangeListener() {
+    breederId.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		Person p = new Person();
-		User u= new User();
-		String name="";
-		boolean noError=true;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        Person p = new Person();
+        User u= new User();
+        String name="";
+        boolean noError=true;
 
-		try {
-		    u=userDataManager.getUserById(Integer.valueOf(breederId.getValue().toString()));
-		} catch (NumberFormatException e) {
-		    noError=false;
-		} catch (MiddlewareQueryException e) {
-		    noError=false;
-		}
+        try {
+            u=userDataManager.getUserById(Integer.valueOf(breederId.getValue().toString()));
+        } catch (NumberFormatException e) {
+            noError=false;
+        } catch (MiddlewareQueryException e) {
+            noError=false;
+        }
 
-		if(u!=null && noError){
-		    try {
-			p = userDataManager.getPersonById(u.getPersonid());
-			if(p!=null){
-			    name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-			}else{
-			    comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
-			    breederId.setValue("");
-			}
-		    } catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-		    comboBoxBreedersName.setValue(name);
-		}else{
-			if(comboBoxBreedersName.getValue()!=null || u==null){
-				MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID), Notification.POSITION_CENTERED);
-		    }
-		    comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
-		    breederId.setValue("");
-		}
-	    }
+        if(u!=null && noError){
+            try {
+            p = userDataManager.getPersonById(u.getPersonid());
+            if(p!=null){
+                name=p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+            }else{
+                comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
+                breederId.setValue("");
+            }
+            } catch (MiddlewareQueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            }
+            comboBoxBreedersName.setValue(name);
+        }else{
+            if(comboBoxBreedersName.getValue()!=null || u==null){
+                MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID), Notification.POSITION_CENTERED);
+            }
+            comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
+            breederId.setValue("");
+        }
+        }
 
-	});
+    });
 
-	return breederId;
+    return breederId;
     }
     
     private ComboBox getComboBoxBreedingMethod() {
 
-	mapBreedingMethod = new HashMap<String, Integer>();
-	try {
-	    method=germplasmDataManager.getMethodsByType("GEN");
-	} catch (MiddlewareQueryException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	for (Method m : method) {
-	    if(m.getMname().length()>0){
-		comboBoxBreedingMethod.addItem(m.getMname());
-		mapBreedingMethod.put(m.getMname(), new Integer(m.getMid()));
-	    }
-	}
-	
-	comboBoxBreedingMethod.addListener(new Property.ValueChangeListener() {
+    mapBreedingMethod = new HashMap<String, Integer>();
+    try {
+        method=germplasmDataManager.getMethodsByType("GEN");
+    } catch (MiddlewareQueryException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+    for (Method m : method) {
+        if(m.getMname().length()>0){
+        comboBoxBreedingMethod.addItem(m.getMname());
+        mapBreedingMethod.put(m.getMname(), new Integer(m.getMid()));
+        }
+    }
+    
+    comboBoxBreedingMethod.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
-	    }
-	});
-	comboBoxBreedingMethod.select("");
-	methodId.setValue("");
-	return comboBoxBreedingMethod;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        methodId.setValue(String.valueOf(mapBreedingMethod.get(comboBoxBreedingMethod.getValue())));
+        }
+    });
+    comboBoxBreedingMethod.select("");
+    methodId.setValue("");
+    return comboBoxBreedingMethod;
     }
     
     private TextField getTextFieldMethodId(){
 
-	methodId.addListener(new Property.ValueChangeListener() {
+    methodId.addListener(new Property.ValueChangeListener() {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		Method m = new Method();
-		boolean noError=true;
+        @Override
+        public void valueChange(ValueChangeEvent event) {
+        Method m = new Method();
+        boolean noError=true;
 
-		try {
-		    m=germplasmDataManager.getMethodByID(Integer.valueOf(methodId.getValue().toString()));
-		} catch (NumberFormatException e) {
-		    noError=false;
-		} catch (MiddlewareQueryException e) {
-		    noError=false;
-		}
+        try {
+            m=germplasmDataManager.getMethodByID(Integer.valueOf(methodId.getValue().toString()));
+        } catch (NumberFormatException e) {
+            noError=false;
+        } catch (MiddlewareQueryException e) {
+            noError=false;
+        }
 
-		if(m!=null && noError){
-		    comboBoxBreedingMethod.setValue(m.getMname());
-		}else{
-			if(comboBoxBreedingMethod.getValue()!=null || m==null){
-		    	MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID), Notification.POSITION_CENTERED);
-		    }
-		    comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
-		    methodId.setValue("");
-		}
-	    }
-	});
+        if(m!=null && noError){
+            comboBoxBreedingMethod.setValue(m.getMname());
+        }else{
+            if(comboBoxBreedingMethod.getValue()!=null || m==null){
+                MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID), Notification.POSITION_CENTERED);
+            }
+            comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
+            methodId.setValue("");
+        }
+        }
+    });
 
-	return methodId;
+    return methodId;
     }
     
     private VerticalLayout getLayoutGermplasmListTextField(final TextField txtField,final String germplasmListFor){
-	VerticalLayout germplasmListTextFieldLayout = new VerticalLayout();
-	germplasmListTextFieldLayout.addComponent(txtField);
-	germplasmListTextFieldLayout.addListener(new LayoutClickListener() {
+    VerticalLayout germplasmListTextFieldLayout = new VerticalLayout();
+    germplasmListTextFieldLayout.addComponent(txtField);
+    germplasmListTextFieldLayout.addListener(new LayoutClickListener() {
 
-	    public void layoutClick(LayoutClickEvent event) {
-	        if (event.getChildComponent() == txtField) {
-	            SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
-	            getWindow().addWindow(selectListWindow);
-	        }
-	    }
-	});
-	
-	return germplasmListTextFieldLayout;
+        public void layoutClick(LayoutClickEvent event) {
+            if (event.getChildComponent() == txtField) {
+                SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
+                getWindow().addWindow(selectListWindow);
+            }
+        }
+    });
+    
+    return germplasmListTextFieldLayout;
     }
     
     
@@ -552,84 +552,84 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
 
     public void backButtonClickAction() {
-	source.disableNurseryTemplateConditionsComponent();
+    source.disableNurseryTemplateConditionsComponent();
     }
 
     public void doneButtonClickAction() {
-	String confirmDialogCaption=messageSource.getMessage(Message.CONFIRM_DIALOG_CAPTION_EXPORT_NURSERY_FILE);
-	String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_EXPORT_NURSERY_FILE);
+    String confirmDialogCaption=messageSource.getMessage(Message.CONFIRM_DIALOG_CAPTION_EXPORT_NURSERY_FILE);
+    String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_EXPORT_NURSERY_FILE);
 
-	ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
-		messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
-		private static final long serialVersionUID = 1L;
+    ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
+        messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+        private static final long serialVersionUID = 1L;
 
-		public void onClose(ConfirmDialog dialog) {
-		    if (dialog.isConfirmed()) {
-			createAndDownloadNurseryTemplateFile();
-		    }
-		}
-	});
+        public void onClose(ConfirmDialog dialog) {
+            if (dialog.isConfirmed()) {
+            createAndDownloadNurseryTemplateFile();
+            }
+        }
+    });
 
     }
     
     protected void createAndDownloadNurseryTemplateFile() {
-	// TODO Auto-generated method stub
-	ImportedGermplasmCrosses nurseryTemplateData=source.getSelectNurseryTemplateScreen().getCrossingManagerUploader().getImportedGermplasmCrosses();
+    // TODO Auto-generated method stub
+    ImportedGermplasmCrosses nurseryTemplateData=source.getSelectNurseryTemplateScreen().getCrossingManagerUploader().getImportedGermplasmCrosses();
 
-	String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
-	NurseryTemplateManagerExporter exporter = new NurseryTemplateManagerExporter(nurseryTemplateData,getNurseryConditionValue());
+    String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+    NurseryTemplateManagerExporter exporter = new NurseryTemplateManagerExporter(nurseryTemplateData,getNurseryConditionValue());
 
-	try {
-	    exporter.exportNurseryTemplateManagerExcel(tempFileName);
-	    FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-	    fileDownloadResource.setFilename(nurseryTemplateData.getFilename());
+    try {
+        exporter.exportNurseryTemplateManagerExcel(tempFileName);
+        FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+        fileDownloadResource.setFilename(nurseryTemplateData.getFilename());
 
-	    this.getWindow().open(fileDownloadResource);
+        this.getWindow().open(fileDownloadResource);
 
-	} catch (CrossingManagerExporterException e) {
-	    MessageNotifier.showError(getWindow(), e.getMessage(), "", Notification.POSITION_CENTERED);
-	}
+    } catch (CrossingManagerExporterException e) {
+        MessageNotifier.showError(getWindow(), e.getMessage(), "", Notification.POSITION_CENTERED);
+    }
 
 
     }
 
     private HashMap<String, String> getNurseryConditionValue() {
-	
-	String breederName="";
-	String breedingMethod="";
-	String siteName="";
-	
-	if(comboBoxBreedersName.getValue()!=null){
-	    breederName=comboBoxBreedersName.getValue().toString();
-	}
-	
-	if(comboBoxBreedingMethod.getValue()!=null){
-	    breedingMethod=comboBoxBreedingMethod.getValue().toString();  
-	}
-	
-	if(comboBoxSiteName.getValue()!=null){
-	    siteName=comboBoxSiteName.getValue().toString();
-	}
-	
-	HashMap<String, String> conditionValue=new HashMap<String,String>();
-	conditionValue.put("NID", nid.getValue().toString());
-	conditionValue.put("BREEDER NAME",breederName );
-	conditionValue.put("BREEDER ID", breederId.getValue().toString());
-	conditionValue.put("SITE", siteName);
-	conditionValue.put("SITE ID", siteId.getValue().toString());
-	conditionValue.put("BREEDING METHOD",breedingMethod );
-	conditionValue.put("BREEDING METHOD ID", methodId.getValue().toString());
-	conditionValue.put("FEMALE LIST NAME", femaleListName.getValue().toString());
-	conditionValue.put("FEMALE LIST ID", femaleListId.getValue().toString());
-	conditionValue.put("MALE LIST NAME", maleListName.getValue().toString());
-	conditionValue.put("MALE LIST ID", maleListId.getValue().toString());
-	
-	return conditionValue;
+    
+    String breederName="";
+    String breedingMethod="";
+    String siteName="";
+    
+    if(comboBoxBreedersName.getValue()!=null){
+        breederName=comboBoxBreedersName.getValue().toString();
+    }
+    
+    if(comboBoxBreedingMethod.getValue()!=null){
+        breedingMethod=comboBoxBreedingMethod.getValue().toString();  
+    }
+    
+    if(comboBoxSiteName.getValue()!=null){
+        siteName=comboBoxSiteName.getValue().toString();
+    }
+    
+    HashMap<String, String> conditionValue=new HashMap<String,String>();
+    conditionValue.put("NID", nid.getValue().toString());
+    conditionValue.put("BREEDER NAME",breederName );
+    conditionValue.put("BREEDER ID", breederId.getValue().toString());
+    conditionValue.put("SITE", siteName);
+    conditionValue.put("SITE ID", siteId.getValue().toString());
+    conditionValue.put("BREEDING METHOD",breedingMethod );
+    conditionValue.put("BREEDING METHOD ID", methodId.getValue().toString());
+    conditionValue.put("FEMALE LIST NAME", femaleListName.getValue().toString());
+    conditionValue.put("FEMALE LIST ID", femaleListId.getValue().toString());
+    conditionValue.put("MALE LIST NAME", maleListName.getValue().toString());
+    conditionValue.put("MALE LIST ID", maleListId.getValue().toString());
+    
+    return conditionValue;
     }
 
 
     private NurseryTemplateConditionsComponent getMainClass(){
-	return this;
+    return this;
     }
 
     public TextField getFemaleListName() {

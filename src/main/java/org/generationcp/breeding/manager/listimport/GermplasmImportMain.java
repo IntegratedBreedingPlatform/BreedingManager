@@ -76,13 +76,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     }
     
     public GermplasmImportFileComponent getWizardScreenOne() {
-    	return wizardScreenOne;
+        return wizardScreenOne;
     }
     public SpecifyGermplasmDetailsComponent getWizardScreenTwo() {
-    	return wizardScreenTwo;
+        return wizardScreenTwo;
     }
     public SaveGermplasmListComponent getWizardScreenThree() {
-    	return wizardScreenThree;
+        return wizardScreenThree;
     }
     
     

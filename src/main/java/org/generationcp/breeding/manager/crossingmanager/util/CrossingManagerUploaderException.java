@@ -17,10 +17,10 @@ public class CrossingManagerUploaderException extends Exception{
     private static final long serialVersionUID = -38638637163746263L;
     
     public CrossingManagerUploaderException(String message){
-    	super(message);
+        super(message);
     }
 
     public CrossingManagerUploaderException(String message, Throwable cause){
-    	super(message, cause);
+        super(message, cause);
     }
 }

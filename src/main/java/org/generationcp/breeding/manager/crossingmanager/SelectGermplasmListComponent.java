@@ -45,7 +45,7 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
     private Integer lastOpenedListId;
     
     public SelectGermplasmListComponent(Integer lastOpenedListId) {
-    	this.lastOpenedListId = lastOpenedListId;
+        this.lastOpenedListId = lastOpenedListId;
     }
     
     @Override

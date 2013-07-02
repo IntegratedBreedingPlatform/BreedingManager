@@ -23,9 +23,9 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
  *
  */
 public interface CrossesMadeContainer {
-	
-	public CrossesMade getCrossesMade();
-	
-	public void setCrossesMade(CrossesMade crossesMade);
-	
+    
+    public CrossesMade getCrossesMade();
+    
+    public void setCrossesMade(CrossesMade crossesMade);
+    
 }

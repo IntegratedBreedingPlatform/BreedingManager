@@ -66,7 +66,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private SimpleResourceBundleMessageSource messageSource;
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
-    	this.source = source;
+        this.source = source;
         this.accordion = accordion;
     }
     
@@ -189,26 +189,26 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     }
     
     public GermplasmImportMain getSource() {
-    	return source;
+        return source;
     }
     
     public void setGermplasmBreedingMethod(String breedingMethod){
-    	breedingMethodComboBox.setNullSelectionAllowed(false);
-    	breedingMethodComboBox.addItem(breedingMethod);
-    	breedingMethodComboBox.setValue(breedingMethod);
+        breedingMethodComboBox.setNullSelectionAllowed(false);
+        breedingMethodComboBox.addItem(breedingMethod);
+        breedingMethodComboBox.setValue(breedingMethod);
     }
     public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException{
-    	germplasmDateField.setValue(germplasmDate);
+        germplasmDateField.setValue(germplasmDate);
     }
     public void setGermplasmLocation(String germplasmLocation){
-    	locationComboBox.setNullSelectionAllowed(false);
-    	locationComboBox.addItem(germplasmLocation);
-    	locationComboBox.setValue(germplasmLocation);
+        locationComboBox.setNullSelectionAllowed(false);
+        locationComboBox.addItem(germplasmLocation);
+        locationComboBox.setValue(germplasmLocation);
     }
     public void setGermplasmListType(String germplasmListType){
-    	nameTypeComboBox.setNullSelectionAllowed(false);
-    	nameTypeComboBox.addItem(germplasmListType);
-    	nameTypeComboBox.setValue(germplasmListType);
+        nameTypeComboBox.setNullSelectionAllowed(false);
+        nameTypeComboBox.addItem(germplasmListType);
+        nameTypeComboBox.setValue(germplasmListType);
     }
     public void setGermplasmListDataTable(){
     }

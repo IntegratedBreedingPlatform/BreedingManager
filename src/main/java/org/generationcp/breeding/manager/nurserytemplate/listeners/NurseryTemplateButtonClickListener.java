@@ -29,11 +29,11 @@ public class NurseryTemplateButtonClickListener implements Button.ClickListener 
             ((NurseryTemplateImportFileComponent) source).nextButtonClickAction();
         
         }else if(eventButtonData.equals(NurseryTemplateConditionsComponent.BACK_BUTTON_ID) 
-        	&& (source instanceof NurseryTemplateConditionsComponent)) {
+            && (source instanceof NurseryTemplateConditionsComponent)) {
             ((NurseryTemplateConditionsComponent) source).backButtonClickAction();
         }else if(eventButtonData.equals(NurseryTemplateConditionsComponent.DONE_BUTTON_ID) 
-        	&& (source instanceof NurseryTemplateConditionsComponent)) {
-            ((NurseryTemplateConditionsComponent) source).doneButtonClickAction();	  
+            && (source instanceof NurseryTemplateConditionsComponent)) {
+            ((NurseryTemplateConditionsComponent) source).doneButtonClickAction();      
         }else {
             LOG.error("CrossingManagerButtonClickListener: Error with buttonClick action. Source not identified.");
         }

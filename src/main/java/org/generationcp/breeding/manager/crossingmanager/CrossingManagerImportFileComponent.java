@@ -72,7 +72,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private GermplasmListManager germplasmListManager;
     
     public CrossingManagerImportFileComponent(CrossingManagerMain source, Accordion accordion){
-    	this.source = source;
+        this.source = source;
         this.accordion = accordion;
         this.nextScreen = null;
         this.nextNextScreen = null;
@@ -105,7 +105,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         templateFileUsageOptionGroup.setItemCaption(TEMPLATE_FILE_USAGE_OPTION_1_ID, "Manually specify parent lists and crosses.");
         templateFileUsageOptionGroup.addItem(TEMPLATE_FILE_USAGE_OPTION_2_ID);
         templateFileUsageOptionGroup.setItemCaption(TEMPLATE_FILE_USAGE_OPTION_2_ID, "Use a template file to specify parents " +
-        		"and (optionally) crosses.");
+                "and (optionally) crosses.");
         templateFileUsageOptionGroup.select(TEMPLATE_FILE_USAGE_OPTION_1_ID);
         templateFileUsageOptionGroup.addListener(new Property.ValueChangeListener() {
             private static final long serialVersionUID = 1L;
@@ -244,8 +244,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     public void updateFilenameLabelValue(String filename){
-    	messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
-    	filenameLabel.setCaption(filenameLabel.getCaption()+": "+filename);
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+        filenameLabel.setCaption(filenameLabel.getCaption()+": "+filename);
     }
 
     public void nextButtonClickAction() throws InternationalizableException{
@@ -265,14 +265,14 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         }
         
         if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-        	MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
         } else if(crossesOptionGroup.getValue()==null) {
-        	MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.", Notification.POSITION_CENTERED);
         } else {
             if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
                 if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
-                	MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet."
-                			, Notification.POSITION_CENTERED);
+                    MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet."
+                            , Notification.POSITION_CENTERED);
                 //pass uploaded info and Crosses (if any) to next screen
                 } else {
                     if(this.nextNextScreen != null){
@@ -285,11 +285,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                 if(this.nextScreen != null){
                     saveCrossesInfoToNextWizardStep(this.nextScreen, false);
                     ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
-	        	} else {
-	        		this.nextButton.setEnabled(false);
-	        	}
-    		}
-    	}
+                } else {
+                    this.nextButton.setEnabled(false);
+                }
+            }
+        }
     }
 
     private void saveCrossesInfoToNextWizardStep(Component nextStep, boolean crossesUploaded){
@@ -307,11 +307,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         source.enableWizardTabs();
         if(nextStep instanceof CrossingManagerMakeCrossesComponent){
             source.getWizardScreenTwo().setPreviousScreen(this);
-    	    this.accordion.setSelectedTab(nextStep);
-    	    source.enableOnlyWizardTabTwo();
-    	    source.enableWizardTabOne();
+            this.accordion.setSelectedTab(nextStep);
+            source.enableOnlyWizardTabTwo();
+            source.enableWizardTabOne();
         } else if(nextStep instanceof CrossingManagerAdditionalDetailsComponent){
-    	    source.getWizardScreenThree().setPreviousScreen(this);
+            source.getWizardScreenThree().setPreviousScreen(this);
             this.accordion.setSelectedTab(nextStep);
             source.enableOnlyWizardTabThree();
             source.enableWizardTabOne();
@@ -347,26 +347,26 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     public Accordion getAccordion() {
-    	return accordion;
+        return accordion;
     }
     
     public Component getNextScreen() {
-    	return nextScreen;
+        return nextScreen;
     }
     
     public Component getNextNextScreen() {
-    	return nextNextScreen;
+        return nextNextScreen;
     }
     
     public CrossingManagerMain getSource() {
-    	return source;
+        return source;
     }
     
     public void selectManuallyMakeCrosses(){
-    	crossesOptionGroup.setValue(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
+        crossesOptionGroup.setValue(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
     }
     public void selectAlreadyDefinedCrossesInNurseryTemplateFile(){
-    	crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
+        crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
     }
 
     public CrossingManagerUploader getCrossingManagerUploader() {

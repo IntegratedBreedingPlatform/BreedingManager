@@ -52,8 +52,8 @@ public class NurseryTemplateManagerExporter{
     private HashMap<String, String> conditionValue;
     
     public NurseryTemplateManagerExporter(ImportedGermplasmCrosses nurseryTemplateData, HashMap<String, String> conditionValue){
-	this.nurseryTemplateData = nurseryTemplateData;
-	this.conditionValue=conditionValue;
+    this.nurseryTemplateData = nurseryTemplateData;
+    this.conditionValue=conditionValue;
     }
     
     public FileOutputStream exportNurseryTemplateManagerExcel(String filename) throws CrossingManagerExporterException {
@@ -66,20 +66,20 @@ public class NurseryTemplateManagerExporter{
         
 //        Map<Germplasm, Name> crossesMap = crossesMade.getCrossesMap();
 //        if (crossesMap != null && !crossesMap.isEmpty()){
-		    HashMap<String, CellStyle> sheetStyles = createStyles(wb);
-	            
-		    //write Description sheet
-		    int lastRow = 0;
-		    lastRow = writeStudyDetailsSection(sheetStyles, descriptionSheet, 1);
-		    lastRow = writeConditionSection(sheetStyles, descriptionSheet, lastRow + 1);
-		    lastRow = writeFactorSection(sheetStyles, descriptionSheet, lastRow + 2); //two rows before section
-		    lastRow = writeConstantsSection(sheetStyles, descriptionSheet, lastRow + 1);
-		    lastRow = writeVariateSection(sheetStyles, descriptionSheet, lastRow + 1);
-		    
-		    //write Observation sheet
-		    writeObservationsSheet(sheetStyles, observationSheet, 1);
+            HashMap<String, CellStyle> sheetStyles = createStyles(wb);
+                
+            //write Description sheet
+            int lastRow = 0;
+            lastRow = writeStudyDetailsSection(sheetStyles, descriptionSheet, 1);
+            lastRow = writeConditionSection(sheetStyles, descriptionSheet, lastRow + 1);
+            lastRow = writeFactorSection(sheetStyles, descriptionSheet, lastRow + 2); //two rows before section
+            lastRow = writeConstantsSection(sheetStyles, descriptionSheet, lastRow + 1);
+            lastRow = writeVariateSection(sheetStyles, descriptionSheet, lastRow + 1);
+            
+            //write Observation sheet
+            writeObservationsSheet(sheetStyles, observationSheet, 1);
 //        }
-	
+    
         //adjust column widths of description sheet to fit contents
         for(int ctr = 0; ctr < NUM_OF_COLUMNS; ctr++) {
             descriptionSheet.autoSizeColumn(ctr);
@@ -91,17 +91,17 @@ public class NurseryTemplateManagerExporter{
         }
 
         
-		try {
-		    //write the excel file
-		    FileOutputStream fileOutputStream = new FileOutputStream(filename);
-		    wb.write(fileOutputStream);
-		    fileOutputStream.close();
-		    
-		    return fileOutputStream;
-		    
-		} catch(Exception ex) {
-		    throw new CrossingManagerExporterException("Error writing file to: " + filename, ex);
-		}
+        try {
+            //write the excel file
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            wb.write(fileOutputStream);
+            fileOutputStream.close();
+            
+            return fileOutputStream;
+            
+        } catch(Exception ex) {
+            throw new CrossingManagerExporterException("Error writing file to: " + filename, ex);
+        }
     }
     
     private HashMap<String, CellStyle> createStyles(HSSFWorkbook wb) {
@@ -149,29 +149,29 @@ public class NurseryTemplateManagerExporter{
     
     
     private int writeStudyDetailsSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
-	int actualRow = startingRow - 1;
-	int currentRow = actualRow;
-	int ctr = 0;
+    int actualRow = startingRow - 1;
+    int currentRow = actualRow;
+    int ctr = 0;
 
-	for (TemplateStudyDetails studyDetail : TemplateStudyDetails.values()){
-	    String header = studyDetail.getValue(); //get header from enum 
-	    currentRow = actualRow + ctr;
+    for (TemplateStudyDetails studyDetail : TemplateStudyDetails.values()){
+        String header = studyDetail.getValue(); //get header from enum 
+        currentRow = actualRow + ctr;
 
-	    HSSFRow row = descriptionSheet.createRow(currentRow);
-	    descriptionSheet.addMergedRegion(new CellRangeAddress(currentRow, currentRow, 1, 7));
+        HSSFRow row = descriptionSheet.createRow(currentRow);
+        descriptionSheet.addMergedRegion(new CellRangeAddress(currentRow, currentRow, 1, 7));
 
-	    Cell labelCell = row.createCell(0);
-	    labelCell.setCellValue(header); 
-	    labelCell.setCellStyle(styles.get(LABEL_STYLE));
+        Cell labelCell = row.createCell(0);
+        labelCell.setCellValue(header); 
+        labelCell.setCellStyle(styles.get(LABEL_STYLE));
 
-	    Cell valueCell = row.createCell(1);
-	    setStudyDetailCellValue(nurseryTemplateData, studyDetail, valueCell);
+        Cell valueCell = row.createCell(1);
+        setStudyDetailCellValue(nurseryTemplateData, studyDetail, valueCell);
 
-	    ctr++;
-	}
+        ctr++;
+    }
 
-	//return the next row to write to. +2 because it's decremented at start of method
-	return currentRow + 2;
+    //return the next row to write to. +2 because it's decremented at start of method
+    return currentRow + 2;
     }
     
     
@@ -192,19 +192,19 @@ public class NurseryTemplateManagerExporter{
         // write the imported conditions
         List<ImportedCondition> importedConditions =nurseryTemplateData.getImportedConditions();
         currentRow++;
-		for (ImportedCondition condition: importedConditions){
-		    HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
-		    conditionRow.createCell(0).setCellValue(condition.getCondition());
-		    conditionRow.createCell(1).setCellValue(condition.getDescription());
-		    conditionRow.createCell(2).setCellValue(condition.getProperty());
-		    conditionRow.createCell(3).setCellValue(condition.getScale());
-		    conditionRow.createCell(4).setCellValue(condition.getMethod());
-		    conditionRow.createCell(5).setCellValue(condition.getDataType());
-		    conditionRow.createCell(6).setCellValue(conditionValue.get(condition.getCondition().toUpperCase()));
-		    conditionRow.createCell(7).setCellValue(condition.getLabel());
+        for (ImportedCondition condition: importedConditions){
+            HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
+            conditionRow.createCell(0).setCellValue(condition.getCondition());
+            conditionRow.createCell(1).setCellValue(condition.getDescription());
+            conditionRow.createCell(2).setCellValue(condition.getProperty());
+            conditionRow.createCell(3).setCellValue(condition.getScale());
+            conditionRow.createCell(4).setCellValue(condition.getMethod());
+            conditionRow.createCell(5).setCellValue(condition.getDataType());
+            conditionRow.createCell(6).setCellValue(conditionValue.get(condition.getCondition().toUpperCase()));
+            conditionRow.createCell(7).setCellValue(condition.getLabel());
         }
-	
-		return currentRow + 1;
+    
+        return currentRow + 1;
     }
     
     
@@ -226,17 +226,17 @@ public class NurseryTemplateManagerExporter{
         List<ImportedFactor> importedFactors =nurseryTemplateData.getImportedFactors();
         currentRow++;
         for (ImportedFactor factor: importedFactors){
-		    HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
-		    conditionRow.createCell(0).setCellValue(factor.getFactor());
-		    conditionRow.createCell(1).setCellValue(factor.getDescription());
-		    conditionRow.createCell(2).setCellValue(factor.getProperty());
-		    conditionRow.createCell(3).setCellValue(factor.getScale());
-		    conditionRow.createCell(4).setCellValue(factor.getMethod());
-		    conditionRow.createCell(5).setCellValue(factor.getDataType());
-		    conditionRow.createCell(6).setCellValue(factor.getNestedIn());
-		    conditionRow.createCell(7).setCellValue(factor.getLabel());
+            HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
+            conditionRow.createCell(0).setCellValue(factor.getFactor());
+            conditionRow.createCell(1).setCellValue(factor.getDescription());
+            conditionRow.createCell(2).setCellValue(factor.getProperty());
+            conditionRow.createCell(3).setCellValue(factor.getScale());
+            conditionRow.createCell(4).setCellValue(factor.getMethod());
+            conditionRow.createCell(5).setCellValue(factor.getDataType());
+            conditionRow.createCell(6).setCellValue(factor.getNestedIn());
+            conditionRow.createCell(7).setCellValue(factor.getLabel());
         }
-	
+    
         return currentRow + 1;
     }
     
@@ -258,19 +258,19 @@ public class NurseryTemplateManagerExporter{
         // write the imported variates
         List<ImportedVariate> importedVariates =nurseryTemplateData.getImportedVariates();
         currentRow++;
-		for (ImportedVariate variate: importedVariates){
-		    HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
-		    conditionRow.createCell(0).setCellValue(variate.getVariate());
-		    conditionRow.createCell(1).setCellValue(variate.getDescription());
-		    conditionRow.createCell(2).setCellValue(variate.getProperty());
-		    conditionRow.createCell(3).setCellValue(variate.getScale());
-		    conditionRow.createCell(4).setCellValue(variate.getMethod());
-		    conditionRow.createCell(5).setCellValue(variate.getDataType());
-//		    conditionRow.createCell(6).setCellValue(variate.getValue()); // empty column in template
-		    conditionRow.createCell(7).setCellValue(variate.getSampleLevel());
+        for (ImportedVariate variate: importedVariates){
+            HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
+            conditionRow.createCell(0).setCellValue(variate.getVariate());
+            conditionRow.createCell(1).setCellValue(variate.getDescription());
+            conditionRow.createCell(2).setCellValue(variate.getProperty());
+            conditionRow.createCell(3).setCellValue(variate.getScale());
+            conditionRow.createCell(4).setCellValue(variate.getMethod());
+            conditionRow.createCell(5).setCellValue(variate.getDataType());
+//            conditionRow.createCell(6).setCellValue(variate.getValue()); // empty column in template
+            conditionRow.createCell(7).setCellValue(variate.getSampleLevel());
         }
-	
-		return currentRow + 1;
+    
+        return currentRow + 1;
     }
     
     private int writeConstantsSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
@@ -290,19 +290,19 @@ public class NurseryTemplateManagerExporter{
         // write the imported constants
         List<ImportedConstant> importedConstants =nurseryTemplateData.getImportedConstants();
         currentRow++;
-		for (ImportedConstant constant: importedConstants){
-		    HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
-		    conditionRow.createCell(0).setCellValue(constant.getConstant());
-		    conditionRow.createCell(1).setCellValue(constant.getDescription());
-		    conditionRow.createCell(2).setCellValue(constant.getProperty());
-		    conditionRow.createCell(3).setCellValue(constant.getScale());
-		    conditionRow.createCell(4).setCellValue(constant.getMethod());
-		    conditionRow.createCell(5).setCellValue(constant.getDataType());
-		    conditionRow.createCell(6).setCellValue(constant.getValue());
-		    conditionRow.createCell(7).setCellValue(constant.getSampleLevel());
+        for (ImportedConstant constant: importedConstants){
+            HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
+            conditionRow.createCell(0).setCellValue(constant.getConstant());
+            conditionRow.createCell(1).setCellValue(constant.getDescription());
+            conditionRow.createCell(2).setCellValue(constant.getProperty());
+            conditionRow.createCell(3).setCellValue(constant.getScale());
+            conditionRow.createCell(4).setCellValue(constant.getMethod());
+            conditionRow.createCell(5).setCellValue(constant.getDataType());
+            conditionRow.createCell(6).setCellValue(constant.getValue());
+            conditionRow.createCell(7).setCellValue(constant.getSampleLevel());
         }
-	
-		return currentRow + 1;
+    
+        return currentRow + 1;
     }
     
     private int writeObservationsSheet(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
@@ -328,46 +328,46 @@ public class NurseryTemplateManagerExporter{
         }
         
         
-	
-		return currentRow + 1;
+    
+        return currentRow + 1;
     }
     
     
     private void setStudyDetailCellValue(ImportedGermplasmCrosses nurseryTemplateData, TemplateStudyDetails studyDetail, Cell cell){
-	
-		switch (studyDetail){
-		    case STUDY : {
-				cell.setCellValue(nurseryTemplateData.getStudy());
-				break;
-		    }
-		    case TITLE : {
-				cell.setCellValue(nurseryTemplateData.getTitle());
-				break;
-		    }
-		    case PMKEY : {
-				cell.setCellValue(nurseryTemplateData.getPMKey());
-				break;
-		    }
-		    case OBJECTIVE : {
-				cell.setCellValue(nurseryTemplateData.getObjective());
-				break;
-		    }
-		    case START_DATE : {
-				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-				cell.setCellValue(formatter.format(nurseryTemplateData.getStartDate()));
-				break;
-		    }
-		    case END_DATE : {
-				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-				cell.setCellValue(formatter.format(nurseryTemplateData.getEndDate()));
-				break;
-		    }
-		    case STUDY_TYPE : {
-				cell.setCellValue(nurseryTemplateData.getType());
-				break;
-		    }
-		}
-		
+    
+        switch (studyDetail){
+            case STUDY : {
+                cell.setCellValue(nurseryTemplateData.getStudy());
+                break;
+            }
+            case TITLE : {
+                cell.setCellValue(nurseryTemplateData.getTitle());
+                break;
+            }
+            case PMKEY : {
+                cell.setCellValue(nurseryTemplateData.getPMKey());
+                break;
+            }
+            case OBJECTIVE : {
+                cell.setCellValue(nurseryTemplateData.getObjective());
+                break;
+            }
+            case START_DATE : {
+                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+                cell.setCellValue(formatter.format(nurseryTemplateData.getStartDate()));
+                break;
+            }
+            case END_DATE : {
+                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+                cell.setCellValue(formatter.format(nurseryTemplateData.getEndDate()));
+                break;
+            }
+            case STUDY_TYPE : {
+                cell.setCellValue(nurseryTemplateData.getType());
+                break;
+            }
+        }
+        
     }
 
 }

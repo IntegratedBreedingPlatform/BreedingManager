@@ -15,11 +15,11 @@ public enum TemplateStudyDetails {
     private String value;
     
     private TemplateStudyDetails(String value){
-    	this.value = value;
+        this.value = value;
     }
-	
+    
     public String getValue(){
-    	return this.value;
+        return this.value;
     }
     
 }

@@ -23,28 +23,28 @@ import java.io.Serializable;
  *
  */
 public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Serializable{
-	
-	private static final long serialVersionUID = 4520653998347266903L;
-	
-	private Integer listDataId;
-	private Integer gid;
-	private Integer entryId;
-	private String designation;
-	
-	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
-	        this.listDataId = listDataId;
-		this.gid = gid;
-		this.entryId = entryId;		
-	}
-	
-	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
-	        this.listDataId = listDataId;
-		this.gid = gid;
-		this.entryId = entryId;		
-		this.designation = designation;
-	}
-	
-	public Integer getListDataId() {
+    
+    private static final long serialVersionUID = 4520653998347266903L;
+    
+    private Integer listDataId;
+    private Integer gid;
+    private Integer entryId;
+    private String designation;
+    
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
+            this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+    }
+    
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
+            this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+        this.designation = designation;
+    }
+    
+    public Integer getListDataId() {
             return listDataId;
         }
 
@@ -54,72 +54,72 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 
         public Integer getGid() {
             return gid;
-	}
+    }
 
-	public void setGid(Integer gid) {
-		this.gid = gid;
-	}
+    public void setGid(Integer gid) {
+        this.gid = gid;
+    }
 
-	public Integer getEntryId() {
-		return entryId;
-	}
+    public Integer getEntryId() {
+        return entryId;
+    }
 
-	public void setEntryId(Integer entryId) {
-		this.entryId = entryId;
-	}
+    public void setEntryId(Integer entryId) {
+        this.entryId = entryId;
+    }
 
-	public String getDesignation() {
-		return designation;
-	}
+    public String getDesignation() {
+        return designation;
+    }
 
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
 
-	@Override
-	public int compareTo(GermplasmListEntry entry) {
-		return this.entryId - entry.getEntryId();
-	}
+    @Override
+    public int compareTo(GermplasmListEntry entry) {
+        return this.entryId - entry.getEntryId();
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("GermplasmListEntry [gid=");
-		builder.append(gid);
-		builder.append(", entryId=");
-		builder.append(entryId);
-		builder.append(", designation=");
-		builder.append(designation);
-		builder.append("]");
-		return builder.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("GermplasmListEntry [gid=");
+        builder.append(gid);
+        builder.append(", entryId=");
+        builder.append(entryId);
+        builder.append(", designation=");
+        builder.append(designation);
+        builder.append("]");
+        return builder.toString();
+    }
 
-	@Override
-	public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((listDataId == null) ? 0 : listDataId.hashCode());
-	    return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((listDataId == null) ? 0 : listDataId.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-	    if (this == obj)
-	    	return true;
-	    if (obj == null)
-	    	return false;
-	    if (getClass() != obj.getClass())
-	    	return false;
-	    GermplasmListEntry other = (GermplasmListEntry) obj;
-	    if (listDataId == null) {
-			if (other.listDataId != null)
-			    return false;
-	    } else if (!listDataId.equals(other.listDataId))
-	    	return false;
-	    
-	    return true;
-	}
-	
-	
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GermplasmListEntry other = (GermplasmListEntry) obj;
+        if (listDataId == null) {
+            if (other.listDataId != null)
+                return false;
+        } else if (!listDataId.equals(other.listDataId))
+            return false;
+        
+        return true;
+    }
+    
+    
 
 }

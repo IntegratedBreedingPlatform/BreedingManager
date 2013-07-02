@@ -46,7 +46,7 @@ import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
-	implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+    implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerDetailsComponent.class);
@@ -81,26 +81,26 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         
     
     public CrossingManagerDetailsComponent(CrossingManagerMain source, Accordion accordion){
-    	this.source = source;
+        this.source = source;
         this.accordion = accordion;
         
     }
 
-	@Override
-	public CrossesMade getCrossesMade() {
-		return this.crossesMade;
-	}
+    @Override
+    public CrossesMade getCrossesMade() {
+        return this.crossesMade;
+    }
 
 
-	@Override
-	public void setCrossesMade(CrossesMade crossesMade) {
-		this.crossesMade = crossesMade;
-		
-	}
-	
-	public void setPreviousScreen(Component backScreen){
-	        this.previousScreen = backScreen; 
-	}
+    @Override
+    public void setCrossesMade(CrossesMade crossesMade) {
+        this.crossesMade = crossesMade;
+        
+    }
+    
+    public void setPreviousScreen(Component backScreen){
+            this.previousScreen = backScreen; 
+    }
 
     
     @Override
@@ -148,8 +148,8 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         initializeListTypeComboBox();
 
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
-		doneButton.addListener(listener);
-		backButton.addListener(listener);
+        doneButton.addListener(listener);
+        backButton.addListener(listener);
     }
     
     @Override
@@ -160,17 +160,17 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     
     @Override
     public void updateLabels() {
-    	messageSource.setCaption(germplasmListNameLabel, Message.GERMPLASM_LIST_NAME);
-    	messageSource.setCaption(germplasmListDescriptionLabel, Message.GERMPLASM_LIST_DESCRIPTION);
-    	messageSource.setCaption(germplasmListTypeLabel, Message.GERMPLASM_LIST_TYPE);
-    	messageSource.setCaption(germplasmListDateLabel, Message.GERMPLASM_LIST_DATE);
-    	messageSource.setCaption(backButton, Message.BACK);
-    	messageSource.setCaption(doneButton, Message.DONE);
+        messageSource.setCaption(germplasmListNameLabel, Message.GERMPLASM_LIST_NAME);
+        messageSource.setCaption(germplasmListDescriptionLabel, Message.GERMPLASM_LIST_DESCRIPTION);
+        messageSource.setCaption(germplasmListTypeLabel, Message.GERMPLASM_LIST_TYPE);
+        messageSource.setCaption(germplasmListDateLabel, Message.GERMPLASM_LIST_DATE);
+        messageSource.setCaption(backButton, Message.BACK);
+        messageSource.setCaption(doneButton, Message.DONE);
     }
 
 
     private void initializeListTypeComboBox() throws MiddlewareQueryException {
-    	List<UserDefinedField> germplasmListTypes = germplasmListManager.getGermplasmListTypes();
+        List<UserDefinedField> germplasmListTypes = germplasmListManager.getGermplasmListTypes();
         for(int i = 0 ; i < germplasmListTypes.size() ; i++){
             UserDefinedField userDefinedField = germplasmListTypes.get(i);
             germplasmListType.addItem(userDefinedField.getFcode());
@@ -183,79 +183,79 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 
     @SuppressWarnings("serial")
     public void doneButtonClickAction() throws InternationalizableException{
-    	if (validateRequiredFields()){
-    	    updateCrossesMadeContainer();
-    	
-    	    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
-	    		messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
-	    		messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
-	    		new ConfirmDialog.Listener() {
-	    			
-	        		public void onClose(ConfirmDialog dialog) {
-	        		    if (dialog.isConfirmed()) {
-	        			saveRecords();
-	        		    }
-	        		}
-	        		
-    	    	}
-    	    );
-    	}
+        if (validateRequiredFields()){
+            updateCrossesMadeContainer();
+        
+            ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
+                messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
+                messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+                new ConfirmDialog.Listener() {
+                    
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
+                        saveRecords();
+                        }
+                    }
+                    
+                }
+            );
+        }
     }
     
     //Save records into DB and redirects to GermplasmListBrowser to view created list
     private void saveRecords() {
-		SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
+        SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
-		try {
-		    Integer listId = saveAction.saveRecords(crossesMade);
-		    MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-		    		messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-		    
-		    this.source.viewGermplasmListCreated(listId);
-		    
-		} catch (MiddlewareQueryException e) {
-		    LOG.error(e.getMessage() + " " + e.getStackTrace());
-		    e.printStackTrace();
-		    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-			    messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
-		}
-    	
+        try {
+            Integer listId = saveAction.saveRecords(crossesMade);
+            MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
+            
+            this.source.viewGermplasmListCreated(listId);
+            
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage() + " " + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
+        }
+        
     }
     
     //save GermplasmList info to CrossesMadeContainer
     private void updateCrossesMadeContainer(){
-    	String listName = ((String) germplasmListName.getValue()).trim();
-    	String listDescription = ((String) germplasmListDescription.getValue()).trim();
-    	SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-    	Date date = (Date)germplasmListDate.getValue();
-    	
-    	GermplasmList list = new GermplasmList();
-    	list.setName(listName);
-    	list.setDescription(listDescription);
-		list.setDate(Long.parseLong(formatter.format(date)));
-		list.setType((String) germplasmListType.getValue()); // value = fCOde
-		list.setUserId(0);
-		
-		this.crossesMade.setGermplasmList(list);
+        String listName = ((String) germplasmListName.getValue()).trim();
+        String listDescription = ((String) germplasmListDescription.getValue()).trim();
+        SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+        Date date = (Date)germplasmListDate.getValue();
+        
+        GermplasmList list = new GermplasmList();
+        list.setName(listName);
+        list.setDescription(listDescription);
+        list.setDate(Long.parseLong(formatter.format(date)));
+        list.setType((String) germplasmListType.getValue()); // value = fCOde
+        list.setUserId(0);
+        
+        this.crossesMade.setGermplasmList(list);
     }
 
     
     private boolean validateRequiredFields(){
-    	return 
-    	CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListName, 
-    		messageSource, (String) germplasmListNameLabel.getCaption())
-		
-		&& CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListDescription, 
-			messageSource, 	(String) germplasmListDescriptionLabel.getCaption())
-			
-		&& CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListType, 
-			messageSource, (String) germplasmListTypeLabel.getCaption())
-			
-		&& CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListDate, 
-			messageSource, (String) germplasmListDateLabel.getCaption());
+        return 
+        CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListName, 
+            messageSource, (String) germplasmListNameLabel.getCaption())
+        
+        && CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListDescription, 
+            messageSource,     (String) germplasmListDescriptionLabel.getCaption())
+            
+        && CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListType, 
+            messageSource, (String) germplasmListTypeLabel.getCaption())
+            
+        && CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListDate, 
+            messageSource, (String) germplasmListDateLabel.getCaption());
     }
 
-	
+    
     public void backButtonClickAction(){
         source.enableWizardTabs();
         accordion.setSelectedTab(previousScreen);

@@ -21,15 +21,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
-		implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
-	public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
-	public static final String SELECT_MALE_PARENT_BUTTON_ID = "Male Parent Button";
-	public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
-	public static final String NEXT_BUTTON_ID = "next button";
-	public static final String BACK_BUTTON_ID = "back button";
+    public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
+    public static final String SELECT_MALE_PARENT_BUTTON_ID = "Male Parent Button";
+    public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
+    public static final String NEXT_BUTTON_ID = "next button";
+    public static final String BACK_BUTTON_ID = "back button";
 
-	
+    
     private static final long serialVersionUID = 9097810121003895303L;
     
     @Autowired
@@ -61,37 +61,37 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private CrossesMade crossesMade;
     
     private enum CrossType { 
-    	MULTIPLY, TOP_TO_BOTTOM
+        MULTIPLY, TOP_TO_BOTTOM
     };
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
-    	this.source = source;
+        this.source = source;
         this.accordion = accordion;
         lastOpenedListId = null;
     }
     
     public CrossingManagerMain getSource() {
-    	return source;
+        return source;
     }
     
     public void setNextScreen(Component nextScreen){
-    	this.nextScreen = nextScreen;
+        this.nextScreen = nextScreen;
     }
     
     public void setPreviousScreen(Component backScreen){
-    	this.previousScreen = backScreen;
+        this.previousScreen = backScreen;
     }
     
     @Override
-	public CrossesMade getCrossesMade() {
-		return this.crossesMade;
-	}
+    public CrossesMade getCrossesMade() {
+        return this.crossesMade;
+    }
 
-	@Override
-	public void setCrossesMade(CrossesMade crossesMade) {
-		this.crossesMade = crossesMade;
-		
-	}
+    @Override
+    public void setCrossesMade(CrossesMade crossesMade) {
+        this.crossesMade = crossesMade;
+        
+    }
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -115,14 +115,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         optionGroupMakeCrosses.addStyleName("wrapOptionGroupText");
         optionGroupMakeCrosses.addItem(CrossType.MULTIPLY);
         optionGroupMakeCrosses.setItemCaption(CrossType.MULTIPLY, 
-        		messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
+                messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
         optionGroupMakeCrosses.addItem(CrossType.TOP_TO_BOTTOM);
         optionGroupMakeCrosses.setItemCaption(CrossType.TOP_TO_BOTTOM, 
-        		messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
+                messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
         optionGroupMakeCrosses.select(CrossType.MULTIPLY); //first option selected by default
         
         chkBoxMakeReciprocalCrosses = new CheckBox();
-	
+    
         btnMakeCross= new Button();
         btnMakeCross.setData(MAKE_CROSS_BUTTON_ID);
         btnMakeCross.addListener(new CrossingManagerImportButtonClickListener(this));
@@ -200,12 +200,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
     @Override
     public void updateLabels() {
-		messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENTS);
-		messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENTS);
-		messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_LIST_BUTTON_LABEL);
-		messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_LIST_BUTTON_LABEL);
-		messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
-		messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
+        messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENTS);
+        messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENTS);
+        messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_LIST_BUTTON_LABEL);
+        messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_LIST_BUTTON_LABEL);
+        messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
+        messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(nextButton, Message.NEXT);
     }
@@ -215,41 +215,41 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
      */
     @SuppressWarnings("unchecked")
     public void makeCrossButtonAction(){
-    	
-    	List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
-    	femaleList.addAll((Collection<GermplasmListEntry>) listSelectFemale.getValue());
-    	Collections.sort(femaleList);
-    	
-    	List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
-    	maleList.addAll((Collection<GermplasmListEntry>)listSelectMale.getValue());
-    	Collections.sort(maleList);
-    	
-    	
-    	if (!femaleList.isEmpty() && !maleList.isEmpty()){
-    		CrossType optionId = (CrossType) optionGroupMakeCrosses.getValue();
-    		
-    		// Female - Male Multiplication
-    		if (CrossType.MULTIPLY.equals(optionId)){
-    			crossesTableComponent.multiplyParents(femaleList, maleList);
-    			if (chkBoxMakeReciprocalCrosses.booleanValue()){
-    				crossesTableComponent.multiplyParents(maleList, femaleList);
-    			}   			
-    			
-    		// Top to Bottom Crossing	
-    		} else if (CrossType.TOP_TO_BOTTOM.equals(optionId)){
-    			if (femaleList.size() == maleList.size()){
-    				crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList);
-    				if (chkBoxMakeReciprocalCrosses.booleanValue()){
-    					crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList);
-    				}
-    			} else {
-    				MessageNotifier.showError(getWindow(), "Error with selecting parents."
-    						,messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL)
-    						, Notification.POSITION_CENTERED);
-    			}
-    		}
-    		this.nextButton.setEnabled(true);
-    	}
+        
+        List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
+        femaleList.addAll((Collection<GermplasmListEntry>) listSelectFemale.getValue());
+        Collections.sort(femaleList);
+        
+        List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
+        maleList.addAll((Collection<GermplasmListEntry>)listSelectMale.getValue());
+        Collections.sort(maleList);
+        
+        
+        if (!femaleList.isEmpty() && !maleList.isEmpty()){
+            CrossType optionId = (CrossType) optionGroupMakeCrosses.getValue();
+            
+            // Female - Male Multiplication
+            if (CrossType.MULTIPLY.equals(optionId)){
+                crossesTableComponent.multiplyParents(femaleList, maleList);
+                if (chkBoxMakeReciprocalCrosses.booleanValue()){
+                    crossesTableComponent.multiplyParents(maleList, femaleList);
+                }               
+                
+            // Top to Bottom Crossing    
+            } else if (CrossType.TOP_TO_BOTTOM.equals(optionId)){
+                if (femaleList.size() == maleList.size()){
+                    crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList);
+                    if (chkBoxMakeReciprocalCrosses.booleanValue()){
+                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList);
+                    }
+                } else {
+                    MessageNotifier.showError(getWindow(), "Error with selecting parents."
+                            ,messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL)
+                            , Notification.POSITION_CENTERED);
+                }
+            }
+            this.nextButton.setEnabled(true);
+        }
     }
     
     public void selectFemaleParentList() {
@@ -267,20 +267,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         nextScreen = source.getWizardScreenThree();
         
         if(this.nextScreen != null){
-        	assert this.nextScreen instanceof CrossesMadeContainer;
-        	assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
-        	
-        	CrossesMadeContainerUpdateListener listener = ((CrossesMadeContainerUpdateListener) crossesTableComponent);
-        	listener.setCrossesMadeContainer(this);
-        	listener.updateCrossesMadeContainer();
-        	((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
+            assert this.nextScreen instanceof CrossesMadeContainer;
+            assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
+            
+            CrossesMadeContainerUpdateListener listener = ((CrossesMadeContainerUpdateListener) crossesTableComponent);
+            listener.setCrossesMadeContainer(this);
+            listener.updateCrossesMadeContainer();
+            ((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
         
-        	source.getWizardScreenThree().setPreviousScreen(this);
-        	source.enableWizardTabs();
-        	this.accordion.setSelectedTab(this.nextScreen);
-        	source.enableOnlyWizardTabThree();
-        	source.enableWizardTabOne();
-        	source.enableWizardTabTwo();
+            source.getWizardScreenThree().setPreviousScreen(this);
+            source.enableWizardTabs();
+            this.accordion.setSelectedTab(this.nextScreen);
+            source.enableOnlyWizardTabThree();
+            source.enableWizardTabOne();
+            source.enableWizardTabTwo();
         } else {
             this.nextButton.setEnabled(false);
         }
@@ -335,7 +335,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         listSelectMale.requestRepaint();
         listSelectFemale.requestRepaint();
     }
-	private void loadListFromUpload(ListSelect listSelect, GermplasmList germplasmList){
+    private void loadListFromUpload(ListSelect listSelect, GermplasmList germplasmList){
         if(germplasmList != null){
             for (Iterator<?> i = germplasmList.getListData().iterator(); i.hasNext();) {
                 // retrieve entries from the table
@@ -351,7 +351,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
             listSelect.requestRepaint();
         }
     }
-	
+    
     public void disableNextButton(){
         nextButton.setEnabled(false);
     }

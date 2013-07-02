@@ -47,7 +47,7 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     private static final String STEP_1_GUIDE_MESSAGE = "This allows you to write a nursery template file with values for the conditions on the first screen. "
             + "First you need to select and upload a blank nursery template file.";
     private static final String STEP_2_GUIDE_MESSAGE = "Filling up the values on this screen is optional.  The values specified here will get written on the file" 
-    	    + " you will get when you click on the Done button.";
+            + " you will get when you click on the Done button.";
     
     private NurseryTemplateImportFileComponent selectNurseryTemplateTab;
     private NurseryTemplateConditionsComponent specifyNurseryConditionsTab;
@@ -93,18 +93,18 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
         wizardTabTwo=accordion.addTab(specifyNurseryConditionsTab, messageSource.getMessage(Message.SPECIFY_NURSERY_CONDITIONS_LABEL)); //Specify Nursery Conditions
        
         accordion.addListener(new SelectedTabChangeListener() {
-    	    @Override
-    	    public void selectedTabChange(SelectedTabChangeEvent event) {
-    	        Component selected =accordion.getSelectedTab();
-    	        Tab tab = accordion.getTab(selected);
-    	        
-    	        if(tab!=null && tab.equals(wizardTabOne)){
-    	            setTitleContent(STEP_1_GUIDE_MESSAGE);
-    	            disableNurseryTemplateConditionsComponent();
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selected =accordion.getSelectedTab();
+                Tab tab = accordion.getTab(selected);
+                
+                if(tab!=null && tab.equals(wizardTabOne)){
+                    setTitleContent(STEP_1_GUIDE_MESSAGE);
+                    disableNurseryTemplateConditionsComponent();
                 }
-    	                    
-    	    }
-    	});
+                            
+            }
+        });
        
         disableNurseryTemplateConditionsComponent();
         addComponent(accordion); 
@@ -147,12 +147,12 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     public void disableNurseryTemplateConditionsComponent(){
-	wizardTabTwo.setEnabled(false);
+    wizardTabTwo.setEnabled(false);
     }
     
     public void enableNurseryTemplateConditionsComponent(){
         setTitleContent(STEP_2_GUIDE_MESSAGE);
-	wizardTabTwo.setEnabled(true);
+    wizardTabTwo.setEnabled(true);
     }
 
     public void setTitleContent(String guideMessage){

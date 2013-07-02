@@ -70,8 +70,8 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     private Accordion accordion;
     
     public NurseryTemplateImportFileComponent(NurseryTemplateMain source, Accordion accordion) {
-	this.source=source;
-	this.accordion=accordion;
+    this.source=source;
+    this.accordion=accordion;
         
     }
     
@@ -175,14 +175,14 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     }
 
     public void nextButtonClickAction() {
-	
-	if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-		MessageNotifier.showError(getWindow(), "Error with file.", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
-	}else{
-	    source.enableNurseryTemplateConditionsComponent();
-	    this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());
-	}
-	
+    
+    if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
+        MessageNotifier.showError(getWindow(), "Error with file.", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
+    }else{
+        source.enableNurseryTemplateConditionsComponent();
+        this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());
+    }
+    
     }
     
     public void disableNextButton(){

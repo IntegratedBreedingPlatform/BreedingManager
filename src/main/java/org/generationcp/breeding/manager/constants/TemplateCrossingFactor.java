@@ -13,11 +13,11 @@ public enum TemplateCrossingFactor {
     private String value;
     
     private TemplateCrossingFactor(String value){
-    	this.value = value;
+        this.value = value;
     }
-	
+    
     public String getValue(){
-    	return this.value;
+        return this.value;
     }
     
 }

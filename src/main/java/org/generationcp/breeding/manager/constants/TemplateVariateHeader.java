@@ -16,11 +16,11 @@ public enum TemplateVariateHeader {
     private String header;
     
     private TemplateVariateHeader(String header){
-    	this.header = header;
+        this.header = header;
     }
-	
+    
     public String getHeader(){
-    	return this.header;
+        return this.header;
     }
     
 }

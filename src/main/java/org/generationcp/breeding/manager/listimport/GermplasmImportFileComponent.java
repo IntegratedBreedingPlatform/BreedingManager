@@ -38,7 +38,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     private SimpleResourceBundleMessageSource messageSource;
     
     public GermplasmImportFileComponent(GermplasmImportMain source, Accordion accordion){
-    	this.source = source;
+        this.source = source;
         this.accordion = accordion;
         this.nextScreen = null;
     }
@@ -59,9 +59,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
         
-	    GermplasmListUploader germplasmListUploader = new GermplasmListUploader(this); 
-	    uploadComponents.setReceiver(germplasmListUploader);
-	    uploadComponents.addListener(germplasmListUploader);        
+        GermplasmListUploader germplasmListUploader = new GermplasmListUploader(this); 
+        uploadComponents.setReceiver(germplasmListUploader);
+        uploadComponents.addListener(germplasmListUploader);        
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
@@ -90,14 +90,14 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     }
     
     public Accordion getAccordion() {
-    	return accordion;
+        return accordion;
     }
     
     public Component getNextScreen() {
-    	return nextScreen;
+        return nextScreen;
     }
     
     public GermplasmImportMain getSource() {
-    	return source;
+        return source;
     }
 }

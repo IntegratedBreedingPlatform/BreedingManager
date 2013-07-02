@@ -38,16 +38,16 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
             
         } else if (CrossingManagerMakeCrossesComponent.NEXT_BUTTON_ID.equals(eventButtonData) 
             && (source instanceof CrossingManagerMakeCrossesComponent)) {
-        	((CrossingManagerMakeCrossesComponent) source).nextButtonClickAction();
-        	
+            ((CrossingManagerMakeCrossesComponent) source).nextButtonClickAction();
+            
         } else if (CrossingManagerAdditionalDetailsComponent.BACK_BUTTON_ID.equals(eventButtonData) 
                 && (source instanceof CrossingManagerAdditionalDetailsComponent)) {
             ((CrossingManagerAdditionalDetailsComponent) source).backButtonClickAction();
             
         } else if (CrossingManagerAdditionalDetailsComponent.NEXT_BUTTON_ID.equals(eventButtonData) 
             && (source instanceof CrossingManagerAdditionalDetailsComponent)) {
-        	((CrossingManagerAdditionalDetailsComponent) source).nextButtonClickAction();
-        	
+            ((CrossingManagerAdditionalDetailsComponent) source).nextButtonClickAction();
+            
         } else if (CrossingManagerMakeCrossesComponent.SELECT_FEMALE_PARENT_BUTTON_ID.equals(eventButtonData)
                 && (source instanceof CrossingManagerMakeCrossesComponent)) {
             ((CrossingManagerMakeCrossesComponent) source).selectFemaleParentList();

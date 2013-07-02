@@ -43,9 +43,9 @@ import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
-	implements InitializingBean, InternationalizableComponent{
-	
-	private static final Logger LOG = LoggerFactory.getLogger(EmbeddedGermplasmListDetailComponent.class);
+    implements InitializingBean, InternationalizableComponent{
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EmbeddedGermplasmListDetailComponent.class);
     private static final long serialVersionUID = -8889276342164300525L;
     
     public static final String EXPORT_BUTTON_ID = "Export Button ID";
@@ -64,8 +64,8 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     private Integer listId;
     
     public EmbeddedGermplasmListDetailComponent(CrossingManagerMain crossingManager, Integer listId) {
-		this.crossingManager = crossingManager;
-		this.listId = listId;
+        this.crossingManager = crossingManager;
+        this.listId = listId;
     }
     
     @Override
@@ -99,24 +99,24 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         layoutForList.addComponent(listInfoPage);
   
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
-	
-		exportButton = new Button();
-		exportButton.setData(EXPORT_BUTTON_ID);
-		exportButton.addListener(listener);
-		
-		makeCrossesButton = new Button();
-		makeCrossesButton.setData(MAKE_CROSSES_BUTTON_ID);
-		makeCrossesButton.addListener(listener);
-		
-		HorizontalLayout buttonArea = new HorizontalLayout();
-		buttonArea.setMargin(true);
-		buttonArea.setSpacing(true);
-		buttonArea.addComponent(exportButton);
-		buttonArea.addComponent(makeCrossesButton);
-		
-		addComponent(layoutForList);
-		addComponent(buttonArea);
-		setComponentAlignment(buttonArea, Alignment.BOTTOM_RIGHT);
+    
+        exportButton = new Button();
+        exportButton.setData(EXPORT_BUTTON_ID);
+        exportButton.addListener(listener);
+        
+        makeCrossesButton = new Button();
+        makeCrossesButton.setData(MAKE_CROSSES_BUTTON_ID);
+        makeCrossesButton.addListener(listener);
+        
+        HorizontalLayout buttonArea = new HorizontalLayout();
+        buttonArea.setMargin(true);
+        buttonArea.setSpacing(true);
+        buttonArea.addComponent(exportButton);
+        buttonArea.addComponent(makeCrossesButton);
+        
+        addComponent(layoutForList);
+        addComponent(buttonArea);
+        setComponentAlignment(buttonArea, Alignment.BOTTOM_RIGHT);
     }
 
     @Override
@@ -127,46 +127,46 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     @Override
     public void updateLabels() {
-    	messageSource.setCaption(exportButton, Message.EXPORT_NURSERY_FILE);
-    	messageSource.setCaption(makeCrossesButton, Message.MAKE_NEW_CROSSES);
+        messageSource.setCaption(exportButton, Message.EXPORT_NURSERY_FILE);
+        messageSource.setCaption(makeCrossesButton, Message.MAKE_NEW_CROSSES);
     }
     
     @SuppressWarnings("serial")
-	public void makeNewCrossesButtonClickAction(){
-    	ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
-    		messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
-    		messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
-    		new ConfirmDialog.Listener() {
-    			
-        		public void onClose(ConfirmDialog dialog) {
-        		    if (dialog.isConfirmed()) {
-        		    	crossingManager.reset();
-        		    }
-        		}
-    		}
-    	);
+    public void makeNewCrossesButtonClickAction(){
+        ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
+            messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            new ConfirmDialog.Listener() {
+                
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
+                        crossingManager.reset();
+                    }
+                }
+            }
+        );
     }
     
     public void exportToFileButtonClickAction(){
         CrossesMade crossesMade = this.crossingManager.getCrossesMade();
 
         if(crossesMade != null){
-			String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
-			
-			CrossingManagerExporter exporter = new CrossingManagerExporter(crossesMade);
-	
-			try {
-				exporter.exportCrossingManagerExcel(tempFileName);
-				FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-				fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName() + ".xls");
-	
-				this.getWindow().open(fileDownloadResource);
-		
-			} catch (CrossingManagerExporterException e) {
-				MessageNotifier.showError(getWindow(), "Error with exporting nursery file.", e.getMessage(), Notification.POSITION_CENTERED);
-			}
+            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            
+            CrossingManagerExporter exporter = new CrossingManagerExporter(crossesMade);
+    
+            try {
+                exporter.exportCrossingManagerExcel(tempFileName);
+                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName() + ".xls");
+    
+                this.getWindow().open(fileDownloadResource);
+        
+            } catch (CrossingManagerExporterException e) {
+                MessageNotifier.showError(getWindow(), "Error with exporting nursery file.", e.getMessage(), Notification.POSITION_CENTERED);
+            }
         } 
-	
+    
     }
 
 }

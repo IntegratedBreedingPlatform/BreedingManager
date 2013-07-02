@@ -16,11 +16,11 @@ public enum TemplateConstantHeader {
     private String header;
     
     private TemplateConstantHeader(String header){
-    	this.header = header;
+        this.header = header;
     }
-	
+    
     public String getHeader(){
-    	return this.header;
+        return this.header;
     }
     
 }

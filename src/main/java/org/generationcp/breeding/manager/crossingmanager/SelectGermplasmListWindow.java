@@ -80,11 +80,11 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     }
     
     public SelectGermplasmListWindow(NurseryTemplateConditionsComponent nurseryTemplateConditionComponent,String germplasmListFor) {
-	// TODO Auto-generated constructor stub
-	this.nurseryTemplateCall=true;
-	this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
-	this.germplasmListFor=germplasmListFor;
-	this.parentList = new ListSelect();
+    // TODO Auto-generated constructor stub
+    this.nurseryTemplateCall=true;
+    this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
+    this.germplasmListFor=germplasmListFor;
+    this.parentList = new ListSelect();
         this.makeCrossesComponent = null;
     }
 
@@ -182,13 +182,13 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     }
     
     private void setValuesOnGermplasmNurseryConditionGermplasmList() {
-	if(germplasmListFor.equals("Female")){
-	    nurseryTemplateConditionComponent.getFemaleListId().setValue(String.valueOf(listId));
-	    nurseryTemplateConditionComponent.getFemaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
-	}else{
-	    nurseryTemplateConditionComponent.getMaleListId().setValue(String.valueOf(listId));
-	    nurseryTemplateConditionComponent.getMaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
-	}
+    if(germplasmListFor.equals("Female")){
+        nurseryTemplateConditionComponent.getFemaleListId().setValue(String.valueOf(listId));
+        nurseryTemplateConditionComponent.getFemaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
+    }else{
+        nurseryTemplateConditionComponent.getMaleListId().setValue(String.valueOf(listId));
+        nurseryTemplateConditionComponent.getMaleListName().setValue(selectGermplasmList.getListInfoComponent().getListName());
+    }
     }
 
     @Override
