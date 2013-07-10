@@ -266,7 +266,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     }
     
     private String buildPrefixString(){
-        return ((String) prefixTextField.getValue()).trim() + " ";
+        return ((String) prefixTextField.getValue()).trim();
     }
 
     private String buildNextNameInSequence(String prefix, String suffix,
