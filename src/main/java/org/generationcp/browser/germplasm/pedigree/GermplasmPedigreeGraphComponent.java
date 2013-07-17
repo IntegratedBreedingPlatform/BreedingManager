@@ -81,6 +81,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         pedigree_level_label = new Label();
         txtLevel = new TextField();
         txtLevel.setWidth("50px");
+        txtLevel.setValue(DEFAULT_TREE_LEVEL);
         
         pedigreeDerivativeCheckbox = new CheckBox();
         
