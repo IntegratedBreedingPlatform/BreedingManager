@@ -95,6 +95,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private GermplasmSearchResultComponent resultComponent;
     private OptionGroup optionGroup;
     private Integer selectedGid;
+    private boolean withSelectedGid=false;
     
     private Accordion accordion;
     
@@ -117,6 +118,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private GermplasmQueries gQuery;
     private GermplasmIndexContainer dataResultIndexContainer;
 
+
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
         this.parentWindow = parentWindow;
@@ -124,6 +126,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         dataResultIndexContainer = new GermplasmIndexContainer(gQuery);
     }
     
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
         // set as modal window, other components are disabled while window is open
@@ -171,6 +175,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 LazyQueryContainer dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);                                        
                 resultComponent.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
                 resultComponent.setContainerDataSource(dataSourceResultLazy);
+                if(dataSourceResultLazy.size() > 0){
+                    resultComponent.setValue(resultComponent.firstItemId());
+                    resultComponent.select(resultComponent.firstItemId());
+                    int gid = Integer.valueOf(resultComponent.getItem(resultComponent.firstItemId()).getItemProperty(GID).toString());
+                    this.selectedGid = gid;
+                    withSelectedGid=true;
+                    this.nextButton.setEnabled(true);
+                }
                 firstTabLayout.requestRepaintAll();
             }
         } else {
@@ -181,6 +193,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void resultTableItemClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
         sourceTable.select(itemId);
         int gid = Integer.valueOf(item.getItemProperty(GID).toString());
+        withSelectedGid=true;
         this.selectedGid = gid;
         this.nextButton.setEnabled(true);
     }
@@ -188,6 +201,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void resultTableItemDoubleClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
         sourceTable.select(itemId);
         int gid = Integer.valueOf(item.getItemProperty(GID).toString());
+        withSelectedGid=true;
         
         Tool tool = null;
         try {
@@ -389,22 +403,20 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         Integer date = Integer.parseInt(formatter.format(dateOfCreation));
         String germplasmName = this.searchForm.getSearchValue();
-        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-            try{
-                Integer.parseInt(germplasmName);
-            } catch(NumberFormatException ex){
+        if(this.optionGroup.getValue().equals(OPTION_2_ID) || this.optionGroup.getValue().equals(OPTION_3_ID)){
                 try{
-                    Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmWithPrefName(this.selectedGid);
-                    if(selectedGermplasm.getPreferredName() != null){
-                        germplasmName = selectedGermplasm.getPreferredName().getNval();
+                    if(withSelectedGid){
+                        Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmWithPrefName(this.selectedGid);
+                        if(selectedGermplasm.getPreferredName() != null){
+                            germplasmName = selectedGermplasm.getPreferredName().getNval();
+                        }
                     }
                 } catch(MiddlewareQueryException mex){
-                    LOG.error("Error with getting germplasm with id: " + this.selectedGid, ex);
+                    LOG.error("Error with getting germplasm with id: " + this.selectedGid, mex);
                     MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + this.selectedGid 
                             +".  Please report to IBWS developers."
                             , Notification.POSITION_CENTERED);
                 }
-            }
         }
         Integer userId = Integer.valueOf(getCurrentUserLocalId());
                 
