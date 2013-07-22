@@ -510,12 +510,16 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private void populateLocationComboBox(){
         try{
                 List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
+                boolean isFirstLocation=false;
             for(Location location : locations){
                 Integer locationId = location.getLocid();
                 String locationName = location.getLname();
                 this.locationComboBox.addItem(locationId);
                 this.locationComboBox.setItemCaption(locationId, locationName);
-                this.locationComboBox.select(locationId);
+                if(!isFirstLocation){
+                  this.locationComboBox.select(locationId);
+                  isFirstLocation=true;
+                }
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting breeding locations!", ex);
