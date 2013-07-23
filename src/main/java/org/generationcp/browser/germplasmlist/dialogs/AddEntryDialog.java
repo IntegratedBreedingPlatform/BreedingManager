@@ -289,7 +289,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                     if(selectedGid == null){
                         nextButton.setEnabled(false);
                     }
-                }else{
+                } else if(optionGroup.getValue().equals(OPTION_2_ID)){
+                    nextButton.setCaption("Next");
+                    if(selectedGid == null){
+                        nextButton.setEnabled(false);
+                    } else {
+                        nextButton.setEnabled(true);
+                    }
+                } else if(optionGroup.getValue().equals(OPTION_3_ID)){
                     nextButton.setCaption("Next");
                     nextButton.setEnabled(true);
                 }
@@ -368,8 +375,28 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 this.source.finishAddingEntry(this.selectedGid);
                 Window window = event.getButton().getWindow();
                 window.getParent().removeWindow(window);
+            } else {
+                MessageNotifier.showWarning(this, "Warning!", 
+                        "You must select a germplasm from the search results.", Notification.POSITION_CENTERED);
             }
-        } else {
+        } else if(optionGroup.getValue().equals(OPTION_2_ID)){
+            if(this.selectedGid != null){
+                if(this.breedingMethodComboBox.getItemIds().isEmpty()){
+                    populateBreedingMethodComboBox();
+                }
+                if(this.nameTypeComboBox.getItemIds().isEmpty()){
+                    populateNameTypeComboBox();
+                }
+                if(this.locationComboBox.getItemIds().isEmpty()){
+                    populateLocationComboBox();
+                }
+                this.accordion.getTab(secondTabLayout).setEnabled(true);
+                this.accordion.setSelectedTab(secondTabLayout);
+            } else{
+                MessageNotifier.showWarning(this, "Warning!", 
+                        "You must select a germplasm from the search results.", Notification.POSITION_CENTERED);
+            }
+        } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = this.searchForm.getSearchValue();
             if(searchValue != null && searchValue.length() != 0){
                 if(this.breedingMethodComboBox.getItemIds().isEmpty()){
