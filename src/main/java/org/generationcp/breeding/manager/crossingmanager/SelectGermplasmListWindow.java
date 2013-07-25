@@ -28,6 +28,7 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -69,14 +70,17 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
 
     private boolean nurseryTemplateCall=false;
 
+    private Label listnameParent;
+
     public SelectGermplasmListWindow() {
         this.parentList = new ListSelect();
         this.makeCrossesComponent = null;
     }
     
-    public SelectGermplasmListWindow(ListSelect parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent) {
+    public SelectGermplasmListWindow(ListSelect parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent,Label listnameParent) {
         this.parentList = parentList;
         this.makeCrossesComponent = makeCrossesComponent;
+        this.listnameParent=listnameParent;
     }
     
     public SelectGermplasmListWindow(NurseryTemplateConditionsComponent nurseryTemplateConditionComponent,String germplasmListFor) {
@@ -179,6 +183,9 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         if(nurseryTemplateCall){
             setValuesOnGermplasmNurseryConditionGermplasmList();
         }
+        
+        this.listnameParent.setValue(selectGermplasmList.getListInfoComponent().getListName());
+        
     }
     
     private void setValuesOnGermplasmNurseryConditionGermplasmList() {

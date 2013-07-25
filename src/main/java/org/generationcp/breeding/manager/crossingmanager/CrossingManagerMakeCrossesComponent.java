@@ -59,6 +59,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private Integer lastOpenedListId;
 
     private CrossesMade crossesMade;
+    private Label listnameFemaleParent;
+    private Label listnameMaleParent;
     
     private enum CrossType { 
         MULTIPLY, TOP_TO_BOTTOM
@@ -97,7 +99,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     public void afterPropertiesSet() throws Exception {
         this.setMargin(true, true, true, true);
 
-        lblFemaleParent= new Label();       
+        lblFemaleParent= new Label(); 
+        listnameFemaleParent= new Label();
+        listnameMaleParent=new Label();
         
         btnSelectListFemaleParent= new Button();
         btnSelectListFemaleParent.setData(SELECT_FEMALE_PARENT_BUTTON_ID);
@@ -230,17 +234,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
             
             // Female - Male Multiplication
             if (CrossType.MULTIPLY.equals(optionId)){
-                crossesTableComponent.multiplyParents(femaleList, maleList);
+                crossesTableComponent.multiplyParents(femaleList, maleList,listnameFemaleParent,this.listnameMaleParent);
                 if (chkBoxMakeReciprocalCrosses.booleanValue()){
-                    crossesTableComponent.multiplyParents(maleList, femaleList);
+                    crossesTableComponent.multiplyParents(maleList, femaleList,listnameFemaleParent,this.listnameMaleParent);
                 }               
                 
             // Top to Bottom Crossing    
             } else if (CrossType.TOP_TO_BOTTOM.equals(optionId)){
                 if (femaleList.size() == maleList.size()){
-                    crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList);
+                    crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,listnameFemaleParent,this.listnameMaleParent);
                     if (chkBoxMakeReciprocalCrosses.booleanValue()){
-                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList);
+                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,listnameFemaleParent,this.listnameMaleParent);
                     }
                 } else {
                     MessageNotifier.showError(getWindow(), "Error with selecting parents."
@@ -253,12 +257,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     }
     
     public void selectFemaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectFemale, this);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectFemale, this,this.listnameFemaleParent);
         this.getWindow().addWindow(selectListWindow);
     }
     
     public void selectMaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectMale, this);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectMale, this,this.listnameMaleParent);
         this.getWindow().addWindow(selectListWindow);
     }
 

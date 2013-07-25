@@ -54,6 +54,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
 
     public static final String PARENTS_DELIMITER = ",";
+    public static final String SOURCE = "Source Column" ;
     public static final String PARENTAGE = "Parentage Column" ;
     public static final String FEMALE_PARENT_COLUMN = "Female Parent Column" ;
     public static final String MALE_PARENT_COLUMN = "Male Parent Column" ;
@@ -102,13 +103,18 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setMultiSelect(true);
         tableCrossesMade.setPageLength(0);
         
+     
         tableCrossesMade.addContainerProperty(PARENTAGE, String.class, null);
         tableCrossesMade.addContainerProperty(FEMALE_PARENT_COLUMN, String.class, null);
         tableCrossesMade.addContainerProperty(MALE_PARENT_COLUMN, String.class, null);
+        tableCrossesMade.addContainerProperty(SOURCE, String.class, null);
         
         tableCrossesMade.setColumnHeader(PARENTAGE, messageSource.getMessage(Message.PARENTAGE));
         tableCrossesMade.setColumnHeader(FEMALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
         tableCrossesMade.setColumnHeader(MALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_MALE_PARENT));
+        tableCrossesMade.setColumnHeader(SOURCE, "SOURCE");
+        
+        tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
         
         tableCrossesMade.addActionHandler(new Action.Handler() {
             public Action[] getActions(Object target, Object sender) {
@@ -149,27 +155,33 @@ public class MakeCrossesTableComponent extends VerticalLayout
      * 
      * @param parents1 - list of GermplasmList entries as first parents
      * @param parents2 - list of GermplasmList entries as second parents
+     * @param listnameMaleParent 
+     * @param listnameFemaleParent 
      */
-    public void makeTopToBottomCrosses(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2) {
+    public void makeTopToBottomCrosses(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2, Label listnameFemaleParent, Label listnameMaleParent) {
         
         ListIterator<GermplasmListEntry> iterator1 = parents1.listIterator();
         ListIterator<GermplasmListEntry> iterator2 = parents2.listIterator();
-        
+        tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
         while (iterator1.hasNext()){
             GermplasmListEntry parent1 = iterator1.next();
             GermplasmListEntry parent2 = iterator2.next();
             String caption1 = parent1.getDesignation();
             String caption2 = parent2.getDesignation();
+            String caption3 =listnameFemaleParent.getValue().toString()+":"+parent1.getEntryId() + "/"+listnameMaleParent.getValue().toString()+":"+parent2.getEntryId();
+            
             
             CrossParents parents = new CrossParents(parent1, parent2);
             if (!crossAlreadyExists(parents)){
                 tableCrossesMade.addItem(new Object[] {
-                        CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
+                        CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3 
                     }, parents); 
             }
         }
 
+        tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
         tableCrossesMade.setPageLength(0);
+        tableCrossesMade.requestRepaint();
         }
     
     /**
@@ -178,25 +190,34 @@ public class MakeCrossesTableComponent extends VerticalLayout
      * 
      * @param parents1 - list of GermplasmList entries as first parents
      * @param parents2 - list of GermplasmList entries as second parents
+     * @param listnameMaleParent 
+     * @param listnameFemaleParent 
      */
-    public void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2){
-        
+    public void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2, Label listnameFemaleParent, Label listnameMaleParent){
+	
+	tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
         for (GermplasmListEntry parent1 : parents1){
             String caption1 = parent1.getDesignation();
+            String parent1Source =listnameFemaleParent.getValue().toString()+":"+parent1.getEntryId();
             
             for (GermplasmListEntry parent2 : parents2){
                 String caption2 = parent2.getDesignation();
+                String parent2Source =listnameMaleParent.getValue().toString()+":"+parent2.getEntryId();
                 CrossParents parents = new CrossParents(parent1, parent2);
                 
                 if (!crossAlreadyExists(parents)){
+                    String caption3=parent1Source+"/"+parent2Source;
+                   
                     tableCrossesMade.addItem(new Object[] {
-                                CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2 
+                                CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3
                             }, parents);                     
                 }
+                
             }
         }
-        
+        tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
         tableCrossesMade.setPageLength(0);
+        tableCrossesMade.requestRepaint();
     }
 
     // Checks if combination of female and male parents already exists in Crossing Made table
@@ -237,7 +258,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
         int ctr = 1;
         for (Object itemId : tableCrossesMade.getItemIds()){
             Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(PARENTAGE);
+            Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(SOURCE);
             String crossName = String.valueOf(crossNameProp.toString());
+            String crossSource= String.valueOf(crossSourceProp.toString());
             
                 // get GIDs and entryIDs of female and male parents
             CrossParents parents = (CrossParents) itemId;
@@ -252,7 +275,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             germplasm.setGpid2(gpId2);
             
             Name name = new Name();
-            name.setNval(crossName);
+            name.setNval(crossName+","+crossSource);
             name.setTypeId(crossingNameTypeId);
             
             ImportedGermplasmCross cross = new ImportedGermplasmCross();

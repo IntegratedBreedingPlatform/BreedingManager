@@ -185,16 +185,20 @@ public class SaveCrossesMadeAction implements Serializable, InitializingBean {
     
     private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId, 
         String designation, String groupName) {
-    
+	
+	String groupNameSplit[]=groupName.split(",");
+	String grpName=groupNameSplit[0];
+	String seedSource=groupNameSplit[1];
+	
         GermplasmListData germplasmListData = new GermplasmListData();
         germplasmListData.setList(list);
         germplasmListData.setGid(gid);
         germplasmListData.setEntryId(entryId);
         germplasmListData.setEntryCode(String.valueOf(entryId));
-        germplasmListData.setSeedSource(LIST_DATA_SOURCE);
+        germplasmListData.setSeedSource(seedSource);
         germplasmListData.setDesignation(designation);
         germplasmListData.setStatus(LIST_DATA_STATUS);
-        germplasmListData.setGroupName(groupName);
+        germplasmListData.setGroupName(grpName);
         germplasmListData.setLocalRecordId(LIST_DATA_LRECID);
         
         return germplasmListData;

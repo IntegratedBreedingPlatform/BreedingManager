@@ -322,6 +322,9 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
         List<ImportedGermplasmCross> importedGermplasmCrosses = 
                 crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses();
+        
+        String listnameFemaleParent=crossingManagerUploader.getImportedGermplasmCrosses().getImportedConditionValue("FEMALE LIST NAME");
+        String listnameMaleParent=crossingManagerUploader.getImportedGermplasmCrosses().getImportedConditionValue("MALE LIST NAME");
 
         //get ID of User Defined Field for Crossing Name
         Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
@@ -334,10 +337,11 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             germplasm.setGid(ctr++);
             germplasm.setGpid1(cross.getFemaleGId());
             germplasm.setGpid2(cross.getMaleGId());
+            String source=listnameFemaleParent+":"+cross.getFemaleEntryId()+"/"+listnameMaleParent+":"+cross.getMaleEntryId();
 
             Name name = new Name();
             name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
-                    cross.getFemaleDesignation(), cross.getMaleDesignation()));
+                    cross.getFemaleDesignation(), cross.getMaleDesignation())+","+source);
             name.setTypeId(crossingNameTypeId);
 
             crossesMadeMap.put(germplasm, name);
