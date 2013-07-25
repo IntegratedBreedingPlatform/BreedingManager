@@ -23,9 +23,15 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
+import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,6 +62,12 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private UserDataManager userDataManager;
     
     private Button exportButton;
     private Button makeCrossesButton;
@@ -127,7 +139,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(exportButton, Message.EXPORT_NURSERY_FILE);
+        messageSource.setCaption(exportButton, Message.EXPORT_CROSSES_MADE);
         messageSource.setCaption(makeCrossesButton, Message.MAKE_NEW_CROSSES);
     }
     
@@ -153,7 +165,40 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         if(crossesMade != null){
             String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
             
-            CrossingManagerExporter exporter = new CrossingManagerExporter(crossesMade);
+            GermplasmList crossesList = null;
+            try {
+                crossesList = germplasmListManager.getGermplasmListById(listId);
+            } catch(MiddlewareQueryException ex){
+                LOG.error("Error getting list with id: " + listId, ex);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting the list of crosses made.  Please report to IBP."
+                        ,Notification.POSITION_CENTERED);
+                return;
+            }
+            
+            User listCreator = null;
+            User listExporter = null;
+            try{
+                listCreator = userDataManager.getUserById(crossesList.getUserId());
+            } catch(MiddlewareQueryException ex){
+                LOG.error("Error getting users for list creator.", ex);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list owner.  Please report to IBP."
+                        ,Notification.POSITION_CENTERED);
+                return;
+            }
+            
+            try{
+                WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+                Project project = workbenchDataManager.getLastOpenedProject(data.getUserId());
+                Integer userId = workbenchDataManager.getLocalIbdbUserId(data.getUserId(), project.getProjectId());
+                listExporter = userDataManager.getUserById(userId);
+            } catch(MiddlewareQueryException ex){
+                LOG.error("Error getting users for list exporter.", ex);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list exporter.  Please report to IBP."
+                        ,Notification.POSITION_CENTERED);
+                return;
+            }
+            
+            CrossingManagerExporter exporter = new CrossingManagerExporter(crossesList, crossesMade, listCreator, listExporter);
     
             try {
                 exporter.exportCrossingManagerExcel(tempFileName);

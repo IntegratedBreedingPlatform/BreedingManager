@@ -10,7 +10,7 @@ public enum TemplateFactorHeader {
     ,SCALE("SCALE")
     ,METHOD("METHOD")
     ,DATA_TYPE("DATA TYPE")
-    ,NESTED_IN("NESTED IN")
+    ,NESTED_IN("")
     ,LABEL("LABEL");
     
     private String header;

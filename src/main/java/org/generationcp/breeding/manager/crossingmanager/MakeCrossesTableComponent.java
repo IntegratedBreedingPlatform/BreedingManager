@@ -284,6 +284,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
             cross.setMaleGId(gpId2);
             cross.setFemaleEntryId(entryId1);
             cross.setMaleEntryId(entryId2);
+            cross.setMaleDesignation(parents.getMaleParent().getDesignation());
+            cross.setFemaleDesignation(parents.getFemaleParent().getDesignation());
             
             crossesMadeMap.put(germplasm, name);
             crossesToExport.add(cross);
