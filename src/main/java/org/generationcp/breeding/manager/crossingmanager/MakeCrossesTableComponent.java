@@ -75,6 +75,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
     private Table tableCrossesMade;
     private Label lblCrossMade;
     
+    private Label crossesMadeCountContainer;
+    
     private CrossesMadeContainer container;
     
     @Override
@@ -94,6 +96,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     @Override
     public void afterPropertiesSet() throws Exception {
         lblCrossMade = new Label();
+        crossesMadeCountContainer = new Label();
         
         tableCrossesMade = new Table();
         tableCrossesMade.setWidth("100%");
@@ -133,6 +136,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
         addComponent(lblCrossMade);
         addComponent(tableCrossesMade);
+        addComponent(crossesMadeCountContainer);
     }
     
     @Override
@@ -145,6 +149,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     @Override
     public void updateLabels() {
         messageSource.setCaption(lblCrossMade, Message.LABEL_CROSS_MADE);
+        this.crossesMadeCountContainer.setCaption("Total Crosses: 0");
     }
     
   
@@ -162,7 +167,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
         ListIterator<GermplasmListEntry> iterator1 = parents1.listIterator();
         ListIterator<GermplasmListEntry> iterator2 = parents2.listIterator();
+
         tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
+
         while (iterator1.hasNext()){
             GermplasmListEntry parent1 = iterator1.next();
             GermplasmListEntry parent2 = iterator2.next();
@@ -172,12 +179,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
             
             
             CrossParents parents = new CrossParents(parent1, parent2);
+            
             if (!crossAlreadyExists(parents)){
                 tableCrossesMade.addItem(new Object[] {
                         CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3 
                     }, parents); 
-            }
+            }     
         }
+        this.crossesMadeCountContainer.setCaption("Total Crosses: " + tableCrossesMade.size());
 
         tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
         tableCrossesMade.setPageLength(0);
@@ -196,6 +205,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     public void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2, Label listnameFemaleParent, Label listnameMaleParent){
 	
 	tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
+        
         for (GermplasmListEntry parent1 : parents1){
             String caption1 = parent1.getDesignation();
             String parent1Source =listnameFemaleParent.getValue().toString()+":"+parent1.getEntryId();
@@ -215,7 +225,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
                 
             }
         }
+
+        this.crossesMadeCountContainer.setCaption("Total Crosses: " + tableCrossesMade.size());
+
         tableCrossesMade.setVisibleColumns(new Object[]{PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
+
         tableCrossesMade.setPageLength(0);
         tableCrossesMade.requestRepaint();
     }
@@ -245,6 +259,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         if(tableCrossesMade.size()==0 && getParent() instanceof CrossingManagerMakeCrossesComponent)
             ((CrossingManagerMakeCrossesComponent) getParent()).disableNextButton();
 
+        this.crossesMadeCountContainer.setCaption("Total Crosses: " + tableCrossesMade.size());
     }
     
     private Map<Germplasm, Name > generateCrossesMadeMap(){
