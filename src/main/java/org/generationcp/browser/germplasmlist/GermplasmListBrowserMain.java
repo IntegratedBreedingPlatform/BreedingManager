@@ -80,7 +80,7 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
 
         tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
         tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
-        tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabCentralInstance);
+        tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabLocalInstance);
         
         centralGermplasmListTreeComponent = new GermplasmListTreeComponent(mainLayout, Database.CENTRAL,forGermplasmListWindow);
         localGermplasmListTreeComponent = new GermplasmListTreeComponent(this,mainLayout, Database.LOCAL,forGermplasmListWindow);
