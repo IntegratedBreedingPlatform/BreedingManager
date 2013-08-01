@@ -71,7 +71,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetStudyDatabaseInstance.addTab(tabSearch).setCaption(messageSource.getMessage(Message.SEARCH_LABEL)); // "Search"
-        tabSheetStudyDatabaseInstance.setSelectedTab(tabCentralInstance);
+        tabSheetStudyDatabaseInstance.setSelectedTab(tabLocalInstance);
         tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
         tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
         tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
