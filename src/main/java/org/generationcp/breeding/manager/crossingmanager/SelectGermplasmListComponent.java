@@ -69,7 +69,7 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
         
         tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
         tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
-        tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabCentralInstance);
+        tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabLocalInstance);
         
         listInfoComponent = new SelectGermplasmListInfoComponent(lastOpenedListId);
         centralGermplasmListTreeComponent = new SelectGermplasmListTreeComponent(Database.CENTRAL, listInfoComponent);
