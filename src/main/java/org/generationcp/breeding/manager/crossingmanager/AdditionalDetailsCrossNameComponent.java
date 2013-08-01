@@ -80,11 +80,12 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     private TextField prefixTextField;
     private TextField suffixTextField;
     private CheckBox sequenceNumCheckBox;
+    private CheckBox addSpaceCheckBox;
     private Select leadingZerosSelect;
     private Button generateButton;
     
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
-    private AbstractComponent[] otherToggableComponents = new AbstractComponent[8];
+    private AbstractComponent[] otherToggableComponents = new AbstractComponent[9];
 
     private String lastPrefixUsed; //store prefix used for MW method including zeros, if any
     private Integer nextNumberInSequence;
@@ -112,7 +113,17 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
                 enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
             }
         });
-    
+
+        addSpaceCheckBox = new CheckBox();
+        addSpaceCheckBox.setImmediate(true);
+        addSpaceCheckBox.addListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                //dennis to do
+                //enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
+            }
+        });       
+        
         specifyPrefixLabel = new Label();
         prefixTextField = new TextField();
         prefixTextField.setWidth("500px");
@@ -154,6 +165,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         messageSource.setCaption(specifyPrefixLabel, Message.SPECIFY_PREFIX_REQUIRED);
         messageSource.setCaption(specifySuffixLabel, Message.SPECIFY_SUFFIX_OPTIONAL);
         messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE_LEADING_ZEROS);
+        messageSource.setCaption(addSpaceCheckBox, Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE);
         messageSource.setCaption(howManyDigitsLabel, Message.HOW_MANY_DIGITS);
         messageSource.setCaption(nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
         messageSource.setCaption(generateButton, Message.GENERATE);
@@ -164,8 +176,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         addComponent(specifyPrefixLabel, "top:40px;left:20px");
         addComponent(prefixTextField, "top:25px;left:180px");
         addComponent(sequenceNumCheckBox, "top:57px;left:20px");
-        addComponent(howManyDigitsLabel, "top:73px;left:400px");
-        addComponent(leadingZerosSelect, "top:55px;left:520px");
+        addComponent(howManyDigitsLabel, "top:73px;left:295px");
+        addComponent(leadingZerosSelect, "top:55px;left:395px");
+        addComponent(addSpaceCheckBox, "top:57px;left:475px");
         addComponent(specifySuffixLabel, "top:110px;left:20px");
         addComponent(suffixTextField, "top:90px;left:180px");
         addComponent(nextNameInSequenceLabel, "top:145px;left:20px");
@@ -183,8 +196,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         otherToggableComponents[3] = prefixTextField;
         otherToggableComponents[4] = suffixTextField;
         otherToggableComponents[5] = sequenceNumCheckBox;
-        otherToggableComponents[6] = generatedNameLabel;
-        otherToggableComponents[7] = generateButton;
+        otherToggableComponents[6] = addSpaceCheckBox;
+        otherToggableComponents[7] = generatedNameLabel;
+        otherToggableComponents[8] = generateButton;
         
         enableSpecifyCrossNameComponents(true);
     }
@@ -266,6 +280,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     }
     
     private String buildPrefixString(){
+        if(addSpaceCheckBox.booleanValue()){
+            return ((String) prefixTextField.getValue()).trim()+" ";
+        }
         return ((String) prefixTextField.getValue()).trim();
     }
 
