@@ -50,6 +50,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private ListSelect listSelectFemale;
     private ListSelect listSelectMale;
     private GridLayout gridLayoutSelectingParents;
+    private GridLayout gridLayoutSelectingParentOptions;
     private VerticalLayout layoutCrossOption;
     private Button backButton;
     private Button nextButton;
@@ -109,13 +110,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         
         listSelectFemale = new ListSelect();
         listSelectFemale.setRows(10);
-        listSelectFemale.setWidth("200px");
+        listSelectFemale.setWidth(240, UNITS_PIXELS);
         listSelectFemale.setNullSelectionAllowed(true);
         listSelectFemale.setMultiSelect(true);
         listSelectFemale.setImmediate(true);
 
         optionGroupMakeCrosses = new OptionGroup();
-        optionGroupMakeCrosses.setWidth("300px");
+        optionGroupMakeCrosses.setWidth(560,UNITS_PIXELS);
         optionGroupMakeCrosses.addStyleName("wrapOptionGroupText");
         optionGroupMakeCrosses.addItem(CrossType.MULTIPLY);
         optionGroupMakeCrosses.setItemCaption(CrossType.MULTIPLY, 
@@ -139,7 +140,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         
         listSelectMale = new ListSelect();
         listSelectMale.setRows(10);
-        listSelectMale.setWidth("200px");
+        listSelectMale.setWidth(240, UNITS_PIXELS);
         listSelectMale.setNullSelectionAllowed(true);
         listSelectMale.setMultiSelect(true);
         listSelectMale.setImmediate(true);
@@ -156,21 +157,24 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         nextButton.setEnabled(false);
 
         //Widget Layout
-        gridLayoutSelectingParents = new GridLayout(4,5);
+        gridLayoutSelectingParents = new GridLayout(2,2);
         gridLayoutSelectingParents.setSpacing(true);
         
-        gridLayoutSelectingParents.addComponent(lblFemaleParent,0,0);
-        gridLayoutSelectingParents.addComponent(btnSelectListFemaleParent,0,1);
-        gridLayoutSelectingParents.addComponent(listSelectFemale,0,2);
-        gridLayoutSelectingParents.setComponentAlignment(lblFemaleParent,  Alignment.MIDDLE_CENTER);
+        gridLayoutSelectingParents.addComponent(btnSelectListFemaleParent,0,0);
+        gridLayoutSelectingParents.addComponent(listSelectFemale,0,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListFemaleParent,  Alignment.MIDDLE_CENTER);
+        gridLayoutSelectingParents.setComponentAlignment(listSelectFemale,  Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParents.addComponent(lblMaleParent,2,0);
-        gridLayoutSelectingParents.addComponent(btnSelectListMaleParent,2,1);
-        gridLayoutSelectingParents.addComponent(listSelectMale,2,2);
-        gridLayoutSelectingParents.setComponentAlignment(lblMaleParent,  Alignment.MIDDLE_CENTER);
+        gridLayoutSelectingParents.addComponent(btnSelectListMaleParent,1,0);
+        gridLayoutSelectingParents.addComponent(listSelectMale,1,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
-       
+        gridLayoutSelectingParents.setComponentAlignment(listSelectMale,  Alignment.MIDDLE_CENTER);
+        
+        gridLayoutSelectingParents.setWidth(600, UNITS_PIXELS);
+        
+        gridLayoutSelectingParentOptions = new GridLayout(1,1);
+        gridLayoutSelectingParentOptions.setSpacing(true);
+        
         layoutCrossOption = new VerticalLayout();
         layoutCrossOption.setSpacing(true);
         layoutCrossOption.addComponent(optionGroupMakeCrosses);
@@ -178,13 +182,23 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         layoutCrossOption.addComponent(btnMakeCross);
         layoutCrossOption.setComponentAlignment(btnMakeCross,Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParents.addComponent(layoutCrossOption,1,2);
-        gridLayoutSelectingParents.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
+        gridLayoutSelectingParentOptions.setWidth(560, UNITS_PIXELS);
+        gridLayoutSelectingParentOptions.setMargin(true, false, false, false);
+        
+        gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
+        gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
         addComponent(gridLayoutSelectingParents);
+        addComponent(gridLayoutSelectingParentOptions);
+        
+        setComponentAlignment(gridLayoutSelectingParents, Alignment.TOP_CENTER);
+        setComponentAlignment(gridLayoutSelectingParentOptions, Alignment.TOP_CENTER);
         
         crossesTableComponent = new MakeCrossesTableComponent();
+        crossesTableComponent.setWidth(550, UNITS_PIXELS);
+        crossesTableComponent.setMargin(true, false, false, false);
         addComponent(crossesTableComponent);
+        setComponentAlignment(crossesTableComponent, Alignment.TOP_CENTER);
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -193,7 +207,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         layoutButtonArea.addComponent(nextButton);
         
         addComponent(layoutButtonArea);
-        setComponentAlignment(layoutButtonArea, Alignment.BOTTOM_RIGHT);
+        setComponentAlignment(layoutButtonArea, Alignment.BOTTOM_CENTER);
     }
 
     @Override

@@ -129,3 +129,20 @@
 	vertical-align: middle;
     height: 28px;
 }
+
+.v-select-select {
+	background: transparent;
+}
+
+.v-select-select caption {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.v-select-select option:nth-child(odd){
+	background: #ffffff;
+}
+
+.v-select-select option:nth-child(even){
+	background: #e0e0e0;
+}
