@@ -125,11 +125,7 @@
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
-    
-    <bean id="traitDataManager" class="org.generationcp.middleware.manager.TraitDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
+
     
     <bean id="userDataManager" class="org.generationcp.middleware.manager.UserDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
