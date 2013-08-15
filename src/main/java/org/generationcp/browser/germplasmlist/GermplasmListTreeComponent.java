@@ -19,6 +19,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
+import org.generationcp.browser.germplasmlist.listeners.GermplasmListTabChangeListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
@@ -174,7 +175,8 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
         
         if (!Util.isTabExist(tabSheetGermplasmList, germplasmList.getName())) {
-            layout.addComponent(new GermplasmListAccordionMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getStatus(), germplasmList.getUserId(), false,forGermplasmListWindow));
+            GermplasmListAccordionMenu component = new GermplasmListAccordionMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getStatus(), germplasmList.getUserId(), false,forGermplasmListWindow);
+            layout.addComponent(component);
             Tab tab = tabSheetGermplasmList.addTab(layout, germplasmList.getName(), null);
             tab.setClosable(true);
 
@@ -182,6 +184,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             germplasmListBrowserMainLayout.setExpandRatio(tabSheetGermplasmList, 1.0f);
             tabSheetGermplasmList.setSelectedTab(layout);
             tabSheetGermplasmList.setCloseHandler(new SelectedTabCloseHandler());
+            tabSheetGermplasmList.addListener(new GermplasmListTabChangeListener(component));
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, germplasmList.getName());
             tabSheetGermplasmList.setSelectedTab(tab.getComponent());

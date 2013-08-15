@@ -93,7 +93,18 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
     }    
-    
+    public void refreshListData(){
+    	try {
+            germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+            layoutListData.removeAllComponents();
+            layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
+            layoutListData.setMargin(true);
+            layoutListData.setSpacing(true);
+        } catch (MiddlewareQueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     public void selectedTabChangeAction() throws InternationalizableException{
         Component selected = this.getSelectedTab();
         Tab tab = this.getTab(selected);
