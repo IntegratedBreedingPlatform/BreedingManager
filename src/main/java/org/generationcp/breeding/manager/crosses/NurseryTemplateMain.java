@@ -158,7 +158,8 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     public void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
         
-        String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
+        //String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
+        String title =  "Crossing Manager: Nursery Template File <h2>" + VERSION + "</h2>";
         nurseryTemplateTitle = new Label();
         nurseryTemplateTitle.setStyleName("gcp-window-title");
         nurseryTemplateTitle.setContentMode(Label.CONTENT_XHTML);

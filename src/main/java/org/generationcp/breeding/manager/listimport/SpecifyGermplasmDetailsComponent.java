@@ -3,11 +3,18 @@ package org.generationcp.breeding.manager.listimport;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,9 +68,15 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private Accordion accordion;
     private Component nextScreen;
     private Component previousScreen;
+
+    private String DEFAULT_METHOD = "UDM";
+    private String DEFAULT_LOCATION = "Unknown";
+
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -88,6 +101,22 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         breedingMethodComboBox = new ComboBox();
         breedingMethodComboBox.setWidth("400px");
+        breedingMethodComboBox.setNullSelectionAllowed(false);
+        List<Method> methodList = germplasmDataManager.getAllMethods();
+        Map methodMap = new HashMap();
+        for(Method method : methodList){
+            //method.getMcode()
+            breedingMethodComboBox.addItem(method.getMid());
+            breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
+            if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
+                breedingMethodComboBox.setValue(method.getMid());
+                breedingMethodComboBox.setDescription(method.getMdesc());
+            }
+            methodMap.put(method.getMid().toString(), method.getMdesc());
+        }
+        breedingMethodComboBox.setTextInputAllowed(false);
+        breedingMethodComboBox.setImmediate(true);
+        breedingMethodComboBox.addListener(new MethodValueChangeListener(breedingMethodComboBox, methodMap));
         addComponent(breedingMethodComboBox, "top:10px;left:200px");
         
         germplasmDateLabel = new Label();
@@ -104,6 +133,22 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         locationComboBox = new ComboBox();
         locationComboBox.setWidth("400px");
+        List<Location> locationList = germplasmDataManager.getAllBreedingLocations();
+        Map locationMap = new HashMap();
+       for(Location location : locationList){
+           //method.getMcode()
+           locationComboBox.addItem(location.getLocid());
+           locationComboBox.setItemCaption(location.getLocid(), location.getLname());
+           if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
+               locationComboBox.setValue(location.getLocid());
+               //locationComboBox.setDescription(location.get);
+           }
+           locationMap.put(location.getLocid(), location.getLname());
+       }
+        locationComboBox.setTextInputAllowed(false);
+        locationComboBox.setImmediate(true);
+        //locationComboBox.addListener(new MethodValueChangeListener(locationComboBox, locationMap));
+
         addComponent(locationComboBox, "top:70px;left:200px");
         
         nameTypeLabel = new Label();
