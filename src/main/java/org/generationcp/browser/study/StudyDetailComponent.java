@@ -83,12 +83,12 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         try {
             study = studyDataManager.getStudy(Integer.valueOf(studyId));
             
-            studyName = new Label(study.getName());
-            studyTitle = new Label(study.getTitle());
-            studyObjective = new Label(study.getObjective());
-            studyType = new Label(study.getType());
-            studyStartDate = new Label(String.valueOf(study.getStartDate()));
-            studyEndDate = new Label(String.valueOf(study.getEndDate()));
+            studyName = new Label(setStudyDetailValue(study.getName()));
+            studyTitle = new Label(setStudyDetailValue(study.getTitle()));
+            studyObjective = new Label(setStudyDetailValue(study.getObjective()));
+            studyType = new Label(setStudyDetailValue(study.getType()));
+            studyStartDate = new Label(setStudyDetailValue(String.valueOf(study.getStartDate())));
+            studyEndDate = new Label(setStudyDetailValue(String.valueOf(study.getEndDate())));
 
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID, Message.EMPTY_STRING);
@@ -123,6 +123,14 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         messageSource.setCaption(lblType, Message.type_label);
         messageSource.setCaption(lblStartDate, Message.start_date_label);
         messageSource.setCaption(lblEndDate, Message.end_date_label);*/
+    }
+    
+    private String setStudyDetailValue(String value){
+
+	if(value.equals("null")){
+	    return "";
+	}
+	return value;
     }
 
 }
