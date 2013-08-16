@@ -1,8 +1,10 @@
 @import url(../reindeer/styles.css);
 
 .gcp-window-title {
-    font-size: 20px;
-	color: rgb(68,72,55);
+    /*font-size: 20px;*/
+    font-size: 16px;
+    text-transform: uppercase;
+	color: rgb(34, 34, 34);
 }
 
 .gcp-window-title H1:first-child {
@@ -42,19 +44,23 @@
 }
 
 .gcp-popup-view {
-	background-color: rgb(240,248,113);
+	background-color: #FF8109;
 	font-size: 12px;
 	box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
 	padding: 1px 3px;
 	text-decoration: none;
 	border-radius: 1px;
-	color: black;
+	color: white;
 	
 	margin-right: 20px;
 }
 
+.gcp-popup-view:hover {
+	color: white;
+}
 .v-popupview-popup-gcp-popup-view {
-	background-color: rgb(240,248,113);
+	background-color: #FF8109;
+    color: white;
 }
 
 /* Lay the options horizontally */
