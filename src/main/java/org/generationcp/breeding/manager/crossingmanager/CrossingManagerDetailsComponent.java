@@ -122,28 +122,29 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         doneButton = new Button();
         doneButton.setData(DONE_BUTTON_ID);
         
-        germplasmListName.setWidth("450px");
-        germplasmListDescription.setWidth("450px");
-        germplasmListType.setWidth("450px");
+        germplasmListName.setWidth("250px");
+        germplasmListDescription.setWidth("250px");
+        germplasmListType.setWidth("250px");
         germplasmListType.setNullSelectionAllowed(false);
         
-        addComponent(germplasmListNameLabel, "top:50px; left:30px;");
-        addComponent(germplasmListDescriptionLabel, "top:80px; left:30px;");
-        addComponent(germplasmListTypeLabel, "top:110px; left:30px;");
-        addComponent(germplasmListDateLabel, "top:140px; left:30px;");
+        addComponent(germplasmListNameLabel, "top:80px; left:170px;");
+        addComponent(germplasmListDescriptionLabel, "top:110px; left:170px;");
+        addComponent(germplasmListTypeLabel, "top:140px; left:170px;");
+        addComponent(germplasmListDateLabel, "top:170px; left:170px;");
         
-        addComponent(germplasmListName, "top:30px; left:200px;");
-        addComponent(germplasmListDescription, "top:60px; left:200px;");
-        addComponent(germplasmListType, "top:90px; left:200px;");
-        addComponent(germplasmListDate, "top:120px; left:200px;");
+        addComponent(germplasmListName, "top:60px; left:340px;");
+        addComponent(germplasmListDescription, "top:90px; left:340px;");
+        addComponent(germplasmListType, "top:120px; left:340px;");
+        addComponent(germplasmListDate, "top:150px; left:340px;");
         
-        addComponent(backButton, "top:260px; left: 625px;");
-        addComponent(doneButton, "top:260px; left: 700px;");
+        addComponent(backButton, "top:200px; left: 340px;");
+        addComponent(doneButton, "top:200px; left: 410px;");
         
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setValue(new Date());
+        germplasmListDate.setWidth("250px");
 
         initializeListTypeComboBox();
 
