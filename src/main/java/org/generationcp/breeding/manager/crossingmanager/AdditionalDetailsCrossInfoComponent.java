@@ -93,14 +93,14 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         harvestLocationLabel = new Label();
         
         harvestLocComboBox = new ComboBox();
-        harvestLocComboBox.setWidth("400px");
+        harvestLocComboBox.setWidth("280px");
         harvestLocComboBox.setNullSelectionAllowed(true);
         
         // layout components
-        addComponent(harvestDateLabel, "top:30px;left:20px");
-        addComponent(harvestDtDateField, "top:10px;left:140px");
-        addComponent(harvestLocationLabel, "top:60px;left:20px");
-        addComponent(harvestLocComboBox, "top:40px;left:140px");
+        addComponent(harvestDateLabel, "top:30px;left:0px");
+        addComponent(harvestDtDateField, "top:10px;left:120px");
+        addComponent(harvestLocationLabel, "top:60px;left:0px");
+        addComponent(harvestLocComboBox, "top:40px;left:120px");
 
         locations = germplasmDataManager.getAllBreedingLocations();
         populateHarvestLocation();

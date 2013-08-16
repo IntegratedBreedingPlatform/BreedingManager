@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout 
@@ -32,9 +35,9 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     private CrossesMade crossesMade;
     
     //Used Form to make use of fieldset HTML element to render section border
-    private Form crossingMethodForm;
-    private Form crossNameForm;
-    private Form crossInfoForm;
+    private VerticalLayout crossingMethodForm;
+    private VerticalLayout crossNameForm;
+    private VerticalLayout crossInfoForm;
     
     private AdditionalDetailsBreedingMethodComponent crossingMethodComponent;
     private AdditionalDetailsCrossNameComponent crossNameComponent;
@@ -95,20 +98,29 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         setHeight("640px");
         setWidth("800px");
         
-        crossingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
-        crossingMethodForm = new Form(crossingMethodComponent);
-        crossingMethodForm.setHeight("210px");
-        crossingMethodForm.setWidth("740px");
+        Label crossingMethodLabel = new Label("<b>"+ messageSource.getMessage(Message.CROSSING_METHOD) +"</b>");
+        crossingMethodLabel.setContentMode(Label.CONTENT_XHTML);
         
+        crossingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
+        crossingMethodForm = new VerticalLayout();
+        crossingMethodForm.addComponent(crossingMethodLabel);
+        crossingMethodForm.addComponent(crossingMethodComponent);
+
+        Label crossNameLabel = new Label("<b>"+ messageSource.getMessage(Message.CROSS_NAME) +"</b>");
+        crossNameLabel.setContentMode(Label.CONTENT_XHTML);
+
         crossNameComponent = new AdditionalDetailsCrossNameComponent();
-        crossNameForm = new Form(crossNameComponent);
-        crossNameForm.setHeight("260px");
-        crossNameForm.setWidth("740px");
+        crossNameForm = new VerticalLayout();
+        crossNameForm.addComponent(crossNameLabel);
+        crossNameForm.addComponent(crossNameComponent);
+        
+        Label crossInfoLabel = new Label("<b>"+ messageSource.getMessage(Message.CROSS_INFO) +"</b>");
+        crossInfoLabel.setContentMode(Label.CONTENT_XHTML);
         
         crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
-        crossInfoForm = new Form(crossInfoComponent);
-        crossInfoForm.setHeight("120px");
-        crossInfoForm.setWidth("740px");
+        crossInfoForm = new VerticalLayout();
+        crossInfoForm.addComponent(crossInfoLabel);
+        crossInfoForm.addComponent(crossInfoComponent);
         
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
@@ -121,11 +133,11 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         nextButton.addListener(listener);
         
         // Layout Components
-        addComponent(crossingMethodForm, "top:20px;left:30px");
-        addComponent(crossNameForm, "top:180px;left:30px");
-        addComponent(crossInfoForm, "top:410px;left:30px");
-        addComponent(backButton, "top:555px;left:600px");
-        addComponent(nextButton, "top:555px;left:670px");
+        addComponent(crossingMethodForm, "top:40px;left:170px");
+        addComponent(crossNameForm, "top:200px;left:170px");
+        addComponent(crossInfoForm, "top:430px;left:170px");
+        addComponent(backButton, "top:555px;left:340px");
+        addComponent(nextButton, "top:555px;left:410px");
         
         setUpdateListeners();
     }
@@ -140,9 +152,9 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     public void updateLabels() {
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(nextButton, Message.NEXT);
-        messageSource.setCaption(crossingMethodForm, Message.CROSSING_METHOD);
-        messageSource.setCaption(crossNameForm, Message.CROSS_CODE);
-        messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
+        //messageSource.setCaption(crossingMethodForm, Message.CROSSING_METHOD);
+        //messageSource.setCaption(crossNameForm, Message.CROSS_CODE);
+        //messageSource.setCaption(crossInfoForm, Message.CROSS_INFO);
     }
     
     private void setUpdateListeners(){

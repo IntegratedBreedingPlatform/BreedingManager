@@ -126,7 +126,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         
         specifyPrefixLabel = new Label();
         prefixTextField = new TextField();
-        prefixTextField.setWidth("500px");
+        prefixTextField.setWidth("300px");
         
         howManyDigitsLabel = new Label();
         leadingZerosSelect = new Select();
@@ -140,7 +140,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         
         specifySuffixLabel = new Label();
         suffixTextField = new TextField();
-        suffixTextField.setWidth("500px");
+        suffixTextField.setWidth("300px");
         
         nextNameInSequenceLabel = new Label();
         generatedNameLabel = new Label();
@@ -164,26 +164,26 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     public void updateLabels() {
         messageSource.setCaption(specifyPrefixLabel, Message.SPECIFY_PREFIX_REQUIRED);
         messageSource.setCaption(specifySuffixLabel, Message.SPECIFY_SUFFIX_OPTIONAL);
-        messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE_LEADING_ZEROS);
+        messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE);
         messageSource.setCaption(addSpaceCheckBox, Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE);
-        messageSource.setCaption(howManyDigitsLabel, Message.HOW_MANY_DIGITS);
+        messageSource.setCaption(howManyDigitsLabel, Message.LEADING_ZEROS);
         messageSource.setCaption(nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
         messageSource.setCaption(generateButton, Message.GENERATE);
     }
-    
     private void layoutComponents() {
-        addComponent(crossNameOptionGroup, "top:10px;left:20px");
-        addComponent(specifyPrefixLabel, "top:40px;left:20px");
-        addComponent(prefixTextField, "top:25px;left:180px");
-        addComponent(sequenceNumCheckBox, "top:57px;left:20px");
-        addComponent(howManyDigitsLabel, "top:73px;left:295px");
-        addComponent(leadingZerosSelect, "top:55px;left:395px");
-        addComponent(addSpaceCheckBox, "top:57px;left:475px");
-        addComponent(specifySuffixLabel, "top:110px;left:20px");
-        addComponent(suffixTextField, "top:90px;left:180px");
-        addComponent(nextNameInSequenceLabel, "top:145px;left:20px");
-        addComponent(generatedNameLabel, "top:145px;left:237px");
-        addComponent(generateButton, "top:155px;left:20px");
+        
+        addComponent(crossNameOptionGroup, "top:0px;left:0px");
+        addComponent(specifyPrefixLabel, "top:25px;left:0px");
+        addComponent(prefixTextField, "top:6px;left:145px");
+        addComponent(sequenceNumCheckBox, "top:37px;left:0px");
+        addComponent(howManyDigitsLabel, "top:53px;left:275px");
+        addComponent(leadingZerosSelect, "top:35px;left:219px");
+        addComponent(addSpaceCheckBox, "top:65px;left:0px");
+        addComponent(specifySuffixLabel, "top:115px;left:0px");
+        addComponent(suffixTextField, "top:95px;left:145px");
+        addComponent(nextNameInSequenceLabel, "top:145px;left:0px");
+        addComponent(generatedNameLabel, "top:145px;left:217px");
+        addComponent(generateButton, "top:155px;left:0px");
     }
     
     private void initializeToggableComponents(){

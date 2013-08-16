@@ -118,16 +118,16 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         selectCrossingMethodLabel.setEnabled(false);
         
         crossingMethodComboBox = new ComboBox();
-        crossingMethodComboBox.setWidth("400px");
+        crossingMethodComboBox.setWidth("300px");
         crossingMethodComboBox.setEnabled(false);
         // Change ComboBox back to TextField when it loses focus
         crossingMethodComboBox.addListener(crossingMethodComboboxFocusListener);
 
         //layout components
-        addComponent(selectOptionLabel, "top:25px;left:20px");
-        addComponent(crossingMethodOptionGroup, "top:35px;left:20px");
-        addComponent(selectCrossingMethodLabel, "top:105px;left:20px");
-        addComponent(crossingMethodComboBox, "top:85px;left:180px");
+        addComponent(selectOptionLabel, "top:20px;left:0px");
+        addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
+        addComponent(selectCrossingMethodLabel, "top:100px;left:0px");
+        addComponent(crossingMethodComboBox, "top:80px;left:150px");
         
         methods = germplasmDataManager.getMethodsByType("GEN");
     }
