@@ -134,10 +134,10 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         
         // Layout Components
         addComponent(crossingMethodForm, "top:40px;left:170px");
-        addComponent(crossNameForm, "top:200px;left:170px");
-        addComponent(crossInfoForm, "top:430px;left:170px");
-        addComponent(backButton, "top:555px;left:340px");
-        addComponent(nextButton, "top:555px;left:410px");
+        addComponent(crossNameForm, "top:240px;left:170px");
+        addComponent(crossInfoForm, "top:460px;left:170px");
+        addComponent(backButton, "top:570px;left:340px");
+        addComponent(nextButton, "top:570px;left:410px");
         
         setUpdateListeners();
     }

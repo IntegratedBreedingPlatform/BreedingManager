@@ -40,6 +40,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window.Notification;
 
 /**
@@ -64,6 +65,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
       
     private Label selectOptionLabel;
     private Label selectCrossingMethodLabel;
+    private Label methodDescriptionLabel;
+    private TextArea crossingMethodDescriptionTextArea;
     
     private OptionGroup crossingMethodOptionGroup;
     private ComboBox crossingMethodComboBox;
@@ -84,7 +87,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     @Override
     public void afterPropertiesSet() throws Exception {  
-        setHeight("130px");
+        setHeight("180px");
         setWidth("700px");
         
         selectOptionLabel = new Label();
@@ -103,12 +106,17 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             public void valueChange(ValueChangeEvent event) {
                 if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
                 selectCrossingMethodLabel.setEnabled(true);
+                methodDescriptionLabel.setEnabled(true);
                 crossingMethodComboBox.setEnabled(true);
                 crossingMethodComboBox.focus();
                 }else{
                 selectCrossingMethodLabel.setEnabled(false);
+                methodDescriptionLabel.setEnabled(false);
                 crossingMethodComboBox.setEnabled(false);
                 crossingMethodComboBox.removeAllItems();
+                crossingMethodDescriptionTextArea.setReadOnly(false);
+                crossingMethodDescriptionTextArea.setValue("");
+                crossingMethodDescriptionTextArea.setReadOnly(true);
                 }
             }
         });
@@ -117,17 +125,52 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         selectCrossingMethodLabel = new Label();
         selectCrossingMethodLabel.setEnabled(false);
         
+        methodDescriptionLabel= new Label();
+        methodDescriptionLabel.setEnabled(false);
+        
+        crossingMethodDescriptionTextArea=new TextArea();
+        crossingMethodDescriptionTextArea.setWordwrap(true);
+        crossingMethodDescriptionTextArea.setWidth("400px");
+        crossingMethodDescriptionTextArea.setRows(2);
+        crossingMethodDescriptionTextArea.addStyleName("mytextarea");
+        crossingMethodDescriptionTextArea.setReadOnly(true);
+                   
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setWidth("300px");
         crossingMethodComboBox.setEnabled(false);
+        crossingMethodComboBox.setImmediate(true);
+        crossingMethodComboBox.setNullSelectionAllowed(false);
         // Change ComboBox back to TextField when it loses focus
         crossingMethodComboBox.addListener(crossingMethodComboboxFocusListener);
+        
+        crossingMethodComboBox.addListener(new Property.ValueChangeListener() {
+	    
+	    @Override
+	    public void valueChange(ValueChangeEvent event) {
+		if(crossingMethodComboBox.size() > 0){
+        		Integer breedingMethodSelected = mapMethods.get(event.getProperty().getValue());
+        		try {
+        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
+        		    crossingMethodDescriptionTextArea.setReadOnly(false);
+        		    crossingMethodDescriptionTextArea.setValue(methodDescription);
+        		    crossingMethodDescriptionTextArea.setReadOnly(true);
+     
+        		} catch (MiddlewareQueryException e) {
+        		    // TODO Auto-generated catch block
+        		    e.printStackTrace();
+        		}
+		}
+		 
+	    }
+	});
 
         //layout components
         addComponent(selectOptionLabel, "top:20px;left:0px");
         addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
         addComponent(selectCrossingMethodLabel, "top:100px;left:0px");
         addComponent(crossingMethodComboBox, "top:80px;left:150px");
+        addComponent(methodDescriptionLabel, "top:130px;left:0px");
+        addComponent(crossingMethodDescriptionTextArea, "top:110px;left:150px");
         
         methods = germplasmDataManager.getMethodsByType("GEN");
     }
@@ -137,11 +180,16 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         public void focus(FocusEvent event) {
             try {
             populateBreedingMethod();
+            crossingMethodComboBox.setImmediate(true);
+            crossingMethodComboBox.focus();
+            crossingMethodComboBox.requestRepaint();
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in getting breeding methods.", e);
         }
         }
     };
+    
+
     
     public void populateBreedingMethod() throws MiddlewareQueryException {
 
@@ -152,21 +200,22 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String breedingMethod = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD.getValue());
             String beedingMethodId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue());
-        if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
-            crossingMethodComboBox.addItem(breedingMethod);
-            mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
-            crossingMethodComboBox.select(breedingMethod);
-        }else{
-            crossingMethodComboBox.select("");
+            if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
+                crossingMethodComboBox.addItem(breedingMethod);
+                mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
+                crossingMethodComboBox.select(breedingMethod);
+            }else{
+                crossingMethodComboBox.select("");
+            }
+        
         }
-    }
     
-    for (Method m : methods) {
-        crossingMethodComboBox.addItem(m.getMname());
-        mapMethods.put(m.getMname(), new Integer(m.getMid()));
-    }
-    
-     //Integer mId = mapMethods.get(breedingMethodComboBox.getValue());
+        for (Method m : methods) {
+            crossingMethodComboBox.addItem(m.getMname());
+            mapMethods.put(m.getMname(), new Integer(m.getMid()));
+        }
+        crossingMethodComboBox.requestRepaint();
+         //Integer mId = mapMethods.get(breedingMethodComboBox.getValue());
         
     }
 
@@ -180,6 +229,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     public void updateLabels() {
         messageSource.setCaption(selectOptionLabel, Message.SELECT_AN_OPTION);
         messageSource.setCaption(selectCrossingMethodLabel, Message.SELECT_CROSSING_METHOD);
+        messageSource.setCaption(methodDescriptionLabel, Message.METHOD_DESCRIPTION_LABEL);
     }
     
     private boolean sameBreedingMethodForAllSelected(){
