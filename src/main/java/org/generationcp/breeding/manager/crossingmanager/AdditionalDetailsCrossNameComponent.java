@@ -166,7 +166,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         messageSource.setCaption(specifySuffixLabel, Message.SPECIFY_SUFFIX_OPTIONAL);
         messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE);
         messageSource.setCaption(addSpaceCheckBox, Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE);
-        messageSource.setCaption(howManyDigitsLabel, Message.LEADING_ZEROS);
+        messageSource.setCaption(howManyDigitsLabel, Message.DIGITS);
         messageSource.setCaption(nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
         messageSource.setCaption(generateButton, Message.GENERATE);
     }

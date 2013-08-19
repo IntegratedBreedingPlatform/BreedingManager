@@ -89,6 +89,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         harvestDtDateField = new DateField();
         harvestDtDateField.setResolution(DateField.RESOLUTION_DAY);
         harvestDtDateField.setDateFormat(CrossingManagerMain.DATE_FORMAT);
+        harvestDtDateField.setWidth("280px");
         
         harvestLocationLabel = new Label();
         

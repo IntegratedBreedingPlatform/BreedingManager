@@ -152,5 +152,6 @@ public enum Message{
     ,CROSS_NAME
     ,SEQUENCE_NUMBER_SHOULD_HAVE
     ,LEADING_ZEROS
+    ,DIGITS
    
 }
