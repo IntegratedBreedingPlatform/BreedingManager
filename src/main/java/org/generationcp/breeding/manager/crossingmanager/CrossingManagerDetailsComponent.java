@@ -127,18 +127,18 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         germplasmListType.setWidth("250px");
         germplasmListType.setNullSelectionAllowed(false);
         
-        addComponent(germplasmListNameLabel, "top:80px; left:170px;");
-        addComponent(germplasmListDescriptionLabel, "top:110px; left:170px;");
-        addComponent(germplasmListTypeLabel, "top:140px; left:170px;");
-        addComponent(germplasmListDateLabel, "top:170px; left:170px;");
+        addComponent(germplasmListNameLabel, "top:45px; left:170px;");
+        addComponent(germplasmListDescriptionLabel, "top:75px; left:170px;");
+        addComponent(germplasmListTypeLabel, "top:105px; left:170px;");
+        addComponent(germplasmListDateLabel, "top:135px; left:170px;");
         
-        addComponent(germplasmListName, "top:60px; left:340px;");
-        addComponent(germplasmListDescription, "top:90px; left:340px;");
-        addComponent(germplasmListType, "top:120px; left:340px;");
-        addComponent(germplasmListDate, "top:150px; left:340px;");
+        addComponent(germplasmListName, "top:25px; left:340px;");
+        addComponent(germplasmListDescription, "top:55px; left:340px;");
+        addComponent(germplasmListType, "top:85px; left:340px;");
+        addComponent(germplasmListDate, "top:115px; left:340px;");
         
-        addComponent(backButton, "top:200px; left: 340px;");
-        addComponent(doneButton, "top:200px; left: 410px;");
+        addComponent(backButton, "top:165px; left: 340px;");
+        addComponent(doneButton, "top:165px; left: 410px;");
         
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
