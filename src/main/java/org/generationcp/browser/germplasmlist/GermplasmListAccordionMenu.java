@@ -97,7 +97,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     	try {
             germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
             layoutListData.removeAllComponents();
-            layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
+            layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus(), this));
             layoutListData.setMargin(true);
             layoutListData.setSpacing(true);
         } catch (MiddlewareQueryException e) {
@@ -118,7 +118,7 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         }
                 
             if (layoutListData.getComponentCount() == 0) {
-                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus()));
+                    layoutListData.addComponent(new GermplasmListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmList.getStatus(), this));
                     layoutListData.setMargin(true);
                     layoutListData.setSpacing(true);
                 }

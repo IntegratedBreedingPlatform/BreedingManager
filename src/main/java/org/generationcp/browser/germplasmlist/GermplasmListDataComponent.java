@@ -104,6 +104,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
     private Window germplasmListCopyToNewListDialog;
 
+    private org.generationcp.browser.germplasmlist.GermplasmListAccordionMenu germplasmListAccordionMenu;
+
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
     
     @Autowired
@@ -122,13 +124,14 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private Integer germplasmListStatus;
     private GermplasmList germplasmList;
     
-    public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus){
+    public GermplasmListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus, org.generationcp.browser.germplasmlist.GermplasmListAccordionMenu germplasmListAccordionMenu){
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.germplasListUserId=germplasListUserId;
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.germplasmListStatus=germplasmListStatus;
+        this.germplasmListAccordionMenu = germplasmListAccordionMenu;
     }
 
     @Override
@@ -682,6 +685,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                             listData.getDesignation(), listData.getGroupName(), listData.getStatusString()
                     }, listDataId);
             listDataTable.requestRepaint();
+            listDataTable.setImmediate(true);
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
                     "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
@@ -699,6 +703,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. Please report to IBWS developers."
                         , Notification.POSITION_CENTERED);
             }
+            //populateTable();
+            //listDataTable.requestRepaint();
+            if(this.germplasmListAccordionMenu != null)
+                this.germplasmListAccordionMenu.refreshListData();
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. Please report to IBWS developers."
