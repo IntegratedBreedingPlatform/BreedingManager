@@ -127,7 +127,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     
     private String setStudyDetailValue(String value){
 
-	if(value.equals("null")){
+	if(value==null || value.equals("null")){
 	    return "";
 	}
 	return value;
