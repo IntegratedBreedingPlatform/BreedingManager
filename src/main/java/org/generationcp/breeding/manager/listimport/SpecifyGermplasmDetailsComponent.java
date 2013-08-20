@@ -13,8 +13,10 @@ import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeL
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,12 +73,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     private String DEFAULT_METHOD = "UDM";
     private String DEFAULT_LOCATION = "Unknown";
+    private String DEFAULT_NAME_TYPE = "Line Name";
 
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+
+    @Autowired
+     private GermplasmListManager germplasmListManager;
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -156,6 +162,19 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
+        List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
+        for(UserDefinedField userDefinedField : userDefinedFieldList){
+                  //method.getMcode()
+            nameTypeComboBox.addItem(userDefinedField.getFldno());
+            nameTypeComboBox.setItemCaption(userDefinedField.getFldno(), userDefinedField.getFname());
+                  if(DEFAULT_NAME_TYPE.equalsIgnoreCase(userDefinedField.getFname())){
+                      nameTypeComboBox.setValue(userDefinedField.getFldno());
+                      //locationComboBox.setDescription(location.get);
+                  }
+              }
+        nameTypeComboBox.setTextInputAllowed(false);
+        nameTypeComboBox.setImmediate(true);
+
         addComponent(nameTypeComboBox, "top:100px;left:200px");
         
         germplasmDetailsLabel = new Label();
