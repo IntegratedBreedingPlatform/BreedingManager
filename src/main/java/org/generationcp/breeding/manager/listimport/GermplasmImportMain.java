@@ -17,6 +17,7 @@ import com.vaadin.ui.VerticalLayout;
 public class GermplasmImportMain extends VerticalLayout implements InitializingBean, InternationalizableComponent{
     
     private static final long serialVersionUID = -6656072296236475385L;
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
     

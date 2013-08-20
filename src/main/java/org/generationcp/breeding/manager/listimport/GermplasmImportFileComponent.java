@@ -115,6 +115,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
                         //System.out.println(importedGermplasm.getEntryId() + "  " + importedGermplasm.getDesig());
                         getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), "", importedGermplasm.getDesig(), "", source}, new Integer(i+1));
                     }
+                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
+                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
             }
         }
     }

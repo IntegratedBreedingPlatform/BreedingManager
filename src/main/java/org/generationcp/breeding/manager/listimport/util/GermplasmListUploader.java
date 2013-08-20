@@ -57,7 +57,19 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private ImportedGermplasmList importedGermplasmList;
     
     private Boolean fileIsValid;
-    
+
+    public String getListName() {
+        return listName;
+    }
+
+    public Date getListDate() {
+        return listDate;
+    }
+
+    public String getListTitle() {
+        return listTitle;
+    }
+
     public GermplasmListUploader(GermplasmImportFileComponent source) {
         this.source = source;
     }

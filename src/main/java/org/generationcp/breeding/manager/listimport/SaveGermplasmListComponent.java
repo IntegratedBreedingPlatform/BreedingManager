@@ -4,6 +4,10 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,6 +22,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+
+import java.util.Date;
+import java.util.List;
 
 @Configurable
 public class SaveGermplasmListComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -46,9 +53,16 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     
     private Accordion accordion;
     private Component previousScreen;
+
+    private List<Germplasm> germplasmList;
+    private List<Name> nameList;
+
+    private String DEFAULT_LIST_TYPE = "LST";
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    @Autowired
+     private GermplasmListManager germplasmListManager;
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -57,6 +71,22 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     
     public void setPreviousScreen(Component previousScreen){
         this.previousScreen = previousScreen;
+    }
+
+    public List<Germplasm> getGermplasmList() {
+        return germplasmList;
+    }
+
+    public void setGermplasmList(List<Germplasm> germplasmList) {
+        this.germplasmList = germplasmList;
+    }
+
+    public List<Name> getNameList() {
+        return nameList;
+    }
+
+    public void setNameList(List<Name> nameList) {
+        this.nameList = nameList;
     }
 
     @Override
@@ -83,6 +113,18 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("400px");
+        List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmListTypes();
+        for(UserDefinedField userDefinedField : userDefinedFieldList){
+                  //method.getMcode()
+            listTypeComboBox.addItem(userDefinedField.getFcode());
+            listTypeComboBox.setItemCaption(userDefinedField.getFcode(), userDefinedField.getFname());
+                  if(DEFAULT_LIST_TYPE.equalsIgnoreCase(userDefinedField.getFcode())){
+                      listTypeComboBox.setValue(userDefinedField.getFcode());
+                      //locationComboBox.setDescription(location.get);
+                  }
+              }
+        listTypeComboBox.setTextInputAllowed(false);
+        listTypeComboBox.setImmediate(true);
         addComponent(listTypeComboBox, "top:70px;left:200px");
         
         listDateLabel = new Label();
@@ -121,11 +163,21 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void backButtonClickAction(){
+        /*already here
+        System.out.println("== " + getGermplasmList().size());
+        System.out.println("== " + getNameList().size());
+        */
         if(this.previousScreen != null){
             this.accordion.setSelectedTab(previousScreen);
         } else{
             this.backButton.setEnabled(false);
         }
+    }
+
+    public void setListDetails(String name, String description, Date date){
+        listNameText.setValue(name);
+        descriptionText.setValue(description);
+        listDateField.setValue(date);
     }
     
     public GermplasmImportMain getSource() {

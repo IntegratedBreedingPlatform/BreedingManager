@@ -2,21 +2,22 @@ package org.generationcp.breeding.manager.listimport;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeListener;
+import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.Location;
-import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
+import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -74,6 +75,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private String DEFAULT_METHOD = "UDM";
     private String DEFAULT_LOCATION = "Unknown";
     private String DEFAULT_NAME_TYPE = "Line Name";
+    private List<ImportedGermplasm> importedGermplasms;
+    private GermplasmListUploader germplasmListUploader;
 
     
     @Autowired
@@ -83,6 +86,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     @Autowired
      private GermplasmListManager germplasmListManager;
+    @Autowired
+     private WorkbenchDataManager workbenchDataManager;
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -99,6 +104,22 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     public void setPreviousScreen(Component previousScreen){
         this.previousScreen = previousScreen;
+    }
+
+    public List<ImportedGermplasm> getImportedGermplasms() {
+        return importedGermplasms;
+    }
+
+    public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
+        this.importedGermplasms = importedGermplasms;
+    }
+
+    public GermplasmListUploader getGermplasmListUploader() {
+        return germplasmListUploader;
+    }
+
+    public void setGermplasmListUploader(GermplasmListUploader germplasmListUploader) {
+        this.germplasmListUploader = germplasmListUploader;
     }
 
     @Override
@@ -134,7 +155,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         germplasmDateField =  new DateField();
         germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
-        germplasmDateField.setDateFormat("yyyy-MM-dd");
+        germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);
         germplasmDateField.setValue(new Date());
         addComponent(germplasmDateField, "top:40px;left:200px");
         
@@ -243,11 +264,83 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     public void nextButtonClickAction(){
         if(this.nextScreen != null){
             this.accordion.setSelectedTab(this.nextScreen);
+
+            List<Germplasm> germplasmList = new ArrayList();
+            List<Name> nameList = new ArrayList();
+            if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
+                //meaning 1st pedigree
+                //we should create the germplasm and named pojos here
+                try{
+                    WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+
+                    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+                    String sDate = formatter.format(germplasmDateField.getValue());
+
+                    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+                        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+                        Germplasm germplasm = new Germplasm();
+                        germplasm.setGid(i);
+                        germplasm.setUserId(data.getUserId());
+                        germplasm.setLocationId((Integer)locationComboBox.getValue());
+                        germplasm.setGdate(dateIntValue);
+
+                        germplasm.setGnpgs(0);
+                        germplasm.setGpid1(0);
+                        germplasm.setGpid2(0);
+                        germplasm.setLgid(0);
+                        germplasm.setGrplce(0);
+                        germplasm.setReferenceId(0);
+                        germplasm.setMgid(0);
+                        germplasmList.add(germplasm);
+
+                        Name name = new Name();
+                        //name.setNid();
+                        //name.setGermplasmId();
+                        name.setTypeId((Integer)nameTypeComboBox.getValue());
+                        name.setUserId(data.getUserId());
+                        name.setNval(importedGermplasm.getDesig());
+                        name.setLocationId((Integer)locationComboBox.getValue());
+                        name.setNdate(dateIntValue);
+                        name.setReferenceId(0);
+                        nameList.add(name);
+                    }
+                    //logFirstPedigreeUploadedToWorkbenchProjectActivity();
+
+                }catch (MiddlewareQueryException mqe){
+                    mqe.printStackTrace();
+                }
+            }
+
+            if(nextScreen instanceof SaveGermplasmListComponent){
+               ((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
+               ((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
+
+                //for 909
+                ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate());
+           }
         } else {
             this.nextButton.setEnabled(false);
         }
     }
-    
+
+    private void logFirstPedigreeUploadedToWorkbenchProjectActivity() throws MiddlewareQueryException {
+           //GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
+
+           User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+
+           ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+                   workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+                   "Import Germplasm List - 1st Pedigree Option",
+                   "Import Germplasm List - 1st Pedigree Option",user,new Date());
+           try {
+               workbenchDataManager.addProjectActivity(projAct);
+           } catch (MiddlewareQueryException e) {
+               LOG.error("Error with logging workbench activity.", e);
+               e.printStackTrace();
+           }
+       }
+
     public void backButtonClickAction(){
         if(this.previousScreen != null){
             this.accordion.setSelectedTab(previousScreen);
