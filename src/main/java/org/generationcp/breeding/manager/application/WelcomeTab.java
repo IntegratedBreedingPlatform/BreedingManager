@@ -112,7 +112,7 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     
     public void importGermplasmButtonClickAction() throws InternationalizableException {
         if (rootLayoutForGermplasmImport.getComponentCount() == 0) {
-            rootLayoutForGermplasmImport.addComponent(new GermplasmImportMain());
+            rootLayoutForGermplasmImport.addComponent(new GermplasmImportMain(rootLayoutForGermplasmImport));
             rootLayoutForGermplasmImport.addStyleName("addSpacing");
             rootLayoutForGermplasmImport.setSizeFull();
         }

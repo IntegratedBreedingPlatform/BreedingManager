@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listimport.listeners;
 
+import org.generationcp.breeding.manager.listimport.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
 import org.generationcp.breeding.manager.listimport.SaveGermplasmListComponent;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
@@ -35,7 +36,13 @@ public class GermplasmImportButtonClickListener implements Button.ClickListener 
         } else if (event.getButton().getData().equals(SaveGermplasmListComponent.BACK_BUTTON_ID) 
                 && (source instanceof SaveGermplasmListComponent)) {
             ((SaveGermplasmListComponent) source).backButtonClickAction();
-        } else {
+        }else if (event.getButton().getData().equals(SaveGermplasmListComponent.DONE_BUTTON_ID)
+                        && (source instanceof SaveGermplasmListComponent)) {
+                    ((SaveGermplasmListComponent) source).nextButtonClickAction();
+        }else if (event.getButton().getData().equals(EmbeddedGermplasmListDetailComponent.NEW_IMPORT_BUTTON_ID)
+            && (source instanceof EmbeddedGermplasmListDetailComponent)) {
+            ((EmbeddedGermplasmListDetailComponent) source).makeNewImportButtonClickAction();
+        }   else {
             LOG.error("GermplasmImportButtonClickListener: Error with buttonClick action. Source not identified.");
         }
     }

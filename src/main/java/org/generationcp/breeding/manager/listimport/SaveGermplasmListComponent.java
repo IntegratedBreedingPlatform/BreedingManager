@@ -1,11 +1,21 @@
 package org.generationcp.breeding.manager.listimport;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.listimport.util.GermplasmImportUtil;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
@@ -14,17 +24,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
+import org.vaadin.dialogs.ConfirmDialog;
 
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Configurable
 public class SaveGermplasmListComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -35,6 +38,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private GermplasmImportMain source;
     
     public static final String BACK_BUTTON_ID = "back button";
+    public static final String DONE_BUTTON_ID = "done button";
     
     private Label listNameLabel;
     private Label descriptionLabel;
@@ -62,7 +66,11 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     @Autowired
-     private GermplasmListManager germplasmListManager;
+    private GermplasmListManager germplasmListManager;
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+    private String filename;
+
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -87,6 +95,14 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
     public void setNameList(List<Name> nameList) {
         this.nameList = nameList;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     @Override
@@ -143,6 +159,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         addComponent(backButton, "top:200px;left:600px");
         
         doneButton = new Button();
+        doneButton.setData(DONE_BUTTON_ID);
+        doneButton.addListener(clickListener);
         addComponent(doneButton, "top:200px;left:670px");
     }
     
@@ -172,6 +190,83 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         } else{
             this.backButton.setEnabled(false);
         }
+    }
+
+    public void nextButtonClickAction() throws InternationalizableException {
+         //do the saving now
+        if (validateRequiredFields()){
+
+                    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_GERMPLASM_LIST),
+                            messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_GERMPLASM),
+                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL),
+                            new ConfirmDialog.Listener() {
+
+                                public void onClose(ConfirmDialog dialog) {
+                                    if (dialog.isConfirmed()) {
+                                        saveRecords();
+                                    }
+                                }
+
+                            }
+                    );
+                }
+    }
+
+
+    private boolean validateRequiredFields(){
+
+
+          return
+          GermplasmImportUtil.validateRequiredStringField(getWindow(), listNameText,
+                  messageSource, (String) listNameLabel.getCaption())
+
+          && GermplasmImportUtil.validateRequiredStringField(getWindow(), descriptionText,
+              messageSource,     (String) descriptionLabel.getCaption())
+
+          && GermplasmImportUtil.validateRequiredField(getWindow(), listTypeComboBox,
+              messageSource, (String) listTypeLabel.getCaption())
+
+          && GermplasmImportUtil.validateRequiredField(getWindow(), listDateField,
+              messageSource, (String) listDateLabel.getCaption());
+      }
+     //Save records into DB and redirects to GermplasmListBrowser to view created list
+    private void saveRecords() {
+        SaveGermplasmListAction saveAction = new SaveGermplasmListAction();
+
+        try {
+
+            GermplasmList germplasmList = new GermplasmList();
+            /*
+                  listuid - local IBDB user id of the current logged in workbench user
+              */
+            SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+            String sDate = formatter.format(listDateField.getValue());
+
+            Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
+             germplasmList.setName((String)listNameText.getValue());
+             germplasmList.setDate(dataLongValue);
+             germplasmList.setType((String)listTypeComboBox.getValue());
+             germplasmList.setDescription((String)descriptionText.getValue());
+             germplasmList.setParent(null);
+             germplasmList.setStatus(1);
+
+             LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
+             for(int i = 0 ; i < this.getGermplasmList().size() ; i++){
+                 germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
+             }
+             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameMap, getFilename());
+             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
+                    messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
+
+            this.source.viewGermplasmListCreated(listId);
+
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage() + " " + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Window.Notification.POSITION_CENTERED);
+        }
+
     }
 
     public void setListDetails(String name, String description, Date date){

@@ -284,6 +284,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         germplasm.setUserId(data.getUserId());
                         germplasm.setLocationId((Integer)locationComboBox.getValue());
                         germplasm.setGdate(dateIntValue);
+                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
 
                         germplasm.setGnpgs(0);
                         germplasm.setGpid1(0);
@@ -315,6 +316,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             if(nextScreen instanceof SaveGermplasmListComponent){
                ((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
                ((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
+               ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
 
                 //for 909
                 ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate());
@@ -323,7 +325,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             this.nextButton.setEnabled(false);
         }
     }
-
+   /*
     private void logFirstPedigreeUploadedToWorkbenchProjectActivity() throws MiddlewareQueryException {
            //GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
 
@@ -340,7 +342,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                e.printStackTrace();
            }
        }
-
+                    */
     public void backButtonClickAction(){
         if(this.previousScreen != null){
             this.accordion.setSelectedTab(previousScreen);

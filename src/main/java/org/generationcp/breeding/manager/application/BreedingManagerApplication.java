@@ -107,7 +107,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
                 germplasmImportWindow.setSizeUndefined();
-                germplasmImportWindow.addComponent(new GermplasmImportMain());
+                germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
             } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
@@ -134,7 +134,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
         if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
             if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
-                rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain());
+                rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain(rootLayoutForImportGermplasmList));
                 rootLayoutForCrossingManager.addStyleName("addSpacing");
             } 
         }

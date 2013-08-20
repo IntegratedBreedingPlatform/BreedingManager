@@ -1,6 +1,8 @@
 package org.generationcp.breeding.manager.listimport;
 
+import com.vaadin.ui.ComponentContainer;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listimport.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
@@ -29,12 +31,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     private Label importToolTitle;
     private Accordion accordion;
+    private ComponentContainer parent;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public GermplasmImportMain(){
-        
+    public GermplasmImportMain(ComponentContainer parent){
+        this.parent = parent;
     }
 
     @Override
@@ -84,6 +87,18 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     }
     public SaveGermplasmListComponent getWizardScreenThree() {
         return wizardScreenThree;
+    }
+
+    public void viewGermplasmListCreated(Integer listId){
+        EmbeddedGermplasmListDetailComponent germplasmListBrowser =
+            new EmbeddedGermplasmListDetailComponent(this, listId);
+
+        this.removeComponent(this.accordion);
+        this.addComponent(germplasmListBrowser);
+    }
+
+    public void reset(){
+        this.parent.replaceComponent(this, new GermplasmImportMain(this.parent));
     }
     
     
