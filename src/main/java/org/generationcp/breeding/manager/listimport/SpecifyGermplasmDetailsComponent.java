@@ -88,6 +88,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         this.source = source;
         this.accordion = accordion;
     }
+
+    public Table getGermplasmDetailsTable(){
+        return germplasmDetailsTable;
+    }
     
     public void setNextScreen(Component nextScreen){
         this.nextScreen = nextScreen;

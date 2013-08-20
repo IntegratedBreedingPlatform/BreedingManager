@@ -61,8 +61,13 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     public GermplasmListUploader(GermplasmImportFileComponent source) {
         this.source = source;
     }
-    
-    public OutputStream receiveUpload(String filename, String mimeType) { 
+
+
+    public ImportedGermplasmList getImportedGermplasmList() {
+        return importedGermplasmList;
+    }
+
+    public OutputStream receiveUpload(String filename, String mimeType) {
         tempFileName = source.getAccordion().getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_germplasmlist.xls";
         FileOutputStream fos = null;
         try {
