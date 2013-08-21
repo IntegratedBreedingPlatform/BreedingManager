@@ -92,7 +92,7 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
     private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
         
-        String title =  "<h1>Cross Study:</h1> <h1>Head-to-Head Comparison Query</h1> <h2>" + VERSION + "</h2>";
+        String title =  "<h1>Breeder Queries:</h1> <h1>Head-to-Head Comparison Query</h1> <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
         mainTitle.setStyleName("gcp-window-title");
         mainTitle.setContentMode(Label.CONTENT_XHTML);
