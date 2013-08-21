@@ -220,8 +220,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     public void updateLabels() {
         messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENTS);
         messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENTS);
-        messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_LIST_BUTTON_LABEL);
-        messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_LIST_BUTTON_LABEL);
+        messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_FEMALE_LIST_BUTTON_LABEL);
+        messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_MALE_LIST_BUTTON_LABEL);
         messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
         messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
