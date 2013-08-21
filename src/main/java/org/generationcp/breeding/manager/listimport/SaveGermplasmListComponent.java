@@ -130,15 +130,25 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("400px");
         List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmListTypes();
+        String firstId = null;
+              boolean hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
                   //method.getMcode()
+            if(firstId == null){
+                          firstId = userDefinedField.getFcode();
+                      }
             listTypeComboBox.addItem(userDefinedField.getFcode());
             listTypeComboBox.setItemCaption(userDefinedField.getFcode(), userDefinedField.getFname());
                   if(DEFAULT_LIST_TYPE.equalsIgnoreCase(userDefinedField.getFcode())){
                       listTypeComboBox.setValue(userDefinedField.getFcode());
+                      hasDefault = true;
                       //locationComboBox.setDescription(location.get);
                   }
               }
+        if(hasDefault == false && firstId != null){
+            listTypeComboBox.setValue(firstId);
+           }
+
         listTypeComboBox.setTextInputAllowed(false);
         listTypeComboBox.setImmediate(true);
         addComponent(listTypeComboBox, "top:70px;left:200px");

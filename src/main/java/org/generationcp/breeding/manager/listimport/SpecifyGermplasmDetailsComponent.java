@@ -166,16 +166,25 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         locationComboBox.setWidth("400px");
         List<Location> locationList = germplasmDataManager.getAllBreedingLocations();
         Map locationMap = new HashMap();
+        Integer firstId = null;
+        boolean hasDefault = false;
        for(Location location : locationList){
            //method.getMcode()
+           if(firstId == null){
+               firstId = location.getLocid();
+           }
            locationComboBox.addItem(location.getLocid());
            locationComboBox.setItemCaption(location.getLocid(), location.getLname());
            if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
                locationComboBox.setValue(location.getLocid());
+               hasDefault = true;
                //locationComboBox.setDescription(location.get);
            }
            locationMap.put(location.getLocid(), location.getLname());
        }
+        if(hasDefault == false && firstId != null){
+            locationComboBox.setValue(firstId);
+        }
         locationComboBox.setTextInputAllowed(false);
         locationComboBox.setImmediate(true);
         //locationComboBox.addListener(new MethodValueChangeListener(locationComboBox, locationMap));
@@ -188,15 +197,25 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
         List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
+         firstId = null;
+         hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
                   //method.getMcode()
+                    if(firstId == null){
+                          firstId = userDefinedField.getFldno();
+                      }
             nameTypeComboBox.addItem(userDefinedField.getFldno());
             nameTypeComboBox.setItemCaption(userDefinedField.getFldno(), userDefinedField.getFname());
                   if(DEFAULT_NAME_TYPE.equalsIgnoreCase(userDefinedField.getFname())){
                       nameTypeComboBox.setValue(userDefinedField.getFldno());
+                      hasDefault = true;
                       //locationComboBox.setDescription(location.get);
                   }
               }
+        if(hasDefault == false && firstId != null){
+                    locationComboBox.setValue(firstId);
+                }
+
         nameTypeComboBox.setTextInputAllowed(false);
         nameTypeComboBox.setImmediate(true);
 
