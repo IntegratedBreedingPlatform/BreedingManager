@@ -142,7 +142,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                   if(DEFAULT_LIST_TYPE.equalsIgnoreCase(userDefinedField.getFcode())){
                       listTypeComboBox.setValue(userDefinedField.getFcode());
                       hasDefault = true;
-                      //locationComboBox.setDescription(location.get);
                   }
               }
         if(hasDefault == false && firstId != null){
@@ -191,10 +190,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void backButtonClickAction(){
-        /*already here
-        System.out.println("== " + getGermplasmList().size());
-        System.out.println("== " + getNameList().size());
-        */
+       
         if(this.previousScreen != null){
             this.accordion.setSelectedTab(previousScreen);
         } else{
@@ -224,7 +220,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
 
     private boolean validateRequiredFields(){
-
 
           return
           GermplasmImportUtil.validateRequiredStringField(getWindow(), listNameText,

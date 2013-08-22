@@ -344,24 +344,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             this.nextButton.setEnabled(false);
         }
     }
-   /*
-    private void logFirstPedigreeUploadedToWorkbenchProjectActivity() throws MiddlewareQueryException {
-           //GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
-
-           User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-
-           ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-                   workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-                   "Import Germplasm List - 1st Pedigree Option",
-                   "Import Germplasm List - 1st Pedigree Option",user,new Date());
-           try {
-               workbenchDataManager.addProjectActivity(projAct);
-           } catch (MiddlewareQueryException e) {
-               LOG.error("Error with logging workbench activity.", e);
-               e.printStackTrace();
-           }
-       }
-                    */
+  
     public void backButtonClickAction(){
         if(this.previousScreen != null){
             this.accordion.setSelectedTab(previousScreen);

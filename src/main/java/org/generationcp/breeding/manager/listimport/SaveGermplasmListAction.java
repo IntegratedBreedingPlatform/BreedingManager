@@ -66,12 +66,6 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
-        //updateConstantFields(crossesMade);
-
-
-
-
-        //Integer germplasmId = germplasmListManager.addGermplasmList(germplasmList);
 
         // save the IBDB records
         List<Integer> germplasmIds = this.germplasmManager.addGermplasm(germplasmMap);
@@ -124,12 +118,6 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId,
             String designation, String groupName, String source) {
 
-
-                                 /*
-    	String groupNameSplit[]=groupName.split(",");
-    	String grpName=groupNameSplit[0];
-    	String seedSource=groupNameSplit[1];
-                                   */
             GermplasmListData germplasmListData = new GermplasmListData();
             germplasmListData.setList(list);
             germplasmListData.setGid(gid);

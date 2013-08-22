@@ -112,7 +112,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
                     for(int i = 0 ; i < importedGermplasms.size() ; i++){
                         ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
                         String source = importedGermplasmList.getFilename()+":"+(i+1);
-                        //System.out.println(importedGermplasm.getEntryId() + "  " + importedGermplasm.getDesig());
                         getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), "", importedGermplasm.getDesig(), "", source}, new Integer(i+1));
                     }
                     getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
