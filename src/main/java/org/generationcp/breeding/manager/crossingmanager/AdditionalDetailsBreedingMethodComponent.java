@@ -34,8 +34,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -109,6 +107,12 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
                 methodDescriptionLabel.setEnabled(true);
                 crossingMethodComboBox.setEnabled(true);
                 crossingMethodComboBox.focus();
+                try {
+		    populateBreedingMethod();
+		} catch (MiddlewareQueryException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
                 }else{
                 selectCrossingMethodLabel.setEnabled(false);
                 methodDescriptionLabel.setEnabled(false);
@@ -141,7 +145,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         crossingMethodComboBox.setImmediate(true);
         crossingMethodComboBox.setNullSelectionAllowed(false);
         // Change ComboBox back to TextField when it loses focus
-        crossingMethodComboBox.addListener(crossingMethodComboboxFocusListener);
         
         crossingMethodComboBox.addListener(new Property.ValueChangeListener() {
 	    
@@ -175,24 +178,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         methods = germplasmDataManager.getMethodsByType("GEN");
     }
 
-    private FocusListener crossingMethodComboboxFocusListener = new FocusListener() {
 
-        public void focus(FocusEvent event) {
-            try {
-            populateBreedingMethod();
-            crossingMethodComboBox.setImmediate(true);
-            crossingMethodComboBox.focus();
-            crossingMethodComboBox.requestRepaint();
-        } catch (MiddlewareQueryException e) {
-            LOG.error("Error in getting breeding methods.", e);
-        }
-        }
-    };
-    
-
-    
     public void populateBreedingMethod() throws MiddlewareQueryException {
 
+	crossingMethodComboBox.removeAllItems();
         mapMethods = new HashMap<String, Integer>();
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossingManagerUploader() !=null){
@@ -214,7 +203,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             crossingMethodComboBox.addItem(m.getMname());
             mapMethods.put(m.getMname(), new Integer(m.getMid()));
         }
-        crossingMethodComboBox.requestRepaint();
          //Integer mId = mapMethods.get(breedingMethodComboBox.getValue());
         
     }
