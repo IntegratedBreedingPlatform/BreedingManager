@@ -164,6 +164,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         locationComboBox = new ComboBox();
         locationComboBox.setWidth("400px");
+        locationComboBox.setNullSelectionAllowed(false);
         List<Location> locationList = germplasmDataManager.getAllBreedingLocations();
         Map locationMap = new HashMap();
         Integer firstId = null;
@@ -196,6 +197,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
+        nameTypeComboBox.setNullSelectionAllowed(false);
         List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
          firstId = null;
          hasDefault = false;

@@ -129,6 +129,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("400px");
+        listTypeComboBox.setNullSelectionAllowed(false);
         List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmListTypes();
         String firstId = null;
               boolean hasDefault = false;
