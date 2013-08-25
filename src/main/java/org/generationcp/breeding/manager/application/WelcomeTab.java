@@ -122,7 +122,6 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
     
     public void selectGermplasmButtonClickAction() {
         SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow();
-        
         this.getWindow().addWindow(selectListWindow);
     }
 

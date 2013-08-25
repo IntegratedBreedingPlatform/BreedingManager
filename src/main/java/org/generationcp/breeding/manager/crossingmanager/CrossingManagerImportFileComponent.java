@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.listimport.SelectGermplasmWindow;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.CrossingManagerUtil;
@@ -223,7 +224,6 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                 }
             }
         });
-        
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
     }
     
