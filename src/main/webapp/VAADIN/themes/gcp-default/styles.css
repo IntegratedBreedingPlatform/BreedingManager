@@ -152,3 +152,7 @@
 .v-select-select option:nth-child(even){
 	background: #e0e0e0;
 }
+
+.v-caption-bold {
+	font-weight: bold;
+}

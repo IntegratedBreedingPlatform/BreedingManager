@@ -31,6 +31,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -72,6 +73,8 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     private Germplasm germplasm;
     private SpecifyGermplasmDetailsComponent source;
     
+    private Label selectGermplasmLabel;
+    
     public SelectGermplasmWindow() {
         this.parentList = new ListSelect();
     }
@@ -96,6 +99,8 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     
     protected void initializeComponents() {
         mainLayout = new AbsoluteLayout();
+        selectGermplasmLabel = new Label();
+        selectGermplasmLabel.setStyleName("bold");
         buttonArea = new HorizontalLayout();
         cancelButton = new Button(); 
         cancelButton.setData(CANCEL_BUTTON_ID);
@@ -144,13 +149,14 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         setWidth("650px");
         setHeight("360px");
         setResizable(false);
-        setCaption("Multiple Germplasm Entries found with the name " + this.germplasmName);
+        
         setClosable(false);
         
         // center window within the browser
         center();
         
-        mainLayout.addComponent(germplasmTable, "top:50px; left:50px;");
+        mainLayout.addComponent(selectGermplasmLabel, "top:40px; left:50px;");
+        mainLayout.addComponent(germplasmTable, "top:55px; left:50px;");
         
         buttonArea.setMargin(false, true, false, true);
         buttonArea.setSpacing(true);
@@ -191,8 +197,9 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 
     @Override
     public void updateLabels() {
+        selectGermplasmLabel.setCaption("Multiple Germplasm Records found with the name " + this.germplasmName);
+        messageSource.setCaption(this, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
         messageSource.setCaption(doneButton, Message.DONE_LABEL);
-        messageSource.setCaption(germplasmTable, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
     }
 
 
