@@ -62,17 +62,47 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
      * @return id of new Germplasm List created
      * @throws MiddlewareQueryException
      */
-    public Integer saveRecords(GermplasmList germplasmList, LinkedHashMap<Germplasm, Name> germplasmMap, String filename)throws MiddlewareQueryException{
+    public Integer saveRecords(GermplasmList germplasmList, LinkedHashMap<Germplasm, Name> germplasmMap, String filename, List<Integer> doNotCreateGermplasmsWithId)throws MiddlewareQueryException{
 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
 
+        //-- ORIG --
         // save the IBDB records
-        List<Integer> germplasmIds = this.germplasmManager.addGermplasm(germplasmMap);
-
+        //List<Integer> germplasmIds = this.germplasmManager.addGermplasm(germplasmMap);
+        //-- END --
+        
+        
+        //
+        List<Integer> germplasmIds = new ArrayList();
+        try {
+            for (Germplasm germplasm : germplasmMap.keySet()) {
+                Name name = germplasmMap.get(germplasm);
+                name.setNid(null);
+                name.setNstat(Integer.valueOf(1));
+                
+                if(doNotCreateGermplasmsWithId.contains(germplasm.getGid())){
+                    //If do not create new germplasm
+                    germplasm = germplasmManager.getGermplasmByGID(germplasm.getGid());
+                    germplasmIds.add(germplasm.getGid());
+                    name.setGermplasmId(germplasm.getGid());
+                    germplasmManager.addGermplasmName(name);
+                } else {
+                    //Create new germplasm
+                    //Integer negativeId = germplasmManager.getN .getNegativeId("gid");
+                    germplasm.setGid(null);
+                    germplasm.setLgid(Integer.valueOf(0));
+                    germplasmIds.add(germplasmManager.addGermplasm(germplasm, name));
+                }
+            }
+        } catch (Exception e) {
+        }
+        
         //GermplasmListData germplasmListData = new GermplasmListData();
         //germplasmList.setListData();
 
+        System.out.println("GIDs saved: "+germplasmIds);
+        
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmMap, germplasmIds, list, filename);
 

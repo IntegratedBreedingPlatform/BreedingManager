@@ -79,7 +79,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private GermplasmListUploader germplasmListUploader;
 
     private List<Germplasm> germplasmList = new ArrayList();
-    private List<Name> nameList = new ArrayList();    
+    private List<Name> nameList = new ArrayList();
+    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -291,6 +292,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             
             germplasmList = new ArrayList(); 
             nameList = new ArrayList();
+            doNotCreateGermplasmsWithId = new ArrayList();
             
             if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
                 //meaning 1st pedigree
@@ -427,6 +429,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
                             List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
                             germplasm.setGid(foundGermplasm.get(0).getGid());
+                            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
                         } else {
                             //If no matches found
                             germplasm.setGid(i);
@@ -471,8 +474,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
            if(nextScreen instanceof SaveGermplasmListComponent){
                ((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
+               ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
                ((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
                ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
+               
                 //for 909
                ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate());
            }
@@ -529,6 +534,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("3")){
             //Add logic here to not insert new record on DB when saved, maybe use existing GID?
             importedGermplasm.setGid(selectedGermplasm.getGid());
+            doNotCreateGermplasmsWithId.add(selectedGermplasm.getGid());
         }
     }
 }

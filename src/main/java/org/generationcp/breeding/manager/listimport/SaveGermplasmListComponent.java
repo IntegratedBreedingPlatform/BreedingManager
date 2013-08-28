@@ -12,6 +12,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -68,9 +69,12 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     @Autowired
     private GermplasmListManager germplasmListManager;
     @Autowired
+    private GermplasmDataManager germplasmDataManager;
+    @Autowired
     private WorkbenchDataManager workbenchDataManager;
     private String filename;
 
+    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
@@ -256,11 +260,28 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              germplasmList.setParent(null);
              germplasmList.setStatus(1);
 
+             System.out.println("DoNotCreateGermplasmsWithId : "+doNotCreateGermplasmsWithId);
+             
              LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
              for(int i = 0 ; i < this.getGermplasmList().size() ; i++){
-                 germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
+                 if(doNotCreateGermplasmsWithId.contains(this.getGermplasmList().get(i).getGid())){
+                     //Get germplasm using temporarily set GID, then create map
+                     Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(this.getGermplasmList().get(i).getGid());
+                     germplasmNameMap.put(germplasmToBeUsed, this.getNameList().get(i));
+                     
+                     List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
+                     germplasmListToBeUsed.set(i, germplasmToBeUsed);
+                     this.setGermplasmList(germplasmListToBeUsed);
+                     
+                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was part of the do not add list");
+                 } else {
+                     //Create map from data from previous screen
+                     germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
+                     
+                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was NOT part of the do not add list");
+                 }
              }
-             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameMap, getFilename());
+             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameMap, getFilename(), doNotCreateGermplasmsWithId);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
 
@@ -283,5 +304,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     
     public GermplasmImportMain getSource() {
         return source;
+    }
+
+    public void setDoNotCreateGermplasmsWithId(List<Integer> doNotCreateGermplasmsWithId) {
+        this.doNotCreateGermplasmsWithId = doNotCreateGermplasmsWithId;
     }    
 }
