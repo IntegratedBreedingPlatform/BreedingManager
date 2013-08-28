@@ -348,6 +348,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                 try{
                     WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
                     
+                    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+                    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+                    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());                    
+                    
                     SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
                     String sDate = formatter.format(germplasmDateField.getValue());
 
@@ -360,7 +364,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         
                         Germplasm germplasm = new Germplasm();
                         germplasm.setGid(i);
-                        germplasm.setUserId(data.getUserId());
+                        germplasm.setUserId(ibdbUserId);
                         germplasm.setLocationId((Integer)locationComboBox.getValue());
                         germplasm.setGdate(dateIntValue);
                         germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
@@ -379,7 +383,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             germplasm.setGpid2(0);
                         }
                         
-                        germplasm.setUserId(data.getUserId()); 
+                        germplasm.setUserId(ibdbUserId); 
                         germplasm.setLgid(0);
                         germplasm.setGrplce(0);
                         germplasm.setReferenceId(0);
@@ -390,7 +394,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         //name.setNid();
                         //name.setGermplasmId();
                         name.setTypeId((Integer)nameTypeComboBox.getValue());
-                        name.setUserId(data.getUserId());
+                        name.setUserId(ibdbUserId);
                         name.setNval(importedGermplasm.getDesig());
                         name.setLocationId((Integer)locationComboBox.getValue());
                         name.setNdate(dateIntValue);
@@ -411,7 +415,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                 //meaning 3rd pedigree
                 try{
                     WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
-
+                    
+                    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+                    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+                    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
+                    
                     SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
                     String sDate = formatter.format(germplasmDateField.getValue());
 
@@ -435,7 +443,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             germplasm.setGid(i);
                         }
                         
-                        germplasm.setUserId(data.getUserId());
+                        germplasm.setUserId(ibdbUserId);
                         germplasm.setLocationId((Integer)locationComboBox.getValue());
                         germplasm.setGdate(dateIntValue);
                         germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
@@ -453,7 +461,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         //name.setNid();
                         //name.setGermplasmId();
                         name.setTypeId((Integer)nameTypeComboBox.getValue());
-                        name.setUserId(data.getUserId());
+                        name.setUserId(ibdbUserId);
                         name.setNval(importedGermplasm.getDesig());
                         name.setLocationId((Integer)locationComboBox.getValue());
                         name.setNdate(dateIntValue);
