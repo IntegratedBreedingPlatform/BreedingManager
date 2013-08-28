@@ -289,6 +289,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     public void nextButtonClickAction(){
         if(this.nextScreen != null){
             
+            germplasmList = new ArrayList(); 
+            nameList = new ArrayList();
+            
             if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
                 //meaning 1st pedigree
                 //we should create the germplasm and named pojos here
