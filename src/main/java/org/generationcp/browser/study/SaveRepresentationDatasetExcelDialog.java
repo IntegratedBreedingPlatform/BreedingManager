@@ -25,7 +25,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
+//import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -82,7 +82,8 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
     private StudyDataManager studyDataManager;
     
     @Autowired
-    private TraitDataManager traitDataManager;
+//    private TraitDataManager traitDataManager;
+    private Object traitDataManager;
     
     public SaveRepresentationDatasetExcelDialog(Window mainWindow, Window dialogWindow, Integer studyId, Integer representationId, Application application) {
         this.dialogWindow = dialogWindow;
@@ -225,12 +226,12 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
         }   
 
         DatasetExporter datasetExporter;
-        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyId, representationId);
-        try {
-            datasetExporter.exportToFieldBookExcel(uploadPath + fileName);
-        } catch (DatasetExporterException e) {
-            MessageNotifier.showError(mainWindow.getWindow(), e.getMessage(), "");
-        }
+//        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyId, representationId);
+//        try {
+//            datasetExporter.exportToFieldBookExcel(uploadPath + fileName);
+//        } catch (DatasetExporterException e) {
+//            MessageNotifier.showError(mainWindow.getWindow(), e.getMessage(), "");
+//        }
         
         closeDialog();
         MessageNotifier.showMessage(mainWindow.getWindow(), fileName,

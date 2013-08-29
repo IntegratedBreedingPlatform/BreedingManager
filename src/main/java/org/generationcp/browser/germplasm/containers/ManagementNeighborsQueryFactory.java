@@ -13,7 +13,6 @@
  **************************************************************/
 package org.generationcp.browser.germplasm.containers;
 
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
@@ -31,14 +30,12 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
  */
 public class ManagementNeighborsQueryFactory implements QueryFactory{
 
-    private GermplasmDataManager dataManager;
     private Integer gid;
     @SuppressWarnings("unused")
     private QueryDefinition definition;
 
-    public ManagementNeighborsQueryFactory(GermplasmDataManager dataManager, Integer gid) {
+    public ManagementNeighborsQueryFactory(Integer gid) {
         super();
-        this.dataManager = dataManager;
         this.gid = gid;
     }
 
@@ -48,7 +45,7 @@ public class ManagementNeighborsQueryFactory implements QueryFactory{
      */
     @Override
     public Query constructQuery(Object[] sortPropertyIds, boolean[] sortStates) {
-        return new ManagementNeighborsQuery(dataManager, gid);
+        return new ManagementNeighborsQuery(gid);
     }
 
     @Override

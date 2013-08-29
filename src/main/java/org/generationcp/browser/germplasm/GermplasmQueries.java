@@ -18,12 +18,17 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.middleware.domain.dms.StudyReference;
+import org.generationcp.middleware.domain.search.StudyResultSet;
+import org.generationcp.middleware.domain.search.filter.GidStudyQueryFilter;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.GetGermplasmByNameModes;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -31,13 +36,8 @@ import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.report.LotReportRow;
-import org.generationcp.middleware.v2.domain.StudyReference;
-import org.generationcp.middleware.v2.manager.api.StudyDataManager;
-import org.generationcp.middleware.v2.search.StudyResultSet;
-import org.generationcp.middleware.v2.search.filter.GidStudyQueryFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -54,12 +54,15 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
-
+    
     @Autowired
-    private StudyDataManager studyDataManagerV2;
+    private StudyDataManager studyDataManager;
 
     @Autowired
     private InventoryDataManager inventoryDataManager;
+    
+    @Autowired
+    private PedigreeDataManager pedigreeDataManager;
 
     public GermplasmQueries() {
 
@@ -189,11 +192,13 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         try {
             ArrayList<GermplasmDetailModel> toreturn = new ArrayList<GermplasmDetailModel>();
             List<Germplasm> generationHistoryList = new ArrayList<Germplasm>();
-            generationHistoryList = germplasmDataManager.getGenerationHistory(new Integer(gid));
+           
+            generationHistoryList = pedigreeDataManager.getGenerationHistory(new Integer(gid));
             for (Germplasm g : generationHistoryList) {
                 GermplasmDetailModel genHistory = new GermplasmDetailModel();
+                String name = g.getPreferredName() != null ? g.getPreferredName().getNval() : "";
                 genHistory.setGid(g.getGid());
-                genHistory.setGermplasmPreferredName(getPreferredName(g));
+                genHistory.setGermplasmPreferredName(name);
                 toreturn.add(genHistory);
             }
             return toreturn;
@@ -324,7 +329,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
     public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws InternationalizableException {
         try {
-            return germplasmDataManager.generatePedigreeTree(gid, i);
+            return pedigreeDataManager.generatePedigreeTree(gid, i);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
         }
@@ -332,7 +337,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     
     public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines) throws InternationalizableException {
         try {
-            return germplasmDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
+            return pedigreeDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
         }
@@ -341,7 +346,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     public GermplasmPedigreeTree getDerivativeNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward)
             throws InternationalizableException {
         try {
-            return germplasmDataManager.getDerivativeNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
+            return pedigreeDataManager.getDerivativeNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DERIVATIVE_NEIGHBORHOOD);
         }
@@ -351,7 +356,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     public GermplasmPedigreeTree getMaintenanceNeighborhood(Integer gid, int numberOfStepsBackward, int numberOfStepsForward)
             throws InternationalizableException {
         try {
-            return germplasmDataManager.getMaintenanceNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
+            return pedigreeDataManager.getMaintenanceNeighborhood(gid, numberOfStepsBackward, numberOfStepsForward);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DERIVATIVE_NEIGHBORHOOD);
         }
@@ -384,7 +389,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
         List<StudyReference> results = new ArrayList<StudyReference>();
         try {
             GidStudyQueryFilter gidFilter = new GidStudyQueryFilter(gid);
-            StudyResultSet resultSet = studyDataManagerV2.searchStudies(gidFilter, 50);
+            StudyResultSet resultSet = studyDataManager.searchStudies(gidFilter, 50);
             while(resultSet.hasMore()){
                 StudyReference reference = resultSet.next();
                 results.add(reference);

@@ -21,8 +21,10 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.dms.DatasetReference;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.v2.domain.DatasetReference;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,7 +50,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private static final long serialVersionUID = 116672292965099233L;
     
     private final Accordion studyInfoAccordion;
-    private final org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private final StudyDataManagerImpl studyDataManager;
     private final Integer studyId;
     private final Accordion accordion;
     private ListSelect datasetList;
@@ -58,9 +60,9 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyEffectComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2, int studyId, Accordion accordion, boolean fromUrl) {
+    public StudyEffectComponent(StudyDataManagerImpl studyDataManager, int studyId, Accordion accordion, boolean fromUrl) {
         this.studyInfoAccordion = accordion;
-        this.studyDataManagerV2 = studyDataManagerV2;
+        this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.accordion = accordion;
         this.fromUrl = fromUrl;
@@ -78,7 +80,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
         String tabTitle = messageSource.getMessage(Message.DATASET_OF_TEXT) + datasetName; // "Dataset of "
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
-            RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManagerV2, datasetId, tabTitle,
+            RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, datasetId, tabTitle,
                     studyId, fromUrl);
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
@@ -99,7 +101,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
         
         List<DatasetReference> datasetNodes = new ArrayList<DatasetReference>();
         try {
-            datasetNodes = studyDataManagerV2.getDatasetReferences(studyId);
+            datasetNodes = studyDataManager.getDatasetReferences(studyId);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_REPRESENTATION_BY_STUDY_ID);
         }

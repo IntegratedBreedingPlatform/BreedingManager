@@ -12,8 +12,6 @@
 
 package org.generationcp.browser.germplasm;
 
-import java.util.ArrayList;
-
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
@@ -22,22 +20,16 @@ import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphCompone
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -88,9 +80,6 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
     
     @Autowired
     private GermplasmListManager germplasmListManager;
-    
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -164,12 +153,12 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(SEVEN_TAB)) {
                 if (layoutGroupRelatives.getComponentCount() == 0) {
-                    layoutGroupRelatives.addComponent(new GermplasmGroupRelativesComponent(germplasmDataManager, gid));
+                    layoutGroupRelatives.addComponent(new GermplasmGroupRelativesComponent(gid));
                     layoutGroupRelatives.setMargin(true);
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(EIGHT_TAB)) {
                 if (layoutManagementNeighbors.getComponentCount() == 0) {
-                    layoutManagementNeighbors.addComponent(new GermplasmManagementNeighborsComponent(germplasmDataManager, gid));
+                    layoutManagementNeighbors.addComponent(new GermplasmManagementNeighborsComponent(gid));
                     layoutManagementNeighbors.setMargin(true);
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(NINE_TAB)) {

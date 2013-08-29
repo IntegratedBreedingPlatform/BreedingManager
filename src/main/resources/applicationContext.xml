@@ -111,11 +111,17 @@
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
     
+    <bean id="pedigreeDataManager" class="org.generationcp.middleware.manager.PedigreeDataManagerImpl">
+        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
+        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
+        <property name="germplasmDataManager" ref="germplasmDataManager"/>
+    </bean>
+          
     <bean id="germplasmListManager" class="org.generationcp.middleware.manager.GermplasmListManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
-    
+        
     <bean id="inventoryDataManager" class="org.generationcp.middleware.manager.InventoryDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
@@ -126,20 +132,18 @@
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
     
-    <bean id="studyDataManagerV2" class="org.generationcp.middleware.v2.manager.StudyDataManagerImpl">
+    
+    <bean id="ontologyDataManager" class="org.generationcp.middleware.manager.OntologyDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
     
-    <bean id="ontologyDataManager" class="org.generationcp.middleware.v2.manager.OntologyDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
+    <!--  
     <bean id="traitDataManager" class="org.generationcp.middleware.manager.TraitDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
+    -->
     
     <bean id="userDataManager" class="org.generationcp.middleware.manager.UserDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>

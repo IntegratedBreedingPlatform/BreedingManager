@@ -16,26 +16,14 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.util.PoiUtil;
+import org.generationcp.middleware.domain.dms.DataSet;
+import org.generationcp.middleware.domain.dms.Experiment;
+import org.generationcp.middleware.domain.dms.Variable;
+import org.generationcp.middleware.domain.dms.VariableList;
+import org.generationcp.middleware.domain.dms.VariableType;
+import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
-import org.generationcp.middleware.pojos.CharacterDataElement;
-import org.generationcp.middleware.pojos.CharacterLevelElement;
-import org.generationcp.middleware.pojos.DatasetCondition;
-import org.generationcp.middleware.pojos.Factor;
-import org.generationcp.middleware.pojos.NumericDataElement;
-import org.generationcp.middleware.pojos.NumericLevelElement;
-import org.generationcp.middleware.pojos.Scale;
-import org.generationcp.middleware.pojos.Study;
-import org.generationcp.middleware.pojos.Trait;
-import org.generationcp.middleware.pojos.TraitMethod;
-import org.generationcp.middleware.pojos.Variate;
-import org.generationcp.middleware.v2.domain.DataSet;
-import org.generationcp.middleware.v2.domain.Experiment;
-import org.generationcp.middleware.v2.domain.Variable;
-import org.generationcp.middleware.v2.domain.VariableList;
-import org.generationcp.middleware.v2.domain.VariableType;
-import org.generationcp.middleware.v2.domain.VariableTypeList;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 
 
 public class DatasetExporter {
@@ -43,29 +31,28 @@ public class DatasetExporter {
     private static final int CONDITION_LIST_HEADER_ROW_INDEX = 7;
     private static final String NUMERIC_VARIABLE = "Numeric variable";
     
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
-    private StudyDataManager studyDataManager;
-    private TraitDataManager traitDataManager;
+    private StudyDataManagerImpl studyDataManager;
+//    private Object traitDataManager;
     private Integer studyId;
     private Integer datasetId;
     
-    public DatasetExporter(StudyDataManager studyDataManager, TraitDataManager traitDataManager, Integer studyId, Integer representationId) {
+    public DatasetExporter(StudyDataManagerImpl studyDataManager, Object traitDataManager, Integer studyId, Integer representationId) {
         this.studyDataManager = studyDataManager;
-        this.traitDataManager = traitDataManager;
+//        this.traitDataManager = traitDataManager;
         this.studyId = studyId;
         this.datasetId = representationId;
     }
-    
-    public DatasetExporter(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2, Integer studyId, Integer datasetId){
-        this.studyDataManagerV2 = studyDataManagerV2;
+   
+    public DatasetExporter(StudyDataManagerImpl studyDataManager, Integer studyId, Integer datasetId){
+        this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.datasetId = datasetId;
     }
     
     public FileOutputStream exportToFieldBookExcelUsingIBDBv2(String filename) throws DatasetExporterException {
         
-        if(studyDataManagerV2 == null){
-            throw new DatasetExporterException("studyDataManagerV2 should not be null.");
+        if(studyDataManager == null){
+            throw new DatasetExporterException("studyDataManager should not be null.");
         }
         
         //create workbook
@@ -106,10 +93,10 @@ public class DatasetExporter {
         
         //write the details on the first sheet - description
         //get the study first
-        org.generationcp.middleware.v2.domain.Study study = null;
+        org.generationcp.middleware.domain.dms.Study study = null;
         
         try {
-            study = this.studyDataManagerV2.getStudy(this.studyId);
+            study = this.studyDataManager.getStudy(this.studyId);
         } catch (MiddlewareQueryException ex) {
             throw new DatasetExporterException("Error with getting Study with id: " + this.studyId, ex);
         }
@@ -250,7 +237,7 @@ public class DatasetExporter {
             
             DataSet dataset = null;
             try {
-                dataset = this.studyDataManagerV2.getDataSet(this.datasetId);
+                dataset = this.studyDataManager.getDataSet(this.datasetId);
             } catch (MiddlewareQueryException ex) {
                 throw new DatasetExporterException("Error with getting Dataset with id: " + this.studyId, ex);
             }
@@ -395,7 +382,7 @@ public class DatasetExporter {
             int sheetRowIndex = 1;
             
             try {
-                totalNumberOfRows = this.studyDataManagerV2.countExperiments(this.datasetId);
+                totalNumberOfRows = this.studyDataManager.countExperiments(this.datasetId);
             } catch(Exception ex) {
                 throw new DatasetExporterException("Error with getting count of experiments for study - " + name 
                         + ", dataset - " + this.datasetId, ex); 
@@ -404,7 +391,7 @@ public class DatasetExporter {
             for(int start = 0; start < totalNumberOfRows; start = start + pageSize) {
                 List<Experiment> experiments = new ArrayList<Experiment>();
                 try {
-                    experiments = this.studyDataManagerV2.getExperiments(this.datasetId, start, pageSize);
+                    experiments = this.studyDataManager.getExperiments(this.datasetId, start, pageSize);
                 } catch(Exception ex) {
                     throw new DatasetExporterException("Error with getting ounit ids of study - " + name 
                             + ", representation - " + this.datasetId, ex); 
@@ -519,6 +506,7 @@ public class DatasetExporter {
         }
     }
     
+    /*
     public FileOutputStream exportToFieldBookExcel(String filename) throws DatasetExporterException {
         //create workbook
         Workbook workbook = new HSSFWorkbook();
@@ -537,7 +525,7 @@ public class DatasetExporter {
         Study study = null;
         
         try {
-            study = this.studyDataManager.getStudyByID(this.studyId);
+            study = this.studyDataManager.getStudy(this.studyId);
         } catch (MiddlewareQueryException ex) {
             throw new DatasetExporterException("Error with getting Study with id: " + this.studyId, ex);
         }
@@ -546,12 +534,13 @@ public class DatasetExporter {
             //get the needed study details
             String name = study.getName();
             String title = study.getTitle();
-            Integer pmkey = study.getProjectKey();
+            Integer pmkey = 0;//study.getProjectKey();
             String objective = study.getObjective();
             Integer startDate = study.getStartDate();
             Integer endDate = study.getEndDate();
             String type = study.getType();
             
+              
             //add to the sheet
             Row row0 = descriptionSheet.createRow(0);
             row0.createCell(0).setCellValue("STUDY");
@@ -616,6 +605,7 @@ public class DatasetExporter {
             List<DatasetCondition> conditions = new ArrayList<DatasetCondition>();
             try {
                 conditions.addAll(this.studyDataManager.getConditionsByRepresentationId(this.datasetId));
+             
             } catch(Exception ex) {
                 throw new DatasetExporterException("Error with getting conditions of study - " + name 
                         + ", representation - " + this.datasetId, ex);
@@ -633,7 +623,7 @@ public class DatasetExporter {
                 
                 String conditionLabel = "";
                 try {
-                    conditionLabel = this.studyDataManager.getMainLabelOfFactorByFactorId(condition.getFactorId());
+                    conditionLabel = "conditionLabel";//this.studyDataManager.getMainLabelOfFactorByFactorId(condition.getFactorId());
                 } catch (MiddlewareQueryException ex) {
                     conditionLabel = "";
                 }
@@ -1001,5 +991,6 @@ public class DatasetExporter {
         
         return toreturn;
     }
-    
+    */
+   
 }

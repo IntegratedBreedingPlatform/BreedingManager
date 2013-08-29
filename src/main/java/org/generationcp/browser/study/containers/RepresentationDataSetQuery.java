@@ -19,9 +19,10 @@ import java.util.Map;
 
 import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.v2.domain.Experiment;
-import org.generationcp.middleware.v2.domain.Variable;
-import org.generationcp.middleware.v2.domain.VariableList;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.domain.dms.Experiment;
+import org.generationcp.middleware.domain.dms.Variable;
+import org.generationcp.middleware.domain.dms.VariableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -46,7 +47,7 @@ public class RepresentationDataSetQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDataSetQuery.class);
 
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private StudyDataManagerImpl studyDataManager;
     private Integer datasetId;
     private List<String> columnIds;
     private boolean fromUrl;    //this is true if this component is created by accessing the Study Details page directly from the URL
@@ -60,10 +61,10 @@ public class RepresentationDataSetQuery implements Query{
      * @param datasetId
      * @param columnIds
      */
-    public RepresentationDataSetQuery(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2, Integer datasetId, 
+    public RepresentationDataSetQuery( StudyDataManagerImpl studyDataManager, Integer datasetId, 
             List<String> columnIds, boolean fromUrl) {
         super();
-        this.studyDataManagerv2 = studyDataManagerV2;
+        this.studyDataManager = studyDataManager;
         this.datasetId = datasetId;
         this.columnIds = columnIds;
         this.fromUrl = fromUrl;
@@ -98,7 +99,7 @@ public class RepresentationDataSetQuery implements Query{
         List<Experiment> experiments = new ArrayList<Experiment>();
         
         try {
-            experiments = studyDataManagerv2.getExperiments(datasetId, start, numOfRows);
+            experiments = studyDataManager.getExperiments(datasetId, start, numOfRows);
         } catch (MiddlewareQueryException ex) {
             // Log error in log file
             LOG.error("Error with getting ounitids for representation: " + datasetId + "\n" + ex.toString());
@@ -191,7 +192,7 @@ public class RepresentationDataSetQuery implements Query{
     public int size() {
         if(this.size == -1){
             try {
-                Long count = Long.valueOf(studyDataManagerv2.countExperiments(this.datasetId));
+                Long count = Long.valueOf(studyDataManager.countExperiments(this.datasetId));
                 this.size = count.intValue(); 
             } catch (MiddlewareQueryException ex) {
                 LOG.error("Error with getting experiments for dataset: " + datasetId + "\n" + ex.toString());

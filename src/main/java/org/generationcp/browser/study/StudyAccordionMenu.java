@@ -17,6 +17,7 @@ import org.generationcp.browser.study.listeners.StudySelectedTabChangeListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,7 +44,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private VerticalLayout layoutFactor;
     private VerticalLayout layoutEffect;
 
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private StudyDataManagerImpl studyDataManager;
     private StudyDetailComponent studyDetailComponent;
 
     private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
@@ -52,9 +53,9 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private SimpleResourceBundleMessageSource messageSource;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent,
-            org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, boolean fromUrl) {
+            StudyDataManagerImpl studyDataManager, boolean fromUrl) {
         this.studyId = studyId;
-        this.studyDataManagerv2 = studyDataManagerv2;
+        this.studyDataManager = studyDataManager;
         this.studyDetailComponent = studyDetailComponent;
         this.fromUrl = fromUrl;
     }
@@ -66,21 +67,21 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             //if (tab.getCaption().equals(layoutFactor.getCaption())) { // "Factors"
             if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_FACTORS)) {
                 if (layoutFactor.getComponentCount() == 0) {
-                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManagerv2, studyId));
+                    layoutFactor.addComponent(new StudyFactorComponent(studyDataManager, studyId));
                     layoutFactor.setMargin(true);
                     layoutFactor.setSpacing(true);
                 }
             }// else if (tab.getCaption().equals(layoutVariate.getCaption())) { // "Variates"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_VARIATES)) {
                 if (layoutVariate.getComponentCount() == 0) {
-                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManagerv2, studyId));
+                    layoutVariate.addComponent(new StudyVariateComponent(studyDataManager, studyId));
                     layoutVariate.setMargin(true);
                     layoutVariate.setSpacing(true);
                 }
             }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
                 if (layoutEffect.getComponentCount() == 0) {
-                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManagerv2, studyId, this, fromUrl));
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, fromUrl));
                 }
             }
         }

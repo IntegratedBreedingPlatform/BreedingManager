@@ -30,20 +30,18 @@ public class GermplasmManagementNeighborsComponent extends Table implements Init
 
     private static final long serialVersionUID = 1L;
     
-    private GermplasmDataManager dataManager;
     private Integer gid;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmManagementNeighborsComponent(GermplasmDataManager dataManager, Integer gid) {
-        this.dataManager = dataManager;
+    public GermplasmManagementNeighborsComponent(Integer gid) {
         this.gid = gid;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ManagementNeighborsQueryFactory factory = new ManagementNeighborsQueryFactory(dataManager, gid);
+        ManagementNeighborsQueryFactory factory = new ManagementNeighborsQueryFactory(gid);
         LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table

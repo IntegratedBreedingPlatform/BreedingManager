@@ -18,14 +18,16 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.v2.domain.Study;
-import org.generationcp.middleware.v2.domain.StudyReference;
-import org.generationcp.middleware.v2.domain.Variable;
-import org.generationcp.middleware.v2.domain.VariableList;
-import org.generationcp.middleware.v2.domain.VariableType;
-import org.generationcp.middleware.v2.domain.VariableTypeList;
-import org.generationcp.middleware.v2.search.StudyResultSet;
-import org.generationcp.middleware.v2.search.filter.BrowseStudyQueryFilter;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.domain.dms.Study;
+import org.generationcp.middleware.domain.dms.StudyReference;
+import org.generationcp.middleware.domain.dms.Variable;
+import org.generationcp.middleware.domain.dms.VariableList;
+import org.generationcp.middleware.domain.dms.VariableType;
+import org.generationcp.middleware.domain.dms.VariableTypeList;
+import org.generationcp.middleware.domain.search.StudyResultSet;
+import org.generationcp.middleware.domain.search.filter.BrowseStudyQueryFilter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +53,11 @@ public class StudyDataIndexContainer{
     public static final String STUDY_ID = "ID";
     public static final String STUDY_NAME = "NAME";
 
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private StudyDataManagerImpl studyDataManager;
     private int studyId;
 
-    public StudyDataIndexContainer(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) {
-        this.studyDataManagerv2 = studyDataManagerv2;
+    public StudyDataIndexContainer(StudyDataManagerImpl studyDataManager, int studyId) {
+        this.studyDataManager = studyDataManager;
         this.studyId = studyId;
     }
 
@@ -72,10 +74,10 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(DATATYPE, String.class, "");
             container.addContainerProperty(VALUE, String.class, "");
 
-            Study study = studyDataManagerv2.getStudy(studyId);
+            Study study = studyDataManager.getStudy(studyId);
             VariableList variableList = study.getConditions();
             List<Variable> conditions = variableList.getVariables();
-            VariableTypeList factors = studyDataManagerv2.getAllStudyFactors(Integer.valueOf(studyId));
+            VariableTypeList factors = studyDataManager.getAllStudyFactors(Integer.valueOf(studyId));
             List<VariableType> factorDetails = factors.getVariableTypes();
             for(VariableType factorDetail : factorDetails){
                 String name = factorDetail.getLocalName();
@@ -135,10 +137,10 @@ public class StudyDataIndexContainer{
             container.addContainerProperty(DATATYPE, String.class, "");
             container.addContainerProperty(VALUE, String.class, "");
 
-            Study study = studyDataManagerv2.getStudy(studyId);
+            Study study = studyDataManager.getStudy(studyId);
             VariableList variableList = study.getConstants();
             List<Variable> constants = variableList.getVariables();
-            VariableTypeList variates = studyDataManagerv2.getAllStudyVariates(Integer.valueOf(studyId));
+            VariableTypeList variates = studyDataManager.getAllStudyVariates(Integer.valueOf(studyId));
             List<VariableType> variateDetails = variates.getVariableTypes(); 
             for(VariableType variateDetail : variateDetails){
                 String name = variateDetail.getLocalName();
@@ -197,7 +199,7 @@ public class StudyDataIndexContainer{
             filter.setCountry(country);
             filter.setSeason(season);
             filter.setStartDate(date);
-            StudyResultSet studyResultSet = studyDataManagerv2.searchStudies(filter, 50);
+            StudyResultSet studyResultSet = studyDataManager.searchStudies(filter, 50);
             
             if(studyResultSet != null){
                 while(studyResultSet.hasMore()){

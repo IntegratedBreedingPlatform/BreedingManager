@@ -24,7 +24,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.NumericRange;
-import org.generationcp.middleware.pojos.TraitCombinationFilter;
+//import org.generationcp.middleware.pojos.TraitCombinationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -369,89 +369,89 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
         btnSearch.setEnabled(true);
     }
 
-    private ArrayList<TraitCombinationFilter> getSearchFilters() {
-
-        ArrayList<TraitCombinationFilter> tcf = new ArrayList<TraitCombinationFilter>();
-        double start = 0;
-        double end = 0;
-
-        for (@SuppressWarnings("rawtypes")
-        Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
-
-            int iid = (Integer) i.next();
-            Item item = criteriaTable.getItem(iid);
-            int traitID = Integer.valueOf(item.getItemProperty("traitID").toString());
-            int scaleID = Integer.valueOf(item.getItemProperty("scaleID").toString());
-            int methodID = Integer.valueOf(item.getItemProperty("methodID").toString());
-            String scaleType = item.getItemProperty("scaleType").toString();
-            String criteriaValue = item.getItemProperty("criteriaValue").toString();
-            String scaleDiscreteValue = item.getItemProperty("scaleDiscreteValue").toString();
-
-            if (scaleType.equals("discrete")) {
-                String valueToUse = scaleDiscreteValue != null && !scaleDiscreteValue.equals("") ? scaleDiscreteValue : criteriaValue;
-                valueToUse = valueToUse.trim();
-
-                // if the value can be a number add a filter with value as a
-                // double
-                try {
-                    Double valueToUseInDouble = Double.valueOf(valueToUse);
-                    TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
-                            methodID), valueToUseInDouble);
-                    LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
-                    System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
-                    tcf.add(filter);
-                } catch (NumberFormatException e) {
-                    LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    e.printStackTrace();
-                    if (getWindow() != null) {
-                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                                messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
-                    }
-                }
-
-                TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
-                        new Integer(methodID), valueToUse);
-                LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
-                System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
-                tcf.add(filter);
-            } else {
-                // check if the value is a numeric range
-                boolean notNumericRange = false;
-                if (criteriaValue.contains("-")) {
-                    String[] c = criteriaValue.split("-");
-                    if (c.length == 2) {
-                        try {
-                            start = Double.valueOf(c[0].trim());
-                            end = Double.valueOf(c[1].trim());
-                            NumericRange ranges = new NumericRange(start, end);
-                            TraitCombinationFilter tcFilter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
-                                    new Integer(methodID), ranges);
-                            tcf.add(tcFilter);
-                        } catch (NumberFormatException e) {
-                            notNumericRange = true;
-                            LOG.error(e.toString() + "\n" + e.getStackTrace());
-                            e.printStackTrace();
-                            MessageNotifier.showWarning(parentWindow, messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                                    messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
-                        }
-                    } else {
-                        notNumericRange = true;
-                    }
-                } else {
-                    notNumericRange = true;
-                }
-
-                if (notNumericRange) {
-                    TraitCombinationFilter tcFilter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
-                            methodID), criteriaValue);
-                    tcf.add(tcFilter);
-                }
-            }
-
-        }
-
-        return tcf;
-    }
+//    private ArrayList<TraitCombinationFilter> getSearchFilters() {
+//
+//        ArrayList<TraitCombinationFilter> tcf = new ArrayList<TraitCombinationFilter>();
+//        double start = 0;
+//        double end = 0;
+//
+//        for (@SuppressWarnings("rawtypes")
+//        Iterator i = criteriaTable.getItemIds().iterator(); i.hasNext();) {
+//
+//            int iid = (Integer) i.next();
+//            Item item = criteriaTable.getItem(iid);
+//            int traitID = Integer.valueOf(item.getItemProperty("traitID").toString());
+//            int scaleID = Integer.valueOf(item.getItemProperty("scaleID").toString());
+//            int methodID = Integer.valueOf(item.getItemProperty("methodID").toString());
+//            String scaleType = item.getItemProperty("scaleType").toString();
+//            String criteriaValue = item.getItemProperty("criteriaValue").toString();
+//            String scaleDiscreteValue = item.getItemProperty("scaleDiscreteValue").toString();
+//
+//            if (scaleType.equals("discrete")) {
+//                String valueToUse = scaleDiscreteValue != null && !scaleDiscreteValue.equals("") ? scaleDiscreteValue : criteriaValue;
+//                valueToUse = valueToUse.trim();
+//
+//                // if the value can be a number add a filter with value as a
+//                // double
+//                try {
+//                    Double valueToUseInDouble = Double.valueOf(valueToUse);
+//                    TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
+//                            methodID), valueToUseInDouble);
+//                    LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
+//                    System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
+//                    tcf.add(filter);
+//                } catch (NumberFormatException e) {
+//                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+//                    e.printStackTrace();
+//                    if (getWindow() != null) {
+//                        MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+//                                messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
+//                    }
+//                }
+//
+//                TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
+//                        new Integer(methodID), valueToUse);
+//                LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
+//                System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
+//                tcf.add(filter);
+//            } else {
+//                // check if the value is a numeric range
+//                boolean notNumericRange = false;
+//                if (criteriaValue.contains("-")) {
+//                    String[] c = criteriaValue.split("-");
+//                    if (c.length == 2) {
+//                        try {
+//                            start = Double.valueOf(c[0].trim());
+//                            end = Double.valueOf(c[1].trim());
+//                            NumericRange ranges = new NumericRange(start, end);
+//                            TraitCombinationFilter tcFilter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
+//                                    new Integer(methodID), ranges);
+//                            tcf.add(tcFilter);
+//                        } catch (NumberFormatException e) {
+//                            notNumericRange = true;
+//                            LOG.error(e.toString() + "\n" + e.getStackTrace());
+//                            e.printStackTrace();
+//                            MessageNotifier.showWarning(parentWindow, messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+//                                    messageSource.getMessage(Message.ERROR_INVALID_NUMBER_FORMAT_MUST_BE_NUMERIC));
+//                        }
+//                    } else {
+//                        notNumericRange = true;
+//                    }
+//                } else {
+//                    notNumericRange = true;
+//                }
+//
+//                if (notNumericRange) {
+//                    TraitCombinationFilter tcFilter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
+//                            methodID), criteriaValue);
+//                    tcf.add(tcFilter);
+//                }
+//            }
+//
+//        }
+//
+//        return tcf;
+//    }
 
     boolean withSelectedTraitScaleMethod() throws InternationalizableException {
         try {
@@ -519,7 +519,11 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
     public void searchButtonClickAction() throws InternationalizableException {
 
         try {
-            ArrayList<Integer> gids = gidsByPhenotypic.getGIDSByPhenotypicData(getSearchFilters());
+//            ArrayList<Integer> gids = gidsByPhenotypic.getGIDSByPhenotypicData(getSearchFilters());
+            
+              ArrayList<Integer> gids= new ArrayList<Integer>(); // mockdata
+              gids.add(1);
+              gids.add(2);
 
             if (flagResult == 0) {
                 displayGidsToResultTable(gids);

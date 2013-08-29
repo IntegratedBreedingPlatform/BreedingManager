@@ -21,8 +21,9 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.TraitCombinationFilter;
+//import org.generationcp.middleware.pojos.TraitCombinationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,7 +41,7 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
 
     /** The StudyDataManager. */
     @Autowired
-    private StudyDataManager managerStudy;
+    private StudyDataManagerImpl studyDataManager;
 
     /**
      * Instantiates a new GidByPhenotypicQueries.
@@ -57,16 +58,16 @@ public class GidByPhenotypicQueries implements InitializingBean, Serializable{
      * @param filters the filters
      * @return the gIDS by phenotypic data
      */
-    public ArrayList<Integer> getGIDSByPhenotypicData(List<TraitCombinationFilter> filters) throws InternationalizableException{
-        ArrayList<Integer> results = null;
-        try {
-            results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_IDS_BY_PHENO_DATA);
-        }
-        return results;
-
-    }
+//    public ArrayList<Integer> getGIDSByPhenotypicData(List<TraitCombinationFilter> filters) throws InternationalizableException{
+//        ArrayList<Integer> results = null;
+//        try {
+//            results = (ArrayList<Integer>) managerStudy.getGIDSByPhenotypicData(filters, 0, 100, Database.CENTRAL);
+//        } catch (MiddlewareQueryException e) {
+//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_IDS_BY_PHENO_DATA);
+//        }
+//        return results;
+//
+//    }
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

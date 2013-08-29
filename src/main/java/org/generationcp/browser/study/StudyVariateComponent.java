@@ -16,6 +16,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,7 +33,7 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     private static final Logger LOG = LoggerFactory.getLogger(StudyVariateComponent.class);
     private static final long serialVersionUID = -3225098517785018744L;
     
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private StudyDataManagerImpl studyDataManager;
     private int studyId;
     
     private static final String NAME = "NAME";
@@ -46,15 +47,15 @@ public class StudyVariateComponent extends Table implements InitializingBean, In
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyVariateComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) {
-        this.studyDataManagerv2 = studyDataManagerv2;
+    public StudyVariateComponent(StudyDataManagerImpl studyDataManager, int studyId) {
+        this.studyDataManager = studyDataManager;
         this.studyId = studyId;
     }
     
 
     @Override
     public void afterPropertiesSet() throws Exception{
-        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManagerv2, studyId);
+        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, studyId);
         IndexedContainer dataStudyFactor;
         
         dataStudyFactor = dataIndexContainer.getStudyVariate();

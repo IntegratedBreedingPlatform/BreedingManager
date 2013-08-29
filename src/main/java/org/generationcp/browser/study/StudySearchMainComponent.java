@@ -26,8 +26,9 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.v2.domain.Reference;
-import org.generationcp.middleware.v2.domain.Study;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.domain.dms.Reference;
+import org.generationcp.middleware.domain.dms.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,7 +69,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     private SimpleResourceBundleMessageSource messageSource;
 
     @Autowired
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private StudyDataManagerImpl studyDataManager;
 
     public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout) throws InternationalizableException {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
@@ -77,7 +78,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     @Override
     public void afterPropertiesSet() throws Exception { 
 
-        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManagerV2, 0);
+        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, 0);
         tabSheetStudy = StudyTreeComponent.getTabSheetStudy();
 
         setSpacing(true);
@@ -129,10 +130,10 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     }
     
     public void studyItemClickAction(Integer studyId) {
-        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManagerV2, studyId);
+        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, studyId);
 
         try {
-            Study study = this.studyDataManagerV2.getStudy(Integer.valueOf(studyId));
+            Study study = this.studyDataManager.getStudy(Integer.valueOf(studyId));
             //don't show study details if study record is a Folder ("F")
             String studyType = study.getType();
             if (!hasChildStudy(studyId) && !isFolderType(studyType)){
@@ -155,7 +156,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
-            Study studyDetails = this.studyDataManagerV2.getStudy(Integer.valueOf(studyId));
+            Study studyDetails = this.studyDataManager.getStudy(Integer.valueOf(studyId));
             if(studyDetails != null){
                 return studyDetails.getName();
             } else {
@@ -171,7 +172,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         List<Reference> studyChildren = new ArrayList<Reference>();
 
         try {
-            studyChildren.addAll(this.studyDataManagerV2.getChildrenOfFolder(Integer.valueOf(studyId)));
+            studyChildren.addAll(this.studyDataManager.getChildrenOfFolder(Integer.valueOf(studyId)));
         } catch (MiddlewareQueryException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
@@ -188,7 +189,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         VerticalLayout layout = new VerticalLayout();
 
         if (!Util.isTabExist(tabSheetStudy, getStudyName(studyId))) {
-            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManagerV2, studyId), studyDataManagerV2, false));
+            layout.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId), studyDataManager, false));
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 

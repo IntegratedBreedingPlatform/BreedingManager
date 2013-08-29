@@ -14,6 +14,7 @@ package org.generationcp.browser.study.containers;
 
 import java.util.List;
 
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
@@ -31,7 +32,7 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
  */
 public class RepresentationDatasetQueryFactory implements QueryFactory{
 
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private StudyDataManagerImpl studyDataManager;
     private Integer datasetId;
     private List<String> columnIds;
     @SuppressWarnings("unused")
@@ -50,10 +51,10 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      *            - List of column ids used for the Vaadin Table displaying the
      *            dataset
      */
-    public RepresentationDatasetQueryFactory(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2
+    public RepresentationDatasetQueryFactory(StudyDataManagerImpl studyDataManager
             , Integer datasetId, List<String> columnIds, boolean fromUrl) {
         super();
-        this.studyDataManagerV2 = studyDataManagerV2;
+        this.studyDataManager = studyDataManager;
         this.datasetId = datasetId;
         this.columnIds = columnIds;
         this.fromUrl = fromUrl;
@@ -65,7 +66,7 @@ public class RepresentationDatasetQueryFactory implements QueryFactory{
      */
     @Override
     public Query constructQuery(Object[] sortPropertyIds, boolean[] sortStates) {
-        return new RepresentationDataSetQuery(studyDataManagerV2, datasetId, columnIds, fromUrl);
+        return new RepresentationDataSetQuery(studyDataManager, datasetId, columnIds, fromUrl);
     }
 
     @Override

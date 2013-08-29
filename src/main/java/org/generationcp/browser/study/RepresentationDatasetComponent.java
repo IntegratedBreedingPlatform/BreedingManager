@@ -27,9 +27,11 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.v2.domain.DataSet;
-import org.generationcp.middleware.v2.domain.TermId;
-import org.generationcp.middleware.v2.domain.VariableType;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.domain.dms.DataSet;
+//import org.generationcp.middleware.domain.dms.TermId;
+import org.generationcp.middleware.domain.dms.VariableType;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -70,19 +72,19 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Button exportExcelButton;
     private StringBuffer reportTitle;
     
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private StudyDataManagerImpl studyDataManager;
     
     private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public RepresentationDatasetComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2,
+    public RepresentationDatasetComponent(StudyDataManagerImpl studyDataManager,
             Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.datasetId = datasetId;
-        this.studyDataManagerV2 = studyDataManagerV2;
+        this.studyDataManager = studyDataManager;
         this.fromUrl = fromUrl;
     }
 
@@ -104,13 +106,14 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     }
     
     // Called by StudyButtonClickListener
+  
     @SuppressWarnings("deprecation")
     public void exportToExcelAction() {
         
         String tempFilename = "dataset-temp.xls";
         
         DatasetExporter datasetExporter;
-        datasetExporter = new DatasetExporter(studyDataManagerV2, studyIdHolder, datasetId);
+        datasetExporter = new DatasetExporter(studyDataManager, studyIdHolder, datasetId);
         try {
             datasetExporter.exportToFieldBookExcelUsingIBDBv2(tempFilename);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFilename), this.getApplication());
@@ -131,6 +134,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         
     }
     
+    
     @Override
     public void afterPropertiesSet() throws Exception{
         
@@ -139,7 +143,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         List<String> columnIds = new ArrayList<String>();
 
         try {
-            DataSet dataset = studyDataManagerV2.getDataSet(datasetId);
+            DataSet dataset = studyDataManager.getDataSet(datasetId);
             variables = dataset.getVariableTypes().getVariableTypes();
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in getting variables of dataset: "
@@ -162,7 +166,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         }
 
         // create item container for dataset table
-        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManagerV2, datasetId, columnIds, fromUrl);
+        RepresentationDatasetQueryFactory factory = new RepresentationDatasetQueryFactory(studyDataManager, datasetId, columnIds, fromUrl);
         LazyQueryContainer datasetContainer = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table

@@ -29,21 +29,18 @@ import com.vaadin.ui.Table;
 public class GermplasmGroupRelativesComponent extends Table implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
-    
-    private GermplasmDataManager dataManager;
-    private Integer gid;
+    private int gid;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public GermplasmGroupRelativesComponent(GermplasmDataManager dataManager, Integer gid) {
-        this.dataManager = dataManager;
+    public GermplasmGroupRelativesComponent(int gid){
         this.gid = gid;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        GroupRelativesQueryFactory factory = new GroupRelativesQueryFactory(this.dataManager, this.gid);
+        GroupRelativesQueryFactory factory = new GroupRelativesQueryFactory(Integer.valueOf(this.gid));
         LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table

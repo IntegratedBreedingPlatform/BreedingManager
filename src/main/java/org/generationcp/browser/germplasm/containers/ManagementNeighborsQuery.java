@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 import com.vaadin.data.Item;
@@ -37,6 +39,7 @@ import com.vaadin.data.util.PropertysetItem;
  * @author Kevin Manansala
  * 
  */
+@Configurable
 public class ManagementNeighborsQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(ManagementNeighborsQuery.class);
@@ -44,7 +47,9 @@ public class ManagementNeighborsQuery implements Query{
     public static final Object GID = "gid";
     public static final Object PREFERRED_NAME = "preferred name";
     
-    private GermplasmDataManager dataManager;
+//    private GermplasmDataManager dataManager;
+    @Autowired
+    private PedigreeDataManager pedigreeDataManager;
     private Integer gid;
     
     /**
@@ -55,9 +60,8 @@ public class ManagementNeighborsQuery implements Query{
      * @param gid
      * @param columnIds
      */
-    public ManagementNeighborsQuery(GermplasmDataManager dataManager, Integer gid) {
+    public ManagementNeighborsQuery(Integer gid) {
         super();
-        this.dataManager = dataManager;
         this.gid = gid;
     }
 
@@ -83,11 +87,12 @@ public class ManagementNeighborsQuery implements Query{
      */
     @Override
     public List<Item> loadItems(int start, int numOfRows) {
+	System.out.println("loadItem");
         List<Item> items = new ArrayList<Item>();
 
         List<Germplasm> germplasms = new ArrayList<Germplasm>();
         try {
-            germplasms.addAll(this.dataManager.getManagementNeighbors(gid, start, numOfRows));
+            germplasms.addAll(pedigreeDataManager.getManagementNeighbors(gid, start, numOfRows));
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting management neighbors for gid = " + gid + ": " + ex.getMessage());
             return new ArrayList<Item>();
@@ -119,7 +124,7 @@ public class ManagementNeighborsQuery implements Query{
     public int size() {
         int size = 0;
         try {
-            size = ((Long) dataManager.countManagementNeighbors(gid)).intValue();
+            size = ((Long) pedigreeDataManager.countManagementNeighbors(gid)).intValue();
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting number of management neighbors for gid: " + gid + "\n" + ex.toString());
         }

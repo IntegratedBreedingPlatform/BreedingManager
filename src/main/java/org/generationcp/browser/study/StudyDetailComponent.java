@@ -17,8 +17,8 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.v2.domain.Study;
-import org.generationcp.middleware.v2.manager.api.OntologyDataManager;
+import org.generationcp.middleware.domain.dms.Study;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,7 +49,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private Label studyStartDate;
     private Label studyEndDate;
     
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager;
+    private org.generationcp.middleware.manager.api.StudyDataManager studyDataManager;
     private int studyId;
 
     @Autowired
@@ -58,7 +58,7 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public StudyDetailComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManager, int studyId){
+    public StudyDetailComponent(org.generationcp.middleware.manager.api.StudyDataManager studyDataManager, int studyId){
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
     }

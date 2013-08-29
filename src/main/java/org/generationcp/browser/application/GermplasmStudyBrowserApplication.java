@@ -36,6 +36,7 @@ import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.ConfigException;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -85,7 +86,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private ApplicationContext applicationContext;
     
     @Autowired
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerV2;
+    private StudyDataManagerImpl studyDataManager;
     
     private GermplasmListBrowserMain germplasmListBrowserMain;
     
@@ -225,8 +226,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     Window studyDetailsWindow = new Window(messageSource.getMessage(Message.STUDY_DETAILS_TEXT) + " " + studyId);  // "Study Details" + study id
                     studyDetailsWindow.setSizeUndefined();
                     //TODO should disable export functions for this screen
-                    studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManagerV2, studyId)
-                        , studyDataManagerV2, true));
+                    studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
+                        , studyDataManager, true));
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;
                 } catch (Exception ex) {

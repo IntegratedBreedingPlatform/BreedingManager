@@ -14,8 +14,9 @@ package org.generationcp.browser.germplasm;
 
 import java.util.ArrayList;
 
+import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.pojos.Bibref;
-import org.generationcp.middleware.pojos.StudyInfo;
+//import org.generationcp.middleware.domain.dms.Study;
 
 public class GermplasmDetailModel {
 
@@ -34,7 +35,7 @@ public class GermplasmDetailModel {
     private ArrayList<GermplasmDetailModel> generationhistory;
     private ArrayList<GermplasmDetailModel> groupRelatives;
     private ArrayList<GermplasmDetailModel> managementNeighbors;
-    private ArrayList<StudyInfo> germplasmStudyInfo;
+    private ArrayList<Study> germplasmStudyInfo;
     
     private Bibref bibRef;
 
@@ -166,11 +167,11 @@ public class GermplasmDetailModel {
         this.managementNeighbors = managementNeighbors;
     }
 
-    public ArrayList<StudyInfo> getGermplasmStudyInfo() {
+    public ArrayList<Study> getGermplasmStudyInfo() {
         return germplasmStudyInfo;
     }
 
-    public void setGermplasmStudyInfo(ArrayList<StudyInfo> germplasmStudyInfo) {
+    public void setGermplasmStudyInfo(ArrayList<Study> germplasmStudyInfo) {
         this.germplasmStudyInfo = germplasmStudyInfo;
     }
 

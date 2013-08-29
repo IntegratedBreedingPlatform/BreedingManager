@@ -17,11 +17,6 @@ import java.util.ArrayList;
 
 import org.generationcp.browser.germplasm.TraitQueries;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.pojos.Scale;
-import org.generationcp.middleware.pojos.ScaleDiscrete;
-import org.generationcp.middleware.pojos.Trait;
-import org.generationcp.middleware.pojos.TraitMethod;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
@@ -76,11 +71,12 @@ public class TraitDataIndexContainer implements Serializable {
         container.addContainerProperty(TRAIT_NAME, String.class, "");
         container.addContainerProperty(TRAIT_DESCRIPTION, String.class, "");
 
-        ArrayList<Trait> query = queryTrait.getTrait();
+//        ArrayList<Trait> query = queryTrait.getTrait();
 
-        for (Trait t : query) {
-            addTraitData(container, t.getTraitId(), t.getAbbreviation(), t.getName(), t.getDescripton());
-        }
+//        for (Trait t : query) {
+//            addTraitData(container, t.getTraitId(), t.getAbbreviation(), t.getName(), t.getDescripton());
+//        }
+        addTraitData(container, 1, "1", "dummy", "dummy");
         return container;
     }
 
@@ -100,16 +96,20 @@ public class TraitDataIndexContainer implements Serializable {
         container.addContainerProperty(SCALE_NAME, String.class, "");
         container.addContainerProperty(SCALE_TYPE, String.class, "");
 
-        ArrayList<Scale> query = queryTrait.getScale(traitID);
+//        ArrayList<Scale> query = queryTrait.getScale(traitID);
 
-        for (Scale s : query) {
-            // addTraitData(container,t.getId(),t.getName(),t.getDescripton());
-            String type = "discrete";
-            if (s.getType().equals("C")) {
-                type = "continuous";
-            }
-            addScaleData(container, s.getId(), s.getName(), type);
-        }
+
+//        for (String s : scale) {
+//            // addTraitData(container,t.getId(),t.getName(),t.getDescripton());
+//            String type = "discrete";
+//            if (s.getType().equals("C")) {
+//                type = "continuous";
+//            }
+//            addScaleData(container, s.getId(), s.getName(), type);
+//        }
+        
+        addScaleData(container, 1, "dummy", "dummy");
+        
         return container;
     }
 
@@ -129,12 +129,14 @@ public class TraitDataIndexContainer implements Serializable {
         container.addContainerProperty(METHOD_NAME, String.class, "");
         container.addContainerProperty(METHOD_DESCRIPTION, String.class, "");
 
-        ArrayList<TraitMethod> query = queryTrait.getTraitMethod(traitID);
+//        ArrayList<TraitMethod> query = queryTrait.getTraitMethod(traitID);
 
-        for (TraitMethod m : query) {
-            // addTraitData(container,t.getId(),t.getName(),t.getDescripton());
-            addMethodData(container, m.getId(), m.getName(), m.getDescription());
-        }
+//        for (TraitMethod m : query) {
+//            // addTraitData(container,t.getId(),t.getName(),t.getDescripton());
+//            addMethodData(container, m.getId(), m.getName(), m.getDescription());
+//        }
+        
+        addMethodData(container, 1, "dummy", "dummy");
         return container;
     }
 
@@ -154,11 +156,12 @@ public class TraitDataIndexContainer implements Serializable {
         container.addContainerProperty(SCALE_VALUE_DESCRIPTION, String.class, "");
         container.addContainerProperty(SCALE_VALUE, String.class, "");
 
-        final ArrayList<ScaleDiscrete> query = queryTrait.getScaleDiscreteValue(scaleID);
+//        final ArrayList<ScaleDiscrete> query = queryTrait.getScaleDiscreteValue(scaleID);
 
-        for (ScaleDiscrete v : query) {
-            addScaleValueData(container, v.getValueDescription(), v.getId().getValue());
-        }
+//        for (ScaleDiscrete v : query) {
+//            addScaleValueData(container, v.getValueDescription(), v.getId().getValue());
+//        }
+        addScaleValueData(container, "dummy", "dummy");
         return container;
     }
 
@@ -206,5 +209,8 @@ public class TraitDataIndexContainer implements Serializable {
         Item item = container.getItem(itemId);
         item.getItemProperty(GID).setValue(gid);
     }
+    
+    //MockData Temporary
+    
 
 }

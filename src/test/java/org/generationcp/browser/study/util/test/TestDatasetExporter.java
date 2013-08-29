@@ -5,7 +5,7 @@ import org.generationcp.browser.study.util.DatasetExporter;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.api.TraitDataManager;
+//import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,13 +22,13 @@ public class TestDatasetExporter{
         DatabaseConnectionParameters central = new DatabaseConnectionParameters("IBPDatasource.properties", "central");
         factory = new ManagerFactory(local, central);
         StudyDataManager studyManager = factory.getStudyDataManager();
-        TraitDataManager traitManager = factory.getTraitDataManager();
-        exporter = new DatasetExporter(studyManager, traitManager, Integer.valueOf(2), Integer.valueOf(4));
+//        TraitDataManager traitManager = factory.getTraitDataManager();
+//        exporter = new DatasetExporter(studyManager, traitManager, Integer.valueOf(2), Integer.valueOf(4));
     }
     
     @Test
     public void testExportToFieldBookExcel() throws Exception {
-        exporter.exportToFieldBookExcel("testing.xls");
+//        exporter.exportToFieldBookExcel("testing.xls");
     }
 
     @AfterClass

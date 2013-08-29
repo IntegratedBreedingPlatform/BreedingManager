@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 import com.vaadin.data.Item;
@@ -37,14 +39,17 @@ import com.vaadin.data.util.PropertysetItem;
  * @author Kevin Manansala
  * 
  */
+@Configurable
 public class GroupRelativesQuery implements Query{
     private final static Logger LOG = LoggerFactory.getLogger(GroupRelativesQuery.class);
 
     public static final Object GID = "gid";
     public static final Object PREFERRED_NAME = "preferred name";
     
-    private GermplasmDataManager dataManager;
     private Integer gid;
+    
+    @Autowired
+    private PedigreeDataManager pedigreeDataManager;
     
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -54,9 +59,8 @@ public class GroupRelativesQuery implements Query{
      * @param gid
      * @param columnIds
      */
-    public GroupRelativesQuery(GermplasmDataManager dataManager, Integer gid) {
+    public GroupRelativesQuery(Integer gid) {
         super();
-        this.dataManager = dataManager;
         this.gid = gid;
     }
 
@@ -86,7 +90,7 @@ public class GroupRelativesQuery implements Query{
 
         List<Germplasm> germplasms = new ArrayList<Germplasm>();
         try {
-            germplasms.addAll(this.dataManager.getGroupRelatives(gid, start, numOfRows));
+            germplasms.addAll(pedigreeDataManager.getGroupRelatives(this.gid, start, numOfRows));
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting group relatives for gid = " + gid + ": " + ex.getMessage());
             return new ArrayList<Item>();
@@ -118,10 +122,11 @@ public class GroupRelativesQuery implements Query{
     public int size() {
         int size = 0;
         try {
-            size = ((Long) dataManager.countGroupRelatives(gid)).intValue();
-        } catch (MiddlewareQueryException ex) {
-            LOG.error("Error with getting number of group relatives for gid: " + gid + "\n" + ex.toString());
-        }
+	    size = ((Long) pedigreeDataManager.countGroupRelatives(gid)).intValue();
+	} catch (MiddlewareQueryException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
         return size;
     }
 

@@ -16,6 +16,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,19 +43,19 @@ public class StudyFactorComponent extends Table implements InitializingBean, Int
 
     private int studyId;
 
-    private org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2;
+    private StudyDataManagerImpl studyDataManager;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    public StudyFactorComponent(org.generationcp.middleware.v2.manager.api.StudyDataManager studyDataManagerv2, int studyId) { //throws QueryException {
-        this.studyDataManagerv2 = studyDataManagerv2;
+    public StudyFactorComponent(StudyDataManagerImpl studyDataManager, int studyId) { //throws QueryException {
+        this.studyDataManager = studyDataManager;
         this.studyId = studyId;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManagerv2, studyId);
+        StudyDataIndexContainer dataIndexContainer = new StudyDataIndexContainer(studyDataManager, studyId);
         IndexedContainer dataStudyFactor;
 
         dataStudyFactor = dataIndexContainer.getStudyFactor();
