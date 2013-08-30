@@ -22,10 +22,12 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -105,6 +107,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private Map<String, TablesEntries> mapTableEntriesId = new HashMap();
     private Map<String, TablesEntries> singleEntriesSet = new HashMap();
     
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
+    
     public SpecifyGermplasmsComponent(HeadToHeadCrossStudyMain mainScreen, TraitsAvailableComponent nextScreen
             , ResultsComponent resultScreen){
         this.mainScreen = mainScreen;
@@ -132,18 +137,20 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         absLayout.setWidth("400px");
         absLayout.setHeight("90px");
         
-        testSearchGermplasmLabel = new Label("Specify a single test entry");
+        
+        
+        testSearchGermplasmLabel = new Label(messageSource.getMessage(Message.SPECIFY_SINGLE_TEST_ENTRY));
         testSearchGermplasmLabel.setImmediate(true);
         
-        testSearchGermplasmListLabel = new Label("Or, specify a list containing test entries");
+        testSearchGermplasmListLabel = new Label(messageSource.getMessage(Message.SPECIFY_TEST_GERMPLASM_LIST_ENTRY));
         testSearchGermplasmListLabel.setImmediate(true);
         
-        testSearchGermplasm = new Button("Search Germplasm");
+        testSearchGermplasm = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_SEARCH_GERMPLASM));
         testSearchGermplasm.setData(SELECT_TEST_SEARCH_GERMPLASM_BUTTON_ID);
         testSearchGermplasm.setWidth("150px");
         testSearchGermplasm.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
-        testSearchGermplasmList = new Button("Browse List");
+        testSearchGermplasmList = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_BROWSE_LIST));
         testSearchGermplasmList.setData(SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID);
         testSearchGermplasmList.setWidth("150px");
         testSearchGermplasmList.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
@@ -158,18 +165,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         absLayoutStandard.setWidth("450px");
         absLayoutStandard.setHeight("90px");
         
-        standardSearchGermplasmLabel = new Label("Specify a standard test");
+        standardSearchGermplasmLabel = new Label(messageSource.getMessage(Message.SPECIFY_SINGLE_STANDARD_ENTRY));
         standardSearchGermplasmLabel.setImmediate(true);
         
-        standardSearchGermplasmListLabel = new Label("Or, specify a list containing standard entries");
+        standardSearchGermplasmListLabel = new Label(messageSource.getMessage(Message.SPECIFY_STANDARD_GERMPLASM_LIST_ENTRY));
         standardSearchGermplasmListLabel.setImmediate(true);
         
-        standardSearchGermplasm = new Button("Search Germplasm");
+        standardSearchGermplasm = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_SEARCH_GERMPLASM));
         standardSearchGermplasm.setData(SELECT_STANDARD_SEARCH_GERMPLASM_BUTTON_ID);
         standardSearchGermplasm.setWidth("150px");
         standardSearchGermplasm.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
-        standardSearchGermplasmList = new Button("Browse List");
+        standardSearchGermplasmList = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_BROWSE_LIST));
         standardSearchGermplasmList.setData(SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID);
         standardSearchGermplasmList.setWidth("150px");
         standardSearchGermplasmList.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
@@ -182,7 +189,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         standardPanel.addComponent(absLayoutStandard);
         
         
-        headerLabel = new Label("Select the test and standard entries to be compared");
+        headerLabel = new Label(messageSource.getMessage(Message.SELECT_TEST_STANDARD_COMPARE));
         headerLabel.setImmediate(true);
         
         addComponent(headerLabel, "top:10px;left:10px");
