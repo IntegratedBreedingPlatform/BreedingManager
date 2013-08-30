@@ -33,7 +33,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
 
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
-    private static final String VERSION = "1.1.1.0";
+    private static final String VERSION = "1.2.0";
     private static final String STEP_1_GUIDE_MESSAGE = "Crossing Manager facilitates " +
             "the dynamic specification of cross combinations or input of cross combinations " +
             "from a crossing nursery template.  You can either use a nursery template file or " +

@@ -23,7 +23,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
     
-    private final static String VERSION = "1.1.1.0";
+    private final static String VERSION = "1.0.0";
     
     private GermplasmImportFileComponent wizardScreenOne;
     private SpecifyGermplasmDetailsComponent wizardScreenTwo;
