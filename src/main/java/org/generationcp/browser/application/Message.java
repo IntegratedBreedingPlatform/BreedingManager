@@ -245,4 +245,10 @@ public enum Message {
      
      //TEST MESSAGES
      ,TEST_BUTTON
+     
+   //Head to Head Main Cross Study
+     ,SPECIFY_ENTRIES
+     ,SELECT_TRAITS
+     ,SELECT_ENVIRONMENTS
+     ,DISPLAY_RESULTS
 }
