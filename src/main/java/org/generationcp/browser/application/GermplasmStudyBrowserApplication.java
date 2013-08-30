@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
+import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmQueries;
@@ -70,6 +71,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String GERMPLASM_DETAILS_PREFIX = "germplasm-";
     public static final String GERMPLASMLIST_DETAILS_PREFIX = "germplasmlist-";
     public static final String HEAD_TO_HEAD_CROSS_STUDY_QUERY_WINDOW_NAME = "h2h-query";
+    public static final String HEAD_TO_HEAD_COMPARISON_WINDOW_NAME = "Head_to_head_comparison";
 
     private Window window;
 
@@ -288,7 +290,15 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                  headToHeadQueryToolWindow.addComponent(new HeadToHeadComparisonMain());
                  this.addWindow(headToHeadQueryToolWindow);
                  return headToHeadQueryToolWindow;
-             }
+             } else if(HEAD_TO_HEAD_COMPARISON_WINDOW_NAME.equals(name)) {
+                      Window headToHeadQueryToolWindow = new Window("Cross Study: Head-to-Head Comparison");
+                      // Browser
+                      headToHeadQueryToolWindow.setName(HEAD_TO_HEAD_COMPARISON_WINDOW_NAME);
+                      headToHeadQueryToolWindow.setSizeUndefined();
+                      headToHeadQueryToolWindow.addComponent(new HeadToHeadCrossStudyMain());
+                      this.addWindow(headToHeadQueryToolWindow);
+                      return headToHeadQueryToolWindow;
+                  }
 
         }
 

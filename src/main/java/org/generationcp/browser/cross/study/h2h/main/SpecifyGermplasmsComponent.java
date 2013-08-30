@@ -2,8 +2,15 @@ package  org.generationcp.browser.cross.study.h2h.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
+import com.vaadin.data.Item;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbsoluteLayout;
@@ -16,12 +23,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
+import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -79,10 +88,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private static final String TEST_ENTRY_COLUMN_ID = "SpecifyGermplasmsComponent Test Entry Column Id";
     private static final String STANDARD_ENTRY_COLUMN_ID = "SpecifyGermplasmsComponent Standard Entry Column Id";
     
-    private static final Action ACTION_SELECT = new Action("Select");
     private static final Action ACTION_SELECT_ALL = new Action("Select All");
     private static final Action ACTION_DELETE = new Action("Delete selected");
-    private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT, ACTION_SELECT_ALL, ACTION_DELETE };
+    private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
    
     private Object tableRowItem = null;
     
@@ -93,6 +101,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    private Map<String, TablesEntries> mapTableEntriesId = new HashMap();
+    private Map<String, TablesEntries> singleEntriesSet = new HashMap();
     
     public SpecifyGermplasmsComponent(HeadToHeadCrossStudyMain mainScreen, TraitsAvailableComponent nextScreen
             , ResultsComponent resultScreen){
@@ -256,19 +267,36 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         if (!selectedIds.isEmpty()){
             for (Object itemId : selectedIds){
             	entriesTable.removeItem(itemId);
+            	mapTableEntriesId.remove(itemId);
             }
             entriesTable.setPageLength(0);
         } else {
            ;// MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
+        
+        if(isTableEntriesEmpty()){
+        	//we set the new set since we already cleared it
+			singleEntriesSet = new HashMap();
+        }
        
     }
     
     public void setDummyTableData(){
+    	/*
     	for(int i = 0 ; i < 100 ; i++){
-    		entriesTable.addItem(new Object[] {"test - "+i, "standard - "+i}, new Integer(i));
+    		entriesTable.addItem(new Object[] {"test - "+i, "standard - "+i}, Integer.toString(i));
+    		
     	}
-    	
+    	*/
+    	try{
+    		
+	    	//addTestGermplasmList(germplasmListManager.getGermplasmListById(-1));
+    		addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
+    		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
     }
     
     public void selectTestEntryButtonClickAction(){
@@ -308,6 +336,36 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
             this.mainScreen.selectSecondTab();
         }
         */
+    	//we check the chosen rows
+    	Iterator iter = entriesTable.getItemIds().iterator();
+		boolean hasLeftBlank = false;
+		boolean hasRightBlank = false;
+		while(iter.hasNext()){
+			//we iterate and permutate against the list
+			String id = (String)iter.next();
+			String leftId = "";
+			String rightId = "";
+			StringTokenizer tokenizer = new StringTokenizer(id,":");
+			if(tokenizer.countTokens() == 2){
+				leftId = tokenizer.nextToken().trim();
+				rightId = tokenizer.nextToken().trim();
+			}
+			if(leftId.equalsIgnoreCase("")){
+				hasLeftBlank = true;
+				break;
+			}
+			if(rightId.equalsIgnoreCase("")){
+				hasRightBlank = true;
+				break;
+			}
+		}
+		if(hasLeftBlank){
+			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Test entry.", Notification.POSITION_CENTERED);
+			return;
+		}else if(hasRightBlank){
+			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Standard entry.", Notification.POSITION_CENTERED);
+			return;
+		}
         if(this.nextScreen != null){
             this.mainScreen.selectSecondTab();
         }
@@ -329,58 +387,474 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
     }
     
-    public void addTestGermplasmList(GermplasmList germplasmList){
-    	//test entry can be Germplasm or Germplasm Entry
-    	
-    	testGermplasmListAdded.add(germplasmList);
-    	doGermplasmPermutation0(germplasmList, standardGermplasmListAdded);
-    	doGermplasmPermutation1(germplasmList, standardGermplasmAdded);
+    public void addTestGermplasmList(GermplasmList germplasmList){  
+    	if(germplasmList != null){
+	    	//testGermplasmListAdded.add(germplasmList);
+	    	//doGermplasmPermutation0(germplasmList, standardGermplasmListAdded);
+	    	//doGermplasmPermutation1(germplasmList, standardGermplasmAdded);
+	    	doGermplasmPermutationOnTable(true, false, germplasmList, null);
+    	}
     }
-    public void addTestGermplasm(Germplasm germplasm ){
-    	//test entry can be Germplasm or Germplasm Entry
-    	
-    	testGermplasmAdded.add(germplasm);
-    	doGermplasmPermutation2(germplasm, standardGermplasmListAdded);
-    	doGermplasmPermutation3(germplasm, standardGermplasmAdded);
-    	//doGermplasmPermutation(testEntry, standardGermplasmListAdded);
+    public void addTestGermplasm(Germplasm germplasm ){  
+    	if(germplasm != null){
+	    	//testGermplasmAdded.add(germplasm);
+	    	//doGermplasmPermutation2(germplasm, standardGermplasmListAdded);
+	    	//doGermplasmPermutation3(germplasm, standardGermplasmAdded);
+    		doGermplasmPermutationOnTable(true, true, null, germplasm);
+    	}
     }
     public void addStandardGermplasmList(GermplasmList germplasmList){
-    	//test entry can be Germplasm or Germplasm Entry
-    	standardGermplasmListAdded.add(germplasmList);
-    	doGermplasmPermutation4(testGermplasmListAdded, germplasmList);
-    	doGermplasmPermutation5(testGermplasmAdded, germplasmList);
-    	//doGermplasmPermutation(testGermplasmListAdded, testEntry);
+    	if(germplasmList != null){
+	    	//standardGermplasmListAdded.add(germplasmList);
+	    	//doGermplasmPermutation4(testGermplasmListAdded, germplasmList);
+	    	//doGermplasmPermutation5(testGermplasmAdded, germplasmList);
+    		doGermplasmPermutationOnTable(false, false, germplasmList, null);
+    	}
     }
     public void addStandardGermplasm(Germplasm germplasm){
-    	//test entry can be Germplasm or Germplasm Entry
-    	standardGermplasmAdded.add(germplasm);
-    	doGermplasmPermutation6(testGermplasmListAdded, germplasm);
-    	doGermplasmPermutation7(testGermplasmAdded, germplasm);
+    	if(germplasm != null){
+	    	//standardGermplasmAdded.add(germplasm);
+	    	//doGermplasmPermutation6(testGermplasmListAdded, germplasm);
+	    	//doGermplasmPermutation7(testGermplasmAdded, germplasm);
+    		doGermplasmPermutationOnTable(false, true, null, germplasm);
+    	}
     }
-    private void doGermplasmPermutation0(GermplasmList testEntries, List<GermplasmList> standardEntries){
-    	//testEntries.getl
-    }
-    private void doGermplasmPermutation1(GermplasmList testEntries, List<Germplasm> standardEntry){
-    	
-    }
-    private void doGermplasmPermutation2(Germplasm testEntry,  List<GermplasmList> standardEntries){
-    	
-    }
-    private void doGermplasmPermutation3(Germplasm testEntry,  List<Germplasm> standardEntry){
+    
+    private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	if(isGermplasm){
+    		//meaning we use the variable germplasm
+    		if(isTableEntriesEmpty()){
+    			TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = "";
+	    		String standardEntryName = "";
+	    		String newId = "";
+	    		if(isTestEntry){
+	    			testEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+	    			standardEntryName = "";
+	    			newId = germplasm.getGid().toString() + ": ";
+	    		}else{
+	    			testEntryName = "";
+	    			standardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+	    			newId = " :"+germplasm.getGid().toString();
+	    		}
+	    		
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry(newId);
+	    		tableEntriesList.add(tableEntry);
+				singleEntriesSet.put(newId, tableEntry);
+    		}else{
+    			Iterator iter = entriesTable.getItemIds().iterator();
+    			boolean isBlank = false;
+    			while(iter.hasNext()){
+    				//we iterate and permutate against the list
+    				TablesEntries tableEntry = new TablesEntries();
+    				String id = (String)iter.next();
+    				String leftId = "";
+    				String rightId = "";
+    				StringTokenizer tokenizer = new StringTokenizer(id,":");
+    				if(tokenizer.countTokens() == 2){
+    					leftId = tokenizer.nextToken().trim();
+    					rightId = tokenizer.nextToken().trim();
+    				}
+    				Item item = entriesTable.getItem(id);
+    				String testEntryName = (String)item.getItemProperty(TEST_ENTRY_COLUMN_ID).getValue();
+    				String standardEntryName = (String)item.getItemProperty(STANDARD_ENTRY_COLUMN_ID).getValue();
+    				String newTestEntryName = "";
+    				String newStandardEntryName = "";
+    	    		String newId = "";
+    	    		
+    				if(isTestEntry){
+    					//We need to permutate against the standard
+    					newTestEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+    					newStandardEntryName = standardEntryName;
+    	    			//newId = germplasm.getGid().toString() + id.trim(); //since id already has -number
+    	    			if(testEntryName.equalsIgnoreCase("")){
+    	    				isBlank = true;
+    	    				newId = germplasm.getGid().toString() + ": ";
+    	    				if(!standardEntryName.equalsIgnoreCase("")){
+    	    					newId =  germplasm.getGid().toString() + ":" +(rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());
+    	    				}
+    	    			}else{
+    	    				newId = germplasm.getGid().toString() + ":" + (rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());    	    				
+    	    			}
+    	    		}else{
+    	    			//we need to permutate against the test entry
+    	    			newTestEntryName = testEntryName;
+    	    			newStandardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+    	    			//newId = id.trim()+germplasm.getGid().toString();
+    	    			if(standardEntryName.equalsIgnoreCase("")){
+    	    				isBlank = true;
+    	    				newId =  " :" + germplasm.getGid().toString();
+    	    				if(!testEntryName.equalsIgnoreCase("")){
+    	    					newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + germplasm.getGid().toString();
+    	    				}
+    	    			}else{
+    	    				newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + germplasm.getGid().toString();
+    	    			}
+    	    		}
+    				tableEntry.setTestEntryName(newTestEntryName);
+    	    		tableEntry.setStandardEntryName(newStandardEntryName);
+    	    		tableEntry.setTestStandardEntry(newId);
+    	    		tableEntriesList.add(tableEntry);
+    			}
+    			if(isBlank == true)
+    				deleteAllSingleEntriesInTable();
+    		}
+    	}else{
+    		//we use the the variable germplasmlist
+    		List<GermplasmListData> germplasmListData = germplasmList.getListData();
+    		
+    			if(isTableEntriesEmpty()){
+    				for(GermplasmListData listData : germplasmListData){
+	    				TablesEntries tableEntry = new TablesEntries();
+	    	    		String testEntryName = "";
+	    	    		String standardEntryName = "";
+	    	    		String newId = "";
+	    	    		if(isTestEntry){
+	    	    			testEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
+	    	    			standardEntryName = "";
+	    	    			newId = listData.getGid().toString() + ": ";
+	    	    		}else{
+	    	    			testEntryName = "";
+	    	    			standardEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
+	    	    			newId = " :"+listData.getGid().toString();
+	    	    		}
+	    	    		
+	    	    		tableEntry.setTestEntryName(testEntryName);
+	    	    		tableEntry.setStandardEntryName(standardEntryName);
+	    	    		tableEntry.setTestStandardEntry(newId);
+	    	    		tableEntriesList.add(tableEntry);
+	    	    		singleEntriesSet.put(newId, tableEntry);
+    				}
+    			}else{
+    				
+	    			Iterator iter = entriesTable.getItemIds().iterator();
+	    			boolean isBlank = false;
+	    			while(iter.hasNext()){
+	    				String id = (String)iter.next();
+	    				StringTokenizer tokenizer = new StringTokenizer(id, ":");
+	    				String leftId = "";
+	    				String rightId = "";
+	    				Item item = entriesTable.getItem(id);
+	    				
+	    				if(tokenizer.countTokens() == 2){
+	    					leftId = tokenizer.nextToken().trim();
+	    					rightId = tokenizer.nextToken().trim();
+	    				}
+	    				String testEntryName = (String)item.getItemProperty(TEST_ENTRY_COLUMN_ID).getValue();
+	    				String standardEntryName = (String)item.getItemProperty(STANDARD_ENTRY_COLUMN_ID).getValue();
+	    				
+	    				for(GermplasmListData listData : germplasmListData){
+		    				//we iterate and permutate against the list
+		    				TablesEntries tableEntry = new TablesEntries();		    						    						    						    						    			
+		    				String newTestEntryName = "";
+		    				String newStandardEntryName = "";
+		    	    		String newId = "";
+		    				if(isTestEntry){
+		    					//We need to permutate against the standard
+		    					newTestEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
+		    					newStandardEntryName = standardEntryName;
+		    	    			//newId = listData.getGid().toString() + id.trim(); //since id already has -number
+		    	    			if(testEntryName.equalsIgnoreCase("")){
+		    	    				isBlank = true;
+		    	    				newId =  listData.getGid().toString() + ": ";
+		    	    				if(!standardEntryName.equalsIgnoreCase("")){
+		    	    					newId =  listData.getGid().toString() + ":" +(rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());
+		    	    				}
+		    	    			}else{
+		    	    				newId =  listData.getGid().toString() + ":" + (rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());		    	    				
+		    	    			}
+		    	    		}else{
+		    	    			//we need to permutate against the test entry
+		    	    			newTestEntryName = testEntryName;
+		    	    			newStandardEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
+		    	    			//newId = id.trim()+listData.getGid().toString();
+		    	    			if(standardEntryName.equalsIgnoreCase("")){
+		    	    				isBlank = true;
+		    	    				newId =  " :" + listData.getGid().toString();
+		    	    				if(!testEntryName.equalsIgnoreCase("")){
+		    	    					newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + listData.getGid().toString();
+		    	    				}
+		    	    			}else{
+		    	    				newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + listData.getGid().toString();
+		    	    			}
+		    	    		}
+		    				tableEntry.setTestEntryName(newTestEntryName);
+		    	    		tableEntry.setStandardEntryName(newStandardEntryName);
+		    	    		tableEntry.setTestStandardEntry(newId);
+		    	    		tableEntriesList.add(tableEntry);
+		    			}
+	    			}
+	    			if(isBlank == true)
+	    				deleteAllSingleEntriesInTable();
+    			}
+    		
+    	}
+    	addToTable(tableEntriesList);
     	
     }
     
-    private void doGermplasmPermutation4(List<GermplasmList> testEntries, GermplasmList standardEntries){
+    private void deleteAllSingleEntriesInTable(){
+    	//we delete the single entrie
+		Iterator singleIter = singleEntriesSet.keySet().iterator();
+		while(singleIter.hasNext()){
+			String idToDelete = (String)singleIter.next();
+			entriesTable.removeItem(idToDelete);	    				
+		}
+		//we set the new set since we already cleared it
+		singleEntriesSet = new HashMap();
+    }
+    /*
+    private void doGermplasmPermutation0(GermplasmList testEntries, List<GermplasmList> standardEntries){
+    	//testEntries.getl
+    	List<GermplasmListData> listData = testEntries.getListData();
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(GermplasmListData germplasmListData : listData){
+    		for(GermplasmList germplasmList : standardEntries){
+    			
+    			List<GermplasmListData> standardListData = germplasmList.getListData();
+    			for(GermplasmListData standardGermplasmListData : standardListData){
+    				TablesEntries tableEntry = new TablesEntries();
+    	    		String testEntryName = germplasmListData.getDesignation() != null ? germplasmListData.getDesignation() : germplasmListData.getGid().toString();
+    	    		String standardEntryName = standardGermplasmListData.getDesignation() != null ? standardGermplasmListData.getDesignation() : standardGermplasmListData.getGid().toString();
+    	    		tableEntry.setTestEntryName(testEntryName);
+    	    		tableEntry.setStandardEntryName(standardEntryName);
+    	    		tableEntry.setTestStandardEntry(germplasmListData.getGid().toString() + "-" + standardGermplasmListData.getGid().toString());
+    	    		tableEntriesList.add(tableEntry);
+    				
+    			}
+	    		
+    		}
+    		
+    		if(tableEntriesList.isEmpty()){
+        		TablesEntries tableEntry = new TablesEntries();
+        		String testEntryName = germplasmListData.getDesignation() != null ? germplasmListData.getDesignation() : germplasmListData.getGid().toString();
+        		String standardEntryName = "";
+        		tableEntry.setTestEntryName(testEntryName);
+        		tableEntry.setStandardEntryName(standardEntryName);
+        		tableEntry.setTestStandardEntry(germplasmListData.getGid().toString() + "-" + "");
+        		tableEntriesList.add(tableEntry);
+        	}
+    	}
     	
+    	addToTable(tableEntriesList);
+    }
+    private void doGermplasmPermutation1(GermplasmList testEntries, List<Germplasm> standardEntry){
+    	List<GermplasmListData> listData = testEntries.getListData();
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(GermplasmListData germplasmListData : listData){
+    		for(Germplasm germplasm : standardEntry){
+	    		TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = germplasmListData.getDesignation() != null ? germplasmListData.getDesignation() : germplasmListData.getGid().toString();
+	    		String standardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry(germplasmListData.getGid().toString() + "-" + germplasm.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+    		}
+    		
+    		if(tableEntriesList.isEmpty()){
+        		TablesEntries tableEntry = new TablesEntries();
+        		String testEntryName = germplasmListData.getDesignation() != null ? germplasmListData.getDesignation() : germplasmListData.getGid().toString();
+        		String standardEntryName = "";
+        		tableEntry.setTestEntryName(testEntryName);
+        		tableEntry.setStandardEntryName(standardEntryName);
+        		tableEntry.setTestStandardEntry(germplasmListData.getGid().toString() + "-" + "");
+        		tableEntriesList.add(tableEntry);
+        	}
+    	}
+    	addToTable(tableEntriesList);
+    	
+    }
+    private void doGermplasmPermutation2(Germplasm testEntry,  List<GermplasmList> standardEntries){
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(GermplasmList germplasmList : standardEntries){			
+			List<GermplasmListData> standardListData = germplasmList.getListData();
+			for(GermplasmListData standardGermplasmListData : standardListData){
+				TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = testEntry.getPreferredName() != null ? testEntry.getPreferredName().getNval() : testEntry.getGid().toString();
+	    		String standardEntryName = standardGermplasmListData.getDesignation() != null ? standardGermplasmListData.getDesignation() : standardGermplasmListData.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry(testEntry.getGid().toString() + "-" + standardGermplasmListData.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+				
+			}
+			
+			
+    		
+		}
+    	if(tableEntriesList.isEmpty()){
+    		TablesEntries tableEntry = new TablesEntries();
+    		String testEntryName = testEntry.getPreferredName() != null ? testEntry.getPreferredName().getNval() : testEntry.getGid().toString();
+    		String standardEntryName = "";
+    		tableEntry.setTestEntryName(testEntryName);
+    		tableEntry.setStandardEntryName(standardEntryName);
+    		tableEntry.setTestStandardEntry(testEntry.getGid().toString() + "-" + "");
+    		tableEntriesList.add(tableEntry);
+    	}
+    	addToTable(tableEntriesList);
+    }
+    private void doGermplasmPermutation3(Germplasm testEntry,  List<Germplasm> standardEntry){
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(Germplasm germplasm : standardEntry){
+    		TablesEntries tableEntry = new TablesEntries();
+    		String testEntryName = testEntry.getPreferredName() != null ? testEntry.getPreferredName().getNval() : testEntry.getGid().toString();
+    		String standardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
+    		tableEntry.setTestEntryName(testEntryName);
+    		tableEntry.setStandardEntryName(standardEntryName);
+    		tableEntry.setTestStandardEntry(testEntry.getGid().toString() + "-" + germplasm.getGid().toString());
+    		tableEntriesList.add(tableEntry);
+    	}
+    	if(tableEntriesList.isEmpty()){
+    		TablesEntries tableEntry = new TablesEntries();
+    		String testEntryName = testEntry.getPreferredName() != null ? testEntry.getPreferredName().getNval() : testEntry.getGid().toString();
+    		String standardEntryName = "";
+    		tableEntry.setTestEntryName(testEntryName);
+    		tableEntry.setStandardEntryName(standardEntryName);
+    		tableEntry.setTestStandardEntry(testEntry.getGid().toString() + "-" + "");
+    		tableEntriesList.add(tableEntry);
+    	}
+    	addToTable(tableEntriesList);
+    }
+    
+    private void doGermplasmPermutation4(List<GermplasmList> testEntries, GermplasmList standardEntries){
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(GermplasmList testGermplasmList : testEntries){
+    		List<GermplasmListData> testListData = testGermplasmList.getListData();
+    		for(GermplasmListData testGermplasmListData : testListData){
+    			List<GermplasmListData> standardListDataList = standardEntries.getListData();
+    			for(GermplasmListData standardListData : standardListDataList){
+    				TablesEntries tableEntry = new TablesEntries();
+    	    		String testEntryName = testGermplasmListData.getDesignation() != null ? testGermplasmListData.getDesignation() : testGermplasmListData.getGid().toString();
+    	    		String standardEntryName = standardListData.getDesignation() != null ? standardListData.getDesignation() : standardListData.getGid().toString();
+    	    		tableEntry.setTestEntryName(testEntryName);
+    	    		tableEntry.setStandardEntryName(standardEntryName);
+    	    		tableEntry.setTestStandardEntry(testGermplasmListData.getGid().toString() + "-" + standardListData.getGid().toString());
+    	    		tableEntriesList.add(tableEntry);
+    				
+    			}
+    		}
+    	}
+    	if(tableEntriesList.isEmpty()){
+    		List<GermplasmListData> standardListDataList = standardEntries.getListData();
+			for(GermplasmListData standardListData : standardListDataList){
+				TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = "";
+	    		String standardEntryName = standardListData.getDesignation() != null ? standardListData.getDesignation() : standardListData.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry("" + "-" + standardListData.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+				
+			}
+    	}
+    	addToTable(tableEntriesList);
     }
     private void doGermplasmPermutation5(List<Germplasm> testEntry, GermplasmList standardEntries){
-    	
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(Germplasm testGermplasm : testEntry){
+    		List<GermplasmListData> standardListDataList = standardEntries.getListData();
+    		for(GermplasmListData standardGermplasmListData : standardListDataList){
+    			TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = testGermplasm.getPreferredName() != null ? testGermplasm.getPreferredName().getNval() : testGermplasm.getGid().toString();
+	    		String standardEntryName = standardGermplasmListData.getDesignation() != null ? standardGermplasmListData.getDesignation() : standardGermplasmListData.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry(testGermplasm.getGid().toString() + "-" + standardGermplasmListData.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+    		}
+    	}
+    	if(tableEntriesList.isEmpty()){
+    		List<GermplasmListData> standardListDataList = standardEntries.getListData();
+			for(GermplasmListData standardListData : standardListDataList){
+				TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = "";
+	    		String standardEntryName = standardListData.getDesignation() != null ? standardListData.getDesignation() : standardListData.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry("" + "-" + standardListData.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+				
+			}
+    	}
+    	addToTable(tableEntriesList);
     }
     private void doGermplasmPermutation6(List<GermplasmList> testEntries,  Germplasm standardEntry){
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(GermplasmList testGermplasmList : testEntries){
+    		List<GermplasmListData> testListData = testGermplasmList.getListData();
+    		for(GermplasmListData testGermplasmListData : testListData){
+    			
+    				TablesEntries tableEntry = new TablesEntries();
+    	    		String testEntryName = testGermplasmListData.getDesignation() != null ? testGermplasmListData.getDesignation() : testGermplasmListData.getGid().toString();
+    	    		String standardEntryName = standardEntry.getPreferredName() != null ? standardEntry.getPreferredName().getNval() : standardEntry.getGid().toString();
+    	    		tableEntry.setTestEntryName(testEntryName);
+    	    		tableEntry.setStandardEntryName(standardEntryName);
+    	    		tableEntry.setTestStandardEntry(testGermplasmListData.getGid().toString() + "-" + standardEntry.getGid().toString());
+    	    		tableEntriesList.add(tableEntry);
+    				
+    			
+    		}
+    	}
+    	if(tableEntriesList.isEmpty()){
+    		
+				TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = "";
+	    		String standardEntryName = standardEntry.getPreferredName() != null ? standardEntry.getPreferredName().getNval() : standardEntry.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry("" + "-" + standardEntry.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+				
+			
+    	}
     	
+    	addToTable(tableEntriesList);
     }
     private void doGermplasmPermutation7(List<Germplasm> testEntry,  Germplasm standardEntry){
-    	
+    	List<TablesEntries> tableEntriesList = new ArrayList();
+    	for(Germplasm testGermplasm : testEntry){
+    		
+    			TablesEntries tableEntry = new TablesEntries();
+	    		String testEntryName = testGermplasm.getPreferredName() != null ? testGermplasm.getPreferredName().getNval() : testGermplasm.getGid().toString();
+	    		String standardEntryName = standardEntry.getPreferredName() != null ? standardEntry.getPreferredName().getNval() : standardEntry.getGid().toString();
+	    		tableEntry.setTestEntryName(testEntryName);
+	    		tableEntry.setStandardEntryName(standardEntryName);
+	    		tableEntry.setTestStandardEntry(testGermplasm.getGid().toString() + "-" + standardEntry.getGid().toString());
+	    		tableEntriesList.add(tableEntry);
+    		
+    	}
+    	if(tableEntriesList.isEmpty()){
+    		
+			TablesEntries tableEntry = new TablesEntries();
+    		String testEntryName = "";
+    		String standardEntryName = standardEntry.getPreferredName() != null ? standardEntry.getPreferredName().getNval() : standardEntry.getGid().toString();
+    		tableEntry.setTestEntryName(testEntryName);
+    		tableEntry.setStandardEntryName(standardEntryName);
+    		tableEntry.setTestStandardEntry("" + "-" + standardEntry.getGid().toString());
+    		tableEntriesList.add(tableEntry);
+			
+		}
+    	addToTable(tableEntriesList);
+    }
+    */
+    private void addToTable(List<TablesEntries> tableEntryList){
+    	for(TablesEntries tableEntry : tableEntryList){
+    		String newId = tableEntry.getTestStandardEntry();    		
+	    	//if not in map, add it in the table
+	    	if(!mapTableEntriesId.containsKey(newId)){
+		    	
+		    		entriesTable.addItem(new Object[] {tableEntry.getTestEntryName(), tableEntry.getStandardEntryName()}, tableEntry.getTestStandardEntry());
+		    		mapTableEntriesId.put(newId, tableEntry);
+		    	
+	    	}
+    	}
+    }
+    private boolean isTableEntriesEmpty(){
+    	return entriesTable.getItemIds().isEmpty();
     }
     
     
