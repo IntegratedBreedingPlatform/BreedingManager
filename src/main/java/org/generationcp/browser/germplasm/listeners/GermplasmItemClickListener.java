@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.germplasm.listeners;
 
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDerivativeNeighborhoodComponent;
 import org.generationcp.browser.germplasm.GermplasmMaintenanceNeighborhoodComponent;
@@ -125,6 +126,26 @@ public class GermplasmItemClickListener implements ItemClickEvent.ItemClickListe
                 } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                     try {
                         ((SelectAGermplasmDialog) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+                    } catch (InternationalizableException e) {  
+                        LOG.error(e.toString() + "\n" + e.getStackTrace());
+                        e.printStackTrace();
+                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                    }
+                }
+            }else if (sourceClass instanceof SelectGermplasmEntryDialog) {
+            	/*
+                if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
+                    try {
+                        ((SelectAGermplasmDialog) sourceClass).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+                    } catch (InternationalizableException e) {  
+                        LOG.error(e.toString() + "\n" + e.getStackTrace());
+                        e.printStackTrace();
+                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                    }
+                } else 
+                	*/if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+                    try {
+                        ((SelectGermplasmEntryDialog) sourceClass).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
                     } catch (InternationalizableException e) {  
                         LOG.error(e.toString() + "\n" + e.getStackTrace());
                         e.printStackTrace();

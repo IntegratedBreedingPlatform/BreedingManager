@@ -4,6 +4,8 @@ import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableCompon
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
+import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -13,7 +15,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 
-
 public class HeadToHeadCrossStudyMainButtonClickListener implements Button.ClickListener {
 
     private static final long serialVersionUID = -3422805642974069212L;
@@ -21,13 +22,13 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     private static final Logger LOG = LoggerFactory.getLogger(HeadToHeadCrossStudyMainButtonClickListener.class);
 
     private Component source;
-
+ 
     public HeadToHeadCrossStudyMainButtonClickListener(Component source){
         this.source = source;
     }
     @Override
     public void buttonClick(ClickEvent event) {
-        if (event.getButton().getData().equals(SpecifyGermplasmsComponent.SELECT_TEST_ENTRY_BUTTON_ID)
+        if (event.getButton().getData().equals(SpecifyGermplasmsComponent.SELECT_TEST_SEARCH_GERMPLASM_BUTTON_ID)
                 && (source instanceof SpecifyGermplasmsComponent)){
             try {
                 ((SpecifyGermplasmsComponent) source).selectTestEntryButtonClickAction();
@@ -36,7 +37,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-        } else if (event.getButton().getData().equals(SpecifyGermplasmsComponent.SELECT_STANDARD_ENTRY_BUTTON_ID)
+        } else if (event.getButton().getData().equals(SpecifyGermplasmsComponent.SELECT_STANDARD_SEARCH_GERMPLASM_BUTTON_ID)
                 && (source instanceof SpecifyGermplasmsComponent)){
             try {
                 ((SpecifyGermplasmsComponent) source).selectStandardEntryButtonClickAction();
@@ -108,6 +109,18 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
+        } else if (event.getButton().getData().equals(SelectGermplasmEntryDialog.ADD_BUTTON_ID)
+                && (source instanceof SelectGermplasmEntryDialog)){
+            try {
+                ((SelectGermplasmEntryDialog) source).addButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (source instanceof SelectGermplasmEntryDialog
+                && event.getButton().getData().equals(SelectGermplasmEntryDialog.SEARCH_BUTTON_ID)) {
+            ((SelectGermplasmEntryDialog) source).searchButtonClickAction();
         } 
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
