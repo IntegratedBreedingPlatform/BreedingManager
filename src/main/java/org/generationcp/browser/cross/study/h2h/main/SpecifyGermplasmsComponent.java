@@ -24,9 +24,9 @@ import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
-import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -285,8 +285,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	try{
     		
 	    	//addTestGermplasmList(germplasmListManager.getGermplasmListById(-1));
-    		addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
-    		addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
+    		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
+    		//addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
     		
     	}catch(Exception e){
     		e.printStackTrace();
@@ -302,6 +302,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public void selectStandardEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         SelectGermplasmEntryDialog selectAGermplasmDialog = new SelectGermplasmEntryDialog(this, parentWindow, false);
+        parentWindow.addWindow(selectAGermplasmDialog);
+    }
+    
+    public void selectTestGermplasmListButtonClickAction(){
+        Window parentWindow = this.getWindow();
+        SelectGermplasmListDialog selectAGermplasmDialog = new SelectGermplasmListDialog(this, parentWindow, true);
+        parentWindow.addWindow(selectAGermplasmDialog);
+    }
+    
+    public void selectStandardGermplasmListButtonClickAction(){
+        Window parentWindow = this.getWindow();
+        SelectGermplasmListDialog selectAGermplasmDialog = new SelectGermplasmListDialog(this, parentWindow, false);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
@@ -390,12 +402,17 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
     }
     
-    public void addTestGermplasmList(GermplasmList germplasmList){  
-    	if(germplasmList != null){
-	    	//testGermplasmListAdded.add(germplasmList);
-	    	//doGermplasmPermutation0(germplasmList, standardGermplasmListAdded);
-	    	//doGermplasmPermutation1(germplasmList, standardGermplasmAdded);
-	    	doGermplasmPermutationOnTable(true, false, germplasmList, null);
+    public void addTestGermplasmList(Integer germplasmListId){
+    	try{
+	    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+	    	if(germplasmList != null){
+		    	//testGermplasmListAdded.add(germplasmList);
+		    	//doGermplasmPermutation0(germplasmList, standardGermplasmListAdded);
+		    	//doGermplasmPermutation1(germplasmList, standardGermplasmAdded);
+		    	doGermplasmPermutationOnTable(true, false, germplasmList, null);
+	    	}
+    	}catch(Exception e){
+    		e.printStackTrace();
     	}
     }
     public void addTestGermplasm(Germplasm germplasm ){  
@@ -406,12 +423,19 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     		doGermplasmPermutationOnTable(true, true, null, germplasm);
     	}
     }
-    public void addStandardGermplasmList(GermplasmList germplasmList){
-    	if(germplasmList != null){
-	    	//standardGermplasmListAdded.add(germplasmList);
-	    	//doGermplasmPermutation4(testGermplasmListAdded, germplasmList);
-	    	//doGermplasmPermutation5(testGermplasmAdded, germplasmList);
-    		doGermplasmPermutationOnTable(false, false, germplasmList, null);
+    public void addStandardGermplasmList(Integer germplasmListId){
+    	
+    	try{
+	    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+	    	if(germplasmList != null){
+		    	//standardGermplasmListAdded.add(germplasmList);
+		    	//doGermplasmPermutation4(testGermplasmListAdded, germplasmList);
+		    	//doGermplasmPermutation5(testGermplasmAdded, germplasmList);
+	    		doGermplasmPermutationOnTable(false, false, germplasmList, null);
+	    	}
+	    	
+    	}catch(Exception e){
+    		e.printStackTrace();
     	}
     }
     public void addStandardGermplasm(Germplasm germplasm){
