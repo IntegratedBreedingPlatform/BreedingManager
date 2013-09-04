@@ -137,7 +137,7 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         doneButton = new Button(buttonlabel);
         doneButton.setData(ADD_BUTTON_ID);
         doneButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        //doneButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new CloseWindowAction());
         doneButton.setEnabled(false);
         buttonLayout.addComponent(doneButton);
         buttonLayout.addComponent(cancelButton);
