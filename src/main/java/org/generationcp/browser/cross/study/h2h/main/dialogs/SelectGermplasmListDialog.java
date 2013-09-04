@@ -147,8 +147,9 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
         
         buttonArea.setMargin(false, true, false, true);
         buttonArea.setSpacing(true);
-        buttonArea.addComponent(cancelButton);
+        
         buttonArea.addComponent(doneButton);
+        buttonArea.addComponent(cancelButton);
         
         mainLayout.addComponent(selectGermplasmList);
         mainLayout.addComponent(buttonArea);
