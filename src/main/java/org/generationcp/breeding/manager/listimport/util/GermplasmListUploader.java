@@ -62,6 +62,10 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         return originalFilename;
     }
 
+    public Boolean getFileIsValid(){
+    	return fileIsValid;
+    }
+    
     public String getListName() {
         return listName;
     }

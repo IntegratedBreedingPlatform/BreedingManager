@@ -489,9 +489,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                 //for 909
                ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate());
            }
-           
-           this.accordion.setSelectedTab(this.nextScreen);
-            
+            source.enableAllTabs();
+           	this.accordion.setSelectedTab(this.nextScreen);
+           	source.enableTab(3);
         } else {
             this.nextButton.setEnabled(false);
         }
@@ -499,7 +499,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
   
     public void backButtonClickAction(){
         if(this.previousScreen != null){
+        	source.enableAllTabs();
             this.accordion.setSelectedTab(previousScreen);
+            source.enableTab(1);
         } else{
             this.backButton.setEnabled(false);
         }

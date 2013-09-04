@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Window.Notification;
 //import com.vaadin.ui.AbsoluteLayout;
 //import com.vaadin.ui.Accordion;
 //import com.vaadin.ui.Button;
@@ -76,6 +77,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new GermplasmImportButtonClickListener(this));
         addComponent(nextButton, "top:250px;left:700px");
+        
     }
 
 
@@ -104,23 +106,31 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     }
 
     public void nextButtonClickAction() throws InternationalizableException{
-        if(this.nextScreen != null){
-            this.accordion.setSelectedTab(this.nextScreen);
-            //we set it here
-            if(getGermplasmDetailsComponent() != null
-                    && germplasmListUploader != null
-                    && germplasmListUploader.getImportedGermplasmList() != null){
-                    ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
-                    List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
-                    for(int i = 0 ; i < importedGermplasms.size() ; i++){
-                        ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
-                        String source = importedGermplasmList.getFilename()+":"+(i+1);
-                        getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), "", importedGermplasm.getDesig(), "", source}, new Integer(i+1));
-                    }
-                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
-                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
-            }
-        }
+    	if(germplasmListUploader.getFileIsValid()==null){
+    		source.getApplication().getMainWindow().showNotification("Please upload a valid import file before clicking on the next button", Notification.TYPE_ERROR_MESSAGE);
+    	} else if(germplasmListUploader.getFileIsValid()==false){
+    		source.getApplication().getMainWindow().showNotification("Invalid import file, please upload a valid import file before clicking on the next button", Notification.TYPE_ERROR_MESSAGE);
+    	} else {
+	        if(this.nextScreen != null){
+	        	source.enableAllTabs();
+	            this.accordion.setSelectedTab(this.nextScreen);
+	            source.enableTab(2);
+	            //we set it here
+	            if(getGermplasmDetailsComponent() != null
+	                    && germplasmListUploader != null
+	                    && germplasmListUploader.getImportedGermplasmList() != null){
+	                    ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
+	                    List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+	                    for(int i = 0 ; i < importedGermplasms.size() ; i++){
+	                        ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
+	                        String source = importedGermplasmList.getFilename()+":"+(i+1);
+	                        getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), "", importedGermplasm.getDesig(), "", source}, new Integer(i+1));
+	                    }
+	                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
+	                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
+	            }
+	        }
+    	}
     }
     
     public Accordion getAccordion() {

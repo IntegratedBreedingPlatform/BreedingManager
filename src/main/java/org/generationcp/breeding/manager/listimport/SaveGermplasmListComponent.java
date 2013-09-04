@@ -197,7 +197,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     public void backButtonClickAction(){
        
         if(this.previousScreen != null){
+        	source.enableAllTabs();
             this.accordion.setSelectedTab(previousScreen);
+            source.enableTab(2);
         } else{
             this.backButton.setEnabled(false);
         }
@@ -207,19 +209,21 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
          //do the saving now
         if (validateRequiredFields()){
 
-                    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_GERMPLASM_LIST),
-                            messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_GERMPLASM),
-                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL),
-                            new ConfirmDialog.Listener() {
-
-                                public void onClose(ConfirmDialog dialog) {
-                                    if (dialog.isConfirmed()) {
-                                        saveRecords();
-                                    }
-                                }
-
-                            }
-                    );
+        saveRecords();
+        
+//                    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_GERMPLASM_LIST),
+//                            messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_GERMPLASM),
+//                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL),
+//                            new ConfirmDialog.Listener() {
+//
+//                                public void onClose(ConfirmDialog dialog) {
+//                                    if (dialog.isConfirmed()) {
+//                                        saveRecords();
+//                                    }
+//                                }
+//
+//                            }
+//                    );
                 }
     }
 

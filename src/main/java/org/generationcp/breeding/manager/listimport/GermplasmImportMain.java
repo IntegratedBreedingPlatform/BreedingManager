@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -32,6 +33,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private Label importToolTitle;
     private Accordion accordion;
     private ComponentContainer parent;
+    
+    private Tab wizardTabOne;
+    private Tab wizardTabTwo;
+    private Tab wizardTabThree;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -61,11 +66,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         wizardScreenTwo.setPreviousScreen(wizardScreenOne);
         wizardScreenThree.setPreviousScreen(wizardScreenTwo);
         
-        accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.OPEN_GERMPLASM_IMPORT_FILE)); //Open Germplasm Import File
-        accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS)); //Specify Germplasm Details
-        accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.SAVE_GERMPLASM_LIST)); //Save Germplasm List
+        wizardTabOne = accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.OPEN_GERMPLASM_IMPORT_FILE)); //Open Germplasm Import File
+        wizardTabTwo = accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS)); //Specify Germplasm Details
+        wizardTabThree = accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.SAVE_GERMPLASM_LIST)); //Save Germplasm List
         
         addComponent(accordion);
+        
+        enableTab(1);
     }
     
     @Override
@@ -96,6 +103,26 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         this.removeComponent(this.accordion);
         this.addComponent(germplasmListBrowser);
     }
+    
+    public void enableAllTabs(){
+    	if(this.wizardTabOne!=null)
+    		this.wizardTabOne.setEnabled(true);
+    	if(this.wizardTabTwo!=null)
+    		this.wizardTabTwo.setEnabled(true);
+    	if(this.wizardTabThree!=null)
+    		this.wizardTabThree.setEnabled(true);
+    }
+    
+    public void enableTab(int index){
+    	this.enableAllTabs();
+    	if(index!=1)
+    		this.wizardTabOne .setEnabled(false);
+    	if(index!=2)
+    		this.wizardTabTwo.setEnabled(false);
+    	if(index!=3)
+    		this.wizardTabThree.setEnabled(false);
+    }
+    
 
     public void reset(){
         this.parent.replaceComponent(this, new GermplasmImportMain(this.parent));
