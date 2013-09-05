@@ -45,6 +45,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private Label descriptionLabel;
     private Label listTypeLabel;
     private Label listDateLabel;
+    private Label doneLabel;
     
     private TextField listNameText;
     private TextField descriptionText;
@@ -176,6 +177,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(clickListener);
         addComponent(doneButton, "top:200px;left:670px");
+        
+        doneLabel = new Label();
+        addComponent(doneLabel, "top:220px;left:20px");
     }
     
     @Override
@@ -192,6 +196,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         messageSource.setCaption(listDateLabel, Message.LIST_DATE_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(doneButton, Message.DONE);
+        messageSource.setCaption(doneLabel, Message.BY_CLICKING_ON_THE_DONE_BUTTON);
     }
 
     public void backButtonClickAction(){
