@@ -76,11 +76,19 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new GermplasmImportButtonClickListener(this));
+        nextButton.setEnabled(false);
         addComponent(nextButton, "top:250px;left:700px");
         
     }
 
-
+    public void enableNextButton(){
+    	this.nextButton.setEnabled(true);
+    }
+    
+    public void disableNextButton(){
+    	this.nextButton.setEnabled(false);
+    }
+    
     private SpecifyGermplasmDetailsComponent getGermplasmDetailsComponent (){
         if(this.accordion != null){
             Iterator<Component> componentIterator = this.accordion.getComponentIterator();
@@ -115,6 +123,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	        	source.enableAllTabs();
 	            this.accordion.setSelectedTab(this.nextScreen);
 	            source.enableTab(2);
+	            source.alsoEnableTab(1);
 	            //we set it here
 	            if(getGermplasmDetailsComponent() != null
 	                    && germplasmListUploader != null

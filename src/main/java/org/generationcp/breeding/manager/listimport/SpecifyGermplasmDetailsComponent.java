@@ -492,6 +492,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             source.enableAllTabs();
            	this.accordion.setSelectedTab(this.nextScreen);
            	source.enableTab(3);
+           	source.alsoEnableTab(2);
         } else {
             this.nextButton.setEnabled(false);
         }

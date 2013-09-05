@@ -205,6 +205,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         	source.enableAllTabs();
             this.accordion.setSelectedTab(previousScreen);
             source.enableTab(2);
+            source.alsoEnableTab(1);
         } else{
             this.backButton.setEnabled(false);
         }

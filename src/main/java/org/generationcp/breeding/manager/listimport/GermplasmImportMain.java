@@ -112,7 +112,8 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     	if(this.wizardTabThree!=null)
     		this.wizardTabThree.setEnabled(true);
     }
-    
+
+   
     public void enableTab(int index){
     	this.enableAllTabs();
     	if(index!=1)
@@ -123,6 +124,14 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     		this.wizardTabThree.setEnabled(false);
     }
     
+    public void alsoEnableTab(int index){
+    	if(index==1)
+    		this.wizardTabOne .setEnabled(true);
+    	if(index==2)
+    		this.wizardTabTwo.setEnabled(true);
+    	if(index==3)
+    		this.wizardTabThree.setEnabled(true);
+    }
 
     public void reset(){
         this.parent.replaceComponent(this, new GermplasmImportMain(this.parent));

@@ -121,6 +121,18 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 
             if(fileIsValid==false){
                 importedGermplasmList = null;
+                
+            	if(source instanceof GermplasmImportFileComponent){
+            		source.disableNextButton();
+            	}
+            	
+            } else {
+            	source.getAccordion().getApplication().getMainWindow().showNotification("A valid file was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
+            	
+            	if(source instanceof GermplasmImportFileComponent){
+            		source.enableNextButton();
+            	}
+            	
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
