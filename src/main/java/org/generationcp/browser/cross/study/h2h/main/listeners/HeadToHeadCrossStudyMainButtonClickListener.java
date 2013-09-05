@@ -143,7 +143,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof SelectGermplasmListDialog
                 && event.getButton().getData().equals(SelectGermplasmListDialog.ADD_BUTTON_ID)) {
             ((SelectGermplasmListDialog) source).populateParentList();
-        } 
+        }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
         }

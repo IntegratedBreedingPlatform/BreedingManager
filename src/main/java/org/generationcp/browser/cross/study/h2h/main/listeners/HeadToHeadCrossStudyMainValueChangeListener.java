@@ -1,0 +1,47 @@
+package org.generationcp.browser.cross.study.h2h.main.listeners;
+
+import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
+import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
+import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
+import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+
+public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeListener {
+
+    private static final long serialVersionUID = -3422805642974069212L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(HeadToHeadCrossStudyMainValueChangeListener.class);
+
+    private Component source;
+    private Component sourceComboBox;
+ 
+    public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox){
+        this.source = source;
+        this.sourceComboBox = sourceComboBox;
+    }
+    @Override
+    public void valueChange(ValueChangeEvent event) {
+        if (source instanceof TraitsAvailableComponent) {
+            ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
+        } if (source instanceof EnvironmentsAvailableComponent) {
+            ((EnvironmentsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
+        }  
+        else {
+            LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
+        }
+    }
+
+}

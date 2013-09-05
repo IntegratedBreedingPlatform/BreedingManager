@@ -1,15 +1,29 @@
 package  org.generationcp.browser.cross.study.h2h.main;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
+
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
-import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
+import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
+import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.dms.TrialEnvironment;
+import org.generationcp.middleware.domain.dms.TrialEnvironments;
+import org.generationcp.middleware.domain.h2h.GermplasmPair;
+import org.generationcp.middleware.domain.h2h.TraitInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
+import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.hibernate.Query;
@@ -21,7 +35,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javassist.bytecode.Descriptor.Iterator;
 
 @Configurable
 public class TraitsAvailableComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -32,9 +50,12 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     public static final String BACK_BUTTON_ID = "TraitsAvailableComponent Back Button ID";
     public static final String NEXT_BUTTON_ID = "TraitsAvailableComponent Next Button ID";
+    public static final String CHECKBOX_ID = "TraitsAvailableComponent Checkbox ID";
     
     private static final String TRAIT_COLUMN_ID = "TraitsAvailableComponent Trait Column Id";
     private static final String NUMBER_OF_ENV_COLUMN_ID = "TraitsAvailableComponent Number of Environments Column Id";
+    private static final String TAG_COLUMN_ID = "TraitsAvailableComponent Tag Column Id";
+    private static final String DIRECTION_COLUMN_ID = "TraitsAvailableComponent Direction Column Id";
     
     private Table traitsTable;
     
@@ -47,10 +68,26 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private Integer currentTestEntryGID;
     private Integer currentStandardEntryGID;
     
+    private Label selectTraitLabel;
+    
     private List<TraitForComparison> traitsForComparisonList;
+    private static Integer INCREASING = 1;
+    private static Integer DECREASING = 0;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private CrossStudyDataManager crossStudyDataManager;
+    
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
+    
+    private List<ComboBox> traitForComparisons; //will contain all the tagged row
+    private Map<ComboBox, TraitInfo> traitMaps; //will contain the mappign from comboBox to the specific row
+    private Map<String, Map<String, TrialEnvironment>> traitEnvironmentMap; //will contain the map of trait and trial environment
+    private Map<String, TrialEnvironment> trialEnvironmentMap; //will contain the map of  trial environment
+    
     
     public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentsAvailableComponent nextScreen){
         this.mainScreen = mainScreen;
@@ -64,34 +101,144 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         setHeight("500px");
         setWidth("1000px");
         
+        selectTraitLabel = new Label(messageSource.getMessage(Message.HEAD_TO_HEAD_SELECT_TRAITS));
+        selectTraitLabel.setImmediate(true);
+        
+        addComponent(selectTraitLabel, "top:20px;left:30px");
+        
         traitsTable = new Table();
-        traitsTable.setWidth("500px");
+        traitsTable.setWidth("800px");
         traitsTable.setHeight("400px");
         traitsTable.setImmediate(true);
         
+        traitsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         traitsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
         traitsTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
+        traitsTable.addContainerProperty(DIRECTION_COLUMN_ID, ComboBox.class, null);
         
-        traitsTable.setColumnHeader(TRAIT_COLUMN_ID, "TRAIT");
-        traitsTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# OF ENV");
+       
+
         
-        addComponent(traitsTable, "top:20px;left:30px");
+        traitsTable.setColumnHeader(TAG_COLUMN_ID,  messageSource.getMessage(Message.HEAD_TO_HEAD_TAG));
+        traitsTable.setColumnHeader(TRAIT_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_TRAIT));
+        traitsTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_NO_OF_ENVS));        
+        traitsTable.setColumnHeader(DIRECTION_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_DIRECTION));
+        
+        traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);
+        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 250);
+        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 200);
+        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);
+        
+        
+        
+        addComponent(traitsTable, "top:40px;left:30px");
         
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        nextButton.setEnabled(true);
+        nextButton.setEnabled(false);
+        
         addComponent(nextButton, "top:450px;left:900px");
         
         backButton = new Button("Back");
         backButton.setData(BACK_BUTTON_ID);
         backButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         addComponent(backButton, "top:450px;left:820px");
+        
+       // addTestData();
     }
 
-    public void populateTraitsAvailableTable(Integer testEntryGID, Integer standardEntryGID){
+    
+    
+    private ComboBox getDirectionComboBox(){
+    	ComboBox combo = new ComboBox();
+    	combo.setNullSelectionAllowed(false);
+    	combo.setTextInputAllowed(false);
+    	combo.setImmediate(true);
+    	
+		combo.addItem(INCREASING);
+		combo.setItemCaption(INCREASING, messageSource.getMessage(Message.HEAD_TO_HEAD_INCREASING));
+		
+		combo.addItem(DECREASING);
+		combo.setItemCaption(DECREASING, messageSource.getMessage(Message.HEAD_TO_HEAD_DECREASING));
+		
+		combo.setValue(INCREASING);
+		
+		combo.setEnabled(false);
+		return combo;
+		
+    }
+    public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList){
         this.traitsTable.removeAllItems();
+       
+        traitForComparisons = new ArrayList();
+        traitMaps = new HashMap();
         
+        Map<String, List<TraitInfo>> traitMap = new HashMap();
+        traitEnvironmentMap = new HashMap();
+        trialEnvironmentMap = new HashMap();
+        List<GermplasmPair> environmentPairList;
+		try {
+			environmentPairList = crossStudyDataManager.getEnvironmentsForGermplasmPairs(germplasmPairList);
+		
+	        for(GermplasmPair pair : environmentPairList){
+	    		CheckBox box = new CheckBox();    	
+	    		TrialEnvironments env = pair.getTrialEnvironments();
+	    		
+	    		java.util.Iterator<TrialEnvironment> envIterator = env.getTrialEnvironments().iterator();
+	    		while(envIterator.hasNext())
+	    		{
+	    			TrialEnvironment trialEnv = envIterator.next();
+	    			trialEnvironmentMap.put(Integer.toString(trialEnv.getId()), trialEnv);
+	    			java.util.Iterator<TraitInfo> traitIterator = trialEnv.getTraits().iterator();
+	    			while(traitIterator.hasNext())
+	        		{
+	    				TraitInfo info = traitIterator.next();
+	    				
+	    				String id = Integer.toString(info.getId());
+	    				List<TraitInfo> tempList = new ArrayList();
+	    				if(traitMap.containsKey(id)){
+	    					tempList = traitMap.get(id);
+	    				}
+	    				tempList.add(info);
+	    				traitMap.put(id, tempList);
+	    				
+	    				
+	    				//we need to keep track on the environments
+	    				Map<String, TrialEnvironment> tempEnvMap = new HashMap();
+	    				if(traitEnvironmentMap.containsKey(id)){
+	    					tempEnvMap = traitEnvironmentMap.get(id);
+	    				}
+	    				tempEnvMap.put(Integer.toString(trialEnv.getId()), trialEnv);
+	    				traitEnvironmentMap.put(id, tempEnvMap);
+	    				
+	        		}
+	    		}
+	    		
+	        }
+	        java.util.Iterator<String> traitsIterator = traitMap.keySet().iterator();
+	        while(traitsIterator.hasNext()){
+	        	String id = traitsIterator.next();
+	        	List<TraitInfo> traitInfoList = traitMap.get(id);
+	        	TraitInfo info = traitInfoList.get(0); //we get the 1st one since its all the same for this specific list
+	        	CheckBox box = new CheckBox();
+	        	ComboBox comboBox = getDirectionComboBox();
+	        	box.setImmediate(true);
+	        	Integer tableId = Integer.valueOf(id);
+	        	traitsTable.addItem(new Object[] {box, info.getName(),
+	        			traitInfoList.size(),comboBox },tableId);
+	        	//checkBoxMap.put(box, traitsTable.getItem(tableId));
+	        	box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
+	        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
+	        	traitMaps.put(comboBox, info);
+	        	
+	        }
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        /*
         List<TraitForComparison> tableItems = getAvailableTraitsForComparison(testEntryGID, standardEntryGID);
         this.traitsForComparisonList = tableItems;
         for(TraitForComparison tableItem : tableItems){
@@ -107,64 +254,51 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
             this.currentTestEntryGID = testEntryGID;
             this.nextButton.setEnabled(true);
         }
+        */
     }
     
-    @SuppressWarnings("rawtypes")
-    private List<TraitForComparison> getAvailableTraitsForComparison(Integer testEntryGID, Integer standardEntryGID){
-        List<TraitForComparison> toreturn = new ArrayList<TraitForComparison>();
-        
-        try{
-            Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
-            Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
-            
-            String testEntryPrefName = null;
-            if(testEntry.getPreferredName() != null){
-                testEntryPrefName = testEntry.getPreferredName().getNval().trim();
-            } else{
-                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<TraitForComparison>();
-            }
-            
-            String standardEntryPrefName = null;
-            if(standardEntry.getPreferredName() != null){
-                standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
-            } else{
-            MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<TraitForComparison>();
-            }
-            
-            GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-            String queryString = "call h2h_traitXenv_summary('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
-            Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
-            List results = query.list();
-            for(Object result : results){
-                Object resultArray[] = (Object[]) result;
-                String name = (String) resultArray[0];
-                if(name != null){
-                    name = name.trim().toUpperCase();
-                }
-                BigInteger numberOfEnvironments = (BigInteger) resultArray[1];
-                toreturn.add(new TraitForComparison(name, numberOfEnvironments.intValue()));
-            }
-        } catch(MiddlewareQueryException ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<TraitForComparison>();
-        } catch(Exception ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<TraitForComparison>();
-        }
-        
-        return toreturn;
+    
+    
+    public void clickCheckBox(Component combo, boolean boolVal){
+    	
+    	
+    	if(combo != null){
+    		ComboBox comboBox = (ComboBox) combo;
+    		comboBox.setEnabled(boolVal);
+    		TraitInfo info = traitMaps.get(comboBox);
+    		
+    			
+    			if( info != null){    				
+    				if(boolVal){
+    					traitForComparisons.add(comboBox);	
+    				}else{
+    					traitForComparisons.remove(comboBox);
+					}    				    				
+    			}
+    			
+			if(traitForComparisons.isEmpty()){
+				nextButton.setEnabled(false);
+			}else{
+				nextButton.setEnabled(true);
+			}
+    	}
+    	
     }
     
+   
     public void nextButtonClickAction(){
         //this.nextScreen.populateEnvironmentsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
+    	List<TraitForComparison> traitForComparisonsList = new ArrayList();
+    	for(ComboBox combo : traitForComparisons){
+    		//ComboBox combo = (ComboBox) item.getItemProperty(DIRECTION_COLUMN_ID);
+    		//item.getItemPropertyIds()
+    		TraitInfo info = traitMaps.get(combo);
+    		TraitForComparison traitForComparison = new TraitForComparison(info, (Integer)combo.getValue());
+    		traitForComparisonsList.add(traitForComparison);
+    	}
+    	if(this.nextScreen != null){
+    		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap);
+    	}
         this.mainScreen.selectThirdTab();
     }
     

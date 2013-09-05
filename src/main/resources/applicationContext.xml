@@ -155,6 +155,12 @@
         <constructor-arg ref="workbenchHibernateSessionProvider" />
     </bean>
     
+    <bean id="crossStudyDataManager"
+        class="org.generationcp.middleware.manager.CrossStudyDataManagerImpl">
+        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
+        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
+    </bean>
+    
     <!--
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
         Add @Configurable annotation to your class if you only need auto-wiring.

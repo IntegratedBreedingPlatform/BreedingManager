@@ -30,6 +30,7 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -128,7 +129,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         setHeight("600px");
         setWidth("1000px");
         
-        testPanel = new Panel("Test");
+        testPanel = new Panel("TEST");
         testPanel.setWidth("400px");
         testPanel.setSizeUndefined();
         
@@ -343,6 +344,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         }
         */
     	//we check the chosen rows
+    	/*
     	Iterator iter = entriesTable.getItemIds().iterator();
 		boolean hasLeftBlank = false;
 		boolean hasRightBlank = false;
@@ -381,9 +383,39 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Standard entry.", Notification.POSITION_CENTERED);
 			return;
 		}
+		*/
         if(this.nextScreen != null){
+        	this.nextScreen.populateTraitsAvailableTable(getGermplasmPairs());
             this.mainScreen.selectSecondTab();
+            
         }
+    }
+    
+    private List<GermplasmPair> getGermplasmPairs(){
+    	List<GermplasmPair> pairList = new ArrayList();
+    	
+    	Iterator iter = entriesTable.getItemIds().iterator();	
+				
+		
+		while(iter.hasNext()){
+			GermplasmPair germplasmPair = new GermplasmPair();			
+			//we iterate and permutate against the list
+			String id = (String)iter.next();
+			String leftId = "";
+			String rightId = "";
+			StringTokenizer tokenizer = new StringTokenizer(id,":");
+			if(tokenizer.countTokens() == 2){
+				leftId = tokenizer.nextToken().trim();
+				rightId = tokenizer.nextToken().trim();
+			}
+			
+			germplasmPair.setGid1(Integer.valueOf(leftId));
+			germplasmPair.setGid2(Integer.valueOf(rightId));
+			pairList.add(germplasmPair);
+			
+		}
+    	
+    	return pairList;
     }
     
     private boolean areCurrentGIDsDifferentFromLast(Integer currentTestEntryGID, Integer currentStandardEntryGID){
