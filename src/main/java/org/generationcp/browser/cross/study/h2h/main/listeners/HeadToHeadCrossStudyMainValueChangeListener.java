@@ -36,7 +36,7 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     public void valueChange(ValueChangeEvent event) {
         if (source instanceof TraitsAvailableComponent) {
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
-        } if (source instanceof EnvironmentsAvailableComponent) {
+        }else if (source instanceof EnvironmentsAvailableComponent) {
             ((EnvironmentsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
         }  
         else {

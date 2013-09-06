@@ -87,6 +87,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private List<ComboBox> environmentForComparison; //will contain all the tagged row
     
+    
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
@@ -229,7 +230,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     }
     public void populateEnvironmentsTable(List<TraitForComparison> traitForComparisonsList, Map<String, Map<String, TrialEnvironment>>  traitEnvMap, Map<String, TrialEnvironment> trialEnvMap){    
-    
+    	if(true)
+    		return;
     	Iterator<TraitForComparison> iter = traitForComparisonsList.iterator();
     	Map<String, Map<String, TrialEnvironment>>  newTraitEnvMap = new HashMap();
     	Set<String> trialEnvironmentIds = new HashSet();
