@@ -87,6 +87,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private List<ComboBox> environmentForComparison; //will contain all the tagged row
     
+    
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     

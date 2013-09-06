@@ -84,7 +84,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private SimpleResourceBundleMessageSource messageSource;
     
     private List<ComboBox> traitForComparisons; //will contain all the tagged row
-    private Map<ComboBox, TraitInfo> traitMaps; //will contain the mappign from comboBox to the specific row
+    private Map<ComboBox, TraitInfo> traitMaps; //will contain the mapping from comboBox to the specific row
     private Map<String, Map<String, TrialEnvironment>> traitEnvironmentMap; //will contain the map of trait and trial environment
     private Map<String, TrialEnvironment> trialEnvironmentMap; //will contain the map of  trial environment
     
