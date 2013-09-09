@@ -205,6 +205,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         entriesTable.setWidth("900px");
         entriesTable.setHeight("330px");
         entriesTable.setImmediate(true);
+        entriesTable.setPageLength(-1);
+        //entriesTable.setCacheRate(cacheRate)
         
         entriesTable.addContainerProperty(TEST_ENTRY_COLUMN_ID, String.class, null);
         entriesTable.addContainerProperty(STANDARD_ENTRY_COLUMN_ID, String.class, null);
