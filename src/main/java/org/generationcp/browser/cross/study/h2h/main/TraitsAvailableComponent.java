@@ -91,6 +91,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private Map<ComboBox, TraitInfo> traitMaps; //will contain the mapping from comboBox to the specific row
     private Map<String, Map<String, TrialEnvironment>> traitEnvironmentMap; //will contain the map of trait and trial environment
     private Map<String, TrialEnvironment> trialEnvironmentMap; //will contain the map of  trial environment
+    private Map<String, String> germplasmIdNameMap;
     
     private Set<Integer> germplasmIds;
     private List<GermplasmPair> finalGermplasmPair;
@@ -178,11 +179,11 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 		return combo;
 		
     }
-    public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList){
+    public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList, Map<String, String> germplasmIdNameMap){
         this.traitsTable.removeAllItems();
         
         selectTraitReminderLabel.setVisible(true);
-       
+        this.germplasmIdNameMap = germplasmIdNameMap; 
         traitForComparisons = new ArrayList();
         traitMaps = new HashMap();
         
@@ -316,7 +317,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		traitForComparisonsList.add(traitForComparison);
     	}
     	if(this.nextScreen != null){
-    		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair);
+    		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair, germplasmIdNameMap);
     	}
         this.mainScreen.selectThirdTab();
     }

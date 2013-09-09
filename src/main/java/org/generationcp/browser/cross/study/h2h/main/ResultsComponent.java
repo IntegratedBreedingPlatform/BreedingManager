@@ -1,14 +1,22 @@
 package org.generationcp.browser.cross.study.h2h.main;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
+
+import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
 import org.generationcp.browser.cross.study.h2h.pojos.Result;
-import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
+import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.h2h.GermplasmPair;
+import org.generationcp.middleware.domain.h2h.TraitInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -21,8 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Configurable
 public class ResultsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -32,12 +43,18 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.ResultsComponent.class);
     
     private static final String TRAIT_COLUMN_ID = "ResultsComponent Trait Column ID";
-    private static final String NUM_OF_ENV_COLUMN_ID = "ResultsComponent Num Of Env Column ID";
-    private static final String NUM_SUP_COLUMN_ID = "ResultsComponent Num Sup Column ID";
+    
+    
     private static final String MEAN_TEST_COLUMN_ID = "ResultsComponent Mean Test Column ID";
     private static final String MEAN_STD_COLUMN_ID = "ResultsComponent Mean STD Column ID";
-    private static final String MEAN_DIFF_COLUMN_ID = "ResultsComponent Mean Diff Column ID";
+    
+    
+    private static final String TEST_COLUMN_ID = "ResultsComponent Test Column ID";
+    private static final String STANDARD_COLUMN_ID = "ResultsComponent Standard Column ID";
+    private static final String NUM_OF_ENV_COLUMN_ID = "ResultsComponent Num Of Env Column ID";
+    private static final String NUM_SUP_COLUMN_ID = "ResultsComponent Num Sup Column ID";
     private static final String PVAL_COLUMN_ID = "ResultsComponent Pval Column ID";
+    private static final String MEAN_DIFF_COLUMN_ID = "ResultsComponent Mean Diff Column ID";
 
     private Table resultsTable;
     
@@ -70,7 +87,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     public void afterPropertiesSet() throws Exception {
         setHeight("550px");
         setWidth("1000px");
-        
+    /*    
     testEntryLabel = new Label("<b>Test Entry:</b>");
     testEntryLabel.setContentMode(Label.CONTENT_XHTML);
     addComponent(testEntryLabel, "top:20px;left:30px");
@@ -84,6 +101,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     standardEntryNameLabel = new Label();
     addComponent(standardEntryNameLabel, "top:20px;left:550px");
+      */  
         
     resultsTable = new Table();
     resultsTable.setWidth("800px");
@@ -91,7 +109,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     resultsTable.setImmediate(true);
     resultsTable.setColumnCollapsingAllowed(true);
     resultsTable.setColumnReorderingAllowed(true);
-        
+    /*
     resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
     resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
     resultsTable.addContainerProperty(NUM_SUP_COLUMN_ID, Integer.class, null);
@@ -107,9 +125,11 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
     resultsTable.setColumnHeader(MEAN_DIFF_COLUMN_ID, "MEAN DIFF");
     resultsTable.setColumnHeader(PVAL_COLUMN_ID, "PVAL");
-        
+    */    
+    
+    
     addComponent(resultsTable, "top:70px;left:30px");
-
+    
     exportButton = new Button("Export");
     exportButton.setData(EXPORT_BUTTON_ID);
     exportButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
@@ -121,7 +141,110 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
        backButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
        addComponent(backButton, "top:500px;left:820px");
     }
-
+    
+    private void createEnvironmentsResultTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList){
+    	    	    	        	    
+        List<Object> propertyIds = new ArrayList<Object>();
+        for(Object propertyId : resultsTable.getContainerPropertyIds()){
+            propertyIds.add(propertyId);
+        }
+        
+        for(Object propertyId : propertyIds){
+        	resultsTable.removeContainerProperty(propertyId);
+        }
+        
+        resultsTable.addContainerProperty(TEST_COLUMN_ID, String.class, null);
+        resultsTable.addContainerProperty(STANDARD_COLUMN_ID, String.class, null);
+        
+        //environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
+        //environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
+        //environmentsTable.addContainerProperty(COUNTRY_COLUMN_ID, String.class, null);
+        //environmentsTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
+        
+        resultsTable.setColumnHeader(TEST_COLUMN_ID, "Test Entry");
+        resultsTable.setColumnHeader(STANDARD_COLUMN_ID, "Standard Entry");
+        //environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
+        //environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
+        //environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
+        
+        EnvironmentForComparison envForComparison = environmentForComparisonList.get(0);
+    	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
+    	
+        for(TraitForComparison traitForCompare : traitsIterator){        	
+            
+        	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+NUM_OF_ENV_COLUMN_ID, String.class, null);
+        	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+NUM_OF_ENV_COLUMN_ID, "NoEnv");
+        	
+        	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+NUM_SUP_COLUMN_ID, String.class, null);
+        	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+NUM_SUP_COLUMN_ID, "NoSup");
+        	
+        	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+PVAL_COLUMN_ID, String.class, null);
+        	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+PVAL_COLUMN_ID, "Pval");
+        	
+        	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+MEAN_DIFF_COLUMN_ID, String.class, null);
+        	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+MEAN_DIFF_COLUMN_ID, "MeanDiff");
+        }
+        
+        for(GermplasmPair germplasmPair : germplasmPairList){
+        	String uniquieId = germplasmPair.getGid1() + ":" + germplasmPair.getGid2();
+        	String testEntry = germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid1()));
+        	String standardEntry =  germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid2()));
+        	Map<String,String> traitDataMap = new HashMap();
+        	ResultsData resData = new ResultsData(germplasmPair.getGid1(), testEntry, germplasmPair.getGid2(), standardEntry, traitDataMap);
+        	
+        	
+        	
+        	Item item = resultsTable.addItem(uniquieId);
+        	item.getItemProperty(TEST_COLUMN_ID).setValue(testEntry);
+        	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
+        	traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
+        	for(TraitForComparison traitForCompare : traitsIterator){        	
+                String cellKey = traitForCompare.getTraitInfo().getName()+NUM_OF_ENV_COLUMN_ID;
+                String cellVal = "0";                
+        		traitDataMap.put(cellKey, cellVal);
+            	item.getItemProperty(cellKey).setValue(cellVal);
+            	
+            	cellKey = traitForCompare.getTraitInfo().getName()+NUM_SUP_COLUMN_ID;
+                cellVal = "0";
+            	traitDataMap.put(cellKey,cellVal);            	
+            	item.getItemProperty(cellKey).setValue(cellVal);
+            	
+            	cellKey = traitForCompare.getTraitInfo().getName()+PVAL_COLUMN_ID;
+                cellVal = "0";
+            	traitDataMap.put(cellKey,cellVal);
+            	item.getItemProperty(cellKey).setValue(cellVal);
+            	
+            	cellKey = traitForCompare.getTraitInfo().getName()+MEAN_DIFF_COLUMN_ID;
+                cellVal = "0";
+            	traitDataMap.put(cellKey,cellVal);
+            	item.getItemProperty(cellKey).setValue(cellVal);
+            }
+        	resData.setTraitDataMap(traitDataMap);
+    	}
+        
+    }
+    
+    public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair){
+    	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair);
+    	/*
+        if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
+            this.resultsTable.removeAllItems();
+            
+            List<Result> results = getResults(testEntryGID, standardEntryGID, traitsForComparisonList);
+            for(Result result : results){
+                this.resultsTable.addItem(new Object[]{result.getTraitName(), result.getNumberOfEnvironments()
+                        , result.getNumberOfSup(), result.getMeanTest(), result.getMeanStd(), result.getMeanDiff()
+                        , result.getPval()}, result.getTraitName());
+            }
+            
+            this.resultsTable.setColumnCollapsed(NUM_SUP_COLUMN_ID, true);
+            this.resultsTable.setColumnCollapsed(PVAL_COLUMN_ID, true);
+            this.resultsTable.requestRepaint();
+        }
+        */
+    }
+    
+/*
     public void populateResultsTable(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){
         if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
             this.resultsTable.removeAllItems();
@@ -138,6 +261,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
             this.resultsTable.requestRepaint();
         }
     }
+    */
     
     @SuppressWarnings("rawtypes")
     private List<Result> getResults(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){
@@ -222,13 +346,13 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     private Integer getNumberOfEnvironmentsForTrait(String traitName, List<TraitForComparison> traitsForComparisonList){
         Integer toreturn = 0;
-        
+        /*
         for(TraitForComparison trait : traitsForComparisonList){
             if(trait.getName().equals(traitName)){
                 return trait.getNumberOfEnvironments();
             }
         }
-        
+        */
         return toreturn;
     }
     
