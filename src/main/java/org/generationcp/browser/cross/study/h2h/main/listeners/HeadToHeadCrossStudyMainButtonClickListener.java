@@ -4,6 +4,7 @@ import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableCompon
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
 import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
@@ -23,10 +24,23 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     private static final Logger LOG = LoggerFactory.getLogger(HeadToHeadCrossStudyMainButtonClickListener.class);
 
     private Component source;
+    private String countryName;
+    private String provinceName;
  
     public HeadToHeadCrossStudyMainButtonClickListener(Component source){
         this.source = source;
     }
+    public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName){
+        this.source = source;
+        this.countryName = countryName;
+    }
+    
+    public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName, String provinceName){
+        this.source = source;
+        this.countryName = countryName;
+        this.provinceName = provinceName;
+    }
+    
     @Override
     public void buttonClick(ClickEvent event) {
         if (event.getButton().getData().equals(SpecifyGermplasmsComponent.SELECT_TEST_SEARCH_GERMPLASM_BUTTON_ID)
@@ -143,6 +157,18 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof SelectGermplasmListDialog
                 && event.getButton().getData().equals(SelectGermplasmListDialog.ADD_BUTTON_ID)) {
             ((SelectGermplasmListDialog) source).populateParentList();
+        } else if (source instanceof EnvironmentsAvailableComponent
+                && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_LOCATION_BUTTON_ID)) {
+            ((EnvironmentsAvailableComponent) source).selectFilterByLocationClickAction();
+        } else if (source instanceof FilterLocationDialog
+                && event.getButton().getData().equals(FilterLocationDialog.COUNTRY_BUTTON_ID)) {
+            ((FilterLocationDialog) source).clickCountryName(countryName);
+        } else if (source instanceof FilterLocationDialog
+                && event.getButton().getData().equals(FilterLocationDialog.PROVINCE_BUTTON_ID)) {
+            ((FilterLocationDialog) source).clickProvinceName(countryName, provinceName);
+        }  else if (source instanceof FilterLocationDialog
+                && event.getButton().getData().equals(FilterLocationDialog.APPLY_BUTTON_ID)) {
+            ((FilterLocationDialog) source).clickApplyButton();
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");

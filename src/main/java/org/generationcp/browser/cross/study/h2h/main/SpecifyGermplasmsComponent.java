@@ -247,7 +247,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         addComponent(nextButton, "top:550px;left:900px");
         
-        setDummyTableData();
+        //setDummyTableData();
+        setDummyTableData2();
         addComponent(entriesTable, "top:200px;left:20px");
         
        
@@ -298,6 +299,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	}
     	*/
     	try{
+    		//2434138
+    		   //1356114
     		Germplasm selectedGermplasm1 = this.germplasmDataManager.getGermplasmWithPrefName(39);
     		Germplasm selectedGermplasm2 = this.germplasmDataManager.getGermplasmWithPrefName(1709);
     		Germplasm selectedGermplasm3 = this.germplasmDataManager.getGermplasmWithPrefName(1000);
@@ -307,6 +310,30 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    	addStandardGermplasm(selectedGermplasm1);
 	    	addStandardGermplasm(selectedGermplasm2);
 	    	addStandardGermplasm(selectedGermplasm3);
+    		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
+    		//addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public void setDummyTableData2(){
+    	/*
+    	for(int i = 0 ; i < 100 ; i++){
+    		entriesTable.addItem(new Object[] {"test - "+i, "standard - "+i}, Integer.toString(i));
+    		
+    	}
+    	*/
+    	try{
+    		//2434138
+    		   //1356114
+    		Germplasm selectedGermplasm1 = this.germplasmDataManager.getGermplasmWithPrefName(2434138);
+    		Germplasm selectedGermplasm2 = this.germplasmDataManager.getGermplasmWithPrefName(1356114);
+	    	addTestGermplasm(selectedGermplasm1);
+	    	addTestGermplasm(selectedGermplasm2);
+	    	addStandardGermplasm(selectedGermplasm1);
+	    	addStandardGermplasm(selectedGermplasm2);
     		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
     		//addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
     		

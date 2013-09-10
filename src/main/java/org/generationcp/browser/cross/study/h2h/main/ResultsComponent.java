@@ -292,7 +292,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
-    	return decimalFormmatter.format(counter);
+    	return "-";//decimalFormmatter.format(counter);
     }
     private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
