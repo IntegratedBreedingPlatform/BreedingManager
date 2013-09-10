@@ -75,8 +75,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private Label selectTraitReminderLabel;
     
     private List<TraitForComparison> traitsForComparisonList;
-    private static Integer INCREASING = 1;
-    private static Integer DECREASING = 0;
+    public static final Integer INCREASING = 1;
+    public static final Integer DECREASING = 0;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -118,7 +118,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         
         
         traitsTable = new Table();
-        traitsTable.setWidth("800px");
+        traitsTable.setWidth("950px");
         traitsTable.setHeight("400px");
         traitsTable.setImmediate(true);
         
@@ -136,9 +136,9 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable.setColumnHeader(DIRECTION_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_DIRECTION));
         
         traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);
-        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 250);
+        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 300);
         traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 200);
-        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 300);
+        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 400);
         
         
         
@@ -181,6 +181,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     }
     public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList, Map<String, String> germplasmIdNameMap){
         this.traitsTable.removeAllItems();
+        nextButton.setEnabled(false);
         
         selectTraitReminderLabel.setVisible(true);
         this.germplasmIdNameMap = germplasmIdNameMap; 

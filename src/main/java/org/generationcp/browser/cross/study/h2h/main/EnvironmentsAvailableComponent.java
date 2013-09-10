@@ -82,10 +82,10 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Button filterByStudy;
     private Button addEnvironment;
     
-    private static Integer  IMPORTANT = 1;
-    private static Integer  CRITICAL = 2;
-    private static Integer  DESIRABLE = 3;
-    private static Integer  IGNORED = 4;
+    public static final Integer  IMPORTANT = 1;
+    public static final Integer  CRITICAL = 2;
+    public static final Integer  DESIRABLE = 3;
+    public static final Integer  IGNORED = 4;
     
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private Map<ComboBox, EnvironmentForComparison> environmentCheckBoxComparisonMap;
@@ -252,6 +252,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	Set<TraitInfo> traitInfosNames = new LinkedHashSet<TraitInfo>();
     	environmentCheckBoxMap = new HashMap();
     	environmentForComparison = new ArrayList();
+    	nextButton.setEnabled(false);
     	environmentCheckBoxComparisonMap = new HashMap();
     	this.germplasmIdNameMap = germplasmIdNameMap;
     	this.finalGermplasmPairs= germplasmPairs; 
@@ -322,7 +323,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 	        	 box.setImmediate(true);
 	        	 
 	             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
-	             Map<TraitForComparison, List<Observation>> traitAndObservationMap = new HashMap();
+	             LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
 	             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
 	             while(traitForCompareIter.hasNext()){
 	            	 TraitForComparison traitForCompare = traitForCompareIter.next();
@@ -398,6 +399,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		String keyToChecked2 = traitInfo.getId() + ":" +envId + ":" + pair.getGid2();
     		Observation obs1 = observationMap.get(keyToChecked1);
     		Observation obs2 = observationMap.get(keyToChecked2);
+    		
+    		//for test data
+    		if(true){
+    			counter++;
+    			obs1.setValue("2");
+    			obs2.setValue("3");
+    			obsList.add(obs1);
+    			obsList.add(obs2);
+    			
+    			continue;
+    		}
+    		
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
     				!obs2.getValue().equalsIgnoreCase("")){
@@ -526,7 +539,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	for(ComboBox box : environmentForComparison){
     		toBeCompared.add(environmentCheckBoxComparisonMap.get(box));
     	}
-    	this.nextScreen.populateResultsTable(toBeCompared, germplasmIdNameMap, finalGermplasmPairs);
+    	this.nextScreen.populateResultsTable(toBeCompared, germplasmIdNameMap, finalGermplasmPairs, observationMap);
         this.mainScreen.selectFourthTab();
     }
     

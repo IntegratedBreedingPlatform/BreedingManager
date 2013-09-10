@@ -258,6 +258,10 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         //addStandardGermplasmList(germplasmListManager.getGermplasmListById(1));
     }
 
+    public void resetTableEntries(){
+    	
+    }
+    
     private void deleteEntriesAction(){
         final Collection<?> selectedIds = (Collection<?>) entriesTable.getValue();
         if (!selectedIds.isEmpty()){
@@ -283,6 +287,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         }
        
     }
+    
+    
     
     public void setDummyTableData(){
     	/*

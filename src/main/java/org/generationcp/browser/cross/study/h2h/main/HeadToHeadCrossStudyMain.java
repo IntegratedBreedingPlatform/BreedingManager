@@ -137,6 +137,15 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
 
     }
 
+    public void selectFirstTabAndReset(){
+    	firstTab.setEnabled(true);
+        this.accordion.setSelectedTab(screenOne);
+        //screenOne.setDummyTableData()
+        secondTab.setEnabled(false);
+        thirdTab.setEnabled(false);
+        fourthTab.setEnabled(false);
+    }
+    
     public void selectFirstTab(){
     	firstTab.setEnabled(true);
         this.accordion.setSelectedTab(screenOne);

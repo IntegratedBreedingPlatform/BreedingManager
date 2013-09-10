@@ -2,6 +2,7 @@ package org.generationcp.browser.cross.study.h2h.main.pojos;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class EnvironmentForComparison implements Serializable{
     private String countryName;
     private String studyName;
     private ComboBox weight;
-    private Map<TraitForComparison, List<Observation>> traitAndObservationMap = new HashMap();
+    private LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
     
     public EnvironmentForComparison(Integer environmentNumber, String locationName, String countryName, String studyName, ComboBox weight) {
         super();
@@ -83,14 +84,14 @@ public class EnvironmentForComparison implements Serializable{
 
 
 
-	public Map<TraitForComparison, List<Observation>> getTraitAndObservationMap() {
+	public LinkedHashMap<TraitForComparison, List<Observation>> getTraitAndObservationMap() {
 		return traitAndObservationMap;
 	}
 
 
 
 	public void setTraitAndObservationMap(
-			Map<TraitForComparison, List<Observation>> traitAndObservationMap) {
+			LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap) {
 		this.traitAndObservationMap = traitAndObservationMap;
 	}
     
