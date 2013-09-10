@@ -136,6 +136,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     resultsTable.setImmediate(true);
     resultsTable.setColumnCollapsingAllowed(true);
     resultsTable.setColumnReorderingAllowed(true);
+    
     /*
     resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
     resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
