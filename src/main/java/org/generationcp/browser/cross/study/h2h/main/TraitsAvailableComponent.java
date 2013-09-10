@@ -36,8 +36,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javassist.bytecode.Descriptor.Iterator;
 
@@ -70,9 +72,11 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     private Label selectTraitLabel;
     
+    private Label selectTraitReminderLabel;
+    
     private List<TraitForComparison> traitsForComparisonList;
-    private static Integer INCREASING = 1;
-    private static Integer DECREASING = 0;
+    public static final Integer INCREASING = 1;
+    public static final Integer DECREASING = 0;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -87,8 +91,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private Map<ComboBox, TraitInfo> traitMaps; //will contain the mapping from comboBox to the specific row
     private Map<String, Map<String, TrialEnvironment>> traitEnvironmentMap; //will contain the map of trait and trial environment
     private Map<String, TrialEnvironment> trialEnvironmentMap; //will contain the map of  trial environment
+    private Map<String, String> germplasmIdNameMap;
     
-    
+    private Set<Integer> germplasmIds;
+    private List<GermplasmPair> finalGermplasmPair;
     public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentsAvailableComponent nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
@@ -103,11 +109,16 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         
         selectTraitLabel = new Label(messageSource.getMessage(Message.HEAD_TO_HEAD_SELECT_TRAITS));
         selectTraitLabel.setImmediate(true);
-        
         addComponent(selectTraitLabel, "top:20px;left:30px");
         
+        selectTraitReminderLabel = new Label(messageSource.getMessage(Message.HEAD_TO_HEAD_SELECT_TRAITS_REMINDER));
+        selectTraitReminderLabel.setImmediate(true);
+        selectTraitReminderLabel.setStyleName("gcp-bold-italic");
+        addComponent(selectTraitReminderLabel, "top:20px;left:400px");
+        
+        
         traitsTable = new Table();
-        traitsTable.setWidth("800px");
+        traitsTable.setWidth("950px");
         traitsTable.setHeight("400px");
         traitsTable.setImmediate(true);
         
@@ -125,10 +136,9 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable.setColumnHeader(DIRECTION_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_DIRECTION));
         
         traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);
-        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 250);
+        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 300);
         traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 200);
-        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);
-        
+        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 400);        
         
         
         addComponent(traitsTable, "top:40px;left:30px");
@@ -168,22 +178,30 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 		return combo;
 		
     }
-    public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList){
+    public void populateTraitsAvailableTable(List<GermplasmPair> germplasmPairList, Map<String, String> germplasmIdNameMap){
         this.traitsTable.removeAllItems();
-       
+        nextButton.setEnabled(false);
+        
+        selectTraitReminderLabel.setVisible(true);
+        this.germplasmIdNameMap = germplasmIdNameMap; 
         traitForComparisons = new ArrayList();
         traitMaps = new HashMap();
         
         Map<String, List<TraitInfo>> traitMap = new HashMap();
         traitEnvironmentMap = new HashMap();
         trialEnvironmentMap = new HashMap();
+        germplasmIds = new HashSet();
         List<GermplasmPair> environmentPairList;
+        finalGermplasmPair = germplasmPairList;
 		try {
 			environmentPairList = crossStudyDataManager.getEnvironmentsForGermplasmPairs(germplasmPairList);
 		
 	        for(GermplasmPair pair : environmentPairList){
 	    		CheckBox box = new CheckBox();    	
 	    		TrialEnvironments env = pair.getTrialEnvironments();
+	    		
+	    		germplasmIds.add(Integer.valueOf(pair.getGid1()));
+	    		germplasmIds.add(Integer.valueOf(pair.getGid2()));
 	    		
 	    		java.util.Iterator<TrialEnvironment> envIterator = env.getTrialEnvironments().iterator();
 	    		while(envIterator.hasNext())
@@ -278,8 +296,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     			
 			if(traitForComparisons.isEmpty()){
 				nextButton.setEnabled(false);
+				selectTraitReminderLabel.setVisible(true);
 			}else{
 				nextButton.setEnabled(true);
+				selectTraitReminderLabel.setVisible(false);
 			}
     	}
     	
@@ -297,7 +317,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		traitForComparisonsList.add(traitForComparison);
     	}
     	if(this.nextScreen != null){
-    		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap);
+    		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair, germplasmIdNameMap);
     	}
         this.mainScreen.selectThirdTab();
     }

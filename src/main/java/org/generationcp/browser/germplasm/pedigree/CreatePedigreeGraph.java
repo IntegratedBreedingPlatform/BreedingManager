@@ -151,9 +151,9 @@ public class CreatePedigreeGraph
                         gv.addln(leafNodeGIDRoot+" [shape=box];");
                         gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\"];");
 //                        gv.addln(leafNodeGIDRoot+" [URL=http://google.com];");
-                        gv.addln(leafNodeGIDRoot+"->"+leafNodeGID+";");
+                        gv.addln(leafNodeGID+"->"+ leafNodeGIDRoot +";");
                     }
-                    gv.addln(parentNodeGID+"->"+leafNodeGID+";");
+                    gv.addln(leafNodeGID+"->"+ parentNodeGID+";");
                     
 //                    if(parent.getLinkedNodes().isEmpty()){
 //                        
