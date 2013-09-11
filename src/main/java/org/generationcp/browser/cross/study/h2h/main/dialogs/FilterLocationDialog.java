@@ -42,6 +42,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -98,11 +99,17 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     private List<FilterLocationDto> checkFilterLocationLevel1DtoList = new ArrayList();
     private List<FilterLocationDto> checkFilterLocationLevel2DtoList = new ArrayList();
     private List<FilterLocationDto> checkFilterLocationLevel3DtoList = new ArrayList();
+    private ThemeResource resource;
+    
     
     public FilterLocationDialog(Component source, Window parentWindow, Map<String, FilterByLocation> filterLocationCountryMap){
         this.source = source;
         this.parentWindow = parentWindow;
         this.filterLocationCountryMap = filterLocationCountryMap;
+        setTheme("gcp-default");
+       
+        
+        	
     }
 
     @Override
@@ -130,11 +137,21 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         
         showCountryRows();
         
+        resource = new ThemeResource("image/arrow-right.png");	        
+	     // Use the resource
+        Embedded rightArrow1 = new Embedded("", resource);
+        Embedded rightArrow2 = new Embedded("", resource);
+       
+        
+        
+        
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(countriesTable, "top:30px;left:20px");
-        mainLayout.addComponent(provinceTable, "top:30px;left:370px");
-        mainLayout.addComponent(locationStudyTable, "top:30px;left:750px");
+        mainLayout.addComponent(provinceTable, "top:30px;left:390px");
+        mainLayout.addComponent(locationStudyTable, "top:30px;left:780px");
         
+        mainLayout.addComponent(rightArrow1, "top:175px;left:335px");
+        mainLayout.addComponent(rightArrow2, "top:175px;left:725px");
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -157,7 +174,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:900px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:950px");
         
         
         addComponent(mainLayout);
