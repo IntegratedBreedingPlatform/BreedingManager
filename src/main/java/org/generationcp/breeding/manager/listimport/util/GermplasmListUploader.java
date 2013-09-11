@@ -127,7 +127,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             	}
             	
             } else {
-            	source.getAccordion().getApplication().getMainWindow().showNotification("A valid file was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
+            	source.getAccordion().getWindow().showNotification("File was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
             	
             	if(source instanceof GermplasmImportFileComponent){
             		source.enableNextButton();
