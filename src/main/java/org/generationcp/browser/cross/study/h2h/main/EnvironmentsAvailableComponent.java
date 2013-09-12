@@ -547,20 +547,20 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		//for test data
-    		/*
+    		
     		if(true){
     			counter++;
-    			obs1.setValue("2");
-    			obs2.setValue("3");
+    			obs1.setValue("aa2");
+    			obs2.setValue("aa3");
     			obsList.add(obs1);
     			obsList.add(obs2);
     			
     			continue;
     		}
-    		*/
+    		
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
     			counter++;
     			obsList.add(obs1);
     			obsList.add(obs2);
@@ -569,6 +569,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		}
     	}
     	return Integer.valueOf(counter);
+    }
+    
+    private boolean isValidDoubleValue(String val){
+    	if(val != null && !val.equalsIgnoreCase("")){
+    		try{
+    			double d = Double.parseDouble(val);
+    			return true;
+    		}catch(NumberFormatException ee){
+    			return false;
+    		}
+    	}
+    	return false;
     }
     
     private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){

@@ -325,9 +325,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-    				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    		if(isValidObsValue(obs1, obs2)){
     			numOfValidEnv++;
     			double obs1Val = Double.parseDouble(obs1.getValue());
     			double obs2Val = Double.parseDouble(obs2.getValue());
@@ -371,9 +369,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-    				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    		if(isValidObsValue(obs1, obs2)){
     			
     			double obs1Val = Double.parseDouble(obs1.getValue());
     			double obs2Val = Double.parseDouble(obs2.getValue());
@@ -410,9 +406,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         		Observation obs2 = observationMap.get(keyToChecked2);
         		
         		
-        		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-        				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-        				!obs2.getValue().equalsIgnoreCase("")){
+        		if(isValidObsValue(obs1, obs2)){
         			counter++;
         			
         		}
@@ -423,6 +417,27 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	return Integer.valueOf(counter);
     }
     
+    private boolean isValidObsValue(Observation obs1, Observation obs2){
+    	if(obs1 != null && obs2 != null && obs1.getValue() != null 
+				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
+				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
+			return true;
+			
+		}
+    	return false;
+    }
+    
+    private boolean isValidDoubleValue(String val){
+    	if(val != null && !val.equalsIgnoreCase("")){
+    		try{
+    			double d = Double.parseDouble(val);
+    			return true;
+    		}catch(NumberFormatException ee){
+    			return false;
+    		}
+    	}
+    	return false;
+    }
     public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair, Map<String, Observation> observationMap){
     	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair, observationMap);
     	/*
