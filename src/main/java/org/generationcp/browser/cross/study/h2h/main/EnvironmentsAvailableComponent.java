@@ -283,6 +283,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	environmentCheckBoxComparisonMap = new HashMap();
     	environmentCheckBoxMap = new HashMap();
     	environmentForComparison = new HashSet();
+    	numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
     	
     	this.germplasmIdNameMap = germplasmIdNameMap;
     	this.finalGermplasmPairs= germplasmPairsTemp; 
