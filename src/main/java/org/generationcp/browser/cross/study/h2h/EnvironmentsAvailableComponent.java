@@ -44,6 +44,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     public static final String NEXT_BUTTON_ID = "EnvironmentsAvailableComponent Next Button ID";
     public static final String BACK_BUTTON_ID = "EnvironmentsAvailableComponent Back Button ID";
     
+    private static final String GET_STUDY_NAME_BY_ENVS_QUERY = "select distinct p.name, e.nd_geolocation_id "
+    	+ "from project p join nd_experiment_project ep on p.project_id = ep.project_id "
+    	+ "join nd_experiment e on e.nd_experiment_id = ep.nd_experiment_id "
+    	+ "join projectprop pp on pp.project_id = p.project_id and pp.type_id = 1011 "
+    	+ "where e.nd_geolocation_id in (:envIds)";
+    
+    private static final String GET_LOCATION_NAME_AND_COUNTRY_NAME_BY_ENVS = "select gp.nd_geolocation_id, l.lname, c.isofull "
+    	+ "from nd_geolocationprop gp "
+    	+ "join location l on gp.value = l.locid and gp.type_id = 8190 "
+    	+ "left join cntry c on c.cntryid = l.cntryid "
+    	+ "where gp.nd_geolocation_id in (:envIds)";
+    
     private Table environmentsTable;
 
     private Button nextButton;
@@ -225,9 +237,42 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
                 environment.getTraitAndNumberOfPairsComparableMap().put(traitName, Integer.valueOf(1));
             }
             
+            List<Integer> envIds = new ArrayList<Integer>();
             for(Integer key : environmentsMap.keySet()){
                 toreturn.add(environmentsMap.get(key));
+                envIds.add(key);
             }
+            
+            //get the study name for each environment
+            Query queryForStudyName = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(GET_STUDY_NAME_BY_ENVS_QUERY);
+            queryForStudyName.setParameterList("envIds", envIds);
+            List queryForStudyNameResults = queryForStudyName.list();
+            for(Object result : queryForStudyNameResults){
+            	Object resultArray[] = (Object[]) result;
+            	String studyName = (String) resultArray[0];
+            	Integer envId = (Integer) resultArray[1];
+            	
+            	if(envId != null){
+            		EnvironmentForComparison env = environmentsMap.get(envId);
+            		env.setStudyName(studyName);
+            	}
+            }
+            
+            //get the location name and country name for each environment
+            Query queryForLocationAndCountry = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(GET_LOCATION_NAME_AND_COUNTRY_NAME_BY_ENVS);
+            queryForLocationAndCountry.setParameterList("envIds", envIds);
+            List queryForLocationAndCountryResults = queryForLocationAndCountry.list();
+            for(Object result : queryForLocationAndCountryResults){
+            	Object resultArray[] = (Object[]) result;
+            	Integer envId = (Integer) resultArray[0];
+            	String locationName = (String) resultArray[1];
+            	String countryName = (String) resultArray[2];
+            	
+            	EnvironmentForComparison env = environmentsMap.get(envId);
+            	env.setCountryName(countryName);
+            	env.setLocationName(locationName);
+            }
+            
         } catch(MiddlewareQueryException ex){
             ex.printStackTrace();
             LOG.error("Database error!", ex);
