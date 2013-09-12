@@ -15,6 +15,7 @@ import com.vaadin.ui.Window.Notification;
 import org.generationcp.browser.application.Message;
 
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -110,6 +111,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private List<GermplasmPair> finalGermplasmPairs;
     private Map<String, FilterByLocation> filterLocationCountryMap;
     private FilterLocationDialog filterLocation;
+    private FilterStudyDialog filterStudy;
     private Set<TraitInfo> traitInfosNames;
     private Set<String> trialEnvironmentIds;
     private Map<String, Map<String, TrialEnvironment>>  traitEnvMap;
@@ -119,6 +121,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private int tableColumnSize = 0;
     
     private Map<String, Object[]> tableEntriesMap;
+    
+    private Map<String, List<StudyReference>> studyEnvironmentMap;
     
     private Map filterSetLevel1;
     private Map filterSetLevel2;
@@ -286,6 +290,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	List<Integer> traitIds = new ArrayList();
     	Set<Integer> environmentIds = new HashSet();
     	filterLocationCountryMap = new HashMap();
+    	studyEnvironmentMap = new HashMap();
     	traitEnvMap = traitEnvMapTemp; 
     	trialEnvMap = trialEnvMapTemp;
     	traitForComparisonsList = traitForComparisonsListTemp;
@@ -328,6 +333,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     	Window parentWindow = this.getWindow();
         filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
+        filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
 
     }
     
@@ -336,7 +342,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	createEnvironmentsTable(traitInfosNames);
     	if(recreateFilterLocationMap){
 	    	environmentCheckBoxComparisonMap = new HashMap();
-	    	environmentCheckBoxMap = new HashMap();	    	
+	    	environmentCheckBoxMap = new HashMap();	   
     	}
     	environmentForComparison = new HashSet();
     	
@@ -475,6 +481,10 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	return isValid;
     }
     
+    public void clickFilterByStudyApply(List<FilterLocationDto> filterLocationDtoListLevel4){
+    	
+    }
+    
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel2, List<FilterLocationDto> filterLocationDtoListLevel3){
     	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
     	
@@ -535,6 +545,16 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	    	
     	countryFilter.addProvinceAndLocationAndStudy(provinceName,locationName, studyName);
     	filterLocationCountryMap.put(countryName, countryFilter);
+    	
+    	//for the mapping in the study level
+    	String studyKey = study.getName() + FilterLocationDialog.DELIMITER + study.getDescription();
+    	List<StudyReference> studyReferenceList = studyEnvironmentMap.get(studyKey);
+    	if(studyReferenceList == null){
+    		studyReferenceList = new ArrayList();
+    	}
+    	studyReferenceList.add(study);
+    	studyEnvironmentMap.put(studyKey, studyReferenceList);
+    	
     }
     
     private Integer getTraitCount(TraitInfo traitInfo, int envId, List<GermplasmPair> germplasmPairs, List<Observation> obsList){
@@ -648,6 +668,10 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         parentWindow.addWindow(filterLocation);
     }
     public void selectFilterByStudyClickAction(){
+    	
+    	Window parentWindow = this.getWindow();
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(filterStudy);
     }
     
     @Override

@@ -160,6 +160,9 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof EnvironmentsAvailableComponent
                 && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_LOCATION_BUTTON_ID)) {
             ((EnvironmentsAvailableComponent) source).selectFilterByLocationClickAction();
+        } else if (source instanceof EnvironmentsAvailableComponent
+                && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_STUDY_BUTTON_ID)) {
+            ((EnvironmentsAvailableComponent) source).selectFilterByStudyClickAction();
         } else if (source instanceof FilterLocationDialog
                 && event.getButton().getData().equals(FilterLocationDialog.COUNTRY_BUTTON_ID)) {
             ((FilterLocationDialog) source).clickCountryName(countryName);
