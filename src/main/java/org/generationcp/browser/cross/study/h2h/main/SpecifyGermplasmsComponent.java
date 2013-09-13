@@ -248,7 +248,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         addComponent(nextButton, "top:550px;left:900px");
         
         //setDummyTableData();
-        setDummyTableData2();
+        //setDummyTableData2();
         addComponent(entriesTable, "top:200px;left:20px");
         
        

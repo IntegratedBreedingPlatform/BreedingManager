@@ -21,6 +21,7 @@ import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
+import org.generationcp.middleware.domain.h2h.TraitType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -212,6 +213,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	    			while(traitIterator.hasNext())
 	        		{
 	    				TraitInfo info = traitIterator.next();
+	    				
+	    				//add here the checking if the trait is non numeric
+	    				if(info.getType() != TraitType.NUMERIC)
+	    					continue;
 	    				
 	    				String id = Integer.toString(info.getId());
 	    				List<TraitInfo> tempList = new ArrayList();
