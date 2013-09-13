@@ -176,14 +176,20 @@ public class HeadToHeadDataListExport {
 	        		numVal = numVal.replaceAll(",", "");
 	        		
 	        		cell = rowData.createCell(cellIndex++);
-	        		cell.setCellValue(Double.parseDouble(numVal));	        		
-	        		cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 	        		
-	        		if(colId.equalsIgnoreCase(ResultsComponent.NUM_OF_ENV_COLUMN_ID) || 
-        				colId.equalsIgnoreCase(ResultsComponent.NUM_SUP_COLUMN_ID))
-	        			cell.setCellStyle(sheetStyles.get(NUMERIC_STYLE));
-	        		else
-	        			cell.setCellStyle(sheetStyles.get(NUMERIC_DOUBLE_STYLE));
+	        		if("-".equalsIgnoreCase(numVal)){
+	        			cell.setCellValue(numVal);
+	        		}else{
+	        		
+		        		cell.setCellValue(Double.parseDouble(numVal));	        		
+		        		cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+		        		
+		        		if(colId.equalsIgnoreCase(ResultsComponent.NUM_OF_ENV_COLUMN_ID) || 
+	        				colId.equalsIgnoreCase(ResultsComponent.NUM_SUP_COLUMN_ID))
+		        			cell.setCellStyle(sheetStyles.get(NUMERIC_STYLE));
+		        		else
+		        			cell.setCellStyle(sheetStyles.get(NUMERIC_DOUBLE_STYLE));
+	        		}
 	        	}
 	        }  
 		}

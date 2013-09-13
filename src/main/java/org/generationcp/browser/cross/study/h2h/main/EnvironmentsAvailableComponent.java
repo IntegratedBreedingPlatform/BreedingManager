@@ -8,17 +8,26 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 
 import org.generationcp.browser.application.Message;
 
+import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
+import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
+import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.dms.LocationDto;
+import org.generationcp.middleware.domain.dms.Study;
+import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.Observation;
@@ -89,7 +98,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private Map<ComboBox, EnvironmentForComparison> environmentCheckBoxComparisonMap;
-    private List<ComboBox> environmentForComparison; //will contain all the tagged row
+    private Set<ComboBox> environmentForComparison; //will contain all the tagged row
     
     @Autowired
     private CrossStudyDataManager crossStudyDataManager;
@@ -100,6 +109,24 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<String, Observation> observationMap;
     private Map<String, String> germplasmIdNameMap;
     private List<GermplasmPair> finalGermplasmPairs;
+    private Map<String, FilterByLocation> filterLocationCountryMap;
+    private FilterLocationDialog filterLocation;
+    private FilterStudyDialog filterStudy;
+    private Set<TraitInfo> traitInfosNames;
+    private Set<String> trialEnvironmentIds;
+    private Map<String, Map<String, TrialEnvironment>>  traitEnvMap;
+    private Map<String, TrialEnvironment> trialEnvMap;
+    private List<TraitForComparison> traitForComparisonsList;
+    //private List<GermplasmPair> germplasmPairs;
+    private int tableColumnSize = 0;
+    
+    private Map<String, Object[]> tableEntriesMap;
+    
+    private Map<String, List<StudyReference>> studyEnvironmentMap;
+    
+    private Map filterSetLevel1;
+    private Map filterSetLevel2;
+    private Map filterSetLevel3;
     
     public EnvironmentsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen = mainScreen;
@@ -241,24 +268,34 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	}
     	
     }
-    public void populateEnvironmentsTable(List<TraitForComparison> traitForComparisonsList,
-    		Map<String, Map<String, TrialEnvironment>>  traitEnvMap, Map<String, 
-    		TrialEnvironment> trialEnvMap, Set<Integer> germplasmIds, 
-    		List<GermplasmPair> germplasmPairs, Map<String, String> germplasmIdNameMap){    
+    public void populateEnvironmentsTable(List<TraitForComparison> traitForComparisonsListTemp,
+    		Map<String, Map<String, TrialEnvironment>>  traitEnvMapTemp, Map<String, 
+    		TrialEnvironment> trialEnvMapTemp, Set<Integer> germplasmIds, 
+    		List<GermplasmPair> germplasmPairsTemp, Map<String, String> germplasmIdNameMap){    
     	
-    	Iterator<TraitForComparison> iter = traitForComparisonsList.iterator();
+    	Iterator<TraitForComparison> iter = traitForComparisonsListTemp.iterator();
     	Map<String, Map<String, TrialEnvironment>>  newTraitEnvMap = new HashMap();
-    	Set<String> trialEnvironmentIds = new HashSet();
-    	Set<TraitInfo> traitInfosNames = new LinkedHashSet<TraitInfo>();
-    	environmentCheckBoxMap = new HashMap();
-    	environmentForComparison = new ArrayList();
+    	tableEntriesMap = new HashMap();
+    	trialEnvironmentIds = new HashSet();
+    	traitInfosNames = new LinkedHashSet<TraitInfo>();
+    	
     	nextButton.setEnabled(false);
     	environmentCheckBoxComparisonMap = new HashMap();
+    	environmentCheckBoxMap = new HashMap();
+    	environmentForComparison = new HashSet();
+    	numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
+    	
     	this.germplasmIdNameMap = germplasmIdNameMap;
-    	this.finalGermplasmPairs= germplasmPairs; 
+    	this.finalGermplasmPairs= germplasmPairsTemp; 
     	
     	List<Integer> traitIds = new ArrayList();
     	Set<Integer> environmentIds = new HashSet();
+    	filterLocationCountryMap = new HashMap();
+    	studyEnvironmentMap = new HashMap();
+    	traitEnvMap = traitEnvMapTemp; 
+    	trialEnvMap = trialEnvMapTemp;
+    	traitForComparisonsList = traitForComparisonsListTemp;
+    	//germplasmPairs = germplasmPairsTemp;
     	
     	while(iter.hasNext()){
     		TraitForComparison comparison = iter.next();
@@ -293,13 +330,28 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
              //return new ArrayList<EnvironmentForComparison>();
     	}
     	//get trait names for columns        
-        
+    	recreateTable(true, false);
+    	
+    	Window parentWindow = this.getWindow();
+        filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
+        filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+
+    }
+    
+    private void recreateTable(boolean recreateFilterLocationMap, boolean isAppliedClick){
     	this.environmentsTable.removeAllItems();
     	createEnvironmentsTable(traitInfosNames);
+    	if(recreateFilterLocationMap){
+	    	environmentCheckBoxComparisonMap = new HashMap();
+	    	environmentCheckBoxMap = new HashMap();	   
+    	}
+    	environmentForComparison = new HashSet();
+    	
 		
     	Map<String, Item> trialEnvIdTableMap = new HashMap();
     	//clean the traitEnvMap
     	Iterator<String> trialEnvIdsIter = trialEnvironmentIds.iterator();
+    	Map<String, String> checkerMap = new HashMap();
     	while(trialEnvIdsIter.hasNext()){
     		 Integer trialEnvId = Integer.parseInt(trialEnvIdsIter.next());
     		 String trialEnvIdString = trialEnvId.toString();
@@ -307,88 +359,203 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		 if(!trialEnvIdTableMap.containsKey(trialEnvIdString)){
 	    		 TrialEnvironment trialEnv = trialEnvMap.get(trialEnvIdString);
 	    		//we build the table
-	    		 Item item = environmentsTable.addItem(trialEnvId);
-	             item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(trialEnv.getId());
-	             item.getItemProperty(LOCATION_COLUMN_ID).setValue(trialEnv.getLocation().getLocationName());
-	             item.getItemProperty(COUNTRY_COLUMN_ID).setValue(trialEnv.getLocation().getCountryName());
-	             item.getItemProperty(STUDY_COLUMN_ID).setValue(trialEnv.getStudy().getName());
-	             /*
-	             for(String traitName : ){
-	                 Integer numberOfComparable = environment.getTraitAndNumberOfPairsComparableMap().get(traitName);
-	                 item.getItemProperty(traitName).setValue(numberOfComparable);
-	             }
-	             */
-	             CheckBox box = new CheckBox();
-	             ComboBox comboBox = getWeightComboBox();
-	        	 box.setImmediate(true);
-	        	 
-	             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
-	             LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
-	             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
-	             while(traitForCompareIter.hasNext()){
-	            	 TraitForComparison traitForCompare = traitForCompareIter.next();
-	            	 
-	            	 List<Observation> obsList = new ArrayList(); 
-	                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), germplasmPairs, obsList);
-	                 item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
-	                 traitAndObservationMap.put(traitForCompare, obsList);
-	             }
-	             compare.setTraitAndObservationMap(traitAndObservationMap);
-	             
-	             
-	        	 
-		        	
-	             item.getItemProperty(TAG_COLUMN_ID).setValue(box);
-	             item.getItemProperty(WEIGHT_COLUMN_ID).setValue(comboBox);
-	             box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
-		        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
-	             environmentCheckBoxMap.put(box, item);
-	             environmentCheckBoxComparisonMap.put(comboBox, compare);
-	             trialEnvIdTableMap.put(trialEnvIdString, item);
+	    		 String tableKey = trialEnvIdString + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getCountryName() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getProvinceName()  + FilterLocationDialog.DELIMITER  +trialEnv.getLocation().getLocationName() + FilterLocationDialog.DELIMITER + trialEnv.getStudy().getName();
+	    		 /*
+	    		 if(checkerMap.get(tableKey) != null)
+	    			 System.out.println("Hello " + tableKey);
+	    		 
+	    		 if(checkerMap.get(tableKey) == null)
+	    			 checkerMap.put(tableKey, tableKey);
+	    		 */
+	    		 boolean isValidEntryAdd = true;
+	    		 if(isAppliedClick){
+	    			 isValidEntryAdd = isValidEntry(trialEnv);
+	    		 }
+	    		 
+	    		 if(isValidEntryAdd){
+	    			 
+	    			 Object[] objItem = new Object[tableColumnSize];
+	    			 
+	    			 if(tableEntriesMap.containsKey(tableKey)){
+	    				 //to be use when filtering only
+	    				 //for recycling same object
+	    				 objItem = tableEntriesMap.get(tableKey);
+	    				 environmentsTable.addItem(objItem, tableKey);
+	    				 
+	    				 if(isAppliedClick){
+	    					 
+	    					 //we simulate the checkbox
+	    					 ((CheckBox)objItem[0]).setValue(true);
+							 clickCheckBox((ComboBox)objItem[objItem.length-1], true);
+	    				 }
+	    			 }else{
+		    			 
+		    			 CheckBox box = new CheckBox();
+		    			 //box.setValue(true);
+			             box.setImmediate(true);
+			             ComboBox comboBox = getWeightComboBox();
+			             /*
+			    		 Item item = environmentsTable.addItem(tableKey);	    		 	    		 
+			             item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(trialEnv.getId());
+			             item.getItemProperty(LOCATION_COLUMN_ID).setValue(trialEnv.getLocation().getLocationName());
+			             item.getItemProperty(COUNTRY_COLUMN_ID).setValue(trialEnv.getLocation().getCountryName());
+			             item.getItemProperty(STUDY_COLUMN_ID).setValue(trialEnv.getStudy().getName());
+			             */
+			             objItem[0] = box;
+			             objItem[1] = trialEnv.getId();
+			             objItem[2] = trialEnv.getLocation().getLocationName();
+			             objItem[3] = trialEnv.getLocation().getCountryName();
+			             objItem[4] = trialEnv.getStudy().getName();
+			             int counterTrait = 5;
+			             
+			             if(recreateFilterLocationMap){
+			            	 setupLocationMappings(trialEnv);
+			            	 tableEntriesMap.put(tableKey, objItem);
+			             }
+			             
+			             
+			             
+			        	 
+			        	 
+			             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
+			             LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
+			             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
+			             while(traitForCompareIter.hasNext()){
+			            	 TraitForComparison traitForCompare = traitForCompareIter.next();
+			            	 
+			            	 List<Observation> obsList = new ArrayList(); 
+			                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), finalGermplasmPairs, obsList);
+			                 //item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
+			                 traitAndObservationMap.put(traitForCompare, obsList);
+			                 objItem[counterTrait++] = count;
+			             }
+			             compare.setTraitAndObservationMap(traitAndObservationMap);
+			             	
+			             //item.getItemProperty(TAG_COLUMN_ID).setValue(box);
+			             //item.getItemProperty(WEIGHT_COLUMN_ID).setValue(comboBox);
+			             objItem[counterTrait++] = comboBox;
+			             
+			             environmentsTable.addItem(objItem, tableKey);
+			             Item item = environmentsTable.getItem(tableKey);
+			             box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
+				        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
+			             environmentCheckBoxMap.put(box, item);
+			             environmentCheckBoxComparisonMap.put(comboBox, compare);
+			             trialEnvIdTableMap.put(trialEnvIdString, item);
+	    			 }
+		             
+		             
+		             
+		            
+		             
+		             //by default, should be checked
+		             //box.setValue(true);
+		             //clickCheckBox(comboBox, true);
+	    		 }
     		 }
              
     	}
-/*
-        if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
-            this.traitsForComparisonList = traitsForComparisonList;
-            this.environmentsTable.removeAllItems();
-            
-            List<EnvironmentForComparison> environments = getEnvironmentsForComparison(testEntryGID, standardEntryGID);
-            
-            //get trait names for columns
-            Set<String> traitNames = new HashSet<String>();
-            for(EnvironmentForComparison environment : environments){
-                for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
-                    traitNames.add(traitName);
-                }
-            }
-            
-            createEnvironmentsTable(traitNames);
-            
-            for(EnvironmentForComparison environment : environments){
-                Item item = environmentsTable.addItem(environment.getEnvironmentNumber());
-                item.getItemProperty(ENV_NUMBER_COLUMN_ID).setValue(environment.getEnvironmentNumber());
-                item.getItemProperty(LOCATION_COLUMN_ID).setValue(environment.getLocationName());
-                item.getItemProperty(COUNTRY_COLUMN_ID).setValue(environment.getCountryName());
-                item.getItemProperty(STUDY_COLUMN_ID).setValue(environment.getStudyName());
-                
-                for(String traitName : environment.getTraitAndNumberOfPairsComparableMap().keySet()){
-                    Integer numberOfComparable = environment.getTraitAndNumberOfPairsComparableMap().get(traitName);
-                    item.getItemProperty(traitName).setValue(numberOfComparable);
-                }
-            }
-            
-            this.environmentsTable.requestRepaint();
-            
-            if(this.environmentsTable.getItemIds().isEmpty()){
-                this.nextButton.setEnabled(false);
-            } else{
-                this.currentStandardEntryGID = standardEntryGID;
-                this.currentTestEntryGID = testEntryGID;
-                this.nextButton.setEnabled(true);
-            }
-        } 
-        */
+    }
+    
+    private boolean isValidEntry(TrialEnvironment trialEnv){
+    	
+    	String countryName = trialEnv.getLocation().getCountryName();
+    	String provinceName = trialEnv.getLocation().getProvinceName();
+    	String locationName = trialEnv.getLocation().getLocationName();
+    	String studyName = trialEnv.getStudy().getName();
+    	
+    	boolean isValid = false;
+    	
+    	String level1Key = countryName;
+    	String level2Key = countryName + FilterLocationDialog.DELIMITER + provinceName;
+    	String level3Key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName + FilterLocationDialog.DELIMITER + studyName;
+    	//check against the map
+    	if(filterSetLevel1.containsKey(level1Key)){
+    		isValid = true;
+    	}else if(filterSetLevel2.containsKey(level2Key)){
+    		isValid = true;
+    	}else if(filterSetLevel3.containsKey(level3Key)){
+    		isValid = true;
+    	}
+    	
+    	
+    	return isValid;
+    }
+    
+    public void clickFilterByStudyApply(List<FilterLocationDto> filterLocationDtoListLevel4){
+    	
+    }
+    
+    public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel2, List<FilterLocationDto> filterLocationDtoListLevel3){
+    	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+    	
+    	Map<String, Set<String>> countryProvinceMap = new HashMap();
+    	Map<String, String> provinceLocationStudyMap = new HashMap();
+    	
+    	filterSetLevel1 = new HashMap();
+    	filterSetLevel2 = new HashMap();
+    	filterSetLevel3 = new HashMap();
+    	    
+    	for(FilterLocationDto dto : filterLocationDtoListLevel1){
+    		String countryName = dto.getCountryName();
+        	
+    		filterSetLevel1.put(countryName, countryName);
+    	}
+    	
+    	for(FilterLocationDto dto : filterLocationDtoListLevel2){
+    		String countryName = dto.getCountryName();
+    		String provinceName = dto.getProvinceName();
+    		String key = countryName + FilterLocationDialog.DELIMITER + provinceName;
+        	
+    		filterSetLevel2.put(key, key);
+    		//we need to remove in the 1st level since this mean we want specific level 2 filter
+    		filterSetLevel1.remove(countryName);
+    	}
+    	
+    	for(FilterLocationDto dto : filterLocationDtoListLevel3){
+    		String countryName = dto.getCountryName();
+    		String provinceName = dto.getProvinceName();
+    		String locationName = dto.getLocationName();
+    		String studyName = dto.getStudyName();
+    		String key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName + FilterLocationDialog.DELIMITER + studyName; 
+        	
+    		filterSetLevel3.put(key, key);
+    		//we need to remove in the 1st level since this mean we want specific level 2 filter
+    		filterSetLevel2.remove(countryName + FilterLocationDialog.DELIMITER + provinceName);
+    		filterSetLevel1.remove(countryName);
+    	}
+    	
+    	
+    	recreateTable(false, true);
+    }
+    
+    private void setupLocationMappings(TrialEnvironment trialEnv){
+    	LocationDto location = trialEnv.getLocation();
+    	StudyReference study = trialEnv.getStudy();
+    	String trialEnvId = Integer.toString(trialEnv.getId());
+    	String countryName = location.getCountryName();
+    	String provinceName = location.getProvinceName();
+    	String locationName = location.getLocationName();
+    	String studyName = study.getName();
+    	    	    	    	
+    	FilterByLocation countryFilter = filterLocationCountryMap.get(countryName);
+    	
+    	if(countryFilter == null){
+    		countryFilter = new FilterByLocation(countryName, trialEnvId);
+    	}
+    	    	
+    	countryFilter.addProvinceAndLocationAndStudy(provinceName,locationName, studyName);
+    	filterLocationCountryMap.put(countryName, countryFilter);
+    	
+    	//for the mapping in the study level
+    	String studyKey = study.getName() + FilterLocationDialog.DELIMITER + study.getDescription();
+    	List<StudyReference> studyReferenceList = studyEnvironmentMap.get(studyKey);
+    	if(studyReferenceList == null){
+    		studyReferenceList = new ArrayList();
+    	}
+    	studyReferenceList.add(study);
+    	studyEnvironmentMap.put(studyKey, studyReferenceList);
+    	
     }
     
     private Integer getTraitCount(TraitInfo traitInfo, int envId, List<GermplasmPair> germplasmPairs, List<Observation> obsList){
@@ -401,10 +568,11 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		//for test data
+    		
     		if(true){
     			counter++;
-    			obs1.setValue("2");
-    			obs2.setValue("3");
+    			obs1.setValue("aa2");
+    			obs2.setValue("aa3");
     			obsList.add(obs1);
     			obsList.add(obs2);
     			
@@ -413,7 +581,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
     			counter++;
     			obsList.add(obs1);
     			obsList.add(obs2);
@@ -422,6 +590,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		}
     	}
     	return Integer.valueOf(counter);
+    }
+    
+    private boolean isValidDoubleValue(String val){
+    	if(val != null && !val.equalsIgnoreCase("")){
+    		try{
+    			double d = Double.parseDouble(val);
+    			return true;
+    		}catch(NumberFormatException ee){
+    			return false;
+    		}
+    	}
+    	return false;
     }
     
     private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){
@@ -440,6 +620,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
             propertyIds.add(propertyId);
         }
         
+        tableColumnSize = 0;
         for(Object propertyId : propertyIds){
             environmentsTable.removeContainerProperty(propertyId);
         }
@@ -454,84 +635,19 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
         environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
+        tableColumnSize = 5;
         
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getName(), Integer.class, null);
             environmentsTable.setColumnHeader(traitInfo.getName(), traitInfo.getName());
+            tableColumnSize++;
         }
         
         environmentsTable.addContainerProperty(WEIGHT_COLUMN_ID, ComboBox.class, null);
         environmentsTable.setColumnHeader(WEIGHT_COLUMN_ID, "Weight");
+        tableColumnSize++;
     }
-    /*
-    @SuppressWarnings("rawtypes")
-    private List<EnvironmentForComparison> getEnvironmentsForComparison(Integer testEntryGID, Integer standardEntryGID){
-        List<EnvironmentForComparison> toreturn = new ArrayList<EnvironmentForComparison>();
-        
-        try{
-            Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
-            Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
-            
-            String testEntryPrefName = null;
-            if(testEntry.getPreferredName() != null){
-                testEntryPrefName = testEntry.getPreferredName().getNval().trim();
-            } else{
-                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<EnvironmentForComparison>();
-            }
-            
-            String standardEntryPrefName = null;
-            if(standardEntry.getPreferredName() != null){
-                standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
-            } else{
-            MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<EnvironmentForComparison>();
-            }
-            
-            
-            Map<Integer, EnvironmentForComparison> environmentsMap = new HashMap<Integer, EnvironmentForComparison>();
-            
-            GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-            String queryString = "call h2h_traitXenv('"+ testEntryPrefName + "','" + standardEntryPrefName + "')";
-            Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
-            List results = query.list();
-            for(Object result : results){
-                Object resultArray[] = (Object[]) result;
-                Integer locationId = (Integer) resultArray[0];
-                String traitName = (String) resultArray[1];
-                if(traitName != null){
-                    traitName = traitName.trim().toUpperCase();
-                }
-                
-                EnvironmentForComparison environment = environmentsMap.get(locationId);
-                if(environment == null){
-                    EnvironmentForComparison newEnvironment = new EnvironmentForComparison(locationId, null, null, null, null);
-                    environmentsMap.put(locationId, newEnvironment);
-                    environment = newEnvironment;
-                }
-                
-                environment.getTraitAndNumberOfPairsComparableMap().put(traitName, Integer.valueOf(1));
-            }
-            
-            for(Integer key : environmentsMap.keySet()){
-                toreturn.add(environmentsMap.get(key));
-            }
-        } catch(MiddlewareQueryException ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<EnvironmentForComparison>();
-        } catch(Exception ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<EnvironmentForComparison>();
-        }
-        
-        return toreturn;
-    }*/
+   
     
     public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
@@ -545,6 +661,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
     public void backButtonClickAction(){
         this.mainScreen.selectSecondTab();
+    }
+    
+    public void selectFilterByLocationClickAction(){
+    	Window parentWindow = this.getWindow();
+    	filterLocation.initializeButtons();
+        parentWindow.addWindow(filterLocation);
+    }
+    public void selectFilterByStudyClickAction(){
+    	
+    	Window parentWindow = this.getWindow();
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(filterStudy);
     }
     
     @Override
