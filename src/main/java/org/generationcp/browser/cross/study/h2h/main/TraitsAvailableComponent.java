@@ -21,6 +21,7 @@ import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
+import org.generationcp.middleware.domain.h2h.TraitType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -213,6 +214,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	        		{
 	    				TraitInfo info = traitIterator.next();
 	    				
+	    				//add here the checking if the trait is non numeric
+	    				if(info.getType() != TraitType.NUMERIC)
+	    					continue;
+	    				
 	    				String id = Integer.toString(info.getId());
 	    				List<TraitInfo> tempList = new ArrayList();
 	    				if(traitMap.containsKey(id)){
@@ -314,7 +319,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		//item.getItemPropertyIds()
     		TraitInfo info = traitMaps.get(combo);
     		TraitForComparison traitForComparison = new TraitForComparison(info, (Integer)combo.getValue());
-    		traitForComparisonsList.add(traitForComparison);
+    		traitForComparisonsList.add(traitForComparison);    		
     	}
     	if(this.nextScreen != null){
     		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair, germplasmIdNameMap);

@@ -208,14 +208,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	
     	
         
-        for(TraitForComparison traitForCompare : traitsIterator){        	
-            for(String columnKey : columnIdData){
-            	String msg = columnIdDataMsgMap.get(columnKey);
-            	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
-            	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, traitForCompare.getTraitInfo().getName() + " " + msg);
-            	resultsTable.setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
-            	
-            }
+        for(TraitForComparison traitForCompare : traitsIterator){    
+        	if(traitForCompare.isDisplay()){
+	            for(String columnKey : columnIdData){
+	            	String msg = columnIdDataMsgMap.get(columnKey);
+	            	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
+	            	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, traitForCompare.getTraitInfo().getName() + " " + msg);
+	            	resultsTable.setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
+	            	
+	            }
+        	}
         }
         
         //resultsTable.addStyleName("multirowheaders");
@@ -241,32 +243,15 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         		//traitDataMap.put(cellKey, cellVal);
             	//item.getItemProperty(cellKey).setValue(cellVal);    
             	
+            	if(traitForCompare.isDisplay()){
+	            	for(String columnKey : columnIdData){
+	            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
+	            		String cellVal = getColumnValue(  columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
+	            		traitDataMap.put(cellKey, cellVal);
+	                	item.getItemProperty(cellKey).setValue(cellVal);                	
+	                }
+            	}
             	
-            	for(String columnKey : columnIdData){
-            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
-            		String cellVal = getColumnValue(  columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
-            		traitDataMap.put(cellKey, cellVal);
-                	item.getItemProperty(cellKey).setValue(cellVal);                	
-                }
-            	/*
-            	mainColumnIdId = NUM_SUP_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);            	
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	
-            	mainColumnIdId = PVAL_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	
-            	mainColumnIdId = MEAN_DIFF_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	*/
             }
         	resData.setTraitDataMap(traitDataMap);
     	}
@@ -292,7 +277,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
-    	return decimalFormmatter.format(counter);
+    	return "-";//decimalFormmatter.format(counter);
     }
     private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
@@ -325,9 +310,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-    				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    		if(isValidObsValue(obs1, obs2)){
     			numOfValidEnv++;
     			double obs1Val = Double.parseDouble(obs1.getValue());
     			double obs2Val = Double.parseDouble(obs2.getValue());
@@ -371,9 +354,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-    				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("")){
+    		if(isValidObsValue(obs1, obs2)){
     			
     			double obs1Val = Double.parseDouble(obs1.getValue());
     			double obs2Val = Double.parseDouble(obs2.getValue());
@@ -410,9 +391,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         		Observation obs2 = observationMap.get(keyToChecked2);
         		
         		
-        		if(obs1 != null && obs2 != null && obs1.getValue() != null 
-        				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-        				!obs2.getValue().equalsIgnoreCase("")){
+        		if(isValidObsValue(obs1, obs2)){
         			counter++;
         			
         		}
@@ -423,6 +402,27 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	return Integer.valueOf(counter);
     }
     
+    private boolean isValidObsValue(Observation obs1, Observation obs2){
+    	if(obs1 != null && obs2 != null && obs1.getValue() != null 
+				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
+				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
+			return true;
+			
+		}
+    	return false;
+    }
+    
+    private boolean isValidDoubleValue(String val){
+    	if(val != null && !val.equalsIgnoreCase("")){
+    		try{
+    			double d = Double.parseDouble(val);
+    			return true;
+    		}catch(NumberFormatException ee){
+    			return false;
+    		}
+    	}
+    	return false;
+    }
     public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair, Map<String, Observation> observationMap){
     	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair, observationMap);
     	/*
