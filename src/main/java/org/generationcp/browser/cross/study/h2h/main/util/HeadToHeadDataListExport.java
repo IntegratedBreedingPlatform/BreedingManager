@@ -126,27 +126,29 @@ public class HeadToHeadDataListExport {
         
         
         for(TraitForComparison traitForCompare : traitsIterator){
-        	int startCol = cellIndex;
-        	int endCol = cellIndex;
-        	Cell cellHeader = headerColSpan.createCell(cellIndex);
-        	cellHeader.setCellValue(traitForCompare.getTraitInfo().getName());
-            cellHeader.setCellStyle(sheetStyles.get(HEADING_MERGED_STYLE));
-            
-    		for(int k = 0 ; k < columnIdData.length ; k++){    		
-    			String colId = columnIdData[k];
-        		String msg = columnIdDataMsgMap.get(colId);
-        		cell = header.createCell(cellIndex++);
-        		cell.setCellValue(msg);
-        		cell.setCellStyle(sheetStyles.get(HEADING_STYLE));
+        	if(traitForCompare.isDisplay()){
+	        	int startCol = cellIndex;
+	        	int endCol = cellIndex;
+	        	Cell cellHeader = headerColSpan.createCell(cellIndex);
+	        	cellHeader.setCellValue(traitForCompare.getTraitInfo().getName());
+	            cellHeader.setCellStyle(sheetStyles.get(HEADING_MERGED_STYLE));
+	            
+	    		for(int k = 0 ; k < columnIdData.length ; k++){    		
+	    			String colId = columnIdData[k];
+	        		String msg = columnIdDataMsgMap.get(colId);
+	        		cell = header.createCell(cellIndex++);
+	        		cell.setCellValue(msg);
+	        		cell.setCellStyle(sheetStyles.get(HEADING_STYLE));
+	        	}
+	    		
+	    		endCol = cellIndex;       
+	            sheet.addMergedRegion(new CellRangeAddress(
+	                       0, //first row (0-based)
+	                       0, //last row  (0-based)
+	                       startCol, //first column (0-based)
+	                       endCol-1  //last column  (0-based)
+	               ));
         	}
-    		
-    		endCol = cellIndex;       
-            sheet.addMergedRegion(new CellRangeAddress(
-                       0, //first row (0-based)
-                       0, //last row  (0-based)
-                       startCol, //first column (0-based)
-                       endCol-1  //last column  (0-based)
-               ));
             
         }        
        
@@ -168,29 +170,31 @@ public class HeadToHeadDataListExport {
 			rowData.createCell(cellIndex++).setCellValue(standardEntryName);
 			
 			for(TraitForComparison traitForCompare : traitsIterator){
-	        	for(String colId : columnIdData){
-	        		String traitColId = traitForCompare.getTraitInfo().getName() + colId;
-	        		
-	        		String numVal = (String)item.getItemProperty(traitColId).getValue();
-	        		
-	        		numVal = numVal.replaceAll(",", "");
-	        		
-	        		cell = rowData.createCell(cellIndex++);
-	        		
-	        		if("-".equalsIgnoreCase(numVal)){
-	        			cell.setCellValue(numVal);
-	        		}else{
-	        		
-		        		cell.setCellValue(Double.parseDouble(numVal));	        		
-		        		cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+				if(traitForCompare.isDisplay()){
+		        	for(String colId : columnIdData){
+		        		String traitColId = traitForCompare.getTraitInfo().getName() + colId;
 		        		
-		        		if(colId.equalsIgnoreCase(ResultsComponent.NUM_OF_ENV_COLUMN_ID) || 
-	        				colId.equalsIgnoreCase(ResultsComponent.NUM_SUP_COLUMN_ID))
-		        			cell.setCellStyle(sheetStyles.get(NUMERIC_STYLE));
-		        		else
-		        			cell.setCellStyle(sheetStyles.get(NUMERIC_DOUBLE_STYLE));
-	        		}
-	        	}
+		        		String numVal = (String)item.getItemProperty(traitColId).getValue();
+		        		
+		        		numVal = numVal.replaceAll(",", "");
+		        		
+		        		cell = rowData.createCell(cellIndex++);
+		        		
+		        		if("-".equalsIgnoreCase(numVal)){
+		        			cell.setCellValue(numVal);
+		        		}else{
+		        		
+			        		cell.setCellValue(Double.parseDouble(numVal));	        		
+			        		cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+			        		
+			        		if(colId.equalsIgnoreCase(ResultsComponent.NUM_OF_ENV_COLUMN_ID) || 
+		        				colId.equalsIgnoreCase(ResultsComponent.NUM_SUP_COLUMN_ID))
+			        			cell.setCellStyle(sheetStyles.get(NUMERIC_STYLE));
+			        		else
+			        			cell.setCellStyle(sheetStyles.get(NUMERIC_DOUBLE_STYLE));
+		        		}
+		        	}
+				}
 	        }  
 		}
         

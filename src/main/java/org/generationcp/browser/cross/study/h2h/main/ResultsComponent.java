@@ -208,14 +208,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	
     	
         
-        for(TraitForComparison traitForCompare : traitsIterator){        	
-            for(String columnKey : columnIdData){
-            	String msg = columnIdDataMsgMap.get(columnKey);
-            	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
-            	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, traitForCompare.getTraitInfo().getName() + " " + msg);
-            	resultsTable.setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
-            	
-            }
+        for(TraitForComparison traitForCompare : traitsIterator){    
+        	if(traitForCompare.isDisplay()){
+	            for(String columnKey : columnIdData){
+	            	String msg = columnIdDataMsgMap.get(columnKey);
+	            	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
+	            	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, traitForCompare.getTraitInfo().getName() + " " + msg);
+	            	resultsTable.setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
+	            	
+	            }
+        	}
         }
         
         //resultsTable.addStyleName("multirowheaders");
@@ -241,32 +243,15 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         		//traitDataMap.put(cellKey, cellVal);
             	//item.getItemProperty(cellKey).setValue(cellVal);    
             	
+            	if(traitForCompare.isDisplay()){
+	            	for(String columnKey : columnIdData){
+	            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
+	            		String cellVal = getColumnValue(  columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
+	            		traitDataMap.put(cellKey, cellVal);
+	                	item.getItemProperty(cellKey).setValue(cellVal);                	
+	                }
+            	}
             	
-            	for(String columnKey : columnIdData){
-            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
-            		String cellVal = getColumnValue(  columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
-            		traitDataMap.put(cellKey, cellVal);
-                	item.getItemProperty(cellKey).setValue(cellVal);                	
-                }
-            	/*
-            	mainColumnIdId = NUM_SUP_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);            	
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	
-            	mainColumnIdId = PVAL_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	
-            	mainColumnIdId = MEAN_DIFF_COLUMN_ID;
-            	cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);
-            	traitDataMap.put(cellKey,cellVal);
-            	item.getItemProperty(cellKey).setValue(cellVal);
-            	*/
             }
         	resData.setTraitDataMap(traitDataMap);
     	}

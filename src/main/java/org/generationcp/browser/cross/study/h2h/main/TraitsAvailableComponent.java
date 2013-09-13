@@ -314,7 +314,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		//item.getItemPropertyIds()
     		TraitInfo info = traitMaps.get(combo);
     		TraitForComparison traitForComparison = new TraitForComparison(info, (Integer)combo.getValue());
-    		traitForComparisonsList.add(traitForComparison);
+    		traitForComparisonsList.add(traitForComparison);    		
     	}
     	if(this.nextScreen != null){
     		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair, germplasmIdNameMap);
