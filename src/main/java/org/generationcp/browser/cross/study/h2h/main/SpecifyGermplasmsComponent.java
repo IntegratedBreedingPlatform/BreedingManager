@@ -561,8 +561,10 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     					String standardName = (String) standardMap.get(standardId);
         				String newId = germplasm.getGid().toString() + ":" + standardId;    
         				
-    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-        	    		tableEntriesList.add(entry);
+        				if(!germplasm.getGid().toString().equalsIgnoreCase(standardId)){        				
+	    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
+	        	    		tableEntriesList.add(entry);
+        				}
         	    		germplasmIdNameMap.put(germplasm.getGid().toString(), testEntryName);
         	    		germplasmIdNameMap.put(standardId, standardName);
     				}
@@ -591,9 +593,11 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     					String testEntryName = (String) testMap.get(testId);
     					String standardName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
         				String newId = testId + ":" + germplasm.getGid().toString();    
-        				
-    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-        	    		tableEntriesList.add(entry);
+        				if(!germplasm.getGid().toString().equalsIgnoreCase(testId)){        				
+        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
+            	    		tableEntriesList.add(entry);
+        				}
+    					
         	    		germplasmIdNameMap.put(testId, testEntryName);
         	    		germplasmIdNameMap.put(germplasm.getGid().toString(), standardName);
     				}
@@ -632,8 +636,12 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    					String standardName = (String) standardMap.get(standardId);
 	        				String newId = listData.getGid().toString() + ":" + standardId;    
 	        				
-	    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-	        	    		tableEntriesList.add(entry);
+	        				if(!listData.getGid().toString().equalsIgnoreCase(standardId)){        				
+	        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
+		        	    		tableEntriesList.add(entry);
+	        				}
+	        				
+	    					
 	        	    		
 	        	    		germplasmIdNameMap.put(listData.getGid().toString(), testEntryName);
 	        	    		germplasmIdNameMap.put(standardId, standardName);
@@ -670,8 +678,11 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    					String standardName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
 	        				String newId = testId + ":" + listData.getGid().toString();    
 	        				
-	    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-	        	    		tableEntriesList.add(entry);
+	        				if(!listData.getGid().toString().equalsIgnoreCase(testId)){        				
+	        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
+		        	    		tableEntriesList.add(entry);
+	        				}
+	    					
 	        	    		
 	        	    		germplasmIdNameMap.put(testId, testEntryName);
 	        	    		germplasmIdNameMap.put(listData.getGid().toString(), standardName);
@@ -709,183 +720,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 		tableEntry.setTestStandardEntry(id);
 		return tableEntry;
     }
-    /*
-    private void doGermplasmPermutationOnTableOld(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
-    	List<TablesEntries> tableEntriesList = new ArrayList();
-    	if(isGermplasm){
-    		//meaning we use the variable germplasm
-    		if(isTableEntriesEmpty()){
-    			TablesEntries tableEntry = new TablesEntries();
-	    		String testEntryName = "";
-	    		String standardEntryName = "";
-	    		String newId = "";
-	    		if(isTestEntry){
-	    			testEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-	    			standardEntryName = "";
-	    			newId = germplasm.getGid().toString() + ": ";
-	    		}else{
-	    			testEntryName = "";
-	    			standardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-	    			newId = " :"+germplasm.getGid().toString();
-	    		}
-	    		
-	    		tableEntry.setTestEntryName(testEntryName);
-	    		tableEntry.setStandardEntryName(standardEntryName);
-	    		tableEntry.setTestStandardEntry(newId);
-	    		tableEntriesList.add(tableEntry);
-				singleEntriesSet.put(newId, tableEntry);
-    		}else{
-    			Iterator iter = entriesTable.getItemIds().iterator();
-    			boolean isBlank = false;
-    			while(iter.hasNext()){
-    				//we iterate and permutate against the list
-    				TablesEntries tableEntry = new TablesEntries();
-    				String id = (String)iter.next();
-    				String leftId = "";
-    				String rightId = "";
-    				StringTokenizer tokenizer = new StringTokenizer(id,":");
-    				if(tokenizer.countTokens() == 2){
-    					leftId = tokenizer.nextToken().trim();
-    					rightId = tokenizer.nextToken().trim();
-    				}
-    				Item item = entriesTable.getItem(id);
-    				String testEntryName = (String)item.getItemProperty(TEST_ENTRY_COLUMN_ID).getValue();
-    				String standardEntryName = (String)item.getItemProperty(STANDARD_ENTRY_COLUMN_ID).getValue();
-    				String newTestEntryName = "";
-    				String newStandardEntryName = "";
-    	    		String newId = "";
-    	    		
-    				if(isTestEntry){
-    					//We need to permutate against the standard
-    					newTestEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-    					newStandardEntryName = standardEntryName;
-    	    			//newId = germplasm.getGid().toString() + id.trim(); //since id already has -number
-    	    			if(testEntryName.equalsIgnoreCase("")){
-    	    				isBlank = true;
-    	    				newId = germplasm.getGid().toString() + ": ";
-    	    				if(!standardEntryName.equalsIgnoreCase("")){
-    	    					newId =  germplasm.getGid().toString() + ":" +(rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());
-    	    				}
-    	    			}else{
-    	    				newId = germplasm.getGid().toString() + ":" + (rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());    	    				
-    	    			}
-    	    		}else{
-    	    			//we need to permutate against the test entry
-    	    			newTestEntryName = testEntryName;
-    	    			newStandardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-    	    			//newId = id.trim()+germplasm.getGid().toString();
-    	    			if(standardEntryName.equalsIgnoreCase("")){
-    	    				isBlank = true;
-    	    				newId =  " :" + germplasm.getGid().toString();
-    	    				if(!testEntryName.equalsIgnoreCase("")){
-    	    					newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + germplasm.getGid().toString();
-    	    				}
-    	    			}else{
-    	    				newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + germplasm.getGid().toString();
-    	    			}
-    	    		}
-    				tableEntry.setTestEntryName(newTestEntryName);
-    	    		tableEntry.setStandardEntryName(newStandardEntryName);
-    	    		tableEntry.setTestStandardEntry(newId);
-    	    		tableEntriesList.add(tableEntry);
-    			}
-    			if(isBlank == true)
-    				deleteAllSingleEntriesInTable();
-    		}
-    	}else{
-    		//we use the the variable germplasmlist
-    		List<GermplasmListData> germplasmListData = germplasmList.getListData();
-    		
-    			if(isTableEntriesEmpty()){
-    				for(GermplasmListData listData : germplasmListData){
-	    				TablesEntries tableEntry = new TablesEntries();
-	    	    		String testEntryName = "";
-	    	    		String standardEntryName = "";
-	    	    		String newId = "";
-	    	    		if(isTestEntry){
-	    	    			testEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-	    	    			standardEntryName = "";
-	    	    			newId = listData.getGid().toString() + ": ";
-	    	    		}else{
-	    	    			testEntryName = "";
-	    	    			standardEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-	    	    			newId = " :"+listData.getGid().toString();
-	    	    		}
-	    	    		
-	    	    		tableEntry.setTestEntryName(testEntryName);
-	    	    		tableEntry.setStandardEntryName(standardEntryName);
-	    	    		tableEntry.setTestStandardEntry(newId);
-	    	    		tableEntriesList.add(tableEntry);
-	    	    		singleEntriesSet.put(newId, tableEntry);
-    				}
-    			}else{
-    				
-	    			Iterator iter = entriesTable.getItemIds().iterator();
-	    			boolean isBlank = false;
-	    			while(iter.hasNext()){
-	    				String id = (String)iter.next();
-	    				StringTokenizer tokenizer = new StringTokenizer(id, ":");
-	    				String leftId = "";
-	    				String rightId = "";
-	    				Item item = entriesTable.getItem(id);
-	    				
-	    				if(tokenizer.countTokens() == 2){
-	    					leftId = tokenizer.nextToken().trim();
-	    					rightId = tokenizer.nextToken().trim();
-	    				}
-	    				String testEntryName = (String)item.getItemProperty(TEST_ENTRY_COLUMN_ID).getValue();
-	    				String standardEntryName = (String)item.getItemProperty(STANDARD_ENTRY_COLUMN_ID).getValue();
-	    				
-	    				for(GermplasmListData listData : germplasmListData){
-		    				//we iterate and permutate against the list
-		    				TablesEntries tableEntry = new TablesEntries();		    						    						    						    						    			
-		    				String newTestEntryName = "";
-		    				String newStandardEntryName = "";
-		    	    		String newId = "";
-		    				if(isTestEntry){
-		    					//We need to permutate against the standard
-		    					newTestEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-		    					newStandardEntryName = standardEntryName;
-		    	    			//newId = listData.getGid().toString() + id.trim(); //since id already has -number
-		    	    			if(testEntryName.equalsIgnoreCase("")){
-		    	    				isBlank = true;
-		    	    				newId =  listData.getGid().toString() + ": ";
-		    	    				if(!standardEntryName.equalsIgnoreCase("")){
-		    	    					newId =  listData.getGid().toString() + ":" +(rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());
-		    	    				}
-		    	    			}else{
-		    	    				newId =  listData.getGid().toString() + ":" + (rightId.trim().equalsIgnoreCase("") ? " " : rightId.trim());		    	    				
-		    	    			}
-		    	    		}else{
-		    	    			//we need to permutate against the test entry
-		    	    			newTestEntryName = testEntryName;
-		    	    			newStandardEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-		    	    			//newId = id.trim()+listData.getGid().toString();
-		    	    			if(standardEntryName.equalsIgnoreCase("")){
-		    	    				isBlank = true;
-		    	    				newId =  " :" + listData.getGid().toString();
-		    	    				if(!testEntryName.equalsIgnoreCase("")){
-		    	    					newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + listData.getGid().toString();
-		    	    				}
-		    	    			}else{
-		    	    				newId =  (leftId.trim().equalsIgnoreCase("") ? " " : leftId.trim()) + ":" + listData.getGid().toString();
-		    	    			}
-		    	    		}
-		    				tableEntry.setTestEntryName(newTestEntryName);
-		    	    		tableEntry.setStandardEntryName(newStandardEntryName);
-		    	    		tableEntry.setTestStandardEntry(newId);
-		    	    		tableEntriesList.add(tableEntry);
-		    			}
-	    			}
-	    			if(isBlank == true)
-	    				deleteAllSingleEntriesInTable();
-    			}
-    		
-    	}
-    	addToTable(tableEntriesList);
-    	
-    }
-    */
+    
     
     private void deleteAllSingleEntriesInTable(){
     	//we delete the single entrie
@@ -933,6 +768,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	for(TablesEntries tableEntry : tableEntryList){
     		String newId = tableEntry.getTestStandardEntry();    		
 	    	//if not in map, add it in the table
+    		
 	    	if(!mapTableEntriesId.containsKey(newId)){
 		    	
 		    		entriesTable.addItem(new Object[] {tableEntry.getTestEntryName(), tableEntry.getStandardEntryName()}, tableEntry.getTestStandardEntry());
