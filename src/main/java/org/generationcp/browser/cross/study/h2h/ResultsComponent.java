@@ -175,14 +175,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
                 averageOfEntry2 = Math.round(averageOfEntry2 * 100.0) / 100.0;
                 
                 Double meanDiff = null;
-                if(testEntryPrefName.equals(entry1)){
-                    meanDiff = averageOfEntry1 - averageOfEntry2;
-                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
-                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry2, averageOfEntry1, meanDiff, null));
-                } else{
-                    meanDiff = averageOfEntry2 - averageOfEntry1;
-                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
-                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry2, meanDiff, null));
+                if(numberOfEnvironments != 0){
+	                if(testEntryPrefName.equals(entry1)){
+	                    meanDiff = averageOfEntry1 - averageOfEntry2;
+	                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
+	                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry2, averageOfEntry1, meanDiff, null));
+	                } else{
+	                    meanDiff = averageOfEntry2 - averageOfEntry1;
+	                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
+	                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry2, meanDiff, null));
+	                }
                 }
             }
         } catch(MiddlewareQueryException ex){
