@@ -170,7 +170,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         addEnvironment = new Button("Add Environment Conditions columns to the Environment Filter");
         addEnvironment.setData(ADD_ENVIRONMENT_BUTTON_ID);
         addEnvironment.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        addEnvironment.setEnabled(true);
+        addEnvironment.setEnabled(false);
         
         addComponent(addEnvironment, "top:40px;left:500px");
         
