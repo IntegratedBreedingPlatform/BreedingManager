@@ -224,7 +224,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             
             try {
                 lastPrefixUsed = buildPrefixString();
-                String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(lastPrefixUsed);
+                String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(lastPrefixUsed.trim());
                 
                 nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
                 generatedNameLabel.setCaption(buildNextNameInSequence(lastPrefixUsed, suffix, nextNumberInSequence));
