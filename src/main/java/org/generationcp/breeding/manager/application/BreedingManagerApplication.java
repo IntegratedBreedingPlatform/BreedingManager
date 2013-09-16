@@ -135,7 +135,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
             if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
                 rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain(rootLayoutForImportGermplasmList));
-                rootLayoutForCrossingManager.addStyleName("addSpacing");
+                rootLayoutForImportGermplasmList.addStyleName("addSpacing");
             } 
         }
         else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {

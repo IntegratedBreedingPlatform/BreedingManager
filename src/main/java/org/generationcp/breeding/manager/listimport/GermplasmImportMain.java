@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listimport;
 
 import com.vaadin.ui.ComponentContainer;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.listimport.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -12,7 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
@@ -25,6 +32,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
     
     private final static String VERSION = "1.0.0";
+    private static final String STEP_1_GUIDE_MESSAGE = "The Germplasm List Import tool facilitates the creation of a list and its list entries based on an import file.  " +
+    		"The first step requires that a Germplasm List Import file be provided. " +
+    		" Choose the file and press the Upload button.  Click on the Next button to proceed to the next step.";
+    private static final String STEP_2_GUIDE_MESSAGE = "The second step involves specifying details for the germplasm records of list entries to be saved. " +
+    		" A table of entries read from the import file is shown.  A Pedigree Option should also be chosen.";
+    private static final String STEP_3_GUIDE_MESSAGE = "In this step you should specify the list details.  Defaults are provided as they are read from the import file. " +
+    		" Clicking done will finish the process and save the database records as needed.  The list details and entries will then be displayed.";
     
     private GermplasmImportFileComponent wizardScreenOne;
     private SpecifyGermplasmDetailsComponent wizardScreenTwo;
@@ -40,6 +54,8 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	private HorizontalLayout titleLayout;
+	private Label crossingManagerTitle;
     
     public GermplasmImportMain(ComponentContainer parent){
         this.parent = parent;
@@ -50,9 +66,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         setMargin(false);
         setSpacing(true);
         
-        importToolTitle = new Label("Import Germplasm List " + VERSION);
-        importToolTitle.setStyleName("h1");
-        addComponent(importToolTitle);
+        titleLayout = new HorizontalLayout();
+        titleLayout.setSpacing(true);
+        setTitleContent(STEP_1_GUIDE_MESSAGE);
+        addComponent(titleLayout);
         
         accordion = new Accordion();
         accordion.setWidth("800px");
@@ -69,6 +86,22 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         wizardTabOne = accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.OPEN_GERMPLASM_IMPORT_FILE)); //Open Germplasm Import File
         wizardTabTwo = accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS)); //Specify Germplasm Details
         wizardTabThree = accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.SAVE_GERMPLASM_LIST)); //Save Germplasm List
+        
+        accordion.addListener(new SelectedTabChangeListener() {
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selected =accordion.getSelectedTab();
+                Tab tab = accordion.getTab(selected);
+                if(tab!=null && tab.equals(wizardTabOne)){
+                	setTitleContent(STEP_1_GUIDE_MESSAGE);
+                } else if(tab!=null && tab.equals(wizardTabTwo)){
+                	setTitleContent(STEP_2_GUIDE_MESSAGE);
+                } else{   
+                	setTitleContent(STEP_3_GUIDE_MESSAGE);
+                } 
+                            
+            }
+        });
         
         addComponent(accordion);
         
@@ -135,6 +168,26 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
     public void reset(){
         this.parent.replaceComponent(this, new GermplasmImportMain(this.parent));
+    }
+    
+    public void setTitleContent(String guideMessage){
+        titleLayout.removeAllComponents();        
+        //String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
+        String title =  "Import Germplasm List  <h2>" + VERSION + "</h2>";
+        crossingManagerTitle = new Label();
+        crossingManagerTitle.setStyleName("gcp-window-title");
+        crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
+        crossingManagerTitle.setValue(title);
+        titleLayout.addComponent(crossingManagerTitle);
+        
+        Label descLbl = new Label(guideMessage);
+        descLbl.setWidth("300px");
+        
+        PopupView popup = new PopupView("?",descLbl);
+        popup.setStyleName("gcp-popup-view");
+        titleLayout.addComponent(popup);
+        
+        titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
     }
     
     
