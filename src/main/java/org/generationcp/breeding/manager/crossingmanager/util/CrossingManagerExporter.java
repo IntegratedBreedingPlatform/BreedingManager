@@ -13,6 +13,7 @@ package org.generationcp.breeding.manager.crossingmanager.util;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,17 +33,24 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-
+@Configurable
 public class CrossingManagerExporter{
     
     private static final String LABEL_STYLE = "labelStyle";
     private static final String FACTOR_HEADING_STYLE = "factorHeadingStyle";
     private static final String VARIATE_HEADING_STYLE = "variateHeadingStyle";
     private static final String NUMERIC_STYLE = "numericStyle";
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
     
     private static final int NUM_OF_COLUMNS = 8;
     
@@ -285,7 +293,18 @@ public class CrossingManagerExporter{
         
         // write the Crosses Made
         currentRow++;
-        for (GermplasmListData cross: this.crossesList.getListData()){
+        List<GermplasmListData> listDatas = null;
+        int germplasmListId =  this.crossesList.getId();
+        try {
+        	long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+			listDatas = this.germplasmListManager.getGermplasmListDataByListId(
+			        germplasmListId, 0, (int) listDataCount);
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+        for (GermplasmListData cross: listDatas){
             HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
             conditionRow.createCell(0).setCellValue(cross.getEntryId());
             conditionRow.createCell(1).setCellValue(cross.getGid());
