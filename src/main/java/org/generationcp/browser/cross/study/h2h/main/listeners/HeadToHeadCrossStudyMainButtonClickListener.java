@@ -5,6 +5,7 @@ import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
 import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
@@ -172,6 +173,9 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         }  else if (source instanceof FilterLocationDialog
                 && event.getButton().getData().equals(FilterLocationDialog.APPLY_BUTTON_ID)) {
             ((FilterLocationDialog) source).clickApplyButton();
+        } else if (source instanceof FilterStudyDialog
+                && event.getButton().getData().equals(FilterStudyDialog.APPLY_BUTTON_ID)) {
+            ((FilterStudyDialog) source).clickApplyButton();
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");

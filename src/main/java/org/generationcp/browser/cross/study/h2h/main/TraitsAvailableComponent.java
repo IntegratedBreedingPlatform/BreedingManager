@@ -21,6 +21,7 @@ import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
+import org.generationcp.middleware.domain.h2h.TraitType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -55,6 +56,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     public static final String CHECKBOX_ID = "TraitsAvailableComponent Checkbox ID";
     
     private static final String TRAIT_COLUMN_ID = "TraitsAvailableComponent Trait Column Id";
+    private static final String TRAIT_DESCRIPTION_COLUMN_ID = "TraitsAvailableComponent Trait Description Column Id";
     private static final String NUMBER_OF_ENV_COLUMN_ID = "TraitsAvailableComponent Number of Environments Column Id";
     private static final String TAG_COLUMN_ID = "TraitsAvailableComponent Tag Column Id";
     private static final String DIRECTION_COLUMN_ID = "TraitsAvailableComponent Direction Column Id";
@@ -124,6 +126,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         
         traitsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         traitsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
+        traitsTable.addContainerProperty(TRAIT_DESCRIPTION_COLUMN_ID, String.class, null);
         traitsTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
         traitsTable.addContainerProperty(DIRECTION_COLUMN_ID, ComboBox.class, null);
         
@@ -132,13 +135,15 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         
         traitsTable.setColumnHeader(TAG_COLUMN_ID,  messageSource.getMessage(Message.HEAD_TO_HEAD_TAG));
         traitsTable.setColumnHeader(TRAIT_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_TRAIT));
+        traitsTable.setColumnHeader(TRAIT_DESCRIPTION_COLUMN_ID, "Description");        
         traitsTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_NO_OF_ENVS));        
         traitsTable.setColumnHeader(DIRECTION_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_DIRECTION));
         
-        traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);
-        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 300);
-        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 200);
-        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 400);        
+        traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);        
+        traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 150);
+        traitsTable.setColumnWidth(TRAIT_DESCRIPTION_COLUMN_ID, 450);
+        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 100);
+        traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);        
         
         
         addComponent(traitsTable, "top:40px;left:30px");
@@ -213,6 +218,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	        		{
 	    				TraitInfo info = traitIterator.next();
 	    				
+	    				//add here the checking if the trait is non numeric
+	    				if(info.getType() != TraitType.NUMERIC)
+	    					continue;
+	    				
 	    				String id = Integer.toString(info.getId());
 	    				List<TraitInfo> tempList = new ArrayList();
 	    				if(traitMap.containsKey(id)){
@@ -243,7 +252,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	        	ComboBox comboBox = getDirectionComboBox();
 	        	box.setImmediate(true);
 	        	Integer tableId = Integer.valueOf(id);
-	        	traitsTable.addItem(new Object[] {box, info.getName(),
+	        	traitsTable.addItem(new Object[] {box, info.getName(),info.getDescription(),
 	        			traitInfoList.size(),comboBox },tableId);
 	        	//checkBoxMap.put(box, traitsTable.getItem(tableId));
 	        	box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
@@ -314,7 +323,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		//item.getItemPropertyIds()
     		TraitInfo info = traitMaps.get(combo);
     		TraitForComparison traitForComparison = new TraitForComparison(info, (Integer)combo.getValue());
-    		traitForComparisonsList.add(traitForComparison);
+    		traitForComparisonsList.add(traitForComparison);    		
     	}
     	if(this.nextScreen != null){
     		this.nextScreen.populateEnvironmentsTable(traitForComparisonsList, traitEnvironmentMap, trialEnvironmentMap, germplasmIds, finalGermplasmPair, germplasmIdNameMap);

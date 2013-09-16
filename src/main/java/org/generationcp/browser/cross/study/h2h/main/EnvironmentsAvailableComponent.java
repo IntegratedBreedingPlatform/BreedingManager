@@ -127,6 +127,11 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map filterSetLevel1;
     private Map filterSetLevel2;
     private Map filterSetLevel3;
+    private Map filterSetLevel4;
+    
+    private static Integer NON_NUMERIC_VAL = -1;
+    private boolean isFilterLocationClicked = false;
+    private boolean isFilterStudyClicked = false;
     
     public EnvironmentsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen = mainScreen;
@@ -297,6 +302,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	traitForComparisonsList = traitForComparisonsListTemp;
     	//germplasmPairs = germplasmPairsTemp;
     	
+    	
+    	
     	while(iter.hasNext()){
     		TraitForComparison comparison = iter.next();
     		//System.out.println(comparison.getTraitInfo().getName() + "  " + comparison.getDirection());
@@ -335,7 +342,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	Window parentWindow = this.getWindow();
         filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
-
+        isFilterLocationClicked = false;
+        isFilterStudyClicked = false;
     }
     
     private void recreateTable(boolean recreateFilterLocationMap, boolean isAppliedClick){
@@ -370,6 +378,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 	    		 boolean isValidEntryAdd = true;
 	    		 if(isAppliedClick){
 	    			 isValidEntryAdd = isValidEntry(trialEnv);
+	    			 
 	    		 }
 	    		 
 	    		 if(isValidEntryAdd){
@@ -427,6 +436,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), finalGermplasmPairs, obsList);
 			                 //item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
 			                 traitAndObservationMap.put(traitForCompare, obsList);
+			                 traitForCompare.setDisplay(true);
+			                 /*
+			                 if(count.intValue() == NON_NUMERIC_VAL.intValue()){
+			                	 //we should hide the column and mark the trait so it wont be displayed anymore
+			                	 traitForCompare.setDisplay(false);			                	 
+			                 }
+			                 */
 			                 objItem[counterTrait++] = count;
 			             }
 			             compare.setTraitAndObservationMap(traitAndObservationMap);
@@ -455,6 +471,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		 }
              
     	}
+    	numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
+    	//set up table column visibility
     }
     
     private boolean isValidEntry(TrialEnvironment trialEnv){
@@ -469,32 +487,64 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	String level1Key = countryName;
     	String level2Key = countryName + FilterLocationDialog.DELIMITER + provinceName;
     	String level3Key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName + FilterLocationDialog.DELIMITER + studyName;
+    	String level4Key = studyName;
+    	
     	//check against the map
-    	if(filterSetLevel1.containsKey(level1Key)){
-    		isValid = true;
-    	}else if(filterSetLevel2.containsKey(level2Key)){
-    		isValid = true;
-    	}else if(filterSetLevel3.containsKey(level3Key)){
-    		isValid = true;
+    	if(isFilterLocationClicked){
+	    	if(filterSetLevel1.containsKey(level1Key)){
+	    		isValid = true;
+	    	}else if(filterSetLevel2.containsKey(level2Key)){
+	    		isValid = true;
+	    	}else if(filterSetLevel3.containsKey(level3Key)){
+	    		isValid = true;
+	    	}
     	}
     	
+    	if(isFilterStudyClicked){
+    		
+    		if(isFilterLocationClicked){
+    			//meaning there is a filter in location already
+    			if(isValid){
+    				//we only filter again if its valid
+	    			if(filterSetLevel4.containsKey(level4Key)){
+	    	    		isValid = true;
+	    	    	}else{
+	    	    		isValid = false;
+	    	    	}
+    			}
+    		}else{
+    			if(filterSetLevel4.containsKey(level4Key)){
+    	    		isValid = true;
+    	    	}else{
+    	    		isValid = false;
+    	    	}
+    		}
+    		
+    	}
     	
     	return isValid;
     }
     
     public void clickFilterByStudyApply(List<FilterLocationDto> filterLocationDtoListLevel4){
-    	
+    	isFilterStudyClicked = true;
+    	filterSetLevel4 = new HashMap();
+    	for(FilterLocationDto dto : filterLocationDtoListLevel4){
+    		String studyName = dto.getStudyName();
+        	
+    		filterSetLevel4.put(studyName, studyName);
+    	}
+    	recreateTable(false, true);
     }
     
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel2, List<FilterLocationDto> filterLocationDtoListLevel3){
     	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
     	
-    	Map<String, Set<String>> countryProvinceMap = new HashMap();
-    	Map<String, String> provinceLocationStudyMap = new HashMap();
     	
+    	isFilterLocationClicked = true;
     	filterSetLevel1 = new HashMap();
     	filterSetLevel2 = new HashMap();
     	filterSetLevel3 = new HashMap();
+    	
     	    
     	for(FilterLocationDto dto : filterLocationDtoListLevel1){
     		String countryName = dto.getCountryName();
@@ -568,8 +618,10 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		Observation obs2 = observationMap.get(keyToChecked2);
     		
     		//for test data
-    		
+    		/*
     		if(true){
+    			return NON_NUMERIC_VAL;
+    			
     			counter++;
     			obs1.setValue("aa2");
     			obs2.setValue("aa3");
@@ -577,17 +629,25 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			obsList.add(obs2);
     			
     			continue;
+    			
     		}
+    	*/
     		
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-    				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
-    			counter++;
-    			obsList.add(obs1);
-    			obsList.add(obs2);
+    				!obs2.getValue().equalsIgnoreCase("")){
+    			if(isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
+	    			counter++;
+	    			obsList.add(obs1);
+	    			obsList.add(obs2);
+    			}else{
+    				;//return NON_NUMERIC_VAL;
+    			}
     			
     			//if(obs1.getValue())
     		}
+    		
+    		
     	}
     	return Integer.valueOf(counter);
     }
@@ -664,6 +724,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     }
     
     public void selectFilterByLocationClickAction(){
+    	
     	Window parentWindow = this.getWindow();
     	filterLocation.initializeButtons();
         parentWindow.addWindow(filterLocation);

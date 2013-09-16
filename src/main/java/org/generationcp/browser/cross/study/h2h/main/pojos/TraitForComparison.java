@@ -10,11 +10,26 @@ public class TraitForComparison implements Serializable{
 
     private TraitInfo traitInfo;
     private Integer direction;
+    private boolean isDisplay;
     
     public TraitForComparison(TraitInfo traitInfo, Integer direction){
         this.traitInfo = traitInfo;
         this.direction = direction;
     }
+    
+    
+
+	public boolean isDisplay() {
+		return isDisplay;
+	}
+
+
+
+	public void setDisplay(boolean isDisplay) {
+		this.isDisplay = isDisplay;
+	}
+
+
 
 	public TraitInfo getTraitInfo() {
 		return traitInfo;
