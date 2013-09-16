@@ -102,8 +102,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         this.mainScreen = mainScreen;
         
         //initialize the data map
-        columnIdDataMsgMap.put(NUM_OF_ENV_COLUMN_ID, "NoEnv");
-        columnIdDataMsgMap.put(NUM_SUP_COLUMN_ID, "NoSup");
+        columnIdDataMsgMap.put(NUM_OF_ENV_COLUMN_ID, "#Env");
+        columnIdDataMsgMap.put(NUM_SUP_COLUMN_ID, "#Sup");
         columnIdDataMsgMap.put(PVAL_COLUMN_ID, "Pval");
         columnIdDataMsgMap.put(MEAN_DIFF_COLUMN_ID, "MeanDiff");
         
