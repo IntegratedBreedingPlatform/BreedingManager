@@ -461,7 +461,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			                	 traitForCompare.setDisplay(false);			                	 
 			                 }
 			                 */
-			                 //objItem[counterTrait++] = count;
+			                 objItem[counterTrait++] = count;
 			             }
 			             compare.setTraitAndObservationMap(traitAndObservationMap);
 			             	
