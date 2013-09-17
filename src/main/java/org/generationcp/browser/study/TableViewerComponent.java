@@ -12,6 +12,7 @@
 package org.generationcp.browser.study;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.util.TableViewerCellSelectorUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,6 +40,7 @@ public class TableViewerComponent extends Window implements InitializingBean, In
 	
 	public TableViewerComponent (Table displayTable) {
 		this.displayTable = displayTable;
+        TableViewerCellSelectorUtil tableViewerCellSelectorUtil = new TableViewerCellSelectorUtil(this, displayTable);
 	}
 
 	@Override

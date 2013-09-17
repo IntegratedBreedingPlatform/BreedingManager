@@ -250,7 +250,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         datasetTable.setSizeFull(); // to make scrollbars appear on the Table component
 
         // Use cell selector utility on datasetTable
-        TableViewerCellSelectorUtil tableViewerCellSelectorUtil = new TableViewerCellSelectorUtil(this, datasetTable);
+        //TableViewerCellSelectorUtil tableViewerCellSelectorUtil = new TableViewerCellSelectorUtil(this, datasetTable);
         
         // set column headers for the Table
         for (VariableType variable : variables) {

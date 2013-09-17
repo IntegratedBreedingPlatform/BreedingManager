@@ -7,6 +7,8 @@ import org.generationcp.browser.study.RepresentationDatasetComponent;
 import org.generationcp.browser.study.pojos.CellCoordinate;
 import org.generationcp.browser.study.pojos.CellCoordinateColorAssignment;
 
+import com.google.gwt.i18n.server.testing.Parent;
+import com.vaadin.Application;
 import com.vaadin.addon.colorpicker.ColorPicker;
 import com.vaadin.addon.colorpicker.events.ColorChangeEvent;
 import com.vaadin.event.ItemClickEvent;
@@ -67,9 +69,16 @@ public class TableViewerCellSelectorUtil {
 	
 	private void initialize(){
 
-		((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table .v-table-cell-content-highlighted { background: #1B91E0; padding-bottom: -1px; border-bottom: 1px solid #146296; padding-right: -1px; border-right: 1px solid #146296; } </style>",Label.CONTENT_XHTML));	
-		((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table .v-table-cell-content-currentlyselected { background: #1B91E0; padding: -2px; border: 2px solid #3B25B3; } </style>",Label.CONTENT_XHTML));
-
+		
+		if(source instanceof Window){
+			((Window) source).addComponent(new Label("<style> .v-table .v-table-cell-content-highlighted { background: #1B91E0; padding-bottom: -1px; border-bottom: 1px solid #146296; padding-right: -1px; border-right: 1px solid #146296; } </style>",Label.CONTENT_XHTML));	
+			((Window) source).addComponent(new Label("<style> .v-table .v-table-cell-content-currentlyselected { background: #1B91E0; padding: -2px; border: 2px solid #3B25B3; } </style>",Label.CONTENT_XHTML));
+		} else {
+			((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table .v-table-cell-content-highlighted { background: #1B91E0; padding-bottom: -1px; border-bottom: 1px solid #146296; padding-right: -1px; border-right: 1px solid #146296; } </style>",Label.CONTENT_XHTML));	
+			((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table .v-table-cell-content-currentlyselected { background: #1B91E0; padding: -2px; border: 2px solid #3B25B3; } </style>",Label.CONTENT_XHTML));			
+		}
+		
+		
 		
 		Object[] columnHeadersObjectArray = table.getVisibleColumns();
 		for(int i=0;i<columnHeadersObjectArray.length;i++){
@@ -107,14 +116,24 @@ public class TableViewerCellSelectorUtil {
 					
 					contextWindow.addComponent(cp);
 					
-					table.getWindow().addWindow(contextWindow);
-
+					if(source instanceof Window){
+						//((Window) source).getApplication().getMainWindow().addWindow(contextWindow);
+						//((Window) source).getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME).addWindow(contextWindow);
+						((Window) source).getParent().getWindow().addWindow(contextWindow);
+					} else {
+						table.getWindow().addWindow(contextWindow);
+					}
+					
 					cp.addListener(new ColorPicker.ColorChangeListener(){
 						private static final long serialVersionUID = 1L;
 						public void colorChanged(ColorChangeEvent event) {
 							cssClassName = addColor(event.getColor().getRed(), event.getColor().getGreen(), event.getColor().getBlue());
 							applyColorToSelectedCells(cssClassName);
-							table.getWindow().removeWindow(contextWindow);
+							if(source instanceof Window){
+								((Window) source).getParent().removeWindow(contextWindow);
+							} else {
+								table.getWindow().removeWindow(contextWindow);
+							}
 						}
 					});
 					
@@ -271,7 +290,11 @@ public class TableViewerCellSelectorUtil {
 		String className = String.valueOf(R) + String.valueOf(G) + String.valueOf(B);
 		if(customCSSClassNames.indexOf(className) == -1){
 			customCSSClassNames.add(className);
-			((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); } </style>",Label.CONTENT_XHTML));
+			if(source instanceof Window){
+				((Window) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); } </style>",Label.CONTENT_XHTML));
+			} else {
+				((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); } </style>",Label.CONTENT_XHTML));
+			}
 		}
 		return className;
 	}
