@@ -141,8 +141,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         
         traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);        
         traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 150);
-        traitsTable.setColumnWidth(TRAIT_DESCRIPTION_COLUMN_ID, 450);
-        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 100);
+        traitsTable.setColumnWidth(TRAIT_DESCRIPTION_COLUMN_ID, 400);
+        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 150);
         traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);        
         
         
