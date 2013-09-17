@@ -14,6 +14,7 @@ public class FilterByLocation {
 	private List<String> provinceNameList  = new ArrayList();
 	private List<String> locationStudyNameList  = new ArrayList();
 	private Map<String, Map<String, LocationStudyDto>> provinceLocationStudyMap = new HashMap();
+	private Map<String, List<String>> locationStudyMap = new HashMap();
 	
 	
 	//private Map<String, LocationStudyDto> locationStudyUniqueMap = new HashMap();
@@ -74,6 +75,13 @@ public class FilterByLocation {
 			locationStudyUniqueMap.put(key, dto);
 		}
 		provinceLocationStudyMap.put(provinceName, locationStudyUniqueMap);
+		
+		List<String> studyList = locationStudyMap.get(locationName);
+		if(studyList == null){
+			studyList = new ArrayList();
+		}
+		studyList.add(studyName);
+		locationStudyMap.put(locationName, studyList);
 		//locationList.add(dto);
 	}
 	
@@ -87,6 +95,14 @@ public class FilterByLocation {
 	public Integer getNumberOfEnvironmentForProvince(String provinceName){
 		Map<String, LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
 		return locationStudyUniqueMap.keySet().size();
+	}
+	
+	public Integer getNumberOfEnvironmentForLocation(String locationName){
+		List<String> studyList = locationStudyMap.get(locationName);
+		if(studyList != null){
+			return studyList.size();
+		}
+		return 0;
 	}
 	public Collection<LocationStudyDto> getLocationStudyForProvince(String provinceName){
 		Map<String, LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);

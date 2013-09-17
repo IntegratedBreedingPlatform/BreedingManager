@@ -31,10 +31,16 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     private Component source;
     private Component sourceComboBox;
     private FilterLocationDto filterLocationDto;
+    private String tableKey;
  
     public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox){
         this.source = source;
         this.sourceComboBox = sourceComboBox;
+    }
+    public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox, String tableKey){
+        this.source = source;
+        this.sourceComboBox = sourceComboBox;
+        this.tableKey = tableKey;
     }
     public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox, FilterLocationDto filterLocationDto){
         this.source = source;
@@ -45,7 +51,7 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         if (source instanceof TraitsAvailableComponent) {
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
         }else if (source instanceof EnvironmentsAvailableComponent) {
-            ((EnvironmentsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
+            ((EnvironmentsAvailableComponent) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof FilterLocationDialog) {
             ((FilterLocationDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
         }  else if (source instanceof FilterStudyDialog) {

@@ -91,7 +91,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     
     private Table countriesTable;
     private Table provinceTable;
-    private Table locationStudyTable;
+    private Table locationTable;
     private Map<String, FilterByLocation> filterLocationCountryMap;
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
@@ -148,7 +148,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(countriesTable, "top:30px;left:20px");
         mainLayout.addComponent(provinceTable, "top:30px;left:390px");
-        mainLayout.addComponent(locationStudyTable, "top:30px;left:780px");
+        mainLayout.addComponent(locationTable, "top:30px;left:780px");
         
         mainLayout.addComponent(rightArrow1, "top:175px;left:335px");
         mainLayout.addComponent(rightArrow2, "top:175px;left:725px");
@@ -254,17 +254,17 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     }
     
     private void initializeLocationStudyTable(){
-    	locationStudyTable = new Table();
-    	locationStudyTable.setWidth("330px");
-    	locationStudyTable.setHeight("350px");
-    	locationStudyTable.setImmediate(true);
-    	locationStudyTable.setPageLength(-1);
+    	locationTable = new Table();
+    	locationTable.setWidth("330px");
+    	locationTable.setHeight("350px");
+    	locationTable.setImmediate(true);
+    	locationTable.setPageLength(-1);
         //entriesTable.setCacheRate(cacheRate)
-    	locationStudyTable.setSelectable(true);
-        locationStudyTable.setMultiSelect(true);
-        locationStudyTable.setNullSelectionAllowed(false);
+    	locationTable.setSelectable(true);
+    	locationTable.setMultiSelect(true);
+    	locationTable.setNullSelectionAllowed(false);
         
-        setUpLocationStudyTable();        
+        setUpLocationTable();        
     }
     
     private void setUpProvinceTable(){
@@ -278,15 +278,15 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         provinceTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
     }
    
-    private void setUpLocationStudyTable(){
-    	locationStudyTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-    	locationStudyTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
-    	locationStudyTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
+    private void setUpLocationTable(){
+    	locationTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+    	locationTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
+    	locationTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
         
         
-    	locationStudyTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
-        locationStudyTable.setColumnHeader(LOCATION_COLUMN_ID, "Location");
-        locationStudyTable.setColumnHeader(STUDY_COLUMN_ID, "Study");        
+    	locationTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
+    	locationTable.setColumnHeader(LOCATION_COLUMN_ID, "Location");
+    	locationTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");        
     }
     
     public void applyButtonClickAction(){
@@ -311,19 +311,19 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         	 provinceTable.removeContainerProperty(propertyId);
          }
          
-         locationStudyTable.removeAllItems();
+         locationTable.removeAllItems();
     	 propertyIds = new ArrayList<Object>();
-         for(Object propertyId : locationStudyTable.getContainerPropertyIds()){
+         for(Object propertyId : locationTable.getContainerPropertyIds()){
              propertyIds.add(propertyId);
          }
          
          for(Object propertyId : propertyIds){
-        	 locationStudyTable.removeContainerProperty(propertyId);
+        	 locationTable.removeContainerProperty(propertyId);
          }
          
         
         setUpProvinceTable();
-        setUpLocationStudyTable();
+        setUpLocationTable();
         
         
 		FilterByLocation filterByLocation = filterLocationCountryMap.get(countryName);
@@ -366,24 +366,24 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     	 List<Object> propertyIds = new ArrayList<Object>();
         
          
-         locationStudyTable.removeAllItems();
+    	 locationTable.removeAllItems();
     	 propertyIds = new ArrayList<Object>();
-         for(Object propertyId : locationStudyTable.getContainerPropertyIds()){
+         for(Object propertyId : locationTable.getContainerPropertyIds()){
              propertyIds.add(propertyId);
          }
          
          for(Object propertyId : propertyIds){
-        	 locationStudyTable.removeContainerProperty(propertyId);
+        	 locationTable.removeContainerProperty(propertyId);
          }
          
         
-        setUpLocationStudyTable();
+        setUpLocationTable();
         
         
 		FilterByLocation filterByLocation = filterLocationCountryMap.get(countryName);
 		Collection<LocationStudyDto> locationStudyDtoList = filterByLocation.getLocationStudyForProvince(province);
 		for(LocationStudyDto locationStudyDto : locationStudyDtoList){
-			String key = countryName+DELIMITER+province+DELIMITER+locationStudyDto.getLocationName() + DELIMITER  + locationStudyDto.getStudyName();
+			String key = countryName+DELIMITER+province+DELIMITER+locationStudyDto.getLocationName();// + DELIMITER  + locationStudyDto.getStudyName();
 			Object[] itemObj = itemMap.get(key);
     		if(itemObj == null){
 				//item = locationStudyTable.addItem(key);
@@ -398,12 +398,12 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
 		        */
 		        //itemMap.put(key, item);
 		        box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
-		        itemObj = new Object[] {box, locationStudyDto.getLocationName() , locationStudyDto.getStudyName()};
-		        locationStudyTable.addItem(itemObj, key);
+		        itemObj = new Object[] {box, locationStudyDto.getLocationName() , filterByLocation.getNumberOfEnvironmentForLocation(locationStudyDto.getLocationName())};
+		        locationTable.addItem(itemObj, key);
 	            
 	            itemMap.put(key, itemObj);
     		}else{
-    			locationStudyTable.addItem(itemObj, key);
+    			locationTable.addItem(itemObj, key);
     		}
 		}
 		
