@@ -268,7 +268,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         if (!selectedIds.isEmpty()){
             for (Object itemId : selectedIds){
             	entriesTable.removeItem(itemId);
-            	mapTableEntriesId.remove(itemId);
+            	mapTableEntriesId.remove(itemId);            	
             }
             entriesTable.setPageLength(0);
         } else {
@@ -279,6 +279,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         	//we set the new set since we already cleared it
 			singleEntriesSet = new HashMap();
 			germplasmIdNameMap = new HashMap();
+			//mapTableEntriesId = new HashMap();
         }
         
         if(isEitherTableEntriesEmpty()){
@@ -541,7 +542,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     			
     			if(testMap.keySet().isEmpty() && !standardMap.keySet().isEmpty()){
     				//we need to remove all
-    				deleteAllSingleEntriesInTable();
+    				deleteAllSingleEntriesInTable(true, germplasm.getGid().toString(), 0, standardMap.keySet().size());
     			}
     			
     			if(standardMap.keySet().isEmpty()){
@@ -573,7 +574,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     			
     			if(standardMap.keySet().isEmpty() && !testMap.keySet().isEmpty()){
     				//we need to remove all
-    				deleteAllSingleEntriesInTable();
+    				deleteAllSingleEntriesInTable(false, germplasm.getGid().toString(), testMap.keySet().size(), 0);
     			}
     			
     			if(testMap.keySet().isEmpty()){
@@ -609,7 +610,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     			
     			if(testMap.keySet().isEmpty() && !standardMap.keySet().isEmpty()){
     				//we need to remove all
-    				deleteAllSingleEntriesInTable();
+    				deleteAllSingleEntriesInTableListData(true, germplasmListData, 0, standardMap.keySet().size());
     			}
     			
     			if(standardMap.keySet().isEmpty()){
@@ -652,7 +653,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     			
     			if(standardMap.keySet().isEmpty() && !testMap.keySet().isEmpty()){
     				//we need to remove all
-    				deleteAllSingleEntriesInTable();
+    				deleteAllSingleEntriesInTableListData(false, germplasmListData, testMap.keySet().size(), 0);
     			}    			
     			if(testMap.keySet().isEmpty()){
     				//just add on the left    		
@@ -722,15 +723,78 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     }
     
     
-    private void deleteAllSingleEntriesInTable(){
+    private void deleteAllSingleEntriesInTable(boolean isTestEntry, String gid, int leftSize, int rightSize){
     	//we delete the single entrie
 		Iterator singleIter = singleEntriesSet.keySet().iterator();
 		while(singleIter.hasNext()){
 			String idToDelete = (String)singleIter.next();
-			entriesTable.removeItem(idToDelete);	    				
+			String tempId = "";
+			if(isTestEntry)
+				tempId = " :" + gid;
+			else
+				tempId = gid+": ";
+			
+			if(idToDelete.equalsIgnoreCase(tempId)){
+				if(isTestEntry){
+					if(rightSize != 1){
+						entriesTable.removeItem(idToDelete);				
+						mapTableEntriesId.remove(idToDelete);
+					}
+				}else{
+					if(leftSize != 1){
+						entriesTable.removeItem(idToDelete);				
+						mapTableEntriesId.remove(idToDelete);
+					}
+				}
+			}
+			
+			if(!idToDelete.equalsIgnoreCase(tempId)){
+				entriesTable.removeItem(idToDelete);				
+				mapTableEntriesId.remove(idToDelete);
+			}
 		}
 		//we set the new set since we already cleared it
-		singleEntriesSet = new HashMap();
+		if(isTableEntriesEmpty()){
+			singleEntriesSet = new HashMap();
+		}
+    }
+    private void deleteAllSingleEntriesInTableListData(boolean isTestEntry, List<GermplasmListData> germplasmListData, int leftSize, int rightSize){
+    	//we delete the single entrie
+		Iterator singleIter = singleEntriesSet.keySet().iterator();
+		while(singleIter.hasNext()){
+			String idToDelete = (String)singleIter.next();
+			for(GermplasmListData listData : germplasmListData){
+				
+				String tempId = "";
+				if(isTestEntry)
+					tempId = " :" + listData.getGid().toString();
+				else
+					tempId = listData.getGid().toString()+": ";
+				
+				if(idToDelete.equalsIgnoreCase(tempId)){
+					if(isTestEntry){
+						if(rightSize != 1){
+							entriesTable.removeItem(idToDelete);				
+							mapTableEntriesId.remove(idToDelete);
+						}
+					}else{
+						if(leftSize != 1){
+							entriesTable.removeItem(idToDelete);				
+							mapTableEntriesId.remove(idToDelete);
+						}
+					}
+				}
+				
+				if(!idToDelete.equalsIgnoreCase(tempId)){
+					entriesTable.removeItem(idToDelete);	
+					mapTableEntriesId.remove(idToDelete);
+				}
+			}
+		}
+		//we set the new set since we already cleared it
+		if(isTableEntriesEmpty()){
+			singleEntriesSet = new HashMap();
+		}
     }
     
     private Map getBothMapEntries(){
