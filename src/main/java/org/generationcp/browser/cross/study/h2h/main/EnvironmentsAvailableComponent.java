@@ -97,8 +97,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     public static final Integer  IGNORED = 4;
     
     private Map<CheckBox, Item> environmentCheckBoxMap;
-    private Map<ComboBox, EnvironmentForComparison> environmentCheckBoxComparisonMap;
-    private Set<ComboBox> environmentForComparison; //will contain all the tagged row
+    private Map<String, EnvironmentForComparison> environmentCheckBoxComparisonMap;
+    private Set<String> environmentForComparison; //will contain all the tagged row
     
     @Autowired
     private CrossStudyDataManager crossStudyDataManager;
@@ -244,23 +244,23 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 		
     }
     
-    public void clickCheckBox(Component combo, boolean boolVal){
+    public void clickCheckBox(String key, Component combo, boolean boolVal){
     	
     	
     	if(combo != null){
     		ComboBox comboBox = (ComboBox) combo;
     		comboBox.setEnabled(boolVal);
-    		
+    	}
     		//TraitInfo info = traitMaps.get(comboBox);
     		
     			
     			//if( info != null){    				
     				if(boolVal){
-    					environmentForComparison.add(comboBox);	
+    					environmentForComparison.add(key);	
     					
     					//environmentCheckBoxComparisonMap.get(comboBox)
     				}else{
-    					environmentForComparison.remove(comboBox);
+    					environmentForComparison.remove(key);
 					}    				    				
     			//}
     			
@@ -270,15 +270,31 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 				nextButton.setEnabled(true);
 			}
 			numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
-    	}
+			
+			//numberOfEnvironmentSelectedLabel.setValue(getNumberOfTagged());
     	
+    	
+    }
+    
+    private String getNumberOfTagged(){
+    	Iterator iter = environmentsTable.getItemIds().iterator();
+    	int checked = 0;
+    	while(iter.hasNext()){
+    		String id = (String)iter.next();
+    		Item item = environmentsTable.getItem(id);
+    		CheckBox box = (CheckBox)item.getItemProperty(TAG_COLUMN_ID).getValue();
+    		if(((Boolean)box.getValue()).booleanValue() == true){
+    			checked++;
+    		}
+    	}
+    	return Integer.toString(checked);
     }
     public void populateEnvironmentsTable(List<TraitForComparison> traitForComparisonsListTemp,
     		Map<String, Map<String, TrialEnvironment>>  traitEnvMapTemp, Map<String, 
     		TrialEnvironment> trialEnvMapTemp, Set<Integer> germplasmIds, 
     		List<GermplasmPair> germplasmPairsTemp, Map<String, String> germplasmIdNameMap){    
     	
-    	Iterator<TraitForComparison> iter = traitForComparisonsListTemp.iterator();
+    	
     	Map<String, Map<String, TrialEnvironment>>  newTraitEnvMap = new HashMap();
     	tableEntriesMap = new HashMap();
     	trialEnvironmentIds = new HashSet();
@@ -301,7 +317,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	trialEnvMap = trialEnvMapTemp;
     	traitForComparisonsList = traitForComparisonsListTemp;
     	//germplasmPairs = germplasmPairsTemp;
-    	
+    	Iterator<TraitForComparison> iter = traitForComparisonsList.iterator();
     	
     	
     	while(iter.hasNext()){
@@ -345,6 +361,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
     }
+    
     
     private void recreateTable(boolean recreateFilterLocationMap, boolean isAppliedClick){
     	this.environmentsTable.removeAllItems();
@@ -395,7 +412,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 	    					 
 	    					 //we simulate the checkbox
 	    					 ((CheckBox)objItem[0]).setValue(true);
-							 clickCheckBox((ComboBox)objItem[objItem.length-1], true);
+							 clickCheckBox(tableKey, (ComboBox)objItem[objItem.length-1], true);
 	    				 }
 	    			 }else{
 		    			 
@@ -410,12 +427,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			             item.getItemProperty(COUNTRY_COLUMN_ID).setValue(trialEnv.getLocation().getCountryName());
 			             item.getItemProperty(STUDY_COLUMN_ID).setValue(trialEnv.getStudy().getName());
 			             */
-			             objItem[0] = box;
-			             objItem[1] = trialEnv.getId();
-			             objItem[2] = trialEnv.getLocation().getLocationName();
-			             objItem[3] = trialEnv.getLocation().getCountryName();
-			             objItem[4] = trialEnv.getStudy().getName();
-			             int counterTrait = 5;
+			             int counterTrait = 0;
+			             objItem[counterTrait++] = box;
+			             //objItem[1] = trialEnv.getId();
+			             objItem[counterTrait++] = trialEnv.getLocation().getLocationName();
+			             objItem[counterTrait++] = trialEnv.getLocation().getCountryName();
+			             objItem[counterTrait++] = trialEnv.getStudy().getName();
+			             
 			             
 			             if(recreateFilterLocationMap){
 			            	 setupLocationMappings(trialEnv);
@@ -453,10 +471,10 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			             
 			             environmentsTable.addItem(objItem, tableKey);
 			             Item item = environmentsTable.getItem(tableKey);
-			             box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
+			             box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox, tableKey));
 				        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
 			             environmentCheckBoxMap.put(box, item);
-			             environmentCheckBoxComparisonMap.put(comboBox, compare);
+			             environmentCheckBoxComparisonMap.put(tableKey, compare);
 			             trialEnvIdTableMap.put(trialEnvIdString, item);
 	    			 }
 		             
@@ -471,6 +489,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		 }
              
     	}
+    	//numberOfEnvironmentSelectedLabel.setValue(getNumberOfTagged());
     	numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
     	//set up table column visibility
     }
@@ -478,7 +497,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private boolean isValidEntry(TrialEnvironment trialEnv){
     	
     	String countryName = trialEnv.getLocation().getCountryName();
-    	String provinceName = trialEnv.getLocation().getProvinceName();
+    	String provinceName = trialEnv.getLocation().getProvinceName() != null ? trialEnv.getLocation().getProvinceName() : "";
     	String locationName = trialEnv.getLocation().getLocationName();
     	String studyName = trialEnv.getStudy().getName();
     	
@@ -486,7 +505,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     	String level1Key = countryName;
     	String level2Key = countryName + FilterLocationDialog.DELIMITER + provinceName;
-    	String level3Key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName + FilterLocationDialog.DELIMITER + studyName;
+    	String level3Key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName;
     	String level4Key = studyName;
     	
     	//check against the map
@@ -556,8 +575,11 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		String countryName = dto.getCountryName();
     		String provinceName = dto.getProvinceName();
     		String key = countryName + FilterLocationDialog.DELIMITER + provinceName;
+    		String key2 = countryName + FilterLocationDialog.DELIMITER;
         	
     		filterSetLevel2.put(key, key);
+    		//this is to handle where some trial environments doent have province name 
+    		filterSetLevel2.put(key2, key2);
     		//we need to remove in the 1st level since this mean we want specific level 2 filter
     		filterSetLevel1.remove(countryName);
     	}
@@ -566,10 +588,12 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		String countryName = dto.getCountryName();
     		String provinceName = dto.getProvinceName();
     		String locationName = dto.getLocationName();
-    		String studyName = dto.getStudyName();
-    		String key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName + FilterLocationDialog.DELIMITER + studyName; 
+    		//String studyName = dto.getStudyName();
+    		String key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName;// + FilterLocationDialog.DELIMITER + studyName;
+    		String key2 = countryName + FilterLocationDialog.DELIMITER + FilterLocationDialog.DELIMITER + locationName;// + FilterLocationDialog.DELIMITER + studyName;
         	
     		filterSetLevel3.put(key, key);
+    		filterSetLevel3.put(key2, key2);
     		//we need to remove in the 1st level since this mean we want specific level 2 filter
     		filterSetLevel2.remove(countryName + FilterLocationDialog.DELIMITER + provinceName);
     		filterSetLevel1.remove(countryName);
@@ -695,7 +719,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
         environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
-        tableColumnSize = 5;
+        tableColumnSize = 4;
         
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getName(), Integer.class, null);
@@ -712,9 +736,26 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	List<EnvironmentForComparison> toBeCompared = new ArrayList();
-    	for(ComboBox box : environmentForComparison){
-    		toBeCompared.add(environmentCheckBoxComparisonMap.get(box));
+    	    	
+    	for(String sKey : environmentForComparison){
+    		toBeCompared.add(environmentCheckBoxComparisonMap.get(sKey));
     	}
+    	
+    	/*
+    	Iterator iter = environmentsTable.getItemIds().iterator();
+    	int checked = 0;
+    	while(iter.hasNext()){
+    		String id = (String)iter.next();
+    		Item item = environmentsTable.getItem(id);
+    		CheckBox box = (CheckBox)item.getItemProperty(TAG_COLUMN_ID).getValue();
+    		if(((Boolean)box.getValue()).booleanValue() == true){
+    			ComboBox comboBox = (ComboBox)item.getItemProperty(WEIGHT_COLUMN_ID).getValue();
+    			toBeCompared.add(environmentCheckBoxComparisonMap.get(comboBox));
+    		}
+    	}
+    	*/
+    	
+    	
     	this.nextScreen.populateResultsTable(toBeCompared, germplasmIdNameMap, finalGermplasmPairs, observationMap);
         this.mainScreen.selectFourthTab();
     }

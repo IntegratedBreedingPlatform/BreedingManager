@@ -22,6 +22,7 @@ import org.generationcp.browser.study.containers.RepresentationDatasetQueryFacto
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.util.DatasetExporter;
 import org.generationcp.browser.study.util.DatasetExporterException;
+import org.generationcp.browser.study.util.TableViewerCellSelectorUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -248,6 +249,9 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         datasetTable.setPageLength(15); // number of rows to display in the Table
         datasetTable.setSizeFull(); // to make scrollbars appear on the Table component
 
+        // Use cell selector utility on datasetTable
+        TableViewerCellSelectorUtil tableViewerCellSelectorUtil = new TableViewerCellSelectorUtil(this, datasetTable);
+        
         // set column headers for the Table
         for (VariableType variable : variables) {
             String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
