@@ -64,6 +64,10 @@ public class StudyButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(StudyTreeComponent.REFRESH_BUTTON_ID) // "Refresh")
                 && (source instanceof StudyTreeComponent)) {
             ((StudyTreeComponent) source).createTree();
+        } else if (event.getButton().getData().equals(RepresentationDatasetComponent.OPEN_TABLE_VIEWER_BUTTON_ID) // "Open in Table Viewer"
+                && (source instanceof RepresentationDatasetComponent)) {
+            ((RepresentationDatasetComponent) source).openTableViewerAction();
+            
         } else {
             LOG.error("StudyButtonClickListener: Error with buttonClick action. Source not identified.");
         }

@@ -26,18 +26,18 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.generationcp.middleware.domain.dms.DataSet;
-//import org.generationcp.middleware.domain.dms.TermId;
 import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
@@ -47,6 +47,7 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+//import org.generationcp.middleware.domain.dms.TermId;
 
 /**
  * This class creates the Vaadin Table where a dataset can be displayed.
@@ -62,6 +63,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     
     public static final String EXPORT_CSV_BUTTON_ID = "RepresentationDatasetComponent Export CSV Button";
     public static final String EXPORT_EXCEL_BUTTON_ID = "RepresentationDatasetComponent Export to FieldBook Excel File Button";
+    public static final String OPEN_TABLE_VIEWER_BUTTON_ID = "RepresentationDatasetComponent Open Table Viewer Button";
 
     private Table datasetTable;
     private String reportName;
@@ -70,6 +72,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
     private Button exportCsvButton;
     private Button exportExcelButton;
+    private Button openTableViewerButton;
     private StringBuffer reportTitle;
     
     private StudyDataManagerImpl studyDataManager;
@@ -134,11 +137,69 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         
     }
     
+    // Called by StudyButtonClickListener
+    public void openTableViewerAction() {
+    	//ask confirmation from user    	
+    	String confirmDialogCaption=messageSource.getMessage(Message.TABLE_VIEWER_CAPTION);
+        String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER); 
+
+        ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
+            messageSource.getMessage(Message.OK_LABEL), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+            private static final long serialVersionUID = 1L;
+
+            public void onClose(ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
+                	openTableViewer();
+                }
+            }
+        });
+    }
+    
+    private void openTableViewer() {
+    	Window mainWindow = this.getWindow();
+    	Table tableViewerDataset = new TableViewerDatasetTable(studyDataManager, datasetId);
+        Window tableViewer = new TableViewerComponent(tableViewerDataset);
+        mainWindow.addWindow(tableViewer);
+    }
+    
     
     @Override
     public void afterPropertiesSet() throws Exception{
         
-         // set the column header ids
+        datasetTable = generateLazyDatasetTable(false);
+        
+        setMargin(true);
+        setSpacing(true);
+        addComponent(datasetTable);
+        setData(this.reportName);
+        
+        exportCsvButton = new Button(); // "Export to CSV"
+        exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
+        exportCsvButton.addListener(new StudyButtonClickListener(this));
+
+        exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
+        exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
+        exportExcelButton.addListener(new StudyButtonClickListener(this));
+        
+        openTableViewerButton = new Button();
+        openTableViewerButton.setData(OPEN_TABLE_VIEWER_BUTTON_ID);
+        openTableViewerButton.addListener(new StudyButtonClickListener(this));
+        
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        //TODO uncomment this when the feature of exporting to CSV is working properly
+        //buttonLayout.addComponent(exportCsvButton);
+        //only show Fieldbook Export to Excel button if study page not accessed directly from URL
+        if (!fromUrl) {
+            buttonLayout.addComponent(exportExcelButton);
+            buttonLayout.addComponent(openTableViewerButton);
+        }
+
+        addComponent(buttonLayout);
+    }
+    
+    private Table generateLazyDatasetTable(boolean fromUrl) {
+    	// set the column header ids
         List<VariableType> variables = new ArrayList<VariableType>();
         List<String> columnIds = new ArrayList<String>();
 
@@ -181,7 +242,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         datasetContainer.getQueryView().getItem(0); // initialize the first batch of data to be displayed
 
         // create the Vaadin Table to display the dataset, pass the container object created
-        datasetTable = new Table("", datasetContainer);
+        Table datasetTable = new Table("", datasetContainer);
         datasetTable.setColumnCollapsingAllowed(true);
         datasetTable.setColumnReorderingAllowed(true);
         datasetTable.setPageLength(15); // number of rows to display in the Table
@@ -194,29 +255,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
             datasetTable.setColumnHeader(columnId, columnHeader);
         }
         
-        setMargin(true);
-        setSpacing(true);
-        addComponent(datasetTable);
-        setData(this.reportName);
-        
-        exportCsvButton = new Button(); // "Export to CSV"
-        exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
-        exportCsvButton.addListener(new StudyButtonClickListener(this));
-
-        exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
-        exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
-        exportExcelButton.addListener(new StudyButtonClickListener(this));
-        
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setSpacing(true);
-        //TODO uncomment this when the feature of exporting to CSV is working properly
-        //buttonLayout.addComponent(exportCsvButton);
-        //only show Fieldbook Export to Excel button if study page not accessed directly from URL
-        if (!fromUrl) {
-            buttonLayout.addComponent(exportExcelButton);
-        }
-
-        addComponent(buttonLayout);
+        return datasetTable;
     }
     
     @Override
@@ -229,6 +268,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public void updateLabels() {
         messageSource.setCaption(exportCsvButton, Message.EXPORT_TO_CSV_LABEL);
         messageSource.setCaption(exportExcelButton, Message.EXPORT_TO_EXCEL_LABEL);
+        messageSource.setCaption(openTableViewerButton, Message.OPEN_TABLE_VIEWER_LABEL);
     }
     
 }

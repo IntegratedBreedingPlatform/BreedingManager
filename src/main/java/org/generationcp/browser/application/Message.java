@@ -20,6 +20,7 @@ public enum Message {
 
      ,EXPORT_TO_CSV_LABEL
      ,EXPORT_TO_EXCEL_LABEL
+     ,OPEN_TABLE_VIEWER_LABEL
      ,SAVE_FIELDBOOK_EXCEL_FILE_LABEL
      ,CANCEL_SAVE_FIELDBOOK_EXCEL_FILE_LABEL
      ,FILE_NAME_LABEL
@@ -124,6 +125,7 @@ public enum Message {
      ,SAVE_GERMPLASM_LIST_WINDOW_LABEL 
      ,SAVE_LABEL 
      ,CANCEL_LABEL
+     ,OK_LABEL
      ,GROUP_RELATIVES_LABEL 
      ,MANAGEMENT_NEIGHBORS_LABEL 
      ,INVENTORY_INFORMATION_LABEL 
@@ -246,7 +248,7 @@ public enum Message {
      //TEST MESSAGES
      ,TEST_BUTTON
      
-   //Head to Head Main Cross Study
+     //Head to Head Main Cross Study
      ,SPECIFY_ENTRIES
      ,SELECT_TRAITS
      ,SELECT_ENVIRONMENTS
@@ -264,6 +266,10 @@ public enum Message {
      ,LIST_ENTRIES_LABEL
      ,CLOSE_SCREEN_LABEL
      ,ADD_LIST_ENTRY
+
+     //Table Viewer
+     ,TABLE_VIEWER_CAPTION
+     ,CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER
      
      ,HEAD_TO_HEAD_TAG
      ,HEAD_TO_HEAD_TRAIT
