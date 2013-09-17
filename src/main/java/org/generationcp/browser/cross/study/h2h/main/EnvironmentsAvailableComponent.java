@@ -443,7 +443,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			                	 traitForCompare.setDisplay(false);			                	 
 			                 }
 			                 */
-			                 objItem[counterTrait++] = count;
+			                 //objItem[counterTrait++] = count;
 			             }
 			             compare.setTraitAndObservationMap(traitAndObservationMap);
 			             	
@@ -685,13 +685,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
             environmentsTable.removeContainerProperty(propertyId);
         }
         environmentsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-        environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
+        //environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
         environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
         environmentsTable.addContainerProperty(COUNTRY_COLUMN_ID, String.class, null);
         environmentsTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
         
         environmentsTable.setColumnHeader(TAG_COLUMN_ID, "TAG");
-        environmentsTable.setColumnHeader(ENV_NUMBER_COLUMN_ID, "ENV #");
+        //environmentsTable.setColumnHeader(ENV_NUMBER_COLUMN_ID, "ENV #");
         environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
         environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
