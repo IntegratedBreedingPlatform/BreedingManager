@@ -2,17 +2,12 @@ package org.generationcp.browser.study.util;
 
 import java.util.ArrayList;
 
-import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
-import org.generationcp.browser.study.RepresentationDatasetComponent;
 import org.generationcp.browser.study.pojos.CellCoordinate;
 import org.generationcp.browser.study.pojos.CellCoordinateColorAssignment;
 
-import com.google.gwt.i18n.server.testing.Parent;
-import com.vaadin.Application;
 import com.vaadin.addon.colorpicker.ColorPicker;
 import com.vaadin.addon.colorpicker.events.ColorChangeEvent;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
