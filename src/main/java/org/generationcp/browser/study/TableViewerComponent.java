@@ -65,8 +65,7 @@ public class TableViewerComponent extends Window implements InitializingBean, In
     
     protected void initializeLayout() {
     	setCaption(messageSource.getMessage(Message.TABLE_VIEWER_CAPTION));
-    	setWidth("800px");
-        setHeight("565px");
+    	setSizeFull();
         center();
         setResizable(true);
         setScrollable(true);

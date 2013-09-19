@@ -32,6 +32,12 @@
      		<param-name>application</param-name>
      		<param-value>org.generationcp.browser.application.GermplasmStudyBrowserApplication</param-value>
    	</init-param>
+   	<init-param>
+   		<description>
+   		Application widgetset</description>
+   		<param-name>widgetset</param-name>
+   		<param-value>org.generationcp.browser.application.widgetset.GermplasmstudybrowserWidgetset</param-value>
+   	</init-param>
 <!-- 	<init-param>
 		<param-name>applicationBeanName</param-name>
 		<param-value>germplasm_study_browser_application</param-value>
