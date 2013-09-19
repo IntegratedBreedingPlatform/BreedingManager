@@ -67,8 +67,7 @@ public class FilterByLocation {
 		if(locationStudyUniqueMap == null){
 			locationStudyUniqueMap = new ArrayList();
 		}
-		String key = locationName + ":" + studyName;
-		
+		String key = locationName + ":" + studyName;		
 		LocationStudyDto dto = null;//locationStudyUniqueMap.get(key);
 		if(dto == null){
 			dto = new LocationStudyDto(locationName, studyName);			
