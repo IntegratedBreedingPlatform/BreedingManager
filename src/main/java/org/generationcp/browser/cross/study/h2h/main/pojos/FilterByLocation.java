@@ -13,7 +13,7 @@ public class FilterByLocation {
 	String trialEnvId;
 	private List<String> provinceNameList  = new ArrayList();
 	private List<String> locationStudyNameList  = new ArrayList();
-	private Map<String, Map<String, LocationStudyDto>> provinceLocationStudyMap = new HashMap();
+	private Map<String, List<LocationStudyDto>> provinceLocationStudyMap = new HashMap();
 	private Map<String, List<String>> locationStudyMap = new HashMap();
 	
 	
@@ -63,17 +63,17 @@ public class FilterByLocation {
 	
 	public void addProvinceAndLocationAndStudy(String provinceName, String locationName, String studyName){
 		provinceNameList.add(provinceName);
-		Map<String, LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
+		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
 		if(locationStudyUniqueMap == null){
-			locationStudyUniqueMap = new HashMap();
+			locationStudyUniqueMap = new ArrayList();
 		}
 		String key = locationName + ":" + studyName;
 		
-		LocationStudyDto dto = locationStudyUniqueMap.get(key);
+		LocationStudyDto dto = null;//locationStudyUniqueMap.get(key);
 		if(dto == null){
-			dto = new LocationStudyDto(locationName, studyName);
-			locationStudyUniqueMap.put(key, dto);
+			dto = new LocationStudyDto(locationName, studyName);			
 		}
+		locationStudyUniqueMap.add(dto);
 		provinceLocationStudyMap.put(provinceName, locationStudyUniqueMap);
 		
 		List<String> studyList = locationStudyMap.get(locationName);
@@ -93,8 +93,8 @@ public class FilterByLocation {
 		return provinceLocationStudyMap.keySet();
 	}
 	public Integer getNumberOfEnvironmentForProvince(String provinceName){
-		Map<String, LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
-		return locationStudyUniqueMap.keySet().size();
+		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
+		return locationStudyUniqueMap.size();
 	}
 	
 	public Integer getNumberOfEnvironmentForLocation(String locationName){
@@ -105,8 +105,8 @@ public class FilterByLocation {
 		return 0;
 	}
 	public Collection<LocationStudyDto> getLocationStudyForProvince(String provinceName){
-		Map<String, LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
-		return locationStudyUniqueMap.values();
+		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
+		return locationStudyUniqueMap;
 	}
 	
 	
