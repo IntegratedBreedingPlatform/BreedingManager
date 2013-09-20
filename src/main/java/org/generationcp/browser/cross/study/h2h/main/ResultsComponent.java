@@ -95,6 +95,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private Map<String, String> columnIdDataMsgMap = new HashMap();
     
     public static DecimalFormat decimalFormmatter = new DecimalFormat("#,##0.00");
+    public List<ResultsData> resultsDataList = new ArrayList();
     
     public ResultsComponent(HeadToHeadCrossStudyMain mainScreen){
         this.currentStandardEntryGID = null;
@@ -114,21 +115,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     public void afterPropertiesSet() throws Exception {
         setHeight("550px");
         setWidth("1000px");
-    /*    
-    testEntryLabel = new Label("<b>Test Entry:</b>");
-    testEntryLabel.setContentMode(Label.CONTENT_XHTML);
-    addComponent(testEntryLabel, "top:20px;left:30px");
-        
-    testEntryNameLabel = new Label();
-    addComponent(testEntryNameLabel, "top:20px;left:100px");
-        
-    standardEntryLabel = new Label("<b>Standard Entry:</b>");
-    standardEntryLabel.setContentMode(Label.CONTENT_XHTML);
-    addComponent(standardEntryLabel, "top:20px;left:450px");
-    
-    standardEntryNameLabel = new Label();
-    addComponent(standardEntryNameLabel, "top:20px;left:550px");
-      */  
+   
         
     resultsTable = new Table();
     resultsTable.setWidth("950px");
@@ -137,23 +124,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     resultsTable.setColumnCollapsingAllowed(true);
     resultsTable.setColumnReorderingAllowed(true);
     
-    /*
-    resultsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
-    resultsTable.addContainerProperty(NUM_OF_ENV_COLUMN_ID, Integer.class, null);
-    resultsTable.addContainerProperty(NUM_SUP_COLUMN_ID, Integer.class, null);
-    resultsTable.addContainerProperty(MEAN_TEST_COLUMN_ID, Double.class, null);
-    resultsTable.addContainerProperty(MEAN_STD_COLUMN_ID, Double.class, null);
-    resultsTable.addContainerProperty(MEAN_DIFF_COLUMN_ID, Double.class, null);
-    resultsTable.addContainerProperty(PVAL_COLUMN_ID, Double.class, null);
-        
-    resultsTable.setColumnHeader(TRAIT_COLUMN_ID, "TRAIT");
-    resultsTable.setColumnHeader(NUM_OF_ENV_COLUMN_ID, "# OF ENV");
-    resultsTable.setColumnHeader(NUM_SUP_COLUMN_ID, "# SUP");
-    resultsTable.setColumnHeader(MEAN_TEST_COLUMN_ID, "MEAN TEST");
-    resultsTable.setColumnHeader(MEAN_STD_COLUMN_ID, "MEAN STD");
-    resultsTable.setColumnHeader(MEAN_DIFF_COLUMN_ID, "MEAN DIFF");
-    resultsTable.setColumnHeader(PVAL_COLUMN_ID, "PVAL");
-    */    
+    
     
     
     addComponent(resultsTable, "top:70px;left:30px");
@@ -188,20 +159,12 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         resultsTable.addContainerProperty(TEST_COLUMN_ID, String.class, null);
         resultsTable.addContainerProperty(STANDARD_COLUMN_ID, String.class, null);
         
-        //environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
-        //environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
-        //environmentsTable.addContainerProperty(COUNTRY_COLUMN_ID, String.class, null);
-        //environmentsTable.addContainerProperty(STUDY_COLUMN_ID, String.class, null);
-        
         resultsTable.setColumnHeader(TEST_COLUMN_ID, "Test Entry");
         resultsTable.setColumnHeader(STANDARD_COLUMN_ID, "Standard Entry");
         
         resultsTable.setColumnAlignment(TEST_COLUMN_ID, Table.ALIGN_CENTER);
         resultsTable.setColumnAlignment(STANDARD_COLUMN_ID, Table.ALIGN_CENTER);
         
-        //environmentsTable.setColumnHeader(LOCATION_COLUMN_ID, "LOCATION");
-        //environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
-        //environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
         
         EnvironmentForComparison envForComparison = environmentForComparisonList.get(0);
     	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
@@ -220,9 +183,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	}
         }
         
-        //resultsTable.addStyleName("multirowheaders");
-        
-        
         for(GermplasmPair germplasmPair : germplasmPairList){
         	String uniquieId = germplasmPair.getGid1() + ":" + germplasmPair.getGid2();
         	String testEntry = germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid1()));
@@ -236,12 +196,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	item.getItemProperty(TEST_COLUMN_ID).setValue(testEntry);
         	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
         	traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-        	for(TraitForComparison traitForCompare : traitsIterator){   
-        		//String mainColumnIdId = NUM_OF_ENV_COLUMN_ID;
-                //String cellKey = traitForCompare.getTraitInfo().getName()+mainColumnIdId;
-                //String cellVal = getColumnValue(  mainColumnIdId,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
-        		//traitDataMap.put(cellKey, cellVal);
-            	//item.getItemProperty(cellKey).setValue(cellVal);    
+        	for(TraitForComparison traitForCompare : traitsIterator){           		
             	
             	if(traitForCompare.isDisplay()){
 	            	for(String columnKey : columnIdData){
@@ -254,6 +209,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
             	
             }
         	resData.setTraitDataMap(traitDataMap);
+        	resultsDataList.add(resData);
     	}
         
     }
@@ -425,145 +381,10 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair, Map<String, Observation> observationMap){
     	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair, observationMap);
-    	/*
-        if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
-            this.resultsTable.removeAllItems();
-            
-            List<Result> results = getResults(testEntryGID, standardEntryGID, traitsForComparisonList);
-            for(Result result : results){
-                this.resultsTable.addItem(new Object[]{result.getTraitName(), result.getNumberOfEnvironments()
-                        , result.getNumberOfSup(), result.getMeanTest(), result.getMeanStd(), result.getMeanDiff()
-                        , result.getPval()}, result.getTraitName());
-            }
-            
-            this.resultsTable.setColumnCollapsed(NUM_SUP_COLUMN_ID, true);
-            this.resultsTable.setColumnCollapsed(PVAL_COLUMN_ID, true);
-            this.resultsTable.requestRepaint();
-        }
-        */
+    
     }
     
-/*
-    public void populateResultsTable(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){
-        if(areCurrentGIDsDifferentFromGiven(testEntryGID, standardEntryGID)){
-            this.resultsTable.removeAllItems();
-            
-            List<Result> results = getResults(testEntryGID, standardEntryGID, traitsForComparisonList);
-            for(Result result : results){
-                this.resultsTable.addItem(new Object[]{result.getTraitName(), result.getNumberOfEnvironments()
-                        , result.getNumberOfSup(), result.getMeanTest(), result.getMeanStd(), result.getMeanDiff()
-                        , result.getPval()}, result.getTraitName());
-            }
-            
-            this.resultsTable.setColumnCollapsed(NUM_SUP_COLUMN_ID, true);
-            this.resultsTable.setColumnCollapsed(PVAL_COLUMN_ID, true);
-            this.resultsTable.requestRepaint();
-        }
-    }
-    */
     
-    @SuppressWarnings("rawtypes")
-    private List<Result> getResults(Integer testEntryGID, Integer standardEntryGID, List<TraitForComparison> traitsForComparisonList){
-        List<Result> toreturn = new ArrayList<Result>();
-        
-        try{
-            Germplasm testEntry = this.germplasmDataManager.getGermplasmWithPrefName(testEntryGID);
-            Germplasm standardEntry = this.germplasmDataManager.getGermplasmWithPrefName(standardEntryGID);
-            
-            String testEntryPrefName = null;
-            if(testEntry.getPreferredName() != null){
-                testEntryPrefName = testEntry.getPreferredName().getNval().trim();
-            } else{
-                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected as test entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<Result>();
-            }
-            
-            String standardEntryPrefName = null;
-            if(standardEntry.getPreferredName() != null){
-                standardEntryPrefName = standardEntry.getPreferredName().getNval().trim();
-            } else{
-            MessageNotifier.showWarning(getWindow(), "Warning!", "The standard entry germplasm you selected as standard entry doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-                return new ArrayList<Result>();
-            }
-            
-            GermplasmDataManagerImpl dataManagerImpl = (GermplasmDataManagerImpl) this.germplasmDataManager;
-            String queryString = "select trait_name, entry_designation, count(observed_value), AVG(observed_value)"
-                + " from h2h_details"
-                + " where entry_designation in ('"+ testEntryPrefName + "','" + standardEntryPrefName + "')"
-                + " group by trait_name, entry_designation"; 
-            Query query = dataManagerImpl.getCurrentSessionForCentral().createSQLQuery(queryString);
-            List results = query.list();
-            Iterator resultsIterator = results.iterator();
-            while(resultsIterator.hasNext()){
-                Object resultArray1[] = (Object[]) resultsIterator.next();
-                Object resultArray2[] = null;
-                
-                if(resultsIterator.hasNext()){
-                    resultArray2 = (Object[]) resultsIterator.next();
-                } else{
-                    break;
-                }
-                
-                String traitName = (String) resultArray1[0];
-                if(traitName != null){
-                    traitName = traitName.trim().toUpperCase();
-                }
-                Integer numberOfEnvironments = getNumberOfEnvironmentsForTrait(traitName, traitsForComparisonList);
-                String entry1 = (String) resultArray1[1];
-                Double averageOfEntry1 = (Double) resultArray1[3];
-                averageOfEntry1 = Math.round(averageOfEntry1 * 100.0) / 100.0;
-                Double averageOfEntry2 = (Double) resultArray2[3];
-                averageOfEntry2 = Math.round(averageOfEntry2 * 100.0) / 100.0;
-                
-                Double meanDiff = null;
-                if(testEntryPrefName.equals(entry1)){
-                    meanDiff = averageOfEntry1 - averageOfEntry2;
-                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
-                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry2, averageOfEntry1, meanDiff, null));
-                } else{
-                    meanDiff = averageOfEntry2 - averageOfEntry1;
-                    meanDiff = Math.round(meanDiff * 100.0) / 100.0;
-                    toreturn.add(new Result(traitName, numberOfEnvironments, null, averageOfEntry1, averageOfEntry2, meanDiff, null));
-                }
-            }
-        } catch(MiddlewareQueryException ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<Result>();
-        } catch(Exception ex){
-            ex.printStackTrace();
-            LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
-            return new ArrayList<Result>();
-        }
-        
-        return toreturn;
-    }
-    
-    private Integer getNumberOfEnvironmentsForTrait(String traitName, List<TraitForComparison> traitsForComparisonList){
-        Integer toreturn = 0;
-        /*
-        for(TraitForComparison trait : traitsForComparisonList){
-            if(trait.getName().equals(traitName)){
-                return trait.getNumberOfEnvironments();
-            }
-        }
-        */
-        return toreturn;
-    }
-    
-    private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){
-        if(this.currentTestEntryGID != null && this.currentStandardEntryGID != null){
-            if(this.currentTestEntryGID == currentTestEntryGID && this.currentStandardEntryGID == currentStandardEntryGID){
-                return false;
-            }
-        }
-        
-        return true;
-    }
     
     public void setEntriesLabel(String testEntryLabel, String standardEntryLabel){
         this.testEntryNameLabel.setValue(testEntryLabel);
@@ -589,7 +410,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
          	
          	                         
              
-                 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsTable, traitsIterator, columnIdData, columnIdDataMsgMap);
+                 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsTable,resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
                  FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
                  fileDownloadResource.setFilename("HeadToHeadDataList.xls");
 

@@ -125,7 +125,6 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<String, List<StudyReference>> studyEnvironmentMap;
     
     private Map filterSetLevel1;
-    private Map filterSetLevel2;
     private Map filterSetLevel3;
     private Map filterSetLevel4;
     
@@ -476,6 +475,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			             environmentCheckBoxMap.put(box, item);
 			             environmentCheckBoxComparisonMap.put(tableKey, compare);
 			             trialEnvIdTableMap.put(trialEnvIdString, item);
+			             			            
 	    			 }
 		             
 		             
@@ -497,22 +497,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private boolean isValidEntry(TrialEnvironment trialEnv){
     	
     	String countryName = trialEnv.getLocation().getCountryName();
-    	String provinceName = trialEnv.getLocation().getProvinceName() != null ? trialEnv.getLocation().getProvinceName() : "";
     	String locationName = trialEnv.getLocation().getLocationName();
     	String studyName = trialEnv.getStudy().getName();
     	
     	boolean isValid = false;
     	
     	String level1Key = countryName;
-    	String level2Key = countryName + FilterLocationDialog.DELIMITER + provinceName;
-    	String level3Key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName;
+    	String level3Key = countryName + FilterLocationDialog.DELIMITER + locationName;
     	String level4Key = studyName;
     	
     	//check against the map
     	if(isFilterLocationClicked){
 	    	if(filterSetLevel1.containsKey(level1Key)){
-	    		isValid = true;
-	    	}else if(filterSetLevel2.containsKey(level2Key)){
 	    		isValid = true;
 	    	}else if(filterSetLevel3.containsKey(level3Key)){
 	    		isValid = true;
@@ -555,13 +551,29 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	recreateTable(false, true);
     }
     
-    public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel2, List<FilterLocationDto> filterLocationDtoListLevel3){
+    public void reopenFilterWindow(){
+    	//this is to simulate and refresh checkboxes
+    	Window parentWindow = this.getWindow();
+    	parentWindow.removeWindow(filterLocation);    	    	
+        
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(filterLocation);
+    }
+    
+    public void reopenFilterStudyWindow(){
+    	//this is to simulate and refresh checkboxes
+    	Window parentWindow = this.getWindow();
+    	parentWindow.removeWindow(filterStudy);    	    	
+        
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(filterStudy);
+    }
+    public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
     	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
     	
     	
     	isFilterLocationClicked = true;
     	filterSetLevel1 = new HashMap();
-    	filterSetLevel2 = new HashMap();
     	filterSetLevel3 = new HashMap();
     	
     	    
@@ -570,7 +582,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         	
     		filterSetLevel1.put(countryName, countryName);
     	}
-    	
+    	/*
     	for(FilterLocationDto dto : filterLocationDtoListLevel2){
     		String countryName = dto.getCountryName();
     		String provinceName = dto.getProvinceName();
@@ -583,19 +595,17 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		//we need to remove in the 1st level since this mean we want specific level 2 filter
     		filterSetLevel1.remove(countryName);
     	}
+    	*/
     	
     	for(FilterLocationDto dto : filterLocationDtoListLevel3){
     		String countryName = dto.getCountryName();
-    		String provinceName = dto.getProvinceName();
     		String locationName = dto.getLocationName();
     		//String studyName = dto.getStudyName();
-    		String key = countryName + FilterLocationDialog.DELIMITER + provinceName + FilterLocationDialog.DELIMITER + locationName;// + FilterLocationDialog.DELIMITER + studyName;
-    		String key2 = countryName + FilterLocationDialog.DELIMITER + FilterLocationDialog.DELIMITER + locationName;// + FilterLocationDialog.DELIMITER + studyName;
+    		String key = countryName + FilterLocationDialog.DELIMITER + locationName;// + FilterLocationDialog.DELIMITER + studyName;
+    	
         	
     		filterSetLevel3.put(key, key);
-    		filterSetLevel3.put(key2, key2);
     		//we need to remove in the 1st level since this mean we want specific level 2 filter
-    		filterSetLevel2.remove(countryName + FilterLocationDialog.DELIMITER + provinceName);
     		filterSetLevel1.remove(countryName);
     	}
     	
