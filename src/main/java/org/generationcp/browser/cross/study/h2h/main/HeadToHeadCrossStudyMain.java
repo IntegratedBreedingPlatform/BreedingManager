@@ -24,7 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 public class HeadToHeadCrossStudyMain  extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = -3488805933508882321L;
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "1.0.0-BETA";
 
     private Accordion accordion;
 
