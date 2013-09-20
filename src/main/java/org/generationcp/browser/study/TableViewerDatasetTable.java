@@ -45,6 +45,7 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	
 	private static final long serialVersionUID = 9114757066977945573L;
 	private final static Logger LOG = LoggerFactory.getLogger(TableViewerDatasetTable.class);
+	private static final String NUMERIC_VARIABLE = "Numeric variable";
 	
 	private StudyDataManager studyDataManager;
 	private Integer datasetId;
@@ -87,12 +88,14 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
             if(variable.getStandardVariable().getStoredIn().getId() != TermId.STUDY_INFORMATION.getId()){
                 String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
                 columnIds.add(columnId);
+                
+                // add the column ids to display for the Table
+                if (NUMERIC_VARIABLE.equals(variable.getStandardVariable().getDataType().getName())) {
+                	this.addContainerProperty(columnId, Double.class, null);
+                } else {
+                	this.addContainerProperty(columnId, String.class, null);
+                }
             }
-        }
-
-        // add the column ids to display for the Table
-        for (String columnId : columnIds) {
-            this.addContainerProperty(columnId, String.class, null);
         }
         
         // set column headers for the Table
@@ -144,27 +147,13 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	                for(Variable variable : variables){
 	                    String columnId = new StringBuffer().append(variable.getVariableType().getId()).append("-")
 	                            .append(variable.getVariableType().getLocalName()).toString();
-	
-	                    //check if the variable value is a number to remove decimal portion if there is no value after the decimal point
-	                    String value = variable.getDisplayValue();
-	                    if(value != null){
-	                        try{
-	                            Double doubleValue = Double.valueOf(value);
-	                            if (doubleValue % 1.0 > 0) {
-	                            	item.getItemProperty(columnId).setValue(value);
-	                                //item.addItemProperty(columnId, new ObjectProperty<String>(value));
-	                            } else {
-	                            	item.getItemProperty(columnId).setValue(String.format("%.0f",doubleValue));
-	                                //item.addItemProperty(columnId, new ObjectProperty<String>(String.format("%.0f",doubleValue)));
-	                            }
-	                        } catch(NumberFormatException ex){
-	                            //add value as String
-	                        	item.getItemProperty(columnId).setValue(value);
-	                            //item.addItemProperty(columnId, new ObjectProperty<String>(value));
-	                        }
+	                    
+	                    if (NUMERIC_VARIABLE.equals(variable.getVariableType().getStandardVariable().getDataType().getName())) {
+	                    	Double doubleValue = Double.valueOf(variable.getValue());
+	                    	item.getItemProperty(columnId).setValue(doubleValue);
 	                    } else {
-	                    	item.getItemProperty(columnId).setValue(null);
-	                        //item.addItemProperty(columnId, null);
+	                    	String stringValue = variable.getDisplayValue();
+	                    	item.getItemProperty(columnId).setValue(stringValue);
 	                    }
 	                }
                 }
