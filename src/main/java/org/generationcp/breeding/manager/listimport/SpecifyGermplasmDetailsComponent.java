@@ -317,7 +317,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         germplasm.setGdate(dateIntValue);
                         germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
 
-                        germplasm.setGnpgs(0);
+                        germplasm.setGnpgs(-1);
                         germplasm.setGpid1(0);
                         germplasm.setGpid2(0);
                         germplasm.setLgid(0);
