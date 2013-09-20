@@ -460,6 +460,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         germplasm.setUserId(userId);
         
         if(this.optionGroup.getValue().equals(OPTION_2_ID)){
+        	germplasm.setGpid1(this.selectedGid);
             germplasm.setGpid2(this.selectedGid);
         } else {
             germplasm.setGpid2(Integer.valueOf(0));
