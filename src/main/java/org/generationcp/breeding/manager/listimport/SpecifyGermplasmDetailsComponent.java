@@ -375,7 +375,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             //   handled by SelectGemrplasmWindow and 
                             //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
                             List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-                            germplasm.setGpid1(foundGermplasm.get(0).getGpid1()); 
+                            if(foundGermplasm.get(0).getGnpgs()<2){
+                            	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
+                            } else {
+                            	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
+                            }
                             germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
                         } else {
                             //If no matches are found
