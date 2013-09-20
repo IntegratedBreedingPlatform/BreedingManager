@@ -270,6 +270,7 @@ public enum Message {
      //Table Viewer
      ,TABLE_VIEWER_CAPTION
      ,CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER
+     ,TABLE_VIEWER_OK_LABEL
      
      ,HEAD_TO_HEAD_TAG
      ,HEAD_TO_HEAD_TRAIT
