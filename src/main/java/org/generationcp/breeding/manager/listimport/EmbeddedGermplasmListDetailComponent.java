@@ -133,7 +133,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(makeImportButton, Message.MAKE_NEW_IMPORT);
+        messageSource.setCaption(makeImportButton, Message.START_NEW_IMPORT);
     }
     
     @SuppressWarnings("serial")
