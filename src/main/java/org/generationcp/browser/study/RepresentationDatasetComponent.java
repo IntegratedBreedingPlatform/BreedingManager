@@ -145,7 +145,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER); 
 
         ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
-            messageSource.getMessage(Message.OK_LABEL), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+            messageSource.getMessage(Message.TABLE_VIEWER_OK_LABEL), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
             private static final long serialVersionUID = 1L;
 
             public void onClose(ConfirmDialog dialog) {
