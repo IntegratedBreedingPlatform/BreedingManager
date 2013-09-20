@@ -64,6 +64,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     private TextField germplasmListDescription;
     private ComboBox germplasmListType;
     private DateField germplasmListDate;
+    private Label warnOnClickDone;
     private Button backButton;
     private Button doneButton;
 
@@ -121,6 +122,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
         doneButton.setData(DONE_BUTTON_ID);
+        warnOnClickDone = new Label();
         
         germplasmListName.setWidth("250px");
         germplasmListDescription.setWidth("250px");
@@ -137,6 +139,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         addComponent(germplasmListType, "top:85px; left:340px;");
         addComponent(germplasmListDate, "top:115px; left:340px;");
         
+        addComponent(warnOnClickDone, "top:240px; left: 130px;");
         addComponent(backButton, "top:165px; left: 340px;");
         addComponent(doneButton, "top:165px; left: 410px;");
         
@@ -167,6 +170,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         messageSource.setCaption(germplasmListDateLabel, Message.GERMPLASM_LIST_DATE);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(doneButton, Message.DONE);
+        messageSource.setCaption(warnOnClickDone, Message.CLICKING_ON_DONE_WOULD_MEAN_THE_LIST_LIST_ENTRIES_AND_GERMPLASM_RECORDS_WILL_BE_SAVED_IN_THE_DATABASE);
     }
 
 
@@ -187,19 +191,20 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         if (validateRequiredFields()){
             updateCrossesMadeContainer();
         
-            ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
-                messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
-                messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
-                new ConfirmDialog.Listener() {
-                    
-                    public void onClose(ConfirmDialog dialog) {
-                        if (dialog.isConfirmed()) {
-                        saveRecords();
-                        }
-                    }
-                    
-                }
-            );
+            saveRecords();
+            
+            //Bypass prompt
+            //ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
+            //    messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
+            //    messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            //    new ConfirmDialog.Listener() {
+            //        public void onClose(ConfirmDialog dialog) {
+            //            if (dialog.isConfirmed()) {
+            //            saveRecords();
+            //            }
+            //        }
+            //    }
+            //);
         }
     }
     
