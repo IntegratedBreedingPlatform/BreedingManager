@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.h2h.main.dialogs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -66,15 +68,11 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "FilterLocationDialog Close Button ID";
     public static final String APPLY_BUTTON_ID = "FilterLocationDialog Apply Button ID";
-    public static final String COUNTRY_BUTTON_ID = "FilterLocationDialog Country Button ID";
-    public static final String PROVINCE_BUTTON_ID = "FilterLocationDialog Province Button ID";
         	
-    private static final String COUNTRY_COLUMN_ID = "FilterLocationDialog Trait Column Id";
+    private static final String COUNTRY_LOCATION_COLUMN_ID = "FilterLocationDialog Country/Location Column Id";
     private static final String NUMBER_OF_ENV_COLUMN_ID = "FilterLocationDialog Number of Environments Column Id";
     private static final String TAG_COLUMN_ID = "FilterLocationDialog Tag Column Id";
-    private static final String PROVINCE_COLUMN_ID = "FilterLocationDialog Province Column Id";
-    private static final String LOCATION_COLUMN_ID = "FilterLocationDialog Location Column Id";
-    private static final String STUDY_COLUMN_ID = "FilterLocationDialog Study Column Id";
+    private static final String TAG_ALL = "FilterLocationDialog TAG_ALL Column Id";
     
     
     @Autowired
@@ -89,24 +87,25 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     private Button applyButton;
     private Button cancelButton;
     
-    private Table countriesTable;
-    private Table provinceTable;
-    private Table locationTable;
+    private TreeTable locationTreeTable;
+    
+
     private Map<String, FilterByLocation> filterLocationCountryMap;
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
-    private Map<String, Object[]> itemMap = new HashMap();
+    //private Map<String, Object[]> itemMap = new HashMap();
     private List<FilterLocationDto> checkFilterLocationLevel1DtoList = new ArrayList();
-    private List<FilterLocationDto> checkFilterLocationLevel2DtoList = new ArrayList();
     private List<FilterLocationDto> checkFilterLocationLevel3DtoList = new ArrayList();
-    private ThemeResource resource;
+    private Map<String, CheckBox> locationCountryCheckBoxMap  = new HashMap();
+    private Map<String, FilterLocationDto> locationCountryFilterDtoMap  = new HashMap();
+    private Map<String, List<String>> countryLocationMapping = new HashMap();
+    private CheckBox tagUnTagAll;
     
     
     public FilterLocationDialog(Component source, Window parentWindow, Map<String, FilterByLocation> filterLocationCountryMap){
         this.source = source;
         this.parentWindow = parentWindow;
         this.filterLocationCountryMap = filterLocationCountryMap;
-        setTheme("gcp-default");
        
         
         	
@@ -117,7 +116,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("1200px");
+        setWidth("1000px");
         setHeight("530px");
         setResizable(false);
         setCaption("Filter by Location pop-up screen");
@@ -128,30 +127,30 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
-        mainLayout.setWidth("1200px");
+        mainLayout.setWidth("1000px");
         mainLayout.setHeight("450px");
         
-        initializeCountryTable();
-        initializeProvinceTable();
-        initializeLocationStudyTable();
         
-        showCountryRows();
+        initializeCountryLocationTable();
+        //initializeProvinceTable();
+        //initializeLocationStudyTable();
         
-        resource = new ThemeResource("image/arrow-right.png");	        
-	     // Use the resource
-        Embedded rightArrow1 = new Embedded("", resource);
-        Embedded rightArrow2 = new Embedded("", resource);
-       
+        showCountryLocationRows();
+        
+
+        tagUnTagAll = new CheckBox();
+        tagUnTagAll.setValue(true);
+        tagUnTagAll.setImmediate(true);
+        tagUnTagAll.setData(TAG_ALL);
+        tagUnTagAll.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, true));
         
         
         
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
-        mainLayout.addComponent(countriesTable, "top:30px;left:20px");
-        mainLayout.addComponent(provinceTable, "top:30px;left:390px");
-        mainLayout.addComponent(locationTable, "top:30px;left:780px");
+        mainLayout.addComponent(locationTreeTable, "top:30px;left:20px");
         
-        mainLayout.addComponent(rightArrow1, "top:175px;left:335px");
-        mainLayout.addComponent(rightArrow2, "top:175px;left:725px");
+        mainLayout.addComponent(tagUnTagAll, "top:32px;left:800px");
+        
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -174,119 +173,72 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:950px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:810px");
         
         
         addComponent(mainLayout);
     }
 
-    private void showCountryRows(){
+    private void showCountryLocationRows(){
     	for(String countryName : filterLocationCountryMap.keySet()){
     		FilterByLocation filterByLocation = filterLocationCountryMap.get(countryName);
-    		
-    		Object[] itemObj = itemMap.get(countryName);
-    		if(itemObj == null){
-	    		//item = countriesTable.addItem(countryName);
-	   		 	CheckBox box = new CheckBox();
-	   		 	box.setImmediate(true);
-	   		 	FilterLocationDto filterLocationDto = new FilterLocationDto(countryName, null, null, null, 1);
-	   		 	//box.setValue(filterLocationDto);
-	            //item.getItemProperty(TAG_COLUMN_ID).setValue(box);
-	            Button countryNameLink = new Button(countryName);
-	            countryNameLink.setImmediate(true);
-	            countryNameLink.setStyleName(Reindeer.BUTTON_LINK);
-	            countryNameLink.setData(COUNTRY_BUTTON_ID);
-	            countryNameLink.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this, countryName));
-	            /*
-	            item.getItemProperty(COUNTRY_COLUMN_ID).setValue(countryNameLink);
-	            
-	            item.getItemProperty(NUMBER_OF_ENV_COLUMN_ID).setValue(filterByLocation.getNumberOfEnvironmentForCountry());
-	            */
-	            box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
-	          
-	            itemObj = new Object[] {box, countryNameLink, filterByLocation.getNumberOfEnvironmentForCountry()};
-	            countriesTable.addItem(itemObj, countryName);
-	            
-	            itemMap.put(countryName, itemObj);
-    		}else{
-    			countriesTable.addItem(itemObj, countryName);
+    		FilterLocationDto filterLocationDto = new FilterLocationDto(countryName, null, null, null, 1);
+    		CheckBox box = new CheckBox();
+    		box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
+    		box.setValue(true);
+    		box.setImmediate(true);
+    		//Object[] countryObj = ;
+			Object countryObj = locationTreeTable.addItem(new Object[] {countryName, filterByLocation.getNumberOfEnvironmentForCountry(), box}, countryName);
+			locationCountryCheckBoxMap.put(countryName, box);
+			locationCountryFilterDtoMap.put(countryName, filterLocationDto);
+			List<String> keyList = new ArrayList();
+			for(String locationNames : filterByLocation.getListOfLocationNames()){
+				CheckBox boxLocation = new CheckBox();
+				FilterLocationDto filterLocationDto1 = new FilterLocationDto(countryName, null, locationNames, null, 3);
+				boxLocation.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto1));
+				boxLocation.setImmediate(true);
+				String key = countryName+FilterLocationDialog.DELIMITER+locationNames; 
+				boxLocation.setValue(true);
+				Object locationObj = locationTreeTable.addItem(new Object[] {locationNames, filterByLocation.getNumberOfEnvironmentForLocation(locationNames), boxLocation}, key);
 				
-    		}
-    		
+				locationTreeTable.setParent(locationObj, countryObj);
+				locationCountryCheckBoxMap.put(key, boxLocation);
+				keyList.add(key);
+				locationCountryFilterDtoMap.put(key, filterLocationDto1);
+				locationTreeTable.setChildrenAllowed(locationObj, false);		      
+
+			}   
+			locationTreeTable.setCollapsed(countryObj, false);
+
+			countryLocationMapping.put(countryName, keyList);
     	}
     }
-    private void initializeCountryTable(){
-    	countriesTable = new Table();
-        countriesTable.setWidth("310px");
-        countriesTable.setHeight("350px");
-        countriesTable.setImmediate(true);
-        countriesTable.setPageLength(-1);
+    private void initializeCountryLocationTable(){
+    	locationTreeTable = new TreeTable();
+    	locationTreeTable.setWidth("900px");
+    	locationTreeTable.setHeight("350px");
+    	locationTreeTable.setImmediate(true);
+    	locationTreeTable.setPageLength(-1);
         //entriesTable.setCacheRate(cacheRate)
-        countriesTable.setSelectable(true);
-        countriesTable.setMultiSelect(true);
-        countriesTable.setNullSelectionAllowed(false);
-        
-        countriesTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-        countriesTable.addContainerProperty(COUNTRY_COLUMN_ID, Button.class, null);
-        countriesTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
+    	locationTreeTable.setSelectable(true);
+    	locationTreeTable.setMultiSelect(true);
+        locationTreeTable.setNullSelectionAllowed(false);
         
         
-        countriesTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
-        countriesTable.setColumnHeader(COUNTRY_COLUMN_ID, "Country");
-        countriesTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
+        
+        locationTreeTable.addContainerProperty(COUNTRY_LOCATION_COLUMN_ID, String.class, null);
+        locationTreeTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
+        locationTreeTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         
         
-    }
-    
-    private void initializeProvinceTable(){
-    	provinceTable = new Table();
-    	provinceTable.setWidth("330px");
-    	provinceTable.setHeight("350px");
-    	provinceTable.setImmediate(true);
-    	provinceTable.setPageLength(-1);
-        //entriesTable.setCacheRate(cacheRate)
-    	provinceTable.setSelectable(true);
-        provinceTable.setMultiSelect(true);
-        provinceTable.setNullSelectionAllowed(false);
+        locationTreeTable.setColumnHeader(COUNTRY_LOCATION_COLUMN_ID, "Country/Location");
+        locationTreeTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
+        locationTreeTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
         
-        setUpProvinceTable();        
+        locationTreeTable.setColumnWidth(COUNTRY_LOCATION_COLUMN_ID, 607);
+        locationTreeTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 120);
+        locationTreeTable.setColumnWidth(TAG_COLUMN_ID, 115);
         
-    }
-    
-    private void initializeLocationStudyTable(){
-    	locationTable = new Table();
-    	locationTable.setWidth("330px");
-    	locationTable.setHeight("350px");
-    	locationTable.setImmediate(true);
-    	locationTable.setPageLength(-1);
-        //entriesTable.setCacheRate(cacheRate)
-    	locationTable.setSelectable(true);
-    	locationTable.setMultiSelect(true);
-    	locationTable.setNullSelectionAllowed(false);
-        
-        setUpLocationTable();        
-    }
-    
-    private void setUpProvinceTable(){
-    	provinceTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-    	provinceTable.addContainerProperty(PROVINCE_COLUMN_ID, Button.class, null);
-    	provinceTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
-        
-        
-        provinceTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
-        provinceTable.setColumnHeader(PROVINCE_COLUMN_ID, "Province");
-        provinceTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
-    }
-   
-    private void setUpLocationTable(){
-    	locationTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-    	locationTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
-    	locationTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
-        
-        
-    	locationTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
-    	locationTable.setColumnHeader(LOCATION_COLUMN_ID, "Location");
-    	locationTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");        
     }
     
     public void applyButtonClickAction(){
@@ -298,137 +250,111 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         //this.selectedGid = Integer.valueOf(item.getItemProperty(GID).toString());
         //this.doneButton.setEnabled(true);
     }
-    
-    public void clickCountryName(String countryName){
-    	//we need to remove all in the location study table
-    	 provinceTable.removeAllItems();
-    	 List<Object> propertyIds = new ArrayList<Object>();
-         for(Object propertyId : provinceTable.getContainerPropertyIds()){
-             propertyIds.add(propertyId);
-         }
-         
-         for(Object propertyId : propertyIds){
-        	 provinceTable.removeContainerProperty(propertyId);
-         }
-         
-         locationTable.removeAllItems();
-    	 propertyIds = new ArrayList<Object>();
-         for(Object propertyId : locationTable.getContainerPropertyIds()){
-             propertyIds.add(propertyId);
-         }
-         
-         for(Object propertyId : propertyIds){
-        	 locationTable.removeContainerProperty(propertyId);
-         }
-         
-        
-        setUpProvinceTable();
-        setUpLocationTable();
-        
-        
-		FilterByLocation filterByLocation = filterLocationCountryMap.get(countryName);
-		for(String provinceName : filterByLocation.getListOfProvinceNames()){
-			String key = countryName+DELIMITER+provinceName;
-			Object[] itemObj = itemMap.get(key);
-    		if(itemObj == null){
-				//item = provinceTable.addItem(key);
-			 	CheckBox box = new CheckBox();
-			 	box.setImmediate(true);
-			 	FilterLocationDto filterLocationDto = new FilterLocationDto(countryName, provinceName, null, null, 2);
-			 	//box.setValue(filterLocationDto);
-		        //item.getItemProperty(TAG_COLUMN_ID).setValue(box);
-		        Button provinceNameLink = new Button(provinceName);
-		        provinceNameLink.setImmediate(true);
-		        provinceNameLink.setStyleName(Reindeer.BUTTON_LINK);
-		        provinceNameLink.setData(PROVINCE_BUTTON_ID);
-		        provinceNameLink.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this, countryName, provinceName));
-		        /*
-		        item.getItemProperty(PROVINCE_COLUMN_ID).setValue(provinceNameLink);
-		        
-		        item.getItemProperty(NUMBER_OF_ENV_COLUMN_ID).setValue(filterByLocation.getNumberOfEnvironmentForProvince(provinceName));
-		        itemMap.put(key, item);
-		        */
-		        box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
-		        itemObj = new Object[] {box, provinceNameLink, filterByLocation.getNumberOfEnvironmentForProvince(provinceName)};
-	            provinceTable.addItem(itemObj, key);
-	            
-	            itemMap.put(key, itemObj);
-    		}else{
-    			provinceTable.addItem(itemObj, key);
-    		}
-		}
-		
-		
-    }
-    
-    public void clickProvinceName(String countryName, String province){
-    	
-    	 List<Object> propertyIds = new ArrayList<Object>();
-        
-         
-    	 locationTable.removeAllItems();
-    	 propertyIds = new ArrayList<Object>();
-         for(Object propertyId : locationTable.getContainerPropertyIds()){
-             propertyIds.add(propertyId);
-         }
-         
-         for(Object propertyId : propertyIds){
-        	 locationTable.removeContainerProperty(propertyId);
-         }
-         
-        
-        setUpLocationTable();
-        
-        
-		FilterByLocation filterByLocation = filterLocationCountryMap.get(countryName);
-		Collection<LocationStudyDto> locationStudyDtoList = filterByLocation.getLocationStudyForProvince(province);
-		for(LocationStudyDto locationStudyDto : locationStudyDtoList){
-			String key = countryName+DELIMITER+province+DELIMITER+locationStudyDto.getLocationName();// + DELIMITER  + locationStudyDto.getStudyName();
-			Object[] itemObj = itemMap.get(key);
-    		if(itemObj == null){
-				//item = locationStudyTable.addItem(key);
-			 	CheckBox box = new CheckBox();
-			 	box.setImmediate(true);
-			 	FilterLocationDto filterLocationDto = new FilterLocationDto(countryName, province, locationStudyDto.getLocationName(), locationStudyDto.getStudyName(), 3);
-			 	//box.setValue(filterLocationDto);
-			 	/*
-		        item.getItemProperty(TAG_COLUMN_ID).setValue(box);	       
-		        item.getItemProperty(LOCATION_COLUMN_ID).setValue(locationStudyDto.getLocationName() );	        
-		        item.getItemProperty(STUDY_COLUMN_ID).setValue(locationStudyDto.getStudyName());
-		        */
-		        //itemMap.put(key, item);
-		        box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
-		        itemObj = new Object[] {box, locationStudyDto.getLocationName() , filterByLocation.getNumberOfEnvironmentForLocation(locationStudyDto.getLocationName())};
-		        locationTable.addItem(itemObj, key);
-	            
-	            itemMap.put(key, itemObj);
-    		}else{
-    			locationTable.addItem(itemObj, key);
-    		}
-		}
-		
-		
-    }
    
     public void clickCheckBox(boolean val, FilterLocationDto filterLocationDto){
     	List tempList = new ArrayList();
-    	if(filterLocationDto.getLevel() == 1)
-    		tempList = checkFilterLocationLevel1DtoList;
-    	else if(filterLocationDto.getLevel() == 2)
-    		tempList = checkFilterLocationLevel2DtoList;
-    	else if(filterLocationDto.getLevel() == 3)
-    		tempList = checkFilterLocationLevel3DtoList;
     	
+    	
+    	
+    	if(filterLocationDto.getLevel() == 1){
+    		if(val){
+    			//we check all the location
+    			List<String> locationList = countryLocationMapping.get(filterLocationDto.getCountryName());
+    			if(locationList != null){
+	    			for(String locKey : locationList){
+	    				CheckBox checkBox = locationCountryCheckBoxMap.get(locKey);
+	    				checkBox.setValue(true);
+	    			}
+    			}
+    		}else{
+    			List<String> locationList = countryLocationMapping.get(filterLocationDto.getCountryName());
+    			if(locationList != null){
+	    			for(String locKey : locationList){
+	    				CheckBox checkBox = locationCountryCheckBoxMap.get(locKey);
+	    				checkBox.setValue(false);
+	    			}
+    			}
+    		}
+    		//tempList = checkFilterLocationLevel1DtoList;
+    	}
+    	else if(filterLocationDto.getLevel() == 3){
+    		//tempList = checkFilterLocationLevel3DtoList;
+    		if(val){
+    			
+    			Map<CheckBox, Boolean> prevStateMap = new HashMap();
+				List<String> locationList = countryLocationMapping.get(filterLocationDto.getCountryName());
+    			if(locationList != null){
+	    			for(String locKey : locationList){
+	    				CheckBox checkBox = locationCountryCheckBoxMap.get(locKey);	   
+	    				if((Boolean)checkBox.getValue() == false)
+	    					prevStateMap.put(checkBox, (Boolean)checkBox.getValue());
+	    			}
+    			}
+    			
+				CheckBox checkBoxCountry = locationCountryCheckBoxMap.get(filterLocationDto.getCountryName());
+				checkBoxCountry.setValue(true);
+				Iterator<CheckBox> iter = prevStateMap.keySet().iterator();
+				while(iter.hasNext()){
+					CheckBox temp = iter.next();
+					temp.setValue(prevStateMap.get(temp));
+				}
+    			
+    		}else{
+    			//we check all the location
+    			List<String> locationList = countryLocationMapping.get(filterLocationDto.getCountryName());
+    			boolean isAtLeast1Check = false;
+    			if(locationList != null){
+	    			for(String locKey : locationList){
+	    				CheckBox checkBox = locationCountryCheckBoxMap.get(locKey);
+	    				//checkBox.setValue(true);
+	    				if((Boolean)checkBox.getValue()){
+	    					isAtLeast1Check = true;
+	    				}
+	    			}
+    			}
+    			if(isAtLeast1Check == false){
+    				CheckBox checkBox = locationCountryCheckBoxMap.get(filterLocationDto.getCountryName());
+    				checkBox.setValue(false);
+    			}
+    		}
+    	}
+    	/*
     	if(val){
     		tempList.add(filterLocationDto);
     	}else{
     		tempList.remove(filterLocationDto);
     	}
+    	*/
+    	
+    	
     	setupApplyButton();
     }
     
+    public void clickCheckBoxTag(boolean val){
+    	for(String sKey : countryLocationMapping.keySet()){
+        	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);        	
+        	temp.setValue(val);
+        }
+    	setupApplyButton();
+    	((EnvironmentsAvailableComponent)source).reopenFilterWindow();
+    }
+    
     public void clickApplyButton(){
-    	((EnvironmentsAvailableComponent)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel2DtoList, checkFilterLocationLevel3DtoList);
+    	
+        checkFilterLocationLevel1DtoList = new ArrayList();
+        checkFilterLocationLevel3DtoList = new ArrayList();
+        for(String sKey : locationCountryCheckBoxMap.keySet()){
+        	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);
+        	if((Boolean)temp.getValue()){
+        		FilterLocationDto dto = locationCountryFilterDtoMap.get(sKey);
+        		if(dto.getLevel() == 1){
+        			checkFilterLocationLevel1DtoList.add(dto);
+        		}else if(dto.getLevel() == 3){
+        			checkFilterLocationLevel3DtoList.add(dto);
+        		}
+        	}
+        }
+    	((EnvironmentsAvailableComponent)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
     }
     
     public void initializeButtons(){
@@ -436,11 +362,17 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     }
     
     private void setupApplyButton(){
-    	if(!checkFilterLocationLevel1DtoList.isEmpty() || !checkFilterLocationLevel2DtoList.isEmpty() || !checkFilterLocationLevel3DtoList.isEmpty() ){
-    		applyButton.setEnabled(true);
-    	}else{
-    		applyButton.setEnabled(false);
+    	if(applyButton != null){
+	    	for(CheckBox checkBox : locationCountryCheckBoxMap.values()){
+	    		if((Boolean)checkBox.getValue()){
+	    			applyButton.setEnabled(true);
+	    			break;
+	    		}else{
+	    			applyButton.setEnabled(false);
+	    		}
+	    	}
     	}
+    	//locationTreeTable.requestRepaintAll();
     }
     
     @Override
