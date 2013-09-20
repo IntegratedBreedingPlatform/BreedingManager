@@ -193,6 +193,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitMaps = new HashMap();
         
         Map<String, List<TraitInfo>> traitMap = new HashMap();
+        Map<String, Set<String>> traitEnvMap = new HashMap();
         traitEnvironmentMap = new HashMap();
         trialEnvironmentMap = new HashMap();
         germplasmIds = new HashSet();
@@ -229,7 +230,12 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	    				}
 	    				tempList.add(info);
 	    				traitMap.put(id, tempList);
-	    				
+	    				Set<String> envIds = traitEnvMap.get(id);
+	    				if(envIds == null){
+	    					envIds = new HashSet();
+	    				}
+	    				envIds.add(trialEnv.getId()+"");
+	    				traitEnvMap.put(id, envIds);
 	    				
 	    				//we need to keep track on the environments
 	    				Map<String, TrialEnvironment> tempEnvMap = new HashMap();
@@ -252,8 +258,10 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	        	ComboBox comboBox = getDirectionComboBox();
 	        	box.setImmediate(true);
 	        	Integer tableId = Integer.valueOf(id);
+	        	
+	        	Integer numOfEnv = traitEnvMap.get(id).size();
 	        	traitsTable.addItem(new Object[] {box, info.getName(),info.getDescription(),
-	        			traitInfoList.size(),comboBox },tableId);
+	        			numOfEnv,comboBox },tableId);
 	        	//checkBoxMap.put(box, traitsTable.getItem(tableId));
 	        	box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, comboBox));
 	        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
@@ -265,26 +273,9 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 			e.printStackTrace();
 		}
         
-        /*
-        List<TraitForComparison> tableItems = getAvailableTraitsForComparison(testEntryGID, standardEntryGID);
-        this.traitsForComparisonList = tableItems;
-        for(TraitForComparison tableItem : tableItems){
-            this.traitsTable.addItem(new Object[]{tableItem.getName(), tableItem.getNumberOfEnvironments()}, tableItem.getName());
-        }
-        
-        this.traitsTable.requestRepaint();
-        
-        if(traitsTable.getItemIds().isEmpty()){
-            this.nextButton.setEnabled(false);
-        } else{
-            this.currentStandardEntryGID = standardEntryGID;
-            this.currentTestEntryGID = testEntryGID;
-            this.nextButton.setEnabled(true);
-        }
-        */
+       
     }
-    
-    
+        
     
     public void clickCheckBox(Component combo, boolean boolVal){
     	
@@ -293,8 +284,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     		ComboBox comboBox = (ComboBox) combo;
     		comboBox.setEnabled(boolVal);
     		TraitInfo info = traitMaps.get(comboBox);
-    		
-    			
+    		    			
     			if( info != null){    				
     				if(boolVal){
     					traitForComparisons.add(comboBox);	
