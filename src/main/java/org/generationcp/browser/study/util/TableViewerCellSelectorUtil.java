@@ -26,6 +26,7 @@ public class TableViewerCellSelectorUtil {
 	
 	private String cssClassName;
 	private Window contextWindow;
+	private Boolean contextWindowDisplayed;
 	private ColorPicker cp;
 	
 	private ArrayList<String> columnHeaders;
@@ -50,6 +51,7 @@ public class TableViewerCellSelectorUtil {
 		highlightedCellCoordinates = new ArrayList<CellCoordinate>();
 		customCSSClassNames = new ArrayList<String>();
 		cellCoordinateColorAssigments = new ArrayList<CellCoordinateColorAssignment>();
+		contextWindowDisplayed = false;
 		initialize();
 	}
 	
@@ -59,6 +61,7 @@ public class TableViewerCellSelectorUtil {
 		highlightedCellCoordinates = new ArrayList<CellCoordinate>();
 		customCSSClassNames = new ArrayList<String>();
 		cellCoordinateColorAssigments = new ArrayList<CellCoordinateColorAssignment>();
+		contextWindowDisplayed = false;
 		initialize();
 	}
 	
@@ -83,6 +86,19 @@ public class TableViewerCellSelectorUtil {
 	    table.addListener(new ItemClickEvent.ItemClickListener(){
 			private static final long serialVersionUID = 1L;
 			public void itemClick(ItemClickEvent event) {
+				
+				//Remove previous context windows and color pickers
+				if(contextWindowDisplayed){
+					contextWindow.removeComponent(cp);
+					if(source instanceof Window){
+						((Window) source).getParent().getWindow().removeWindow(contextWindow);
+					} else {
+						table.getWindow().removeWindow(contextWindow);
+					}
+					contextWindowDisplayed = false;
+				}
+				
+				
 				System.out.println("Clicked");
 				System.out.println("Row: "+event.getItemId());
 				System.out.println("Column: "+event.getPropertyId());
@@ -110,14 +126,20 @@ public class TableViewerCellSelectorUtil {
 					//cp.setPopupStyle(ColorPicker.PopupStyle.POPUP_SIMPLE);
 					cp.setPosition(event.getClientX(), event.getClientY());
 					
+					
+					
 					contextWindow.addComponent(cp);
 					
 					if(source instanceof Window){
 						//((Window) source).getApplication().getMainWindow().addWindow(contextWindow);
 						//((Window) source).getApplication().getWindow(GermplasmStudyBrowserApplication.STUDY_WINDOW_NAME).addWindow(contextWindow);
-						((Window) source).getParent().getWindow().addWindow(contextWindow);
+						if(!contextWindowDisplayed)
+							((Window) source).getParent().getWindow().addWindow(contextWindow);
+						contextWindowDisplayed = true;
 					} else {
-						table.getWindow().addWindow(contextWindow);
+						if(!contextWindowDisplayed)
+							table.getWindow().addWindow(contextWindow);
+						contextWindowDisplayed = true;
 					}
 					
 					cp.addListener(new ColorPicker.ColorChangeListener(){
@@ -127,8 +149,10 @@ public class TableViewerCellSelectorUtil {
 							applyColorToSelectedCells(cssClassName);
 							if(source instanceof Window){
 								((Window) source).getParent().removeWindow(contextWindow);
+								contextWindowDisplayed = false;
 							} else {
 								table.getWindow().removeWindow(contextWindow);
+								contextWindowDisplayed = false;
 							}
 						}
 					});
