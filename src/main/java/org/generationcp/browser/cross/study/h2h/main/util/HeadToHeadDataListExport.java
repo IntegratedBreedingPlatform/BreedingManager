@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -97,7 +98,7 @@ public class HeadToHeadDataListExport {
         return styles;
     }
    
-    public FileOutputStream exportHeadToHeadDataListExcel(String filename, Table tableEntries, 
+    public FileOutputStream exportHeadToHeadDataListExcel(String filename, Table tableEntries, List<ResultsData> resultDataList,
     		Set<TraitForComparison> traitsIterator, String[] columnIdData, Map<String, String> columnIdDataMsgMap) throws HeadToHeadDataListExportException{
     	
     	
@@ -153,18 +154,19 @@ public class HeadToHeadDataListExport {
         }        
        
         //we iterate the table already
-        Iterator entriesIter = tableEntries.getItemIds().iterator();
+        //Iterator entriesIter = tableEntries.getItemIds().iterator();
         
-		while(entriesIter.hasNext()){
+		//while(entriesIter.hasNext()){
+        for(ResultsData resData : resultDataList){
 			//we iterate and permutate against the list
 			
-			String id = (String)entriesIter.next();
+			//String id = (String)entriesIter.next();
 			
-			Item item = tableEntries.getItem(id);
+			//Item item = tableEntries.getItem(id);
 			cellIndex = 0;
 			HSSFRow rowData = sheet.createRow(startDataRowIndex++);
-			String testEntryName = (String)item.getItemProperty(ResultsComponent.TEST_COLUMN_ID).getValue();
-			String standardEntryName = (String)item.getItemProperty(ResultsComponent.STANDARD_COLUMN_ID).getValue();
+			String testEntryName = resData.getGid1Name(); //(String)item.getItemProperty(ResultsComponent.TEST_COLUMN_ID).getValue();
+			String standardEntryName = resData.getGid2Name(); //(String)item.getItemProperty(ResultsComponent.STANDARD_COLUMN_ID).getValue();
 			
 			rowData.createCell(cellIndex++).setCellValue(testEntryName);
 			rowData.createCell(cellIndex++).setCellValue(standardEntryName);
@@ -174,7 +176,9 @@ public class HeadToHeadDataListExport {
 		        	for(String colId : columnIdData){
 		        		String traitColId = traitForCompare.getTraitInfo().getName() + colId;
 		        		
-		        		String numVal = (String)item.getItemProperty(traitColId).getValue();
+		        		//String numVal = (String)item.getItemProperty(traitColId).getValue();
+		        		
+		        		String numVal = (String) resData.getTraitDataMap().get(traitColId);
 		        		
 		        		numVal = numVal.replaceAll(",", "");
 		        		

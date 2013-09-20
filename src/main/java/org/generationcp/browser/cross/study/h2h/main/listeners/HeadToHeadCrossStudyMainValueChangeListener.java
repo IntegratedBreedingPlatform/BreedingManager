@@ -32,7 +32,13 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     private Component sourceComboBox;
     private FilterLocationDto filterLocationDto;
     private String tableKey;
+    private boolean isTagAll = false;
  
+    public HeadToHeadCrossStudyMainValueChangeListener(Component source, boolean isTagAll){
+        this.source = source;
+        this.isTagAll = isTagAll;
+    }
+    
     public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox){
         this.source = source;
         this.sourceComboBox = sourceComboBox;
@@ -52,10 +58,16 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
         }else if (source instanceof EnvironmentsAvailableComponent) {
             ((EnvironmentsAvailableComponent) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
-        } else if (source instanceof FilterLocationDialog) {
-            ((FilterLocationDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
-        }  else if (source instanceof FilterStudyDialog) {
-            ((FilterStudyDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
+        } else if (source instanceof FilterLocationDialog) {  
+        	if(isTagAll){
+        		((FilterLocationDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        	}else
+        		((FilterLocationDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
+        }else if (source instanceof FilterStudyDialog) {
+        	if(isTagAll){
+        		((FilterStudyDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        	}else
+        		((FilterStudyDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
         }  
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javassist.bytecode.Descriptor.Iterator;
+
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
@@ -90,9 +92,9 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private Map<String, List<StudyReference>> filterStudyMap;
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
-    private Map<String, Object[]> itemMap = new HashMap();
+    private Map<String, CheckBox> checkBoxMap = new HashMap();
     private List<FilterLocationDto> checkFilterLocationLevel4DtoList = new ArrayList();    
-    
+    private CheckBox tagUnTagAll;
     
     public FilterStudyDialog(Component source, Window parentWindow, Map<String, List<StudyReference>> filterStudyMap){
         this.source = source;
@@ -124,13 +126,18 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         
         showStudyRows();
         
-        
+        tagUnTagAll = new CheckBox();
+        tagUnTagAll.setValue(true);
+        tagUnTagAll.setImmediate(true);
+        tagUnTagAll.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, true));
        
         
         
         
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(studyTable, "top:30px;left:20px");
+        
+        mainLayout.addComponent(tagUnTagAll, "top:30px;left:620px");
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -159,36 +166,39 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         addComponent(mainLayout);
     }
 
+    public void clickCheckBoxTag(boolean val){
+    	/*
+    	for(String sKey : countryLocationMapping.keySet()){
+        	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);        	
+        	temp.setValue(val);
+        }
+    	setupApplyButton();
+    	((EnvironmentsAvailableComponent)source).reopenFilterWindow();
+    	*/
+    	java.util.Iterator<CheckBox> checkboxes = checkBoxMap.values().iterator();
+    	while(checkboxes.hasNext()){
+    		CheckBox box = checkboxes.next();
+    		box.setValue(val);
+    	}
+    	setupApplyButton();		
+    	((EnvironmentsAvailableComponent)source).reopenFilterStudyWindow();
+    	
+    }
     private void showStudyRows(){
     	for(String studyKey : filterStudyMap.keySet()){
     		List<StudyReference> studyReferenceList = filterStudyMap.get(studyKey);
     		StudyReference studyRef = studyReferenceList.get(0);
     		
-    		Object[] itemObj = itemMap.get(studyKey);
-    		if(itemObj == null){
-	    		//item = countriesTable.addItem(countryName);
-	   		 	CheckBox box = new CheckBox();
+    		 	CheckBox box = new CheckBox();
 	   		 	box.setImmediate(true);
 	   		 	FilterLocationDto filterLocationDto = new FilterLocationDto(null, null, null, studyRef.getName(), 4);
-	   		 	//box.setValue(filterLocationDto);
-	            //item.getItemProperty(TAG_COLUMN_ID).setValue(box);
-	            
-	            /*
-	            item.getItemProperty(COUNTRY_COLUMN_ID).setValue(countryNameLink);
-	            
-	            item.getItemProperty(NUMBER_OF_ENV_COLUMN_ID).setValue(filterByLocation.getNumberOfEnvironmentForCountry());
-	            */
+	   		 	
 	            box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
-	          
-	            itemObj = new Object[] {box, studyRef.getName(), studyRef.getDescription(), studyReferenceList.size()};
-	            studyTable.addItem(itemObj, studyKey);
 	            
-	            itemMap.put(studyKey, itemObj);
-    		}else{
-    			studyTable.addItem(itemObj, studyKey);
-				
-    		}
-    		
+	            Object[] itemObj = new Object[] {studyRef.getName(), studyRef.getDescription(), studyReferenceList.size(), box};
+	            studyTable.addItem(itemObj, studyKey);
+	            checkBoxMap.put(studyKey, box);   		
+	            box.setValue(true);
     	}
     }
     private void initializeStudyTable(){
@@ -202,17 +212,22 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         studyTable.setMultiSelect(true);
         studyTable.setNullSelectionAllowed(false);
         
-        studyTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+        
         studyTable.addContainerProperty(STUDY_NAME_COLUMN_ID, String.class, null);
         studyTable.addContainerProperty(STUDY_DESCRIPTION_COLUMN_ID, String.class, null);
         studyTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
+        studyTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         
         
-        studyTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
         studyTable.setColumnHeader(STUDY_NAME_COLUMN_ID, "Study Name");
         studyTable.setColumnHeader(STUDY_DESCRIPTION_COLUMN_ID, "Study Title");
         studyTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
+        studyTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
         
+        studyTable.setColumnWidth(STUDY_NAME_COLUMN_ID, 120);
+        studyTable.setColumnWidth(STUDY_DESCRIPTION_COLUMN_ID, 300);
+        studyTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 116);
+        studyTable.setColumnWidth(TAG_COLUMN_ID, 110);
         
     }
     
@@ -230,7 +245,6 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     }
     
     
-   
     public void clickCheckBox(boolean val, FilterLocationDto filterLocationDto){
     	List tempList = new ArrayList();
     	if(filterLocationDto.getLevel() == 4)
@@ -253,10 +267,12 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     }
     
     private void setupApplyButton(){
-    	if(!checkFilterLocationLevel4DtoList.isEmpty()){
-    		applyButton.setEnabled(true);
-    	}else{
-    		applyButton.setEnabled(false);
+    	if(applyButton != null){
+	    	if(!checkFilterLocationLevel4DtoList.isEmpty()){
+	    		applyButton.setEnabled(true);
+	    	}else{
+	    		applyButton.setEnabled(false);
+	    	}
     	}
     }
     
