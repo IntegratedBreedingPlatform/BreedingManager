@@ -83,12 +83,12 @@ public class TableViewerCellSelectorUtil {
 	    table.addListener(new ItemClickEvent.ItemClickListener(){
 			private static final long serialVersionUID = 1L;
 			public void itemClick(ItemClickEvent event) {
-				//System.out.println("Clicked");
-				//System.out.println("Row: "+event.getItemId());
-				//System.out.println("Column: "+event.getPropertyId());
-				//System.out.println("Ctrl Pressed: "+event.isCtrlKey());
-				//System.out.println("Shift Pressed: "+event.isShiftKey());
-				//System.out.println("");
+				System.out.println("Clicked");
+				System.out.println("Row: "+event.getItemId());
+				System.out.println("Column: "+event.getPropertyId());
+				System.out.println("Ctrl Pressed: "+event.isCtrlKey());
+				System.out.println("Shift Pressed: "+event.isShiftKey());
+				System.out.println("");
 				
 				//table.getItem(event.getItemId()).getItemProperty(event.getPropertyId()).addStyleName("highlighted");
 				
@@ -108,6 +108,7 @@ public class TableViewerCellSelectorUtil {
 					
 					cp = new ColorPicker("Select color for the cells");
 					//cp.setPopupStyle(ColorPicker.PopupStyle.POPUP_SIMPLE);
+					cp.setPosition(event.getClientX(), event.getClientY());
 					
 					contextWindow.addComponent(cp);
 					
@@ -244,17 +245,21 @@ public class TableViewerCellSelectorUtil {
 							!isHighlighted
 							){
 						hasColorSet = true;
+						System.out.println("Setting cell style to - "+cellCoordinateColorAssigments.get(i).getCssClassName());
 						return cellCoordinateColorAssigments.get(i).getCssClassName();
 					}
 				}
 				
 				if(hasColorSet == false){
 					if(currentColumn!=null && currentColumn.equals(propertyId) && currentRow!=null && currentRow.equals(itemId.toString())){
+						System.out.println("Setting cell style to - currentlySelected");
 						return "currentlyselected";
 					} else {
 						if(isHighlighted){
+							System.out.println("Setting cell style to - highlighted");
 							return "highlighted";
 						} else {
+							System.out.println("Setting cell style to - [null]");
 							return null;
 						}
 					}
@@ -286,9 +291,9 @@ public class TableViewerCellSelectorUtil {
 		if(customCSSClassNames.indexOf(className) == -1){
 			customCSSClassNames.add(className);
 			if(source instanceof Window){
-				((Window) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); } </style>",Label.CONTENT_XHTML));
+				((Window) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+");  border-bottom:1px solid #e0e0e0; } </style>",Label.CONTENT_XHTML));
 			} else {
-				((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); } </style>",Label.CONTENT_XHTML));
+				((AbstractOrderedLayout) source).addComponent(new Label("<style> .v-table-cell-content-"+className+" { background: rgb("+R+","+G+","+B+"); border-bottom:1px solid #e0e0e0; } </style>",Label.CONTENT_XHTML));
 			}
 		}
 		return className;
