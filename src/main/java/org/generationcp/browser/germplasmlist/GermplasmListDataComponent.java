@@ -428,7 +428,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         final Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
         if(selectedIds.size() > 0){
             ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
-                    "Ok", "Cancel", new ConfirmDialog.Listener() {
+                    "OK", "Cancel", new ConfirmDialog.Listener() {
                         public void onClose(ConfirmDialog dialog) {
                             if (dialog.isConfirmed()) {
                                 // Confirmed to continue
