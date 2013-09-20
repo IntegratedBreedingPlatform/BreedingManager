@@ -1,64 +1,35 @@
 package org.generationcp.browser.cross.study.h2h.main.dialogs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javassist.bytecode.Descriptor.Iterator;
-
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
-import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
-import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
-import org.generationcp.browser.cross.study.h2h.main.pojos.LocationStudyDto;
-import org.generationcp.browser.germplasm.GermplasmQueries;
-import org.generationcp.browser.germplasm.GermplasmSearchFormComponent;
-import org.generationcp.browser.germplasm.GermplasmSearchResultComponent;
-import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
-import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
-import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.StudyReference;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.workbench.Tool;
-import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class FilterStudyDialog extends Window implements InitializingBean, InternationalizableComponent {
@@ -110,11 +81,11 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         setWidth("800px");
         setHeight("530px");
         setResizable(false);
-        setCaption("Filter by Study pop-up screen");
+        setCaption("Filter by Study");
         // center window within the browser
         center();
         
-        popupLabel = new Label("Filter by Study");
+        popupLabel = new Label("Specify filter by checking or unchecking studies.");
         
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
