@@ -22,6 +22,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -110,8 +113,11 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         germplasmTable = new Table();
         germplasmTable.addContainerProperty("GID", Integer.class, null);
         germplasmTable.addContainerProperty("Name", String.class, null);
+        germplasmTable.addContainerProperty("Location", String.class, null);
+        germplasmTable.addContainerProperty("Breeding Method", String.class, null);
+//        germplasmTable.addContainerProperty("Pedigree", String.class, null);
         germplasmTable.setHeight("200px");
-        germplasmTable.setWidth("550px");
+        germplasmTable.setWidth("750px");
         germplasmTable.setSelectable(true);
         germplasmTable.setMultiSelect(false);
         germplasmTable.setNullSelectionAllowed(false);
@@ -134,7 +140,21 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount, Operation.EQUAL);
             for (int i=0; i<this.germplasms.size(); i++){
                 Germplasm germplasm = germplasms.get(i);
-                this.germplasmTable.addItem(new Object[]{germplasm.getGid(), germplasmName}, germplasm.getGid());
+                Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
+                Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+                
+//                Germplasm femaleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
+//                Germplasm maleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid2());
+//                
+//                String parents = "";
+//                if(femaleGermplasm!=null)
+//                	parents = femaleGermplasm.getPreferredName().getNval(); 
+//                if(femaleGermplasm!=null && maleGermplasm!=null) 
+//                	parents = parents + " X ";
+//                if(maleGermplasm!=null)
+//                	parents = parents + maleGermplasm.getPreferredName().getNval();
+                
+                this.germplasmTable.addItem(new Object[]{germplasm.getGid(), germplasmName, location.getLname(), method.getMname()}, germplasm.getGid());
             }
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block
@@ -146,7 +166,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         // set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("650px");
+        setWidth("850px");
         setHeight("360px");
         setResizable(false);
         
@@ -162,7 +182,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         buttonArea.setSpacing(true);
         buttonArea.addComponent(doneButton);
         
-        mainLayout.addComponent(buttonArea, "top:265px; left:525px;");
+        mainLayout.addComponent(buttonArea, "top:265px; left:725px;");
         
         this.setContent(mainLayout);
     }
