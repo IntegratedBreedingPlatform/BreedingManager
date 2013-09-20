@@ -203,12 +203,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     }
 
     private void readGermplasmListFileInfo(){
-        try {
             listName = getCellStringValue(0,0,1,true);
             listTitle = getCellStringValue(0,1,1,true);
             listType = getCellStringValue(0,2,1,true);
-            listDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,3,1,true));
             
+        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+            try {
+            	listDate = simpleDateFormat.parse(getCellStringValue(0,3,1,true));
+            } catch(ParseException e){
+            	showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
+            }
+                        
             importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
             
             System.out.println("DEBUG | Original Filename:" + originalFilename);
@@ -217,10 +222,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             System.out.println("DEBUG | List Type:" + listType);
             System.out.println("DEBUG | List Date:" + listDate);
             
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        
         //Prepare for next set of data
         while(!rowIsEmpty()){
             currentRow++;

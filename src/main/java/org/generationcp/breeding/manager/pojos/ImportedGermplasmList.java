@@ -23,6 +23,7 @@ public class ImportedGermplasmList {
         this.title = title;
         this.type = type;
         this.date = date;
+        this.importedConditions = new ArrayList<ImportedCondition>();
         this.importedFactors = new ArrayList<ImportedFactor>();
         this.importedConstants = new ArrayList<ImportedConstant>();
         this.importedVariates = new ArrayList<ImportedVariate>();
@@ -94,7 +95,7 @@ public class ImportedGermplasmList {
     }
     
     public void addImportedCondition(ImportedCondition importedCondition){
-        this.importedConditions.add(importedCondition);
+   		this.importedConditions.add(importedCondition);
     }
 
     public List<ImportedFactor> getImportedFactors(){
