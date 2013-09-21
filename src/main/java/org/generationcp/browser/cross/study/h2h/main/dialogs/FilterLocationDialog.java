@@ -183,7 +183,6 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
 
 			}   
 			locationTreeTable.setCollapsed(countryObj, true);
-
 			countryLocationMapping.put(countryName, keyList);
     	}
     }
