@@ -9,7 +9,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
@@ -69,7 +71,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     public static final String PVAL_COLUMN_ID = "ResultsComponent Pval Column ID";
     public static final String MEAN_DIFF_COLUMN_ID = "ResultsComponent Mean Diff Column ID";
 
-    private Table resultsTable;
+    private Table[] resultsTable;
     
     private Label testEntryLabel;
     private Label standardEntryLabel;
@@ -96,6 +98,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     public static DecimalFormat decimalFormmatter = new DecimalFormat("#,##0.00");
     public List<ResultsData> resultsDataList = new ArrayList();
+    private TabSheet mainTabs;
     
     public ResultsComponent(HeadToHeadCrossStudyMain mainScreen){
         this.currentStandardEntryGID = null;
@@ -117,71 +120,97 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         setWidth("1000px");
    
         
-    resultsTable = new Table();
-    resultsTable.setWidth("950px");
-    resultsTable.setHeight("400px");
-    resultsTable.setImmediate(true);
-    resultsTable.setColumnCollapsingAllowed(true);
-    resultsTable.setColumnReorderingAllowed(true);
-    
-    
-    
-    
-    addComponent(resultsTable, "top:70px;left:30px");
     
     exportButton = new Button("Export");
     exportButton.setData(EXPORT_BUTTON_ID);
     exportButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
     exportButton.setEnabled(true);
-    addComponent(exportButton, "top:500px;left:900px");
+    addComponent(exportButton, "top:515px;left:900px");
 
        backButton = new Button("Back");
        backButton.setData(BACK_BUTTON_ID);
        backButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
-       addComponent(backButton, "top:500px;left:820px");
+       addComponent(backButton, "top:515px;left:820px");
     }
     
     private void createEnvironmentsResultTable(List<EnvironmentForComparison> environmentForComparisonList, 
     		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, Observation> observationMap){
     	 
-    	this.resultsTable.removeAllItems();
+    	mainTabs = new TabSheet();    
+    	mainTabs.setWidth("950px");   
+        addComponent(mainTabs, "top:20px;left:10px");
+        
     	this.finalEnvironmentForComparisonList = environmentForComparisonList; 
-    	
-        List<Object> propertyIds = new ArrayList<Object>();
-        for(Object propertyId : resultsTable.getContainerPropertyIds()){
-            propertyIds.add(propertyId);
-        }
-        
-        for(Object propertyId : propertyIds){
-        	resultsTable.removeContainerProperty(propertyId);
-        }
-        
-        resultsTable.addContainerProperty(TEST_COLUMN_ID, String.class, null);
-        resultsTable.addContainerProperty(STANDARD_COLUMN_ID, String.class, null);
-        
-        resultsTable.setColumnHeader(TEST_COLUMN_ID, "Test Entry");
-        resultsTable.setColumnHeader(STANDARD_COLUMN_ID, "Standard Entry");
-        
-        resultsTable.setColumnAlignment(TEST_COLUMN_ID, Table.ALIGN_CENTER);
-        resultsTable.setColumnAlignment(STANDARD_COLUMN_ID, Table.ALIGN_CENTER);
-        
-        
         EnvironmentForComparison envForComparison = environmentForComparisonList.get(0);
-    	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-    	
-    	
+        Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
+        Iterator<TraitForComparison> iter = traitsIterator.iterator();
+        TraitForComparison[] traitsIteratorArray = new  TraitForComparison[traitsIterator.size()];
+        int x = 0;
+        while(iter.hasNext()){
+        	
+        	traitsIteratorArray[x++] = iter.next();
+        }
+        		//(TraitForComparison[]) envForComparison.getTraitAndObservationMap().keySet().l();
+        int traitSize = envForComparison.getTraitAndObservationMap().keySet().size();
+        resultsTable = new Table[traitSize];
+        VerticalLayout[] layouts = new VerticalLayout[traitSize];
+        resultsDataList = new ArrayList();
         
-        for(TraitForComparison traitForCompare : traitsIterator){    
+        for(int counter = 0 ; counter < traitsIteratorArray.length ; counter++){    
+        	TraitForComparison traitForCompare = traitsIteratorArray[counter];
         	if(traitForCompare.isDisplay()){
-	            for(String columnKey : columnIdData){
+        		//layouts[counter] = new VerticalLayout();
+        		//create multiple table       
+        		/*
+        		this.resultsTable[counter].removeAllItems();
+            	
+            	
+                List<Object> propertyIds = new ArrayList<Object>();
+                for(Object propertyId : resultsTable[counter].getContainerPropertyIds()){
+                    propertyIds.add(propertyId);
+                }
+                
+                for(Object propertyId : propertyIds){
+                	resultsTable[counter].removeContainerProperty(propertyId);
+                }
+                */
+        		
+        		resultsTable[counter] = new Table();
+        	    resultsTable[counter].setWidth("900px");
+        	    resultsTable[counter].setHeight("400px");
+        	    resultsTable[counter].setImmediate(true);
+        	    resultsTable[counter].setColumnCollapsingAllowed(true);
+        	    resultsTable[counter].setColumnReorderingAllowed(true);
+        	    
+                resultsTable[counter].addContainerProperty(TEST_COLUMN_ID, String.class, null);
+                resultsTable[counter].addContainerProperty(STANDARD_COLUMN_ID, String.class, null);
+                
+                resultsTable[counter].setColumnHeader(TEST_COLUMN_ID, "Test Entry");
+                resultsTable[counter].setColumnHeader(STANDARD_COLUMN_ID, "Standard Entry");
+                
+                resultsTable[counter].setColumnAlignment(TEST_COLUMN_ID, Table.ALIGN_CENTER);
+                resultsTable[counter].setColumnAlignment(STANDARD_COLUMN_ID, Table.ALIGN_CENTER);
+                
+                for(String columnKey : columnIdData){
 	            	String msg = columnIdDataMsgMap.get(columnKey);
-	            	resultsTable.addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
-	            	resultsTable.setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, traitForCompare.getTraitInfo().getName() + " " + msg);
-	            	resultsTable.setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
+	            	resultsTable[counter].addContainerProperty(traitForCompare.getTraitInfo().getName()+columnKey, String.class, null);
+	            	resultsTable[counter].setColumnHeader(traitForCompare.getTraitInfo().getName()+columnKey, msg);
+	            	resultsTable[counter].setColumnAlignment(traitForCompare.getTraitInfo().getName()+columnKey, Table.ALIGN_CENTER);
 	            	
 	            }
+                layouts[counter] = new VerticalLayout();
+                layouts[counter].setMargin(true);
+                layouts[counter].setSpacing(true);
+
+        		layouts[counter].addComponent(resultsTable[counter]);
+        		mainTabs.addTab(layouts[counter], traitForCompare.getTraitInfo().getName());
+        		
         	}
         }
+        
+        
+        //traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
+    	
         
         for(GermplasmPair germplasmPair : germplasmPairList){
         	String uniquieId = germplasmPair.getGid1() + ":" + germplasmPair.getGid2();
@@ -191,13 +220,12 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	ResultsData resData = new ResultsData(germplasmPair.getGid1(), testEntry, germplasmPair.getGid2(), standardEntry, traitDataMap);
         	
         	
-        	
-        	Item item = resultsTable.addItem(uniquieId);
-        	item.getItemProperty(TEST_COLUMN_ID).setValue(testEntry);
-        	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
-        	traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-        	for(TraitForComparison traitForCompare : traitsIterator){           		
-            	
+        	for(int i = 0 ; i < resultsTable.length ; i++){
+        		Table table = resultsTable[i];
+        		Item item = table.addItem(uniquieId);
+            	item.getItemProperty(TEST_COLUMN_ID).setValue(testEntry);
+            	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
+            	TraitForComparison traitForCompare = traitsIteratorArray[i];
             	if(traitForCompare.isDisplay()){
 	            	for(String columnKey : columnIdData){
 	            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
@@ -206,8 +234,9 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 	                	item.getItemProperty(cellKey).setValue(cellVal);                	
 	                }
             	}
-            	
-            }
+        	}
+        	
+        	
         	resData.setTraitDataMap(traitDataMap);
         	resultsDataList.add(resData);
     	}
@@ -410,7 +439,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
          	
          	                         
              
-                 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsTable,resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
+                 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
                  FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
                  fileDownloadResource.setFilename("HeadToHeadDataList.xls");
 
