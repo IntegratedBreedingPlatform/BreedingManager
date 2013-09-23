@@ -430,14 +430,14 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private void showInvalidFileError(String message){
         if(fileIsValid){
-            source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
+            source.getAccordion().getWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
             fileIsValid = false;
         }
     }
     
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            source.getAccordion().getApplication().getMainWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+            source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
             fileIsValid = false;
         }
     }    
