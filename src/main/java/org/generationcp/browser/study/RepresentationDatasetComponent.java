@@ -22,7 +22,6 @@ import org.generationcp.browser.study.containers.RepresentationDatasetQueryFacto
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.util.DatasetExporter;
 import org.generationcp.browser.study.util.DatasetExporterException;
-import org.generationcp.browser.study.util.TableViewerCellSelectorUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -140,20 +139,29 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     
     // Called by StudyButtonClickListener
     public void openTableViewerAction() {
-    	//ask confirmation from user    	
-    	String confirmDialogCaption=messageSource.getMessage(Message.TABLE_VIEWER_CAPTION);
-        String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER); 
+        try {
+            long expCount = studyDataManager.countExperiments(datasetId);
+            if (expCount > 500) {
+                //ask confirmation from user for generating large datasets           
+                String confirmDialogCaption=messageSource.getMessage(Message.TABLE_VIEWER_CAPTION);
+                String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER); 
 
-        ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
-            messageSource.getMessage(Message.TABLE_VIEWER_OK_LABEL), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
-            private static final long serialVersionUID = 1L;
+                ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
+                    messageSource.getMessage(Message.TABLE_VIEWER_OK_LABEL), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+                    private static final long serialVersionUID = 1L;
 
-            public void onClose(ConfirmDialog dialog) {
-                if (dialog.isConfirmed()) {
-                	openTableViewer();
-                }
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
+                            openTableViewer();
+                        }
+                    }
+                });
+            } else {
+                openTableViewer();
             }
-        });
+        }  catch (MiddlewareQueryException ex) {
+            LOG.error("Error with getting experiments for dataset: " + datasetId + "\n" + ex.toString());
+        }
     }
     
     private void openTableViewer() {
