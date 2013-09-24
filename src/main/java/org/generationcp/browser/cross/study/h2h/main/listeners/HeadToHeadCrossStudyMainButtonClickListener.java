@@ -27,7 +27,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     private Component source;
     private String countryName;
     private String provinceName;
- 
+    private Integer studyId;
     public HeadToHeadCrossStudyMainButtonClickListener(Component source){
         this.source = source;
     }
@@ -40,6 +40,12 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         this.source = source;
         this.countryName = countryName;
         this.provinceName = provinceName;
+    }
+    public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName, String provinceName, Integer studyId){
+        this.source = source;
+        this.countryName = countryName;
+        this.provinceName = provinceName;
+        this.studyId = studyId;
     }
     
     @Override
@@ -170,6 +176,9 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.APPLY_BUTTON_ID)) {
             ((FilterStudyDialog) source).clickApplyButton();
+        } else if (source instanceof FilterStudyDialog
+                && event.getButton().getData().equals(FilterStudyDialog.STUDY_BUTTON_ID)) {
+            ((FilterStudyDialog) source).showStudyInfo(studyId);
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");

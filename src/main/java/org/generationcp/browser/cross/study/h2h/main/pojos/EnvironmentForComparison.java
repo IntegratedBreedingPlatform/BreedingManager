@@ -21,7 +21,7 @@ public class EnvironmentForComparison implements Serializable{
     private String countryName;
     private String studyName;
     private ComboBox weight;
-    private LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
+    private LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
     
     public EnvironmentForComparison(Integer environmentNumber, String locationName, String countryName, String studyName, ComboBox weight) {
         super();
@@ -84,14 +84,14 @@ public class EnvironmentForComparison implements Serializable{
 
 
 
-	public LinkedHashMap<TraitForComparison, List<Observation>> getTraitAndObservationMap() {
+	public LinkedHashMap<TraitForComparison, List<ObservationList>> getTraitAndObservationMap() {
 		return traitAndObservationMap;
 	}
 
 
 
 	public void setTraitAndObservationMap(
-			LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap) {
+			LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap) {
 		this.traitAndObservationMap = traitAndObservationMap;
 	}
     
