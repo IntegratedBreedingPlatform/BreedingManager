@@ -22,6 +22,7 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -106,7 +107,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    private Map<String, Observation> observationMap;
+    private Map<String, ObservationList> observationMap;
     private Map<String, String> germplasmIdNameMap;
     private List<GermplasmPair> finalGermplasmPairs;
     private Map<String, FilterByLocation> filterLocationCountryMap;
@@ -343,7 +344,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		List<Observation> observationList = crossStudyDataManager.getObservationsForTraitOnGermplasms(traitIds, germplasmIdsList, environmentIdsList);
     		for(Observation obs : observationList){
     			String newKey = obs.getId().getTraitId() + ":" + obs.getId().getEnvironmentId() + ":" + obs.getId().getGermplasmId();
-    			observationMap.put(newKey, obs);    			
+    			
+    			ObservationList obsList = observationMap.get(newKey);
+    			if(obsList == null){
+    				obsList = new ObservationList(newKey);
+    			}
+    			obsList.addObservation(obs);
+    			observationMap.put(newKey, obsList);    			
     		}
     	}catch(MiddlewareQueryException ex){
     		 ex.printStackTrace();
@@ -444,12 +451,12 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			        	 
 			        	 
 			             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
-			             LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
+			             LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
 			             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
 			             while(traitForCompareIter.hasNext()){
 			            	 TraitForComparison traitForCompare = traitForCompareIter.next();
 			            	 
-			            	 List<Observation> obsList = new ArrayList(); 
+			            	 List<ObservationList> obsList = new ArrayList(); 
 			                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), finalGermplasmPairs, obsList);
 			                 //item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
 			                 traitAndObservationMap.put(traitForCompare, obsList);
@@ -642,14 +649,15 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     }
     
-    private Integer getTraitCount(TraitInfo traitInfo, int envId, List<GermplasmPair> germplasmPairs, List<Observation> obsList){
+    private Integer getTraitCount(TraitInfo traitInfo, int envId, 
+    		List<GermplasmPair> germplasmPairs, List<ObservationList> obsList){
     	int counter = 0;
     	
     	for(GermplasmPair pair : germplasmPairs){
     		String keyToChecked1 = traitInfo.getId() + ":" +envId + ":" + pair.getGid1();
     		String keyToChecked2 = traitInfo.getId() + ":" +envId + ":" + pair.getGid2();
-    		Observation obs1 = observationMap.get(keyToChecked1);
-    		Observation obs2 = observationMap.get(keyToChecked2);
+    		ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
     		
     		//for test data
     		/*
@@ -666,7 +674,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			
     		}
     	*/
+    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+    			counter++;
+    			obsList.add(obs1);
+    			obsList.add(obs2);	
+    		}
     		
+    		/*
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
     				!obs2.getValue().equalsIgnoreCase("")){
@@ -681,7 +695,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			//if(obs1.getValue())
     		}
     		
-    		
+    		*/
     	}
     	return Integer.valueOf(counter);
     }
@@ -698,15 +712,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	return false;
     }
     
-    private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){
-        if(this.currentTestEntryGID != null && this.currentStandardEntryGID != null){
-            if(this.currentTestEntryGID == currentTestEntryGID && this.currentStandardEntryGID == currentStandardEntryGID){
-                return false;
-            }
-        }
-        
-        return true;
-    }
+   
     
     private void createEnvironmentsTable(Set<TraitInfo> traitInfos){
         List<Object> propertyIds = new ArrayList<Object>();

@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class FilterStudyDialog extends Window implements InitializingBean, InternationalizableComponent {
@@ -40,6 +41,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "FilterStudyDialog Close Button ID";
     public static final String APPLY_BUTTON_ID = "FilterStudyDialog Apply Button ID";
+    public static final String STUDY_BUTTON_ID = "FilterStudyDialog Study Button ID";
        	
     private static final String STUDY_NAME_COLUMN_ID = "FilterStudyDialog Study Name Column Id";
     private static final String STUDY_DESCRIPTION_COLUMN_ID = "FilterStudyDialog Study Description Column Id";
@@ -166,11 +168,24 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
 	   		 	
 	            box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
 	            
-	            Object[] itemObj = new Object[] {studyRef.getName(), studyRef.getDescription(), studyReferenceList.size(), box};
+	        	Button studyNameLink = new Button(studyRef.getName());
+	        	studyNameLink.setImmediate(true);
+	        	studyNameLink.setStyleName(Reindeer.BUTTON_LINK);
+	        	studyNameLink.setData(STUDY_BUTTON_ID);
+	        	studyNameLink.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this, null, null, studyRef.getId()));
+	        	
+	            Object[] itemObj = new Object[] {studyNameLink, studyRef.getDescription(), studyReferenceList.size(), box};
 	            studyTable.addItem(itemObj, studyKey);
 	            checkBoxMap.put(studyKey, box);   		
 	            box.setValue(true);
     	}
+    }
+    
+    public void showStudyInfo(Integer studyId){
+    	//Window parentWindow = this.getWindow();
+    	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId));
+        
+        
     }
     private void initializeStudyTable(){
     	studyTable = new Table();
@@ -184,7 +199,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         studyTable.setNullSelectionAllowed(false);
         
         
-        studyTable.addContainerProperty(STUDY_NAME_COLUMN_ID, String.class, null);
+        studyTable.addContainerProperty(STUDY_NAME_COLUMN_ID, Button.class, null);
         studyTable.addContainerProperty(STUDY_DESCRIPTION_COLUMN_ID, String.class, null);
         studyTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
         studyTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);

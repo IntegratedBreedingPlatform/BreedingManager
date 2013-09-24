@@ -16,6 +16,7 @@ import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
 import org.generationcp.browser.cross.study.h2h.pojos.Result;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
@@ -134,7 +135,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     
     private void createEnvironmentsResultTable(List<EnvironmentForComparison> environmentForComparisonList, 
-    		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, Observation> observationMap){
+    		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, ObservationList> observationMap){
     	 
     	mainTabs = new TabSheet();    
     	mainTabs.setWidth("950px");   
@@ -243,7 +244,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         
     }
     
-    private String getColumnValue(String columnId, GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap, List<EnvironmentForComparison> environmentForComparisonList){
+    private String getColumnValue(String columnId, GermplasmPair germplasmPair, 
+    		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap, List<EnvironmentForComparison> environmentForComparisonList){
     	String val = "0";
     	if(NUM_OF_ENV_COLUMN_ID.equalsIgnoreCase(columnId)){
     		//get the total number of environment where the germplasm pair was observer and the observation value is not null and not empty string
@@ -260,11 +262,13 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	}
     	return val;
     }
-    private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
+    private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
+    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
     	return "-";//decimalFormmatter.format(counter);
     }
-    private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
+    private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
+    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
     	//r * ( summation of [ (Tijk-Silk)/Nijl ] )
     	/*
@@ -291,15 +295,17 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
 			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
 			
-			Observation obs1 = observationMap.get(keyToChecked1);
-    		Observation obs2 = observationMap.get(keyToChecked2);
+			ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(isValidObsValue(obs1, obs2)){
+    		//if(isValidObsValue(obs1, obs2)){
+    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
     			numOfValidEnv++;
-    			double obs1Val = Double.parseDouble(obs1.getValue());
-    			double obs2Val = Double.parseDouble(obs2.getValue());
-    			
+    			//double obs1Val = Double.parseDouble(obs1.getValue());
+    			//double obs2Val = Double.parseDouble(obs2.getValue());
+    			double obs1Val = obs1.getObservationAverage();
+    			double obs2Val = obs2.getObservationAverage();
     			listOfObsVal.add(Double.valueOf(obs1Val - obs2Val));
     			
     		}
@@ -317,7 +323,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 		return decimalFormmatter.format(summation);
     	//return Double.valueOf();
     }
-    private Integer getTotalNumOfSup(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
+    private Integer getTotalNumOfSup(GermplasmPair germplasmPair, 
+    		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	boolean isIncreasing = false;
     	int counter = 0;
     	if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.INCREASING.intValue()){
@@ -335,14 +342,17 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
 			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
 			
-			Observation obs1 = observationMap.get(keyToChecked1);
-    		Observation obs2 = observationMap.get(keyToChecked2);
+			ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
     		
     		
-    		if(isValidObsValue(obs1, obs2)){
+    		//if(isValidObsValue(obs1, obs2)){
+    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
     			
-    			double obs1Val = Double.parseDouble(obs1.getValue());
-    			double obs2Val = Double.parseDouble(obs2.getValue());
+    			//double obs1Val = Double.parseDouble(obs1.getValue());
+    			//double obs2Val = Double.parseDouble(obs2.getValue());
+    			double obs1Val = obs1.getObservationAverage();
+    			double obs2Val = obs2.getObservationAverage();
     			
     			if(isIncreasing){
     				if(obs1Val > obs2Val)
@@ -359,7 +369,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 		
 		return Integer.valueOf(counter);
     }
-    private Integer getTotalNumOfEnv(GermplasmPair germplasmPair, TraitForComparison traitForComparison, Map<String, Observation> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
+    private Integer getTotalNumOfEnv(GermplasmPair germplasmPair, 
+    		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	int counter = 0;
     		
     		
@@ -372,11 +383,11 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
     			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
     			
-    			Observation obs1 = observationMap.get(keyToChecked1);
-        		Observation obs2 = observationMap.get(keyToChecked2);
+    			ObservationList obs1 = observationMap.get(keyToChecked1);
+        		ObservationList obs2 = observationMap.get(keyToChecked2);
         		
-        		
-        		if(isValidObsValue(obs1, obs2)){
+        		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+        		//if(isValidObsValue(obs1, obs2)){
         			counter++;
         			
         		}
@@ -397,7 +408,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	return false;
     }
     
-    private boolean isValidDoubleValue(String val){
+    public static boolean isValidDoubleValue(String val){
     	if(val != null && !val.equalsIgnoreCase("")){
     		try{
     			double d = Double.parseDouble(val);
@@ -408,7 +419,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	}
     	return false;
     }
-    public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair, Map<String, Observation> observationMap){
+    public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair,
+    		Map<String, ObservationList> observationMap){
     	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair, observationMap);
     
     }
