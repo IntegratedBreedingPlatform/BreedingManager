@@ -245,6 +245,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
+        nextButton.setEnabled(false);
         addComponent(nextButton, "top:550px;left:900px");
         
         //setDummyTableData();
@@ -443,9 +444,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private List<GermplasmPair> getGermplasmPairs(){
     	List<GermplasmPair> pairList = new ArrayList();
     	
-    	Iterator iter = entriesTable.getItemIds().iterator();	
-				
-		
+    	Iterator iter = entriesTable.getItemIds().iterator();						
 		while(iter.hasNext()){
 			GermplasmPair germplasmPair = new GermplasmPair();			
 			//we iterate and permutate against the list
