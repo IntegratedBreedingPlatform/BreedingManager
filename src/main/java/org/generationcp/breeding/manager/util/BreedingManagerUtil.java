@@ -8,9 +8,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
 
 import com.vaadin.ui.AbstractField;
@@ -18,117 +16,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 
-public class CrossingManagerUtil{
+public class BreedingManagerUtil{
     
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 
-    private GermplasmDataManager germplasmDataManager;
-
-
-    public CrossingManagerUtil(GermplasmDataManager germplasmDataManager) {
-    this.germplasmDataManager = germplasmDataManager;
-    }
-    
-    /**
-     * Sets Breeding Method of Germplasm based on status of parental lines
-     * 
-     * @param germplasmDataManager
-     * @param germplasm
-     * @param femaleGid
-     * @param maleGid
-     * @return
-     * @throws MiddlewareQueryException
-     */
-    public static Germplasm setCrossingBreedingMethod(GermplasmDataManager germplasmDataManager, Germplasm germplasm,
-                                                        Integer femaleGid, Integer maleGid) throws MiddlewareQueryException{
-        
-        CrossingManagerUtil util = new CrossingManagerUtil(germplasmDataManager);
-        return util.setCrossingBreedingMethod(germplasm, femaleGid, maleGid);
-    }
-
-
-    public Germplasm setCrossingBreedingMethod(Germplasm gc,Integer femaleGid, Integer maleGid) throws MiddlewareQueryException{
-
-    Germplasm gf = germplasmDataManager.getGermplasmByGID(femaleGid); // germplasm female
-    Germplasm gm = germplasmDataManager.getGermplasmByGID(maleGid); // germplasm male
-    Germplasm gff = germplasmDataManager.getGermplasmByGID(gf.getGpid2()); // maternal male grand parent (daddy of female parent)
-    Germplasm gfm =  germplasmDataManager.getGermplasmByGID(gf.getGpid1()); // maternal female grand parent (mommy of female parent)
-    Germplasm gmf = germplasmDataManager.getGermplasmByGID(gm.getGpid1()); //  paternal female grand parent (mommy of male parent)
-    Germplasm gmm =  germplasmDataManager.getGermplasmByGID(gm.getGpid2()); // paternal male grand parent (daddy of male parent)
-
-    if(gf != null && gf.getGnpgs()<0)
-    {
-        if(gm != null && gm.getGnpgs()<0)
-        {
-        gc.setMethodId(101);
-        }
-        else
-        {
-        if(gm != null && gm.getGnpgs()==1)
-        {
-            gc.setMethodId(101);
-        }
-        else if(gm != null && gm.getGnpgs()==2)
-        {
-            if((gmf != null && gmf.getGid()==gf.getGid()) || (gmm != null && gmm.getGid()==gf.getGid()))
-            {
-            gc.setMethodId(107);
-            }
-            else
-            {
-            gc.setMethodId(102);
-            }
-        }
-        else
-        {
-            gc.setMethodId(106);
-        }
-        }
-    }
-    else
-    {
-        if(gm != null && gm.getGnpgs()<0)
-        {
-        if(gf != null && gf.getGnpgs()==1)
-        {
-            gc.setMethodId(101);
-        }
-        else if(gf != null && gf.getGnpgs()==2)
-        {
-            if((gff != null && gff.getGid()==gm.getGid()) || (gfm != null && gfm.getGid()==gm.getGid()))
-            {
-            gc.setMethodId(107);
-            }
-            else
-            {
-            gc.setMethodId(102);
-            }
-        }
-        else
-        {
-            gc.setMethodId(106);
-        }
-        }
-        else
-        {
-        if((gf != null && gf.getMethodId()==101) && (gm != null && gm.getMethodId()==101))
-        {
-            gc.setMethodId(103);
-        }
-        else
-        {
-            gc.setMethodId(106);
-        }
-        }
-    }
-
-    if(gc.getMethodId() == null){
-        gc.setMethodId(101);
-    }
-    return gc;
-
-    }
-    
     public static String generateFemaleandMaleCrossName(String femaleName, String maleName){
         return femaleName + "/" + maleName;
     }

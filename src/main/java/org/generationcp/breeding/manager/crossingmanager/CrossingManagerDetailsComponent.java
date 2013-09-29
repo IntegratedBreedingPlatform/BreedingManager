@@ -18,7 +18,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.util.CrossingManagerUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -248,16 +248,16 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     
     private boolean validateRequiredFields(){
         return 
-        CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListName, 
+        BreedingManagerUtil.validateRequiredStringField(getWindow(), germplasmListName, 
             messageSource, (String) germplasmListNameLabel.getCaption())
         
-        && CrossingManagerUtil.validateRequiredStringField(getWindow(), germplasmListDescription, 
+        && BreedingManagerUtil.validateRequiredStringField(getWindow(), germplasmListDescription, 
             messageSource,     (String) germplasmListDescriptionLabel.getCaption())
             
-        && CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListType, 
+        && BreedingManagerUtil.validateRequiredField(getWindow(), germplasmListType, 
             messageSource, (String) germplasmListTypeLabel.getCaption())
             
-        && CrossingManagerUtil.validateRequiredField(getWindow(), germplasmListDate, 
+        && BreedingManagerUtil.validateRequiredField(getWindow(), germplasmListDate, 
             messageSource, (String) germplasmListDateLabel.getCaption());
     }
 

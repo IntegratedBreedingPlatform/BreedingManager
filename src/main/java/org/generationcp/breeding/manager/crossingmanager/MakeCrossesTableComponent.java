@@ -22,7 +22,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
-import org.generationcp.breeding.manager.util.CrossingManagerUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -184,7 +184,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             
             if (!crossAlreadyExists(parents)){
                 tableCrossesMade.addItem(new Object[] {1,
-                        CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3 
+                        BreedingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3 
                     }, parents); 
                
             }     
@@ -223,7 +223,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
                     String caption3=parent1Source+"/"+parent2Source;
                    
                     tableCrossesMade.addItem(new Object[] {1,
-                                CrossingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3
+                                BreedingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3
                             }, parents);     
                     
                 }
@@ -283,7 +283,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         List<ImportedGermplasmCross> crossesToExport = new ArrayList<ImportedGermplasmCross>();
         
         //get ID of User Defined Field for Crossing Name
-        Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+        Integer crossingNameTypeId = BreedingManagerUtil.getIDForUserDefinedFieldCrossingName(
                         germplasmListManager, getWindow(), messageSource);
         
         int ctr = 1;

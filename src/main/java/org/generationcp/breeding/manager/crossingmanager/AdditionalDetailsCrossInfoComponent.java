@@ -21,7 +21,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
-import org.generationcp.breeding.manager.util.CrossingManagerUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;

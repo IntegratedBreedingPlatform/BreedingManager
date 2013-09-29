@@ -17,8 +17,9 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
-import org.generationcp.breeding.manager.util.CrossingManagerUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -227,7 +228,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     private boolean validateBreedingMethod(){
         if (sameBreedingMethodForAllSelected()){
-            return CrossingManagerUtil.validateRequiredField(getWindow(), crossingMethodComboBox, messageSource, 
+            return BreedingManagerUtil.validateRequiredField(getWindow(), crossingMethodComboBox, messageSource, 
                     messageSource.getMessage(Message.CROSSING_METHOD));
         }
         return true;
@@ -253,7 +254,23 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
                     Integer maleGid = germplasm.getGpid2();
                     
                     try {
-                        CrossingManagerUtil.setCrossingBreedingMethod(germplasmDataManager, germplasm, femaleGid, maleGid);
+                    	Germplasm female = germplasmDataManager.getGermplasmByGID(femaleGid);
+                    	Germplasm male = germplasmDataManager.getGermplasmByGID(maleGid);
+                    	
+                    	Germplasm motherOfFemale = null;
+                    	Germplasm fatherOfFemale = null;
+                    	if(female != null){
+                    		motherOfFemale = germplasmDataManager.getGermplasmByGID(female.getGpid1());
+                    		fatherOfFemale = germplasmDataManager.getGermplasmByGID(female.getGpid2());
+                    	}
+                    	
+                    	Germplasm motherOfMale = null;
+                    	Germplasm fatherOfMale = null;
+                    	if(male != null){
+                    		motherOfMale = germplasmDataManager.getGermplasmByGID(male.getGpid1());
+                    		fatherOfMale = germplasmDataManager.getGermplasmByGID(male.getGpid2());
+                    	}
+                    	CrossingManagerUtil.setCrossingBreedingMethod(germplasm, female, male, motherOfFemale, fatherOfFemale, motherOfMale, fatherOfMale);	
                     } catch (MiddlewareQueryException e) {
                         LOG.error(e.toString() + "\n" + e.getStackTrace());
                         e.printStackTrace();

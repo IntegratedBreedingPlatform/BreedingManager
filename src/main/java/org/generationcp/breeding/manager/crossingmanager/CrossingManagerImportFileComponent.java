@@ -11,7 +11,7 @@ import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUpl
 import org.generationcp.breeding.manager.listimport.SelectGermplasmWindow;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
-import org.generationcp.breeding.manager.util.CrossingManagerUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -327,7 +327,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         String listnameMaleParent=crossingManagerUploader.getImportedGermplasmCrosses().getImportedConditionValue("MALE LIST NAME");
 
         //get ID of User Defined Field for Crossing Name
-        Integer crossingNameTypeId = CrossingManagerUtil.getIDForUserDefinedFieldCrossingName(
+        Integer crossingNameTypeId = BreedingManagerUtil.getIDForUserDefinedFieldCrossingName(
                 germplasmListManager, getWindow(), messageSource);
 
         int ctr = 1;
@@ -340,7 +340,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             String source=listnameFemaleParent+":"+cross.getFemaleEntryId()+"/"+listnameMaleParent+":"+cross.getMaleEntryId();
 
             Name name = new Name();
-            name.setNval(CrossingManagerUtil.generateFemaleandMaleCrossName(
+            name.setNval(BreedingManagerUtil.generateFemaleandMaleCrossName(
                     cross.getFemaleDesignation(), cross.getMaleDesignation())+","+source);
             name.setTypeId(crossingNameTypeId);
 
