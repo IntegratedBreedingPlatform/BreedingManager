@@ -1,12 +1,14 @@
 package org.generationcp.breeding.manager.listimport;
 
-import com.vaadin.ui.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.breeding.manager.listimport.util.GermplasmImportUtil;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -25,10 +27,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import org.vaadin.dialogs.ConfirmDialog;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class SaveGermplasmListComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -237,16 +244,16 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private boolean validateRequiredFields(){
 
           return
-          GermplasmImportUtil.validateRequiredStringField(getWindow(), listNameText,
+          BreedingManagerUtil.validateRequiredStringField(getWindow(), listNameText,
                   messageSource, (String) listNameLabel.getCaption())
 
-          && GermplasmImportUtil.validateRequiredStringField(getWindow(), descriptionText,
+          && BreedingManagerUtil.validateRequiredStringField(getWindow(), descriptionText,
               messageSource,     (String) descriptionLabel.getCaption())
 
-          && GermplasmImportUtil.validateRequiredField(getWindow(), listTypeComboBox,
+          && BreedingManagerUtil.validateRequiredField(getWindow(), listTypeComboBox,
               messageSource, (String) listTypeLabel.getCaption())
 
-          && GermplasmImportUtil.validateRequiredField(getWindow(), listDateField,
+          && BreedingManagerUtil.validateRequiredField(getWindow(), listDateField,
               messageSource, (String) listDateLabel.getCaption());
       }
      //Save records into DB and redirects to GermplasmListBrowser to view created list
