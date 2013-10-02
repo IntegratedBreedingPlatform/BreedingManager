@@ -60,12 +60,12 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 
 	        screenThree = new ResultsComponent(this);
 	        screenTwo = new SetUpTraitFilter(this, screenThree);
-	        screenOne = new SpecifyAndWeighEnvironments(this, screenTwo);
+	        screenOne = new SpecifyAndWeighEnvironments(this, screenTwo, screenThree);
 
 	        firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_WEIGH_ENVIRONMENT));
 	        secondTab = accordion.addTab(screenTwo,  messageSource.getMessage(Message.SETUP_TRAIT_FILTER));
 	        thirdTab = accordion.addTab(screenThree, messageSource.getMessage(Message.DISPLAY_RESULTS));
-
+	        /*
 	        secondTab.setEnabled(false);
 	        thirdTab.setEnabled(false);
 
@@ -83,7 +83,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	                }
 	            }
 	        });
-
+			*/
 	        addComponent(accordion);
 	    }
 	    
@@ -114,6 +114,34 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 			// TODO Auto-generated method stub
 			
 		}
+		
+		public void selectFirstTabAndReset(){
+	    	firstTab.setEnabled(true);
+	        this.accordion.setSelectedTab(screenOne);
+	        //screenOne.setDummyTableData()
+	        secondTab.setEnabled(false);
+	        thirdTab.setEnabled(false);
+	    }
+	    
+	    public void selectFirstTab(){
+	    	firstTab.setEnabled(true);
+	        this.accordion.setSelectedTab(screenOne);
+	        secondTab.setEnabled(false);
+	        thirdTab.setEnabled(false);
+	    }
 
+	    public void selectSecondTab(){
+	        secondTab.setEnabled(true);
+	        firstTab.setEnabled(false);
+	        this.accordion.setSelectedTab(screenTwo);
+	        thirdTab.setEnabled(false);
+	    }
+
+	    public void selectThirdTab(){
+	        firstTab.setEnabled(false);
+	        secondTab.setEnabled(false);
+	        thirdTab.setEnabled(true);
+	        this.accordion.setSelectedTab(screenThree);
+	    }
 
 }
