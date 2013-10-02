@@ -415,7 +415,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     
     /*
-     * Gets sum of all observed values for a trait for the a germplasm in the pair.
+     * Gets mean of all observed values for a trait for a germplasm in the pair.
+     * Mean = sum of observed values for germplasm / # of envt's 
      * If index = 1, get mean for first germplasm in pair. If index = 2, get mean for second germplasm.
      */
     private String getMeanValue(GermplasmPair germplasmPair, int index, TraitForComparison traitForComparison, 
