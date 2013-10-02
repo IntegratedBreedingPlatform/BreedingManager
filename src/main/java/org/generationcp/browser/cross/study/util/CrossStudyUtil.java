@@ -19,7 +19,6 @@ public class CrossStudyUtil {
     	for (EnvironmentWeight weight : EnvironmentWeight.values()){
     		combo.addItem(weight);
     		combo.setItemCaption(weight, weight.getLabel());
-    		
     	}
 			
 		combo.setValue(EnvironmentWeight.IMPORTANT);
