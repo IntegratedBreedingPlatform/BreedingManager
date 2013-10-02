@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.middleware.domain.h2h.Observation;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
 
@@ -20,35 +21,27 @@ public class EnvironmentForComparison implements Serializable{
     private String locationName;
     private String countryName;
     private String studyName;
-    private ComboBox weight;
-    private LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
+    private ComboBox weightComboBox;
+    private Double weight;
+    private LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
     
-    public EnvironmentForComparison(Integer environmentNumber, String locationName, String countryName, String studyName, ComboBox weight) {
+    public EnvironmentForComparison(Integer environmentNumber, String locationName, String countryName, String studyName, ComboBox weightComboBox) {
         super();
         this.environmentNumber = environmentNumber;
         this.locationName = locationName;
         this.countryName = countryName;
         this.studyName = studyName;
-        this.weight = weight;
+        this.weightComboBox = weightComboBox;
     //    this.traitAndNumberOfPairsComparableMap = traitAndNumberOfPairsComparableMap;
     }
-    
-    
 
-
-	public ComboBox getWeight() {
-		return weight;
+	public ComboBox getWeightComboBox() {
+		return weightComboBox;
 	}
 
-
-
-
-	public void setWeight(ComboBox weight) {
-		this.weight = weight;
+	public void setWeightComboBox(ComboBox weightComboBox) {
+		this.weightComboBox = weightComboBox;
 	}
-
-
-
 
 	public Integer getEnvironmentNumber() {
         return environmentNumber;
@@ -82,17 +75,29 @@ public class EnvironmentForComparison implements Serializable{
         this.studyName = studyName;
     }
 
-
-
-	public LinkedHashMap<TraitForComparison, List<Observation>> getTraitAndObservationMap() {
+	public LinkedHashMap<TraitForComparison, List<ObservationList>> getTraitAndObservationMap() {
 		return traitAndObservationMap;
 	}
 
-
-
 	public void setTraitAndObservationMap(
-			LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap) {
+			LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap) {
 		this.traitAndObservationMap = traitAndObservationMap;
+	}
+
+	public Double getWeight() {
+		return this.weight;
+	}
+
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+	
+	public void computeWeight(int total){
+		if (total > 0 && this.weightComboBox != null){
+			EnvironmentWeight envtWeight = (EnvironmentWeight) weightComboBox.getValue();
+			this.weight = (double) envtWeight.getWeight() / total;
+		}
 	}
     
     

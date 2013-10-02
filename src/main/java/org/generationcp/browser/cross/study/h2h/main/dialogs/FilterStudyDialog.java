@@ -1,60 +1,32 @@
 package org.generationcp.browser.cross.study.h2h.main.dialogs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javassist.bytecode.Descriptor.Iterator;
-
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
-import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
-import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
-import org.generationcp.browser.cross.study.h2h.main.pojos.LocationStudyDto;
-import org.generationcp.browser.germplasm.GermplasmQueries;
-import org.generationcp.browser.germplasm.GermplasmSearchFormComponent;
-import org.generationcp.browser.germplasm.GermplasmSearchResultComponent;
-import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
-import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
-import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.StudyReference;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.workbench.Tool;
-import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -69,6 +41,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "FilterStudyDialog Close Button ID";
     public static final String APPLY_BUTTON_ID = "FilterStudyDialog Apply Button ID";
+    public static final String STUDY_BUTTON_ID = "FilterStudyDialog Study Button ID";
        	
     private static final String STUDY_NAME_COLUMN_ID = "FilterStudyDialog Study Name Column Id";
     private static final String STUDY_DESCRIPTION_COLUMN_ID = "FilterStudyDialog Study Description Column Id";
@@ -110,11 +83,11 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         setWidth("800px");
         setHeight("530px");
         setResizable(false);
-        setCaption("Filter by Study pop-up screen");
+        setCaption("Filter by Study");
         // center window within the browser
         center();
         
-        popupLabel = new Label("Filter by Study");
+        popupLabel = new Label("Specify filter by checking or unchecking studies.");
         
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
@@ -195,11 +168,24 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
 	   		 	
 	            box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, filterLocationDto));
 	            
-	            Object[] itemObj = new Object[] {studyRef.getName(), studyRef.getDescription(), studyReferenceList.size(), box};
+	        	Button studyNameLink = new Button(studyRef.getName());
+	        	studyNameLink.setImmediate(true);
+	        	studyNameLink.setStyleName(Reindeer.BUTTON_LINK);
+	        	studyNameLink.setData(STUDY_BUTTON_ID);
+	        	studyNameLink.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this, null, null, studyRef.getId()));
+	        	
+	            Object[] itemObj = new Object[] {studyNameLink, studyRef.getDescription(), studyReferenceList.size(), box};
 	            studyTable.addItem(itemObj, studyKey);
 	            checkBoxMap.put(studyKey, box);   		
 	            box.setValue(true);
     	}
+    }
+    
+    public void showStudyInfo(Integer studyId){
+    	//Window parentWindow = this.getWindow();
+    	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId));
+        
+        
     }
     private void initializeStudyTable(){
     	studyTable = new Table();
@@ -213,7 +199,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         studyTable.setNullSelectionAllowed(false);
         
         
-        studyTable.addContainerProperty(STUDY_NAME_COLUMN_ID, String.class, null);
+        studyTable.addContainerProperty(STUDY_NAME_COLUMN_ID, Button.class, null);
         studyTable.addContainerProperty(STUDY_DESCRIPTION_COLUMN_ID, String.class, null);
         studyTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
         studyTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);

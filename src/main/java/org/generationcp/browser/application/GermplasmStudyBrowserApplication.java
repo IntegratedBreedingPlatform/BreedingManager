@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
+import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
 import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
@@ -72,6 +73,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String GERMPLASMLIST_DETAILS_PREFIX = "germplasmlist-";
     public static final String HEAD_TO_HEAD_CROSS_STUDY_QUERY_WINDOW_NAME = "h2h-query";
     public static final String HEAD_TO_HEAD_COMPARISON_WINDOW_NAME = "Head_to_head_comparison";
+    public static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME = "Query_For_Adapted_Germplasm";
 
     private Window window;
 
@@ -291,14 +293,22 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                  this.addWindow(headToHeadQueryToolWindow);
                  return headToHeadQueryToolWindow;
              } else if(HEAD_TO_HEAD_COMPARISON_WINDOW_NAME.equals(name)) {
-                      Window headToHeadQueryToolWindow = new Window("Cross Study: Head-to-Head Comparison");
-                      // Browser
-                      headToHeadQueryToolWindow.setName(HEAD_TO_HEAD_COMPARISON_WINDOW_NAME);
-                      headToHeadQueryToolWindow.setSizeUndefined();
-                      headToHeadQueryToolWindow.addComponent(new HeadToHeadCrossStudyMain());
-                      this.addWindow(headToHeadQueryToolWindow);
-                      return headToHeadQueryToolWindow;
-                  }
+                  Window headToHeadQueryToolWindow = new Window("Cross Study: Head-to-Head Comparison");
+                  // Browser
+                  headToHeadQueryToolWindow.setName(HEAD_TO_HEAD_COMPARISON_WINDOW_NAME);
+                  headToHeadQueryToolWindow.setSizeUndefined();
+                  headToHeadQueryToolWindow.addComponent(new HeadToHeadCrossStudyMain());
+                  this.addWindow(headToHeadQueryToolWindow);
+                  return headToHeadQueryToolWindow;
+              } else if(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME.equals(name)) {
+                  Window queryForAdaptedGermplasmToolWindow = new Window("Cross Study: Query-for-Adapted Germplasm");
+                  // Browser
+                  queryForAdaptedGermplasmToolWindow.setName(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME);
+                  queryForAdaptedGermplasmToolWindow.setSizeUndefined();
+                  queryForAdaptedGermplasmToolWindow.addComponent(new QueryForAdaptedGermplasmMain());
+                  this.addWindow(queryForAdaptedGermplasmToolWindow);
+                  return queryForAdaptedGermplasmToolWindow;
+              }
 
         }
 

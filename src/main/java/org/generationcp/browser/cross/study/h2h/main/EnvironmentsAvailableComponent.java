@@ -14,6 +14,7 @@ import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.Message;
 
+import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
@@ -22,7 +23,9 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
+import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
@@ -90,12 +93,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Button filterByLocation;
     private Button filterByStudy;
     private Button addEnvironment;
-    
-    public static final Integer  IMPORTANT = 1;
-    public static final Integer  CRITICAL = 2;
-    public static final Integer  DESIRABLE = 3;
-    public static final Integer  IGNORED = 4;
-    
+       
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private Map<String, EnvironmentForComparison> environmentCheckBoxComparisonMap;
     private Set<String> environmentForComparison; //will contain all the tagged row
@@ -106,7 +104,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    private Map<String, Observation> observationMap;
+    private Map<String, ObservationList> observationMap;
     private Map<String, String> germplasmIdNameMap;
     private List<GermplasmPair> finalGermplasmPairs;
     private Map<String, FilterByLocation> filterLocationCountryMap;
@@ -219,28 +217,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
 
     private ComboBox getWeightComboBox(){
-    	ComboBox combo = new ComboBox();
-    	combo.setNullSelectionAllowed(false);
-    	combo.setTextInputAllowed(false);
-    	combo.setImmediate(true);
-    	
-		combo.addItem(IMPORTANT);
-		combo.setItemCaption(IMPORTANT,"Important");
-		
-		combo.addItem(CRITICAL);
-		combo.setItemCaption(CRITICAL,"Critical");
-		
-		combo.addItem(DESIRABLE);
-		combo.setItemCaption(DESIRABLE,"Desirable");
-		
-		combo.addItem(IGNORED);
-		combo.setItemCaption(IGNORED,"Ignored");
-			
-		combo.setValue(IMPORTANT);
-		
-		combo.setEnabled(false);
-		return combo;
-		
+    	return CrossStudyUtil.getWeightComboBox();
     }
     
     public void clickCheckBox(String key, Component combo, boolean boolVal){
@@ -343,7 +320,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		List<Observation> observationList = crossStudyDataManager.getObservationsForTraitOnGermplasms(traitIds, germplasmIdsList, environmentIdsList);
     		for(Observation obs : observationList){
     			String newKey = obs.getId().getTraitId() + ":" + obs.getId().getEnvironmentId() + ":" + obs.getId().getGermplasmId();
-    			observationMap.put(newKey, obs);    			
+    			
+    			ObservationList obsList = observationMap.get(newKey);
+    			if(obsList == null){
+    				obsList = new ObservationList(newKey);
+    			}
+    			obsList.addObservation(obs);
+    			observationMap.put(newKey, obsList);    			
     		}
     	}catch(MiddlewareQueryException ex){
     		 ex.printStackTrace();
@@ -444,12 +427,12 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 			        	 
 			        	 
 			             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
-			             LinkedHashMap<TraitForComparison, List<Observation>> traitAndObservationMap = new LinkedHashMap();
+			             LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
 			             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
 			             while(traitForCompareIter.hasNext()){
 			            	 TraitForComparison traitForCompare = traitForCompareIter.next();
 			            	 
-			            	 List<Observation> obsList = new ArrayList(); 
+			            	 List<ObservationList> obsList = new ArrayList(); 
 			                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), finalGermplasmPairs, obsList);
 			                 //item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
 			                 traitAndObservationMap.put(traitForCompare, obsList);
@@ -642,14 +625,15 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     }
     
-    private Integer getTraitCount(TraitInfo traitInfo, int envId, List<GermplasmPair> germplasmPairs, List<Observation> obsList){
+    private Integer getTraitCount(TraitInfo traitInfo, int envId, 
+    		List<GermplasmPair> germplasmPairs, List<ObservationList> obsList){
     	int counter = 0;
     	
     	for(GermplasmPair pair : germplasmPairs){
     		String keyToChecked1 = traitInfo.getId() + ":" +envId + ":" + pair.getGid1();
     		String keyToChecked2 = traitInfo.getId() + ":" +envId + ":" + pair.getGid2();
-    		Observation obs1 = observationMap.get(keyToChecked1);
-    		Observation obs2 = observationMap.get(keyToChecked2);
+    		ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
     		
     		//for test data
     		/*
@@ -666,7 +650,17 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			
     		}
     	*/
+    		//System.out.println((obs1 != null && obs2 != null));
+    		if(obs1 != null && obs2 != null){    			
+		    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+		    			counter++;
+		    			obsList.add(obs1);
+		    			obsList.add(obs2);	
+		    		}    			
+	    		
+    		}
     		
+    		/*
     		if(obs1 != null && obs2 != null && obs1.getValue() != null 
     				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
     				!obs2.getValue().equalsIgnoreCase("")){
@@ -681,7 +675,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			//if(obs1.getValue())
     		}
     		
-    		
+    		*/
     	}
     	return Integer.valueOf(counter);
     }
@@ -698,15 +692,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	return false;
     }
     
-    private boolean areCurrentGIDsDifferentFromGiven(Integer currentTestEntryGID, Integer currentStandardEntryGID){
-        if(this.currentTestEntryGID != null && this.currentStandardEntryGID != null){
-            if(this.currentTestEntryGID == currentTestEntryGID && this.currentStandardEntryGID == currentStandardEntryGID){
-                return false;
-            }
-        }
-        
-        return true;
-    }
+   
     
     private void createEnvironmentsTable(Set<TraitInfo> traitInfos){
         List<Object> propertyIds = new ArrayList<Object>();
@@ -747,8 +733,23 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	List<EnvironmentForComparison> toBeCompared = new ArrayList();
     	    	
+    	int total = 0;
+    	//get the total of weights
     	for(String sKey : environmentForComparison){
-    		toBeCompared.add(environmentCheckBoxComparisonMap.get(sKey));
+    		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
+    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
+    		total += envtWeight.getWeight();
+    	}
+    	LOG.debug("TOTAL = " + total);
+    	
+    	// compute the weight percentages
+    	for (String sKey : environmentForComparison){
+    		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
+    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
+    		envt.computeWeight(total);
+    		
+    		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
+    		toBeCompared.add(envt);
     	}
     	
     	/*

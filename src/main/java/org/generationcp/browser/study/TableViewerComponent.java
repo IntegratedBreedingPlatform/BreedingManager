@@ -74,7 +74,7 @@ public class TableViewerComponent extends Window implements InitializingBean, In
         // enable basic edit options on the specified table
         displayTable.setColumnCollapsingAllowed(true);
         displayTable.setColumnReorderingAllowed(true);
-        displayTable.setPageLength(20); // number of rows to display in the Table
+        displayTable.setPageLength(0); // display all rows of the table to the browser
         displayTable.setSizeFull(); // to make scrollbars appear on the Table component
     }
     

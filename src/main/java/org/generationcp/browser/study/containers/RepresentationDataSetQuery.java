@@ -13,7 +13,7 @@
 package org.generationcp.browser.study.containers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +95,7 @@ public class RepresentationDataSetQuery implements Query{
     @Override
     public List<Item> loadItems(int start, int numOfRows) {
         List<Item> items = new ArrayList<Item>();
-        Map<Integer, Item> itemMap = new HashMap<Integer, Item>();
+        Map<Integer, Item> itemMap = new LinkedHashMap<Integer, Item>();
         List<Experiment> experiments = new ArrayList<Experiment>();
         
         try {

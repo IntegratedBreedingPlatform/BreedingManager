@@ -98,7 +98,7 @@ public class HeadToHeadDataListExport {
         return styles;
     }
    
-    public FileOutputStream exportHeadToHeadDataListExcel(String filename, Table tableEntries, List<ResultsData> resultDataList,
+    public FileOutputStream exportHeadToHeadDataListExcel(String filename, List<ResultsData> resultDataList,
     		Set<TraitForComparison> traitsIterator, String[] columnIdData, Map<String, String> columnIdDataMsgMap) throws HeadToHeadDataListExportException{
     	
     	
@@ -179,7 +179,8 @@ public class HeadToHeadDataListExport {
 		        		//String numVal = (String)item.getItemProperty(traitColId).getValue();
 		        		
 		        		String numVal = (String) resData.getTraitDataMap().get(traitColId);
-		        		
+		        		if(numVal == null)
+		        			numVal = "0";
 		        		numVal = numVal.replaceAll(",", "");
 		        		
 		        		cell = rowData.createCell(cellIndex++);

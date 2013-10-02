@@ -97,6 +97,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     private Set<Integer> germplasmIds;
     private List<GermplasmPair> finalGermplasmPair;
+    private List<GermplasmPair> prevfinalGermplasmPair;
+    private List<GermplasmPair> environmentPairList;
     public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentsAvailableComponent nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
@@ -197,10 +199,42 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitEnvironmentMap = new HashMap();
         trialEnvironmentMap = new HashMap();
         germplasmIds = new HashSet();
-        List<GermplasmPair> environmentPairList;
+        //List<GermplasmPair> environmentPairList;
         finalGermplasmPair = germplasmPairList;
+        boolean doRefresh = false;
+        if(prevfinalGermplasmPair == null){
+        	doRefresh = true;
+        }else{
+        	//we checked if its the same
+        	if(prevfinalGermplasmPair.size() == finalGermplasmPair.size()){
+        		doRefresh = false;
+        		for(GermplasmPair pairOld : prevfinalGermplasmPair){
+        			boolean isMatched = false;
+        			for(GermplasmPair pairNew : finalGermplasmPair){
+        				if(pairOld.getGid1() == pairNew.getGid1() && pairOld.getGid2() == pairNew.getGid2()){
+        					isMatched = true;
+        					break;
+        				}
+            		}
+        			if(isMatched == false){
+        				//meaning new pair
+        				doRefresh = true;
+        				break;
+        			}
+        		}
+        	}else{
+        		doRefresh = true;
+        	}
+        	
+        }
+        
 		try {
-			environmentPairList = crossStudyDataManager.getEnvironmentsForGermplasmPairs(germplasmPairList);
+			
+			if(doRefresh){
+				//only call when need to refresh
+				prevfinalGermplasmPair = germplasmPairList;
+				environmentPairList = crossStudyDataManager.getEnvironmentsForGermplasmPairs(germplasmPairList);
+			}
 		
 	        for(GermplasmPair pair : environmentPairList){
 	    		CheckBox box = new CheckBox();    	
@@ -267,6 +301,11 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 	        	//traitMaps.put(comboBox, traitsTable.getItem(tableId));
 	        	traitMaps.put(comboBox, info);
 	        	
+	        }
+	        
+	        if(traitsTable.getItemIds().isEmpty()){
+	        	MessageNotifier.showWarning(getWindow(), "Warning!", "No environments and traits were found for the pairs of germplasm entries you have specified.", Notification.POSITION_CENTERED);
+				return;
 	        }
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
