@@ -300,14 +300,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		
     		
     		//if(isValidObsValue(obs1, obs2)){
-    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-    			numOfValidEnv++;
-    			//double obs1Val = Double.parseDouble(obs1.getValue());
-    			//double obs2Val = Double.parseDouble(obs2.getValue());
-    			double obs1Val = obs1.getObservationAverage();
-    			double obs2Val = obs2.getObservationAverage();
-    			listOfObsVal.add(Double.valueOf(obs1Val - obs2Val));
-    			
+    		if(obs1 != null && obs2 != null){
+	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+	    			numOfValidEnv++;
+	    			//double obs1Val = Double.parseDouble(obs1.getValue());
+	    			//double obs2Val = Double.parseDouble(obs2.getValue());
+	    			double obs1Val = obs1.getObservationAverage();
+	    			double obs2Val = obs2.getObservationAverage();
+	    			listOfObsVal.add(Double.valueOf(obs1Val - obs2Val));
+	    			
+	    		}
     		}
 			
 		}
@@ -347,22 +349,24 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		
     		
     		//if(isValidObsValue(obs1, obs2)){
-    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-    			
-    			//double obs1Val = Double.parseDouble(obs1.getValue());
-    			//double obs2Val = Double.parseDouble(obs2.getValue());
-    			double obs1Val = obs1.getObservationAverage();
-    			double obs2Val = obs2.getObservationAverage();
-    			
-    			if(isIncreasing){
-    				if(obs1Val > obs2Val)
-    					counter++;
-    			}else{
-    				if(obs1Val < obs2Val)
-    					counter++;
-    			}
-    			
-    			
+    		if(obs1 != null && obs2 != null){
+	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+	    			
+	    			//double obs1Val = Double.parseDouble(obs1.getValue());
+	    			//double obs2Val = Double.parseDouble(obs2.getValue());
+	    			double obs1Val = obs1.getObservationAverage();
+	    			double obs2Val = obs2.getObservationAverage();
+	    			
+	    			if(isIncreasing){
+	    				if(obs1Val > obs2Val)
+	    					counter++;
+	    			}else{
+	    				if(obs1Val < obs2Val)
+	    					counter++;
+	    			}
+	    			
+	    			
+	    		}
     		}
 			
 		}
@@ -385,11 +389,12 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     			
     			ObservationList obs1 = observationMap.get(keyToChecked1);
         		ObservationList obs2 = observationMap.get(keyToChecked2);
-        		
-        		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-        		//if(isValidObsValue(obs1, obs2)){
-        			counter++;
-        			
+        		if(obs1 != null && obs2 != null){
+	        		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+	        		//if(isValidObsValue(obs1, obs2)){
+	        			counter++;
+	        			
+	        		}
         		}
     			
     		}
