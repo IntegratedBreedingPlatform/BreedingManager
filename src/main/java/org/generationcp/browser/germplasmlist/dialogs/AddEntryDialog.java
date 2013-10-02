@@ -118,6 +118,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private GermplasmQueries gQuery;
     private GermplasmIndexContainer dataResultIndexContainer;
 
+    private Germplasm selectedGermplasm;
 
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
@@ -179,6 +180,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                     resultComponent.setValue(resultComponent.firstItemId());
                     resultComponent.select(resultComponent.firstItemId());
                     int gid = Integer.valueOf(resultComponent.getItem(resultComponent.firstItemId()).getItemProperty(GID).toString());
+                    try {
+						selectedGermplasm = germplasmDataManager.getGermplasmByGID(gid);
+					} catch (MiddlewareQueryException e) {
+						selectedGermplasm = null;
+					}
                     this.selectedGid = gid;
                     withSelectedGid=true;
                     this.nextButton.setEnabled(true);
@@ -460,7 +466,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         germplasm.setUserId(userId);
         
         if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-        	germplasm.setGpid1(this.selectedGid);
+        	if(selectedGermplasm != null)
+        		germplasm.setGpid1(selectedGermplasm.getGpid1());
             germplasm.setGpid2(this.selectedGid);
         } else {
             germplasm.setGpid2(Integer.valueOf(0));
