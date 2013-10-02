@@ -270,11 +270,11 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
     		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
-    	//r * ( summation of [ (Tijk-Silk)/Nijl ] )
+    	//r * ( summation of [ Ek (Tijk-Silk)/Nijl ] )
     	/*
     	 * Nijl = is the number of environment where both tijk and silk is not null and not empty string
     	 * r = 1 if increasing and -1 if decreasing
-    	 * 
+    	 * Ek - environment weight
     	 */
     	
     	boolean isIncreasing = false;
@@ -307,8 +307,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 	    			//double obs2Val = Double.parseDouble(obs2.getValue());
 	    			double obs1Val = obs1.getObservationAverage();
 	    			double obs2Val = obs2.getObservationAverage();
-	    			listOfObsVal.add(Double.valueOf(obs1Val - obs2Val));
-	    			
+	    			double envWeight = envForComparison.getWeight(); 
+	    			listOfObsVal.add(Double.valueOf( envWeight * (obs1Val - obs2Val) ));
 	    		}
     		}
 			
