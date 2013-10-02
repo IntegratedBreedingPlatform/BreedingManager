@@ -94,7 +94,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     private HeadToHeadCrossStudyMain mainScreen;
     private List<EnvironmentForComparison> finalEnvironmentForComparisonList;
     
-    private String[] columnIdData = {NUM_OF_ENV_COLUMN_ID,NUM_SUP_COLUMN_ID,PVAL_COLUMN_ID,MEAN_DIFF_COLUMN_ID};
+    private String[] columnIdData = {NUM_OF_ENV_COLUMN_ID,NUM_SUP_COLUMN_ID,MEAN_TEST_COLUMN_ID,
+    		MEAN_STD_COLUMN_ID, PVAL_COLUMN_ID,MEAN_DIFF_COLUMN_ID};
     private Map<String, String> columnIdDataMsgMap = new HashMap();
     
     public static DecimalFormat decimalFormmatter = new DecimalFormat("#,##0.00");
@@ -109,6 +110,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         //initialize the data map
         columnIdDataMsgMap.put(NUM_OF_ENV_COLUMN_ID, "#Env");
         columnIdDataMsgMap.put(NUM_SUP_COLUMN_ID, "#Sup");
+        columnIdDataMsgMap.put(MEAN_TEST_COLUMN_ID, "MeanTest");
+        columnIdDataMsgMap.put(MEAN_STD_COLUMN_ID, "MeanStd");
         columnIdDataMsgMap.put(PVAL_COLUMN_ID, "Pval");
         columnIdDataMsgMap.put(MEAN_DIFF_COLUMN_ID, "MeanDiff");
         
@@ -254,7 +257,14 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		
     	}else if(NUM_SUP_COLUMN_ID.equalsIgnoreCase(columnId)){
     		val = getTotalNumOfSup(germplasmPair, traitForComparison, observationMap,environmentForComparisonList).toString();
-    	}else if(PVAL_COLUMN_ID.equalsIgnoreCase(columnId)){
+    		
+    	} else if(MEAN_TEST_COLUMN_ID.equalsIgnoreCase(columnId)){
+    		val = getMeanValue(germplasmPair, 1, traitForComparison, observationMap, environmentForComparisonList).toString();
+    		
+    	} else if(MEAN_STD_COLUMN_ID.equalsIgnoreCase(columnId)){
+    		val = getMeanValue(germplasmPair, 2, traitForComparison, observationMap, environmentForComparisonList).toString();
+    		
+    	} else if(PVAL_COLUMN_ID.equalsIgnoreCase(columnId)){
     		val = getPval(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
     		
     	}else if(MEAN_DIFF_COLUMN_ID.equalsIgnoreCase(columnId)){
@@ -262,6 +272,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	}
     	return val;
     }
+    
     private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
     		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
     	double counter = 0;
@@ -403,6 +414,52 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	return Integer.valueOf(counter);
     }
     
+    /*
+     * Gets sum of all observed values for a trait for the a germplasm in the pair.
+     * If index = 1, get mean for first germplasm in pair. If index = 2, get mean for second germplasm.
+     */
+    private String getMeanValue(GermplasmPair germplasmPair, int index, TraitForComparison traitForComparison, 
+    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
+    	double counter = 0;
+    	int numOfValidEnv = 0;
+    	double summation = 0;
+    	String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
+		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
+		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
+
+		for(EnvironmentForComparison envForComparison: environmentForComparisonList){			
+			String envId = envForComparison.getEnvironmentNumber().toString();
+			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
+			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
+			
+			ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
+    		
+    		// get only values for envt's where trait has been observed for both germplasms
+    		if(obs1 != null && obs2 != null){
+	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+	    			numOfValidEnv++;
+	    			
+	    			if (index == 1){
+	    				summation += obs1.getObservationAverage();
+	    			} else if (index == 2){
+	    				summation += obs2.getObservationAverage();
+	    			}
+	    			
+	    		}
+    		}
+			
+		}
+		
+		double mean = 0;
+		if (numOfValidEnv > 0){
+			mean = summation / numOfValidEnv;
+		}
+		
+		return decimalFormmatter.format(mean);
+    }
+
+    
     private boolean isValidObsValue(Observation obs1, Observation obs2){
     	if(obs1 != null && obs2 != null && obs1.getValue() != null 
 				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
@@ -474,7 +531,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	//MessageNotifier.showWarning(getWindow(), "Warning!", "Do the export now", Notification.POSITION_CENTERED);
         return;
     }
-    
+        
     public void backButtonClickAction(){
         this.mainScreen.selectThirdTab();
     }
