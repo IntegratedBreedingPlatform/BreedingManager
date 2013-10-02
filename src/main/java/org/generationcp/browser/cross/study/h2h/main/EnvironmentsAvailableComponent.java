@@ -674,10 +674,14 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			
     		}
     	*/
-    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-    			counter++;
-    			obsList.add(obs1);
-    			obsList.add(obs2);	
+    		//System.out.println((obs1 != null && obs2 != null));
+    		if(obs1 != null && obs2 != null){    			
+		    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
+		    			counter++;
+		    			obsList.add(obs1);
+		    			obsList.add(obs2);	
+		    		}    			
+	    		
     		}
     		
     		/*
