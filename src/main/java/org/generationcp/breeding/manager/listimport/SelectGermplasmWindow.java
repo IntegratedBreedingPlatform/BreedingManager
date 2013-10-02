@@ -16,6 +16,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -35,9 +36,11 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 
 /**
@@ -75,22 +78,26 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     private int germplasmIndex;
     private Germplasm germplasm;
     private SpecifyGermplasmDetailsComponent source;
+    private Boolean viaToolURL;
     
     private Label selectGermplasmLabel;
     
-    public SelectGermplasmWindow() {
+    public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent, String germplasmName2, int i, Germplasm germplasm2) {
         this.parentList = new ListSelect();
+        this.viaToolURL = false;
     }
-    
+     
     public SelectGermplasmWindow(String germplasmName) {
         this.germplasmName = germplasmName;
+        this.viaToolURL = false;
     }    
     
-    public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent source, String germplasmName, int index, Germplasm germplasm) {
+    public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent source, String germplasmName, int index, Germplasm germplasm, Boolean viaToolURL) {
         this.germplasmName = germplasmName;
         this.germplasmIndex = index;
         this.germplasm = germplasm;
         this.source = source;
+        this.viaToolURL = viaToolURL;
     }
     
     protected void assemble() {
@@ -111,7 +118,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         doneButton.setEnabled(false);
         doneButton.setData(DONE_BUTTON_ID);
         germplasmTable = new Table();
-        germplasmTable.addContainerProperty("GID", Integer.class, null);
+        germplasmTable.addContainerProperty("GID", Button.class, null);
         germplasmTable.addContainerProperty("Name", String.class, null);
         germplasmTable.addContainerProperty("Location", String.class, null);
         germplasmTable.addContainerProperty("Breeding Method", String.class, null);
@@ -139,9 +146,13 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(germplasmName, Operation.EQUAL);
             this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount, Operation.EQUAL);
             for (int i=0; i<this.germplasms.size(); i++){
+            	
                 Germplasm germplasm = germplasms.get(i);
                 Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
                 Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+
+            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
+                gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
                 
 //                Germplasm femaleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
 //                Germplasm maleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid2());
@@ -154,7 +165,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 //                if(maleGermplasm!=null)
 //                	parents = parents + maleGermplasm.getPreferredName().getNval();
                 
-                this.germplasmTable.addItem(new Object[]{germplasm.getGid(), germplasmName, location.getLname(), method.getMname()}, germplasm.getGid());
+                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname()}, germplasm.getGid());
             }
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block

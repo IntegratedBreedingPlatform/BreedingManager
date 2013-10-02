@@ -91,10 +91,13 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
      private GermplasmListManager germplasmListManager;
     @Autowired
      private WorkbenchDataManager workbenchDataManager;
-        
-    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion){
+    
+    private Boolean viaToolURL;
+    
+    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion, Boolean viaToolURL){
         this.source = source;
         this.accordion = accordion;
+        this.viaToolURL = viaToolURL;
     }
 
     public Table getGermplasmDetailsTable(){
@@ -126,7 +129,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     }
 
     public void displaySelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
-        SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm);
+        SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, viaToolURL);
         this.getWindow().addWindow(selectGermplasmWindow);
     }
     
