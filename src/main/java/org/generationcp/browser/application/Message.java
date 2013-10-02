@@ -281,6 +281,7 @@ public enum Message {
      ,HEAD_TO_HEAD_SELECT_TRAITS
      ,HEAD_TO_HEAD_SELECT_TRAITS_REMINDER
      
-    
-     
+     //Query for Adapted Germplasm
+     ,SPECIFY_WEIGH_ENVIRONMENT
+     ,SETUP_TRAIT_FILTER
 }
