@@ -1,0 +1,8 @@
+#Workbench hibernate configuration 
+workbench.driver=com.mysql.jdbc.Driver
+workbench.url=jdbc:mysql://localhost:3306/workbench
+workbench.host=localhost
+workbench.port=3306
+workbench.dbname=workbench
+workbench.username=root
+workbench.password=password
