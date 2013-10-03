@@ -154,51 +154,18 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
 
-                Germplasm pGermplasm = germplasm;
-                Germplasm previousPGermplasm;
-                while(pGermplasm.getGnpgs()<2){
-                	System.out.println("pGermplasm GNPGS: "+pGermplasm.getGnpgs());
-                	previousPGermplasm = pGermplasm;
-                	pGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid2());
-                	if(pGermplasm==null || pGermplasm.getGnpgs()==0){
-                		pGermplasm = previousPGermplasm;
-                		break;
-                	}
-                }
                 
-                String parentsString = "";
-
-                if(pGermplasm!=null){
-	                Germplasm femaleGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid1());
-	                Germplasm maleGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid2());
-	
-	                String femaleNameString = "";
-	                String maleNameString = "";
-	                
-	                if(femaleGermplasm!=null){
-	                    femaleNameString = femaleGermplasm.getPreferredName() != null ? femaleGermplasm.getPreferredName().getNval() : "[No Preferred Name]";
-	                } else {
-	                	femaleNameString = "[Not Available]";
-	                }
-	                                
-	                if(maleGermplasm!=null){
-	                    maleNameString = maleGermplasm.getPreferredName() != null ? maleGermplasm.getPreferredName().getNval() : "[No Preferred Name]";;
-	                } else {
-	                	maleNameString = "[Not Available]";
-	                }
-	                
-	                if(femaleNameString!=""){
-	                	parentsString = femaleNameString;
-	                }
-	                if(femaleNameString!="" && maleNameString!=""){ 
-	                	parentsString = parentsString + "/";
-	                }
-	                if(maleNameString!=""){
-	                	parentsString = parentsString + maleNameString;
-	                }
-                }
+                String crossExpansion = "";
+                if(germplasm!=null){
+                	try {
+                		if(germplasmDataManager!=null)
+                			crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                	} catch(MiddlewareQueryException ex){
+                        crossExpansion = "-";
+                    }
+            	}
                 
-                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname(), parentsString}, germplasm.getGid());
+                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname(), crossExpansion}, germplasm.getGid());
             }
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block
