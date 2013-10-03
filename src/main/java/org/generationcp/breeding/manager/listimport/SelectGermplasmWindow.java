@@ -122,7 +122,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         germplasmTable.addContainerProperty("Name", String.class, null);
         germplasmTable.addContainerProperty("Location", String.class, null);
         germplasmTable.addContainerProperty("Breeding Method", String.class, null);
-//        germplasmTable.addContainerProperty("Pedigree", String.class, null);
+        germplasmTable.addContainerProperty("Pedigree", String.class, null);
         germplasmTable.setHeight("200px");
         germplasmTable.setWidth("750px");
         germplasmTable.setSelectable(true);
@@ -153,19 +153,52 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 
             	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
+
+                Germplasm pGermplasm = germplasm;
+                Germplasm previousPGermplasm;
+                while(pGermplasm.getGnpgs()<2){
+                	System.out.println("pGermplasm GNPGS: "+pGermplasm.getGnpgs());
+                	previousPGermplasm = pGermplasm;
+                	pGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid2());
+                	if(pGermplasm==null || pGermplasm.getGnpgs()==0){
+                		pGermplasm = previousPGermplasm;
+                		break;
+                	}
+                }
                 
-//                Germplasm femaleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
-//                Germplasm maleGermplasm = germplasmDataManager.getGermplasmByGID(germplasm.getGpid2());
-//                
-//                String parents = "";
-//                if(femaleGermplasm!=null)
-//                	parents = femaleGermplasm.getPreferredName().getNval(); 
-//                if(femaleGermplasm!=null && maleGermplasm!=null) 
-//                	parents = parents + " X ";
-//                if(maleGermplasm!=null)
-//                	parents = parents + maleGermplasm.getPreferredName().getNval();
+                String parentsString = "";
+
+                if(pGermplasm!=null){
+	                Germplasm femaleGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid1());
+	                Germplasm maleGermplasm = germplasmDataManager.getGermplasmByGID(pGermplasm.getGpid2());
+	
+	                String femaleNameString = "";
+	                String maleNameString = "";
+	                
+	                if(femaleGermplasm!=null){
+	                    femaleNameString = femaleGermplasm.getPreferredName() != null ? femaleGermplasm.getPreferredName().getNval() : "[No Preferred Name]";
+	                } else {
+	                	femaleNameString = "[Not Available]";
+	                }
+	                                
+	                if(maleGermplasm!=null){
+	                    maleNameString = maleGermplasm.getPreferredName() != null ? maleGermplasm.getPreferredName().getNval() : "[No Preferred Name]";;
+	                } else {
+	                	maleNameString = "[Not Available]";
+	                }
+	                
+	                if(femaleNameString!=""){
+	                	parentsString = femaleNameString;
+	                }
+	                if(femaleNameString!="" && maleNameString!=""){ 
+	                	parentsString = parentsString + "/";
+	                }
+	                if(maleNameString!=""){
+	                	parentsString = parentsString + maleNameString;
+	                }
+                }
                 
-                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname()}, germplasm.getGid());
+                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname(), parentsString}, germplasm.getGid());
             }
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block
