@@ -546,8 +546,14 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     public void receiveGermplasmFromWindowAndUpdateGermplasmData(int index, Germplasm importedGermplasm, Germplasm selectedGermplasm) {
         if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("2")){
             //Update GPID 1 & 2 to values of selected germplasm, and update germplasmList using the updated germplasm
-            importedGermplasm.setGpid1(selectedGermplasm.getGpid1()); 
-            importedGermplasm.setGpid2(selectedGermplasm.getGid());            
+            
+            if(selectedGermplasm.getGnpgs()<2){
+            	importedGermplasm.setGpid1(selectedGermplasm.getGpid1());
+            } else {
+            	importedGermplasm.setGpid1(selectedGermplasm.getGid());                            	
+            }
+            importedGermplasm.setGpid2(selectedGermplasm.getGid());
+            
             germplasmList.set(index, importedGermplasm);
         } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("3")){
             //Add logic here to not insert new record on DB when saved, maybe use existing GID?
