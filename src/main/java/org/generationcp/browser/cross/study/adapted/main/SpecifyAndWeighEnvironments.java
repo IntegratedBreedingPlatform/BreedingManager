@@ -7,9 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
@@ -24,6 +26,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
+import org.generationcp.middleware.domain.dms.TrialEnvironmentProperty;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -42,6 +45,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -87,6 +91,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 	
     private FilterLocationDialog filterLocation;
     private FilterStudyDialog filterStudy;
+    private AddEnvironmentalConditionsDialog addConditionsDialog;
     
     private Map filterSetLevel1;
     private Map filterSetLevel3;
@@ -101,8 +106,11 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 	private Map<String, Object[]> tableEntriesMap;
 	private Map<String, EnvironmentForComparison> environmentCheckBoxComparisonMap;
     private Set<String> environmentForComparison; //will contain all the tagged row
-	
+    private List<String> addedEnvironmentColumns;
+    
 	private Map<CheckBox, Item> environmentCheckBoxMap;
+	
+	Set<Integer> environmentIds;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -152,6 +160,8 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
        
        addEnvConditionsBtn = new Button(messageSource.getMessage(Message.ADD_ENV_CONDITION));
        addEnvConditionsBtn.setWidth("400px");
+       addEnvConditionsBtn.setData(ADD_ENVIRONMENT_BUTTON_ID);
+       addEnvConditionsBtn.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
        addComponent(addEnvConditionsBtn, "top:50px;left:580px");
        
        chooseEnvLabel = new Label(messageSource.getMessage(Message.CHOOSE_ENVIRONMENTS));
@@ -196,6 +206,9 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
         for(Object propertyId : propertyIds){
             environmentsTable.removeContainerProperty(propertyId);
         }
+        
+        removeAddedEnvironmentConditionsColumns(this.addedEnvironmentColumns);
+        
         environmentsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
         environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
@@ -224,12 +237,16 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 		
     	filterLocationCountryMap = new HashMap();
 		studyEnvironmentMap = new HashMap();
-    	
+		environmentIds = new HashSet();
+		
 		recreateTable(true,false);
+		
+		List<Integer> environmentIdsList = new ArrayList<Integer>(environmentIds);
 		
 		Window parentWindow = this.getWindow();
         filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+        addConditionsDialog = new AddEnvironmentalConditionsDialog(this, parentWindow, environmentIdsList);
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
 	}
@@ -258,7 +275,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 				
 				if(!trialEnvIdTableMap.containsKey(trialEnvIdString)){
 					String tableKey = trialEnv.getId() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getCountryName() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getProvinceName()  + FilterLocationDialog.DELIMITER  +trialEnv.getLocation().getLocationName() + FilterLocationDialog.DELIMITER + trialEnv.getStudy().getName();
-					
+					environmentIds.add(trialEnv.getId());
 					boolean isValidEntryAdd = true;
 					if(isAppliedClick){
 						isValidEntryAdd = isValidEntry(trialEnv); 
@@ -463,8 +480,12 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	Window parentWindow = this.getWindow();
     	filterStudy.initializeButtons();
         parentWindow.addWindow(filterStudy);
-    	System.out.println("window: " + parentWindow.toString());
-        System.out.println("Open Study Details");
+    }
+    
+    public void addEnvironmentalConditionsClickAction(){
+    	
+    	Window parentWindow = this.getWindow();
+        parentWindow.addWindow(addConditionsDialog);
     }
     
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
@@ -526,8 +547,60 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	filterStudy.initializeButtons();
         parentWindow.addWindow(filterStudy);
     }
+    
+    public void reopenAddEnvironmentConditionsWindow(){
+    	//this is to simulate and refresh checkboxes
+    	Window parentWindow = this.getWindow();
+    	parentWindow.removeWindow(addConditionsDialog);    	    	
+        
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(addConditionsDialog);
+    }
 
+    /*
+     * Callback method for AddEnvironmentalConditionsDialog button
+     */
+    public void addEnviromentalConditionColumns(List<String> names, Set<TrialEnvironmentProperty> conditions){
+    	// remove previously added envt conditions columns, if any
+    	removeAddedEnvironmentConditionsColumns(names);
 
+    	// add the selected envt condition column(s)
+    	for (final TrialEnvironmentProperty condition: conditions){
+    		
+			this.environmentsTable.addGeneratedColumn(condition.getName(), new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
 
+				@Override
+    			public Object generateCell(Table source, Object itemId, Object columnId) {
+    				StringTokenizer st = new StringTokenizer((String)itemId, FilterLocationDialog.DELIMITER);
+    				
+    				String envtIdStr = st.nextToken();
+    				if (envtIdStr != null && !envtIdStr.isEmpty()){
+    					Integer envtId = Integer.parseInt(envtIdStr);
+    					addedEnvironmentColumns.add(condition.getName());
+    					
+    					return condition.getEnvironmentValuesMap().get(envtId);
+    				}
+    				
+    				return "";
+    			}
+    			
+    		});
+    	
+    		
+    	}	
+    }
+    
+    private void removeAddedEnvironmentConditionsColumns(List<String> columns) {
+		if (this.environmentsTable != null && columns != null){
+			for (String columnHeader : columns){
+				String existingColumn = this.environmentsTable.getColumnHeader(columnHeader);
+				if (existingColumn != null && !existingColumn.isEmpty()){
+					this.environmentsTable.removeGeneratedColumn(columnHeader);
+				}
+			}
+		}
+        this.addedEnvironmentColumns = new ArrayList<String>();
+	}
 }
 

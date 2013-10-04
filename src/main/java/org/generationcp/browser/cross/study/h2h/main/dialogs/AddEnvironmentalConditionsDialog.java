@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -125,7 +126,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
                
         applyButton = new Button();
         applyButton.setData(APPLY_BUTTON_ID);
-        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
+        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
         //TODO disable
         applyButton.setEnabled(true);
@@ -224,8 +225,13 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     	}
     }
     
-    public void clickApplyButton(){
-    	((EnvironmentsAvailableComponent)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
+    public void clickApplyButton(String classname){
+    	if(classname.equals("EnvironmentsAvailableComponent")){
+    		((EnvironmentsAvailableComponent)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
+    	} else if(classname.equals("SpecifyAndWeighEnvironments")){
+    		((SpecifyAndWeighEnvironments)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
+    	}
+    	
     }
     
     

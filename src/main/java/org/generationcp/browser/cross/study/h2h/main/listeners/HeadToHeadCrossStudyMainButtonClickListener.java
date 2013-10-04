@@ -181,10 +181,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof EnvironmentsAvailableComponent
                 && event.getButton().getData().equals(EnvironmentsAvailableComponent.ADD_ENVIRONMENT_BUTTON_ID)) {
             ((EnvironmentsAvailableComponent) source).addEnvironmentalConditionsClickAction();
-        } else if (source instanceof AddEnvironmentalConditionsDialog
-                && event.getButton().getData().equals(AddEnvironmentalConditionsDialog.APPLY_BUTTON_ID)) {
-            ((AddEnvironmentalConditionsDialog) source).clickApplyButton();
-        }
+        } 
         
         //for Adapted Germplasm
         else if (event.getButton().getData().equals(SpecifyAndWeighEnvironments.NEXT_BUTTON_ID)
@@ -202,6 +199,9 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof SpecifyAndWeighEnvironments
                 && event.getButton().getData().equals(SpecifyAndWeighEnvironments.FILTER_STUDY_BUTTON_ID)) {
             ((SpecifyAndWeighEnvironments) source).selectFilterByStudyClickAction();
+        } else if (source instanceof SpecifyAndWeighEnvironments
+                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.ADD_ENVIRONMENT_BUTTON_ID)) {
+            ((SpecifyAndWeighEnvironments) source).addEnvironmentalConditionsClickAction();
         }
         
         //Common in Adapted Germplasm and H2H
@@ -236,7 +236,16 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
             ((FilterStudyDialog) source).showStudyInfo(studyId);
         } else if (source instanceof AddEnvironmentalConditionsDialog
                 && event.getButton().getData().equals(AddEnvironmentalConditionsDialog.APPLY_BUTTON_ID)) {
-            ((AddEnvironmentalConditionsDialog) source).clickApplyButton();
+        	
+        	String parentClass = "";
+        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
+        		parentClass = "SpecifyAndWeighEnvironments";
+        	}
+        	else{
+        		parentClass = "EnvironmentsAvailableComponent";
+        	}
+        	
+            ((AddEnvironmentalConditionsDialog) source).clickApplyButton(parentClass);
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
