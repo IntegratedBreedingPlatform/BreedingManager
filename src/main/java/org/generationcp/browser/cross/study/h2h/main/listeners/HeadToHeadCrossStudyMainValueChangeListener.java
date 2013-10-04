@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
+import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
@@ -63,8 +64,10 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     public void valueChange(ValueChangeEvent event) {
         if (source instanceof TraitsAvailableComponent) {
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
-        }else if (source instanceof EnvironmentsAvailableComponent) {
+        } else if (source instanceof EnvironmentsAvailableComponent) {
             ((EnvironmentsAvailableComponent) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
+        } else if (source instanceof SpecifyAndWeighEnvironments) {
+            ((SpecifyAndWeighEnvironments) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof FilterLocationDialog) {  
         	if(isTagAll){
         		((FilterLocationDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());

@@ -296,4 +296,5 @@ public enum Message {
      ,ADD_ENV_CONDITION
      ,CHOOSE_ENVIRONMENTS
      ,NO_OF_SELECTED_ENVIRONMENT
+     ,NEXT
 }

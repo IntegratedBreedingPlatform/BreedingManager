@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -139,7 +140,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
        
         applyButton = new Button(buttonlabel);
         applyButton.setData(APPLY_BUTTON_ID);
-        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
+        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
         applyButton.setEnabled(false);
         
@@ -312,7 +313,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     	((EnvironmentsAvailableComponent)source).reopenFilterWindow();
     }
     
-    public void clickApplyButton(){
+    public void clickApplyButton(String classname){
     	
         checkFilterLocationLevel1DtoList = new ArrayList();
         checkFilterLocationLevel3DtoList = new ArrayList();
@@ -327,7 +328,13 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         		}
         	}
         }
-    	((EnvironmentsAvailableComponent)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
+        
+        if(classname.equals("EnvironmentsAvailableComponent")){
+        	((EnvironmentsAvailableComponent)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
+        }
+        else if(classname.equals("SpecifyAndWeighEnvironments")){
+        	((SpecifyAndWeighEnvironments)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
+        }
     }
     
     public void initializeButtons(){
