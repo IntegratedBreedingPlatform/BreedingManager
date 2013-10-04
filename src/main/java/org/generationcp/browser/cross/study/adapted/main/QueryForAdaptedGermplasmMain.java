@@ -132,7 +132,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 
 	    public void selectSecondTab(){
 	        secondTab.setEnabled(true);
-	        //firstTab.setEnabled(false);
+	        firstTab.setEnabled(false);
 	        this.accordion.setSelectedTab(screenTwo);
 	        thirdTab.setEnabled(false);
 	    }
