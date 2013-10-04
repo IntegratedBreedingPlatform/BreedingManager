@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -364,6 +365,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
 
         validateRequiredConditions(requiredConditionRows);
+        
+        validateConditionValues();
 
         currentRow++;
     }
@@ -427,6 +430,29 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 String missingConditionString = missingConditions.toString().replace("[", "").replace("]", "").replace(", ", "<br/>");
                 showInvalidFileError("Required Conditions not found in template file:", missingConditionString);
             }
+        }
+    }
+    
+    private void validateConditionValues() {
+        // build HashMap of Conditions read from the template file
+        HashMap<String, ImportedCondition> fileConditions = new HashMap<String, ImportedCondition>();
+        List<ImportedCondition> conditions = importedGermplasmCrosses.getImportedConditions();
+        for (ImportedCondition c : conditions) {
+            fileConditions.put(c.getCondition().toUpperCase(), c);
+        }
+        
+        ImportedCondition maleListName = fileConditions.get(TemplateCrossingCondition.MALE_LIST_NAME.getValue());
+        ImportedCondition femaleListName = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_NAME.getValue());
+        
+        String listNameErrors = "";
+        if (femaleListIdIsSpecified && !femaleListName.getValue().equals(femaleGermplasmList.getName())) {
+            listNameErrors = listNameErrors + "<br/>" + TemplateCrossingCondition.FEMALE_LIST_NAME.getValue();
+        }
+        if (maleListIdIsSpecified && !maleListName.getValue().equals(maleGermplasmList.getName())) {
+            listNameErrors = listNameErrors + "<br/>" + TemplateCrossingCondition.MALE_LIST_NAME.getValue();
+        }
+        if (!"".equals(listNameErrors)){
+            showInvalidFileError("Invalid Germplasm List Name:", listNameErrors);
         }
     }
 
