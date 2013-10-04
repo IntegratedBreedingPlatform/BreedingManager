@@ -4,6 +4,7 @@ import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableCompon
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
@@ -12,6 +13,7 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
 import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.dms.TrialEnvironmentProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     private Component source;
     private Component sourceComboBox;
     private FilterLocationDto filterLocationDto;
+    private TrialEnvironmentProperty environmentCondition;
     private String tableKey;
     private boolean isTagAll = false;
  
@@ -52,6 +55,10 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         this.source = source;
         this.filterLocationDto = filterLocationDto;
     }
+    public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component sourceComboBox, TrialEnvironmentProperty environmentCondition){
+        this.source = source;
+        this.environmentCondition = environmentCondition;
+    }
     @Override
     public void valueChange(ValueChangeEvent event) {
         if (source instanceof TraitsAvailableComponent) {
@@ -68,7 +75,13 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         		((FilterStudyDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
         	}else
         		((FilterStudyDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
-        }  
+        
+        } else if (source instanceof AddEnvironmentalConditionsDialog) {
+        	if(isTagAll){
+        		((AddEnvironmentalConditionsDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        	}else
+        		((AddEnvironmentalConditionsDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), environmentCondition);
+        }   
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
         }

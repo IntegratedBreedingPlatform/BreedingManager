@@ -1,23 +1,20 @@
 package org.generationcp.browser.cross.study.h2h.main;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-
-
-import org.generationcp.browser.application.Message;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
-import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
@@ -29,25 +26,32 @@ import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
-import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
+import org.generationcp.middleware.domain.dms.TrialEnvironmentProperty;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.Observation;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.*;
+import com.vaadin.data.Item;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class EnvironmentsAvailableComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -97,6 +101,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<CheckBox, Item> environmentCheckBoxMap;
     private Map<String, EnvironmentForComparison> environmentCheckBoxComparisonMap;
     private Set<String> environmentForComparison; //will contain all the tagged row
+    private List<String> addedEnvironmentColumns;
     
     @Autowired
     private CrossStudyDataManager crossStudyDataManager;
@@ -110,6 +115,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     private Map<String, FilterByLocation> filterLocationCountryMap;
     private FilterLocationDialog filterLocation;
     private FilterStudyDialog filterStudy;
+    private AddEnvironmentalConditionsDialog addConditionsDialog;
     private Set<TraitInfo> traitInfosNames;
     private Set<String> trialEnvironmentIds;
     private Map<String, Map<String, TrialEnvironment>>  traitEnvMap;
@@ -167,7 +173,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         addEnvironment = new Button("Add Environment Conditions columns to the Environment Filter");
         addEnvironment.setData(ADD_ENVIRONMENT_BUTTON_ID);
         addEnvironment.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        addEnvironment.setEnabled(false);
+        addEnvironment.setEnabled(true);
         
         addComponent(addEnvironment, "top:40px;left:500px");
         
@@ -340,6 +346,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	Window parentWindow = this.getWindow();
         filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+        addConditionsDialog = new AddEnvironmentalConditionsDialog(this, parentWindow, environmentIdsList);
+        
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
     }
@@ -534,6 +542,40 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	recreateTable(false, true);
     }
     
+    /*
+     * Callback method for AddEnvironmentalConditionsDialog button
+     */
+    public void addEnviromentalConditionColumns(List<String> names, Set<TrialEnvironmentProperty> conditions){
+    	// remove previously added envt conditions columns, if any
+    	removeAddedEnvironmentConditionsColumns(names);
+
+    	// add the selected envt condition column(s)
+    	for (final TrialEnvironmentProperty condition: conditions){
+    		
+			this.environmentsTable.addGeneratedColumn(condition.getName(), new ColumnGenerator() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+    			public Object generateCell(Table source, Object itemId, Object columnId) {
+    				StringTokenizer st = new StringTokenizer((String)itemId, FilterLocationDialog.DELIMITER);
+    				
+    				String envtIdStr = st.nextToken();
+    				if (envtIdStr != null && !envtIdStr.isEmpty()){
+    					Integer envtId = Integer.parseInt(envtIdStr);
+    					addedEnvironmentColumns.add(condition.getName());
+    					
+    					return condition.getEnvironmentValuesMap().get(envtId);
+    				}
+    				
+    				return "";
+    			}
+    			
+    		});
+    	
+    		
+    	}	
+    }
+    
     public void reopenFilterWindow(){
     	//this is to simulate and refresh checkboxes
     	Window parentWindow = this.getWindow();
@@ -551,6 +593,16 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	filterStudy.initializeButtons();
         parentWindow.addWindow(filterStudy);
     }
+    
+    public void reopenAddEnvironmentConditionsWindow(){
+    	//this is to simulate and refresh checkboxes
+    	Window parentWindow = this.getWindow();
+    	parentWindow.removeWindow(addConditionsDialog);    	    	
+        
+    	filterStudy.initializeButtons();
+        parentWindow.addWindow(addConditionsDialog);
+    }
+    
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
     	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
     	
@@ -704,6 +756,9 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         for(Object propertyId : propertyIds){
             environmentsTable.removeContainerProperty(propertyId);
         }
+
+        removeAddedEnvironmentConditionsColumns(this.addedEnvironmentColumns);
+        
         environmentsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         //environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
         environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
@@ -727,6 +782,18 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
         environmentsTable.setColumnHeader(WEIGHT_COLUMN_ID, "Weight");
         tableColumnSize++;
     }
+
+	private void removeAddedEnvironmentConditionsColumns(List<String> columns) {
+		if (this.environmentsTable != null && columns != null){
+			for (String columnHeader : columns){
+				String existingColumn = this.environmentsTable.getColumnHeader(columnHeader);
+				if (existingColumn != null && !existingColumn.isEmpty()){
+					this.environmentsTable.removeGeneratedColumn(columnHeader);
+				}
+			}
+		}
+        this.addedEnvironmentColumns = new ArrayList<String>();
+	}
    
     
     public void nextButtonClickAction(){
@@ -786,6 +853,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	Window parentWindow = this.getWindow();
     	filterStudy.initializeButtons();
         parentWindow.addWindow(filterStudy);
+    }
+    
+    public void addEnvironmentalConditionsClickAction(){
+    	
+    	Window parentWindow = this.getWindow();
+    	addConditionsDialog.initializeButtons();
+        parentWindow.addWindow(addConditionsDialog);
     }
     
     @Override

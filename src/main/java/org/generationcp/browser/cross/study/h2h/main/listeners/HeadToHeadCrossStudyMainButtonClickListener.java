@@ -4,6 +4,7 @@ import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableCompon
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
+import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
@@ -170,7 +171,10 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof EnvironmentsAvailableComponent
                 && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_STUDY_BUTTON_ID)) {
             ((EnvironmentsAvailableComponent) source).selectFilterByStudyClickAction();
-        } else if (source instanceof FilterLocationDialog
+        } else if (source instanceof EnvironmentsAvailableComponent
+                && event.getButton().getData().equals(EnvironmentsAvailableComponent.ADD_ENVIRONMENT_BUTTON_ID)) {
+            ((EnvironmentsAvailableComponent) source).addEnvironmentalConditionsClickAction();
+        }else if (source instanceof FilterLocationDialog
                 && event.getButton().getData().equals(FilterLocationDialog.APPLY_BUTTON_ID)) {
             ((FilterLocationDialog) source).clickApplyButton();
         } else if (source instanceof FilterStudyDialog
@@ -179,6 +183,9 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.STUDY_BUTTON_ID)) {
             ((FilterStudyDialog) source).showStudyInfo(studyId);
+        } else if (source instanceof AddEnvironmentalConditionsDialog
+                && event.getButton().getData().equals(AddEnvironmentalConditionsDialog.APPLY_BUTTON_ID)) {
+            ((AddEnvironmentalConditionsDialog) source).clickApplyButton();
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
