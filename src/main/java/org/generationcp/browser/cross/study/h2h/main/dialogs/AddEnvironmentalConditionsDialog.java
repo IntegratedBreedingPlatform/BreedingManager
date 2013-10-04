@@ -132,7 +132,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         
         buttonLayout.addComponent(cancelButton);
         buttonLayout.addComponent(applyButton);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:550px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:600px");
         
         
         addComponent(mainLayout);
@@ -144,7 +144,6 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     		CheckBox box = checkboxes.next();
     		box.setValue(val);
     	}
-    	setupApplyButton();		
     	((EnvironmentsAvailableComponent)source).reopenAddEnvironmentConditionsWindow();
     	
     }
@@ -223,22 +222,12 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     	}else{
     		selectedProperties.remove(environmentCondition);
     	}
-    	setupApplyButton();
     }
     
     public void clickApplyButton(){
     	((EnvironmentsAvailableComponent)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
     }
     
-    public void initializeButtons(){
-    	setupApplyButton();
-    }
-    
-    private void setupApplyButton(){
-//    	if(applyButton != null){
-//    		applyButton.setEnabled(!selectedProperties.isEmpty());
-//    	}
-    }
     
     @Override
     public void attach() {
@@ -248,7 +237,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(applyButton, Message.ADD_CONDITION_TO_TABLE);
+        messageSource.setCaption(applyButton, Message.DONE);
         messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
     }
 }

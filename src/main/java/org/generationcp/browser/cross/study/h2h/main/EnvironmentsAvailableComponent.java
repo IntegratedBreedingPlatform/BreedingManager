@@ -858,7 +858,6 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     public void addEnvironmentalConditionsClickAction(){
     	
     	Window parentWindow = this.getWindow();
-    	addConditionsDialog.initializeButtons();
         parentWindow.addWindow(addConditionsDialog);
     }
     
