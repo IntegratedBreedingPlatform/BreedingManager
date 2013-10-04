@@ -178,7 +178,13 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof EnvironmentsAvailableComponent
                 && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_STUDY_BUTTON_ID)) {
             ((EnvironmentsAvailableComponent) source).selectFilterByStudyClickAction();
-        } 
+        } else if (source instanceof EnvironmentsAvailableComponent
+                && event.getButton().getData().equals(EnvironmentsAvailableComponent.ADD_ENVIRONMENT_BUTTON_ID)) {
+            ((EnvironmentsAvailableComponent) source).addEnvironmentalConditionsClickAction();
+        } else if (source instanceof AddEnvironmentalConditionsDialog
+                && event.getButton().getData().equals(AddEnvironmentalConditionsDialog.APPLY_BUTTON_ID)) {
+            ((AddEnvironmentalConditionsDialog) source).clickApplyButton();
+        }
         
         //for Adapted Germplasm
         else if (event.getButton().getData().equals(SpecifyAndWeighEnvironments.NEXT_BUTTON_ID)
