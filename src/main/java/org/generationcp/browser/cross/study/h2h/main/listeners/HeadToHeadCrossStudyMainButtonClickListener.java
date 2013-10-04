@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
+import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
@@ -29,6 +30,8 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     private String countryName;
     private String provinceName;
     private Integer studyId;
+    private Component parentOfSource; // EnvironmentsAvailableCompoent or SpecifyAndWeighEnvironment
+    
     public HeadToHeadCrossStudyMainButtonClickListener(Component source){
         this.source = source;
     }
@@ -47,6 +50,10 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         this.countryName = countryName;
         this.provinceName = provinceName;
         this.studyId = studyId;
+    }
+    public HeadToHeadCrossStudyMainButtonClickListener(Component source, Component parentOfSource){
+        this.source = source;
+        this.parentOfSource = parentOfSource;
     }
     
     @Override
@@ -171,15 +178,53 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof EnvironmentsAvailableComponent
                 && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_STUDY_BUTTON_ID)) {
             ((EnvironmentsAvailableComponent) source).selectFilterByStudyClickAction();
-        } else if (source instanceof EnvironmentsAvailableComponent
-                && event.getButton().getData().equals(EnvironmentsAvailableComponent.ADD_ENVIRONMENT_BUTTON_ID)) {
-            ((EnvironmentsAvailableComponent) source).addEnvironmentalConditionsClickAction();
-        }else if (source instanceof FilterLocationDialog
+        } 
+        
+        //for Adapted Germplasm
+        else if (event.getButton().getData().equals(SpecifyAndWeighEnvironments.NEXT_BUTTON_ID)
+                && (source instanceof SpecifyAndWeighEnvironments)){
+            try {
+                ((SpecifyAndWeighEnvironments) source).nextButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+		} else if (source instanceof SpecifyAndWeighEnvironments
+                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.FILTER_LOCATION_BUTTON_ID)) {
+            ((SpecifyAndWeighEnvironments) source).selectFilterByLocationClickAction();
+        } else if (source instanceof SpecifyAndWeighEnvironments
+                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.FILTER_STUDY_BUTTON_ID)) {
+            ((SpecifyAndWeighEnvironments) source).selectFilterByStudyClickAction();
+        }
+        
+        //Common in Adapted Germplasm and H2H
+        else if (source instanceof FilterLocationDialog
                 && event.getButton().getData().equals(FilterLocationDialog.APPLY_BUTTON_ID)) {
-            ((FilterLocationDialog) source).clickApplyButton();
+        	
+        	String parentClass = "";
+        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
+        		parentClass = "SpecifyAndWeighEnvironments";
+        	}
+        	else{
+        		parentClass = "EnvironmentsAvailableComponent";
+        	}
+        	
+            ((FilterLocationDialog) source).clickApplyButton(parentClass);
+            
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.APPLY_BUTTON_ID)) {
-            ((FilterStudyDialog) source).clickApplyButton();
+        	
+        	String parentClass = "";
+        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
+        		parentClass = "SpecifyAndWeighEnvironments";
+        	}
+        	else{
+        		parentClass = "EnvironmentsAvailableComponent";
+        	}
+            
+        	((FilterStudyDialog) source).clickApplyButton(parentClass);
+        	
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.STUDY_BUTTON_ID)) {
             ((FilterStudyDialog) source).showStudyInfo(studyId);

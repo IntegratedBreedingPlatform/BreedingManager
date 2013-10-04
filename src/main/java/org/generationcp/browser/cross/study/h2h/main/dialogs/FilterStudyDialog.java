@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -125,7 +126,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
        
         applyButton = new Button(buttonlabel);
         applyButton.setData(APPLY_BUTTON_ID);
-        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
+        applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
         applyButton.setEnabled(false);
         
@@ -244,8 +245,12 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     	setupApplyButton();
     }
     
-    public void clickApplyButton(){
-    	((EnvironmentsAvailableComponent)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
+    public void clickApplyButton(String classname){
+    	if(classname.equals("EnvironmentsAvailableComponent")){
+    		((EnvironmentsAvailableComponent)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
+    	} else if(classname.equals("SpecifyAndWeighEnvironments")){
+    		((SpecifyAndWeighEnvironments)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
+    	} 
     }
     
     public void initializeButtons(){
