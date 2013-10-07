@@ -65,8 +65,10 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_WEIGH_ENVIRONMENT));
 	        secondTab = accordion.addTab(screenTwo,  messageSource.getMessage(Message.SETUP_TRAIT_FILTER));
 	        thirdTab = accordion.addTab(screenThree, messageSource.getMessage(Message.DISPLAY_RESULTS));
-	        /*
-	        secondTab.setEnabled(false);
+	        
+	        
+	        firstTab.setEnabled(true);
+	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(false);
 
 	        accordion.addListener(new SelectedTabChangeListener() {
@@ -76,14 +78,18 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	                Tab tab = accordion.getTab(selected);
 
 	                if(tab!=null && tab.equals(firstTab)){
-	                    secondTab.setEnabled(false);
+	                    secondTab.setEnabled(true);
 	                    thirdTab.setEnabled(false);
 	                } else if(tab!=null && tab.equals(secondTab)){
-	                    thirdTab.setEnabled(false);
+	                	firstTab.setEnabled(true);
+	                	thirdTab.setEnabled(true);
+	                } else if(tab!=null && tab.equals(thirdTab)){
+	                	firstTab.setEnabled(false);
+	                	thirdTab.setEnabled(true);
 	                }
 	            }
 	        });
-			*/
+			
 	        addComponent(accordion);
 	    }
 	    
@@ -118,28 +124,27 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 		public void selectFirstTabAndReset(){
 	    	firstTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenOne);
-	        //screenOne.setDummyTableData()
-	        secondTab.setEnabled(false);
+	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(false);
 	    }
 	    
 	    public void selectFirstTab(){
 	    	firstTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenOne);
-	        secondTab.setEnabled(false);
+	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(false);
 	    }
 
 	    public void selectSecondTab(){
-	        secondTab.setEnabled(true);
-	        firstTab.setEnabled(false);
+	    	firstTab.setEnabled(true);
+	    	secondTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenTwo);
-	        thirdTab.setEnabled(false);
+	        thirdTab.setEnabled(true);
 	    }
 
 	    public void selectThirdTab(){
 	        firstTab.setEnabled(false);
-	        secondTab.setEnabled(false);
+	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenThree);
 	    }
