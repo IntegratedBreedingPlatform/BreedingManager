@@ -347,6 +347,14 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	if(combo != null){
     		ComboBox comboBox = (ComboBox) combo;
     		comboBox.setEnabled(boolVal);
+    		
+    		if(boolVal){
+    			comboBox.setValue(EnvironmentWeight.IMPORTANT);
+    		}
+    		else{
+    			comboBox.setValue(EnvironmentWeight.IGNORED);
+    		}
+    		
     	}
     			
 		if(boolVal){
@@ -528,6 +536,8 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     		filterSetLevel4.put(studyName, studyName);
     	}
     	recreateTable(false, true);
+    	
+    	headerValLabel.setValue("");
     }
     
     public void reopenFilterWindow(){
@@ -602,5 +612,6 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 		}
         this.addedEnvironmentColumns = new ArrayList<String>();
 	}
+
 }
 

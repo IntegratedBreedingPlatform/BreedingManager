@@ -21,7 +21,7 @@ public class CrossStudyUtil {
     		combo.setItemCaption(weight, weight.getLabel());
     	}
 			
-		combo.setValue(EnvironmentWeight.IMPORTANT);
+		combo.setValue(EnvironmentWeight.IGNORED);
 		
 		combo.setEnabled(false);
 		return combo;

@@ -232,6 +232,13 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	if(combo != null){
     		ComboBox comboBox = (ComboBox) combo;
     		comboBox.setEnabled(boolVal);
+    		
+    		if(boolVal){
+    			comboBox.setValue(EnvironmentWeight.IMPORTANT);
+    		}
+    		else{
+    			comboBox.setValue(EnvironmentWeight.IGNORED);
+    		}
     	}
     		//TraitInfo info = traitMaps.get(comboBox);
     		
