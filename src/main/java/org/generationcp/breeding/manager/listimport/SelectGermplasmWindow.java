@@ -165,7 +165,15 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                     }
             	}
                 
-                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, location.getLname(), method.getMname(), crossExpansion}, germplasm.getGid());
+                String locationName = "";
+                if(location!=null && location.getLname()!=null)
+                	locationName = location.getLname();
+
+                String methodName = "";
+                if(method!=null && method.getMname()!=null)
+                	methodName = method.getMname();
+                
+                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, locationName, methodName, crossExpansion}, germplasm.getGid());
             }
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block
