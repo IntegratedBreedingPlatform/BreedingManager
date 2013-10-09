@@ -1,6 +1,8 @@
 package org.generationcp.browser.cross.study.util;
 
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
+import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
+import org.generationcp.middleware.domain.h2h.NumericTraitInfo;
 
 import com.vaadin.ui.ComboBox;
 
@@ -22,6 +24,27 @@ public class CrossStudyUtil {
     	}
 			
 		combo.setValue(EnvironmentWeight.IGNORED);
+		
+		combo.setEnabled(false);
+		return combo;
+    }
+    
+    /**
+	 * Creates a combobox with values of <class>NumericTraitCriteria</class> enum
+	 * @return
+	 */
+    public static ComboBox getNumericTraitCombobox(){
+    	ComboBox combo = new ComboBox();
+    	combo.setNullSelectionAllowed(false);
+    	combo.setTextInputAllowed(false);
+    	combo.setImmediate(true);
+    	
+    	for (NumericTraitCriteria criteria : NumericTraitCriteria.values()){
+    		combo.addItem(criteria);
+    		combo.setItemCaption(criteria, criteria.getLabel());
+    	}
+			
+		combo.setValue(NumericTraitCriteria.KEEP_ALL);
 		
 		combo.setEnabled(false);
 		return combo;

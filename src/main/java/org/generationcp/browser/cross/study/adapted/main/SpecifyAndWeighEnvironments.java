@@ -473,6 +473,9 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     		toBeCompared.add(envt);
     	}
     	
+    	if (this.nextScreen != null){
+    		this.nextScreen.populateTraitsTables(toBeCompared);
+    	}
         this.mainScreen.selectSecondTab();
     }
     
