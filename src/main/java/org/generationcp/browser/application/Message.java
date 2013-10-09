@@ -320,4 +320,5 @@ public enum Message {
      ,MAX
      ,PRIORITY
      ,INCORRECT_LIMITS_VALUE
+     ,CHARACTER_TRAITS_SECTION_TITLE
 }

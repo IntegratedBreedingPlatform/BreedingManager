@@ -2,6 +2,7 @@ package org.generationcp.browser.cross.study.util;
 
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
+import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.middleware.domain.h2h.NumericTraitInfo;
 
 import com.vaadin.ui.ComboBox;
@@ -9,7 +10,7 @@ import com.vaadin.ui.ComboBox;
 public class CrossStudyUtil {
 	
 	/**
-	 * Creates a combobox with values of <class>EnvironmentWeight</class> enum
+	 * Creates a ComboBox with values of <class>EnvironmentWeight</class> enum
 	 * @return
 	 */
     public static ComboBox getWeightComboBox(){
@@ -50,4 +51,25 @@ public class CrossStudyUtil {
 		return combo;
     }
 
+    /**
+	 * Creates a ComboBox with values of <class>TraitWeight</class> enum
+	 * @return
+	 */
+    public static ComboBox getTraitWeightsComboBox(){
+    	ComboBox combo = new ComboBox();
+    	combo.setNullSelectionAllowed(false);
+    	combo.setTextInputAllowed(false);
+    	combo.setImmediate(true);
+    	
+    	for (TraitWeight weight : TraitWeight.values()){
+    		combo.addItem(weight);
+    		combo.setItemCaption(weight, weight.getLabel());
+    	}
+			
+    	//default values is important
+		combo.setValue(TraitWeight.IMPORTANT);
+		
+		combo.setEnabled(false);
+		return combo;
+    }
 }
