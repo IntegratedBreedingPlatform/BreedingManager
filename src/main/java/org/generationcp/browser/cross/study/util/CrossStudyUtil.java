@@ -3,7 +3,6 @@ package org.generationcp.browser.cross.study.util;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
-import org.generationcp.middleware.domain.h2h.NumericTraitInfo;
 
 import com.vaadin.ui.ComboBox;
 
@@ -66,7 +65,7 @@ public class CrossStudyUtil {
     		combo.setItemCaption(weight, weight.getLabel());
     	}
 			
-    	//default values is important
+    	//default value is important
 		combo.setValue(TraitWeight.IMPORTANT);
 		
 		combo.setEnabled(false);

@@ -277,7 +277,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	private enum TableColumn {
 		NUM_TAG_COL_ID (Message.HEAD_TO_HEAD_TAG, CheckBox.class, 25)
 		, NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, String.class, 120) 	//TODO - turn column to "Button.class"
-		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_ENVIRONMENTS_SHORT, Integer.class, 60) 
+		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 60) 
 		, NUM_NUMBER_OF_LINES_COL_ID (Message.NUMBER_OF_LINES, Integer.class, 65)
 		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 60)
 		, NUM_MIN_COL_ID (Message.MIN, Double.class, 40)

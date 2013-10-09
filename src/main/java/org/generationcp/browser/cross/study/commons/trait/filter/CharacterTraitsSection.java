@@ -57,12 +57,26 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 		traitsTable.addContainerProperty(CONDITION_COLUMN_ID, ComboBox.class, null);
 		traitsTable.addContainerProperty(LIMITS_COLUMN_ID, TextField.class, null);
 		traitsTable.addContainerProperty(PRIORITY_COLUMN_ID, ComboBox.class, null);
+		
+		traitsTable.setColumnHeader(TRAIT_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_TRAIT)); // Trait
+		traitsTable.setColumnHeader(NUM_LOCATIONS_COLUMN_ID, messageSource.getMessage(Message.NUMBER_OF_LOCATIONS)); // # of Locations
+		traitsTable.setColumnHeader(NUM_LINES_COLUMN_ID, messageSource.getMessage(Message.NUMBER_OF_LINES)); // # of Lines
+		traitsTable.setColumnHeader(NUM_OBSERVATIONS_COLUMN_ID, messageSource.getMessage(Message.NUMBER_OF_OBSERVATIONS)); // # of Observations
+		traitsTable.setColumnHeader(DISTINCT_OBSERVED_VALUES_COLUMN_ID, messageSource.getMessage(Message.DISTINCT_OBSERVED_VALUES)); // Distinct Observed Values
+		traitsTable.setColumnHeader(CONDITION_COLUMN_ID, messageSource.getMessage(Message.CONDITION_HEADER)); // Condition
+		traitsTable.setColumnHeader(LIMITS_COLUMN_ID, messageSource.getMessage(Message.LIMITS)); // Limits
+		traitsTable.setColumnHeader(PRIORITY_COLUMN_ID, messageSource.getMessage(Message.PRIORITY)); // Priority
+	}
+	
+	private void initializeLayout(){
+		this.addComponent(lblSectionTitle);
+		this.addComponent(traitsTable);
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
+		initializeComponents();
+		initializeLayout();
 	}
 	
 	@Override
