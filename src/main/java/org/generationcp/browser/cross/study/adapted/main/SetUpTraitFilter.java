@@ -10,6 +10,7 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.validators.NumericTraitLimitsValidator;
+import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
@@ -112,6 +113,13 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	public void createTraitsTabs() {		
 		mainTabSheet = new TabSheet();
         for (int i = 0; i < NUM_OF_SECTIONS; i++){
+        	
+        	if(i == 1){
+        		mainTabSheet.addTab(new CharacterTraitsSection(this.environmentIds, this.getWindow())
+        			, messageSource.getMessage(Message.CHARACTER_TRAIT_FILTER_TAB_TITLE));
+        		continue;
+        	}
+        	
         	VerticalLayout layout = new VerticalLayout();
         	layout.setSpacing(true);
         	layout.setMargin(true);

@@ -3,7 +3,7 @@ package org.generationcp.browser.cross.study.commons.trait.filter;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.study.StudyFactorComponent;
+import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -21,6 +21,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -40,6 +41,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	
 	private List<Integer> environmentIds = null;
 	
+	private Window parentWindow;
 	private Label lblSectionTitle;
 	private Table traitsTable;
 	
@@ -49,9 +51,10 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	@Autowired
 	private CrossStudyDataManager crossStudyDataManager;
 	
-	public CharacterTraitsSection(List<Integer> environmentIds){
+	public CharacterTraitsSection(List<Integer> environmentIds, Window parentWindow){
 		super();
 		this.environmentIds = environmentIds;
+		this.parentWindow = parentWindow;
 	}
 
 	private void initializeComponents(){
@@ -82,8 +85,10 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	}
 	
 	private void initializeLayout(){
-		this.addComponent(lblSectionTitle);
-		this.addComponent(traitsTable);
+		setMargin(true);
+		setSpacing(true);
+		addComponent(lblSectionTitle);
+		addComponent(traitsTable);
 	}
 	
 	private void populateTraitsTable(){
@@ -93,9 +98,33 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 				traitInfoObjects = crossStudyDataManager.getTraitsForCharacterVariates(environmentIds);
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with getting character trait info given environment ids: " + this.environmentIds.toString(), ex);
-				MessageNotifier.showError(this.getWindow(), "Database Error!", "Error with getting character trait info given environment ids."
+				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting character trait info given environment ids."
 						+ " Please report to IBP.", Notification.POSITION_CENTERED);
 				return;
+			}
+			
+			if(traitInfoObjects != null){
+				if(traitInfoObjects.isEmpty()){
+					MessageNotifier.showMessage(parentWindow, "Information", "There were no character traits observed in the environments you have selected."
+							, 3000, Notification.POSITION_CENTERED);
+					return;
+				}
+				
+				for(CharacterTraitInfo traitInfo : traitInfoObjects){
+					StringBuffer distinctValuesObserved = new StringBuffer();
+					for(String value: traitInfo.getValues()){
+						distinctValuesObserved.append(value);
+						distinctValuesObserved.append(", ");
+					}
+					
+					ComboBox conditionComboBox = CrossStudyUtil.getCharacterTraitConditionsComboBox();
+					ComboBox priorityComboBox = CrossStudyUtil.getTraitWeightsComboBox();
+					TextField txtLimits = new TextField();
+					
+					Object[] itemObj = new Object[]{traitInfo.getName(), traitInfo.getLocationCount(), traitInfo.getGermplasmCount(), traitInfo.getObservationCount()
+							, distinctValuesObserved.toString(), conditionComboBox, txtLimits, priorityComboBox};
+					traitsTable.addItem(itemObj, traitInfo);
+				}
 			}
 		}
 	}
@@ -104,6 +133,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	public void afterPropertiesSet() throws Exception {
 		initializeComponents();
 		initializeLayout();
+		populateTraitsTable();
 	}
 	
 	@Override
