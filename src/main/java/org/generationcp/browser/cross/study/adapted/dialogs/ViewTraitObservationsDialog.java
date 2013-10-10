@@ -25,16 +25,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class LocationForNumericVariateDialog extends Window implements InitializingBean, InternationalizableComponent {
+public class ViewTraitObservationsDialog extends Window implements InitializingBean, InternationalizableComponent {
 	
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger LOG = LoggerFactory.getLogger(LocationForNumericVariateDialog.class);
+	private final static Logger LOG = LoggerFactory.getLogger(ViewTraitObservationsDialog.class);
 	
-	private static final String OBSERVATION_NO = "LocationForNumericVariateDialog Observation No";
-	private static final String LINE_NO = "LocationForNumericVariateDialog Line No";
-	private static final String LINE_GID = "LocationForNumericVariateDialog Line GID";
-	private static final String LINE_DESIGNATION = "LocationForNumericVariateDialog Line Designation";
+	private static final String OBSERVATION_NO = "ViewTraitObservationsDialog Observation No";
+	private static final String LINE_NO = "ViewTraitObservationsDialog Line No";
+	private static final String LINE_GID = "ViewTraitObservationsDialog Line GID";
+	private static final String LINE_DESIGNATION = "ViewTraitObservationsDialog Line Designation";
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -54,6 +54,7 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
 	private int traitId;
 	private List<Integer> environmentIds;
 	private String traitName;
+	private String traitType;
 	
 	private Table locationTable;
 	private Integer maxNoOfLocation;
@@ -64,9 +65,10 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
 	
 	Map<Integer, String> gidLocMap;
 	
-	public LocationForNumericVariateDialog(Component source, Window parentWindow, int traitId, String traitName, List<Integer> environmentIds){
+	public ViewTraitObservationsDialog(Component source, Window parentWindow, String traitType, int traitId, String traitName, List<Integer> environmentIds){
         this.source = source;
         this.parentWindow = parentWindow;
+        this.traitType = traitType;
         this.traitId = traitId;
         this.traitName = traitName;
         this.environmentIds = environmentIds;
@@ -86,7 +88,7 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
         setWidth("900px");
         setHeight("530px");
         setResizable(false);
-        setCaption(messageSource.getMessage(Message.LINE_BY_LOCATION_FOR_NUMERIC_VARIATE));
+        setCaption(messageSource.getMessage(Message.LINE_BY_LOCATION_TITLE) + " " + traitType);
         // center window within the browser
         center();
         
@@ -129,7 +131,7 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
         locationTable.setColumnHeader(LINE_DESIGNATION, messageSource.getMessage(Message.LINE_DESIGNATION));
         
         for (String locationName : locationList){
-        	String columnName = "LocationForNumericVariateDialog " + locationName;
+        	String columnName = "ViewTraitObservationsDialog " + locationName;
         	locationTable.addContainerProperty(columnName, String.class, null);
         	locationTable.setColumnHeader(columnName, locationName);
         }

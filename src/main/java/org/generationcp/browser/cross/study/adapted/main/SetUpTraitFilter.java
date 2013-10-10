@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.adapted.dialogs.LocationForNumericVariateDialog;
+import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.validators.NumericTraitLimitsValidator;
@@ -338,7 +338,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	public void showNumericVariateClickAction(Integer traitId, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
-		parentWindow.addWindow(new LocationForNumericVariateDialog(this, parentWindow, traitId, traitName, envIds));
+		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
 	}
 	
 
