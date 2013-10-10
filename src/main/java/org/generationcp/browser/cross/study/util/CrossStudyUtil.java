@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.util;
 
+import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
@@ -67,6 +68,28 @@ public class CrossStudyUtil {
 			
     	//default value is important
 		combo.setValue(TraitWeight.IMPORTANT);
+		
+		combo.setEnabled(false);
+		return combo;
+    }
+    
+    /**
+	 * Creates a ComboBox with values of <class>CharacterTraitCondition</class> enum
+	 * @return
+	 */
+    public static ComboBox getCharacterTraitConditionsComboBox(){
+    	ComboBox combo = new ComboBox();
+    	combo.setNullSelectionAllowed(false);
+    	combo.setTextInputAllowed(false);
+    	combo.setImmediate(true);
+    	
+    	for (CharacterTraitCondition condition : CharacterTraitCondition.values()){
+    		combo.addItem(condition);
+    		combo.setItemCaption(condition, condition.getLabel());
+    	}
+			
+    	//default value is keep all
+		combo.setValue(CharacterTraitCondition.KEEP_ALL);
 		
 		combo.setEnabled(false);
 		return combo;
