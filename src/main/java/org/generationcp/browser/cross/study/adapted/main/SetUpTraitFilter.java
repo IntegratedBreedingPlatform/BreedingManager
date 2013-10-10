@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.dialogs.LocationForNumericVariateDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.validators.NumericTraitLimitsValidator;
@@ -40,12 +41,15 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 
 	public static final String PROCEED1_BUTTON_ID = "SetUpTraitFilter Numeric Apply Button ID";
+	public static final String TRAIT_BUTTON_ID = "SetUpTraitFilter Trait Button ID";
     
 	private static final long serialVersionUID = 1L;
 	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitFilter.class);
@@ -182,6 +186,12 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					CheckBox box = new CheckBox();
 					box.setImmediate(true);
 					
+					Button traitNameLink = new Button(trait.getName());
+					traitNameLink.setImmediate(true);
+					traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
+					traitNameLink.setData(TRAIT_BUTTON_ID);
+					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(),trait.getName(),this.environmentIds));
+					
 					TextField limitsField = new TextField();
 					limitsField.setWidth("80px");
 					limitsField.setEnabled(false);
@@ -199,7 +209,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					limitsField.addValidator(new NumericTraitLimitsValidator(conditionBox, minValue, maxValue));
 					this.fieldsToValidate.add(limitsField);
 					
-					Object[] itemObj = new Object[]{ box, trait.getName(), trait.getLocationCount(), trait.getGermplasmCount(), 
+					Object[] itemObj = new Object[]{ box, traitNameLink, trait.getLocationCount(), trait.getGermplasmCount(), 
 							trait.getObservationCount(), minValue, trait.getMedianValue(), maxValue,
 							conditionBox, limitsField, weightBox};
 		    		
@@ -276,8 +286,8 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 
 	private enum TableColumn {
 		NUM_TAG_COL_ID (Message.HEAD_TO_HEAD_TAG, CheckBox.class, 25)
-		, NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, String.class, 120) 	//TODO - turn column to "Button.class"
-		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 60) 
+		, NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, Button.class, 120)
+		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 60)
 		, NUM_NUMBER_OF_LINES_COL_ID (Message.NUMBER_OF_LINES, Integer.class, 65)
 		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 60)
 		, NUM_MIN_COL_ID (Message.MIN, Double.class, 40)
@@ -323,6 +333,12 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	public void attach() {
 		super.attach();
 		updateLabels();
+	}
+
+	public void showNumericVariateClickAction(Integer traitId, String traitName,
+			List<Integer> envIds) {
+		Window parentWindow = this.getWindow();
+		parentWindow.addWindow(new LocationForNumericVariateDialog(this, parentWindow, traitId, traitName, envIds));
 	}
 	
 

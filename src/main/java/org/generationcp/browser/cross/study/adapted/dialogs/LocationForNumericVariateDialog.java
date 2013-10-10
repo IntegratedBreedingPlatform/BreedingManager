@@ -1,14 +1,16 @@
-package org.generationcp.browser.cross.study.h2h.main.dialogs;
+package org.generationcp.browser.cross.study.adapted.dialogs;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.domain.h2h.Observation;
 import org.generationcp.middleware.domain.h2h.TraitObservation;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,14 +35,15 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
 	private static final String LINE_NO = "LocationForNumericVariateDialog Line No";
 	private static final String LINE_GID = "LocationForNumericVariateDialog Line GID";
 	private static final String LINE_DESIGNATION = "LocationForNumericVariateDialog Line Designation";
-	private static final String LOCATION_1 = "LocationForNumericVariateDialog Location 1";
-	private static final String LOCATION_2 = "LocationForNumericVariateDialog Location 2";
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 	
 	@Autowired
 	private CrossStudyDataManager crossStudyDataManager;
+	
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 	
 	private Component source;
 	private Window parentWindow;
@@ -53,11 +56,19 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
 	private String traitName;
 	
 	private Table locationTable;
+	private Integer maxNoOfLocation;
+	List<TraitObservation> traitObservations;
+	List<Integer> gidList;
+	List<String> locationList;
+	Map<Integer, String> gidPreferredNameMap;
 	
-	public LocationForNumericVariateDialog(Component source, Window parentWindow, int traitId, List<Integer> environmentIds){
+	Map<Integer, String> gidLocMap;
+	
+	public LocationForNumericVariateDialog(Component source, Window parentWindow, int traitId, String traitName, List<Integer> environmentIds){
         this.source = source;
         this.parentWindow = parentWindow;
         this.traitId = traitId;
+        this.traitName = traitName;
         this.environmentIds = environmentIds;
     }
 	
@@ -72,7 +83,7 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("800px");
+        setWidth("900px");
         setHeight("530px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.LINE_BY_LOCATION_FOR_NUMERIC_VARIATE));
@@ -82,66 +93,117 @@ public class LocationForNumericVariateDialog extends Window implements Initializ
         initializeLocationTable();
         populateLocationTable();
         
-        popUpLabel = new Label(messageSource.getMessage(Message.LINE_BY_LOCATION_FOR_TRAIT));
+        popUpLabel = new Label(messageSource.getMessage(Message.LINE_BY_LOCATION_FOR_TRAIT) + " " + traitName);
 
         AbsoluteLayout mainLayout = new AbsoluteLayout();
-        mainLayout.setWidth("800px");
+        mainLayout.setWidth("900px");
         mainLayout.setHeight("450px");
         
         mainLayout.addComponent(popUpLabel, "top:10px;left:20px");
-        mainLayout.addComponent(locationTable, "top:30px;left:20px");
+        mainLayout.addComponent(locationTable, "top:35px;left:20px");
         
         addComponent(mainLayout);
 	}
 
-	private void initializeLocationTable() {
+	private void initializeLocationTable() throws MiddlewareQueryException {
+		traitObservations = crossStudyDataManager.getObservationsForTrait(traitId, environmentIds);
+		
+		locationList = getLocations(traitObservations);
+		
 		locationTable = new Table();
-    	locationTable.setWidth("720px");
-    	locationTable.setHeight("350px");
+    	locationTable.setWidth("820px");
+    	locationTable.setHeight("380px");
         locationTable.setImmediate(true);
-        locationTable.setPageLength(-1);
-        //entriesTable.setCacheRate(cacheRate)
         locationTable.setSelectable(true);
-        locationTable.setMultiSelect(true);
-        locationTable.setNullSelectionAllowed(false);
+        locationTable.setColumnCollapsingAllowed(true);
+        locationTable.setColumnReorderingAllowed(true);
         
-        locationTable.addContainerProperty(OBSERVATION_NO, String.class, null);
-        locationTable.addContainerProperty(LINE_NO, String.class, null);
-        locationTable.addContainerProperty(LINE_GID, String.class, null);
+        locationTable.addContainerProperty(OBSERVATION_NO, Integer.class, null);
+        locationTable.addContainerProperty(LINE_NO, Integer.class, null);
+        locationTable.addContainerProperty(LINE_GID, Integer.class, null);
         locationTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
-        locationTable.addContainerProperty(LOCATION_1, String.class, null);
-        locationTable.addContainerProperty(LOCATION_2, String.class, null);
-     
+        
         locationTable.setColumnHeader(OBSERVATION_NO, messageSource.getMessage(Message.OBSERVATION_NO));
         locationTable.setColumnHeader(LINE_NO, messageSource.getMessage(Message.LINE_NO));
         locationTable.setColumnHeader(LINE_GID, messageSource.getMessage(Message.LINE_GID));
         locationTable.setColumnHeader(LINE_DESIGNATION, messageSource.getMessage(Message.LINE_DESIGNATION));
-        locationTable.setColumnHeader(LOCATION_1, messageSource.getMessage(Message.LOCATION_1));
-        locationTable.setColumnHeader(LOCATION_2, messageSource.getMessage(Message.LOCATION_2));
+        
+        for (String locationName : locationList){
+        	String columnName = "LocationForNumericVariateDialog " + locationName;
+        	locationTable.addContainerProperty(columnName, String.class, null);
+        	locationTable.setColumnHeader(columnName, locationName);
+        }
         
 	}
 
 	private void populateLocationTable() throws MiddlewareQueryException {
-		List<TraitObservation> result = crossStudyDataManager.getObservationsForTrait(traitId, environmentIds);
+		gidList = getGIDs(traitObservations);
+		gidPreferredNameMap = germplasmDataManager.getPreferredNamesByGids(gidList);
 		
-		for(TraitObservation observation : result ){
-			String locationNames = observation.getLocationName().replace(";;", ";"); 
-			String[] locs = locationNames.split(";");
-			String loc1, loc2;
+		Integer observationNo = 1;
+		Integer lineNo = 0;
+		int currentGid = 0;
+		for(TraitObservation traitObservation : traitObservations){
 			
-			if(locs.length == 1){
-				locs = locationNames.split(",");
-				loc1 = locs[0];
-				loc2 = "";
-			}
-			else{
-				loc1 = locs[0];
-				loc2 = locs[1];
+			int gid = traitObservation.getGid();
+			String gidName = gidPreferredNameMap.get(gid);
+			String location = traitObservation.getLocationName();
+			String traitVal = traitObservation.getTraitValue();
+			
+			if(gid != currentGid){
+				lineNo++;
+				currentGid = gid;
 			}
 			
-			Object[] itemObj = new Object[]{ observation.getObservationId(), observation.getId(), observation.getGid(), observation.getTraitValue(), loc1,loc2};
-			locationTable.addItem(itemObj, observation.getObservationId());
+			Object[] itemObj = getTableRow(observationNo, lineNo, gid, gidName, location, traitVal);
+			locationTable.addItem(itemObj, observationNo);
+			
+			
+			observationNo++;
 		}
+		
+		
 	}
-
+	
+	private Object[] getTableRow(int observationNo, int lineNo, int gid, String gidName, String location, String traitVal){
+		int noOfCols = 4 + locationList.size();
+		Object[] row = new Object[noOfCols];
+		
+		row[0] = observationNo;
+		row[1] = lineNo;
+		row[2] = gid;
+		row[3] = gidName;
+		row[4 + locationList.indexOf(location)] = traitVal;
+		
+		return row;
+	}
+	
+	private List<Integer> getGIDs(List<TraitObservation> result){
+		List<Integer> gids = new ArrayList<Integer>();
+		
+		for(TraitObservation trait: result){
+			
+			int id = trait.getGid();
+			
+			if(!gids.contains(id)){
+				gids.add(id);
+			}
+		}
+		
+		return gids;
+	}
+	
+	private List<String> getLocations(List<TraitObservation> result){
+		List<String> locationList = new ArrayList<String>();
+		
+		for(TraitObservation trait : result){
+			String location = trait.getLocationName();
+			
+			if(!locationList.contains(location)){
+				locationList.add(location);
+			}
+		}
+		
+		return locationList;
+	}
 }
