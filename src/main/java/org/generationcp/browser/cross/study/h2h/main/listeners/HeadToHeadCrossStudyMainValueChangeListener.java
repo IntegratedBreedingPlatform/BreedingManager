@@ -97,7 +97,7 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         
         } else if (source instanceof AddEnvironmentalConditionsDialog) {
         	if(isTagAll){
-        		((AddEnvironmentalConditionsDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        		((AddEnvironmentalConditionsDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue(), parentClass);
         	}else
         		((AddEnvironmentalConditionsDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), environmentCondition);
         }   
