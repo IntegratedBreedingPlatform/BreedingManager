@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.adapted.main.listeners;
 import java.util.List;
 
 import org.generationcp.browser.cross.study.adapted.main.SetUpTraitFilter;
+import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -33,12 +34,10 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 	@Override
 	public void buttonClick(ClickEvent event) {
 		Object data = event.getButton().getData();
-		if (source instanceof SetUpTraitFilter){
-			SetUpTraitFilter screen = (SetUpTraitFilter) source;
-			if (SetUpTraitFilter.PROCEED1_BUTTON_ID.equals(data)){
-				screen.proceedButtonClickAction(0);
-			}
-			else if (SetUpTraitFilter.TRAIT_BUTTON_ID.equals(data)){
+		if (source instanceof NumericTraitsSection){
+			NumericTraitsSection screen = (NumericTraitsSection) source;
+			
+			if (NumericTraitsSection.TRAIT_BUTTON_ID.equals(data)){
 				screen.showNumericVariateClickAction(traitId, traitName, envIds);
 			}
 		}
