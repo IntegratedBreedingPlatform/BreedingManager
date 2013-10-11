@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.browser.cross.study.adapted.main.SetUpTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
+import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -50,6 +51,12 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 				screen.nextButtonClickAction();
 			}
 			
+		}
+		else if (source instanceof CharacterTraitsSection){
+			CharacterTraitsSection screen = (CharacterTraitsSection) source;
+			if (CharacterTraitsSection.TRAIT_BUTTON_ID.equals(data)){
+				screen.showTraitObservationClickAction(traitId, variateType, traitName, envIds);
+			}
 		}
 	}
 

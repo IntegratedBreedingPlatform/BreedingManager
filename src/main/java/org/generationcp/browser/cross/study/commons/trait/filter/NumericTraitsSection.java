@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
@@ -96,6 +95,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 				traitNameLink.setImmediate(true);
 				traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
 				traitNameLink.setData(TRAIT_BUTTON_ID);
+
 				traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(),trait.getName(), "Numeric Variate", this.environmentIds));
 				
 				TextField limitsField = new TextField();
