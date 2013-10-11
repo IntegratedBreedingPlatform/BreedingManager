@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
+import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.validators.NumericTraitLimitsValidator;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -64,7 +67,6 @@ public class NumericTraitsSection extends VerticalLayout implements
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -90,14 +92,11 @@ public class NumericTraitsSection extends VerticalLayout implements
 				double minValue = trait.getMinValue();
 				double maxValue = trait.getMaxValue();
 
-				CheckBox box = new CheckBox();
-				box.setImmediate(true);
-				
 				Button traitNameLink = new Button(trait.getName());
 				traitNameLink.setImmediate(true);
 				traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
 				traitNameLink.setData(TRAIT_BUTTON_ID);
-//				traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(),trait.getName(),this.environmentIds));
+				traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(),trait.getName(), "Numeric Variate", this.environmentIds));
 				
 				TextField limitsField = new TextField();
 				limitsField.setWidth("80px");
@@ -108,15 +107,14 @@ public class NumericTraitsSection extends VerticalLayout implements
 				
 				ComboBox conditionBox = CrossStudyUtil.getNumericTraitCombobox();
 				conditionBox.setWidth("100px");
-				ComboBox weightBox = CrossStudyUtil.getWeightComboBox();
+				ComboBox weightBox = CrossStudyUtil.getTraitWeightsComboBox();
 				weightBox.setWidth("100px");
 
-				box.addListener(new AdaptedGermplasmValueChangeListener(this, conditionBox, weightBox, limitsField));
-				conditionBox.addListener(new AdaptedGermplasmValueChangeListener(this, box, limitsField, weightBox));
+				conditionBox.addListener(new AdaptedGermplasmValueChangeListener(this, limitsField, weightBox));
 				limitsField.addValidator(new NumericTraitLimitsValidator(conditionBox, minValue, maxValue));
 				this.fieldsToValidate.add(limitsField);
 				
-				Object[] itemObj = new Object[]{ box, traitNameLink, trait.getLocationCount(), trait.getGermplasmCount(), 
+				Object[] itemObj = new Object[]{traitNameLink, trait.getLocationCount(), trait.getGermplasmCount(), 
 						trait.getObservationCount(), minValue, trait.getMedianValue(), maxValue,
 						conditionBox, limitsField, weightBox};
 	    		
@@ -137,8 +135,6 @@ public class NumericTraitsSection extends VerticalLayout implements
 		lblSectionTitle = new Label(messageSource.getMessage(Message.GET_NUMERIC_VARIATES));
 		
 		traitsTable = new Table();
-		traitsTable.setWidth("950px");
-		traitsTable.setHeight("400px");
 		traitsTable.setImmediate(true);
 		traitsTable.setColumnCollapsingAllowed(true);
 		traitsTable.setColumnReorderingAllowed(true);
@@ -157,45 +153,40 @@ public class NumericTraitsSection extends VerticalLayout implements
 	public void showNumericVariateClickAction(Integer traitId, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
-//		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
+		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
 	}
 	
 	
 	
 	
-	// perform validations and if no error, proceed to next tab
-//	public void proceedButtonClickAction(int index){
-//		if (index <= NUM_OF_SECTIONS){
-//			Component nextTab = tabLayouts[index+1];
-//			
-//			if (nextTab != null){
-//				try {
-//					
-//					for (Field field : this.fieldsToValidate){
-//						if (field.isEnabled())
-//							field.validate();
-//					}
-//					mainTabSheet.setSelectedTab(nextTab);
-//					
-//				} catch (InvalidValueException e) {
-//					MessageNotifier.showWarning(getWindow(), 
-//							this.messageSource.getMessage(Message.INCORRECT_LIMITS_VALUE), 
-//							e.getMessage(), Notification.POSITION_CENTERED);
-//				}
-//			}
-//		}
-//	}
+	// perform validation on limits textfields
+	public boolean allFieldsValid(){
+		try {
+			for (Field field : this.fieldsToValidate){
+				if (field.isEnabled())
+					field.validate();
+			}
+			
+			return true;
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showWarning(getWindow(), 
+					this.messageSource.getMessage(Message.INCORRECT_LIMITS_VALUE), 
+					e.getMessage(), Notification.POSITION_CENTERED);
+			return false;
+		}
+	
+	}
 	
 
 	private enum TableColumn {
-		NUM_TAG_COL_ID (Message.HEAD_TO_HEAD_TAG, CheckBox.class, 25)
-		, NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, Button.class, 120)
-		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 60)
+		NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, Button.class, 130)
+		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 85)
 		, NUM_NUMBER_OF_LINES_COL_ID (Message.NUMBER_OF_LINES, Integer.class, 65)
-		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 60)
+		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 105)
 		, NUM_MIN_COL_ID (Message.MIN, Double.class, 40)
 		, NUM_MEDIAN_COL_ID (Message.MEDIAN, Double.class, 50)
-		, NUM_MAX_COL_ID(Message.MAX, Double.class, 50)
+		, NUM_MAX_COL_ID(Message.MAX, Double.class, 40)
 		, NUM_CONDITION_COL_ID (Message.CONDITION_HEADER, ComboBox.class, 105)
 		, NUM_LIMITS_COL_ID (Message.LIMITS, TextField.class, 90)
 		, NUM_PRIORITY_COL_ID (Message.PRIORITY, ComboBox.class, 105);

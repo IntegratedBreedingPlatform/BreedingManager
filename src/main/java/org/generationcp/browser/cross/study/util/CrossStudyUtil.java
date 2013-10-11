@@ -47,7 +47,7 @@ public class CrossStudyUtil {
 			
 		combo.setValue(NumericTraitCriteria.KEEP_ALL);
 		
-		combo.setEnabled(false);
+		combo.setEnabled(true);
 		return combo;
     }
 
@@ -69,7 +69,7 @@ public class CrossStudyUtil {
     	//default value is important
 		combo.setValue(TraitWeight.IMPORTANT);
 		
-		combo.setEnabled(false);
+		combo.setEnabled(true);
 		return combo;
     }
     

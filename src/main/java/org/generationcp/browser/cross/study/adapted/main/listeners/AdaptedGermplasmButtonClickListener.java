@@ -43,6 +43,13 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 			if (NumericTraitsSection.TRAIT_BUTTON_ID.equals(data)){
 				screen.showNumericVariateClickAction(traitId, traitName, envIds);
 			}
+		} else if (source instanceof SetUpTraitFilter){
+			SetUpTraitFilter screen = (SetUpTraitFilter) source;
+			
+			if (SetUpTraitFilter.NEXT_BUTTON_ID.equals(data)){
+				screen.nextButtonClickAction();
+			}
+			
 		}
 	}
 

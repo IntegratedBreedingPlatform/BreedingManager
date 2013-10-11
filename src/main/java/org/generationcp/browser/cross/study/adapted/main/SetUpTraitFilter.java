@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
@@ -16,11 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
+	
+	public static final String NEXT_BUTTON_ID = "SetUpTraitFilter Next Button ID";
 	   
 	private static final long serialVersionUID = 1L;
 	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitFilter.class);
@@ -31,9 +35,13 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	private VerticalLayout[] tabLayouts = new VerticalLayout[NUM_OF_SECTIONS];
+	private QueryForAdaptedGermplasmMain mainScreen;
+	private ResultsComponent nextScreen;
+	private CharacterTraitsSection characterSection;
+	private NumericTraitsSection numericSection;
 
 	private TabSheet mainTabSheet;
+	private Button nextButton;
 	
 	private List<EnvironmentForComparison> environmentsForComparisonList;
 	private List<Integer> environmentIds;
@@ -42,10 +50,15 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	public SetUpTraitFilter(
 			QueryForAdaptedGermplasmMain queryForAdaptedGermplasmMain,
 			ResultsComponent screenThree) {
+		this.mainScreen = queryForAdaptedGermplasmMain;
+		this.nextScreen = screenThree;
 	}
 
 	@Override
 	public void updateLabels() {
+		if (nextButton != null){
+			messageSource.setCaption(nextButton, Message.NEXT);
+		}
 	}
 	
 	@Override
@@ -56,24 +69,27 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	
 	public void createTraitsTabs() {		
 		mainTabSheet = new TabSheet();
+		mainTabSheet.setHeight("470px");
+		
 		
         for (int i = 0; i < NUM_OF_SECTIONS; i++){
         	VerticalLayout layout = new VerticalLayout();
         	
         	switch (i) {
 				case 0:
-					layout = new NumericTraitsSection(this.environmentIds, this.getWindow());
+					numericSection = new NumericTraitsSection(this.environmentIds, this.getWindow());
+					layout = numericSection;
 					break;
 				
 				case 1:
-					layout = new CharacterTraitsSection(this.environmentIds, this.getWindow());
+					characterSection = new CharacterTraitsSection(this.environmentIds, this.getWindow());
+					layout = characterSection;
 					break;
 					
 			}
 
         	
         	mainTabSheet.addTab(layout, messageSource.getMessage(tabLabels[i]));
-        	tabLayouts[i] = layout;
         }
         
         addComponent(mainTabSheet, "top:20px");
@@ -87,6 +103,28 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		}
 		
 		createTraitsTabs();	
+		createButtonLayout();
+	}
+	
+	
+	private void createButtonLayout(){
+		nextButton = new Button();
+		nextButton.setData(NEXT_BUTTON_ID);
+		nextButton.addListener(new AdaptedGermplasmButtonClickListener(this));
+		
+		addComponent(nextButton, "top:515px;left:910px");
+		updateLabels();
+	}
+	
+	// validate conditions before proceeding to next tab
+	public void nextButtonClickAction(){
+		if (numericSection != null){
+			if (!numericSection.allFieldsValid()){
+				return;
+			}
+		}
+		
+		this.mainScreen.selectThirdTab();
 	}
 	
 

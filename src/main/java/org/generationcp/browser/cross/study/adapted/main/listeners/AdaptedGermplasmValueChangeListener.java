@@ -1,12 +1,11 @@
 package org.generationcp.browser.cross.study.adapted.main.listeners;
 
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
-import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
+import org.generationcp.browser.cross.study.constants.TraitWeight;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 
@@ -15,7 +14,7 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 	private static final long serialVersionUID = 1L;
 
 	private Component source;
-	private CheckBox checkbox;
+//	private CheckBox checkbox;
 	private Component conditionCombobox;
 	private Component limitsTextField;
 	private Component weightCombobox;
@@ -31,11 +30,10 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 	}
 	
 
-	public AdaptedGermplasmValueChangeListener(Component source, CheckBox checkbox,
+	public AdaptedGermplasmValueChangeListener(Component source,
 			Component limitsTextField, Component weightCombobox) {
 		super();
 		this.source = source;
-		this.checkbox = checkbox;
 		this.limitsTextField = limitsTextField;
 		this.weightCombobox = weightCombobox;
 	}
@@ -47,8 +45,8 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 				toggleTrait((Boolean)event.getProperty().getValue(), conditionCombobox, 
 						weightCombobox, limitsTextField);
 				
-			} else if (limitsTextField != null && this.checkbox != null){
-				toggleDependentFields(event.getProperty().getValue(), this.checkbox, this.limitsTextField, weightCombobox);
+			} else if (limitsTextField != null ){
+				toggleDependentFields(event.getProperty().getValue(), this.limitsTextField, weightCombobox);
 			}
 
 		} 
@@ -63,14 +61,14 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 				weightCombobox.setEnabled(false);
 			} else {
 				Object value = ((ComboBox)conditionCombobox).getValue();
-				toggleDependentFields( value, null, textField, weightCombobox);
+				toggleDependentFields( value, textField, weightCombobox);
 			}
 		}
 	}
 	
 	
 	
-	public void toggleDependentFields(Object value, CheckBox checkbox, Component textfield, Component weightCombobox){
+	public void toggleDependentFields(Object value, Component textfield, Component weightCombobox){
 		if (value != null && value instanceof NumericTraitCriteria && textfield != null){
 			NumericTraitCriteria criteria = (NumericTraitCriteria) value;
 			
@@ -79,10 +77,6 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 			textfield.setEnabled(!doDisable);
 			
 			toggleWeightCombobox(!dropTrait, weightCombobox);
-			if (checkbox != null){
-				checkbox.setEnabled(!dropTrait);
-				checkbox.setValue(!dropTrait);
-			}
 			
 		}
 	}
@@ -90,7 +84,7 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 	public void toggleWeightCombobox(boolean enabled, Component weightCombobox){
 		weightCombobox.setEnabled(enabled);
 		((ComboBox) weightCombobox).setValue(
-				enabled? EnvironmentWeight.IMPORTANT : EnvironmentWeight.IGNORED);
+				enabled? TraitWeight.IMPORTANT : TraitWeight.IGNORED);
 	}
 
 }
