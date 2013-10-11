@@ -139,14 +139,19 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         addComponent(mainLayout);
     }
 
-    public void clickCheckBoxTag(boolean val){
+    public void clickCheckBoxTag(boolean val, String classname){
     	java.util.Iterator<CheckBox> checkboxes = checkBoxMap.values().iterator();
     	while(checkboxes.hasNext()){
     		CheckBox box = checkboxes.next();
     		box.setValue(val);
     	}
-    	((EnvironmentsAvailableComponent)source).reopenAddEnvironmentConditionsWindow();
-    	
+        
+    	if(classname.equals("EnvironmentsAvailableComponent")){
+    		((EnvironmentsAvailableComponent)source).reopenAddEnvironmentConditionsWindow();
+        }
+        else if(classname.equals("SpecifyAndWeighEnvironments")){
+        	((SpecifyAndWeighEnvironments)source).reopenAddEnvironmentConditionsWindow();
+        }	
     }
     
     private void populateConditionsTable() throws MiddlewareQueryException{

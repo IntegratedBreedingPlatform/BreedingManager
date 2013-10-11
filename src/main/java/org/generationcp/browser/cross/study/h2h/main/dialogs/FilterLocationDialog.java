@@ -304,13 +304,20 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     	setupApplyButton();
     }
     
-    public void clickCheckBoxTag(boolean val){
+    public void clickCheckBoxTag(boolean val, String className){
     	for(String sKey : countryLocationMapping.keySet()){
         	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);        	
         	temp.setValue(val);
         }
     	setupApplyButton();
-    	((EnvironmentsAvailableComponent)source).reopenFilterWindow();
+    	
+    	if(className.equals("EnvironmentsAvailableComponent")){
+    		((EnvironmentsAvailableComponent)source).reopenFilterWindow();
+    	}
+    	else if(className.equals("SpecifyAndWeighEnvironments")){
+    		((SpecifyAndWeighEnvironments)source).reopenFilterWindow();
+    	}
+    	
     }
     
     public void clickApplyButton(String classname){

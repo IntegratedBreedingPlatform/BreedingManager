@@ -140,7 +140,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         addComponent(mainLayout);
     }
 
-    public void clickCheckBoxTag(boolean val){
+    public void clickCheckBoxTag(boolean val, String className){
     	/*
     	for(String sKey : countryLocationMapping.keySet()){
         	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);        	
@@ -155,8 +155,13 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     		box.setValue(val);
     	}
     	setupApplyButton();		
-    	((EnvironmentsAvailableComponent)source).reopenFilterStudyWindow();
     	
+        if(className.equals("EnvironmentsAvailableComponent")){
+        	((EnvironmentsAvailableComponent)source).reopenFilterStudyWindow();
+        }
+        else if(className.equals("SpecifyAndWeighEnvironments")){
+        	((SpecifyAndWeighEnvironments)source).reopenFilterStudyWindow();
+        }
     }
     private void showStudyRows(){
     	for(String studyKey : filterStudyMap.keySet()){

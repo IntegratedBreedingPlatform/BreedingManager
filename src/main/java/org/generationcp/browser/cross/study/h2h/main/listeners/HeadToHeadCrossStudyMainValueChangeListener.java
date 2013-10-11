@@ -37,6 +37,7 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     private TrialEnvironmentProperty environmentCondition;
     private String tableKey;
     private boolean isTagAll = false;
+    private Component parentOfSource; // EnvironmentsAvailableCompoent or SpecifyAndWeighEnvironment
  
     public HeadToHeadCrossStudyMainValueChangeListener(Component source, boolean isTagAll){
         this.source = source;
@@ -60,8 +61,23 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         this.source = source;
         this.environmentCondition = environmentCondition;
     }
+    public HeadToHeadCrossStudyMainValueChangeListener(Component source, Component parentOfSource, boolean isTagAll){
+        this.source = source;
+        this.parentOfSource = parentOfSource;
+        this.isTagAll = isTagAll;
+    }
+    
     @Override
     public void valueChange(ValueChangeEvent event) {
+    	
+		String parentClass = "";
+    	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
+    		parentClass = "SpecifyAndWeighEnvironments";
+    	}
+    	else if( parentOfSource instanceof EnvironmentsAvailableComponent ){
+    		parentClass = "EnvironmentsAvailableComponent";
+    	}
+    	
         if (source instanceof TraitsAvailableComponent) {
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof EnvironmentsAvailableComponent) {
@@ -69,19 +85,19 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
         } else if (source instanceof SpecifyAndWeighEnvironments) {
             ((SpecifyAndWeighEnvironments) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof FilterLocationDialog) {  
-        	if(isTagAll){
-        		((FilterLocationDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        	if(isTagAll){   	
+        		((FilterLocationDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue(), parentClass);
         	}else
         		((FilterLocationDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
         }else if (source instanceof FilterStudyDialog) {
         	if(isTagAll){
-        		((FilterStudyDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        		((FilterStudyDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue(), parentClass);
         	}else
         		((FilterStudyDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), filterLocationDto);
         
         } else if (source instanceof AddEnvironmentalConditionsDialog) {
         	if(isTagAll){
-        		((AddEnvironmentalConditionsDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue());
+        		((AddEnvironmentalConditionsDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue(), parentClass);
         	}else
         		((AddEnvironmentalConditionsDialog) source).clickCheckBox((Boolean)event.getProperty().getValue(), environmentCondition);
         }   

@@ -16,6 +16,7 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 	private Component source;
 	private Integer traitId;
 	private String traitName;
+	private String variateType;
 	private List<Integer> envIds;
 
 	public AdaptedGermplasmButtonClickListener(Component source) {
@@ -23,17 +24,19 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 		this.source = source;
 	}
 
-	public AdaptedGermplasmButtonClickListener(Component source, Integer traitId, String traitName, List<Integer> envIds){
+	public AdaptedGermplasmButtonClickListener(Component source, Integer traitId, String traitName, String variateType, List<Integer> envIds){
 		super();
 		this.source = source;
 		this.traitId = traitId;
 		this.traitName = traitName;
+		this.variateType = variateType;
 		this.envIds = envIds;
 	}
 	
 	@Override
 	public void buttonClick(ClickEvent event) {
 		Object data = event.getButton().getData();
+
 		if (source instanceof NumericTraitsSection){
 			NumericTraitsSection screen = (NumericTraitsSection) source;
 			

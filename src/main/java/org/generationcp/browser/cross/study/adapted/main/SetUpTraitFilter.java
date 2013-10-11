@@ -86,17 +86,16 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 			this.environmentIds.add(envt.getEnvironmentNumber());
 		}
 		
-//		this.fieldsToValidate = new ArrayList<Field>();
-		
 		createTraitsTabs();	
 	}
 	
+
 	
 	@Override
 	public void attach() {
 		super.attach();
 		updateLabels();
 	}
-	
+
 
 }
