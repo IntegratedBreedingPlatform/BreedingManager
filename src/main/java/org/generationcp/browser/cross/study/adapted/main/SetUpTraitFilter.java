@@ -198,7 +198,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					traitNameLink.setImmediate(true);
 					traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
 					traitNameLink.setData(TRAIT_BUTTON_ID);
-					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(),trait.getName(),this.environmentIds));
+					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,trait.getId(), trait.getName(), "Numeric Variate", this.environmentIds));
 					
 					TextField limitsField = new TextField();
 					limitsField.setWidth("80px");
@@ -343,10 +343,10 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		updateLabels();
 	}
 
-	public void showNumericVariateClickAction(Integer traitId, String traitName,
+	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
-		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
+		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow, variateType , traitId, traitName, envIds));
 	}
 	
 

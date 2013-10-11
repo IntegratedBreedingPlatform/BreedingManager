@@ -15,6 +15,7 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 	private Component source;
 	private Integer traitId;
 	private String traitName;
+	private String variateType;
 	private List<Integer> envIds;
 
 	public AdaptedGermplasmButtonClickListener(Component source) {
@@ -22,11 +23,12 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 		this.source = source;
 	}
 
-	public AdaptedGermplasmButtonClickListener(Component source, Integer traitId, String traitName, List<Integer> envIds){
+	public AdaptedGermplasmButtonClickListener(Component source, Integer traitId, String traitName, String variateType, List<Integer> envIds){
 		super();
 		this.source = source;
 		this.traitId = traitId;
 		this.traitName = traitName;
+		this.variateType = variateType;
 		this.envIds = envIds;
 	}
 	
@@ -39,7 +41,7 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 				screen.proceedButtonClickAction(0);
 			}
 			else if (SetUpTraitFilter.TRAIT_BUTTON_ID.equals(data)){
-				screen.showNumericVariateClickAction(traitId, traitName, envIds);
+				screen.showTraitObservationClickAction(traitId, variateType, traitName, envIds);
 			}
 		}
 	}

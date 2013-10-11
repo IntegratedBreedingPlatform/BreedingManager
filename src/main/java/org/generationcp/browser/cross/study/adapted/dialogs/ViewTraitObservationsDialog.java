@@ -54,7 +54,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	private int traitId;
 	private List<Integer> environmentIds;
 	private String traitName;
-	private String traitType;
+	private String variateType;
 	
 	private Table locationTable;
 	private Integer maxNoOfLocation;
@@ -65,10 +65,10 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	
 	Map<Integer, String> gidLocMap;
 	
-	public ViewTraitObservationsDialog(Component source, Window parentWindow, String traitType, int traitId, String traitName, List<Integer> environmentIds){
+	public ViewTraitObservationsDialog(Component source, Window parentWindow, String variateType, int traitId, String traitName, List<Integer> environmentIds){
         this.source = source;
         this.parentWindow = parentWindow;
-        this.traitType = traitType;
+        this.variateType = variateType;
         this.traitId = traitId;
         this.traitName = traitName;
         this.environmentIds = environmentIds;
@@ -88,7 +88,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
         setWidth("900px");
         setHeight("530px");
         setResizable(false);
-        setCaption(messageSource.getMessage(Message.LINE_BY_LOCATION_TITLE) + " " + traitType);
+        setCaption(messageSource.getMessage(Message.LINE_BY_LOCATION_TITLE) + " " + variateType);
         // center window within the browser
         center();
         
