@@ -192,7 +192,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
        nextButton.setData(NEXT_BUTTON_ID);
        nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
        nextButton.setWidth("100px");
-       nextButton.setEnabled(true);
+       nextButton.setEnabled(false);
        addComponent(nextButton, "top:490px;left:880px");
 	}
 
