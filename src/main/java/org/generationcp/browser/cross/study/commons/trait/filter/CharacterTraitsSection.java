@@ -3,6 +3,8 @@ package org.generationcp.browser.cross.study.commons.trait.filter;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
+import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -23,6 +26,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CharacterTraitsSection extends VerticalLayout implements InitializingBean, InternationalizableComponent{
@@ -38,6 +42,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	private static final String CONDITION_COLUMN_ID = "Condition";
 	private static final String LIMITS_COLUMN_ID = "Limits";
 	private static final String PRIORITY_COLUMN_ID = "Priority";
+	public static final String TRAIT_BUTTON_ID = "CharacterTraitsSection Trait Button ID";
 	
 	private List<Integer> environmentIds = null;
 	
@@ -65,7 +70,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 		traitsTable.setColumnCollapsingAllowed(true);
 		traitsTable.setColumnReorderingAllowed(true);
 		
-		traitsTable.addContainerProperty(TRAIT_COLUMN_ID, String.class, null);
+		traitsTable.addContainerProperty(TRAIT_COLUMN_ID, Button.class, null);
 		traitsTable.addContainerProperty(NUM_LOCATIONS_COLUMN_ID, Integer.class, null);
 		traitsTable.addContainerProperty(NUM_LINES_COLUMN_ID, Integer.class, null);
 		traitsTable.addContainerProperty(NUM_OBSERVATIONS_COLUMN_ID, Integer.class, null);
@@ -117,11 +122,17 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 						distinctValuesObserved.append(", ");
 					}
 					
+					Button traitNameLink = new Button(traitInfo.getName());
+					traitNameLink.setImmediate(true);
+					traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
+					traitNameLink.setData(TRAIT_BUTTON_ID);
+					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,traitInfo.getId(), traitInfo.getName(), "Character Variate", this.environmentIds));
+					
 					ComboBox conditionComboBox = CrossStudyUtil.getCharacterTraitConditionsComboBox();
 					ComboBox priorityComboBox = CrossStudyUtil.getTraitWeightsComboBox();
 					TextField txtLimits = new TextField();
 					
-					Object[] itemObj = new Object[]{traitInfo.getName(), traitInfo.getLocationCount(), traitInfo.getGermplasmCount(), traitInfo.getObservationCount()
+					Object[] itemObj = new Object[]{traitNameLink, traitInfo.getLocationCount(), traitInfo.getGermplasmCount(), traitInfo.getObservationCount()
 							, distinctValuesObserved.toString(), conditionComboBox, txtLimits, priorityComboBox};
 					traitsTable.addItem(itemObj, traitInfo);
 				}
@@ -139,5 +150,11 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(lblSectionTitle, Message.CHARACTER_TRAITS_SECTION_TITLE);
+	}
+
+	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,
+			List<Integer> envIds) {
+		Window parentWindow = this.getWindow();
+		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow, variateType , traitId, traitName, envIds));
 	}
 }
