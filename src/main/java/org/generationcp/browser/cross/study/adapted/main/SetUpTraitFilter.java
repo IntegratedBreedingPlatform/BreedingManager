@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
+import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
@@ -30,7 +31,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitFilter.class);
 
 	private static final int NUM_OF_SECTIONS = 3;
-	private static final Message[] tabLabels = {Message.NUMERIC_TRAITS, Message.CHARACTER_TRAIT_FILTER_TAB_TITLE, Message.THIRD_SECTION};
+	private static final Message[] tabLabels = {Message.NUMERIC_TRAITS, Message.CHARACTER_TRAIT_FILTER_TAB_TITLE, Message.CATEGORICAL_VARIATES};
 
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -39,6 +40,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	private ResultsComponent nextScreen;
 	private CharacterTraitsSection characterSection;
 	private NumericTraitsSection numericSection;
+	private CategoricalVariatesSection categoricalVariatesSection;
 
 	private TabSheet mainTabSheet;
 	private Button nextButton;
@@ -85,6 +87,11 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					characterSection = new CharacterTraitsSection(this.environmentIds, this.getWindow());
 					layout = characterSection;
 					break;
+					
+				case 2:
+					categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.getWindow());
+					layout = categoricalVariatesSection;
+					break;					
 					
 			}
 
