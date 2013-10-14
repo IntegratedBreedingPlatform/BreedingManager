@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.generationcp.browser.application.Message;
@@ -98,7 +97,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         addComponent(hLayout);
         panelPedigree= new Panel();
         panelPedigree.setHeight("500px");
-        panelPedigree.setWidth("98%");
+        panelPedigree.setWidth("100%");
         panelPedigree.setScrollable(true);
     
         addComponent(panelPedigree);
