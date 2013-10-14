@@ -11,8 +11,9 @@ import com.vaadin.ui.ComboBox;
 
 public class NumericTraitLimitsValidator implements Validator {
 	
-	public static final String LIST_REGEX = "^(\\d+(.\\d+)*)(\\s*,\\s*\\d+(.\\d+)*)*";
-	public static final String RANGE_REGEX = "^(\\d+(.\\d+)*)\\s*-{1}\\s*(\\d+(.\\d+)*)$";
+	public static final String LIST_REGEX = "^(\\d+(\\.\\d+)*)(\\s*,\\s*\\d+(\\.\\d+)*)*";
+	public static final String RANGE_REGEX = "^(\\d+(\\.\\d+)*)\\s*-{1}\\s*(\\d+(\\.\\d+)*)$";
+	public static final String DOUBLE_REGEX = "^(\\d+(\\.\\d+)*)$";
 	public static final String LIST_DELIMITER = ",";
 	public static final String RANGE_DELIMITER = "-";
 	
@@ -37,7 +38,6 @@ public class NumericTraitLimitsValidator implements Validator {
 
 	@Override
 	public void validate(Object value) throws InvalidValueException {
-		this.delimiter = "";
 		
 		if (!isValid(value)){
 			throw new InvalidValueException(this.errorDetails);
@@ -47,14 +47,14 @@ public class NumericTraitLimitsValidator implements Validator {
 
 	@Override
 	public boolean isValid(Object value) {
-		String stringValue = (String)value;
+		String stringValue = ((String)value).trim();
 		
 		if (isValidFormat(stringValue)){
 			List<Double> values = parseValues(stringValue);
-			this.errorDetails = DEFAULT_ERROR;
 			boolean allValid = true;
 			
 			if (values != null && !values.isEmpty()){
+				this.errorDetails = DEFAULT_ERROR;
 				
 				for (Double aDouble : values){
 					if (exceedLowerLimits(aDouble) || exceedUpperLimits(aDouble)){
@@ -72,19 +72,21 @@ public class NumericTraitLimitsValidator implements Validator {
 	
 	public boolean isValidFormat(String value){
 		NumericTraitCriteria criteria = (NumericTraitCriteria) conditionBox.getValue();
+		this.errorDetails = INVALID_FORMAT;
 		
 		if (NumericTraitCriteria.BETWEEN.equals(criteria)){
 			this.delimiter = RANGE_DELIMITER;
-			this.errorDetails = INVALID_FORMAT;
 			return value.matches(RANGE_REGEX);
 			
 		} else if (NumericTraitCriteria.IN.equals(criteria) || NumericTraitCriteria.NOT_IN.equals(criteria)){
 			this.delimiter = LIST_DELIMITER;
-			this.errorDetails = INVALID_FORMAT;
 			return value.matches(LIST_REGEX);
+			
+		} else {
+			this.delimiter = "";
+			return value.matches(DOUBLE_REGEX);
 		}
 		
-		return true;
 	}
 	
 	private boolean exceedUpperLimits(Double value){
