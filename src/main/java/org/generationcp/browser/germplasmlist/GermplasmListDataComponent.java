@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.germplasm.GermplasmDetailModel;
+import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialog;
 import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialogSource;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
@@ -35,6 +37,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -65,7 +68,7 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmListDataComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListDataComponent.class);
     private static final long serialVersionUID = -6487623269938610915L;
 
     private static final String GID = "gid";
@@ -76,6 +79,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
     private static final String STATUS = "status";
+    private static final String PREFERRED_NAME="preferrred name";
+    private static final String PREFERRED_ID="preferrred id";
 
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
@@ -83,6 +88,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace EntryCode with Preferred Name");
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace EntryCode with Preferred ID");
 
     private Table listDataTable;
     private Button selectAllButton;
@@ -100,8 +107,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private int germplasListUserId;
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE = new Action("Delete selected entries");
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
+
     private Window germplasmListCopyToNewListDialog;
 
     private org.generationcp.browser.germplasmlist.GermplasmListAccordionMenu germplasmListAccordionMenu;
@@ -120,6 +128,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
+    @Autowired
+    private PedigreeDataManager pedigreeDataManager;
+    
     private boolean forGermplasmListWindow;
     private Integer germplasmListStatus;
     private GermplasmList germplasmList;
@@ -136,6 +147,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
     @Override
     public void afterPropertiesSet() throws Exception{
+
         listDatas = new ArrayList<GermplasmListData>();
         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
 
@@ -153,6 +165,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.setPageLength(15); // number of rows to display in the Table
             listDataTable.setSizeFull(); // to make scrollbars appear on the Table component
             
+            
             if(!fromUrl){
                     listDataTable.addActionHandler(new Action.Handler() {
                         public Action[] getActions(Object target, Object sender) {
@@ -168,6 +181,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                         deleteListButtonClickAction();
                         } else if (ACTION_SELECT_ALL == action) {
                         listDataTable.setValue(listDataTable.getItemIds());
+                        }else if(ACTION_VIEW_GERMPLASM_PREFERRED_ID==action){
+                        	setEntryCodeColumnWithGermplasmInfo(PREFERRED_ID);
+                        }else if(ACTION_VIEW_GERMPLASM_PREFERRED_NAME==action){
+                        	setEntryCodeColumnWithGermplasmInfo(PREFERRED_NAME);
                         }
                     }
                     });
@@ -200,6 +217,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             
             setSpacing(true);
             addComponent(listDataTable);
+
 
             if(!fromUrl){
                 HorizontalLayout buttonArea = new HorizontalLayout();
@@ -239,7 +257,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 addEntriesButton.setData(ADD_ENTRIES_BUTTON_ID);
                 buttonArea2.addComponent(addEntriesButton);
                 
-                saveSortingButton = new Button("Save Sorting", new GermplasmListButtonClickListener(this));
+                saveSortingButton = new Button("Save Changes", new GermplasmListButtonClickListener(this));
                 saveSortingButton.setData(SORTING_BUTTON_ID);
                 buttonArea2.addComponent(saveSortingButton);
 
@@ -264,7 +282,26 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         }
     }
 
-    private void populateTable() throws MiddlewareQueryException {
+    protected void setEntryCodeColumnWithGermplasmInfo(String gInfo) {
+    	GermplasmQueries gQuery= new GermplasmQueries();
+    	for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+            Item item = listDataTable.getItem(listDataId);
+            Object gidObject = item.getItemProperty(GID).getValue();
+            Button b= (Button) gidObject;
+            String gid=b.getCaption();
+            GermplasmDetailModel gModel=gQuery.getGermplasmDetails(Integer.valueOf(gid));
+            if(gInfo.equals(PREFERRED_NAME)){
+            	item.getItemProperty(ENTRY_CODE).setValue(gModel.getGermplasmPreferredName());
+            }else{
+            	item.getItemProperty(ENTRY_CODE).setValue(gModel.getPrefID());
+            }
+    	}
+		
+	}
+
+	private void populateTable() throws MiddlewareQueryException {
         listDataTable.removeAllItems();
         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
         listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
@@ -306,7 +343,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     }
 
     // called by GermplasmListButtonClickListener
-    public void saveSortingAction() throws InternationalizableException {
+    public void saveChangesAction() throws InternationalizableException {
         int entryId = 1;
         //re-assign "Entry ID" field based on table's sorting
         for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
@@ -321,6 +358,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             for (GermplasmListData listData : listDatas) {
                 if (listData.getId().equals(listDataId)) {
                     listData.setEntryId(entryId);
+                    listData.setEntryCode(item.getItemProperty(ENTRY_CODE).getValue().toString());
                     break;
                 }
             }
@@ -332,10 +370,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.requestRepaint();
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
-                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SORTING_SUCCESS)
+                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
                     ,3000, Notification.POSITION_CENTERED);
         } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_SORTING);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
         }
 
     }
@@ -432,13 +470,16 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                         public void onClose(ConfirmDialog dialog) {
                             if (dialog.isConfirmed()) {
                                 // Confirmed to continue
-                                try {
+                            	
+                                ArrayList<Integer> gidsWithoutChildren = null;
+								try {
                                     if(getCurrentUserLocalId()==germplasListUserId) {
                                         designationOfListEntriesDeleted="";
                                         for (final Object itemId : selectedIds) {
                         Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
                         Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
                         try {
+                        	gidsWithoutChildren=getGidsToDeletedWithOutChildren();
                             int entryId=Integer.valueOf(pEntryId.getValue().toString());
                             designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
                             germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
@@ -485,6 +526,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                     } else {
                         showMessageInvalidDeletingListEntries();
                     }
+                                    
+                                    
                 } catch (NumberFormatException e) {
                     LOG.error("Error with deleting list entries.", e);
                     e.printStackTrace();
@@ -492,6 +535,19 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                     LOG.error("Error with deleting list entries.", e);
                     e.printStackTrace();
                 }
+                                
+              	try {
+            		
+            		if(gidsWithoutChildren.size() > 0){
+            			deleteGermplasmDialogBox(gidsWithoutChildren);
+            		}
+				} catch (NumberFormatException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MiddlewareQueryException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             } else {
                 // User did not confirm
             }
@@ -720,5 +776,55 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
         parentWindow.addWindow(addEntriesDialog);
     }
+    
+	protected void deleteGermplasmDialogBox(final ArrayList<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
+		// TODO Auto-generated method stub
+    	// getGermplasm Selected
+    	ConfirmDialog.show(this.getWindow(), "Delete Germplasm", "Do you also want to delete the germplasms",
+    			"OK", "Cancel", new ConfirmDialog.Listener() {
+    		public void onClose(ConfirmDialog dialog) {
+    			if (dialog.isConfirmed()) {
+    				ArrayList<Germplasm> gList = new ArrayList<Germplasm>();
+    				for(Integer gid:gidsWithoutChildren){
+    					try {
+							Germplasm g= germplasmDataManager.getGermplasmByGID(gid);
+							g.setGrplce(gid);
+							gList.add(g);
+						} catch (MiddlewareQueryException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+    					
+    					try {
+							germplasmDataManager.updateGermplasm(gList);
+						} catch (MiddlewareQueryException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+    				}
+
+    			}
+    		}
+    	});
+	}
+	
+    protected ArrayList<Integer> getGidsToDeletedWithOutChildren() throws NumberFormatException, MiddlewareQueryException{
+   	 ArrayList<Integer> gids= new ArrayList<Integer>();
+   	Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
+     for (final Object itemId : selectedIds) {
+      
+         Property pGid= listDataTable.getItem(itemId).getItemProperty(GID_VALUE);
+   		 String gid=pGid.getValue().toString();
+   		 if(gid.contains("-")){
+   			 long count = pedigreeDataManager.countDescendants(Integer.valueOf(gid));
+   			 if(count == 0){
+   				 gids.add(Integer.valueOf(gid));
+   			 }
+   		 }
+   	 }
+    	   			 
+   	return gids;
+   	
+   }
     
 }

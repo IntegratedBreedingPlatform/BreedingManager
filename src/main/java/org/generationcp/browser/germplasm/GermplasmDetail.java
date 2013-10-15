@@ -271,8 +271,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
             try {
                 Window pedigreeGraphWindow = new Window("Pedigree Graph");
                 pedigreeGraphWindow.setModal(true);
-                pedigreeGraphWindow.setWidth(getWindow().getWidth()-100);
-                pedigreeGraphWindow.setHeight(getWindow().getHeight()-100);
+                pedigreeGraphWindow.setWidth("100%");
+                pedigreeGraphWindow.setHeight("620px");
                 pedigreeGraphWindow.setName("Pedigree Graph");
                 pedigreeGraphWindow.addComponent(new GermplasmPedigreeGraphComponent(this.gid, this.qQuery));
                 getWindow().addWindow(pedigreeGraphWindow);

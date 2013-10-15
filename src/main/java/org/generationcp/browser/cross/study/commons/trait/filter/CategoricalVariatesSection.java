@@ -171,7 +171,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 					traitNameLink.setImmediate(true);
 					traitNameLink.setStyleName(Reindeer.BUTTON_LINK);
 					traitNameLink.setData(TRAIT_BUTTON_ID);
-					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,traitInfo.getId(), traitInfo.getName(), "Character Variate", this.environmentIds));
+					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,traitInfo.getId(), traitInfo.getName(), "Categorical Variate", this.environmentIds));
 					
 					ComboBox conditionComboBox = CrossStudyUtil.getCategoricalVariatesComboBox();
 					conditionComboBox.setEnabled(true);

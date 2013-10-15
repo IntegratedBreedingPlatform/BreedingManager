@@ -74,7 +74,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(GermplasmListDataComponent.SORTING_BUTTON_ID) // "Save Sorting"
                 && (source instanceof GermplasmListDataComponent)) {
             try {
-                ((GermplasmListDataComponent) source).saveSortingAction();
+                ((GermplasmListDataComponent) source).saveChangesAction();
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
