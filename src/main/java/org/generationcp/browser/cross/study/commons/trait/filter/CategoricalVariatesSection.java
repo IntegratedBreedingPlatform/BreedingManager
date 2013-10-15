@@ -77,7 +77,6 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 				LOG.error("Error with getting categorical variate info given environment ids: " + this.environmentIds.toString(), ex);
 				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting categorical variate info given environment ids."
 						+ " Please report to IBP.", Notification.POSITION_CENTERED);
-				return;
 			}
 		}
 		
@@ -146,10 +145,12 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	
 	private int getMaxCategoryValueCount(List<CategoricalTraitInfo> categoricalValueObjects){
 		int max=0;
-		for(int i=0;i<categoricalValueObjects.size();i++){
-			int count = categoricalValueObjects.get(i).getValues().size();
-			if(count > max)
-				max = count;
+		if(categoricalValueObjects!=null){
+			for(int i=0;i<categoricalValueObjects.size();i++){
+				int count = categoricalValueObjects.get(i).getValues().size();
+				if(count > max)
+					max = count;
+			}
 		}
 		return max;
 	}

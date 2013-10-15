@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
@@ -81,7 +82,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private VerticalLayout rootLayoutForStudyBrowser;
     private VerticalLayout rootLayoutForGermplasmByPhenoTab;
     private VerticalLayout rootLayoutForGermplasmListBrowser;
-
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
