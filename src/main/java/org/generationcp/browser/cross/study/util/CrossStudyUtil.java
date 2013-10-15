@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.util;
 
 import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
+import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
@@ -90,6 +91,29 @@ public class CrossStudyUtil {
 			
     	//default value is keep all
 		combo.setValue(CharacterTraitCondition.KEEP_ALL);
+		
+		combo.setEnabled(false);
+		return combo;
+    }
+    
+    
+    /**
+	 * Creates a ComboBox with values of <class>CategoricalVariatesCondition</class> enum
+	 * @return
+	 */
+    public static ComboBox getCategoricalVariatesComboBox(){
+    	ComboBox combo = new ComboBox();
+    	combo.setNullSelectionAllowed(false);
+    	combo.setTextInputAllowed(false);
+    	combo.setImmediate(true);
+    	
+    	for (CategoricalVariatesCondition condition : CategoricalVariatesCondition.values()){
+    		combo.addItem(condition);
+    		combo.setItemCaption(condition, condition.getLabel());
+    	}
+			
+    	//default value is keep all
+		combo.setValue(CategoricalVariatesCondition.KEEP_ALL);
 		
 		combo.setEnabled(false);
 		return combo;

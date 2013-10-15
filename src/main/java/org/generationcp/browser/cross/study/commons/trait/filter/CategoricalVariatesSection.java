@@ -5,6 +5,7 @@ import java.util.List;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
+import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -172,11 +173,12 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 					traitNameLink.setData(TRAIT_BUTTON_ID);
 					traitNameLink.addListener(new AdaptedGermplasmButtonClickListener(this,traitInfo.getId(), traitInfo.getName(), "Character Variate", this.environmentIds));
 					
-					ComboBox conditionComboBox = CrossStudyUtil.getNumericTraitCombobox();
+					ComboBox conditionComboBox = CrossStudyUtil.getCategoricalVariatesComboBox();
 					conditionComboBox.setEnabled(true);
 					
 					ComboBox priorityComboBox = CrossStudyUtil.getTraitWeightsComboBox();
 					TextField txtLimits = new TextField();
+					txtLimits.setEnabled(false);
 					
 					Object[] itemObj = new Object[traitsTable.getColumnHeaders().length];
 
@@ -200,6 +202,8 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 					itemObj[traitsTable.getColumnHeaders().length - 1] = priorityComboBox;
 					
 					traitsTable.addItem(itemObj, traitInfo);
+					
+					conditionComboBox.addListener(new AdaptedGermplasmValueChangeListener(this, txtLimits, priorityComboBox));
 				}
 			}
 		}

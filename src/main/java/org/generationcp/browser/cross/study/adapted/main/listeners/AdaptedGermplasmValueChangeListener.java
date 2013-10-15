@@ -1,6 +1,8 @@
 package org.generationcp.browser.cross.study.adapted.main.listeners;
 
+import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
+import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
 import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 
@@ -40,11 +42,10 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 
 	@Override
 	public void valueChange(ValueChangeEvent event) {
-		if (source instanceof NumericTraitsSection) {
+		if (source instanceof NumericTraitsSection || source instanceof CategoricalVariatesSection) {
 			if (conditionCombobox != null && weightCombobox != null){
 				toggleTrait((Boolean)event.getProperty().getValue(), conditionCombobox, 
 						weightCombobox, limitsTextField);
-				
 			} else if (limitsTextField != null ){
 				toggleDependentFields(event.getProperty().getValue(), this.limitsTextField, weightCombobox);
 			}
@@ -74,6 +75,15 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 			
 			boolean dropTrait = NumericTraitCriteria.DROP_TRAIT.equals(criteria);
 			boolean doDisable = (NumericTraitCriteria.KEEP_ALL.equals (criteria) || dropTrait);
+			textfield.setEnabled(!doDisable);
+			
+			toggleWeightCombobox(!dropTrait, weightCombobox);
+			
+		} else if (value != null && value instanceof CategoricalVariatesCondition && textfield != null){
+			CategoricalVariatesCondition criteria = (CategoricalVariatesCondition) value;
+			
+			boolean dropTrait = CategoricalVariatesCondition.DROP_TRAIT.equals(criteria);
+			boolean doDisable = (CategoricalVariatesCondition.KEEP_ALL.equals (criteria) || dropTrait);
 			textfield.setEnabled(!doDisable);
 			
 			toggleWeightCombobox(!dropTrait, weightCombobox);
