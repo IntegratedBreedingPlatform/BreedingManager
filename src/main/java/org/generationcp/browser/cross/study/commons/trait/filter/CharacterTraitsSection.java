@@ -19,8 +19,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
+import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -88,12 +91,29 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 		traitsTable.setColumnHeader(CONDITION_COLUMN_ID, messageSource.getMessage(Message.CONDITION_HEADER)); // Condition
 		traitsTable.setColumnHeader(LIMITS_COLUMN_ID, messageSource.getMessage(Message.LIMITS)); // Limits
 		traitsTable.setColumnHeader(PRIORITY_COLUMN_ID, messageSource.getMessage(Message.PRIORITY)); // Priority
+		
+		traitsTable.setColumnWidth(DISTINCT_OBSERVED_VALUES_COLUMN_ID, 250);
+		
+		traitsTable.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(propertyId != null && propertyId == DISTINCT_OBSERVED_VALUES_COLUMN_ID) {
+			    	Table theTraitsTable = (Table) source;
+			    	Item item = theTraitsTable.getItem(itemId);
+			    	String distinctValues = (String) item.getItemProperty(DISTINCT_OBSERVED_VALUES_COLUMN_ID).getValue();
+			    	return "<b>Distinct values:</b>  " + distinctValues;
+			    }                                                                       
+			    return null;
+			}
+		});
 	}
 	
 	private void initializeLayout(){
 		setMargin(true);
 		setSpacing(true);
 		addComponent(lblSectionTitle);
+		
+		traitsTable.setHeight("360px");
+		traitsTable.setWidth("920px");
 		addComponent(traitsTable);
 	}
 	

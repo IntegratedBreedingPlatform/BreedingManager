@@ -92,7 +92,7 @@ public class CrossStudyUtil {
     	//default value is keep all
 		combo.setValue(CharacterTraitCondition.KEEP_ALL);
 		
-		combo.setEnabled(false);
+		combo.setEnabled(true);
 		return combo;
     }
     
