@@ -89,8 +89,8 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					break;
 					
 				case 2:
-					//categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.getWindow());
-					//layout = categoricalVariatesSection;
+					categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.getWindow());
+					layout = categoricalVariatesSection;
 					break;					
 					
 			}
