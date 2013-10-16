@@ -464,10 +464,16 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         germplasm.setMgid(Integer.valueOf(0));
         germplasm.setReferenceId(Integer.valueOf(0));
         germplasm.setUserId(userId);
-        
+         
+    	if(selectedGermplasm != null){
+            if(selectedGermplasm.getGnpgs()<2){
+            	germplasm.setGpid1(selectedGermplasm.getGpid1());
+            } else {
+            	germplasm.setGpid1(selectedGermplasm.getGid());                            	
+            }
+    	}
+    	
         if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-        	if(selectedGermplasm != null)
-        		germplasm.setGpid1(selectedGermplasm.getGpid1());
             germplasm.setGpid2(this.selectedGid);
         } else {
             germplasm.setGpid2(Integer.valueOf(0));
