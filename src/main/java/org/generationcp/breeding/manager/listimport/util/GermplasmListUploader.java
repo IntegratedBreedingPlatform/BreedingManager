@@ -205,13 +205,26 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private void readGermplasmListFileInfo(){
             listName = getCellStringValue(0,0,1,true);
             listTitle = getCellStringValue(0,1,1,true);
-            listType = getCellStringValue(0,2,1,true);
             
-        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-            try {
-            	listDate = simpleDateFormat.parse(getCellStringValue(0,3,1,true));
-            } catch(ParseException e){
-            	showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
+
+            if(getCellStringValue(0,2,0,true).toUpperCase().equals("LIST TYPE")){
+            //LIST TYPE on ROW3, LIST DATE on ROW4
+            	listType = getCellStringValue(0,2,1,true);
+        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        		try {
+        			listDate = simpleDateFormat.parse(getCellStringValue(0,3,1,true));
+        		} catch(ParseException e){
+        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
+        		}
+            } else {
+            //LIST TYPE on ROW4, LIST DATE on ROW3
+        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        		try {
+        			listDate = simpleDateFormat.parse(getCellStringValue(0,2,1,true));
+        		} catch(ParseException e){
+        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
+        		}
+            	listType = getCellStringValue(0,3,1,true);
             }
                         
             importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
@@ -232,38 +245,41 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private void readConditions(){
         
         currentRow++; //Skip row from file info
-        
-        //Check if headers are correct
-        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONDITION") 
-            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
-            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
-            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
-            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
-            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
-            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")){
-            showInvalidFileError("Incorrect headers for conditions.");
-            System.out.println("DEBUG | Invalid file on readConditions header");
-            System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
+    
+        //Conditions section is not required, do nothing if it's not there
+        if(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONDITION")){
+	        //Check if headers are correct
+	        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONDITION") 
+	            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
+	            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
+	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
+	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
+	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
+	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
+	            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")){
+	            showInvalidFileError("Incorrect headers for conditions.");
+	            System.out.println("DEBUG | Invalid file on readConditions header");
+	            System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
+	        }
+	        //If file is still valid (after checking headers), proceed
+	        if(fileIsValid){
+	            ImportedCondition importedCondition;
+	            currentRow++; 
+	            while(!rowIsEmpty()){
+	                importedCondition = new ImportedCondition(getCellStringValue(currentSheet,currentRow,0,true)
+	                    ,getCellStringValue(currentSheet,currentRow,1,true)
+	                    ,getCellStringValue(currentSheet,currentRow,2,true)
+	                    ,getCellStringValue(currentSheet,currentRow,3,true)
+	                    ,getCellStringValue(currentSheet,currentRow,4,true)
+	                    ,getCellStringValue(currentSheet,currentRow,5,true)
+	                    ,getCellStringValue(currentSheet,currentRow,6,true)
+	                    ,getCellStringValue(currentSheet,currentRow,7,true));
+	                importedGermplasmList.addImportedCondition(importedCondition);
+	                currentRow++;
+	            }
+	        }
+	        currentRow++;
         }
-        //If file is still valid (after checking headers), proceed
-        if(fileIsValid){
-            ImportedCondition importedCondition;
-            currentRow++; 
-            while(!rowIsEmpty()){
-                importedCondition = new ImportedCondition(getCellStringValue(currentSheet,currentRow,0,true)
-                    ,getCellStringValue(currentSheet,currentRow,1,true)
-                    ,getCellStringValue(currentSheet,currentRow,2,true)
-                    ,getCellStringValue(currentSheet,currentRow,3,true)
-                    ,getCellStringValue(currentSheet,currentRow,4,true)
-                    ,getCellStringValue(currentSheet,currentRow,5,true)
-                    ,getCellStringValue(currentSheet,currentRow,6,true)
-                    ,getCellStringValue(currentSheet,currentRow,7,true));
-                importedGermplasmList.addImportedCondition(importedCondition);
-                currentRow++;
-            }
-        }
-        currentRow++;
     }
 
     private void readFactors(){
@@ -325,63 +341,71 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     }
     
     private void readConstants(){
-        //Check if headers are correct
-        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONSTANT") 
-            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
-            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
-            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
-            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
-            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")) {
-            showInvalidFileError("Incorrect headers for constants.");
-            System.out.println("DEBUG | Invalid file on readConstants header");
-        }
-        //If file is still valid (after checking headers), proceed
-        if(fileIsValid){
-            ImportedConstant importedConstant;
-            currentRow++; //skip header
-            while(!rowIsEmpty()){
-                importedConstant = new ImportedConstant(getCellStringValue(currentSheet,currentRow,0,true)
-                    ,getCellStringValue(currentSheet,currentRow,1,true)
-                    ,getCellStringValue(currentSheet,currentRow,2,true)
-                    ,getCellStringValue(currentSheet,currentRow,3,true)
-                    ,getCellStringValue(currentSheet,currentRow,4,true)
-                    ,getCellStringValue(currentSheet,currentRow,5,true)
-                    ,getCellStringValue(currentSheet,currentRow,6,true));
-                importedGermplasmList.addImportedConstant(importedConstant);   
-                currentRow++;
-            }
-        }
-        currentRow++;
+    	
+    	//Constants section is not required, do nothing if it's not there
+    	if(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONSTANT")){
+	        //Check if headers are correct
+	        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONSTANT") 
+	            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
+	            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
+	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
+	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
+	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
+	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")) {
+	            showInvalidFileError("Incorrect headers for constants.");
+	            System.out.println("DEBUG | Invalid file on readConstants header");
+	        }
+	        //If file is still valid (after checking headers), proceed
+	        if(fileIsValid){
+	            ImportedConstant importedConstant;
+	            currentRow++; //skip header
+	            while(!rowIsEmpty()){
+	                importedConstant = new ImportedConstant(getCellStringValue(currentSheet,currentRow,0,true)
+	                    ,getCellStringValue(currentSheet,currentRow,1,true)
+	                    ,getCellStringValue(currentSheet,currentRow,2,true)
+	                    ,getCellStringValue(currentSheet,currentRow,3,true)
+	                    ,getCellStringValue(currentSheet,currentRow,4,true)
+	                    ,getCellStringValue(currentSheet,currentRow,5,true)
+	                    ,getCellStringValue(currentSheet,currentRow,6,true));
+	                importedGermplasmList.addImportedConstant(importedConstant);   
+	                currentRow++;
+	            }
+	        }
+	        currentRow++;
+    	}
     }
     
     private void readVariates(){
-        //Check if headers are correct
-        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("VARIATE")
-            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
-            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
-            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
-            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
-            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")) {
-            showInvalidFileError("Incorrect headers for variates.");
-            System.out.println("DEBUG | Invalid file on readVariates header");
-        }
-        //If file is still valid (after checking headers), proceed
-        if(fileIsValid){
-            ImportedVariate importedVariate;
-            currentRow++; //skip header
-            while(!rowIsEmpty()){
-                importedVariate = new ImportedVariate(getCellStringValue(currentSheet,currentRow,0,true)
-                    ,getCellStringValue(currentSheet,currentRow,1,true)
-                    ,getCellStringValue(currentSheet,currentRow,2,true)
-                    ,getCellStringValue(currentSheet,currentRow,3,true)
-                    ,getCellStringValue(currentSheet,currentRow,4,true)
-                    ,getCellStringValue(currentSheet,currentRow,5,true));
-                importedGermplasmList.addImportedVariate(importedVariate);
-                currentRow++;
-            }
-        }
-        currentRow++;
+    	
+    	//Variates section is not required, do nothing if it's not there
+    	if(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("VARIATE")){
+	        //Check if headers are correct
+	        if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("VARIATE")
+	            || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
+	            || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
+	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
+	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
+	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")) {
+	            showInvalidFileError("Incorrect headers for variates.");
+	            System.out.println("DEBUG | Invalid file on readVariates header");
+	        }
+	        //If file is still valid (after checking headers), proceed
+	        if(fileIsValid){
+	            ImportedVariate importedVariate;
+	            currentRow++; //skip header
+	            while(!rowIsEmpty()){
+	                importedVariate = new ImportedVariate(getCellStringValue(currentSheet,currentRow,0,true)
+	                    ,getCellStringValue(currentSheet,currentRow,1,true)
+	                    ,getCellStringValue(currentSheet,currentRow,2,true)
+	                    ,getCellStringValue(currentSheet,currentRow,3,true)
+	                    ,getCellStringValue(currentSheet,currentRow,4,true)
+	                    ,getCellStringValue(currentSheet,currentRow,5,true));
+	                importedGermplasmList.addImportedVariate(importedVariate);
+	                currentRow++;
+	            }
+	        }
+	        currentRow++;
+    	}
     }
 
     
