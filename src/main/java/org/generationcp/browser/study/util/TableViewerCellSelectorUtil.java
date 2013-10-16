@@ -118,8 +118,21 @@ public class TableViewerCellSelectorUtil {
 					contextWindow.setCaption("Choose a color");
 					contextWindow.setWidth("170px");
 					contextWindow.setHeight("60px");
-					contextWindow.setPositionX(event.getClientX());
-					contextWindow.setPositionY(event.getClientY());
+
+					//Computation doesn't work too well because table width is always 100.0 (a.k.a 100%) not pixels
+					if((int) event.getClientX()>(table.getWidth()-contextWindow.getWidth()-50)){
+						contextWindow.setPositionX((int) (event.getClientX()-contextWindow.getWidth()));
+					} else {
+						contextWindow.setPositionX(event.getClientX());
+					}
+					
+					//Computation doesn't work too well because table height is always 100.0 (a.k.a 100%) not pixels
+					if((int) event.getClientY()>(table.getHeight()-contextWindow.getHeight()-120)){
+						contextWindow.setPositionY((int) (event.getClientY()-contextWindow.getHeight()));
+					} else {
+						contextWindow.setPositionY(event.getClientY());	
+					}
+					
 					contextWindow.setResizable(false);
 					
 					cp = new ColorPicker("Select color for the cells");
