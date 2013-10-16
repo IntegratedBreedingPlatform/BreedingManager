@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -317,6 +318,9 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     	else if(className.equals("SpecifyAndWeighEnvironments")){
     		((SpecifyAndWeighEnvironments)source).reopenFilterWindow();
     	}
+    	else if(className.equals("EnvironmentFilter")){
+    		((EnvironmentFilter)source).reopenFilterWindow();
+    	}
     	
     }
     
@@ -341,6 +345,9 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         }
         else if(classname.equals("SpecifyAndWeighEnvironments")){
         	((SpecifyAndWeighEnvironments)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
+        }
+        else if(classname.equals("EnvironmentFilter")){
+        	((EnvironmentFilter)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
         }
     }
     

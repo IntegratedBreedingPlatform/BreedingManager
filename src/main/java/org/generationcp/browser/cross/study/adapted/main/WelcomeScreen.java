@@ -2,6 +2,7 @@ package org.generationcp.browser.cross.study.adapted.main;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
     public static final String NEXT_BUTTON_ID = "WelcomeScreen Next Button ID";
     
     private QueryForAdaptedGermplasmMain mainScreen;
-	private SpecifyAndWeighEnvironments nextScreen;
+	private EnvironmentFilter nextScreen;
 	
 	private Label introductionMessage;
 	
@@ -33,7 +34,7 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public WelcomeScreen(QueryForAdaptedGermplasmMain mainScreen, SpecifyAndWeighEnvironments nextScreen) {
+	public WelcomeScreen(QueryForAdaptedGermplasmMain mainScreen, EnvironmentFilter nextScreen) {
 		 this.mainScreen = mainScreen;
 		 this.nextScreen = nextScreen;
 	}
