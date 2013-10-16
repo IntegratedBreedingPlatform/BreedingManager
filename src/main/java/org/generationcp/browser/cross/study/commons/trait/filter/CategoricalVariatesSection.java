@@ -40,7 +40,6 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	private static final String NUM_LOCATIONS_COLUMN_ID = "Number of Locations";
 	private static final String NUM_LINES_COLUMN_ID = "Number of Lines";
 	private static final String NUM_OBSERVATIONS_COLUMN_ID = "Number of Observations";
-	private static final String DISTINCT_OBSERVED_VALUES_COLUMN_ID = "Distinct Observed Values";
 	private static final String CLASS_COLUMN_ID = "Class";
 	private static final String CONDITION_COLUMN_ID = "Condition";
 	private static final String LIMITS_COLUMN_ID = "Limits";
@@ -65,6 +64,11 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		super();
 		this.environmentIds = environmentIds;
 		this.parentWindow = parentWindow;
+		
+		for(int i=0;i<environmentIds.size();i++){
+			System.out.println("EVT ID: "+environmentIds.get(i).toString());
+		}
+		System.out.println("");
 	}
 
 	private void initializeComponents(){

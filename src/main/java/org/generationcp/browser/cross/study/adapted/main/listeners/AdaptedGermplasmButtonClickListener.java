@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.adapted.main.listeners;
 import java.util.List;
 
 import org.generationcp.browser.cross.study.adapted.main.SetUpTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.WelcomeScreen;
 import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
@@ -39,7 +40,14 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 	public void buttonClick(ClickEvent event) {
 		Object data = event.getButton().getData();
 
-		if (source instanceof NumericTraitsSection){
+		if (source instanceof WelcomeScreen){
+			WelcomeScreen screen = (WelcomeScreen) source;
+			System.out.println("instanceof WelcomeScreen");
+			if (WelcomeScreen.NEXT_BUTTON_ID.equals(data)){
+				System.out.println("buttondata equals next_button_id");
+				screen.nextButtonClickAction();
+			}
+		} else if (source instanceof NumericTraitsSection){
 			NumericTraitsSection screen = (NumericTraitsSection) source;
 			
 			if (NumericTraitsSection.TRAIT_BUTTON_ID.equals(data)){

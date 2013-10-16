@@ -451,6 +451,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     }
     
     public void nextButtonClickAction(){
+    	System.out.println("next button on SpecifyAndWeighEnvironments clicked");
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	List<EnvironmentForComparison> toBeCompared = new ArrayList();
     	    	

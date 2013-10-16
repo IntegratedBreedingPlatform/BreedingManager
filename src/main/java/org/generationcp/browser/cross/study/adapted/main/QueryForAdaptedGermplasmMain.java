@@ -30,10 +30,12 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 
 	    private Label mainTitle;
 
+	    private WelcomeScreen welcomeScreen;
 	    private SpecifyAndWeighEnvironments screenOne;
 	    private SetUpTraitFilter screenTwo;
 	    private ResultsComponent screenThree;
 
+	    private Tab welcomeTab;
 	    private Tab firstTab;
 	    private Tab secondTab;
 	    private Tab thirdTab;
@@ -58,17 +60,19 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        accordion = new Accordion();
 	        accordion.setWidth("1000px");
 
+	        welcomeScreen = new WelcomeScreen(this, screenOne);
 	        screenThree = new ResultsComponent(this);
 	        screenTwo = new SetUpTraitFilter(this, screenThree);
 	        screenOne = new SpecifyAndWeighEnvironments(this, screenTwo, screenThree);
 
+	        welcomeTab = accordion.addTab(welcomeScreen, messageSource.getMessage(Message.INTRODUCTION));
 	        firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_WEIGH_ENVIRONMENT));
 	        secondTab = accordion.addTab(screenTwo,  messageSource.getMessage(Message.SETUP_TRAIT_FILTER));
 	        thirdTab = accordion.addTab(screenThree, messageSource.getMessage(Message.DISPLAY_RESULTS));
 	        
-	        
+	        welcomeTab.setEnabled(true);	        	        
 	        firstTab.setEnabled(true);
-	        secondTab.setEnabled(true);
+	        secondTab.setEnabled(false);
 	        thirdTab.setEnabled(false);
 
 	        accordion.addListener(new SelectedTabChangeListener() {
@@ -77,13 +81,20 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	                Component selected =accordion.getSelectedTab();
 	                Tab tab = accordion.getTab(selected);
 
-	                if(tab!=null && tab.equals(firstTab)){
+	                if(tab!=null && tab.equals(welcomeTab)){
+	                	welcomeTab.setEnabled(true);
+	                    firstTab.setEnabled(true);
+	                    secondTab.setEnabled(false);
+	                } else if(tab!=null && tab.equals(firstTab)){
+	                	welcomeTab.setEnabled(true);
 	                    secondTab.setEnabled(true);
 	                    thirdTab.setEnabled(false);
 	                } else if(tab!=null && tab.equals(secondTab)){
+	                	welcomeTab.setEnabled(false);
 	                	firstTab.setEnabled(true);
 	                	thirdTab.setEnabled(true);
 	                } else if(tab!=null && tab.equals(thirdTab)){
+	                	welcomeTab.setEnabled(false);
 	                	firstTab.setEnabled(false);
 	                	thirdTab.setEnabled(true);
 	                }
@@ -127,8 +138,17 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(false);
 	    }
+		
+	    public void selectWelcomeTab(){
+	    	welcomeTab.setEnabled(true);
+	    	firstTab.setEnabled(true);
+	        this.accordion.setSelectedTab(welcomeScreen);
+	        secondTab.setEnabled(false);
+	        thirdTab.setEnabled(false);
+	    }		
 	    
 	    public void selectFirstTab(){
+	    	welcomeTab.setEnabled(true);
 	    	firstTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenOne);
 	        secondTab.setEnabled(true);
@@ -136,6 +156,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	    }
 
 	    public void selectSecondTab(){
+	    	welcomeTab.setEnabled(false);
 	    	firstTab.setEnabled(true);
 	    	secondTab.setEnabled(true);
 	        this.accordion.setSelectedTab(screenTwo);
@@ -143,6 +164,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	    }
 
 	    public void selectThirdTab(){
+	    	welcomeTab.setEnabled(false);
 	        firstTab.setEnabled(false);
 	        secondTab.setEnabled(true);
 	        thirdTab.setEnabled(true);
