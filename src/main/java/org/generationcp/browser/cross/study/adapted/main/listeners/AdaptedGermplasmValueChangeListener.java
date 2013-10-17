@@ -94,7 +94,7 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 					textfield.setEnabled(false);
 					toggleWeightCombobox(false, weightCombobox);
 				} else if (condition == CharacterTraitCondition.KEEP_ALL){
-					textfield.setEnabled(true);
+					textfield.setEnabled(false);
 					toggleWeightCombobox(true, weightCombobox);
 				} else {
 					textfield.setEnabled(true);
@@ -102,14 +102,14 @@ public class AdaptedGermplasmValueChangeListener implements ValueChangeListener 
 						toggleWeightCombobox(true, weightCombobox);
 					}
 				}
-		        } else if (value instanceof CategoricalVariatesCondition){
-  		   	        CategoricalVariatesCondition criteria = (CategoricalVariatesCondition) value;
+		    } else if (value instanceof CategoricalVariatesCondition){
+  		   	    CategoricalVariatesCondition criteria = (CategoricalVariatesCondition) value;
 			
-			        boolean dropTrait = CategoricalVariatesCondition.DROP_TRAIT.equals(criteria);
-			        boolean doDisable = (CategoricalVariatesCondition.KEEP_ALL.equals (criteria) || dropTrait);
-			        textfield.setEnabled(!doDisable);
+			    boolean dropTrait = CategoricalVariatesCondition.DROP_TRAIT.equals(criteria);
+			    boolean doDisable = (CategoricalVariatesCondition.KEEP_ALL.equals (criteria) || dropTrait);
+			    textfield.setEnabled(!doDisable);
 			
-			        toggleWeightCombobox(!dropTrait, weightCombobox);
+			    toggleWeightCombobox(!dropTrait, weightCombobox);
 			}
 		}
 	}

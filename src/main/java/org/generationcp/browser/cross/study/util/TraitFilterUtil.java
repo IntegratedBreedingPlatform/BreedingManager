@@ -3,6 +3,11 @@ package org.generationcp.browser.cross.study.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Kevin Manansala
+ *
+ */
 public class TraitFilterUtil {
 
 	/**
