@@ -1,46 +1,5 @@
 package org.generationcp.browser.cross.study.h2h.main;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
-
-import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
-import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
-import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
-import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
-import org.generationcp.browser.cross.study.h2h.pojos.Result;
-import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
-import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExport;
-import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExportException;
-import org.generationcp.browser.germplasmlist.util.GermplasmListExporter;
-import org.generationcp.browser.germplasmlist.util.GermplasmListExporterException;
-import org.generationcp.commons.util.FileDownloadResource;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.h2h.GermplasmPair;
-import org.generationcp.middleware.domain.h2h.Observation;
-import org.generationcp.middleware.domain.h2h.TraitInfo;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.hibernate.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -49,7 +8,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
+
+import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
+import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
+import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
+import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
+import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExport;
+import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExportException;
+import org.generationcp.browser.cross.study.util.HeadToHeadResultsUtil;
+import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.h2h.GermplasmPair;
+import org.generationcp.middleware.domain.h2h.Observation;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.data.Item;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ResultsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -231,9 +218,10 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
             	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
             	TraitForComparison traitForCompare = traitsIteratorArray[i];
             	if(traitForCompare.isDisplay()){
+            		Map<String, Object> valuesMap = new HashMap<String, Object>();
 	            	for(String columnKey : columnIdData){
 	            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
-	            		String cellVal = getColumnValue(  columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
+	            		String cellVal = getColumnValue(valuesMap, columnKey,   germplasmPair,  traitForCompare,   observationMap,  environmentForComparisonList);                
 	            		traitDataMap.put(cellKey, cellVal);
 	                	item.getItemProperty(cellKey).setValue(cellVal);                	
 	                }
@@ -247,219 +235,37 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         
     }
     
-    private String getColumnValue(String columnId, GermplasmPair germplasmPair, 
+    private String getColumnValue(Map<String,Object> valuesMap, String columnId, GermplasmPair germplasmPair, 
     		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap, List<EnvironmentForComparison> environmentForComparisonList){
-    	String val = "0";
+    	Object value = 0;
     	if(NUM_OF_ENV_COLUMN_ID.equalsIgnoreCase(columnId)){
     		//get the total number of environment where the germplasm pair was observer and the observation value is not null and not empty string
-    		val = getTotalNumOfEnv(germplasmPair, traitForComparison, observationMap,environmentForComparisonList).toString();
-    		
+    		value = HeadToHeadResultsUtil.getTotalNumOfEnv(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
     		
     	}else if(NUM_SUP_COLUMN_ID.equalsIgnoreCase(columnId)){
-    		val = getTotalNumOfSup(germplasmPair, traitForComparison, observationMap,environmentForComparisonList).toString();
+    		value = HeadToHeadResultsUtil.getTotalNumOfSup(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
     		
     	} else if(MEAN_TEST_COLUMN_ID.equalsIgnoreCase(columnId)){
-    		val = getMeanValue(germplasmPair, 1, traitForComparison, observationMap, environmentForComparisonList).toString();
+    		value = HeadToHeadResultsUtil.getMeanValue(germplasmPair, 1, traitForComparison, observationMap, environmentForComparisonList);
     		
     	} else if(MEAN_STD_COLUMN_ID.equalsIgnoreCase(columnId)){
-    		val = getMeanValue(germplasmPair, 2, traitForComparison, observationMap, environmentForComparisonList).toString();
+    		value = HeadToHeadResultsUtil.getMeanValue(germplasmPair, 2, traitForComparison, observationMap, environmentForComparisonList);
     		
     	} else if(PVAL_COLUMN_ID.equalsIgnoreCase(columnId)){
-    		val = getPval(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
+    		Integer numOfEnvts = (Integer) valuesMap.get(NUM_OF_ENV_COLUMN_ID);
+    		Double standardMean = (Double) valuesMap.get(MEAN_STD_COLUMN_ID);
+    		value = HeadToHeadResultsUtil.getPvalue(numOfEnvts, standardMean);
     		
     	}else if(MEAN_DIFF_COLUMN_ID.equalsIgnoreCase(columnId)){
-    		val = getMeanDiff(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
-    	}
-    	return val;
-    }
-    
-    private String getPval(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
-    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	double counter = 0;
-    	return "-";//decimalFormmatter.format(counter);
-    }
-    private String getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
-    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	double counter = 0;
-    	//r * ( summation of [ Ek (Tijk-Silk)/Nijl ] )
-    	/*
-    	 * Nijl = is the number of environment where both tijk and silk is not null and not empty string
-    	 * r = 1 if increasing and -1 if decreasing
-    	 * Ek - environment weight
-    	 */
-    	
-    	boolean isIncreasing = false;
-    	int numOfValidEnv = 0;
-    	if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.INCREASING.intValue()){
-    		isIncreasing = true;
-    	}else if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.DECREASING.intValue()){
-    		isIncreasing = false;
+    		value = HeadToHeadResultsUtil.getMeanDiff(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);
     	}
     	
-    	String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
-		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
-		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
-		List<Double> listOfObsVal = new ArrayList();
-		for(EnvironmentForComparison envForComparison: environmentForComparisonList){
-			
-			String envId = envForComparison.getEnvironmentNumber().toString();
-			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
-			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
-			
-			ObservationList obs1 = observationMap.get(keyToChecked1);
-    		ObservationList obs2 = observationMap.get(keyToChecked2);
-    		
-    		
-    		//if(isValidObsValue(obs1, obs2)){
-    		if(obs1 != null && obs2 != null){
-	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-	    			numOfValidEnv++;
-	    			//double obs1Val = Double.parseDouble(obs1.getValue());
-	    			//double obs2Val = Double.parseDouble(obs2.getValue());
-	    			double obs1Val = obs1.getObservationAverage();
-	    			double obs2Val = obs2.getObservationAverage();
-	    			double envWeight = envForComparison.getWeight(); 
-	    			listOfObsVal.add(Double.valueOf( envWeight * (obs1Val - obs2Val) ));
-	    		}
-    		}
-			
-		}
-		double summation = 0;
-		for(Double obsCalculatedVal : listOfObsVal){
-			summation += (obsCalculatedVal.doubleValue() / numOfValidEnv);
-		}
-		
-		if(isIncreasing == false && summation != 0)
-			summation = -1 * summation; 
-    	
-		//summation = 123456789.12345567;
-		return decimalFormmatter.format(summation);
-    	//return Double.valueOf();
-    }
-    private Integer getTotalNumOfSup(GermplasmPair germplasmPair, 
-    		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	boolean isIncreasing = false;
-    	int counter = 0;
-    	if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.INCREASING.intValue()){
-    		isIncreasing = true;
-    	}else if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.DECREASING.intValue()){
-    		isIncreasing = false;
+    	valuesMap.put(columnId, value);
+    	if (value instanceof Double){
+    		value = decimalFormmatter.format(value);
     	}
-    	
-    	String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
-		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
-		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
-		for(EnvironmentForComparison envForComparison: environmentForComparisonList){
-			
-			String envId = envForComparison.getEnvironmentNumber().toString();
-			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
-			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
-			
-			ObservationList obs1 = observationMap.get(keyToChecked1);
-    		ObservationList obs2 = observationMap.get(keyToChecked2);
-    		
-    		
-    		//if(isValidObsValue(obs1, obs2)){
-    		if(obs1 != null && obs2 != null){
-	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-	    			
-	    			//double obs1Val = Double.parseDouble(obs1.getValue());
-	    			//double obs2Val = Double.parseDouble(obs2.getValue());
-	    			double obs1Val = obs1.getObservationAverage();
-	    			double obs2Val = obs2.getObservationAverage();
-	    			
-	    			if(isIncreasing){
-	    				if(obs1Val > obs2Val)
-	    					counter++;
-	    			}else{
-	    				if(obs1Val < obs2Val)
-	    					counter++;
-	    			}
-	    			
-	    			
-	    		}
-    		}
-			
-		}
-		
-		return Integer.valueOf(counter);
+    	return value.toString();
     }
-    private Integer getTotalNumOfEnv(GermplasmPair germplasmPair, 
-    		TraitForComparison traitForComparison, Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	int counter = 0;
-    		
-    		
-    		String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
-    		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
-    		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
-    		for(EnvironmentForComparison envForComparison: environmentForComparisonList){
-    			
-    			String envId = envForComparison.getEnvironmentNumber().toString();
-    			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
-    			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
-    			
-    			ObservationList obs1 = observationMap.get(keyToChecked1);
-        		ObservationList obs2 = observationMap.get(keyToChecked2);
-        		if(obs1 != null && obs2 != null){
-	        		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-	        		//if(isValidObsValue(obs1, obs2)){
-	        			counter++;
-	        			
-	        		}
-        		}
-    			
-    		}
-    	
-    		
-    	return Integer.valueOf(counter);
-    }
-    
-    /*
-     * Gets mean of all observed values for a trait for a germplasm in the pair.
-     * Mean = sum of observed values for germplasm / # of envt's 
-     * If index = 1, get mean for first germplasm in pair. If index = 2, get mean for second germplasm.
-     */
-    private String getMeanValue(GermplasmPair germplasmPair, int index, TraitForComparison traitForComparison, 
-    		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	double counter = 0;
-    	int numOfValidEnv = 0;
-    	double summation = 0;
-    	String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
-		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
-		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
-
-		for(EnvironmentForComparison envForComparison: environmentForComparisonList){			
-			String envId = envForComparison.getEnvironmentNumber().toString();
-			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
-			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
-			
-			ObservationList obs1 = observationMap.get(keyToChecked1);
-    		ObservationList obs2 = observationMap.get(keyToChecked2);
-    		
-    		// get only values for envt's where trait has been observed for both germplasms
-    		if(obs1 != null && obs2 != null){
-	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-	    			numOfValidEnv++;
-	    			
-	    			if (index == 1){
-	    				summation += obs1.getObservationAverage();
-	    			} else if (index == 2){
-	    				summation += obs2.getObservationAverage();
-	    			}
-	    			
-	    		}
-    		}
-			
-		}
-		
-		double mean = 0;
-		if (numOfValidEnv > 0){
-			mean = summation / numOfValidEnv;
-		}
-		
-		return decimalFormmatter.format(mean);
-    }
-
     
     private boolean isValidObsValue(Observation obs1, Observation obs2){
     	if(obs1 != null && obs2 != null && obs1.getValue() != null 
