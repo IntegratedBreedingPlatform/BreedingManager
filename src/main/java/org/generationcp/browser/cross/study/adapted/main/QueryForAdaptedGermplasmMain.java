@@ -65,7 +65,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        welcomeScreen = new WelcomeScreen(this, screenOne);
 	        screenThree = new DisplayResults(this);
 	        screenTwo = new SetUpTraitFilter(this, screenThree);
-	        screenOne = new EnvironmentFilter(this, screenTwo, screenThree);
+	        screenOne = new EnvironmentFilter(this, screenTwo);
 
 	        welcomeTab = accordion.addTab(welcomeScreen, messageSource.getMessage(Message.INTRODUCTION));
 	        firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_WEIGH_ENVIRONMENT));

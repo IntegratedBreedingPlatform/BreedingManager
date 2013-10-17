@@ -13,16 +13,13 @@ import java.util.StringTokenizer;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
-import org.generationcp.browser.cross.study.adapted.main.DisplayResults;
 import org.generationcp.browser.cross.study.adapted.main.SetUpTraitFilter;
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
-import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
@@ -43,7 +40,6 @@ import org.generationcp.middleware.domain.h2h.Observation;
 import org.generationcp.middleware.domain.h2h.TraitInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,18 +48,17 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -91,10 +86,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     private HeadToHeadCrossStudyMain mainScreen1;
     private ResultsComponent nextScreen1;
     
-    private Integer currentTestEntryGID;
-    private Integer currentStandardEntryGID;
-    private List<TraitForComparison> traitsForComparisonList;
-    
     private Map<String, ObservationList> observationMap;
     private Map<String, String> germplasmIdNameMap;
     private List<GermplasmPair> finalGermplasmPairs;
@@ -107,7 +98,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     /*Adapted Germplasm Variables*/
     private QueryForAdaptedGermplasmMain mainScreen2;
 	private SetUpTraitFilter nextScreen2;
-	private DisplayResults resultsScreen2;
 	
 	private Label headerLabel;
 	private Label headerValLabel;
@@ -131,11 +121,10 @@ private static final long serialVersionUID = -3667517088395779496L;
     private FilterStudyDialog filterStudy;
     private AddEnvironmentalConditionsDialog addConditionsDialog;
     
-    private Map filterSetLevel1;
-    private Map filterSetLevel3;
-    private Map filterSetLevel4;
+    private Map<String, String> filterSetLevel1;
+    private Map<String, String> filterSetLevel3;
+    private Map<String, String> filterSetLevel4;
     
-    private static Integer NON_NUMERIC_VAL = -1;
     private boolean isFilterLocationClicked = false;
     private boolean isFilterStudyClicked = false;
     
@@ -156,26 +145,19 @@ private static final long serialVersionUID = -3667517088395779496L;
     @Autowired
     private CrossStudyDataManager crossStudyDataManager;
     
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-    
     private CrossStudyToolType crossStudyToolType;
     
     /*Constructors*/
     public EnvironmentFilter(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen1 = mainScreen;
         this.nextScreen1 = nextScreen;
-        this.currentStandardEntryGID = null;
-        this.currentTestEntryGID = null;
         
         this.crossStudyToolType = CrossStudyToolType.HEAD_TO_HEAD_QUERY;
     }
     
-	public EnvironmentFilter(QueryForAdaptedGermplasmMain mainScreen, SetUpTraitFilter nextScreen
-			, DisplayResults resultScreen) {
+	public EnvironmentFilter(QueryForAdaptedGermplasmMain mainScreen, SetUpTraitFilter nextScreen) {
 		 this.mainScreen2 = mainScreen;
 		 this.nextScreen2 = nextScreen;
-		 this.resultsScreen2 = resultScreen;
 		 
 		 this.crossStudyToolType = CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM;  
 	}
@@ -205,6 +187,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       filterByLocationBtn.setWidth("200px");
 	       filterByLocationBtn.setData(FILTER_LOCATION_BUTTON_ID);
 	       filterByLocationBtn.addListener(new Button.ClickListener(){
+	    	   private static final long serialVersionUID = 6624555365983829849L;
+
 	    	   @Override
 				public void buttonClick(ClickEvent event) {
 					if(event.getButton().getData().equals(FILTER_LOCATION_BUTTON_ID)) {
@@ -218,6 +202,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       filterByStudyBtn.setWidth("200px");
 	       filterByStudyBtn.setData(FILTER_STUDY_BUTTON_ID);
 	       filterByStudyBtn.addListener(new Button.ClickListener(){
+				private static final long serialVersionUID = -8782138170364187141L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					if(event.getButton().getData().equals(FILTER_STUDY_BUTTON_ID)) {
@@ -231,6 +217,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       addEnvConditionsBtn.setWidth("400px");
 	       addEnvConditionsBtn.setData(ADD_ENVIRONMENT_BUTTON_ID);
 	       addEnvConditionsBtn.addListener(new Button.ClickListener(){
+				private static final long serialVersionUID = 4763719750664067113L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					if(event.getButton().getData().equals(ADD_ENVIRONMENT_BUTTON_ID)) {
@@ -274,6 +262,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       nextButton = new Button(messageSource.getMessage(Message.NEXT));
 	       nextButton.setData(NEXT_BUTTON_ID);
 	       nextButton.addListener(new Button.ClickListener(){
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					nextButtonClickAction();
@@ -287,6 +277,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 		       backButton = new Button(messageSource.getMessage(Message.BACK));
 		       backButton.setData(BACK_BUTTON_ID);
 		       backButton.addListener(new Button.ClickListener(){
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 						backButtonClickAction();
@@ -370,24 +362,24 @@ private static final long serialVersionUID = -3667517088395779496L;
     		List<GermplasmPair> germplasmPairsTemp, Map<String, String> germplasmIdNameMap){    
     	
     	
-    	Map<String, Map<String, TrialEnvironment>>  newTraitEnvMap = new HashMap();
-    	tableEntriesMap = new HashMap();
-    	trialEnvironmentIds = new HashSet();
+    	Map<String, Map<String, TrialEnvironment>>  newTraitEnvMap = new HashMap<String, Map<String, TrialEnvironment>>();
+    	tableEntriesMap = new HashMap<String, Object[]>();
+    	trialEnvironmentIds = new HashSet<String>();
     	traitInfosNames = new LinkedHashSet<TraitInfo>();
     	
     	nextButton.setEnabled(false);
-    	environmentCheckBoxComparisonMap = new HashMap();
-    	environmentCheckBoxMap = new HashMap();
-    	environmentForComparison = new HashSet();
+    	environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
+    	environmentCheckBoxMap = new HashMap<CheckBox, Item>();
+    	environmentForComparison = new HashSet<String>();
     	numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
     	
     	this.germplasmIdNameMap = germplasmIdNameMap;
     	this.finalGermplasmPairs= germplasmPairsTemp; 
     	
-    	List<Integer> traitIds = new ArrayList();
-    	Set<Integer> environmentIds = new HashSet();
-    	filterLocationCountryMap = new HashMap();
-    	studyEnvironmentMap = new HashMap();
+    	List<Integer> traitIds = new ArrayList<Integer>();
+    	Set<Integer> environmentIds = new HashSet<Integer>();
+    	filterLocationCountryMap = new HashMap<String, FilterByLocation>();
+    	studyEnvironmentMap = new HashMap<String, List<StudyReference>>();
     	traitEnvMap = traitEnvMapTemp; 
     	trialEnvMap = trialEnvMapTemp;
     	traitForComparisonsList = traitForComparisonsListTemp;
@@ -415,7 +407,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	List<Integer> germplasmIdsList = new ArrayList<Integer>(germplasmIds);
     	List<Integer> environmentIdsList = new ArrayList<Integer>(environmentIds);
     	try{
-    		observationMap = new HashMap();
+    		observationMap = new HashMap<String, ObservationList>();
     		List<Observation> observationList = crossStudyDataManager.getObservationsForTraitOnGermplasms(traitIds, germplasmIdsList, environmentIdsList);
     		for(Observation obs : observationList){
     			String newKey = obs.getId().getTraitId() + ":" + obs.getId().getEnvironmentId() + ":" + obs.getId().getGermplasmId();
@@ -446,16 +438,16 @@ private static final long serialVersionUID = -3667517088395779496L;
     }
 	
 	private void populateEnvironmentsTable() {
-		tableEntriesMap = new HashMap();
+		tableEntriesMap = new HashMap<String, Object[]>();
 		
-		environmentCheckBoxComparisonMap = new HashMap();
-    	environmentCheckBoxMap = new HashMap();
-    	environmentForComparison = new HashSet();
+		environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
+    	environmentCheckBoxMap = new HashMap<CheckBox, Item>();
+    	environmentForComparison = new HashSet<String>();
     	//numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
 		
-    	filterLocationCountryMap = new HashMap();
-		studyEnvironmentMap = new HashMap();
-		environmentIds = new HashSet();
+    	filterLocationCountryMap = new HashMap<String, FilterByLocation>();
+		studyEnvironmentMap = new HashMap<String, List<StudyReference>>();
+		environmentIds = new HashSet<Integer>();
 		
 		recreateTable(true,false);
 		
@@ -473,12 +465,12 @@ private static final long serialVersionUID = -3667517088395779496L;
     	this.environmentsTable.removeAllItems();
     	
     	if(recreateFilterLocationMap){
-	    	environmentCheckBoxComparisonMap = new HashMap();
-	    	environmentCheckBoxMap = new HashMap();	   
+	    	environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
+	    	environmentCheckBoxMap = new HashMap<CheckBox, Item>();	   
     	}
-    	environmentForComparison = new HashSet();
+    	environmentForComparison = new HashSet<String>();
     	
-    	Map<String, Item> trialEnvIdTableMap = new HashMap();
+    	Map<String, Item> trialEnvIdTableMap = new HashMap<String, Item>();
     	
     	if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
     		try {
@@ -539,7 +531,9 @@ private static final long serialVersionUID = -3667517088395779496L;
     				             environmentsTable.addItem(objItem, tableKey);
     				             Item item = environmentsTable.getItem(tableKey);
     				             box.addListener(new ValueChangeListener(){
-    								@Override
+    								private static final long serialVersionUID = -4759863142479248292L;
+
+									@Override
     								public void valueChange(ValueChangeEvent event) {
     									clickCheckBox(tableKey, comboBox, (Boolean)event.getProperty().getValue());
     								}
@@ -570,7 +564,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     		
         	//clean the traitEnvMap
         	Iterator<String> trialEnvIdsIter = trialEnvironmentIds.iterator();
-        	Map<String, String> checkerMap = new HashMap();
         	while(trialEnvIdsIter.hasNext()){
         		 Integer trialEnvId = Integer.parseInt(trialEnvIdsIter.next());
         		 String trialEnvIdString = trialEnvId.toString();
@@ -635,12 +628,12 @@ private static final long serialVersionUID = -3667517088395779496L;
     			             }
     			             
     			             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
-    			             LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
+    			             LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap<TraitForComparison, List<ObservationList>>();
     			             Iterator<TraitForComparison> traitForCompareIter = traitForComparisonsList.iterator();
     			             while(traitForCompareIter.hasNext()){
     			            	 TraitForComparison traitForCompare = traitForCompareIter.next();
     			            	 
-    			            	 List<ObservationList> obsList = new ArrayList(); 
+    			            	 List<ObservationList> obsList = new ArrayList<ObservationList>(); 
     			                 Integer count = getTraitCount(traitForCompare.getTraitInfo(), trialEnv.getId(), finalGermplasmPairs, obsList);
     			                 //item.getItemProperty(traitForCompare.getTraitInfo().getName()).setValue(count);
     			                 traitAndObservationMap.put(traitForCompare, obsList);
@@ -713,7 +706,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 		numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
 	}
 	
-    private String getNumberOfTagged(){
+    @SuppressWarnings("rawtypes")
+	private String getNumberOfTagged(){
     	Iterator iter = environmentsTable.getItemIds().iterator();
     	int checked = 0;
     	while(iter.hasNext()){
@@ -798,7 +792,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	String studyKey = study.getName() + FilterLocationDialog.DELIMITER + study.getDescription();
     	List<StudyReference> studyReferenceList = studyEnvironmentMap.get(studyKey);
     	if(studyReferenceList == null){
-    		studyReferenceList = new ArrayList();
+    		studyReferenceList = new ArrayList<StudyReference>();
     	}
     	studyReferenceList.add(study);
     	studyEnvironmentMap.put(studyKey, studyReferenceList);
@@ -863,7 +857,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	private boolean isValidDoubleValue(String val){
 		if(val != null && !val.equalsIgnoreCase("")){
 			try{
-				double d = Double.parseDouble(val);
+				Double.parseDouble(val);
 				return true;
 			}catch(NumberFormatException ee){
 				return false;
@@ -874,7 +868,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	
 	public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
-    	List<EnvironmentForComparison> toBeCompared = new ArrayList();
+    	List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
     	    	
     	int total = 0;
     	//get the total of weights
@@ -888,7 +882,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     	// compute the weight percentages
     	for (String sKey : environmentForComparison){
     		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
-    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
     		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
@@ -941,8 +934,8 @@ private static final long serialVersionUID = -3667517088395779496L;
     	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
     	
     	isFilterLocationClicked = true;
-    	filterSetLevel1 = new HashMap();
-    	filterSetLevel3 = new HashMap();
+    	filterSetLevel1 = new HashMap<String, String>();
+    	filterSetLevel3 = new HashMap<String, String>();
     	
     	    
     	for(FilterLocationDto dto : filterLocationDtoListLevel1){
@@ -970,7 +963,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     
     public void clickFilterByStudyApply(List<FilterLocationDto> filterLocationDtoListLevel4){
     	isFilterStudyClicked = true;
-    	filterSetLevel4 = new HashMap();
+    	filterSetLevel4 = new HashMap<String, String>();
     	for(FilterLocationDto dto : filterLocationDtoListLevel4){
     		String studyName = dto.getStudyName();
         	
@@ -1067,5 +1060,14 @@ private static final long serialVersionUID = -3667517088395779496L;
 			this.mainClass = mainClass;
 			this.className = className;
 		}
+
+		public Class<?> getMainClass() {
+			return mainClass;
+		}
+
+		public String getClassName() {
+			return className;
+		}
+		
 	}
 }
