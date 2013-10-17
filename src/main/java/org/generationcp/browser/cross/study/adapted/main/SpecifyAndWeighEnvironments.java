@@ -70,7 +70,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     
     private QueryForAdaptedGermplasmMain mainScreen;
 	private SetUpTraitFilter nextScreen;
-	private ResultsComponent resultsScreen;
+	private DisplayResults resultsScreen;
 	
 	private Label headerLabel;
 	private Label headerValLabel;
@@ -119,7 +119,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     private CrossStudyDataManager crossStudyDataManager;
 	
 	public SpecifyAndWeighEnvironments(QueryForAdaptedGermplasmMain mainScreen, SetUpTraitFilter nextScreen
-			, ResultsComponent resultScreen) {
+			, DisplayResults resultScreen) {
 		 this.mainScreen = mainScreen;
 		 this.nextScreen = nextScreen;
 		 this.resultsScreen = resultScreen;

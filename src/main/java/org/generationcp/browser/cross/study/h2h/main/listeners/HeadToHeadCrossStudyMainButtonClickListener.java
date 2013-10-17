@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
 import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
@@ -208,28 +209,12 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         else if (source instanceof FilterLocationDialog
                 && event.getButton().getData().equals(FilterLocationDialog.APPLY_BUTTON_ID)) {
         	
-        	String parentClass = "";
-        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
-        		parentClass = "SpecifyAndWeighEnvironments";
-        	}
-        	else{
-        		parentClass = "EnvironmentsAvailableComponent";
-        	}
-        	
-            ((FilterLocationDialog) source).clickApplyButton(parentClass);
+        	((FilterLocationDialog) source).clickApplyButton(getParentClass(parentOfSource));
             
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.APPLY_BUTTON_ID)) {
         	
-        	String parentClass = "";
-        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
-        		parentClass = "SpecifyAndWeighEnvironments";
-        	}
-        	else{
-        		parentClass = "EnvironmentsAvailableComponent";
-        	}
-            
-        	((FilterStudyDialog) source).clickApplyButton(parentClass);
+        	((FilterStudyDialog) source).clickApplyButton(getParentClass(parentOfSource));
         	
         } else if (source instanceof FilterStudyDialog
                 && event.getButton().getData().equals(FilterStudyDialog.STUDY_BUTTON_ID)) {
@@ -237,19 +222,27 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof AddEnvironmentalConditionsDialog
                 && event.getButton().getData().equals(AddEnvironmentalConditionsDialog.APPLY_BUTTON_ID)) {
         	
-        	String parentClass = "";
-        	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
-        		parentClass = "SpecifyAndWeighEnvironments";
-        	}
-        	else{
-        		parentClass = "EnvironmentsAvailableComponent";
-        	}
-        	
-            ((AddEnvironmentalConditionsDialog) source).clickApplyButton(parentClass);
+            ((AddEnvironmentalConditionsDialog) source).clickApplyButton(getParentClass(parentOfSource));
         }
         else {
             LOG.error("HeadToHeadCrossStudyMainButtonClickListener: Error with buttonClick action. Source not identified.");
         }
+    }
+    
+    public String getParentClass(Component parentOfSource){
+    	String parentClass = "";
+    	
+    	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
+    		parentClass = "SpecifyAndWeighEnvironments";
+    	}
+    	else if( parentOfSource instanceof EnvironmentsAvailableComponent ){
+    		parentClass = "EnvironmentsAvailableComponent";
+    	}
+    	else if( parentOfSource instanceof EnvironmentFilter ){
+    		parentClass = "EnvironmentFilter";
+    	}
+    	
+    	return parentClass;
     }
 
 }

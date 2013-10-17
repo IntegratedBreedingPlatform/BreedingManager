@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 
 @Configurable
-public class ResultsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class DisplayResults extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
 
 	private QueryForAdaptedGermplasmMain mainScreen;
 	
-	public ResultsComponent(
+	public DisplayResults(
 			QueryForAdaptedGermplasmMain mainScreen) {
 		this.mainScreen = mainScreen;
 	}

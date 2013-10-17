@@ -2,6 +2,7 @@ package org.generationcp.browser.cross.study.h2h.main;
 
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,7 +35,7 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
 
     private SpecifyGermplasmsComponent screenOne;
     private TraitsAvailableComponent screenTwo;
-    private EnvironmentsAvailableComponent screenThree;
+    private EnvironmentFilter screenThree;
     private ResultsComponent screenFour;
 
     private Tab firstTab;
@@ -67,7 +68,7 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
         accordion.setWidth("1000px");
 
         screenFour = new ResultsComponent(this);
-        screenThree = new EnvironmentsAvailableComponent(this, screenFour);
+        screenThree = new EnvironmentFilter(this, screenFour);
         screenTwo = new TraitsAvailableComponent(this, screenThree);
         screenOne = new SpecifyGermplasmsComponent(this, screenTwo, screenFour);
 

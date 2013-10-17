@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
 import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
@@ -76,6 +77,9 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     	}
     	else if( parentOfSource instanceof EnvironmentsAvailableComponent ){
     		parentClass = "EnvironmentsAvailableComponent";
+    	}
+    	else if( parentOfSource instanceof EnvironmentFilter ){
+    		parentClass = "EnvironmentFilter";
     	}
     	
         if (source instanceof TraitsAvailableComponent) {

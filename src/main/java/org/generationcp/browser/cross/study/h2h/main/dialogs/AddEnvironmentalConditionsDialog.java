@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -151,6 +152,9 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         }
         else if(classname.equals("SpecifyAndWeighEnvironments")){
         	((SpecifyAndWeighEnvironments)source).reopenAddEnvironmentConditionsWindow();
+        }
+        else if(classname.equals("EnvironmentFilter")){
+        	((EnvironmentFilter)source).reopenAddEnvironmentConditionsWindow();
         }	
     }
     
@@ -235,6 +239,8 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     		((EnvironmentsAvailableComponent)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
     	} else if(classname.equals("SpecifyAndWeighEnvironments")){
     		((SpecifyAndWeighEnvironments)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
+    	} else if(classname.equals("EnvironmentFilter")){
+    		((EnvironmentFilter)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
     	}
     	
     }
