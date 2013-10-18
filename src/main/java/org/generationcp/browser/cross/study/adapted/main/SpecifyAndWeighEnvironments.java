@@ -48,6 +48,13 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Window.Notification;
 
+/**
+ * This class is no longer in use but kept for reference.
+ * 
+ * See org.generationcp.browser.cross.study.commons.EnvironmentFilter instead.
+ * 
+ */
+@Deprecated
 @Configurable
 public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 	
@@ -70,7 +77,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     
     private QueryForAdaptedGermplasmMain mainScreen;
 	private SetUpTraitFilter nextScreen;
-	private ResultsComponent resultsScreen;
+	private DisplayResults resultsScreen;
 	
 	private Label headerLabel;
 	private Label headerValLabel;
@@ -119,7 +126,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     private CrossStudyDataManager crossStudyDataManager;
 	
 	public SpecifyAndWeighEnvironments(QueryForAdaptedGermplasmMain mainScreen, SetUpTraitFilter nextScreen
-			, ResultsComponent resultScreen) {
+			, DisplayResults resultScreen) {
 		 this.mainScreen = mainScreen;
 		 this.nextScreen = nextScreen;
 		 this.resultsScreen = resultScreen;

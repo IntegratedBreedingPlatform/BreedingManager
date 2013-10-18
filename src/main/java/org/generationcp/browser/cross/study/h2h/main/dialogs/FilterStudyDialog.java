@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
@@ -162,6 +163,9 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         else if(className.equals("SpecifyAndWeighEnvironments")){
         	((SpecifyAndWeighEnvironments)source).reopenFilterStudyWindow();
         }
+        else if(className.equals("EnvironmentFilter")){
+        	((EnvironmentFilter)source).reopenFilterStudyWindow();
+        }
     }
     private void showStudyRows(){
     	for(String studyKey : filterStudyMap.keySet()){
@@ -255,6 +259,8 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     		((EnvironmentsAvailableComponent)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
     	} else if(classname.equals("SpecifyAndWeighEnvironments")){
     		((SpecifyAndWeighEnvironments)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
+    	} else if(classname.equals("EnvironmentFilter")){
+    		((EnvironmentFilter)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
     	} 
     }
     

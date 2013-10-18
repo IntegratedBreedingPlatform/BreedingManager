@@ -53,6 +53,13 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+/**
+ * This class is no longer in use but kept for reference.
+ * 
+ * See org.generationcp.browser.cross.study.commons.EnvironmentFilter instead.
+ * 
+ */
+@Deprecated
 @Configurable
 public class EnvironmentsAvailableComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 

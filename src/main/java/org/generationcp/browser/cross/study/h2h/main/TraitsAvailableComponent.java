@@ -11,6 +11,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
@@ -67,7 +68,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private Button backButton;
     
     private HeadToHeadCrossStudyMain mainScreen;
-    private EnvironmentsAvailableComponent nextScreen;
+    private EnvironmentFilter nextScreen;
     
     private Integer currentTestEntryGID;
     private Integer currentStandardEntryGID;
@@ -99,7 +100,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private List<GermplasmPair> finalGermplasmPair;
     private List<GermplasmPair> prevfinalGermplasmPair;
     private List<GermplasmPair> environmentPairList;
-    public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentsAvailableComponent nextScreen){
+    public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentFilter nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
         this.currentStandardEntryGID = null;

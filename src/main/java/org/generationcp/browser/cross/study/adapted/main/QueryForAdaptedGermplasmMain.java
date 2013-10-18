@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.adapted.main;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,10 +31,11 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 
 	    private Label mainTitle;
 
+
 	    private WelcomeScreen welcomeScreen;
-	    private SpecifyAndWeighEnvironments screenOne;
+	    private EnvironmentFilter screenOne;
 	    private SetUpTraitFilter screenTwo;
-	    private ResultsComponent screenThree;
+	    private DisplayResults screenThree;
 
 	    private Tab welcomeTab;
 	    private Tab firstTab;
@@ -61,9 +63,9 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        accordion.setWidth("1000px");
 
 	        welcomeScreen = new WelcomeScreen(this, screenOne);
-	        screenThree = new ResultsComponent(this);
+	        screenThree = new DisplayResults(this);
 	        screenTwo = new SetUpTraitFilter(this, screenThree);
-	        screenOne = new SpecifyAndWeighEnvironments(this, screenTwo, screenThree);
+	        screenOne = new EnvironmentFilter(this, screenTwo);
 
 	        welcomeTab = accordion.addTab(welcomeScreen, messageSource.getMessage(Message.INTRODUCTION));
 	        firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_WEIGH_ENVIRONMENT));

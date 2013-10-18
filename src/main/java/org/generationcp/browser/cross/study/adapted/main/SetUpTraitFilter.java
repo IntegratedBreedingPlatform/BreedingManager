@@ -37,7 +37,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
     private SimpleResourceBundleMessageSource messageSource;
 	
 	private QueryForAdaptedGermplasmMain mainScreen;
-	private ResultsComponent nextScreen;
+	private DisplayResults nextScreen;
 	private CharacterTraitsSection characterSection;
 	private NumericTraitsSection numericSection;
 	private CategoricalVariatesSection categoricalVariatesSection;
@@ -51,7 +51,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	
 	public SetUpTraitFilter(
 			QueryForAdaptedGermplasmMain queryForAdaptedGermplasmMain,
-			ResultsComponent screenThree) {
+			DisplayResults screenThree) {
 		this.mainScreen = queryForAdaptedGermplasmMain;
 		this.nextScreen = screenThree;
 	}
