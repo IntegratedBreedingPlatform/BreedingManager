@@ -2,6 +2,7 @@ package org.generationcp.browser.study.util;
 
 import java.util.ArrayList;
 
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.generationcp.browser.study.pojos.CellCoordinate;
 import org.generationcp.browser.study.pojos.CellCoordinateColorAssignment;
 
@@ -159,7 +160,7 @@ public class TableViewerCellSelectorUtil {
 						private static final long serialVersionUID = 1L;
 						public void colorChanged(ColorChangeEvent event) {
 							cssClassName = addColor(event.getColor().getRed(), event.getColor().getGreen(), event.getColor().getBlue());
-							applyColorToSelectedCells(cssClassName);
+							applyColorToSelectedCells(cssClassName, event.getColor().getRed(), event.getColor().getGreen(), event.getColor().getBlue());
 							if(source instanceof Window){
 								((Window) source).getParent().removeWindow(contextWindow);
 								contextWindowDisplayed = false;
@@ -344,7 +345,7 @@ public class TableViewerCellSelectorUtil {
 	 * 
 	 * @param className
 	 */
-	private void applyColorToSelectedCells(String className){
+	private void applyColorToSelectedCells(String className, int redValue, int greenValue, int blueValue){
 		for(int i=0;i<highlightedCellCoordinates.size();i++){
 			Boolean inColorAssigmentsList = false;
 			for(int x=0;x<cellCoordinateColorAssigments.size();x++){
@@ -354,11 +355,14 @@ public class TableViewerCellSelectorUtil {
 						){
 					inColorAssigmentsList = true;
 					cellCoordinateColorAssigments.get(x).setCssClassName(className);
+					cellCoordinateColorAssigments.get(x).setRedValue(redValue);
+					cellCoordinateColorAssigments.get(x).setGreenValue(greenValue);
+					cellCoordinateColorAssigments.get(x).setBlueValue(blueValue);
 				}
 					
 			}
 			if(inColorAssigmentsList == false){
-				CellCoordinateColorAssignment cellCoordinateColorAssigment = new CellCoordinateColorAssignment(highlightedCellCoordinates.get(i), className);
+				CellCoordinateColorAssignment cellCoordinateColorAssigment = new CellCoordinateColorAssignment(highlightedCellCoordinates.get(i), className, redValue, greenValue, blueValue);
 				cellCoordinateColorAssigments.add(cellCoordinateColorAssigment);
 			}
 		}
@@ -366,5 +370,17 @@ public class TableViewerCellSelectorUtil {
 		updateTableCellColors();
 	}
 	
+	public ArrayList<CellCoordinateColorAssignment> getCellCoordinateColorAssigments(){
+		return cellCoordinateColorAssigments;
+	}
 	
+	
+	public XSSFColor getColor(String itemId, String propertyId){
+		for(int i=0;i<cellCoordinateColorAssigments.size();i++){
+			if(cellCoordinateColorAssigments.get(i).getCellCoordinate().getX().equals(propertyId) && cellCoordinateColorAssigments.get(i).getCellCoordinate().getY().equals(itemId.toString())){
+				return new XSSFColor(new java.awt.Color(cellCoordinateColorAssigments.get(i).getRedValue(), cellCoordinateColorAssigments.get(i).getGreenValue(), cellCoordinateColorAssigments.get(i).getBlueValue()));
+			}
+		}
+	    return null;
+	}
 }

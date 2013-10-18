@@ -16,6 +16,7 @@ import org.generationcp.browser.application.WelcomeTab;
 import org.generationcp.browser.study.RepresentationDatasetComponent;
 import org.generationcp.browser.study.SaveRepresentationDatasetExcelDialog;
 import org.generationcp.browser.study.StudyTreeComponent;
+import org.generationcp.browser.study.TableViewerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +29,17 @@ public class StudyButtonClickListener implements Button.ClickListener {
     private static final Logger LOG = LoggerFactory.getLogger(StudyButtonClickListener.class);
     private static final long serialVersionUID = 7921109465618354206L;
 
-    private Layout source;
+    private Object source;
 
     public StudyButtonClickListener(Layout source) {
         this.source = source;
     }
 
-    @Override
+    public StudyButtonClickListener(TableViewerComponent source) {
+    	this.source = source;
+	}
+
+	@Override
     public void buttonClick(ClickEvent event) {
         
         if (event.getButton().getData().equals(RepresentationDatasetComponent.EXPORT_CSV_BUTTON_ID) // "Export to CSV"
@@ -45,6 +50,10 @@ public class StudyButtonClickListener implements Button.ClickListener {
                     && (source instanceof RepresentationDatasetComponent)) {
                 ((RepresentationDatasetComponent) source).exportToExcelAction();
                 
+        } else if (event.getButton().getData().equals(TableViewerComponent.EXPORT_EXCEL_BUTTON_ID) // "Export Dataset to Excel"
+                && (source instanceof TableViewerComponent)) {
+            ((TableViewerComponent) source).exportToExcelAction();
+            
         } else  if (event.getButton().getData().equals(SaveRepresentationDatasetExcelDialog.SAVE_EXCEL_BUTTON_ID) // "Save to Fieldbook Excel File"
                 && (source instanceof SaveRepresentationDatasetExcelDialog)) {
             ((SaveRepresentationDatasetExcelDialog) source).saveExcelFileButtonClickAction();

@@ -48,13 +48,15 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	private static final String NUMERIC_VARIABLE = "Numeric variable";
 	
 	private StudyDataManager studyDataManager;
+	private Integer studyId;
 	private Integer datasetId;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public TableViewerDatasetTable(StudyDataManager studyDataManager, Integer datasetId) {
+	public TableViewerDatasetTable(StudyDataManager studyDataManager, Integer studyId, Integer datasetId) {
 		this.studyDataManager = studyDataManager;
+		this.studyId = studyId;
 		this.datasetId = datasetId;
 	}
 
@@ -161,4 +163,16 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
         }
     }
 	
+    public StudyDataManager getStudyDataManager(){
+    	return studyDataManager;
+    }
+    
+    public Integer getStudyId(){
+    	return studyId;
+    }
+    
+    public Integer getDatasetId(){
+    	return datasetId;
+    }
+    
 }

@@ -166,9 +166,16 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     
     private void openTableViewer() {
     	Window mainWindow = this.getWindow();
-    	Table tableViewerDataset = new TableViewerDatasetTable(studyDataManager, datasetId);
-        Window tableViewer = new TableViewerComponent(tableViewerDataset);
-        mainWindow.addWindow(tableViewer);
+    	TableViewerDatasetTable tableViewerDataset = new TableViewerDatasetTable(studyDataManager, studyIdHolder, datasetId);
+    	String studyName;
+		try {
+			studyName = studyDataManager.getStudy(studyIdHolder).getName();
+			Window tableViewer = new TableViewerComponent(tableViewerDataset,studyName);
+			mainWindow.addWindow(tableViewer);
+		} catch (MiddlewareQueryException e) {
+			Window tableViewer = new TableViewerComponent(tableViewerDataset);
+			mainWindow.addWindow(tableViewer);
+		}
     }
     
     
