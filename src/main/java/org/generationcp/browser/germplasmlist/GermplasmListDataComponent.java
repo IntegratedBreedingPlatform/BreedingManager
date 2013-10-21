@@ -88,8 +88,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace EntryCode with Preferred Name");
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace EntryCode with Preferred ID");
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace Entry Code with Preferred Name");
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace Entry Code with Preferred ID");
 
     private Table listDataTable;
     private Button selectAllButton;
