@@ -72,22 +72,14 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     public void valueChange(ValueChangeEvent event) {
     	
 		String parentClass = "";
-    	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
-    		parentClass = "SpecifyAndWeighEnvironments";
-    	}
-    	else if( parentOfSource instanceof EnvironmentsAvailableComponent ){
-    		parentClass = "EnvironmentsAvailableComponent";
-    	}
-    	else if( parentOfSource instanceof EnvironmentFilter ){
+    	if( parentOfSource instanceof EnvironmentFilter ){
     		parentClass = "EnvironmentFilter";
     	}
     	
         if (source instanceof TraitsAvailableComponent) {
             ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
-        } else if (source instanceof EnvironmentsAvailableComponent) {
-            ((EnvironmentsAvailableComponent) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
-        } else if (source instanceof SpecifyAndWeighEnvironments) {
-            ((SpecifyAndWeighEnvironments) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
+        } else if (source instanceof EnvironmentFilter) {
+            ((EnvironmentFilter) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof FilterLocationDialog) {  
         	if(isTagAll){   	
         		((FilterLocationDialog) source).clickCheckBoxTag((Boolean)event.getProperty().getValue(), parentClass);
