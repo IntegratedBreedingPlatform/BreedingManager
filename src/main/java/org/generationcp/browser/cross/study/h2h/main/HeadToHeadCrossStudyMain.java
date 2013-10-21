@@ -6,9 +6,8 @@ import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -70,14 +69,7 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
         screenFour = new ResultsComponent(this);
         screenThree = new EnvironmentFilter(this, screenFour);
         screenTwo = new TraitsAvailableComponent(this, screenThree);
-        screenOne = new SpecifyGermplasmsComponent(this, screenTwo, screenFour);
-
-
-
-
-
-
-
+        screenOne = new SpecifyGermplasmsComponent(this, screenTwo);
 
         firstTab = accordion.addTab(screenOne, messageSource.getMessage(Message.SPECIFY_ENTRIES));
         secondTab = accordion.addTab(screenTwo,  messageSource.getMessage(Message.SELECT_TRAITS));
@@ -89,7 +81,9 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
         fourthTab.setEnabled(false);
 
         accordion.addListener(new SelectedTabChangeListener() {
-            @Override
+            private static final long serialVersionUID = -5006519828997264724L;
+
+			@Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected =accordion.getSelectedTab();
                 Tab tab = accordion.getTab(selected);
@@ -113,7 +107,7 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
 
     @Override
     public void updateLabels() {
-    // TODO Auto-generated method stub
+    	// TODO Auto-generated method stub
     }
 
     private void setTitleContent(String guideMessage){
@@ -135,7 +129,6 @@ public class HeadToHeadCrossStudyMain  extends VerticalLayout implements Initial
         titleLayout.addComponent(popup);
 
         titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
-
     }
 
     public void selectFirstTabAndReset(){
