@@ -11,7 +11,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.CategoricalTraitInfo;
-import org.generationcp.middleware.domain.h2h.CategoricalValue;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.slf4j.Logger;
@@ -165,7 +164,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 			
 			if(categoricalValueObjects != null){
 				if(categoricalValueObjects.isEmpty()){
-					MessageNotifier.showMessage(parentWindow, "Information", "There were no categorical variates observed in the environments you have selected."
+					MessageNotifier.showMessage(parentWindow, "Information", "There were no categorical traits observed in the environments you have selected."
 							, 3000, Notification.POSITION_CENTERED);
 					return;
 				}
