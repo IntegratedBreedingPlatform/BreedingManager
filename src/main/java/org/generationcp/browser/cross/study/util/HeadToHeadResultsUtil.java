@@ -1,10 +1,12 @@
 package org.generationcp.browser.cross.study.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.distribution.BinomialDistribution;
+import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
@@ -27,7 +29,7 @@ public class HeadToHeadResultsUtil {
 	
 	public static Double getMeanDiff(GermplasmPair germplasmPair, TraitForComparison traitForComparison, 
     		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-    	//r * ( summation of [ Ek (Tijk-Silk)/Nijl ] )
+    	//r * ( summation of [ (Ek /summation of Ek)(Tijk-Silk) ] )
     	/*
     	 * Nijl = is the number of environment where both tijk and silk is not null and not empty string
     	 * r = 1 if increasing and -1 if decreasing
@@ -35,7 +37,7 @@ public class HeadToHeadResultsUtil {
     	 */
     	
     	boolean isIncreasing = false;
-    	int numOfValidEnv = 0;
+    	int totalWeight = 0;
     	if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.INCREASING.intValue()){
     		isIncreasing = true;
     	}else if(traitForComparison.getDirection().intValue() == TraitsAvailableComponent.DECREASING.intValue()){
@@ -46,6 +48,8 @@ public class HeadToHeadResultsUtil {
 		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
 		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
 		List<Double> listOfObsVal = new ArrayList<Double>();
+		List<Integer> envtWeights = new ArrayList<Integer>();
+		
 		for(EnvironmentForComparison envForComparison: environmentForComparisonList){
 			
 			String envId = envForComparison.getEnvironmentNumber().toString();
@@ -55,32 +59,39 @@ public class HeadToHeadResultsUtil {
 			ObservationList obs1 = observationMap.get(keyToChecked1);
     		ObservationList obs2 = observationMap.get(keyToChecked2);
     		
-    		
-    		//if(isValidObsValue(obs1, obs2)){
     		if(obs1 != null && obs2 != null){
 	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
-	    			numOfValidEnv++;
-	    			//double obs1Val = Double.parseDouble(obs1.getValue());
-	    			//double obs2Val = Double.parseDouble(obs2.getValue());
 	    			double obs1Val = obs1.getObservationAverage();
 	    			double obs2Val = obs2.getObservationAverage();
-	    			double envWeight = envForComparison.getWeight(); 
-	    			listOfObsVal.add(Double.valueOf( envWeight * (obs1Val - obs2Val) ));
+	    			
+	    			EnvironmentWeight envtWeight = (EnvironmentWeight) envForComparison.getWeightComboBox().getValue();	
+	    			int weight = envtWeight.getWeight();
+	    			totalWeight += weight;
+	    			envtWeights.add(weight);
+	    		
+	    			Double difference = Double.valueOf(obs1Val - obs2Val);
+					listOfObsVal.add(difference);
 	    		}
     		}
 			
 		}
+
 		double summation = 0;
-		for(Double obsCalculatedVal : listOfObsVal){
-			summation += (obsCalculatedVal.doubleValue() / numOfValidEnv);
+		Iterator<Double> diffIterator = listOfObsVal.iterator();
+		Iterator<Integer> envtIterator = envtWeights.iterator();
+		
+		while (diffIterator.hasNext() && envtIterator.hasNext() && totalWeight != 0){
+			Double difference = diffIterator.next();
+			double envtWeight = (double) envtIterator.next();
+			Double finalWeight = envtWeight / totalWeight;
+			
+			summation += (difference * finalWeight);
 		}
 		
 		if(isIncreasing == false && summation != 0)
 			summation = -1 * summation; 
     	
-		//summation = 123456789.12345567;
 		return summation;
-    	//return Double.valueOf();
     }
 	
 	
