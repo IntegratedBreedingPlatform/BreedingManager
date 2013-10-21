@@ -163,19 +163,34 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 
         ImportedGermplasm importedGermplasm;
         Boolean entryColumnIsPresent = false;
-        Boolean desigColumnIsPresent = false;        
+        Boolean desigColumnIsPresent = false;
+        Boolean entryScaleIsValid = false;
+        Boolean desigScaleIsValid = false;
     
         //Check if columns ENTRY and DESIG is present
         if(importedGermplasmList.getImportedFactors()!=null)
         for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-            if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY"))
+            if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY")){
                 entryColumnIsPresent = true;
-            else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG"))
+                if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("NUMBER")){
+                	entryScaleIsValid = true;	
+                }
+            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG")){
                 desigColumnIsPresent = true;
+                if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("DBCV")){
+                	desigScaleIsValid = true;	
+                }
+            }
         }
         if(entryColumnIsPresent==false || desigColumnIsPresent==false){
             showInvalidFileError("ENTRY or DESIG column missing from Observation sheet.");
             System.out.println("DEBUG | Invalid file on missing ENTRY or DESIG on readSheet2");
+        } else if(entryScaleIsValid==false){
+            showInvalidFileError("ENTRY must have NUMBER as scale");
+            System.out.println("DEBUG | ENTRY must have NUMBER as scale");
+        } else if(desigScaleIsValid==false){
+            showInvalidFileError("DESIG must have DBCV as scale");
+            System.out.println("DEBUG | DESIG must have DBCV as scale");
         }
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
