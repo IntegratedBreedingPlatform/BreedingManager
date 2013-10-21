@@ -231,7 +231,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                     studyDetailsWindow.setSizeUndefined();
                     //TODO should disable export functions for this screen
                     studyDetailsWindow.addComponent(new StudyAccordionMenu(studyId, new StudyDetailComponent(studyDataManager, studyId)
-                        , studyDataManager, true));
+                        , studyDataManager, true,false));
                     this.addWindow(studyDetailsWindow);
                     return studyDetailsWindow;
                 } catch (Exception ex) {

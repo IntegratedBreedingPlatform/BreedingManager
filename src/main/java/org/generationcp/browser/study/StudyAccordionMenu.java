@@ -51,13 +51,15 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	private boolean h2hCall;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent,
-            StudyDataManagerImpl studyDataManager, boolean fromUrl) {
+            StudyDataManagerImpl studyDataManager, boolean fromUrl,boolean h2hCall) {
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.studyDetailComponent = studyDetailComponent;
         this.fromUrl = fromUrl;
+        this.h2hCall=h2hCall;
     }
 
     public void selectedTabChangeAction() throws InternationalizableException{
@@ -81,7 +83,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
             }// else if (tab.getCaption().equals(layoutEffect.getCaption())) { // "Datasets"
             else if (((VerticalLayout) tab.getComponent()).getData().equals(STUDY_EFFECTS)) {
                 if (layoutEffect.getComponentCount() == 0) {
-                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, fromUrl));
+                    layoutEffect.addComponent(new StudyEffectComponent(studyDataManager, studyId, this, fromUrl,h2hCall));
                 }
             }
         }

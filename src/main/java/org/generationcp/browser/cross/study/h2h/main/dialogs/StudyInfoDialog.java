@@ -66,11 +66,14 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
     private Integer studyId;
     @Autowired
     private StudyDataManagerImpl studyDataManager;
+
+	private boolean h2hCall;
     
-    public StudyInfoDialog(Component source, Window parentWindow, Integer studyId){
+    public StudyInfoDialog(Component source, Window parentWindow, Integer studyId,boolean h2hCall){
         this.source = source;
         this.parentWindow = parentWindow;
         this.studyId = studyId;
+        this.h2hCall= h2hCall;
         
         	
     }
@@ -102,7 +105,7 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
                // createStudyInfoTab(studyId);
             //}
             Accordion accordion = new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
-                    studyDataManager, false);
+                    studyDataManager, false,h2hCall);
             accordion.setWidth("1050px");
             accordion.setHeight("490px");
             mainLayout.addComponent(accordion, "top:10px;left:5px");

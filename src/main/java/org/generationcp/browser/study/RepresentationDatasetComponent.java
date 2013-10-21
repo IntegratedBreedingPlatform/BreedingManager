@@ -81,14 +81,16 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	private boolean h2hCall;
     
     public RepresentationDatasetComponent(StudyDataManagerImpl studyDataManager,
-            Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl) {
+            Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl,boolean h2hCall) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;
         this.datasetId = datasetId;
         this.studyDataManager = studyDataManager;
         this.fromUrl = fromUrl;
+        this.h2hCall=h2hCall;
     }
 
     // Called by StudyButtonClickListener
@@ -189,29 +191,31 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         addComponent(datasetTable);
         setData(this.reportName);
         
-        exportCsvButton = new Button(); // "Export to CSV"
-        exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
-        exportCsvButton.addListener(new StudyButtonClickListener(this));
-
-        exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
-        exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
-        exportExcelButton.addListener(new StudyButtonClickListener(this));
-        
-        openTableViewerButton = new Button();
-        openTableViewerButton.setData(OPEN_TABLE_VIEWER_BUTTON_ID);
-        openTableViewerButton.addListener(new StudyButtonClickListener(this));
-        
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setSpacing(true);
-        //TODO uncomment this when the feature of exporting to CSV is working properly
-        //buttonLayout.addComponent(exportCsvButton);
-        //only show Fieldbook Export to Excel button if study page not accessed directly from URL
-        if (!fromUrl) {
-            buttonLayout.addComponent(exportExcelButton);
-            buttonLayout.addComponent(openTableViewerButton);
+        if(!h2hCall){
+	        exportCsvButton = new Button(); // "Export to CSV"
+	        exportCsvButton.setData(EXPORT_CSV_BUTTON_ID);
+	        exportCsvButton.addListener(new StudyButtonClickListener(this));
+	
+	        exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
+	        exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
+	        exportExcelButton.addListener(new StudyButtonClickListener(this));
+	        
+	        openTableViewerButton = new Button();
+	        openTableViewerButton.setData(OPEN_TABLE_VIEWER_BUTTON_ID);
+	        openTableViewerButton.addListener(new StudyButtonClickListener(this));
+	        
+	        HorizontalLayout buttonLayout = new HorizontalLayout();
+	        buttonLayout.setSpacing(true);
+	        //TODO uncomment this when the feature of exporting to CSV is working properly
+	        //buttonLayout.addComponent(exportCsvButton);
+	        //only show Fieldbook Export to Excel button if study page not accessed directly from URL
+	        if (!fromUrl) {
+	            buttonLayout.addComponent(exportExcelButton);
+	            buttonLayout.addComponent(openTableViewerButton);
+	        }
+	
+	        addComponent(buttonLayout);
         }
-
-        addComponent(buttonLayout);
     }
     
     private Table generateLazyDatasetTable(boolean fromUrl) {

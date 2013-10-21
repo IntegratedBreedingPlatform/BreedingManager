@@ -59,13 +59,15 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	private boolean h2hCall;
 
-    public StudyEffectComponent(StudyDataManagerImpl studyDataManager, int studyId, Accordion accordion, boolean fromUrl) {
+    public StudyEffectComponent(StudyDataManagerImpl studyDataManager, int studyId, Accordion accordion, boolean fromUrl,boolean h2hCall) {
         this.studyInfoAccordion = accordion;
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.accordion = accordion;
         this.fromUrl = fromUrl;
+        this.h2hCall=h2hCall;
     }
 
     // called by StudyValueChangedListener.valueChange()
@@ -81,7 +83,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
 
         if (!Util.isAccordionDatasetExist(accordion, tabTitle)) {
             RepresentationDatasetComponent datasetComponent = new RepresentationDatasetComponent(studyDataManager, datasetId, tabTitle,
-                    studyId, fromUrl);
+                    studyId, fromUrl,h2hCall);
             studyInfoAccordion.addTab(datasetComponent, tabTitle);
             studyInfoAccordion.setSelectedTab(datasetComponent);
         } else {

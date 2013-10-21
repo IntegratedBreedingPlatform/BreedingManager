@@ -70,6 +70,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private Map<String, CheckBox> checkBoxMap = new HashMap();
     private List<FilterLocationDto> checkFilterLocationLevel4DtoList = new ArrayList();    
     private CheckBox tagUnTagAll;
+    boolean h2hCall=true;
     
     public FilterStudyDialog(Component source, Window parentWindow, Map<String, List<StudyReference>> filterStudyMap){
         this.source = source;
@@ -193,7 +194,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     
     public void showStudyInfo(Integer studyId){
     	//Window parentWindow = this.getWindow();
-    	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId));
+    	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId,h2hCall));
         
         
     }
