@@ -3,24 +3,10 @@ package  org.generationcp.browser.cross.study.h2h.main;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
-
-import com.vaadin.data.Item;
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
@@ -29,7 +15,6 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -39,6 +24,15 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.data.Item;
+import com.vaadin.event.Action;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class SpecifyGermplasmsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -54,17 +48,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public static final String SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Test Search Germplasm List Button ID";
     public static final String SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Standard Search Germplasm List Button ID";
     
-    
     private Panel testPanel;
     private Panel standardPanel;
     
-    private Label specifyTestEntryLabel;
-    private Label specifyStandardEntryLabel;
-    private Label testEntryLabel;
-    private Label standardEntryLabel;
-    
-    private Button selectTestEntryButton;
-    private Button selectStandardEntryButton;
     private Button nextButton;
     
     private Button testSearchGermplasm;
@@ -83,12 +69,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     private HeadToHeadCrossStudyMain mainScreen;
     private TraitsAvailableComponent nextScreen;
-    private ResultsComponent resultsScreen;
     
     private Table entriesTable;
-    
-    private Integer lastTestEntryGID;
-    private Integer lastStandardEntryGID;
     
     private static final String TEST_ENTRY_COLUMN_ID = "SpecifyGermplasmsComponent Test Entry Column Id";
     private static final String STANDARD_ENTRY_COLUMN_ID = "SpecifyGermplasmsComponent Standard Entry Column Id";
@@ -97,20 +79,11 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private static final Action ACTION_DELETE = new Action("Delete selected");
     private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
    
-    private Object tableRowItem = null;
-    
-    private List<GermplasmList> testGermplasmListAdded = new ArrayList(); //can be a germplasm or a germplasmList
-    private List<Germplasm> testGermplasmAdded = new ArrayList(); //can be a germplasm or a germplasmList
-    private List<GermplasmList> standardGermplasmListAdded = new ArrayList(); //can be a germplasm or a germplasmList
-    private List<Germplasm> standardGermplasmAdded = new ArrayList(); //can be a germplasm or a germplasmList
-    
     @Autowired
     private GermplasmListManager germplasmListManager;
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
     
-    private Map<String, TablesEntries> mapTableEntriesId = new HashMap();
-    private Map<String, TablesEntries> singleEntriesSet = new HashMap();
+    private Map<String, TablesEntries> mapTableEntriesId = new HashMap<String, TablesEntries>();
+    private Map<String, TablesEntries> singleEntriesSet = new HashMap<String, TablesEntries>();
     
     private String TEST_ENTRY = "TEST";
     private String STANDARD_ENTRY = "STANDARD";
@@ -120,13 +93,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public SpecifyGermplasmsComponent(HeadToHeadCrossStudyMain mainScreen, TraitsAvailableComponent nextScreen
-            , ResultsComponent resultScreen){
+    public SpecifyGermplasmsComponent(HeadToHeadCrossStudyMain mainScreen, TraitsAvailableComponent nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
-        this.resultsScreen = resultScreen;
-        this.lastTestEntryGID = null;
-        this.lastStandardEntryGID = null;
     }
     
     @Override
@@ -142,12 +111,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         standardPanel.setWidth("470px");
         testPanel.setSizeUndefined();
         
-        
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("400px");
         absLayout.setHeight("90px");
-        
-        
         
         testSearchGermplasmLabel = new Label(messageSource.getMessage(Message.SPECIFY_SINGLE_TEST_ENTRY));
         testSearchGermplasmLabel.setImmediate(true);
@@ -198,7 +164,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         absLayoutStandard.addComponent(standardSearchGermplasmList, "top:50px;left:250px");
         standardPanel.addComponent(absLayoutStandard);
         
-        
         headerLabel = new Label(messageSource.getMessage(Message.SELECT_TEST_STANDARD_COMPARE));
         headerLabel.setImmediate(true);
         
@@ -225,7 +190,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         entriesTable.setImmediate(true);
         
         entriesTable.addActionHandler(new Action.Handler() {
-            public Action[] getActions(Object target, Object sender) {
+            private static final long serialVersionUID = 3972058734324800774L;
+
+			public Action[] getActions(Object target, Object sender) {
                     return ACTIONS_TABLE_CONTEXT_MENU;
             }
 
@@ -237,27 +204,16 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
                 	entriesTable.setValue(entriesTable.getItemIds());
                 	entriesTable.setPageLength(0);
                 }
-                tableRowItem = null;
             }
         });
         
-      
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         nextButton.setEnabled(false);
         addComponent(nextButton, "top:550px;left:900px");
         
-        //setDummyTableData();
-        //setDummyTableData2();
         addComponent(entriesTable, "top:200px;left:20px");
-        
-       
-        
-        
-        
-        //addTestGermplasmList(germplasmListManager.getGermplasmListById(1));
-        //addStandardGermplasmList(germplasmListManager.getGermplasmListById(1));
     }
 
     public void resetTableEntries(){
@@ -278,8 +234,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         if(isTableEntriesEmpty()){
         	//we set the new set since we already cleared it
-			singleEntriesSet = new HashMap();
-			germplasmIdNameMap = new HashMap();
+			singleEntriesSet = new HashMap<String, TablesEntries>();
+			germplasmIdNameMap = new HashMap<String, String>();
 			//mapTableEntriesId = new HashMap();
         }
         
@@ -289,59 +245,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         	nextButton.setEnabled(true);
         }
        
-    }
-    
-    
-    
-    public void setDummyTableData(){
-    	/*
-    	for(int i = 0 ; i < 100 ; i++){
-    		entriesTable.addItem(new Object[] {"test - "+i, "standard - "+i}, Integer.toString(i));
-    		
-    	}
-    	*/
-    	try{
-    		//2434138
-    		   //1356114
-    		Germplasm selectedGermplasm1 = this.germplasmDataManager.getGermplasmWithPrefName(39);
-    		Germplasm selectedGermplasm2 = this.germplasmDataManager.getGermplasmWithPrefName(1709);
-    		Germplasm selectedGermplasm3 = this.germplasmDataManager.getGermplasmWithPrefName(1000);
-	    	addTestGermplasm(selectedGermplasm1);
-	    	addTestGermplasm(selectedGermplasm2);
-	    	addTestGermplasm(selectedGermplasm3);
-	    	addStandardGermplasm(selectedGermplasm1);
-	    	addStandardGermplasm(selectedGermplasm2);
-	    	addStandardGermplasm(selectedGermplasm3);
-    		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
-    		//addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
-    		
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    }
-    
-    public void setDummyTableData2(){
-    	/*
-    	for(int i = 0 ; i < 100 ; i++){
-    		entriesTable.addItem(new Object[] {"test - "+i, "standard - "+i}, Integer.toString(i));
-    		
-    	}
-    	*/
-    	try{
-    		//2434138
-    		   //1356114
-    		Germplasm selectedGermplasm1 = this.germplasmDataManager.getGermplasmWithPrefName(2434138);
-    		Germplasm selectedGermplasm2 = this.germplasmDataManager.getGermplasmWithPrefName(1356114);
-	    	addTestGermplasm(selectedGermplasm1);
-	    	addTestGermplasm(selectedGermplasm2);
-	    	addStandardGermplasm(selectedGermplasm1);
-	    	addStandardGermplasm(selectedGermplasm2);
-    		//addTestGermplasmList(germplasmListManager.getGermplasmListById(-2));
-    		//addStandardGermplasmList(germplasmListManager.getGermplasmListById(-1));
-    		
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
     }
     
     public void selectTestEntryButtonClickAction(){
@@ -441,8 +344,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         }
     }
     
-    private List<GermplasmPair> getGermplasmPairs(){
-    	List<GermplasmPair> pairList = new ArrayList();
+    @SuppressWarnings("rawtypes")
+	private List<GermplasmPair> getGermplasmPairs(){
+    	List<GermplasmPair> pairList = new ArrayList<GermplasmPair>();
     	
     	Iterator iter = entriesTable.getItemIds().iterator();						
 		while(iter.hasNext()){
@@ -466,6 +370,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	return pairList;
     }
     
+    /**
     private boolean areCurrentGIDsDifferentFromLast(Integer currentTestEntryGID, Integer currentStandardEntryGID){
         if(this.lastTestEntryGID != null && this.lastStandardEntryGID != null){
             if(this.lastTestEntryGID == currentTestEntryGID && this.lastStandardEntryGID == currentStandardEntryGID){
@@ -475,6 +380,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         return true;
     }
+    **/
     
     @Override
     public void updateLabels() {
@@ -495,6 +401,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     		e.printStackTrace();
     	}
     }
+    
     public void addTestGermplasm(Germplasm germplasm ){  
     	if(germplasm != null){
 	    	//testGermplasmAdded.add(germplasm);
@@ -503,6 +410,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     		doGermplasmPermutationOnTable(true, true, null, germplasm);
     	}
     }
+    
     public void addStandardGermplasmList(Integer germplasmListId){
     	
     	try{
@@ -518,6 +426,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     		e.printStackTrace();
     	}
     }
+    
     public void addStandardGermplasm(Germplasm germplasm){
     	if(germplasm != null){
 	    	//standardGermplasmAdded.add(germplasm);
@@ -526,14 +435,16 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     		doGermplasmPermutationOnTable(false, true, null, germplasm);
     	}
     }
-    private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
-    	Map map = getBothMapEntries();
-    	Map testMap = (Map) map.get(TEST_ENTRY);
-    	Map standardMap = (Map) map.get(STANDARD_ENTRY);
-    	List<TablesEntries> tableEntriesList = new ArrayList();
+    
+    @SuppressWarnings("rawtypes")
+	private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
+    	Map<String, Map<String, String>> map = getBothMapEntries();
+    	Map<String, String> testMap = map.get(TEST_ENTRY);
+    	Map<String, String> standardMap = map.get(STANDARD_ENTRY);
+    	List<TablesEntries> tableEntriesList = new ArrayList<TablesEntries>();
     	
     	if(isTableEntriesEmpty()){
-			germplasmIdNameMap = new HashMap();
+			germplasmIdNameMap = new HashMap<String, String>();
         }
     	
     	if(isGermplasm){
@@ -722,7 +633,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     }
     
     
-    private void deleteAllSingleEntriesInTable(boolean isTestEntry, String gid, int leftSize, int rightSize){
+    @SuppressWarnings("rawtypes")
+	private void deleteAllSingleEntriesInTable(boolean isTestEntry, String gid, int leftSize, int rightSize){
     	//we delete the single entrie
 		Iterator singleIter = singleEntriesSet.keySet().iterator();
 		while(singleIter.hasNext()){
@@ -754,10 +666,12 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 		}
 		//we set the new set since we already cleared it
 		if(isTableEntriesEmpty()){
-			singleEntriesSet = new HashMap();
+			singleEntriesSet = new HashMap<String, TablesEntries>();
 		}
     }
-    private void deleteAllSingleEntriesInTableListData(boolean isTestEntry, List<GermplasmListData> germplasmListData, int leftSize, int rightSize){
+    
+    @SuppressWarnings("rawtypes")
+	private void deleteAllSingleEntriesInTableListData(boolean isTestEntry, List<GermplasmListData> germplasmListData, int leftSize, int rightSize){
     	//we delete the single entrie
 		Iterator singleIter = singleEntriesSet.keySet().iterator();
 		while(singleIter.hasNext()){
@@ -792,14 +706,15 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 		}
 		//we set the new set since we already cleared it
 		if(isTableEntriesEmpty()){
-			singleEntriesSet = new HashMap();
+			singleEntriesSet = new HashMap<String, TablesEntries>();
 		}
     }
     
-    private Map getBothMapEntries(){
-    	Map testMap = new HashMap();
-    	Map standardMap = new HashMap();
-    	Map resultMap = new HashMap();
+    @SuppressWarnings("rawtypes")
+	private Map<String, Map<String, String>> getBothMapEntries(){
+    	Map<String, String> testMap = new HashMap<String, String>();
+    	Map<String, String> standardMap = new HashMap<String, String>();
+    	Map<String, Map<String, String>> resultMap = new HashMap<String, Map<String, String>>();
     	Iterator iter = entriesTable.getItemIds().iterator();		
 		while(iter.hasNext()){
 			String id = (String)iter.next();
@@ -833,31 +748,29 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    	//if not in map, add it in the table
     		
 	    	if(!mapTableEntriesId.containsKey(newId)){
-		    	
-		    		entriesTable.addItem(new Object[] {tableEntry.getTestEntryName(), tableEntry.getStandardEntryName()}, tableEntry.getTestStandardEntry());
-		    		mapTableEntriesId.put(newId, tableEntry);
-		    	
-	    	}
+	    		entriesTable.addItem(new Object[] {tableEntry.getTestEntryName(), tableEntry.getStandardEntryName()}, tableEntry.getTestStandardEntry());
+		    	mapTableEntriesId.put(newId, tableEntry);
+		    }
     	}
     }
+    
     private boolean isTableEntriesEmpty(){
-    	Map map = getBothMapEntries();
-    	Map testMap = (Map) map.get(TEST_ENTRY);
-    	Map standardMap = (Map) map.get(STANDARD_ENTRY);
+    	Map<String, Map<String, String>> map = getBothMapEntries();
+    	Map<String, String> testMap = map.get(TEST_ENTRY);
+    	Map<String, String> standardMap = map.get(STANDARD_ENTRY);
     	if(testMap.keySet().isEmpty() && standardMap.keySet().isEmpty())
     		return true;
     	return false;
     	//return entriesTable.getItemIds().isEmpty();
     }
+    
     private boolean isEitherTableEntriesEmpty(){
-    	Map map = getBothMapEntries();
-    	Map testMap = (Map) map.get(TEST_ENTRY);
-    	Map standardMap = (Map) map.get(STANDARD_ENTRY);
+    	Map<String, Map<String, String>> map = getBothMapEntries();
+    	Map<String, String> testMap = map.get(TEST_ENTRY);
+    	Map<String, String> standardMap = map.get(STANDARD_ENTRY);
     	if(testMap.keySet().isEmpty() || standardMap.keySet().isEmpty())
     		return true;
     	return false;
     	//return entriesTable.getItemIds().isEmpty();
     }
-    
-    
 }

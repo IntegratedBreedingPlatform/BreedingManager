@@ -81,6 +81,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private static final String STATUS = "status";
     private static final String PREFERRED_NAME="preferrred name";
     private static final String PREFERRED_ID="preferrred id";
+    private static final String LOCATION_NAME="location name";
 
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
@@ -88,8 +89,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace EntryCode with Preferred Name");
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace EntryCode with Preferred ID");
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace Entry Code with Preferred Name");
+    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace Entry Code with Preferred ID");
+    static final Action ACTION_VIEW_GERMPLASM_LOCATION_NAME = new Action("Replace Seed Source with Germplasm Location Name");
 
     private Table listDataTable;
     private Button selectAllButton;
@@ -107,7 +109,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private int germplasListUserId;
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE = new Action("Delete selected entries");
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID};
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
 
     private Window germplasmListCopyToNewListDialog;
@@ -177,15 +179,17 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                     }
         
                     public void handleAction(Action action, Object sender, Object target) {
-                        if (ACTION_DELETE == action) {
-                        deleteListButtonClickAction();
-                        } else if (ACTION_SELECT_ALL == action) {
-                        listDataTable.setValue(listDataTable.getItemIds());
-                        }else if(ACTION_VIEW_GERMPLASM_PREFERRED_ID==action){
-                        	setEntryCodeColumnWithGermplasmInfo(PREFERRED_ID);
-                        }else if(ACTION_VIEW_GERMPLASM_PREFERRED_NAME==action){
-                        	setEntryCodeColumnWithGermplasmInfo(PREFERRED_NAME);
-                        }
+                    	if (ACTION_DELETE == action) {
+                    		deleteListButtonClickAction();
+                    	} else if (ACTION_SELECT_ALL == action) {
+                    		listDataTable.setValue(listDataTable.getItemIds());
+                    	}else if(ACTION_VIEW_GERMPLASM_PREFERRED_ID==action){
+                    		setListDataTableColumnWithOtherInfo(PREFERRED_ID);
+                    	}else if(ACTION_VIEW_GERMPLASM_PREFERRED_NAME==action){
+                    		setListDataTableColumnWithOtherInfo(PREFERRED_NAME);
+                    	}else if(ACTION_VIEW_GERMPLASM_LOCATION_NAME==action){
+                    		setListDataTableColumnWithOtherInfo(LOCATION_NAME);
+                    	}
                     }
                     });
             }
@@ -282,7 +286,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         }
     }
 
-    protected void setEntryCodeColumnWithGermplasmInfo(String gInfo) {
+    protected void setListDataTableColumnWithOtherInfo(String gInfo) {
     	GermplasmQueries gQuery= new GermplasmQueries();
     	for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
@@ -294,8 +298,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             GermplasmDetailModel gModel=gQuery.getGermplasmDetails(Integer.valueOf(gid));
             if(gInfo.equals(PREFERRED_NAME)){
             	item.getItemProperty(ENTRY_CODE).setValue(gModel.getGermplasmPreferredName());
-            }else{
+            }else if(gInfo.equals(ENTRY_CODE)){
             	item.getItemProperty(ENTRY_CODE).setValue(gModel.getPrefID());
+            }else if(gInfo.equals(LOCATION_NAME)){
+            	item.getItemProperty(SEED_SOURCE).setValue(gModel.getGermplasmLocation());
             }
     	}
 		
@@ -359,6 +365,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 if (listData.getId().equals(listDataId)) {
                     listData.setEntryId(entryId);
                     listData.setEntryCode(item.getItemProperty(ENTRY_CODE).getValue().toString());
+                    listData.setSeedSource(item.getItemProperty(SEED_SOURCE).getValue().toString());
                     break;
                 }
             }
