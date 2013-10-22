@@ -79,27 +79,36 @@ public class TableViewerExporter {
 		
 		
 		//Traverse through table, and create rows/columns and populate with data
-		XSSFColor cellColor = null;
-		XSSFCellStyle cellStyle = null;
+		ArrayList<XSSFColor> cellColor = new ArrayList<XSSFColor>();
+		ArrayList<XSSFCellStyle> cellStyle = new ArrayList<XSSFCellStyle>();
+		
+		XSSFColor currentColor;
 		
 		Row rows[] = new Row[tableItemIds.length];
+		
+		
         for(int y=0;y<tableItemIds.length;y++){
         	rows[y] = sheet1.createRow(y+1);
         	//System.out.println("Item ID: "+tableItemIds[y].toString());
         	for(int x=0;x<columnHeaders.size();x++){
         		rows[y].createCell(x).setCellValue(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).toString());
-        		cellColor = tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString());
-        		if(cellColor!=null){
-        			cellStyle = (XSSFCellStyle) rows[y].getCell(x).getCellStyle();
-        			cellStyle.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
-        			cellStyle.setFillForegroundColor(cellColor);
-        			rows[y].getCell(x).setCellStyle(cellStyle);
+        		
+        		currentColor = tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString());	
+        		if(currentColor!=null){
+        			
+        			cellColor.add(currentColor);
+        			
+        			cellStyle.add((XSSFCellStyle) workbook.createCellStyle()); //(XSSFCellStyle) rows[y].getCell(x).getCellStyle());
+        			cellStyle.get(cellStyle.size()-1).setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
+        			cellStyle.get(cellStyle.size()-1).setFillForegroundColor(cellColor.get(cellColor.size()-1));
+        			rows[y].getCell(x).setCellStyle(cellStyle.get(cellStyle.size()-1));
+        			
         		}
         		//System.out.println("Color: "+tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString()));
         		//System.out.println("ColumnHeader: "+columnHeaders.get(x));
     			//System.out.println(columnId.get(x)+": "+table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)));
     		}	
-        	//System.out.println("");
+        	System.out.println("");
         }
         
         

@@ -100,12 +100,12 @@ public class TableViewerCellSelectorUtil {
 				}
 				
 				
-				System.out.println("Clicked");
-				System.out.println("Row: "+event.getItemId());
-				System.out.println("Column: "+event.getPropertyId());
-				System.out.println("Ctrl Pressed: "+event.isCtrlKey());
-				System.out.println("Shift Pressed: "+event.isShiftKey());
-				System.out.println("");
+				//System.out.println("Clicked");
+				//System.out.println("Row: "+event.getItemId());
+				//System.out.println("Column: "+event.getPropertyId());
+				//System.out.println("Ctrl Pressed: "+event.isCtrlKey());
+				//System.out.println("Shift Pressed: "+event.isShiftKey());
+				//System.out.println("");
 				
 				//table.getItem(event.getItemId()).getItemProperty(event.getPropertyId()).addStyleName("highlighted");
 				
@@ -283,21 +283,21 @@ public class TableViewerCellSelectorUtil {
 							!isHighlighted
 							){
 						hasColorSet = true;
-						System.out.println("Setting cell style to - "+cellCoordinateColorAssigments.get(i).getCssClassName());
+						//System.out.println("Setting cell style to - "+cellCoordinateColorAssigments.get(i).getCssClassName());
 						return cellCoordinateColorAssigments.get(i).getCssClassName();
 					}
 				}
 				
 				if(hasColorSet == false){
 					if(currentColumn!=null && currentColumn.equals(propertyId) && currentRow!=null && currentRow.equals(itemId.toString())){
-						System.out.println("Setting cell style to - currentlySelected");
+						//System.out.println("Setting cell style to - currentlySelected");
 						return "currentlyselected";
 					} else {
 						if(isHighlighted){
-							System.out.println("Setting cell style to - highlighted");
+							//System.out.println("Setting cell style to - highlighted");
 							return "highlighted";
 						} else {
-							System.out.println("Setting cell style to - [null]");
+							//System.out.println("Setting cell style to - [null]");
 							return null;
 						}
 					}
@@ -378,6 +378,7 @@ public class TableViewerCellSelectorUtil {
 	public XSSFColor getColor(String itemId, String propertyId){
 		for(int i=0;i<cellCoordinateColorAssigments.size();i++){
 			if(cellCoordinateColorAssigments.get(i).getCellCoordinate().getX().equals(propertyId) && cellCoordinateColorAssigments.get(i).getCellCoordinate().getY().equals(itemId.toString())){
+				System.out.println("R:"+cellCoordinateColorAssigments.get(i).getRedValue()+" G:"+cellCoordinateColorAssigments.get(i).getGreenValue()+" B:"+cellCoordinateColorAssigments.get(i).getBlueValue());
 				return new XSSFColor(new java.awt.Color(cellCoordinateColorAssigments.get(i).getRedValue(), cellCoordinateColorAssigments.get(i).getGreenValue(), cellCoordinateColorAssigments.get(i).getBlueValue()));
 			}
 		}
