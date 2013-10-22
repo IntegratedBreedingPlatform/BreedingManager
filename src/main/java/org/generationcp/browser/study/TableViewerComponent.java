@@ -139,7 +139,7 @@ public class TableViewerComponent extends Window implements InitializingBean, In
             tableViewerExporter.exportToExcel(tempFilename);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFilename), this.getApplication());
             if(studyName!=null){
-            	fileDownloadResource.setFilename("TVDataset_"+studyName+".xlsx");
+            	fileDownloadResource.setFilename("TVDataset_"+studyName.replace(" ", "").trim()+".xlsx");
             } else {
             	fileDownloadResource.setFilename(tempFilename);
             }
