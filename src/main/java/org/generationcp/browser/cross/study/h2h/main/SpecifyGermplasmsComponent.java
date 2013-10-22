@@ -16,7 +16,6 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -216,10 +215,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         addComponent(entriesTable, "top:200px;left:20px");
     }
 
-    public void resetTableEntries(){
-    	
-    }
-    
     private void deleteEntriesAction(){
         final Collection<?> selectedIds = (Collection<?>) entriesTable.getValue();
         if (!selectedIds.isEmpty()){
