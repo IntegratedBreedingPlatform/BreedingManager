@@ -166,6 +166,8 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         Boolean desigColumnIsPresent = false;
         Boolean entryScaleIsValid = false;
         Boolean desigScaleIsValid = false;
+        Boolean entryPropertyIsValid = false;
+        Boolean desigPropertyIsValid = false;        
     
         //Check if columns ENTRY and DESIG is present
         if(importedGermplasmList.getImportedFactors()!=null)
@@ -175,11 +177,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("NUMBER")){
                 	entryScaleIsValid = true;	
                 }
+                if(importedGermplasmList.getImportedFactors().get(col).getProperty().toUpperCase().equals("GERMPLASM ENTRY")){
+                	entryPropertyIsValid = true;	
+                }
             } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG")){
                 desigColumnIsPresent = true;
                 if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("DBCV")){
                 	desigScaleIsValid = true;	
                 }
+                if(importedGermplasmList.getImportedFactors().get(col).getProperty().toUpperCase().equals("GERMPLASM ID")){
+                	desigPropertyIsValid = true;	
+                }                
             }
         }
         if(entryColumnIsPresent==false || desigColumnIsPresent==false){
@@ -191,6 +199,12 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         } else if(desigScaleIsValid==false){
             showInvalidFileError("DESIG must have DBCV as scale");
             System.out.println("DEBUG | DESIG must have DBCV as scale");
+        } else if(entryPropertyIsValid==false){
+            showInvalidFileError("ENTRY must have GERMPLASM ENTRY as property");
+            System.out.println("DEBUG | ENTRY must have GERMPLASM ENTRY as property");
+        } else if(desigPropertyIsValid==false){
+            showInvalidFileError("DESIG must have GERMPLASM ID as property");
+            System.out.println("DEBUG | DESIG must have GERMPLASM ID as property");
         }
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
