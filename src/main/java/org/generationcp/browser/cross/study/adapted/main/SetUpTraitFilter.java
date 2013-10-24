@@ -1,13 +1,18 @@
 package org.generationcp.browser.cross.study.adapted.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
+import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
+import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
+import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
@@ -132,6 +138,9 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		}
 		
 		this.mainScreen.selectThirdTab();
+		
+		this.nextScreen.populateResultsTable(environmentsForComparisonList,numericSection.getFilters(),
+				characterSection.getFilters(),categoricalVariatesSection.getFilters());
 	}
 	
 

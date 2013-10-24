@@ -1,6 +1,8 @@
 package org.generationcp.browser.cross.study.commons.trait.filter;
 
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -8,6 +10,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
+import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.listeners.CharacterTraitLimitsValueChangeListener;
 import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
@@ -199,35 +202,41 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	public List<CharacterTraitFilter> getFilters(){
 		List<CharacterTraitFilter> toreturn = new ArrayList<CharacterTraitFilter>();
 		
-		List<CharacterTraitInfo> traitInfoObjects = (List<CharacterTraitInfo>) this.traitsTable.getItemIds();
+		Collection<CharacterTraitInfo> traitInfoObjects = (Collection<CharacterTraitInfo>) this.traitsTable.getItemIds();
 		for(CharacterTraitInfo traitInfo : traitInfoObjects){
 			Item tableRow = this.traitsTable.getItem(traitInfo);
 			
 			ComboBox conditionComboBox = (ComboBox) tableRow.getItemProperty(CONDITION_COLUMN_ID).getValue();
 			CharacterTraitCondition condition = (CharacterTraitCondition) conditionComboBox.getValue();
+			
 			ComboBox priorityComboBox = (ComboBox) tableRow.getItemProperty(PRIORITY_COLUMN_ID).getValue();
 			TraitWeight priority = (TraitWeight) priorityComboBox.getValue();
-			String limitsString = (String) tableRow.getItemProperty(LIMITS_COLUMN_ID).getValue();
 			
-			if(condition == CharacterTraitCondition.KEEP_ALL){
-				CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo.getId(), condition, new ArrayList<String>(), priority);
-				toreturn.add(filter);
-			} else if(condition != CharacterTraitCondition.DROP_TRAIT && priority != TraitWeight.IGNORED){
-				if(limitsString != null && limitsString.length() > 0){
-					StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
-					List<String> givenLimits = new ArrayList<String>();
-					
-					while(tokenizer.hasMoreTokens()){
-						String limit = tokenizer.nextToken().trim();
-						givenLimits.add(limit);
-					}
-					
-					CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo.getId(), condition, givenLimits, priority);
+			TextField limitsField = (TextField) tableRow.getItemProperty(LIMITS_COLUMN_ID).getValue();
+			String limitsString = limitsField.getValue().toString();
+			
+			if(condition != CharacterTraitCondition.DROP_TRAIT && priority != TraitWeight.IGNORED){
+				if(condition == CharacterTraitCondition.KEEP_ALL){ 
+					CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
 					toreturn.add(filter);
+				} else {
+					if(limitsString != null && limitsString.length() > 0){
+						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
+						List<String> givenLimits = new ArrayList<String>();
+						
+						while(tokenizer.hasMoreTokens()){
+							String limit = tokenizer.nextToken().trim();
+							givenLimits.add(limit);
+						}
+						
+						CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo, condition, givenLimits, priority);
+						toreturn.add(filter);
+					}
 				}
 			}
 		}
 		
 		return toreturn;
 	}
+
 }

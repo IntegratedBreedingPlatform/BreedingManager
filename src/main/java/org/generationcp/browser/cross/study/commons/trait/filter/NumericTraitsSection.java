@@ -2,13 +2,18 @@ package org.generationcp.browser.cross.study.commons.trait.filter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
+import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.validators.NumericTraitLimitsValidator;
+import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
+import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -22,6 +27,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -57,7 +63,6 @@ public class NumericTraitsSection extends VerticalLayout implements
 	private List<Integer> environmentIds = null;
 	private List<Field> fieldsToValidate = new ArrayList<Field>();
 
-	
 	public NumericTraitsSection(List<Integer> environmentIds, Window parentWindow) {
 		super();
 		this.parentWindow = parentWindow;
@@ -176,6 +181,48 @@ public class NumericTraitsSection extends VerticalLayout implements
 			return false;
 		}
 	
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<NumericTraitFilter> getFilters(){
+		List<NumericTraitFilter> toreturn = new ArrayList<NumericTraitFilter>();
+		
+		Collection<NumericTraitInfo> traitInfoObjects = (Collection<NumericTraitInfo>) this.traitsTable.getContainerDataSource().getItemIds();
+		for(NumericTraitInfo traitInfo : traitInfoObjects){
+			Item tableRow = this.traitsTable.getItem(traitInfo);
+			
+			ComboBox conditionComboBox = (ComboBox) tableRow.getItemProperty(TableColumn.NUM_CONDITION_COL_ID).getValue();
+			NumericTraitCriteria condition = (NumericTraitCriteria) conditionComboBox.getValue();
+			
+			ComboBox priorityComboBox = (ComboBox) tableRow.getItemProperty(TableColumn.NUM_PRIORITY_COL_ID).getValue();
+			TraitWeight priority = (TraitWeight) priorityComboBox.getValue();
+			
+			TextField limitsField = (TextField) tableRow.getItemProperty(TableColumn.NUM_LIMITS_COL_ID).getValue();
+			String limitsString = limitsField.getValue().toString();
+			
+			if(condition != NumericTraitCriteria.DROP_TRAIT && priority != TraitWeight.IGNORED){
+				if(condition == NumericTraitCriteria.KEEP_ALL){
+					NumericTraitFilter filter = new NumericTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
+					toreturn.add(filter);
+				} else{
+					if(limitsString != null && limitsString.length() > 0){
+						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
+						List<String> givenLimits = new ArrayList<String>();
+						
+						while(tokenizer.hasMoreTokens()){
+							String limit = tokenizer.nextToken().trim();
+							givenLimits.add(limit);
+						}
+						
+						NumericTraitFilter filter = new NumericTraitFilter(traitInfo, condition, givenLimits, priority);
+						toreturn.add(filter);
+					}
+				}
+				
+			}
+		}
+		
+		return toreturn;
 	}
 	
 

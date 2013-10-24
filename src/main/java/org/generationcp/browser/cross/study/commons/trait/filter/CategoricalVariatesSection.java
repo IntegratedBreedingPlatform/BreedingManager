@@ -1,11 +1,20 @@
 package org.generationcp.browser.cross.study.commons.trait.filter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
+import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
+import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
+import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -19,6 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -143,6 +153,8 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		setSpacing(true);
 		addComponent(lblSectionTitle);
 		addComponent(traitsTable);
+		traitsTable.setHeight("360px");
+		traitsTable.setWidth("920px");
 	}
 	
 	
@@ -234,4 +246,46 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		Window parentWindow = this.getWindow();
 		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow, variateType , traitId, traitName, envIds));
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<CategoricalTraitFilter> getFilters(){
+		List<CategoricalTraitFilter> toreturn = new ArrayList<CategoricalTraitFilter>();
+		
+		Collection<CategoricalTraitInfo> traitInfoObjects = (Collection<CategoricalTraitInfo>) this.traitsTable.getItemIds();
+		for(CategoricalTraitInfo traitInfo : traitInfoObjects){
+			Item tableRow = this.traitsTable.getItem(traitInfo);
+			
+			ComboBox conditionComboBox = (ComboBox) tableRow.getItemProperty(CONDITION_COLUMN_ID).getValue();
+			CategoricalVariatesCondition condition = (CategoricalVariatesCondition) conditionComboBox.getValue();
+			
+			ComboBox priorityComboBox = (ComboBox) tableRow.getItemProperty(PRIORITY_COLUMN_ID).getValue();
+			TraitWeight priority = (TraitWeight) priorityComboBox.getValue();
+			
+			TextField limitsField = (TextField) tableRow.getItemProperty(LIMITS_COLUMN_ID).getValue();
+			String limitsString = limitsField.getValue().toString();
+			
+			if(condition != CategoricalVariatesCondition.DROP_TRAIT && priority != TraitWeight.IGNORED){
+				if(condition == CategoricalVariatesCondition.KEEP_ALL){
+					CategoricalTraitFilter filter = new CategoricalTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
+					toreturn.add(filter);
+				} else{
+					if(limitsString != null && limitsString.length() > 0){
+						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
+						List<String> givenLimits = new ArrayList<String>();
+						
+						while(tokenizer.hasMoreTokens()){
+							String limit = tokenizer.nextToken().trim();
+							givenLimits.add(limit);
+						}
+						
+						CategoricalTraitFilter filter = new CategoricalTraitFilter(traitInfo, condition, givenLimits, priority);
+						toreturn.add(filter);
+					}
+				}
+			}
+		}
+		
+		return toreturn;
+	}
+
 }

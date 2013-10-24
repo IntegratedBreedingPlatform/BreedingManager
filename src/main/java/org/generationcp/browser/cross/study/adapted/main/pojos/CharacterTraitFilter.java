@@ -1,4 +1,4 @@
-package org.generationcp.browser.cross.study.commons.trait.filter;
+package org.generationcp.browser.cross.study.adapted.main.pojos;
 
 import java.io.Serializable;
 import java.util.List;
@@ -7,32 +7,33 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
+import org.generationcp.middleware.domain.h2h.TraitInfo;
 
 public class CharacterTraitFilter implements Serializable {
 
 	private static final long serialVersionUID = -1400001149797183987L;
 	
-	private Integer traitId;
+	private TraitInfo traitInfo;
 	private CharacterTraitCondition condition;
 	private List<String> limits;
 	private TraitWeight priority;
 	
-	public CharacterTraitFilter(Integer traitId,
+	public CharacterTraitFilter(TraitInfo traitInfo,
 			CharacterTraitCondition condition, List<String> limits,
 			TraitWeight priority) {
 		super();
-		this.traitId = traitId;
+		this.traitInfo = traitInfo;
 		this.condition = condition;
 		this.limits = limits;
 		this.priority = priority;
 	}
 
-	public Integer getTraitId() {
-		return traitId;
+	public TraitInfo getTraitInfo() {
+		return traitInfo;
 	}
 	
-	public void setTraitId(Integer traitId) {
-		this.traitId = traitId;
+	public void setTraitInfo(TraitInfo traitInfo) {
+		this.traitInfo = traitInfo;
 	}
 	
 	public CharacterTraitCondition getCondition() {
@@ -72,11 +73,11 @@ public class CharacterTraitFilter implements Serializable {
         }
 
         CharacterTraitFilter rhs = (CharacterTraitFilter) obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(traitId, rhs.traitId).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(traitInfo, rhs.traitInfo).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(traitId).toHashCode();
+        return new HashCodeBuilder(17, 37).append(traitInfo).toHashCode();
     }
 }

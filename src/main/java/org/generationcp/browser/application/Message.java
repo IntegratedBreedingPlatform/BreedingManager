@@ -298,6 +298,7 @@ public enum Message {
      ,NO_OF_SELECTED_ENVIRONMENT
      ,NEXT
      ,BACK
+     ,SAVE
      ,LINE_BY_LOCATION_TITLE
      ,LINE_BY_LOCATION_FOR_TRAIT
      ,OBSERVATION_NO

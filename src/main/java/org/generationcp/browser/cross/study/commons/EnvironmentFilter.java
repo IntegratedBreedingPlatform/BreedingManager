@@ -435,9 +435,12 @@ private static final long serialVersionUID = -3667517088395779496L;
         
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
+        
+        //System.out.println("parentWindow in EnvironmentFilter1:" + parentWindow);
+        //System.out.println("parentWindow in EnvironmentFilter1:" + getParent());
     }
 	
-	private void populateEnvironmentsTable() {
+	public void populateEnvironmentsTable() {
 		tableEntriesMap = new HashMap<String, Object[]>();
 		
 		environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
@@ -457,8 +460,12 @@ private static final long serialVersionUID = -3667517088395779496L;
         filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
         addConditionsDialog = new AddEnvironmentalConditionsDialog(this, parentWindow, environmentIdsList);
+        
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
+        
+        //System.out.println("parentWindow in EnvironmentFilter2:" + parentWindow);
+        //System.out.println("parentWindow in EnvironmentFilter2:" + getParent());
 	}
 
 	private void recreateTable(boolean recreateFilterLocationMap, boolean isAppliedClick){
