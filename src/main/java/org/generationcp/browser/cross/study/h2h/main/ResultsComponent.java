@@ -22,11 +22,9 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.Observation;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
@@ -45,12 +43,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.ResultsComponent.class);
     
-    private static final String TRAIT_COLUMN_ID = "ResultsComponent Trait Column ID";
-    
-    
     private static final String MEAN_TEST_COLUMN_ID = "ResultsComponent Mean Test Column ID";
     private static final String MEAN_STD_COLUMN_ID = "ResultsComponent Mean STD Column ID";
-    
     
     public static final String TEST_COLUMN_ID = "ResultsComponent Test Column ID";
     public static final String STANDARD_COLUMN_ID = "ResultsComponent Standard Column ID";
@@ -61,17 +55,9 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 
     private Table[] resultsTable;
     
-    private Label testEntryLabel;
-    private Label standardEntryLabel;
     private Label testEntryNameLabel;
     private Label standardEntryNameLabel;
     
-    private Integer currentTestEntryGID;
-    private Integer currentStandardEntryGID;
-    
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-
     public static final String BACK_BUTTON_ID = "ResultsComponent Back Button ID";
     public static final String EXPORT_BUTTON_ID = "ResultsComponent Export Button ID";
 
@@ -83,15 +69,13 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     private String[] columnIdData = {NUM_OF_ENV_COLUMN_ID,NUM_SUP_COLUMN_ID,MEAN_TEST_COLUMN_ID,
     		MEAN_STD_COLUMN_ID, PVAL_COLUMN_ID,MEAN_DIFF_COLUMN_ID};
-    private Map<String, String> columnIdDataMsgMap = new HashMap();
+    private Map<String, String> columnIdDataMsgMap = new HashMap<String, String>();
     
     public static DecimalFormat decimalFormmatter = new DecimalFormat("#,##0.00");
-    public List<ResultsData> resultsDataList = new ArrayList();
+    public List<ResultsData> resultsDataList = new ArrayList<ResultsData>();
     private TabSheet mainTabs;
     
     public ResultsComponent(HeadToHeadCrossStudyMain mainScreen){
-        this.currentStandardEntryGID = null;
-        this.currentTestEntryGID = null;
         this.mainScreen = mainScreen;
         
         //initialize the data map
@@ -101,8 +85,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         columnIdDataMsgMap.put(MEAN_STD_COLUMN_ID, "MeanStd");
         columnIdDataMsgMap.put(PVAL_COLUMN_ID, "Pval");
         columnIdDataMsgMap.put(MEAN_DIFF_COLUMN_ID, "MeanDiff");
-        
-        
     }
     
     @Override
@@ -145,7 +127,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         int traitSize = envForComparison.getTraitAndObservationMap().keySet().size();
         resultsTable = new Table[traitSize];
         VerticalLayout[] layouts = new VerticalLayout[traitSize];
-        resultsDataList = new ArrayList();
+        resultsDataList = new ArrayList<ResultsData>();
         
         for(int counter = 0 ; counter < traitsIteratorArray.length ; counter++){    
         	TraitForComparison traitForCompare = traitsIteratorArray[counter];
@@ -207,7 +189,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	String uniquieId = germplasmPair.getGid1() + ":" + germplasmPair.getGid2();
         	String testEntry = germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid1()));
         	String standardEntry =  germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid2()));
-        	Map<String,String> traitDataMap = new HashMap();
+        	Map<String,String> traitDataMap = new HashMap<String, String>();
         	ResultsData resData = new ResultsData(germplasmPair.getGid1(), testEntry, germplasmPair.getGid2(), standardEntry, traitDataMap);
         	
         	
@@ -267,20 +249,10 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	return value.toString();
     }
     
-    private boolean isValidObsValue(Observation obs1, Observation obs2){
-    	if(obs1 != null && obs2 != null && obs1.getValue() != null 
-				&& obs2.getValue() != null && !obs1.getValue().equalsIgnoreCase("") &&
-				!obs2.getValue().equalsIgnoreCase("") && isValidDoubleValue(obs1.getValue()) && isValidDoubleValue(obs2.getValue())){
-			return true;
-			
-		}
-    	return false;
-    }
-    
     public static boolean isValidDoubleValue(String val){
     	if(val != null && !val.equalsIgnoreCase("")){
     		try{
-    			double d = Double.parseDouble(val);
+    			Double.parseDouble(val);
     			return true;
     		}catch(NumberFormatException ee){
     			return false;
@@ -288,13 +260,12 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	}
     	return false;
     }
+    
     public void populateResultsTable(List<EnvironmentForComparison> environmentForComparisonList, Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPair,
     		Map<String, ObservationList> observationMap){
     	createEnvironmentsResultTable(environmentForComparisonList, germplasmNameIdMap, germplasmPair, observationMap);
     
     }
-    
-    
     
     public void setEntriesLabel(String testEntryLabel, String standardEntryLabel){
         this.testEntryNameLabel.setValue(testEntryLabel);
@@ -317,22 +288,20 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
          try {
         	EnvironmentForComparison envForComparison = this.finalEnvironmentForComparisonList.get(0);
          	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-         	
-         	                         
-             
-                 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
-                 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                 fileDownloadResource.setFilename("HeadToHeadDataList.xls");
+         	 
+            listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
+            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+            fileDownloadResource.setFilename("HeadToHeadDataList.xls");
 
-                 this.getWindow().open(fileDownloadResource);
-             	 this.mainScreen.selectFirstTab();
-                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                 //File tempFile = new File(tempFileName);
-                 //tempFile.delete();
+            this.getWindow().open(fileDownloadResource);
+            this.mainScreen.selectFirstTab();
+            //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+            //File tempFile = new File(tempFileName);
+            //tempFile.delete();
          } catch (HeadToHeadDataListExportException e) {
-                 MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.HEAD_TO_HEAD_COMPARISON_WINDOW_NAME) 
-                             , "Error with exporting list."
-                             , e.getMessage(), Notification.POSITION_CENTERED);
+             MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.HEAD_TO_HEAD_COMPARISON_WINDOW_NAME) 
+                        , "Error with exporting list."
+                        , e.getMessage(), Notification.POSITION_CENTERED);
          }
          
     	//MessageNotifier.showWarning(getWindow(), "Warning!", "Do the export now", Notification.POSITION_CENTERED);
