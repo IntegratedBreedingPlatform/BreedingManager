@@ -50,6 +50,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private static final String NUMBER_OF_ENV_COLUMN_ID = "FilterStudyDialog Number of Environments Column Id";
     private static final String TAG_COLUMN_ID = "FilterStudyDialog Tag Column Id";
     
+    private static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW = "Query_For_Adapted_Germplasm";
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -72,12 +73,21 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private CheckBox tagUnTagAll;
     boolean h2hCall=true;
     
+    private String windowName; 
+    
     public FilterStudyDialog(Component source, Window parentWindow, Map<String, List<StudyReference>> filterStudyMap){
         this.source = source;
         this.parentWindow = parentWindow;
         this.filterStudyMap = filterStudyMap;                        	
     }
 
+    public FilterStudyDialog(Component source, Window parentWindow, Map<String, List<StudyReference>> filterStudyMap, String windowName){
+        this.source = source;
+        this.parentWindow = parentWindow;
+        this.filterStudyMap = filterStudyMap;                        	
+        this.windowName = windowName;
+    }
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         //set as modal window, other components are disabled while window is open
@@ -193,11 +203,11 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     }
     
     public void showStudyInfo(Integer studyId){
-    	//Window parentWindow = this.getWindow();
+    	if(parentWindow==null && windowName!=null)
+    		parentWindow = this.getApplication().getWindow(windowName);
     	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId,h2hCall));
-        
-        
     }
+    
     private void initializeStudyTable(){
     	studyTable = new Table();
     	studyTable.setWidth("700px");

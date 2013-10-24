@@ -81,6 +81,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     public static final String FILTER_LOCATION_BUTTON_ID = "EnvironmentFilter Filter Location Button ID";
     public static final String FILTER_STUDY_BUTTON_ID = "EnvironmentFilter Filter Study Button ID";
     public static final String ADD_ENVIRONMENT_BUTTON_ID = "EnvironmentFilter Add Env Button ID";
+    public static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME = "Query_For_Adapted_Germplasm";
     
     /*Head to Head Query Variables*/
     private HeadToHeadCrossStudyMain mainScreen1;
@@ -457,8 +458,15 @@ private static final long serialVersionUID = -3667517088395779496L;
 		List<Integer> environmentIdsList = new ArrayList<Integer>(environmentIds);
 		
 		Window parentWindow = this.getWindow();
-        filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
-        filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+		
+	    if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
+	    	filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+	    } else if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
+	    	filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap, QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME);
+	    } else {
+	    	filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
+	    }
+	    filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         addConditionsDialog = new AddEnvironmentalConditionsDialog(this, parentWindow, environmentIdsList);
         
         isFilterLocationClicked = false;
