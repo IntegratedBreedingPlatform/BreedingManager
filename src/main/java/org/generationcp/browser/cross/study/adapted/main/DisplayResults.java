@@ -1,13 +1,14 @@
 package org.generationcp.browser.cross.study.adapted.main;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.adapted.dialogs.SaveToListDialog;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitEvaluator;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitEvaluator;
@@ -33,15 +34,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -81,6 +83,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	private List<String> columnHeaders;
 	
 	List<TableResultRow> tableRows;
+	List<TableResultRow> tableRowsSelected;
 	Integer	currentLineIndex; 
 	
 	private Button backButton;
@@ -93,13 +96,17 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	
 	private List<Integer> traitIds;
 	private Map<Integer, String> germplasmIdNameMap;
+	private Map<String, Integer> germplasmNameIdMap;
 	
 	private List<NumericTraitFilter> numericTraitFilter;
 	private List<CharacterTraitFilter> characterTraitFilter;
 	private List<CategoricalTraitFilter> categoricalTraitFilter;
 	
 	private List<Observation> observations;
-	private Map<ObservationKey, ObservationList> observationsMap; 
+	private Map<ObservationKey, ObservationList> observationsMap;
+	
+	private SaveToListDialog saveGermplasmListDialog;
+	private Map<Integer, String> selectedGermplasmMap;
 	
 	public DisplayResults(QueryForAdaptedGermplasmMain mainScreen) {
 		this.mainScreen = mainScreen;
@@ -197,7 +204,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		backButton.setEnabled(true);
 		addComponent(backButton, "top:510px;left:770px");
 
-		saveButton = new Button(messageSource.getMessage(Message.SAVE));
+		saveButton = new Button(messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL));
 		saveButton.setData(SAVE_BUTTON_ID);
 		saveButton.addListener(new Button.ClickListener(){
 			@Override
@@ -206,7 +213,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		});
 		saveButton.setWidth("100px");
-		saveButton.setEnabled(true);
+		saveButton.setEnabled(false);
 		addComponent(saveButton, "top:510px;left:880px");
 	}
 	
@@ -221,6 +228,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		this.traitIds = getTraitIds(numericTraitFilter, characterTraitFilter, categoricalTraitFilter);
 		
 		this.germplasmIdNameMap = getGermplasm(traitIds,environmentIds);
+		this.germplasmNameIdMap = getSortedGermplasmList(germplasmIdNameMap);
+		this.selectedGermplasmMap = new HashMap<Integer,String>();
 		
 		createResultsTable();
 	}
@@ -393,6 +402,29 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			
 			CheckBox box = new CheckBox();
 			box.setImmediate(true);
+			box.setData(row);
+			if(selectedGermplasmMap.containsKey(gid)){
+				box.setValue(true);
+			}
+			
+			box.addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					CheckBox box = (CheckBox) event.getSource();
+					TableResultRow row = (TableResultRow) box.getData();
+					
+					if(box.booleanValue()){
+						box.setValue(true);
+					}
+					else{
+						box.setValue(false);
+					}
+					
+					addItemForSelectedGermplasm(box,row);
+					//MessageNotifier.showMessage(getWindow(), row.getGermplasmId().toString(), germplasmIdNameMap.get(row.getGermplasmId()));
+				}
+			});
+			
 			itemObj3[0] = box;
 			
 			combinedScoreTagColTable.addItem(itemObj3,row);
@@ -422,8 +454,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			List<Integer> germplasmIds = new ArrayList<Integer>();
 			germplasmIds.addAll(germplasmIdNameMap.keySet());
 			
-			for(Map.Entry<Integer, String> germplasm : germplasmIdNameMap.entrySet()){
-				int germplasmId = germplasm.getKey();
+			for(Map.Entry<String, Integer> germplasm : germplasmNameIdMap.entrySet()){
+				int germplasmId = germplasm.getValue();
 				
 				Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = new HashMap<NumericTraitFilter,TraitObservationScore>();
 				Map<CharacterTraitFilter,TraitObservationScore> characterTOSMap = new HashMap<CharacterTraitFilter,TraitObservationScore>();
@@ -438,7 +470,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
 					for(EnvironmentForComparison env : environments){
-						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasm.getKey(), env.getEnvironmentNumber());
+						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
@@ -481,7 +513,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
 					for(EnvironmentForComparison env : environments){
-						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasm.getKey(), env.getEnvironmentNumber());
+						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
@@ -523,7 +555,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
 					for(EnvironmentForComparison env : environments){
-						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasm.getKey(), env.getEnvironmentNumber());
+						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
@@ -649,7 +681,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	}
 	
 	public Map<Integer, String> getGermplasm(List<Integer> traitIds, List<Integer> environmentIds){
-		Map<Integer, String> germplasmIdNameMap = new HashMap<Integer, String>();
+		Map<Integer,String> germplasmIdNameMap = new HashMap<Integer,String>();
 		
 		List<Integer> germplasmIds = new ArrayList<Integer>();
 		List<Integer> traitIdList = new ArrayList<Integer>();
@@ -666,7 +698,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					germplasmIds.add(id);
 				}
 			}
-			
+
 			germplasmIdNameMap = germplasmDataManager.getPreferredNamesByGids(germplasmIds);
 		} catch (MiddlewareQueryException ex) {
 			ex.printStackTrace();
@@ -675,6 +707,20 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		return germplasmIdNameMap;
+	}
+	
+	public Map<String, Integer> getSortedGermplasmList(Map<Integer, String> germplasmList){
+		TreeMap<String, Integer> sorted = new TreeMap<String, Integer>();
+		
+		for(Map.Entry<Integer, String> entry : germplasmList.entrySet()){
+			String name = entry.getValue();
+			if(name == null){ name = ""; }
+			
+			Integer id = entry.getKey();
+			sorted.put(name, id);
+		}
+		
+		return sorted;
 	}
 	
 	public void nextEntryButtonClickAction(){
@@ -711,7 +757,42 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	}
 	
 	public void saveButtonClickAction(){
-		//this.mainScreen.selectThirdTab();
+		openDialogSaveList();
 	}
+	
+	public void addItemForSelectedGermplasm(CheckBox box, TableResultRow row){
+		Integer gid = row.getGermplasmId();
+		String preferredName = germplasmIdNameMap.get(gid);
+		
+		if(selectedGermplasmMap.isEmpty()){
+			selectedGermplasmMap.put(gid, preferredName);
+		}
+		else{
+			if(selectedGermplasmMap.containsKey(gid)){
+				selectedGermplasmMap.remove(gid);
+			}
+			else{
+				selectedGermplasmMap.put(gid, preferredName);
+			}
+		}
+		
+		if(selectedGermplasmMap.size() > 0){
+			this.saveButton.setEnabled(true);
+		}
+		else if(selectedGermplasmMap.size() == 0){
+			this.saveButton.setEnabled(false);
+		}
+		
+		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
+	}
+	
+    @SuppressWarnings("deprecation")
+	private void openDialogSaveList() {
+    	Window parentWindow = this.getWindow();
+    	
+    	saveGermplasmListDialog = new SaveToListDialog(mainScreen, this, parentWindow, selectedGermplasmMap);
+	    
+	    parentWindow.addWindow(saveGermplasmListDialog);
+    }
 
 }
