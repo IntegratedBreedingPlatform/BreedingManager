@@ -299,6 +299,8 @@ public enum Message {
      ,NEXT
      ,BACK
      ,SAVE
+     ,NEXT_ENTRY
+     ,PREV_ENTRY
      ,LINE_BY_LOCATION_TITLE
      ,LINE_BY_LOCATION_FOR_TRAIT
      ,OBSERVATION_NO
