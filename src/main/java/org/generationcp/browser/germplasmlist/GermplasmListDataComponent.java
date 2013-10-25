@@ -474,96 +474,107 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         if(selectedIds.size() > 0){
             ConfirmDialog.show(this.getWindow(), "Delete List Entries:", "Are you sure you want to delete the selected list entries?",
                     "OK", "Cancel", new ConfirmDialog.Listener() {
-                        public void onClose(ConfirmDialog dialog) {
+
+            			private static final long serialVersionUID = 1L;
+
+						public void onClose(ConfirmDialog dialog) {
                             if (dialog.isConfirmed()) {
                                 // Confirmed to continue
-                            	
-                                ArrayList<Integer> gidsWithoutChildren = null;
-								try {
-                                    if(getCurrentUserLocalId()==germplasListUserId) {
-                                        designationOfListEntriesDeleted="";
-                                        for (final Object itemId : selectedIds) {
-                        Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
-                        Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
-                        try {
-                        	gidsWithoutChildren=getGidsToDeletedWithOutChildren();
-                            int entryId=Integer.valueOf(pEntryId.getValue().toString());
-                            designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
-                            germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
-                            listDataTable.removeItem(itemId);
-                        } catch (MiddlewareQueryException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            	performListEntriesDeletion(selectedIds);
+
+				            } else {
+				                // User did not confirm
+				            }
                         }
-                                        }
-                                        designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
-                            
-                                        //Change entry IDs on listData
-                                            listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0
-                                                    , (int) germplasmListManager.countGermplasmListDataByListId(germplasmListId));
-                                            Integer entryId = 1;
-                                            for (GermplasmListData listData : listDatas) {
-                                                listData.setEntryId(entryId);
-                                                entryId++;
-                                            }
-                                            germplasmListManager.updateGermplasmListData(listDatas);
-                                        
-                                            //Change entry IDs on table
-                                            entryId = 1;
-                                            for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
-                                                int listDataId = (Integer) i.next();
-                                                Item item = listDataTable.getItem(listDataId);
-                                                item.getItemProperty(ENTRY_ID).setValue(entryId);
-                                                for (GermplasmListData listData : listDatas) {
-                                                    if (listData.getId().equals(listDataId)) {
-                                                        listData.setEntryId(entryId);
-                                                        break;
-                                                    }
-                                                }
-                                                entryId += 1;
-                                            }
-                                            listDataTable.requestRepaint();
-                                        
-                                            try {
-                                                logDeletedListEntriesToWorkbenchProjectActivity();
-                                            } catch (MiddlewareQueryException e) {
-                                                LOG.error("Error logging workbench activity.", e);
-                                                e.printStackTrace();
-                                            }
-                    } else {
-                        showMessageInvalidDeletingListEntries();
-                    }
-                                    
-                                    
-                } catch (NumberFormatException e) {
-                    LOG.error("Error with deleting list entries.", e);
-                    e.printStackTrace();
-                } catch (MiddlewareQueryException e) {
-                    LOG.error("Error with deleting list entries.", e);
-                    e.printStackTrace();
-                }
-                                
-              	try {
-            		
-            		if(gidsWithoutChildren.size() > 0){
-            			deleteGermplasmDialogBox(gidsWithoutChildren);
-            		}
-				} catch (NumberFormatException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (MiddlewareQueryException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-            } else {
-                // User did not confirm
-            }
-        }
-        });
+        		}
+            );
+            
         }else{
             MessageNotifier.showError(this.getWindow(), "Error with deleteting entries." 
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
+    }
+    
+    private void performListEntriesDeletion(Collection<?> selectedIds){
+		try {
+            if(getCurrentUserLocalId()==germplasListUserId) {
+                designationOfListEntriesDeleted="";
+                final ArrayList<Integer> gidsWithoutChildren = getGidsToDeletedWithOutChildren();
+                for (final Object itemId : selectedIds) {
+                	Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
+                	Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
+                	try {
+					    int entryId=Integer.valueOf(pEntryId.getValue().toString());
+					    designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
+					    germplasmListManager.deleteGermplasmListDataByListIdEntryId(germplasmListId,entryId);
+					    listDataTable.removeItem(itemId);
+					} catch (MiddlewareQueryException e) {
+						e.printStackTrace();
+					}
+                }
+                
+                deleteGermplasmDialogBox(gidsWithoutChildren);
+                
+                designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
+    
+                //Change entry IDs on listData
+                listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0
+                            , (int) germplasmListManager.countGermplasmListDataByListId(germplasmListId));
+                Integer entryId = 1;
+                for (GermplasmListData listData : listDatas) {
+                    listData.setEntryId(entryId);
+                    entryId++;
+                }
+                germplasmListManager.updateGermplasmListData(listDatas);
+                
+                //Change entry IDs on table
+                entryId = 1;
+                for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+                    int listDataId = (Integer) i.next();
+                    Item item = listDataTable.getItem(listDataId);
+                    item.getItemProperty(ENTRY_ID).setValue(entryId);
+                    for (GermplasmListData listData : listDatas) {
+                        if (listData.getId().equals(listDataId)) {
+                            listData.setEntryId(entryId);
+                            break;
+                        }
+                    }
+                    entryId += 1;
+                }
+                listDataTable.requestRepaint();
+                
+                try {
+                    logDeletedListEntriesToWorkbenchProjectActivity();
+                } catch (MiddlewareQueryException e) {
+                    LOG.error("Error logging workbench activity.", e);
+                    e.printStackTrace();
+                }
+
+            
+                
+            } else {
+            	showMessageInvalidDeletingListEntries();
+            }
+            
+		} catch (NumberFormatException e) {
+			LOG.error("Error with deleting list entries.", e);
+			e.printStackTrace();
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error with deleting list entries.", e);
+			e.printStackTrace();
+		}
+        
+//		gidsWithoutChildren=getGidsToDeletedWithOutChildren();
+//		try {
+//			if(gidsWithoutChildren.size() > 0){
+//				deleteGermplasmDialogBox(gidsWithoutChildren);
+//			}
+//		} catch (NumberFormatException e1) {
+//			e1.printStackTrace();
+//		} catch (MiddlewareQueryException e1) {
+//			e1.printStackTrace();
+//		}
+		
     }
 
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
@@ -784,54 +795,55 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         parentWindow.addWindow(addEntriesDialog);
     }
     
-	protected void deleteGermplasmDialogBox(final ArrayList<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
-		// TODO Auto-generated method stub
-    	// getGermplasm Selected
-    	ConfirmDialog.show(this.getWindow(), "Delete Germplasm", "Do you also want to delete the germplasms",
-    			"OK", "Cancel", new ConfirmDialog.Listener() {
-    		public void onClose(ConfirmDialog dialog) {
-    			if (dialog.isConfirmed()) {
-    				ArrayList<Germplasm> gList = new ArrayList<Germplasm>();
-    				for(Integer gid:gidsWithoutChildren){
-    					try {
-							Germplasm g= germplasmDataManager.getGermplasmByGID(gid);
-							g.setGrplce(gid);
-							gList.add(g);
-						} catch (MiddlewareQueryException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-    					
-    					try {
-							germplasmDataManager.updateGermplasm(gList);
-						} catch (MiddlewareQueryException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-    				}
+	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
 
-    			}
-    		}
-    	});
+        if (gidsWithoutChildren!= null && gidsWithoutChildren.size() > 0){
+        	
+        	ConfirmDialog.show(this.getWindow(), "Delete Germplasm", "Do you also want to delete the germplasm(s)?",
+        			"OK", "Cancel", new ConfirmDialog.Listener() {
+        		private static final long serialVersionUID = 1L;
+        		
+        		public void onClose(ConfirmDialog dialog) {
+        			if (dialog.isConfirmed()) {
+        				ArrayList<Germplasm> gList = new ArrayList<Germplasm>();
+        				try {
+        					for(Integer gid : gidsWithoutChildren){
+        						Germplasm g= germplasmDataManager.getGermplasmByGID(gid);
+        						g.setGrplce(gid);
+        						gList.add(g);
+        					}// end loop
+        					
+        					germplasmDataManager.updateGermplasm(gList);
+        					
+        				} catch (MiddlewareQueryException e) {
+        					e.printStackTrace();
+        				}
+        				
+        			}
+        		}
+        		
+        	});
+        	
+        }
 	}
 	
     protected ArrayList<Integer> getGidsToDeletedWithOutChildren() throws NumberFormatException, MiddlewareQueryException{
-   	 ArrayList<Integer> gids= new ArrayList<Integer>();
-   	Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
-     for (final Object itemId : selectedIds) {
-      
-         Property pGid= listDataTable.getItem(itemId).getItemProperty(GID_VALUE);
-   		 String gid=pGid.getValue().toString();
-   		 if(gid.contains("-")){
-   			 long count = pedigreeDataManager.countDescendants(Integer.valueOf(gid));
-   			 if(count == 0){
-   				 gids.add(Integer.valueOf(gid));
-   			 }
-   		 }
-   	 }
-    	   			 
-   	return gids;
-   	
-   }
+    	ArrayList<Integer> gids= new ArrayList<Integer>();
+    	Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
+	     for (final Object itemId : selectedIds) {
+	      
+	         Property pGid= listDataTable.getItem(itemId).getItemProperty(GID_VALUE);
+	   		 String gid=pGid.getValue().toString();
+	   		 // only allow deletions for local germplasms
+	   		 if(gid.contains("-")){
+	   			 long count = pedigreeDataManager.countDescendants(Integer.valueOf(gid));
+	   			 if(count == 0){
+	   				 gids.add(Integer.valueOf(gid));
+	   			 }
+	   		 }
+	     }
+	    	   			 
+	   	return gids;
+   	}
     
 }
