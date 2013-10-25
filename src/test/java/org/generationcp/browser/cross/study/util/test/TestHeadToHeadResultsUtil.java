@@ -6,6 +6,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
@@ -22,8 +23,10 @@ public class TestHeadToHeadResultsUtil {
 	private static final int TID1 = 22544;
 	private static final int TID2 = 22564;
 	
-	private static final TraitForComparison TRAIT1 = new TraitForComparison(new TraitInfo(TID1), 1);
-	private static final TraitForComparison TRAIT2 = new TraitForComparison(new TraitInfo(TID2), -1);
+	private static final TraitForComparison TRAIT1 = 
+		new TraitForComparison(new TraitInfo(TID1), TraitsAvailableComponent.INCREASING);
+	private static final TraitForComparison TRAIT2 = 
+		new TraitForComparison(new TraitInfo(TID2), TraitsAvailableComponent.DECREASING);
 	
 	private static Map<String, ObservationList> data = MockCrossStudyDataUtil.getHeadToHeadData(TID1, TID2, GID1, GID2);
 	private static final GermplasmPair pair = new GermplasmPair(GID1, GID2);
