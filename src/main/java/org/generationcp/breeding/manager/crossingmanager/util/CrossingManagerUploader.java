@@ -365,8 +365,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
 
         validateRequiredConditions(requiredConditionRows);
-        
-        validateConditionValues();
+
+        if (TemplateUploadSource.CROSSING_MANAGER.equals(this.uploadSourceType)) {
+        	// special validation for Crossing Manager only
+        	validateCrossingConditionValues();
+        }
 
         currentRow++;
     }
@@ -433,7 +436,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
     }
     
-    private void validateConditionValues() {
+    private void validateCrossingConditionValues() {
         // build HashMap of Conditions read from the template file
         HashMap<String, ImportedCondition> fileConditions = new HashMap<String, ImportedCondition>();
         List<ImportedCondition> conditions = importedGermplasmCrosses.getImportedConditions();
@@ -441,18 +444,35 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             fileConditions.put(c.getCondition().toUpperCase(), c);
         }
         
-        ImportedCondition maleListName = fileConditions.get(TemplateCrossingCondition.MALE_LIST_NAME.getValue());
-        ImportedCondition femaleListName = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_NAME.getValue());
+        ImportedCondition templateFemaleListId = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_ID.getValue());
+        ImportedCondition templateFemaleListName = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_NAME.getValue());
+        ImportedCondition templateMaleListId = fileConditions.get(TemplateCrossingCondition.MALE_LIST_ID.getValue());
+        ImportedCondition templateMaleListName = fileConditions.get(TemplateCrossingCondition.MALE_LIST_NAME.getValue());
         
-        String listNameErrors = "";
-        if (femaleListIdIsSpecified && !femaleListName.getValue().equals(femaleGermplasmList.getName())) {
-            listNameErrors = listNameErrors + "<br/>" + TemplateCrossingCondition.FEMALE_LIST_NAME.getValue();
+        String conditionErrors = "";
+        
+        if (femaleGermplasmList == null) {
+        	conditionErrors = conditionErrors + "<br/> The female germplasm list id \""+ templateFemaleListId.getValue() +"\" does not exist in the database.";
+        } else {
+        	String templateFemaleListNameValue = templateFemaleListName.getValue();
+            String femaleGermplasmListName = femaleGermplasmList.getName();
+            if (femaleListIdIsSpecified && !templateFemaleListNameValue.equals(femaleGermplasmListName)) {
+                conditionErrors = conditionErrors + "<br/> The female list name \"" + templateFemaleListNameValue + "\" does not exist in the database.";
+            }
         }
-        if (maleListIdIsSpecified && !maleListName.getValue().equals(maleGermplasmList.getName())) {
-            listNameErrors = listNameErrors + "<br/>" + TemplateCrossingCondition.MALE_LIST_NAME.getValue();
+        
+        if (maleGermplasmList == null) {
+        	conditionErrors = conditionErrors + "<br/> The male germplasm list id \""+ templateMaleListId.getValue() +"\" does not exist in the database.";
+        } else {
+        	String templateMaleListNameValue = templateMaleListName.getValue();
+        	String maleGermplasmListName = maleGermplasmList.getName();
+        	if (maleListIdIsSpecified && !templateMaleListNameValue.equals(maleGermplasmListName)) {
+        		conditionErrors = conditionErrors + "<br/> The male list name \"" + templateMaleListNameValue + "\" does not exist in the database.";
+            }
         }
-        if (!"".equals(listNameErrors)){
-            showInvalidFileError("Invalid Germplasm List Name:", listNameErrors);
+        
+        if (!"".equals(conditionErrors)){
+            showInvalidFileError("Invalid germplasm list information", conditionErrors);
         }
     }
 
