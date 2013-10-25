@@ -12,14 +12,10 @@
 package org.generationcp.browser.study;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
-import org.generationcp.browser.study.pojos.CellCoordinateColorAssignment;
-import org.generationcp.browser.study.util.DatasetExporter;
 import org.generationcp.browser.study.util.DatasetExporterException;
 import org.generationcp.browser.study.util.TableViewerCellSelectorUtil;
 import org.generationcp.browser.study.util.TableViewerExporter;
@@ -27,14 +23,12 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Layout.MarginInfo;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -48,6 +42,7 @@ import com.vaadin.ui.Window;
 public class TableViewerComponent extends Window implements InitializingBean, InternationalizableComponent {
 	
 	private static final long serialVersionUID = 477658402146083181L;
+	public static final String TABLE_VIEWER_WINDOW_NAME = "table-viewer";
     public static final String EXPORT_EXCEL_BUTTON_ID = "Export Dataset to Excel";
 	
     private TableViewerCellSelectorUtil tableViewerCellSelectorUtil;
@@ -100,6 +95,7 @@ public class TableViewerComponent extends Window implements InitializingBean, In
     }
     
     protected void initializeLayout() {
+    	setName(TABLE_VIEWER_WINDOW_NAME);
     	setCaption(messageSource.getMessage(Message.TABLE_VIEWER_CAPTION));
     	setSizeFull();
         center();

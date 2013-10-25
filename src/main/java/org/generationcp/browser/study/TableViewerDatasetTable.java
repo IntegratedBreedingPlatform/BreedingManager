@@ -12,11 +12,10 @@
 package org.generationcp.browser.study;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.DataSet;
@@ -34,7 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * @author Mark Agarrado
@@ -95,7 +96,12 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
                 if (NUMERIC_VARIABLE.equals(variable.getStandardVariable().getDataType().getName())) {
                 	this.addContainerProperty(columnId, Double.class, null);
                 } else {
-                	this.addContainerProperty(columnId, String.class, null);
+                	//define column as Button for GID, else define as String
+                	if (columnId.contains("GID")) {
+                		this.addContainerProperty(columnId, Button.class, null);
+                	} else {
+                		this.addContainerProperty(columnId, String.class, null);
+                	}
                 }
             }
         }
@@ -155,7 +161,18 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	                    	item.getItemProperty(columnId).setValue(doubleValue);
 	                    } else {
 	                    	String stringValue = variable.getDisplayValue();
-	                    	item.getItemProperty(columnId).setValue(stringValue);
+	                    	if (stringValue != null) {
+	                    		stringValue = stringValue.trim();
+	                    		// display value as Link if GID, else display as string
+		                    	if ("GID".equals(variable.getVariableType().getLocalName().trim())) {
+	                                Button gidButton = new Button(stringValue, new GidLinkButtonClickListener(stringValue));
+	                                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+	                                gidButton.setDescription("Click to view Germplasm information");
+	                                item.getItemProperty(columnId).setValue(gidButton);
+		                    	} else {
+			                    	item.getItemProperty(columnId).setValue(stringValue);
+		                    	}
+	                    	}
 	                    }
 	                }
                 }

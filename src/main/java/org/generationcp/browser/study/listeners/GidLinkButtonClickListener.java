@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.study.listeners;
 
+import org.generationcp.browser.study.TableViewerComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Tool;
@@ -45,8 +46,14 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 
     @Override
     public void buttonClick(ClickEvent event) {
-        Window mainWindow = event.getComponent().getWindow();
-        
+    	Window mainWindow;
+    	Window eventWindow = event.getComponent().getWindow();
+    	if (TableViewerComponent.TABLE_VIEWER_WINDOW_NAME.equals(eventWindow.getName())) {
+    		mainWindow = eventWindow.getParent();
+    	} else {
+    		mainWindow = eventWindow;
+    	}
+    	
         Tool tool = null;
         try {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
