@@ -92,6 +92,7 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
 
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
+        mainLayout.setMargin(true);
         mainLayout.setWidth("1100px");
         mainLayout.setHeight("550px");
         
@@ -106,7 +107,7 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
             //}
             Accordion accordion = new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
                     studyDataManager, false,h2hCall);
-            accordion.setWidth("1050px");
+            accordion.setWidth("95%");
             accordion.setHeight("490px");
             mainLayout.addComponent(accordion, "top:10px;left:5px");
         } catch (NumberFormatException e) {
