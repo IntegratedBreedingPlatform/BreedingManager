@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.adapted.main;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
@@ -107,6 +109,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	
 	private SaveToListDialog saveGermplasmListDialog;
 	private Map<Integer, String> selectedGermplasmMap;
+	private Map<Object, Boolean> columnOrdering; 
 	
 	public DisplayResults(QueryForAdaptedGermplasmMain mainScreen) {
 		this.mainScreen = mainScreen;
@@ -132,15 +135,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		germplasmColTable.setHeight("420px");
 		germplasmColTable.setImmediate(true);
 		germplasmColTable.setPageLength(15);
-		germplasmColTable.setColumnCollapsingAllowed(false);
+		germplasmColTable.setColumnCollapsingAllowed(true);
 		germplasmColTable.setColumnReorderingAllowed(false);
-		germplasmColTable.addListener(new Table.HeaderClickListener() {
-		    public void headerClick(HeaderClickEvent event) {
-		        String column = (String) event.getPropertyId();
-		        System.out.println("Clicked " + column + "with " + event.getButtonName());
-		    }
-		});
-		germplasmColTable.setSortDisabled(true);
+		//germplasmColTable.setSortDisabled(true);
 		
 		traitsColTable = new Table();
 		traitsColTable.setWidth("560px");
@@ -149,21 +146,21 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		traitsColTable.setPageLength(15);
 		traitsColTable.setColumnCollapsingAllowed(true);
 		traitsColTable.setColumnReorderingAllowed(false);
-		traitsColTable.setSortDisabled(true);
+		//traitsColTable.setSortDisabled(true);
 		
 		combinedScoreTagColTable = new Table(); 
 		combinedScoreTagColTable.setWidth("60px");
 		combinedScoreTagColTable.setHeight("420px");
 		combinedScoreTagColTable.setImmediate(true);
 		combinedScoreTagColTable.setPageLength(15);
-		combinedScoreTagColTable.setColumnCollapsingAllowed(false);
+		combinedScoreTagColTable.setColumnCollapsingAllowed(true);
 		combinedScoreTagColTable.setColumnReorderingAllowed(false);
-		combinedScoreTagColTable.setSortDisabled(true);
+		//combinedScoreTagColTable.setSortDisabled(true);
 		
 		resultTable.addComponent(germplasmColTable, "top:20px;left:20px");
 		resultTable.addComponent(traitsColTable, "top:20px;left:359px");
 		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:919px");
-		
+		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; } </style>",Label.CONTENT_XHTML));
 		addComponent(resultTable, "top:0px;left:0px");
 		
 		
@@ -231,7 +228,114 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		this.germplasmNameIdMap = getSortedGermplasmList(germplasmIdNameMap);
 		this.selectedGermplasmMap = new HashMap<Integer,String>();
 		
-		createResultsTable();
+		//createResultsTable();
+		germplasmColTable = createResultsTable(germplasmColTable);
+		traitsColTable = createResultsTable(traitsColTable);
+		combinedScoreTagColTable = createResultsTable(combinedScoreTagColTable);
+		
+		
+		for(Object propertyId : germplasmColTable.getContainerPropertyIds()){
+        	if(propertyId.toString().equals(LINE_NO)){ 
+        		germplasmColTable.setColumnCollapsed(propertyId, false);
+        	}
+        	else if(propertyId.toString().equals(LINE_GID)){
+        		germplasmColTable.setColumnCollapsed(propertyId, false);
+        	}
+        	else if(propertyId.toString().equals(LINE_DESIGNATION)){
+        		germplasmColTable.setColumnCollapsed(propertyId, false);
+        	}
+        	else{
+        		germplasmColTable.setColumnCollapsed(propertyId, true);
+        	}
+        }
+		
+		for(Object propertyId : traitsColTable.getContainerPropertyIds()){
+        	if(propertyId.toString().equals(LINE_NO)){ 
+        		traitsColTable.setColumnCollapsed(propertyId, true);
+        	}
+        	else if(propertyId.toString().equals(LINE_GID)){
+        		traitsColTable.setColumnCollapsed(propertyId, true);
+        	}
+        	else if(propertyId.toString().equals(LINE_DESIGNATION)){
+        		traitsColTable.setColumnCollapsed(propertyId, true);
+        	}
+        	else if(propertyId.toString().equals(TAG_COLUMN_ID)){
+        		traitsColTable.setColumnCollapsed(propertyId, true);
+        	}
+        	else{
+        		traitsColTable.setColumnCollapsed(propertyId, false);
+        	}
+        }
+		
+		for(Object propertyId : combinedScoreTagColTable.getContainerPropertyIds()){
+			if(propertyId.toString().equals(TAG_COLUMN_ID)){
+				combinedScoreTagColTable.setColumnCollapsed(propertyId, false);
+        	}
+        	else{
+        		combinedScoreTagColTable.setColumnCollapsed(propertyId, true);
+        	}
+        }
+		
+		//header column listener
+		initializeColumnOrdering();
+		
+		germplasmColTable.addListener(new Table.HeaderClickListener() {
+		    public void headerClick(HeaderClickEvent event) {
+		        //String column = (String) event.getPropertyId();
+		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
+		    	Object property = event.getPropertyId();
+		    	Object[] properties = new Object[]{property};
+		    	
+		    	boolean order = columnOrdering.get(property);
+		    	order = order? false : true;
+		    	
+		    	columnOrdering.put(property, order);
+		    	
+		    	boolean[] ordering = new boolean[]{ order };
+		        
+		        traitsColTable.sort(properties, ordering);
+		        combinedScoreTagColTable.sort(properties, ordering);
+		    }
+		});
+		
+		traitsColTable.addListener(new Table.HeaderClickListener() {
+			public void headerClick(HeaderClickEvent event) {
+		        //String column = (String) event.getPropertyId();
+		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
+		    	Object property = event.getPropertyId();
+		    	Object[] properties = new Object[]{property};
+		    	
+		    	boolean order = columnOrdering.get(property);
+		    	order = order? false : true;
+		    	
+		    	columnOrdering.put(property, order);
+		    	
+		    	boolean[] ordering = new boolean[]{ order };
+		        
+		    	germplasmColTable.sort(properties, ordering);
+		        combinedScoreTagColTable.sort(properties, ordering);
+		    }
+		});
+		
+		combinedScoreTagColTable.addListener(new Table.HeaderClickListener() {
+			public void headerClick(HeaderClickEvent event) {
+		        //String column = (String) event.getPropertyId();
+		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
+		    	Object property = event.getPropertyId();
+		    	Object[] properties = new Object[]{property};
+		    	
+		    	boolean order = columnOrdering.get(property);
+		    	order = order? false : true;
+		    	
+		    	columnOrdering.put(property, order);
+		    	
+		    	boolean[] ordering = new boolean[]{ order };
+		        
+		        traitsColTable.sort(properties, ordering);
+		        germplasmColTable.sort(properties, ordering);
+		    }
+		});
+        		
 	}
 	
 	public void createResultsTable(){
@@ -329,6 +433,89 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		tableRows = getTableRowsResults();
 		currentLineIndex = 0;
 		populateRowsResultsTable();
+	}
+	
+	public Table createResultsTable(Table resultTable){
+		
+		List<Object> propertyIds = new ArrayList<Object>();
+        for(Object propertyId : resultTable.getContainerPropertyIds()){
+            propertyIds.add(propertyId);
+        }
+        for(Object propertyId : propertyIds){
+        	resultTable.removeContainerProperty(propertyId);
+        	resultTable.removeGeneratedColumn(propertyId);
+        }
+        
+        resultTable.removeAllItems();
+		
+        resultTable.addContainerProperty(LINE_NO, Integer.class, null);
+        resultTable.addContainerProperty(LINE_GID, Integer.class, null);
+        resultTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
+		
+        resultTable.setColumnHeader(LINE_NO, "Line No");
+        resultTable.setColumnHeader(LINE_GID, "Line GID");
+        resultTable.setColumnHeader(LINE_DESIGNATION, "Line Designation");
+		
+		Integer NoOfColumns = 3;
+		NoOfTraitColumns = 0;
+		for(NumericTraitFilter trait : numericTraitFilter){
+			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			Integer traitId = trait.getTraitInfo().getId();
+			
+			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			
+			resultTable.setColumnHeader("DisplayResults " + name, name);
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			
+			NoOfColumns+=2;
+			NoOfTraitColumns += 2;
+		}
+		
+		for(CharacterTraitFilter trait : characterTraitFilter){
+			Integer traitId = trait.getTraitInfo().getId();
+			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			
+			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			
+			resultTable.setColumnHeader("DisplayResults " + name, name);
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			
+			NoOfColumns+=2;
+			NoOfTraitColumns += 2;
+		}
+		
+		for(CategoricalTraitFilter trait : categoricalTraitFilter){
+			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			Integer traitId = trait.getTraitInfo().getId();
+			
+			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			
+			resultTable.setColumnHeader("DisplayResults " + name, name);
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			
+			NoOfColumns+=2;
+			NoOfTraitColumns += 2;
+		}
+		
+		resultTable.addContainerProperty(COMBINED_SCORE_COLUMN_ID, Double.class, null);
+		resultTable.setColumnHeader(COMBINED_SCORE_COLUMN_ID, "Combined Score");
+		NoOfColumns++;
+		
+		resultTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+		resultTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
+		NoOfColumns++;
+		
+		tableRows = getTableRowsResults();
+		currentLineIndex = 0;
+		populateRowsResultsTable(resultTable, NoOfColumns);
+		
+		return resultTable;
 	}
 	
 	public void populateRowsResultsTable(){
@@ -433,6 +620,101 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 	}
 	
+	public void populateRowsResultsTable(Table resultTable, Integer NoOfColumns){
+		int line_no = currentLineIndex + 1;
+		int endOfListIndex = currentLineIndex + 15;
+		
+		if(endOfListIndex > this.tableRows.size()){
+			endOfListIndex = this.tableRows.size();
+		}
+				
+        for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){
+			int gid = row.getGermplasmId();
+			String germplasmName = germplasmIdNameMap.get(gid);
+			
+			Object[] itemObj = new Object[NoOfColumns];   
+			
+			itemObj[0] = line_no;
+			itemObj[1] = gid;
+			itemObj[2] = germplasmName;
+			
+			columnHeaders = getColumnHeaders(resultTable.getColumnHeaders());
+			//System.out.println("TOTAL TRAIT COLUMNS NO: " + NoOfColumns);
+			
+			Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = row.getNumericTOSMap();
+			for(Map.Entry<NumericTraitFilter, TraitObservationScore> numericTOS : numericTOSMap.entrySet()){
+				String traitName = numericTOS.getKey().getTraitInfo().getName().trim();
+				
+				String name = traitName + "\n No Obs";
+				
+				int index = columnHeaders.indexOf(name);
+				
+				itemObj[index] = numericTOS.getValue().getNoOfObservation();
+				itemObj[index + 1] = numericTOS.getValue().getWtScore();
+				
+				//System.out.println(name + "CURRENT INDEX: " + index + "|" + numericTOS.getValue().getNoOfObservation() + "|" + numericTOS.getValue().getWtScore());
+			}
+			
+			Map<CharacterTraitFilter,TraitObservationScore> characterTOSMap = row.getCharacterTOSMap();
+			for(Map.Entry<CharacterTraitFilter, TraitObservationScore> characterTOS : characterTOSMap.entrySet()){
+				String traitName = characterTOS.getKey().getTraitInfo().getName().trim();
+				
+				String name = traitName + "\n No Obs";
+				
+				int index = columnHeaders.indexOf(name);
+				
+				itemObj[index] = characterTOS.getValue().getNoOfObservation();
+				itemObj[index + 1] = characterTOS.getValue().getWtScore();
+			}
+			
+			Map<CategoricalTraitFilter,TraitObservationScore> categoricalTOSMap = row.getCategoricalTOSMap();
+			for(Map.Entry<CategoricalTraitFilter, TraitObservationScore> categoricalTOS : categoricalTOSMap.entrySet()){
+				String traitName = categoricalTOS.getKey().getTraitInfo().getName().trim();
+				
+				String name = traitName + "\n No Obs";
+				
+				int index = columnHeaders.indexOf(name);
+				
+				itemObj[index] = categoricalTOS.getValue().getNoOfObservation();
+				itemObj[index + 1] = categoricalTOS.getValue().getWtScore();
+			}
+			
+			itemObj[NoOfColumns - 2] = row.getCombinedScore();
+			
+			
+			CheckBox box = new CheckBox();
+			box.setImmediate(true);
+			box.setData(row);
+			if(selectedGermplasmMap.containsKey(gid)){
+				box.setValue(true);
+			}
+			
+			box.addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					CheckBox box = (CheckBox) event.getSource();
+					TableResultRow row = (TableResultRow) box.getData();
+					
+					if(box.booleanValue()){
+						box.setValue(true);
+					}
+					else{
+						box.setValue(false);
+					}
+					
+					addItemForSelectedGermplasm(box,row);
+					//MessageNotifier.showMessage(getWindow(), row.getGermplasmId().toString(), germplasmIdNameMap.get(row.getGermplasmId()));
+				}
+			});
+			
+			itemObj[NoOfColumns - 1] = box;
+			
+			resultTable.addItem(itemObj,row);
+			
+			line_no++;
+		}
+	}
+	
 	public List<String> getColumnHeaders(String[] headers){
 		List<String> columnHeaders = new ArrayList<String>();
 		
@@ -442,6 +724,21 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		return columnHeaders;
+	}
+	
+	public void initializeColumnOrdering(){
+		columnOrdering = new HashMap<Object,Boolean>();
+		
+		Collection columns = germplasmColTable.getContainerPropertyIds();
+		for(Object column : columns){
+			if(column.equals(LINE_DESIGNATION)){
+				columnOrdering.put(column, false);
+			}
+			else{
+				columnOrdering.put(column, true);
+			}
+			
+		}
 	}
 	
 	public List<TableResultRow> getTableRowsResults(){
@@ -730,7 +1027,12 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
             combinedScoreTagColTable.removeAllItems();
             
         	currentLineIndex += 15;
-        	populateRowsResultsTable();
+        	
+            //populateRowsResultsTable();
+            int NoOfColumns = this.NoOfTraitColumns + 5; 
+            populateRowsResultsTable(germplasmColTable, NoOfColumns);
+            populateRowsResultsTable(traitsColTable, NoOfColumns);
+            populateRowsResultsTable(combinedScoreTagColTable, NoOfColumns);
         }
         else{
         	MessageNotifier.showWarning(getWindow(), "Notification", "No More Rows to display.");
@@ -744,7 +1046,11 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
             traitsColTable.removeAllItems();
             combinedScoreTagColTable.removeAllItems();
             
-            populateRowsResultsTable();
+            //populateRowsResultsTable();
+            int NoOfColumns = this.NoOfTraitColumns + 5; 
+            populateRowsResultsTable(germplasmColTable, NoOfColumns);
+            populateRowsResultsTable(traitsColTable, NoOfColumns);
+            populateRowsResultsTable(combinedScoreTagColTable, NoOfColumns);
         }
         else{
         	 currentLineIndex = 0;
