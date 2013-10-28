@@ -93,7 +93,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 			}
 		}
 		
-		lblSectionTitle = new Label(messageSource.getMessage(Message.CHARACTER_TRAITS_SECTION_TITLE));
+		lblSectionTitle = new Label(messageSource.getMessage(Message.CATEGORICAL_TRAITS_SECTION_TITLE));
 		
 		traitsTable = new Table();
 		traitsTable.setImmediate(true);
