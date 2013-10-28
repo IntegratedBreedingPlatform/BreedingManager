@@ -107,7 +107,7 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
             //}
             Accordion accordion = new StudyAccordionMenu(studyId, new StudyDetailComponent(this.studyDataManager, studyId),
                     studyDataManager, false,h2hCall);
-            accordion.setWidth("95%");
+            accordion.setWidth("93%");
             accordion.setHeight("490px");
             mainLayout.addComponent(accordion, "top:10px;left:5px");
         } catch (NumberFormatException e) {

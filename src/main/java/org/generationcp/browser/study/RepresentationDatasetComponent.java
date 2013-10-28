@@ -190,8 +190,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         setSpacing(true);
         addComponent(datasetTable);
         setData(this.reportName);
-        setWidth("100%");
-        setHeight("100%");
+        setWidth("97%");
+        setHeight("97%");
         
         if(!h2hCall){
 	        exportCsvButton = new Button(); // "Export to CSV"
