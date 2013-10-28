@@ -238,7 +238,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	
 	@Override
 	public void updateLabels() {
-		messageSource.setCaption(lblSectionTitle, Message.CHARACTER_TRAITS_SECTION_TITLE);
+		messageSource.setCaption(lblSectionTitle, Message.CATEGORICAL_TRAITS_SECTION_TITLE);
 	}
 
 	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,
