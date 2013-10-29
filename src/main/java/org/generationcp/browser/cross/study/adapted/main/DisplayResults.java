@@ -399,7 +399,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			resultTable.addContainerProperty("DisplayResults " + name + traitId + " categorical", Integer.class, null);
 			resultTable.addContainerProperty("DisplayResults " + weight + traitId + " categorical", Double.class, null);
 			
-			resultTable.setColumnHeader("DisplayResults " + name + traitId, name + " categorical");
+			resultTable.setColumnHeader("DisplayResults " + name + traitId + " categorical", name );
 			resultTable.setColumnHeader("DisplayResults " + weight + traitId + " categorical", weight);
 			
 			NoOfColumns+=2;
