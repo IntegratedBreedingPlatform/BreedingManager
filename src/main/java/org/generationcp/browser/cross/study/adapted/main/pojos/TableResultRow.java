@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.adapted.main.pojos;
 import java.util.Map;
 
 import org.generationcp.middleware.domain.h2h.TraitInfo;
+import org.generationcp.middleware.domain.h2h.TraitObservation;
 
 public class TableResultRow {
 	private Integer germplasmId;
@@ -88,7 +89,33 @@ public class TableResultRow {
 		
 		combinedScore = combinedScore / totalTraitWeight ;
 		
+		
+		combinedScore = (double) Math.round(combinedScore * 100);
+		combinedScore = combinedScore/100;
+		
 		return combinedScore;
+	}
+	
+	@Override
+	public String toString(){
+		String toPrint = "";
+		String numericTOS = "", characterTOS = "", categoricalTOS = "";
+		
+		for(Map.Entry<NumericTraitFilter, TraitObservationScore> obs : numericTOSMap.entrySet()){
+			numericTOS += obs.getValue().toString() + "\n"; 
+		}
+		
+		for(Map.Entry<CharacterTraitFilter, TraitObservationScore> obs : characterTOSMap.entrySet()){
+			characterTOS += obs.getValue().toString() + "\n"; 
+		}
+		
+		for(Map.Entry<CategoricalTraitFilter, TraitObservationScore> obs : categoricalTOSMap.entrySet()){
+			categoricalTOS += obs.getValue().toString() + "\n"; 
+		}
+		
+		toPrint = "TableResultRow: [ numericTOS: " + numericTOS + "] \n [ characterTOS: " + characterTOS + " ] \n" + "[ categoricalTOS: " + categoricalTOS + "]";
+		
+		return toPrint;
 	}
 }
 

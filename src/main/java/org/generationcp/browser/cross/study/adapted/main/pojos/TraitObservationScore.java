@@ -31,4 +31,15 @@ public class TraitObservationScore {
 	public void setWtScore(Double wtScore) {
 		this.wtScore = wtScore;
 	}
+	
+	@Override
+	public String toString(){
+		String toPrint = "TraitObservation [ " + 
+				"germplasmId= " +germplasmId + 
+				", noOfObservation= " + noOfObservation + 
+				", wtScore= "+ wtScore +
+				"]";
+		
+		return toPrint;
+	}
 }

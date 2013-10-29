@@ -160,7 +160,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		resultTable.addComponent(germplasmColTable, "top:20px;left:20px");
 		resultTable.addComponent(traitsColTable, "top:20px;left:359px");
 		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:919px");
-		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; } </style>",Label.CONTENT_XHTML));
+		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; }" +
+				".v-table-row, .v-table-row-odd { height: 25px; } </style>",Label.CONTENT_XHTML));
 		addComponent(resultTable, "top:0px;left:0px");
 		
 		
@@ -515,6 +516,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		currentLineIndex = 0;
 		populateRowsResultsTable(resultTable, NoOfColumns);
 		
+		System.out.println("# of TableRows: " + tableRows.size());
+		System.out.println("# of Traits: " + NoOfTraitColumns);
+		
 		return resultTable;
 	}
 	
@@ -627,8 +631,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		if(endOfListIndex > this.tableRows.size()){
 			endOfListIndex = this.tableRows.size();
 		}
-				
+		System.out.println("Line No: " + line_no);
+		System.out.println("End Of List Index: " + endOfListIndex);		
         for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){
+        	row.toString();
 			int gid = row.getGermplasmId();
 			String germplasmName = germplasmIdNameMap.get(gid);
 			
