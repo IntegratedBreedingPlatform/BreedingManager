@@ -24,6 +24,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -187,25 +188,42 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         String listName = comboBoxListName.getValue().toString();
         String listNameId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
 
-        if (listName.trim().length() == 0) {
-
-            getWindow().showNotification("List Name Input Error...", "Please specify a List Name before saving",
-                    Notification.TYPE_WARNING_MESSAGE);
-
-        } else if (listName.trim().length() > 50) {
-
-            getWindow().showNotification("List Name Input Error...", "Listname input is too large limit the name only up to 50 characters",
-                    Notification.TYPE_WARNING_MESSAGE);
-            comboBoxListName.setValue("");
-
-        } else {
-            saveGermplasmAction.addGermplasListNameAndData(listName, listNameId, this.tabSheet, txtDescription.getValue().toString(),
-                    selectType.getValue().toString());
-            closeSavingGermplasmListDialog();
-            // display notification message
-            MessageNotifier.showMessage(this.mainWindow, messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL),
-                    messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_SUCCESS));
-        }
+		Boolean proceedWithSave = true;
+		
+		try {
+			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
+			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
+			if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+				proceedWithSave = false;
+			}
+		} catch (MiddlewareQueryException e) {
+			
+		}
+        
+		if(proceedWithSave){
+			
+	        if (listName.trim().length() == 0) {
+	
+	            getWindow().showNotification("List Name Input Error...", "Please specify a List Name before saving",
+	                    Notification.TYPE_WARNING_MESSAGE);
+	
+	        } else if (listName.trim().length() > 50) {
+	
+	            getWindow().showNotification("List Name Input Error...", "Listname input is too large limit the name only up to 50 characters",
+	                    Notification.TYPE_WARNING_MESSAGE);
+	            comboBoxListName.setValue("");
+	
+	        } else {
+	            saveGermplasmAction.addGermplasListNameAndData(listName, listNameId, this.tabSheet, txtDescription.getValue().toString(),
+	                    selectType.getValue().toString());
+	            closeSavingGermplasmListDialog();
+	            // display notification message
+	            MessageNotifier.showMessage(this.mainWindow, messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL),
+	                    messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_SUCCESS));
+	        }
+	        
+		}
     }
 
     public void cancelGermplasmListButtonClickAction() {
