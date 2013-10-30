@@ -35,7 +35,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -339,103 +338,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
         		
 	}
 	
-	public void createResultsTable(){
-		
-		List<Object> propertyIds = new ArrayList<Object>();
-        for(Object propertyId : germplasmColTable.getContainerPropertyIds()){
-            propertyIds.add(propertyId);
-        }
-        for(Object propertyId : propertyIds){
-        	germplasmColTable.removeContainerProperty(propertyId);
-        	germplasmColTable.removeGeneratedColumn(propertyId);
-        }
-        
-        propertyIds = new ArrayList<Object>();
-        for(Object propertyId : traitsColTable.getContainerPropertyIds()){
-            propertyIds.add(propertyId);
-        }
-        for(Object propertyId : propertyIds){
-        	traitsColTable.removeContainerProperty(propertyId);
-        	traitsColTable.removeGeneratedColumn(propertyId);
-        }
-        
-        propertyIds = new ArrayList<Object>();
-        for(Object propertyId : combinedScoreTagColTable.getContainerPropertyIds()){
-            propertyIds.add(propertyId);
-        }
-        for(Object propertyId : propertyIds){
-        	combinedScoreTagColTable.removeContainerProperty(propertyId);
-        	combinedScoreTagColTable.removeGeneratedColumn(propertyId);
-        }
-        
-        germplasmColTable.removeAllItems();
-        traitsColTable.removeAllItems();
-        combinedScoreTagColTable.removeAllItems();
-		
-        germplasmColTable.addContainerProperty(LINE_NO, Integer.class, null);
-        germplasmColTable.addContainerProperty(LINE_GID, Integer.class, null);
-        germplasmColTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
-		
-        germplasmColTable.setColumnHeader(LINE_NO, "Line No");
-        germplasmColTable.setColumnHeader(LINE_GID, "Line GID");
-        germplasmColTable.setColumnHeader(LINE_DESIGNATION, "Line Designation");
-		
-		NoOfTraitColumns = 0;
-		
-		for(NumericTraitFilter trait : numericTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
-			Integer traitId = trait.getTraitInfo().getId();
-			
-			traitsColTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			traitsColTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
-			
-			traitsColTable.setColumnHeader("DisplayResults " + name, name);
-			traitsColTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
-			
-			NoOfTraitColumns+=2;
-		}
-		
-		for(CharacterTraitFilter trait : characterTraitFilter){
-			Integer traitId = trait.getTraitInfo().getId();
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
-			
-			traitsColTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			traitsColTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
-			
-			traitsColTable.setColumnHeader("DisplayResults " + name, name);
-			traitsColTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
-			
-			NoOfTraitColumns+=2;
-		}
-		
-		for(CategoricalTraitFilter trait : categoricalTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
-			Integer traitId = trait.getTraitInfo().getId();
-			
-			traitsColTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			traitsColTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
-			
-			traitsColTable.setColumnHeader("DisplayResults " + name, name);
-			traitsColTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
-			
-			NoOfTraitColumns+=2;
-		}
-		
-		traitsColTable.addContainerProperty(COMBINED_SCORE_COLUMN_ID, Double.class, null);
-		traitsColTable.setColumnHeader(COMBINED_SCORE_COLUMN_ID, "Combined Score");
-		NoOfTraitColumns++;
-		
-		combinedScoreTagColTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-		combinedScoreTagColTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
-		
-		tableRows = getTableRowsResults();
-		currentLineIndex = 0;
-		populateRowsResultsTable();
-	}
-	
 	public Table createResultsTable(Table resultTable){
 		
 		List<Object> propertyIds = new ArrayList<Object>();
@@ -464,26 +366,26 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
-			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			resultTable.addContainerProperty("DisplayResults " + name + traitId + " numeric", Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId + " numeric", Double.class, null);
 			
-			resultTable.setColumnHeader("DisplayResults " + name, name);
-			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			resultTable.setColumnHeader("DisplayResults " + name + traitId + " numeric", name);
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId + " numeric", weight);
 			
 			NoOfColumns+=2;
 			NoOfTraitColumns += 2;
 		}
 		
 		for(CharacterTraitFilter trait : characterTraitFilter){
-			Integer traitId = trait.getTraitInfo().getId();
 			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
 			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			Integer traitId = trait.getTraitInfo().getId();
 			
-			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			resultTable.addContainerProperty("DisplayResults " + name + traitId + " character", Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId + " character", Double.class, null);
 			
-			resultTable.setColumnHeader("DisplayResults " + name, name);
-			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			resultTable.setColumnHeader("DisplayResults " + name + traitId + " character", name);
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId + " character", weight);
 			
 			NoOfColumns+=2;
 			NoOfTraitColumns += 2;
@@ -494,11 +396,11 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
-			resultTable.addContainerProperty("DisplayResults " + name, Integer.class, null);
-			resultTable.addContainerProperty("DisplayResults " + weight + traitId, Double.class, null);
+			resultTable.addContainerProperty("DisplayResults " + name + traitId + " categorical", Integer.class, null);
+			resultTable.addContainerProperty("DisplayResults " + weight + traitId + " categorical", Double.class, null);
 			
-			resultTable.setColumnHeader("DisplayResults " + name, name);
-			resultTable.setColumnHeader("DisplayResults " + weight + traitId, weight);
+			resultTable.setColumnHeader("DisplayResults " + name + traitId + " categorical", name );
+			resultTable.setColumnHeader("DisplayResults " + weight + traitId + " categorical", weight);
 			
 			NoOfColumns+=2;
 			NoOfTraitColumns += 2;
@@ -516,114 +418,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		currentLineIndex = 0;
 		populateRowsResultsTable(resultTable, NoOfColumns);
 		
-		System.out.println("# of TableRows: " + tableRows.size());
-		System.out.println("# of Traits: " + NoOfTraitColumns);
-		
 		return resultTable;
 	}
-	
-	public void populateRowsResultsTable(){
 		
-		int line_no = currentLineIndex + 1;
-		int endOfListIndex = currentLineIndex + 15;
-		
-		if(endOfListIndex > this.tableRows.size()){
-			endOfListIndex = this.tableRows.size();
-		}
-				
-        for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){
-			int gid = row.getGermplasmId();
-			String germplasmName = germplasmIdNameMap.get(gid);
-			
-			Object[] itemObj1 = new Object[3];   
-			
-			itemObj1[0] = line_no;
-			itemObj1[1] = gid;
-			itemObj1[2] = germplasmName;
-			
-			germplasmColTable.addItem(itemObj1, row);
-			
-			Object[] itemObj2 = new Object[NoOfTraitColumns];
-			
-			columnHeaders = getColumnHeaders(traitsColTable.getColumnHeaders());
-			//System.out.println("TOTAL TRAIT COLUMNS NO: " + NoOfTraitColumns);
-			
-			Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = row.getNumericTOSMap();
-			for(Map.Entry<NumericTraitFilter, TraitObservationScore> numericTOS : numericTOSMap.entrySet()){
-				String traitName = numericTOS.getKey().getTraitInfo().getName().trim();
-				
-				String name = traitName + "\n No Obs";
-				
-				int index = columnHeaders.indexOf(name);
-				
-				itemObj2[index] = numericTOS.getValue().getNoOfObservation();
-				itemObj2[index + 1] = numericTOS.getValue().getWtScore();
-				
-				//System.out.println(name + "CURRENT INDEX: " + index + "|" + numericTOS.getValue().getNoOfObservation() + "|" + numericTOS.getValue().getWtScore());
-			}
-			
-			Map<CharacterTraitFilter,TraitObservationScore> characterTOSMap = row.getCharacterTOSMap();
-			for(Map.Entry<CharacterTraitFilter, TraitObservationScore> characterTOS : characterTOSMap.entrySet()){
-				String traitName = characterTOS.getKey().getTraitInfo().getName().trim();
-				
-				String name = traitName + "\n No Obs";
-				
-				int index = columnHeaders.indexOf(name);
-				
-				itemObj2[index] = characterTOS.getValue().getNoOfObservation();
-				itemObj2[index + 1] = characterTOS.getValue().getWtScore();
-			}
-			
-			Map<CategoricalTraitFilter,TraitObservationScore> categoricalTOSMap = row.getCategoricalTOSMap();
-			for(Map.Entry<CategoricalTraitFilter, TraitObservationScore> categoricalTOS : categoricalTOSMap.entrySet()){
-				String traitName = categoricalTOS.getKey().getTraitInfo().getName().trim();
-				
-				String name = traitName + "\n No Obs";
-				
-				int index = columnHeaders.indexOf(name);
-				
-				itemObj2[index] = categoricalTOS.getValue().getNoOfObservation();
-				itemObj2[index + 1] = categoricalTOS.getValue().getWtScore();
-			}
-			
-			itemObj2[NoOfTraitColumns-1] = row.getCombinedScore();
-			traitsColTable.addItem(itemObj2,row);
-			
-			Object[] itemObj3 = new Object[1];
-			
-			CheckBox box = new CheckBox();
-			box.setImmediate(true);
-			box.setData(row);
-			if(selectedGermplasmMap.containsKey(gid)){
-				box.setValue(true);
-			}
-			
-			box.addListener(new ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					CheckBox box = (CheckBox) event.getSource();
-					TableResultRow row = (TableResultRow) box.getData();
-					
-					if(box.booleanValue()){
-						box.setValue(true);
-					}
-					else{
-						box.setValue(false);
-					}
-					
-					addItemForSelectedGermplasm(box,row);
-					//MessageNotifier.showMessage(getWindow(), row.getGermplasmId().toString(), germplasmIdNameMap.get(row.getGermplasmId()));
-				}
-			});
-			
-			itemObj3[0] = box;
-			
-			combinedScoreTagColTable.addItem(itemObj3,row);
-			
-			line_no++;
-		}
-	}
-	
 	public void populateRowsResultsTable(Table resultTable, Integer NoOfColumns){
 		int line_no = currentLineIndex + 1;
 		int endOfListIndex = currentLineIndex + 15;
@@ -631,10 +428,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		if(endOfListIndex > this.tableRows.size()){
 			endOfListIndex = this.tableRows.size();
 		}
-		System.out.println("Line No: " + line_no);
-		System.out.println("End Of List Index: " + endOfListIndex);		
+				
         for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){
-        	row.toString();
+        	//System.out.println(row.toString());
+        	
 			int gid = row.getGermplasmId();
 			String germplasmName = germplasmIdNameMap.get(gid);
 			
@@ -642,47 +439,54 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			
 			itemObj[0] = line_no;
 			itemObj[1] = gid;
-			itemObj[2] = germplasmName;
+			itemObj[2] = (germplasmName == null)? "" : germplasmName;
 			
-			columnHeaders = getColumnHeaders(resultTable.getColumnHeaders());
+			columnHeaders = getColumnProperties(resultTable.getContainerPropertyIds());
 			//System.out.println("TOTAL TRAIT COLUMNS NO: " + NoOfColumns);
 			
 			Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = row.getNumericTOSMap();
 			for(Map.Entry<NumericTraitFilter, TraitObservationScore> numericTOS : numericTOSMap.entrySet()){
 				String traitName = numericTOS.getKey().getTraitInfo().getName().trim();
+				Integer traitId = numericTOS.getKey().getTraitInfo().getId();
 				
 				String name = traitName + "\n No Obs";
 				
-				int index = columnHeaders.indexOf(name);
+				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " numeric");
 				
 				itemObj[index] = numericTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = numericTOS.getValue().getWtScore();
 				
-				//System.out.println(name + "CURRENT INDEX: " + index + "|" + numericTOS.getValue().getNoOfObservation() + "|" + numericTOS.getValue().getWtScore());
+				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + numericTOS.getValue().getNoOfObservation() + "|" + numericTOS.getValue().getWtScore());
 			}
 			
 			Map<CharacterTraitFilter,TraitObservationScore> characterTOSMap = row.getCharacterTOSMap();
 			for(Map.Entry<CharacterTraitFilter, TraitObservationScore> characterTOS : characterTOSMap.entrySet()){
 				String traitName = characterTOS.getKey().getTraitInfo().getName().trim();
+				Integer traitId = characterTOS.getKey().getTraitInfo().getId();
 				
 				String name = traitName + "\n No Obs";
 				
-				int index = columnHeaders.indexOf(name);
+				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " character");
 				
 				itemObj[index] = characterTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = characterTOS.getValue().getWtScore();
+				
+				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + characterTOS.getValue().getNoOfObservation() + "|" + characterTOS.getValue().getWtScore());
 			}
 			
 			Map<CategoricalTraitFilter,TraitObservationScore> categoricalTOSMap = row.getCategoricalTOSMap();
 			for(Map.Entry<CategoricalTraitFilter, TraitObservationScore> categoricalTOS : categoricalTOSMap.entrySet()){
 				String traitName = categoricalTOS.getKey().getTraitInfo().getName().trim();
+				Integer traitId = categoricalTOS.getKey().getTraitInfo().getId();
 				
 				String name = traitName + "\n No Obs";
 				
-				int index = columnHeaders.indexOf(name);
+				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " categorical");
 				
 				itemObj[index] = categoricalTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = categoricalTOS.getValue().getWtScore();
+				
+				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + categoricalTOS.getValue().getNoOfObservation() + "|" + categoricalTOS.getValue().getWtScore());
 			}
 			
 			itemObj[NoOfColumns - 2] = row.getCombinedScore();
@@ -727,6 +531,17 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		for(int i = 0; i < headers.length; i++){
 			columnHeaders.add(headers[i].trim());
 			//System.out.println(columnHeaders.get(i));
+		}
+		
+		return columnHeaders;
+	}
+	
+	public List<String> getColumnProperties(Collection properties){
+		List<String> columnHeaders = new ArrayList<String>();
+		
+		for(Object prop : properties){
+			columnHeaders.add(prop.toString());
+			//System.out.println(prop.toString());
 		}
 		
 		return columnHeaders;

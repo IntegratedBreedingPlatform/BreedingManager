@@ -102,18 +102,18 @@ public class TableResultRow {
 		String numericTOS = "", characterTOS = "", categoricalTOS = "";
 		
 		for(Map.Entry<NumericTraitFilter, TraitObservationScore> obs : numericTOSMap.entrySet()){
-			numericTOS += obs.getValue().toString() + "\n"; 
+			numericTOS += obs.getValue().toString(); 
 		}
 		
 		for(Map.Entry<CharacterTraitFilter, TraitObservationScore> obs : characterTOSMap.entrySet()){
-			characterTOS += obs.getValue().toString() + "\n"; 
+			characterTOS += obs.getValue().toString(); 
 		}
 		
 		for(Map.Entry<CategoricalTraitFilter, TraitObservationScore> obs : categoricalTOSMap.entrySet()){
-			categoricalTOS += obs.getValue().toString() + "\n"; 
+			categoricalTOS += obs.getValue().toString(); 
 		}
 		
-		toPrint = "TableResultRow: [ numericTOS: " + numericTOS + "] \n [ characterTOS: " + characterTOS + " ] \n" + "[ categoricalTOS: " + categoricalTOS + "]";
+		toPrint = "TableResultRow: [ numericTOS: " + numericTOS + "] [ characterTOS: " + characterTOS + " ] " + "[ categoricalTOS: " + categoricalTOS + "] [ combined score: " + getCombinedScore() + "]";
 		
 		return toPrint;
 	}

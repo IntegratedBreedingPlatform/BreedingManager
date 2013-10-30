@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.TraitObservation;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -23,6 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ViewTraitObservationsDialog extends Window implements InitializingBean, InternationalizableComponent {
@@ -132,7 +134,17 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
         
         for (String locationName : locationList){
         	String columnName = "ViewTraitObservationsDialog " + locationName;
-        	locationTable.addContainerProperty(columnName, String.class, null);
+        	
+        	if(this.variateType.equals("Numeric Variate")){
+        		locationTable.addContainerProperty(columnName, Double.class, null);
+        	}
+        	else if(this.variateType.equals("Character Variate")){
+        		locationTable.addContainerProperty(columnName, String.class, null);
+        	}
+        	else if(this.variateType.equals("Categorical Variate")){
+        		locationTable.addContainerProperty(columnName, String.class, null);
+        	}
+        	
         	locationTable.setColumnHeader(columnName, locationName);
         }
         
@@ -157,9 +169,19 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 				currentGid = gid;
 			}
 			
-			Object[] itemObj = getTableRow(observationNo, lineNo, gid, gidName, location, traitVal);
-			locationTable.addItem(itemObj, observationNo);
-			
+			try{
+				Object[] itemObj = getTableRow(observationNo, lineNo, gid, gidName, location, traitVal);
+				locationTable.addItem(itemObj, observationNo);
+			}
+			catch(NumberFormatException e){
+				e.printStackTrace();
+	            locationTable.removeAllItems();
+	            
+				LOG.error("Invalid Numeric Data!", e);
+	            MessageNotifier.showError(getWindow(), "Invalid Numeric data!", traitVal + " is not a number.", Notification.POSITION_CENTERED);
+	            
+	            break;
+			}
 			
 			observationNo++;
 		}
@@ -167,7 +189,8 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 		
 	}
 	
-	private Object[] getTableRow(int observationNo, int lineNo, int gid, String gidName, String location, String traitVal){
+	private Object[] getTableRow(int observationNo, int lineNo, int gid, 
+			String gidName, String location, String traitVal) throws NumberFormatException {
 		int noOfCols = 4 + locationList.size();
 		Object[] row = new Object[noOfCols];
 		
@@ -175,8 +198,15 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 		row[1] = lineNo;
 		row[2] = gid;
 		row[3] = gidName;
-		row[4 + locationList.indexOf(location)] = traitVal;
 		
+		if(this.variateType.equals("Numeric Variate")){
+			Double value = Double.parseDouble(traitVal);
+			row[4 + locationList.indexOf(location)] = value;
+		}
+		else{
+			row[4 + locationList.indexOf(location)] = traitVal;
+		}
+
 		return row;
 	}
 	
