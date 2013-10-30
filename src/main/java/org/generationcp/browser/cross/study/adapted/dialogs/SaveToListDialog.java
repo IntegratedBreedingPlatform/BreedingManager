@@ -18,6 +18,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -216,30 +217,47 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 	
 	public void saveButtonClickAction(){
 		String listName = comboBoxListName.getValue().toString();
-		String listNameId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
-	        
-		if (listName.trim().length() == 0) {
+		String listNameId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));	
+			    
+		Boolean proceedWithSave = true;
+		
+		try {
+			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
+			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
+			if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+				proceedWithSave = false;
+			}
+		} catch (MiddlewareQueryException e) {
+			
+		}
 
-            getWindow().showNotification("List Name Input Error...", "Please specify a List Name before saving",
-                    Notification.TYPE_WARNING_MESSAGE);
-
-        } else if (listName.trim().length() > 50) {
-
-            getWindow().showNotification("List Name Input Error...", "Listname input is too large limit the name only up to 50 characters",
-                    Notification.TYPE_WARNING_MESSAGE);
-            comboBoxListName.setValue("");
-
-        } else {
-        	
-        	addGermplasListNameAndData(listName, listNameId, this.germplasmsMap, txtDescription.getValue().toString(), selectType.getValue().toString());
-        	closeSavingGermplasmListDialog();
-            
-        	this.mainScreen.selectWelcomeTab();
-        	
-            // display notification message
-            MessageNotifier.showMessage(this.parentWindow, messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL),
-                    messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_SUCCESS));
-        }
+		if(proceedWithSave){
+		
+			if (listName.trim().length() == 0) {
+	
+	            getWindow().showNotification("List Name Input Error...", "Please specify a List Name before saving",
+	                    Notification.TYPE_WARNING_MESSAGE);
+	
+	        } else if (listName.trim().length() > 50) {
+	
+	            getWindow().showNotification("List Name Input Error...", "Listname input is too large limit the name only up to 50 characters",
+	                    Notification.TYPE_WARNING_MESSAGE);
+	            comboBoxListName.setValue("");
+	
+	        } else {
+	        	
+	        	addGermplasListNameAndData(listName, listNameId, this.germplasmsMap, txtDescription.getValue().toString(), selectType.getValue().toString());
+	        	closeSavingGermplasmListDialog();
+	            
+	        	this.mainScreen.selectWelcomeTab();
+	        	
+	            // display notification message
+	            MessageNotifier.showMessage(this.parentWindow, messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL),
+	                    messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_SUCCESS));
+	        }
+			
+		}
 	}
 	
 	private void addGermplasListNameAndData(String listName, String listId,
