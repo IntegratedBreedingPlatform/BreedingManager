@@ -9,7 +9,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
@@ -17,6 +20,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
@@ -24,6 +28,13 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
@@ -32,6 +43,7 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.Window.Notification;
 
+@Configurable
 public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private static final long serialVersionUID = 1L;
@@ -57,7 +69,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private ImportedGermplasmList importedGermplasmList;
     
     private Boolean fileIsValid;
+    private Boolean importFileIsAdvanced;
 
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
+    
     public String getOriginalFilename() {
         return originalFilename;
     }
@@ -164,67 +180,111 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         ImportedGermplasm importedGermplasm;
         Boolean entryColumnIsPresent = false;
         Boolean desigColumnIsPresent = false;
-        Boolean entryScaleIsValid = false;
-        Boolean desigScaleIsValid = false;
-        Boolean entryPropertyIsValid = false;
-        Boolean desigPropertyIsValid = false;        
+        Boolean gidColumnIsPresent = false;
     
         //Check if columns ENTRY and DESIG is present
         if(importedGermplasmList.getImportedFactors()!=null)
         for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
             if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY")){
                 entryColumnIsPresent = true;
-                if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("NUMBER")){
-                	entryScaleIsValid = true;	
-                }
-                if(importedGermplasmList.getImportedFactors().get(col).getProperty().toUpperCase().equals("GERMPLASM ENTRY")){
-                	entryPropertyIsValid = true;	
-                }
-            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG")){
+            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIGNATION")){
                 desigColumnIsPresent = true;
-                if(importedGermplasmList.getImportedFactors().get(col).getScale().toUpperCase().equals("DBCV")){
-                	desigScaleIsValid = true;	
-                }
-                if(importedGermplasmList.getImportedFactors().get(col).getProperty().toUpperCase().equals("GERMPLASM ID")){
-                	desigPropertyIsValid = true;	
-                }                
-            }
+            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GID")){
+                gidColumnIsPresent = true;
+            }  
         }
-        if(entryColumnIsPresent==false || desigColumnIsPresent==false){
-            showInvalidFileError("ENTRY or DESIG column missing from Observation sheet.");
-            System.out.println("DEBUG | Invalid file on missing ENTRY or DESIG on readSheet2");
-        } else if(entryScaleIsValid==false){
-            showInvalidFileError("ENTRY must have NUMBER as scale");
-            System.out.println("DEBUG | ENTRY must have NUMBER as scale");
-        } else if(desigScaleIsValid==false){
-            showInvalidFileError("DESIG must have DBCV as scale");
-            System.out.println("DEBUG | DESIG must have DBCV as scale");
-        } else if(entryPropertyIsValid==false){
-            showInvalidFileError("ENTRY must have GERMPLASM ENTRY as property");
-            System.out.println("DEBUG | ENTRY must have GERMPLASM ENTRY as property");
-        } else if(desigPropertyIsValid==false){
-            showInvalidFileError("DESIG must have GERMPLASM ID as property");
-            System.out.println("DEBUG | DESIG must have GERMPLASM ID as property");
+        
+        if(entryColumnIsPresent==false){
+            showInvalidFileError("ENTRY column missing from Observation sheet.");
+            System.out.println("DEBUG | Invalid file on missing ENTRY on readSheet2");
+        } else if(gidColumnIsPresent==false && desigColumnIsPresent==false){
+            showInvalidFileError("DESIG/DESIGNATION column missing from Observation sheet.");
+            System.out.println("DEBUG | Invalid file on missing DESIG/DESIGNATION on readSheet2");
         }
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
         if(fileIsValid){
             currentRow++;
         
-            while(!rowIsEmpty()){
+            while(!rowIsEmpty() && fileIsValid){
                 System.out.println("");
                 importedGermplasm = new ImportedGermplasm();
                 for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
+                	
+                	//Map cell (given a column label) with a pojo setter 
                     if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY")){
                         importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG")){
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIGNATION")){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID")){
+                        importedGermplasm.setGid(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                        System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
+                        importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
+                        System.out.println("DEBUG | CROSS:"+getCellStringValue(currentSheet, currentRow, col));
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("SOURCE")){
+                        importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
+                        System.out.println("DEBUG | SOURCE:"+getCellStringValue(currentSheet, currentRow, col));
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY CODE")){
+                        importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
+                        System.out.println("DEBUG | ENTRY CODE:"+getCellStringValue(currentSheet, currentRow, col));
                     } else {
                         System.out.println("DEBUG | Unhandled Column - "+importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase()+":"+getCellStringValue(currentSheet, currentRow, col));
                     }
                 }
+                
+                //For cases where GID is preset and Desig is not present, or GID is not present and desig is present, or both are present
+                
+                //GID is given, but no DESIG, get value of DESIG given GID
+                if(importedGermplasm.getGid()!=null && importedGermplasm.getDesig()==null){
+                	try {
+                		
+				        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+				        importedGermplasmGids.add(importedGermplasm.getGid());
+				        
+						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+						
+						System.out.println("#### PreferredNames Map: "+preferredNames);
+						System.out.println("#### GID: "+importedGermplasm.getGid());
+						System.out.println("#### Preferred Name: "+preferredNames.get(importedGermplasm.getGid()));
+						System.out.println("");
+
+						if(preferredNames.get(importedGermplasm.getGid())!=null)
+							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+
+					} catch (MiddlewareQueryException e) {
+						e.printStackTrace();
+					}
+                	
+                //GID and DESIG are given, make sure DESIG matches value of GID
+                } else if (importedGermplasm.getGid()!=null && importedGermplasm.getDesig()!=null && importedGermplasm.getDesig()!=""){
+                	try {
+				        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+				        importedGermplasmGids.add(importedGermplasm.getGid());
+				        
+						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+						
+						System.out.println("#### PreferredNames Map: "+preferredNames);
+						System.out.println("#### GID: "+importedGermplasm.getGid());
+						System.out.println("#### Preferred Name: "+preferredNames.get(importedGermplasm.getGid()));
+						System.out.println("");
+						
+						if(preferredNames.get(importedGermplasm.getGid())!=null && !importedGermplasm.getDesig().toUpperCase().equals(preferredNames.get(importedGermplasm.getGid()).toUpperCase())){
+							showInvalidFileError("Invalid GID and DESIG/DESIGNATION combination on Sheet 2, DESIG on file for GID "+importedGermplasm.getGid()+" is \""+importedGermplasm.getDesig()+"\" but preferred name on database is \""+preferredNames.get(importedGermplasm.getGid())+"\".");
+						} else {
+							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+						}
+					} catch (MiddlewareQueryException e) {
+						e.printStackTrace();
+					}
+                	
+                //GID is not given, and DESIG is given
+                } else {
+                	
+                }
+                
                 importedGermplasmList.addImportedGermplasm(importedGermplasm);
                 currentRow++;
             }
@@ -313,8 +373,19 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 
     private void readFactors(){
         Boolean entryColumnIsPresent = false;
+        Boolean entryPropertyIsValid = false;
+        Boolean entryScaleIsValid = false;
+        
         Boolean desigColumnIsPresent = false;
+        Boolean desigPropertyIsValid = false;
+        Boolean desigScaleIsValid = false;
+        
+        Boolean gidColumnIsPresent = false;
+        Boolean gidPropertyIsValid = false;
+        Boolean gidScaleIsValid = false;
 
+        importFileIsAdvanced = false;
+        
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("FACTOR") 
             || !getCellStringValue(currentSheet,currentRow,1,true).toUpperCase().equals("DESCRIPTION")
@@ -351,11 +422,32 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 System.out.println("DEBUG | Value:"+getCellStringValue(currentSheet,currentRow,6));
                 System.out.println("DEBUG | Label:"+getCellStringValue(currentSheet,currentRow,7));
                 
-                //Check if the current factor is ENTRY or DESIG
+                //Factors validation
                 if(importedFactor.getFactor().toUpperCase().equals("ENTRY")){
                     entryColumnIsPresent = true;
-                } else if(importedFactor.getFactor().toUpperCase().equals("DESIG")){
+                    if(importedFactor.getScale().toUpperCase().equals("NUMBER")){
+                    	entryScaleIsValid = true;	
+                    }
+                    if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ENTRY")){
+                    	entryPropertyIsValid = true;	
+                    }
+                } else if(importedFactor.getFactor().toUpperCase().equals("DESIG") || importedFactor.getFactor().toUpperCase().equals("DESIGNATION")){
                     desigColumnIsPresent = true;
+                    if(importedFactor.getScale().toUpperCase().equals("DBCV")){
+                    	desigScaleIsValid = true;	
+                    }
+                    if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
+                    	desigPropertyIsValid = true;	
+                    }                
+                } else if(importedFactor.getFactor().toUpperCase().equals("GID")){
+                	gidColumnIsPresent = true;
+                	if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
+                		gidPropertyIsValid = true;
+                	}
+                	if(importedFactor.getScale().toUpperCase().equals("DBID")){
+                		gidScaleIsValid = true;
+                	}
+                	importFileIsAdvanced = true;
                 }
                 currentRow++;
             }
@@ -363,12 +455,37 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         currentRow++;
 
         //If ENTRY or DESIG is not present on Factors, return error
-        if(entryColumnIsPresent == false || desigColumnIsPresent == false){
-            showInvalidFileError("There is no ENTRY or DESIG factor.");
-            System.out.println("DEBUG | Invalid file on missing ENTRY or DESIG on readFactors");
-        }
-    }
-    
+        if(entryColumnIsPresent==false){
+        	showInvalidFileError("There is no ENTRY factor.");
+            System.out.println("DEBUG | Invalid file on missing ENTRY on readFactors");
+        } else if(desigColumnIsPresent==false && gidColumnIsPresent==false){
+            showInvalidFileError("There is no DESIG/DESIGNATION factor.");
+            System.out.println("DEBUG | Invalid file on missing DESIG/DESIGNATION on readFactors");
+
+	    } else if(entryPropertyIsValid==false){
+	        showInvalidFileError("ENTRY must have GERMPLASM ENTRY as property");
+	        System.out.println("DEBUG | ENTRY must have GERMPLASM ENTRY as property");
+	    } else if(entryScaleIsValid==false){
+	        showInvalidFileError("ENTRY must have NUMBER as scale");
+	        System.out.println("DEBUG | ENTRY must have NUMBER as scale");
+
+	    } else if(desigPropertyIsValid==false){
+	        showInvalidFileError("DESIG/DESIGNATION must have GERMPLASM ID as property");
+	        System.out.println("DEBUG | DESIG/DESIGNATION must have GERMPLASM ID as property");
+	    } else if(desigScaleIsValid==false){
+	        showInvalidFileError("DESIG/DESIGNATION must have DBCV as scale");
+	        System.out.println("DEBUG | DESIG/DESIGNATION must have DBCV as scale");
+	        
+		} else if(gidColumnIsPresent==true && gidPropertyIsValid==false){
+		    showInvalidFileError("GID must have GERMPLASM ID as property");
+		    System.out.println("DEBUG | ENTRY must have GERMPLASM ID as property");
+		} else if(gidColumnIsPresent==true && gidScaleIsValid==false){
+		    showInvalidFileError("GID must have DBID as scale");
+		    System.out.println("DEBUG | GID must have DBID as scale");
+		}
+	}
+
+
     private void readConstants(){
     	
     	//Constants section is not required, do nothing if it's not there
@@ -495,4 +612,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         }
     }    
     
+    public Boolean importFileIsAdvanced(){
+    	return importFileIsAdvanced;
+    }
 };

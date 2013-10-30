@@ -561,4 +561,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             doNotCreateGermplasmsWithId.add(selectedGermplasm.getGid());
         }
     }
+    
+    public void setPedigreeOptionGroupValue(Integer value){
+    	pedigreeOptionGroup.setValue(value);
+    }
 }

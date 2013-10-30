@@ -137,6 +137,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	                    }
 	                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
 	                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
+	                    
+	                    if(germplasmListUploader.importFileIsAdvanced()){
+	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupValue(3);
+	                    } else {
+	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupValue(1);
+	                    }
 	            }
 	        }
     	}
