@@ -24,6 +24,8 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -188,7 +190,22 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 
     @SuppressWarnings("serial")
     public void doneButtonClickAction() throws InternationalizableException{
-        if (validateRequiredFields()){
+    	
+		Boolean proceedWithSave = true;
+		
+		try {
+			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(((String) germplasmListName.getValue()).trim(), Operation.EQUAL, Database.LOCAL);
+			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(((String) germplasmListName.getValue()).trim(), Operation.EQUAL, Database.CENTRAL);
+			if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+				proceedWithSave = false;
+			}
+		} catch (MiddlewareQueryException e) {
+			
+		}
+    	
+    	
+        if (validateRequiredFields() && proceedWithSave){
             updateCrossesMadeContainer();
         
             saveRecords();
