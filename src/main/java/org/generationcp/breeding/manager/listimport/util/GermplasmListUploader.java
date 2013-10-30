@@ -30,7 +30,10 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +76,10 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
+    
     
     public String getOriginalFilename() {
         return originalFilename;
@@ -287,6 +294,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             listName = getCellStringValue(0,0,1,true);
             listTitle = getCellStringValue(0,1,1,true);
             
+            try {
+				Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
+				Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
+				
+				if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+					showInvalidFileError("There is already an existing germplasm list with the name specified on the file");
+				}
+			} catch (MiddlewareQueryException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
             if(getCellStringValue(0,2,0,true).toUpperCase().equals("LIST TYPE")){
             //LIST TYPE on ROW3, LIST DATE on ROW4
