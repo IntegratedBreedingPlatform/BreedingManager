@@ -128,6 +128,8 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         
         fileIsValid = true;
         
+        importedGermplasmList = null;
+        
         try {
             inp = new FileInputStream(tempFileName);
             wb = new HSSFWorkbook(inp);
@@ -246,11 +248,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				        
 						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
 						
-						System.out.println("#### PreferredNames Map: "+preferredNames);
-						System.out.println("#### GID: "+importedGermplasm.getGid());
-						System.out.println("#### Preferred Name: "+preferredNames.get(importedGermplasm.getGid()));
-						System.out.println("");
-
 						if(preferredNames.get(importedGermplasm.getGid())!=null)
 							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
 
@@ -265,11 +262,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				        importedGermplasmGids.add(importedGermplasm.getGid());
 				        
 						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-						
-						System.out.println("#### PreferredNames Map: "+preferredNames);
-						System.out.println("#### GID: "+importedGermplasm.getGid());
-						System.out.println("#### Preferred Name: "+preferredNames.get(importedGermplasm.getGid()));
-						System.out.println("");
 						
 						if(preferredNames.get(importedGermplasm.getGid())!=null && !importedGermplasm.getDesig().toUpperCase().equals(preferredNames.get(importedGermplasm.getGid()).toUpperCase())){
 							showInvalidFileError("Invalid GID and DESIG/DESIGNATION combination on Sheet 2, DESIG on file for GID "+importedGermplasm.getGid()+" is \""+importedGermplasm.getDesig()+"\" but preferred name on database is \""+preferredNames.get(importedGermplasm.getGid())+"\".");

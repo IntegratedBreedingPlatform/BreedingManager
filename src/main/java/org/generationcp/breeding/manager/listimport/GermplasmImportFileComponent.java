@@ -130,6 +130,10 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	                    && germplasmListUploader.getImportedGermplasmList() != null){
 	                    ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
 	                    List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+	                    
+	                    //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
+	                    getGermplasmDetailsComponent().getGermplasmDetailsTable().removeAllItems();
+	                    
 	                    for(int i = 0 ; i < importedGermplasms.size() ; i++){
 	                        ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
 	                        String source = importedGermplasmList.getFilename()+":"+(i+1);
@@ -137,7 +141,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	                    }
 	                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
 	                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
-	                    
+
 	                    if(germplasmListUploader.importFileIsAdvanced()){
 	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupValue(3);
 	                    } else {
