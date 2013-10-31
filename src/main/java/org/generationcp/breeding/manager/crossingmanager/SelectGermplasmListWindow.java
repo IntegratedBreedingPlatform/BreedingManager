@@ -56,7 +56,7 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     private Button doneButton;
     private HorizontalLayout buttonArea;
     
-    private ListSelect parentList;
+    private Table parentList;
     private CrossingManagerMakeCrossesComponent makeCrossesComponent;
     
     @Autowired
@@ -73,11 +73,11 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     private Label listnameParent;
 
     public SelectGermplasmListWindow() {
-        this.parentList = new ListSelect();
+        this.parentList = new Table();
         this.makeCrossesComponent = null;
     }
     
-    public SelectGermplasmListWindow(ListSelect parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent,Label listnameParent) {
+    public SelectGermplasmListWindow(Table parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent,Label listnameParent) {
         this.parentList = parentList;
         this.makeCrossesComponent = makeCrossesComponent;
         this.listnameParent=listnameParent;
@@ -88,7 +88,7 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     this.nurseryTemplateCall=true;
     this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
     this.germplasmListFor=germplasmListFor;
-    this.parentList = new ListSelect();
+    this.parentList = new Table();
         this.makeCrossesComponent = null;
     }
 
@@ -168,9 +168,10 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
             
             // add entries to the parent ListSelect
             GermplasmListEntry entry = new GermplasmListEntry(listDataId, gid, entryId, designation);
-            parentList.addItem(entry);
-            String itemCaption = entry.getEntryId()+" -> "+entry.getDesignation(); 
-            parentList.setItemCaption(entry, itemCaption);
+            parentList.addItem(new Object[] {entry.getEntryId()+" -> "+entry.getDesignation()}, entry);
+            
+            //String itemCaption = entry.getEntryId()+" -> "+entry.getDesignation(); 
+            //parentList.setItemCaption(entry, itemCaption);
         }
         // remember selected List ID 
         listId = listEntryValues.getData();

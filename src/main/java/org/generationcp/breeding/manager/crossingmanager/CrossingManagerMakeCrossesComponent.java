@@ -2,7 +2,17 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.*;
 
+import com.vaadin.data.Item;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.And;
+import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.Window.Notification;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -47,8 +57,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private OptionGroup optionGroupMakeCrosses;
     private CheckBox chkBoxMakeReciprocalCrosses;
     private Button btnMakeCross;
-    private ListSelect listSelectFemale;
-    private ListSelect listSelectMale;
+    //private ListSelect listSelectFemale;
+    //private ListSelect listSelectMale;
+    private Table femaleParents;
+    private Table maleParents;
     private GridLayout gridLayoutSelectingParents;
     private GridLayout gridLayoutSelectingParentOptions;
     private VerticalLayout layoutCrossOption;
@@ -108,13 +120,55 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         btnSelectListFemaleParent.setData(SELECT_FEMALE_PARENT_BUTTON_ID);
         btnSelectListFemaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
         
-        listSelectFemale = new ListSelect();
-        listSelectFemale.setRows(10);
-        listSelectFemale.setWidth(240, UNITS_PIXELS);
-        listSelectFemale.setNullSelectionAllowed(true);
-        listSelectFemale.setMultiSelect(true);
-        listSelectFemale.setImmediate(true);
+        //listSelectFemale = new ListSelect();
+        //listSelectFemale.setRows(10);
+        //listSelectFemale.setWidth(240, UNITS_PIXELS);
+        //listSelectFemale.setNullSelectionAllowed(true);
+        //listSelectFemale.setMultiSelect(true);
+        //listSelectFemale.setImmediate(true);
 
+        femaleParents = new Table();
+        femaleParents.setHeight(180, UNITS_PIXELS);
+        femaleParents.setWidth(240, UNITS_PIXELS);
+        femaleParents.setNullSelectionAllowed(true);
+        femaleParents.setSelectable(true);
+        femaleParents.setMultiSelect(true);
+        femaleParents.setImmediate(true);
+        femaleParents.addContainerProperty("Female Parents", String.class, null);
+        femaleParents.setDragMode(TableDragMode.ROW);
+        femaleParents.setDropHandler(new DropHandler() {
+                public void drop(DragAndDropEvent dropEvent) {
+                    TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
+                       
+                    Table sourceTable = (Table) transferable.getSourceComponent();
+                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+                        
+                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+                    Object targetItemId = dropData.getItemIdOver();
+
+                    //Check first if item is dropped on top of itself
+                    if(!transferable.getItemId().equals(targetItemId)){
+                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Female Parents").getValue();
+                		sourceTable.removeItem(transferable.getItemId());
+                		Item item;
+                    	//switch (dropData.getDropLocation()){
+                        //	case BOTTOM :
+                        		item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
+                        //	break;
+                        //	case MIDDLE: 
+                        //	case TOP :
+                        //		item = targetTable.addItemAt(indexOfId(targetItemId), transferable.getItemId());
+                        //	break;
+                    	//}
+                    	item.getItemProperty("Female Parents").setValue(femaleParentValue);
+                    }
+                }
+
+                public AcceptCriterion getAcceptCriterion() {
+                	return new And(new SourceIs(femaleParents), AcceptItem.ALL);
+                }
+        });
+        
         optionGroupMakeCrosses = new OptionGroup();
         optionGroupMakeCrosses.setWidth(560,UNITS_PIXELS);
         optionGroupMakeCrosses.addStyleName("wrapOptionGroupText");
@@ -138,12 +192,49 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         btnSelectListMaleParent.setData(SELECT_MALE_PARENT_BUTTON_ID);
         btnSelectListMaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
         
-        listSelectMale = new ListSelect();
-        listSelectMale.setRows(10);
-        listSelectMale.setWidth(240, UNITS_PIXELS);
-        listSelectMale.setNullSelectionAllowed(true);
-        listSelectMale.setMultiSelect(true);
-        listSelectMale.setImmediate(true);
+        //listSelectMale = new ListSelect();
+        //listSelectMale.setRows(10);
+        //listSelectMale.setWidth(240, UNITS_PIXELS);
+        //listSelectMale.setNullSelectionAllowed(true);
+        //listSelectMale.setMultiSelect(true);
+        //listSelectMale.setImmediate(true);
+        
+        
+        maleParents = new Table();
+        maleParents.setHeight(180, UNITS_PIXELS);
+        maleParents.setWidth(240, UNITS_PIXELS);
+        maleParents.setNullSelectionAllowed(true);
+        maleParents.setSelectable(true);
+        maleParents.setMultiSelect(true);
+        maleParents.setImmediate(true);
+        maleParents.addContainerProperty("Male Parents", String.class, null);
+        maleParents.setDragMode(TableDragMode.ROW);
+        maleParents.setDropHandler(new DropHandler() {
+                public void drop(DragAndDropEvent dropEvent) {
+                    TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
+                        
+                    Table sourceTable = (Table) transferable.getSourceComponent();
+                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+                        
+                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+                    Object targetItemId = dropData.getItemIdOver();
+
+                    //Check first if item is dropped on top of itself
+                    if(!transferable.getItemId().equals(targetItemId)){
+                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Male Parents").getValue();
+                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
+                        
+                        sourceTable.removeItem(transferable.getItemId());
+                        
+                        Item item = targetTable.addItemAfter(targetItemId, maleItemId);
+                      	item.getItemProperty("Male Parents").setValue(maleParentValue);
+                	}
+                }
+
+                public AcceptCriterion getAcceptCriterion() {
+                	return new And(new SourceIs(maleParents), AcceptItem.ALL);
+                }
+        });
         
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
@@ -161,14 +252,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         gridLayoutSelectingParents.setSpacing(true);
         
         gridLayoutSelectingParents.addComponent(btnSelectListFemaleParent,0,0);
-        gridLayoutSelectingParents.addComponent(listSelectFemale,0,1);
+        gridLayoutSelectingParents.addComponent(femaleParents,0,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListFemaleParent,  Alignment.MIDDLE_CENTER);
-        gridLayoutSelectingParents.setComponentAlignment(listSelectFemale,  Alignment.MIDDLE_CENTER);
+        gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
         
         gridLayoutSelectingParents.addComponent(btnSelectListMaleParent,1,0);
-        gridLayoutSelectingParents.addComponent(listSelectMale,1,1);
+        gridLayoutSelectingParents.addComponent(maleParents,1,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
-        gridLayoutSelectingParents.setComponentAlignment(listSelectMale,  Alignment.MIDDLE_CENTER);
+        gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
         
         gridLayoutSelectingParents.setWidth(600, UNITS_PIXELS);
         
@@ -234,13 +325,21 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     @SuppressWarnings("unchecked")
     public void makeCrossButtonAction(){
         
-        List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
-        femaleList.addAll((Collection<GermplasmListEntry>) listSelectFemale.getValue());
-        Collections.sort(femaleList);
+        //List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
+        //femaleList.addAll((Collection<GermplasmListEntry>) femaleParents.getValue());
+        //Collections.sort(femaleList);
+    	
+        List<GermplasmListEntry> femaleList = getCorrectSortedValue(femaleParents);
         
-        List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
-        maleList.addAll((Collection<GermplasmListEntry>)listSelectMale.getValue());
-        Collections.sort(maleList);
+        System.out.println("Female Collection: "+femaleList);
+        
+        //List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
+        //maleList.addAll((Collection<GermplasmListEntry>) maleParents.getValue());
+        //Collections.sort(maleList);
+        
+        List<GermplasmListEntry> maleList = getCorrectSortedValue(maleParents);
+        
+        System.out.println("Male Collection: "+maleList);
         
         
         if (!femaleList.isEmpty() && !maleList.isEmpty()){
@@ -271,12 +370,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     }
     
     public void selectFemaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectFemale, this,this.listnameFemaleParent);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(femaleParents, this,this.listnameFemaleParent);
         this.getWindow().addWindow(selectListWindow);
     }
     
     public void selectMaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(listSelectMale, this,this.listnameMaleParent);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(maleParents, this,this.listnameMaleParent);
         this.getWindow().addWindow(selectListWindow);
     }
 
@@ -324,12 +423,37 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         this.lastOpenedListId = lastOpenedListId;
     }
     
+    
+    /**
+     * Implemented something similar to table.getValue(), because that method returns
+     *     a collection of items, but does not follow the sorting done by the 
+     *     drag n drop sorting, this one does
+     * @param table
+     * @return List of selected germplasm list entries
+     */
+    private List<GermplasmListEntry> getCorrectSortedValue(Table table){
+    	List<GermplasmListEntry> allItemIds = new ArrayList<GermplasmListEntry>();
+    	List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
+    	List<GermplasmListEntry> sortedSelectedValues = new ArrayList<GermplasmListEntry>();
+
+    	allItemIds.addAll((Collection<GermplasmListEntry>) table.getItemIds());
+    	selectedItemIds.addAll((Collection<GermplasmListEntry>) table.getValue());
+    	
+    	for(GermplasmListEntry itemId : allItemIds){
+    		for(GermplasmListEntry selectedItemId : selectedItemIds){
+    			if(itemId.equals(selectedItemId))
+    				sortedSelectedValues.add(selectedItemId);    			
+    		}
+    	}
+    	return sortedSelectedValues;
+    }
+    
     public void setupDefaultListFromFile(){
         CrossingManagerUploader crossingManagerUploader = crossesMade.getCrossingManagerUploader();
         // retrieve list entries and add them to the parent ListSelect component
         //add checking to provide error
-        listSelectMale.removeAllItems();
-        listSelectFemale.removeAllItems();
+        maleParents.removeAllItems();
+        femaleParents.removeAllItems();
         if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified() &&
                 crossingManagerUploader.getFemaleGermplasmList() == null && crossingManagerUploader.getMaleGermplasmList() == null){
             MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_BOTH_ID_REQUIRED)
@@ -338,22 +462,23 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() != null){
             MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_FEMALE_ID_REQUIRED)
                     , Notification.POSITION_CENTERED);
-            loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
+            loadListFromUpload(maleParents, crossingManagerUploader.getMaleGermplasmList());
         }else if(crossingManagerUploader.isMaleListIdSpecified() && crossingManagerUploader.getMaleGermplasmList() == null &&
                 crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.getFemaleGermplasmList() != null){
             MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_GERMPLASM_LIST_IMPORT_MALE_ID_REQUIRED)
                     , Notification.POSITION_CENTERED);
-            loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
+            loadListFromUpload(femaleParents, crossingManagerUploader.getFemaleGermplasmList());
         }else if(crossingManagerUploader.isFemaleListIdSpecified() && crossingManagerUploader.isMaleListIdSpecified()){
-            loadListFromUpload(listSelectMale, crossingManagerUploader.getMaleGermplasmList());
-            loadListFromUpload(listSelectFemale, crossingManagerUploader.getFemaleGermplasmList());
+            loadListFromUpload(maleParents, crossingManagerUploader.getMaleGermplasmList());
+            loadListFromUpload(femaleParents, crossingManagerUploader.getFemaleGermplasmList());
         }
 
 
-        listSelectMale.requestRepaint();
-        listSelectFemale.requestRepaint();
+        maleParents.requestRepaint();
+        femaleParents.requestRepaint();
     }
-    private void loadListFromUpload(ListSelect listSelect, GermplasmList germplasmList){
+
+	private void loadListFromUpload(Table listSelect, GermplasmList germplasmList){
         if(germplasmList != null){
             for (Iterator<?> i = germplasmList.getListData().iterator(); i.hasNext();) {
                 // retrieve entries from the table
@@ -375,8 +500,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     }
 
     public void clearParentsListsAndCrossesTable(){
-        this.listSelectFemale.removeAllItems();
-        this.listSelectMale.removeAllItems();
+        this.femaleParents.removeAllItems();
+        this.maleParents.removeAllItems();
         this.crossesTableComponent.clearCrossesTable();
     }
 }
