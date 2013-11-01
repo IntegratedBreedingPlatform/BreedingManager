@@ -249,15 +249,22 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 //GID is given, but no DESIG, get value of DESIG given GID
                 if(importedGermplasm.getGid()!=null && importedGermplasm.getDesig()==null){
                 	try {
-                		
-				        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-				        importedGermplasmGids.add(importedGermplasm.getGid());
-				        
-						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-						
-						if(preferredNames.get(importedGermplasm.getGid())!=null)
-							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
 
+                		//Check if germplasm exists
+				        Germplasm currentGermplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
+				        if(currentGermplasm==null){
+				        	showInvalidFileError("Germplasm with GID "+importedGermplasm.getGid()+" not found in database");
+				        } else {
+                		
+					        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+					        importedGermplasmGids.add(importedGermplasm.getGid());
+					        
+							Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+							
+							if(preferredNames.get(importedGermplasm.getGid())!=null)
+								importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+							
+				        }
 					} catch (MiddlewareQueryException e) {
 						e.printStackTrace();
 					}
@@ -265,16 +272,25 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 //GID and DESIG are given, make sure DESIG matches value of GID
                 } else if (importedGermplasm.getGid()!=null && importedGermplasm.getDesig()!=null && importedGermplasm.getDesig()!=""){
                 	try {
-				        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-				        importedGermplasmGids.add(importedGermplasm.getGid());
-				        
-						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-						
-						if(preferredNames.get(importedGermplasm.getGid())!=null && !importedGermplasm.getDesig().toUpperCase().equals(preferredNames.get(importedGermplasm.getGid()).toUpperCase())){
-							showInvalidFileError("Invalid GID and DESIG/DESIGNATION combination on Sheet 2, DESIG on file for GID "+importedGermplasm.getGid()+" is \""+importedGermplasm.getDesig()+"\" but preferred name on database is \""+preferredNames.get(importedGermplasm.getGid())+"\".");
-						} else {
-							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
-						}
+                		
+                		//Check if germplasm exists
+				        Germplasm currentGermplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
+				        if(currentGermplasm==null){
+				        	showInvalidFileError("Germplasm with GID "+importedGermplasm.getGid()+" not found in database");
+				        } else {
+
+					        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+					        importedGermplasmGids.add(importedGermplasm.getGid());
+					        
+							Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+							
+							if(preferredNames.get(importedGermplasm.getGid())!=null && !importedGermplasm.getDesig().toUpperCase().equals(preferredNames.get(importedGermplasm.getGid()).toUpperCase())){
+								showInvalidFileError("Invalid GID and DESIG/DESIGNATION combination on Sheet 2, DESIG on file for GID "+importedGermplasm.getGid()+" is \""+importedGermplasm.getDesig()+"\" but preferred name on database is \""+preferredNames.get(importedGermplasm.getGid())+"\".");
+							} else {
+								importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+							}
+							
+				        }
 					} catch (MiddlewareQueryException e) {
 						e.printStackTrace();
 					}
@@ -479,10 +495,10 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	        showInvalidFileError("ENTRY must have NUMBER as scale");
 	        System.out.println("DEBUG | ENTRY must have NUMBER as scale");
 
-	    } else if(desigPropertyIsValid==false){
+	    } else if(desigPropertyIsValid==false && desigColumnIsPresent==true){
 	        showInvalidFileError("DESIG/DESIGNATION must have GERMPLASM ID as property");
 	        System.out.println("DEBUG | DESIG/DESIGNATION must have GERMPLASM ID as property");
-	    } else if(desigScaleIsValid==false){
+	    } else if(desigScaleIsValid==false && desigColumnIsPresent==true){
 	        showInvalidFileError("DESIG/DESIGNATION must have DBCV as scale");
 	        System.out.println("DEBUG | DESIG/DESIGNATION must have DBCV as scale");
 	        

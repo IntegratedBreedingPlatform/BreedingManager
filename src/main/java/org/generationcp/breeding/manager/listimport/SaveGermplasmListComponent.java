@@ -82,7 +82,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private WorkbenchDataManager workbenchDataManager;
     private String filename;
 
-    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
+    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;

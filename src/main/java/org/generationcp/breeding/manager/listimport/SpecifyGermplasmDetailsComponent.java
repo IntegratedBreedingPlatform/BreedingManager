@@ -366,35 +366,42 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
                         
                         Germplasm germplasm = new Germplasm();
-                        germplasm.setGid(i);
-                        germplasm.setUserId(ibdbUserId);
-                        germplasm.setLocationId((Integer)locationComboBox.getValue());
-                        germplasm.setGdate(dateIntValue);
-                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
-
-                        germplasm.setGnpgs(-1);
-                        if(germplasmMatchesCount==1){
-                            //If a single match is found, multiple matches will be 
-                            //   handled by SelectGemrplasmWindow and 
-                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-                            if(foundGermplasm.get(0).getGnpgs()<2){
-                            	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
-                            } else {
-                            	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
-                            }
-                            germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
+                        
+                        if(importedGermplasm.getGid()!=null){
+                        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
                         } else {
-                            //If no matches are found
-                            germplasm.setGpid1(0); 
-                            germplasm.setGpid2(0);
+	                        germplasm.setGid(i);
+	                        germplasm.setUserId(ibdbUserId);
+	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
+	                        germplasm.setGdate(dateIntValue);
+	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
+	
+	                        germplasm.setGnpgs(-1);
+	                        if(germplasmMatchesCount==1){
+	                            //If a single match is found, multiple matches will be 
+	                            //   handled by SelectGemrplasmWindow and 
+	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+	                            if(foundGermplasm.get(0).getGnpgs()<2){
+	                            	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
+	                            } else {
+	                            	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
+	                            }
+	                            germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
+	                        } else {
+	                            //If no matches are found
+	                            germplasm.setGpid1(0); 
+	                            germplasm.setGpid2(0);
+	                        }
+	                        
+	                        germplasm.setUserId(ibdbUserId); 
+	                        germplasm.setLgid(0);
+	                        germplasm.setGrplce(0);
+	                        germplasm.setReferenceId(0);
+	                        germplasm.setMgid(0);
+	                        
                         }
                         
-                        germplasm.setUserId(ibdbUserId); 
-                        germplasm.setLgid(0);
-                        germplasm.setGrplce(0);
-                        germplasm.setReferenceId(0);
-                        germplasm.setMgid(0);
                         germplasmList.add(germplasm);
 
                         Name name = new Name();
@@ -408,7 +415,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         name.setReferenceId(0);
                         nameList.add(name);
                         
-                        if(germplasmMatchesCount>1){
+                        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
                             displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
                         }
 
@@ -438,30 +445,37 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         
                         Germplasm germplasm = new Germplasm();
                         
-                        if(germplasmMatchesCount==1){
-                            //If a single match is found, multiple matches will be 
-                            //   handled by SelectGemrplasmWindow and 
-                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-                            germplasm.setGid(foundGermplasm.get(0).getGid());
-                            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+                        if(importedGermplasm.getGid()!=null){
+                        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
+                        	doNotCreateGermplasmsWithId.add(importedGermplasm.getGid());
                         } else {
-                            //If no matches found
-                            germplasm.setGid(i);
-                        }
                         
-                        germplasm.setUserId(ibdbUserId);
-                        germplasm.setLocationId((Integer)locationComboBox.getValue());
-                        germplasm.setGdate(dateIntValue);
-                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
-
-                        germplasm.setGnpgs(0);
-                        germplasm.setGpid1(0);
-                        germplasm.setGpid2(0);
-                        germplasm.setLgid(0);
-                        germplasm.setGrplce(0);
-                        germplasm.setReferenceId(0);
-                        germplasm.setMgid(0);
+	                        if(germplasmMatchesCount==1){
+	                            //If a single match is found, multiple matches will be 
+	                            //   handled by SelectGemrplasmWindow and 
+	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+	                            germplasm.setGid(foundGermplasm.get(0).getGid());
+	                            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+	                        } else {
+	                            //If no matches found
+	                            germplasm.setGid(i);
+	                        }
+	                        
+	                        germplasm.setUserId(ibdbUserId);
+	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
+	                        germplasm.setGdate(dateIntValue);
+	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
+	
+	                        germplasm.setGnpgs(0);
+	                        germplasm.setGpid1(0);
+	                        germplasm.setGpid2(0);
+	                        germplasm.setLgid(0);
+	                        germplasm.setGrplce(0);
+	                        germplasm.setReferenceId(0);
+	                        germplasm.setMgid(0);
+	                        
+                        }
                         germplasmList.add(germplasm);
 
                         Name name = new Name();
@@ -475,7 +489,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         name.setReferenceId(0);
                         nameList.add(name);
                         
-                        if(germplasmMatchesCount>1){
+                        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
                             displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
                         }
                     }
