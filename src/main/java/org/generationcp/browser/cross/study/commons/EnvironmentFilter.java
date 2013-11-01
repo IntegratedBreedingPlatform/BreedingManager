@@ -884,9 +884,22 @@ private static final long serialVersionUID = -3667517088395779496L;
 	public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
-    	    	
+
+    	int total = 0;
+    	//get the total of weights
+    	for(String sKey : environmentForComparison){
+    		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
+    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
+    		total += envtWeight.getWeight();
+    	}
+    	LOG.debug("TOTAL = " + total);
+    	
     	for (String sKey : environmentForComparison){
     		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
+    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
+    		envt.computeWeight(total);
+    		
+    		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	

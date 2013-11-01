@@ -45,6 +45,21 @@ public class ObservationList {
 		}
 		return total / observationList.size();
 	}
+	
+	//will be use for getting the average
+	public double getWeightedObservationAverage(Double weightValue){
+		double ave = 0;
+		double total = 0;
+		for(Observation observation : observationList){
+			if(ResultsComponent.isValidDoubleValue(observation.getValue())){
+				if(weightValue!=null)
+					total += weightValue * Double.parseDouble(observation.getValue());
+				else
+					total += Double.parseDouble(observation.getValue());
+			}
+		}
+		return total / observationList.size();
+	}	
 
 	public String getKey() {
 		return key;

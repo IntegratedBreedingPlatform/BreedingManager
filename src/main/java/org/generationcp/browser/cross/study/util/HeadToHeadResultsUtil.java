@@ -203,10 +203,14 @@ public class HeadToHeadResultsUtil {
 	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
 	    			numOfValidEnv++;
 	    			
+	    			System.out.println("Env: "+envForComparison.getLocationName());
+	    			System.out.println("Weight: "+envForComparison.getWeight());
+	    			System.out.println("");
+	    			
 	    			if (index == 1){
-	    				summation += obs1.getObservationAverage();
+	    				summation += obs1.getWeightedObservationAverage(envForComparison.getWeight());
 	    			} else if (index == 2){
-	    				summation += obs2.getObservationAverage();
+	    				summation += obs2.getWeightedObservationAverage(envForComparison.getWeight());
 	    			}
 	    			
 	    		}
