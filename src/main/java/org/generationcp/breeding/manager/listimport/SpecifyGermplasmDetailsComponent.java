@@ -237,10 +237,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         germplasmDetailsTable = new Table();
         germplasmDetailsTable.addContainerProperty(1, Integer.class, null);
         germplasmDetailsTable.addContainerProperty(2, String.class, null);
-        germplasmDetailsTable.addContainerProperty(3, String.class, null);
+        germplasmDetailsTable.addContainerProperty(3, Integer.class, null);
         germplasmDetailsTable.addContainerProperty(4, String.class, null);
         germplasmDetailsTable.addContainerProperty(5, String.class, null);
-        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry ID", "Entry CD", "Designation", "Cross", "Source"});
+        germplasmDetailsTable.addContainerProperty(6, String.class, null);
+        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry ID", "Entry Code","GID","Designation", "Cross", "Source"});
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");
         addComponent(germplasmDetailsTable, "top:160px;left:20px");

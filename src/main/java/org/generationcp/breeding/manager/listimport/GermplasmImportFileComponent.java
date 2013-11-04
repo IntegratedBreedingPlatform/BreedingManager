@@ -133,11 +133,15 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	                    
 	                    //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 	                    getGermplasmDetailsComponent().getGermplasmDetailsTable().removeAllItems();
-	                    
+	                    String source;
 	                    for(int i = 0 ; i < importedGermplasms.size() ; i++){
 	                        ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
-	                        String source = importedGermplasmList.getFilename()+":"+(i+1);
-	                        getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), "", importedGermplasm.getDesig(), "", source}, new Integer(i+1));
+	                        if(importedGermplasm.getSource()==null){
+	                        	source = importedGermplasmList.getFilename()+":"+(i+1);
+	                        }else{
+	                        	source=importedGermplasm.getSource();
+	                        }
+	                        getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(),importedGermplasm.getGid(), importedGermplasm.getDesig(), importedGermplasm.getCross(), source}, new Integer(i+1));
 	                    }
 	                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
 	                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
