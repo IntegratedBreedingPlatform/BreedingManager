@@ -42,6 +42,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     private Accordion accordion;
     private Component nextScreen;
     private GermplasmListUploader germplasmListUploader;
+    private Label filenameLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -68,6 +69,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         uploadComponents = new Upload();
         uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
         addComponent(uploadComponents, "top:60px;left:30px");
+        
+        filenameLabel = new Label();
+        addComponent(filenameLabel, "top:110px;left:35px;");
         
         germplasmListUploader = new GermplasmListUploader(this);
         uploadComponents.setReceiver(germplasmListUploader);
@@ -111,7 +115,14 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     public void updateLabels() {
         messageSource.setCaption(selectFileLabel, Message.SELECT_GERMPLASM_LIST_FILE);
         messageSource.setCaption(nextButton, Message.NEXT);
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+        filenameLabel.setCaption(filenameLabel.getCaption()+": ");
     }
+    
+    public void updateFilenameLabelValue(String filename){
+        messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
+        filenameLabel.setCaption(filenameLabel.getCaption()+": "+filename);
+    }    
 
     public void nextButtonClickAction() throws InternationalizableException{
     	if(germplasmListUploader.getFileIsValid()==null){
