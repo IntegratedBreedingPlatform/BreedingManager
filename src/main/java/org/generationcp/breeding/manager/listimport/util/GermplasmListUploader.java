@@ -228,7 +228,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIGNATION")){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID")){
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GERMPLASM ID")){
                         importedGermplasm.setGid(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
