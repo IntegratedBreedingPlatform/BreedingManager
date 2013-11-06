@@ -7,6 +7,7 @@ import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -34,6 +35,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
     public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
+    public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
     
     private Window window;
     
@@ -124,6 +126,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 nurseryTemplateWindow.addComponent(new NurseryTemplateMain());
                 this.addWindow(nurseryTemplateWindow);
                 return nurseryTemplateWindow;
+            } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
+                Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+                listManagerWindow.setName(LIST_MANAGER_WINDOW_NAME);
+                listManagerWindow.setSizeUndefined();
+                listManagerWindow.addComponent(new ListManagerMain());
+                this.addWindow(listManagerWindow);
+                return listManagerWindow;
             }
         }
         
