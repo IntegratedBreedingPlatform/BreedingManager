@@ -199,7 +199,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 entryColumnIsPresent = true;
             } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIGNATION")){
                 desigColumnIsPresent = true;
-            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GID")){
+            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GID") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GERMPLASM ID")){
                 gidColumnIsPresent = true;
             }  
         }
@@ -228,7 +228,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIGNATION")){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID")){
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID")){
                         importedGermplasm.setGid(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
@@ -466,7 +466,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                     if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
                     	desigPropertyIsValid = true;	
                     }                
-                } else if(importedFactor.getFactor().toUpperCase().equals("GID")){
+                } else if(importedFactor.getFactor().toUpperCase().equals("GID") || importedFactor.getFactor().toUpperCase().equals("GERMPLASM ID") ){
                 	gidColumnIsPresent = true;
                 	if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
                 		gidPropertyIsValid = true;
