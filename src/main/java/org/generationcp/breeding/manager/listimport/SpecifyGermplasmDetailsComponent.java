@@ -580,4 +580,13 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     public void setPedigreeOptionGroupValue(Integer value){
     	pedigreeOptionGroup.setValue(value);
     }
+    
+    public Integer getPedigreeOptionGroupValue(){
+    	return (Integer) pedigreeOptionGroup.getValue();
+    }
+    
+    public void setPedigreeOptionGroupEnabled(Boolean value){
+    	pedigreeOptionGroup.setEnabled(value);
+    }
+    
 }
