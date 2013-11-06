@@ -799,8 +799,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
         if (gidsWithoutChildren!= null && gidsWithoutChildren.size() > 0){
         	
-        	ConfirmDialog.show(this.getWindow(), "Delete Germplasm", "Do you also want to delete the germplasm(s)?",
-        			"OK", "Cancel", new ConfirmDialog.Listener() {
+        	ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database", "Would you like to delete the germplasm(s) from the database also?",
+        			"Yes", "No", new ConfirmDialog.Listener() {
         		private static final long serialVersionUID = 1L;
         		
         		public void onClose(ConfirmDialog dialog) {
