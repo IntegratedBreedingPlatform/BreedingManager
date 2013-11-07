@@ -34,7 +34,7 @@ public class NumericTraitEvaluator {
 		}
 		else if(condition == NumericTraitCriteria.EQUAL){
 			Double limit = Double.valueOf(limits.get(0));
-			result = (value == limit)? true: false;
+			result = (value.equals(limit))? true: false;
 		}
 		else if(condition == NumericTraitCriteria.GREATER_THAN){
 			Double limit = Double.valueOf(limits.get(0));

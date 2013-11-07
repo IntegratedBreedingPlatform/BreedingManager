@@ -1,6 +1,8 @@
 package org.generationcp.browser.study.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.generationcp.browser.study.pojos.CellCoordinate;
@@ -13,6 +15,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
+import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
 
 public class TableViewerCellSelectorUtil {
@@ -54,6 +57,19 @@ public class TableViewerCellSelectorUtil {
 		cellCoordinateColorAssigments = new ArrayList<CellCoordinateColorAssignment>();
 		contextWindowDisplayed = false;
 		initialize();
+		
+		//To clear selected cells when table is re-sorted
+		table.addListener(new Table.HeaderClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void headerClick(HeaderClickEvent event) {
+				clearHighlightedCells();
+			}
+
+		});
+		
+		
 	}
 	
 	public TableViewerCellSelectorUtil(Table sourceTable){
@@ -111,6 +127,7 @@ public class TableViewerCellSelectorUtil {
 				
 				if(event.getButton()==ItemClickEvent.BUTTON_RIGHT){
 					if(highlightedCellCoordinates.size()==0){
+						@SuppressWarnings("unused")
 						CellCoordinate currentCellCoordinate = new CellCoordinate(currentColumn, currentRow);
 						updateTableCellColors();
 					}
@@ -223,10 +240,19 @@ public class TableViewerCellSelectorUtil {
 	*/
 	
 	private void addCoordinatesSelectedByShift(){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		itemIds.addAll((Collection<Integer>) table.getItemIds());
+		
+		columnHeaders.clear();
+		Object[] columnHeadersObjectArray = table.getVisibleColumns();
+		for(int i=0;i<columnHeadersObjectArray.length;i++){
+			columnHeaders.add(columnHeadersObjectArray[i].toString());
+		}
+		
 		int indexOfCurrentColumn = columnHeaders.indexOf(currentColumn);
 		int indexOfPreviousColumn = columnHeaders.indexOf(previousColumn);
-		int indexOfCurrentRow = Integer.valueOf(currentRow);
-		int indexOfPreviousRow = Integer.valueOf(previousRow);
+		int indexOfCurrentRow = itemIds.indexOf(Integer.valueOf(currentRow));
+		int indexOfPreviousRow = itemIds.indexOf(Integer.valueOf(previousRow));
 		
 		int minColumn = 0;
 		int maxColumn = 0;
@@ -251,7 +277,7 @@ public class TableViewerCellSelectorUtil {
 		
 		for(int x=minColumn;x<=maxColumn;x++){
 			for(int y=minRow;y<=maxRow;y++){
-				CellCoordinate currentCellCoordinate = new CellCoordinate(columnHeaders.get(x), y);
+				CellCoordinate currentCellCoordinate = new CellCoordinate(columnHeaders.get(x), itemIds.get(y));
 				highlightedCellCoordinates.add(currentCellCoordinate);
 			}
 		}
@@ -383,5 +409,12 @@ public class TableViewerCellSelectorUtil {
 			}
 		}
 	    return null;
+	}
+	
+	public void clearHighlightedCells(){
+		highlightedCellCoordinates.clear();
+		updateTableCellColors();
+		currentRow = "";
+		currentColumn = "";
 	}
 }
