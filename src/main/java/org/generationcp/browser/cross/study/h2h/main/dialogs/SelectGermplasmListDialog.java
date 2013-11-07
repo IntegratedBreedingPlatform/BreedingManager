@@ -11,25 +11,19 @@
  *******************************************************************************/
 package org.generationcp.browser.cross.study.h2h.main.dialogs;
 
-import java.util.Iterator;
-
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
-import org.generationcp.browser.germplasm.GermplasmQueries;
-import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
-import org.generationcp.browser.cross.study.h2h.main.listeners.SelectListButtonClickListener;
-import org.generationcp.browser.cross.study.h2h.main.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -71,6 +65,7 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
     private String germplasmListFor;
 
     private boolean isTestEntry;
+    private boolean doCloseDialog = true;
 
     private Label listnameParent;
     private Window parentWindow;
@@ -160,7 +155,21 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
     
     protected void initializeActions() {
         doneButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        doneButton.addListener(new CloseWindowAction());
+        // only close window if calling screen used the list successfully.
+        // eg. table permutations will not cause heap space error
+        doneButton.addListener(new Button.ClickListener() {
+			
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (doCloseDialog){
+					Window window = event.getButton().getWindow();
+					window.getParent().removeWindow(window);
+				}
+			}
+		});
+
         cancelButton.addListener(new CloseWindowAction());
     }
     
@@ -170,19 +179,17 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
     public void populateParentList() {
         // retrieve list entries and add them to the parent ListSelect component
     	
-    	if(isTestEntry){
-    		((SpecifyGermplasmsComponent)source).addTestGermplasmList(selectGermplasmList.getListInfoComponent().getGermplasmListId());
-    	}else{
-    		((SpecifyGermplasmsComponent)source).addStandardGermplasmList(selectGermplasmList.getListInfoComponent().getGermplasmListId());
-    	}
+    	doCloseDialog = ((SpecifyGermplasmsComponent)source).addGermplasmList(
+    			selectGermplasmList.getListInfoComponent().getGermplasmListId(), isTestEntry);
+
     	Table listEntryValues = selectGermplasmList.getListInfoComponent().getEntriesTable();
         // remove existing list entries if selected list has entries
         if (listEntryValues.size() == 0) {
             doneButton.setEnabled(false);
-        }else{
+        } else {
         	doneButton.setEnabled(true);
         }
-        
+       
     	/*
         Table listEntryValues = selectGermplasmList.getListInfoComponent().getEntriesTable();
         // remove existing list entries if selected list has entries

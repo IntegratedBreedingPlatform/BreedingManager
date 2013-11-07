@@ -1,5 +1,6 @@
 package  org.generationcp.browser.cross.study.h2h.main;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -48,6 +50,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public static final String SELECT_STANDARD_SEARCH_GERMPLASM_BUTTON_ID = "SpecifyGermplasmsComponent Standard Search Germplasm Button ID";
     public static final String SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Test Search Germplasm List Button ID";
     public static final String SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Standard Search Germplasm List Button ID";
+    
+    private static final BigInteger MAX_NUM_OF_PAIRS = new BigInteger("1000000"); // 100,000 maximum
     
     private Panel testPanel;
     private Panel standardPanel;
@@ -385,18 +389,36 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
     }
     
-    public void addTestGermplasmList(Integer germplasmListId){
+    private boolean permutationsWillExceedMax(GermplasmList list){
+    	List<GermplasmListData> selectedList = list.getListData();
+		if (list != null && selectedList!= null && entriesTable != null){
+			int permutationsCount = entriesTable.size() * selectedList.size();
+    		return MAX_NUM_OF_PAIRS.intValue() < permutationsCount;
+    	}
+    	
+    	return false;
+    }
+    
+    public boolean addGermplasmList(Integer germplasmListId, boolean isTestEntry){
     	try{
 	    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
 	    	if(germplasmList != null){
-		    	//testGermplasmListAdded.add(germplasmList);
-		    	//doGermplasmPermutation0(germplasmList, standardGermplasmListAdded);
-		    	//doGermplasmPermutation1(germplasmList, standardGermplasmAdded);
-		    	doGermplasmPermutationOnTable(true, false, germplasmList, null);
+	    		
+	    		if (!permutationsWillExceedMax(germplasmList)){
+	    			doGermplasmPermutationOnTable(isTestEntry, false, germplasmList, null);
+	    			return true;
+	    			
+	    		} else {
+	    			MessageNotifier.showWarning(getWindow(), "Warning", "The list selected will create too " +
+	    					"many germplasm pairs and may cause the tool to crash. Please select another list.");
+	    		}
+	    		
 	    	}
     	}catch(Exception e){
     		e.printStackTrace();
     	}
+    	
+    	return false;
     }
     
     public void addTestGermplasm(Germplasm germplasm ){  
@@ -405,22 +427,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    	//doGermplasmPermutation2(germplasm, standardGermplasmListAdded);
 	    	//doGermplasmPermutation3(germplasm, standardGermplasmAdded);
     		doGermplasmPermutationOnTable(true, true, null, germplasm);
-    	}
-    }
-    
-    public void addStandardGermplasmList(Integer germplasmListId){
-    	
-    	try{
-	    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-	    	if(germplasmList != null){
-		    	//standardGermplasmListAdded.add(germplasmList);
-		    	//doGermplasmPermutation4(testGermplasmListAdded, germplasmList);
-		    	//doGermplasmPermutation5(testGermplasmAdded, germplasmList);
-	    		doGermplasmPermutationOnTable(false, false, germplasmList, null);
-	    	}
-	    	
-    	}catch(Exception e){
-    		e.printStackTrace();
     	}
     }
     
@@ -433,7 +439,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	}
     }
     
-    @SuppressWarnings("rawtypes")
 	private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
     	Map<String, Map<String, String>> map = getBothMapEntries();
     	Map<String, String> testMap = map.get(TEST_ENTRY);
@@ -444,162 +449,24 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 			germplasmIdNameMap = new HashMap<String, String>();
         }
     	
+    	// create a germplasm list with the germplasm as the sole list item
     	if(isGermplasm){
-    		if(isTestEntry){
-    			
-    			if(testMap.keySet().isEmpty() && !standardMap.keySet().isEmpty()){
-    				//we need to remove all
-    				deleteAllSingleEntriesInTable(true, germplasm.getGid().toString(), 0, standardMap.keySet().size());
-    			}
-    			
-    			if(standardMap.keySet().isEmpty()){
-    				//just add on the left    				
-    				String testEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-    				String newId = germplasm.getGid().toString() + ": ";    
-    				TablesEntries entry = createTableEntries(testEntryName, "", newId);
-    	    		tableEntriesList.add(entry);
-    				singleEntriesSet.add(newId);
-    				germplasmIdNameMap.put(germplasm.getGid().toString(), testEntryName);
-    			}else{
-    				//we iterate
-    				Iterator standardIterator = standardMap.keySet().iterator();
-    				while(standardIterator.hasNext()){
-    					String standardId = (String) standardIterator.next();
-    					String testEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-    					String standardName = (String) standardMap.get(standardId);
-        				String newId = germplasm.getGid().toString() + ":" + standardId;    
-        				
-        				if(!germplasm.getGid().toString().equalsIgnoreCase(standardId)){        				
-	    					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-	        	    		tableEntriesList.add(entry);
-        				}
-        	    		germplasmIdNameMap.put(germplasm.getGid().toString(), testEntryName);
-        	    		germplasmIdNameMap.put(standardId, standardName);
-    				}
-    			}
-    		}else{
-    			
-    			if(standardMap.keySet().isEmpty() && !testMap.keySet().isEmpty()){
-    				//we need to remove all
-    				deleteAllSingleEntriesInTable(false, germplasm.getGid().toString(), testMap.keySet().size(), 0);
-    			}
-    			
-    			if(testMap.keySet().isEmpty()){
-    				//just add on the left    				
-    				String standardEntryName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-    				String newId = " :"+germplasm.getGid().toString();    
-    				TablesEntries entry = createTableEntries("", standardEntryName, newId);
-    	    		tableEntriesList.add(entry);
-    				singleEntriesSet.add(newId);
-    				germplasmIdNameMap.put(germplasm.getGid().toString(), standardEntryName);
-    	    		
-    			}else{
-    				//we iterate
-    				Iterator testIterator = testMap.keySet().iterator();
-    				while(testIterator.hasNext()){
-    					String testId = (String) testIterator.next();
-    					String testEntryName = (String) testMap.get(testId);
-    					String standardName = germplasm.getPreferredName() != null ? germplasm.getPreferredName().getNval() : germplasm.getGid().toString();
-        				String newId = testId + ":" + germplasm.getGid().toString();    
-        				if(!germplasm.getGid().toString().equalsIgnoreCase(testId)){        				
-        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-            	    		tableEntriesList.add(entry);
-        				}
-    					
-        	    		germplasmIdNameMap.put(testId, testEntryName);
-        	    		germplasmIdNameMap.put(germplasm.getGid().toString(), standardName);
-    				}
-    			}
-    		}
-    	}else{
-    		List<GermplasmListData> germplasmListData = germplasmList.getListData();
-			if(isTestEntry){
-    			
-    			if(testMap.keySet().isEmpty() && !standardMap.keySet().isEmpty()){
-    				//we need to remove all
-    				deleteAllSingleEntriesInTableListData(true, germplasmListData, 0, standardMap.keySet().size());
-    			}
-    			
-    			if(standardMap.keySet().isEmpty()){
-    				//just add on the left    	
-    				for(GermplasmListData listData : germplasmListData){
-    					String testEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-        				String newId = listData.getGid().toString() + ": ";    
-        				TablesEntries entry = createTableEntries(testEntryName, "", newId);
-        	    		tableEntriesList.add(entry);
-        				singleEntriesSet.add(newId);
-        				
-        				germplasmIdNameMap.put(listData.getGid().toString(), testEntryName);
-        	    		
-    				}
-    				
-    			}else{
-    				//we iterate
-    				
-    				for(GermplasmListData listData : germplasmListData){
-    					Iterator standardIterator = standardMap.keySet().iterator();
-	    				while(standardIterator.hasNext()){
-	    					String standardId = (String) standardIterator.next();
-	    					String testEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-	    					String standardName = (String) standardMap.get(standardId);
-	        				String newId = listData.getGid().toString() + ":" + standardId;    
-	        				
-	        				if(!listData.getGid().toString().equalsIgnoreCase(standardId)){        				
-	        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-		        	    		tableEntriesList.add(entry);
-	        				}
-	        				
-	    					
-	        	    		
-	        	    		germplasmIdNameMap.put(listData.getGid().toString(), testEntryName);
-	        	    		germplasmIdNameMap.put(standardId, standardName);
-	    				}
-    				}
-    			}
-    		}else{
-    			
-    			if(standardMap.keySet().isEmpty() && !testMap.keySet().isEmpty()){
-    				//we need to remove all
-    				deleteAllSingleEntriesInTableListData(false, germplasmListData, testMap.keySet().size(), 0);
-    			}    			
-    			if(testMap.keySet().isEmpty()){
-    				//just add on the left    		
-    				for(GermplasmListData listData : germplasmListData){
-	    				String standardEntryName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-	    				String newId = " :"+listData.getGid().toString();    
-	    				TablesEntries entry = createTableEntries("", standardEntryName, newId);
-	    	    		tableEntriesList.add(entry);
-	    	    		singleEntriesSet.add(newId);
-	    	    		
-	    	    		germplasmIdNameMap.put(listData.getGid().toString(), standardEntryName);
-        	    		
-    				}
-    				
-    			}else{
-    				//we iterate
-    				
-    				for(GermplasmListData listData : germplasmListData){
-    					Iterator testIterator = testMap.keySet().iterator();
-	    				while(testIterator.hasNext()){
-	    					String testId = (String) testIterator.next();
-	    					String testEntryName = (String) testMap.get(testId);
-	    					String standardName = listData.getDesignation() != null ? listData.getDesignation() : listData.getGid().toString();
-	        				String newId = testId + ":" + listData.getGid().toString();    
-	        				
-	        				if(!listData.getGid().toString().equalsIgnoreCase(testId)){        				
-	        					TablesEntries entry = createTableEntries(testEntryName, standardName, newId);
-		        	    		tableEntriesList.add(entry);
-	        				}
-	    					
-	        	    		
-	        	    		germplasmIdNameMap.put(testId, testEntryName);
-	        	    		germplasmIdNameMap.put(listData.getGid().toString(), standardName);
-	    				}
-    				}
-    			}
-    		}
+    		germplasmList = new GermplasmList();
+    		List<GermplasmListData> dataList = new ArrayList<GermplasmListData>();
+    		
+    		GermplasmListData germplasmData = new GermplasmListData();
+    		//GID and Designation are fields that will be checked/used
+    		germplasmData.setGid(germplasm.getGid());
+    		germplasmData.setDesignation(germplasm.getPreferredName().getNval());
+    		
+    		dataList.add(germplasmData);
+    		germplasmList.setListData(dataList);
     	}
-    	addToTable(tableEntriesList);
+    			
+		permutateGermplasmListToPartnerEntries(isTestEntry, testMap, standardMap,
+						tableEntriesList, germplasmList);
+
+		addToTable(tableEntriesList);
     	
     	if(isEitherTableEntriesEmpty()){
         	nextButton.setEnabled(false);
@@ -608,6 +475,84 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         }
     	
     }
+
+	private void permutateGermplasmListToPartnerEntries(
+			boolean isTestEntry,
+			Map<String, String> testMap, Map<String, String> standardMap,
+			List<TablesEntries> tableEntriesList,
+			GermplasmList germplasmList) {
+		
+		List<GermplasmListData> germplasmListData = germplasmList.getListData();
+		Map<String, String> ownMap = testMap;
+		Map<String, String> partnerMap = standardMap;
+		
+		if (!isTestEntry){
+			ownMap = standardMap;
+			partnerMap = testMap;
+		} 
+		
+		if(ownMap.keySet().isEmpty() && !partnerMap.keySet().isEmpty()){
+			//we need to remove all
+			deleteAllSingleEntriesInTableListData(isTestEntry, germplasmListData, testMap.keySet().size(), standardMap.keySet().size());
+		}
+		
+		if(partnerMap.keySet().isEmpty()){
+			//just add on one side  	
+			for(GermplasmListData listData : germplasmListData){
+				String gid = listData.getGid().toString();
+				String germplasmName = listData.getDesignation() != null ? listData.getDesignation() : gid;
+				
+				String testEntryName = germplasmName;
+				String standardEntryName = "";
+				String newId = gid + ": ";    
+				if (!isTestEntry){
+					standardEntryName = germplasmName;
+					testEntryName = "";
+					newId = " :" + gid;
+				}
+				
+				TablesEntries entry = createTableEntries(testEntryName, standardEntryName, newId);
+				tableEntriesList.add(entry);
+				singleEntriesSet.add(newId);
+				germplasmIdNameMap.put(gid, germplasmName);
+				
+			}
+			
+		}else{
+			//we iterate			
+			for(GermplasmListData listData : germplasmListData){
+				Iterator<String> partnerIterator = partnerMap.keySet().iterator();
+				String gid = listData.getGid().toString();
+				String germplasmName = listData.getDesignation() != null ? listData.getDesignation() : gid;
+				
+				while(partnerIterator.hasNext()){
+					String partnerId = (String) partnerIterator.next();
+					String partnerName = (String) partnerMap.get(partnerId);
+
+					String testEntryName = germplasmName;
+					String standardEntryName = partnerName;
+					String newId = gid + ":" + partnerId;    
+					
+					if (!isTestEntry){
+						testEntryName = partnerName;
+						standardEntryName = germplasmName;
+						newId =  partnerId + ":" + gid;
+					}
+					
+					if(!gid.equalsIgnoreCase(partnerId)){        				
+						TablesEntries entry = createTableEntries(testEntryName, standardEntryName, newId);
+			    		tableEntriesList.add(entry);
+					}
+					germplasmIdNameMap.put(partnerId, partnerName);
+				}
+				
+				germplasmIdNameMap.put(gid, germplasmName);
+			}
+			
+			
+		}
+	}
+	
     /*
     public void selectTestEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
@@ -628,41 +573,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 		tableEntry.setTestStandardEntry(id);
 		return tableEntry;
     }
-    
-    private void deleteAllSingleEntriesInTable(boolean isTestEntry, String gid, int leftSize, int rightSize){
-    	//we delete the single entrie
-		for(String idToDelete : singleEntriesSet){
-			String tempId = "";
-			if(isTestEntry)
-				tempId = " :" + gid;
-			else
-				tempId = gid+": ";
-			
-			if(idToDelete.equalsIgnoreCase(tempId)){
-				if(isTestEntry){
-					if(rightSize != 1){
-						entriesTable.removeItem(idToDelete);				
-						tableEntriesId.remove(idToDelete);
-					}
-				}else{
-					if(leftSize != 1){
-						entriesTable.removeItem(idToDelete);				
-						tableEntriesId.remove(idToDelete);
-					}
-				}
-			}
-			
-			if(!idToDelete.equalsIgnoreCase(tempId)){
-				entriesTable.removeItem(idToDelete);				
-				tableEntriesId.remove(idToDelete);
-			}
-		}
-		//we set the new set since we already cleared it
-		if(isTableEntriesEmpty()){
-			singleEntriesSet = new HashSet<String>();
-		}
-    }
-    
+     
     private void deleteAllSingleEntriesInTableListData(boolean isTestEntry, List<GermplasmListData> germplasmListData, int leftSize, int rightSize){
     	//we delete the single entrie
 		for(String idToDelete : singleEntriesSet){
