@@ -1,29 +1,17 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
-import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
-import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
-import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
-import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
-import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
-import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.TrialEnvironmentProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 
 public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeListener {
@@ -77,7 +65,11 @@ public class HeadToHeadCrossStudyMainValueChangeListener implements ValueChangeL
     	}
     	
         if (source instanceof TraitsAvailableComponent) {
-            ((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
+        	if (isTagAll) {
+        		((TraitsAvailableComponent) source).clickTagAllCheckbox((Boolean)event.getProperty().getValue());
+        	} else {
+        		((TraitsAvailableComponent) source).clickCheckBox(sourceComboBox, (Boolean)event.getProperty().getValue());
+        	}
         } else if (source instanceof EnvironmentFilter) {
             ((EnvironmentFilter) source).clickCheckBox(tableKey, sourceComboBox, (Boolean)event.getProperty().getValue());
         } else if (source instanceof FilterLocationDialog) {  
