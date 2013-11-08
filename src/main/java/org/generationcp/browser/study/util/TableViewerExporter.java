@@ -31,6 +31,8 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.StudyDataManagerImpl;
 
+import com.vaadin.ui.Button;
+
 
 public class TableViewerExporter {
 
@@ -89,9 +91,13 @@ public class TableViewerExporter {
 		
         for(int y=0;y<tableItemIds.length;y++){
         	rows[y] = sheet1.createRow(y+1);
-        	//System.out.println("Item ID: "+tableItemIds[y].toString());
         	for(int x=0;x<columnHeaders.size();x++){
-        		rows[y].createCell(x).setCellValue(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).toString());
+        		//if(columnHeadersStringArray[x].toString().toUpperCase().equals("GID") || columnHeadersStringArray[x].toString().toUpperCase().equals("GERMPLASM ID") ) {
+        		if(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue() instanceof Button){
+        			rows[y].createCell(x).setCellValue(((Button) table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue()).getCaption().toString());
+        		} else {
+        			rows[y].createCell(x).setCellValue(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).toString());
+        		}
         		
         		currentColor = tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString());	
         		if(currentColor!=null){
@@ -121,6 +127,17 @@ public class TableViewerExporter {
         } catch(Exception ex) {
             throw new DatasetExporterException("Error with writing to: " + filename, ex);
         }
+    }
+    
+    
+    public static boolean isInteger(String s) {
+        try { 
+            Integer.parseInt(s); 
+        } catch(NumberFormatException e) { 
+            return false; 
+        }
+        // only got here if we didn't return false
+        return true;
     }
     
    
