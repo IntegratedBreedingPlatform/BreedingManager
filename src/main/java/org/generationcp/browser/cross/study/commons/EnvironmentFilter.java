@@ -52,6 +52,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -137,6 +138,8 @@ private static final long serialVersionUID = -3667517088395779496L;
     private List<String> addedEnvironmentColumns;
     
 	private Map<CheckBox, Item> environmentCheckBoxMap;
+	
+	private CheckBox tagAllCheckBox;
 	
 	Set<Integer> environmentIds;
 	
@@ -251,6 +254,23 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       }
 	       
 	       addComponent(environmentsTable, "top:110px;left:20px");
+	
+	       tagAllCheckBox = new CheckBox();
+	       tagAllCheckBox.setImmediate(true);
+	       
+	       addComponent(tagAllCheckBox, "top:111px; left:49px;");
+	       
+	       tagAllCheckBox.addListener(new ValueChangeListener(){
+	    	   	private static final long serialVersionUID = 1L;
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					if((Boolean) tagAllCheckBox.getValue()==true)
+						tagAllEnvironments();
+					else
+						untagAllEnvironments();
+				}
+	       });
+	       
 	       
 	       noOfEnvLabel = new Label(messageSource.getMessage(Message.NO_OF_SELECTED_ENVIRONMENT));
 	       noOfEnvLabel.setImmediate(true);
@@ -1084,5 +1104,21 @@ private static final long serialVersionUID = -3667517088395779496L;
 			return className;
 		}
 		
+	}
+	
+	private void tagAllEnvironments(){
+		Object tableItemIds[] = environmentsTable.getItemIds().toArray();
+		for(int i=0;i<tableItemIds.length;i++){
+			if(environmentsTable.getItem(tableItemIds[i].toString()).getItemProperty(TAG_COLUMN_ID).getValue() instanceof CheckBox)
+				((CheckBox) environmentsTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue()).setValue(true);
+		}
+	}
+	
+	private void untagAllEnvironments(){
+		Object tableItemIds[] = environmentsTable.getItemIds().toArray();
+		for(int i=0;i<tableItemIds.length;i++){
+			if(environmentsTable.getItem(tableItemIds[i].toString()).getItemProperty(TAG_COLUMN_ID).getValue() instanceof CheckBox)
+				((CheckBox) environmentsTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue()).setValue(false);
+		}		
 	}
 }
