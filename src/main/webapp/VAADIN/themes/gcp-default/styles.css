@@ -204,3 +204,20 @@
 	background-image: url(images/icon_document.png);
 	background-repeat: no-repeat;
 }
+
+.componenttree-children {
+	padding-left: 4px;
+}
+.componenttree-parent {
+	padding: 4px 0 4px 0px;
+}
+.componenttree-child {
+	padding: 4px 0 4px 19px;
+}
+
+/* Expand/collapse button: */
+.componenttree-expander {
+	float: left;
+	margin: 0;
+	padding: 10px;
+}

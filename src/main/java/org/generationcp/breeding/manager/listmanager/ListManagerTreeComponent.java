@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTabChangeListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
+import org.generationcp.breeding.manager.util.SelectedTabCloseHandler;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -21,10 +23,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.Runo;
 
 @Configurable
 public class ListManagerTreeComponent extends VerticalLayout implements
@@ -33,21 +42,40 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	private static final long serialVersionUID = -224052511814636864L;
 	private final static int BATCH_SIZE = 50;
 	public final static String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
+	public static final String CLOSE_ALL_TABS_ID = "ListManagerTreeComponent Close All Tabs ID";
 	
 	private Tree germplasmListTree;
+	private static TabSheet tabSheetGermplasmList;
+    private AbsoluteLayout germplasmListBrowserMainLayout;
 	private Button refreshButton;
+	private Label heading;
+	private Button btnCloseAllTabs;
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public ListManagerTreeComponent(){
-    	
+    private ListManagerMain listManagerMain;
+    
+    private boolean forGermplasmListWindow;
+    
+    public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
+        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
+        this.forGermplasmListWindow=forGermplasmListWindow;
     }
+
+    public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
+        this.listManagerMain = listManagerMain;
+        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
+        this.forGermplasmListWindow=forGermplasmListWindow;
+    }    
     
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		
+		tabSheetGermplasmList = new TabSheet();
+		
 		germplasmListTree = new Tree();
 		
 		refreshButton = new Button();
@@ -204,8 +232,60 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     
-    private void createGermplasmListInfoTab(int germplasmListId){
-    	//TODO add action when list is clicked
+    private void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
+    	VerticalLayout layout = new VerticalLayout();
+
+        GermplasmList germplasmList=getGermplasmList(germplasmListId);
+        
+        if (!Util.isTabExist(tabSheetGermplasmList, germplasmList.getName())) {
+        	ListManagerTreeMenu component = new ListManagerTreeMenu(this, germplasmListId,germplasmList.getName(),germplasmList.getStatus(), germplasmList.getUserId(), false, forGermplasmListWindow);
+        	layout.addComponent(component);
+            
+            Tab tab = tabSheetGermplasmList.addTab(layout, germplasmList.getName(), null);
+            tab.setClosable(true);
+            
+            if(tabSheetGermplasmList.getComponentCount() <= 1){
+            	
+            	//reset
+            	germplasmListBrowserMainLayout.removeComponent(tabSheetGermplasmList);
+            	
+            	btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+            	btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
+            	btnCloseAllTabs.setImmediate(true);
+            	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
+            	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
+            	germplasmListBrowserMainLayout.addComponent(btnCloseAllTabs,"top:30px; left:1190px;");
+            	
+            	heading = new Label();
+            	heading.setWidth("300px");
+        		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS));
+        		heading.addStyleName("gcp-content-title");
+        		germplasmListBrowserMainLayout.addComponent(heading,"top:30px; left:340px;");
+        		
+            	germplasmListBrowserMainLayout.addComponent(tabSheetGermplasmList, "top:55px;left:340px");
+                germplasmListBrowserMainLayout.setWidth("98%");
+                germplasmListBrowserMainLayout.setStyleName(Runo.TABSHEET_SMALL);
+            }
+            
+            tabSheetGermplasmList.setSelectedTab(layout);
+            tabSheetGermplasmList.setCloseHandler(new SelectedTabCloseHandler());
+            tabSheetGermplasmList.addListener(new GermplasmListTabChangeListener(component));
+        } else {
+            Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, germplasmList.getName());
+            tabSheetGermplasmList.setSelectedTab(tab.getComponent());
+        }
+    }
+    
+    public void closeAllListDetailTabButtonClickAction() {
+    	System.out.println("Close All Tabs..");
+        Util.closeAllTab(tabSheetGermplasmList);
+        germplasmListBrowserMainLayout.removeComponent(heading);
+        germplasmListBrowserMainLayout.removeComponent(btnCloseAllTabs);
+        germplasmListBrowserMainLayout.removeComponent(tabSheetGermplasmList);
+    }
+    
+    private GermplasmList getGermplasmList(int germplasmListId) throws MiddlewareQueryException {
+        return this.germplasmListManager.getGermplasmListById(germplasmListId);
     }
     
     public static boolean isInteger(String s) {
@@ -215,5 +295,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             return false; 
         }
         return true;
+    }
+    
+    public TabSheet getTabSheetGermplasmList() {
+        return tabSheetGermplasmList;
     }
 }
