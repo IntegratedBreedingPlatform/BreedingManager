@@ -28,6 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -53,6 +54,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private static final String NUMBER_OF_ENV_COLUMN_ID = "TraitsAvailableComponent Number of Environments Column Id";
     private static final String TAG_COLUMN_ID = "TraitsAvailableComponent Tag Column Id";
     private static final String DIRECTION_COLUMN_ID = "TraitsAvailableComponent Direction Column Id";
+    private static final String TAG_ALL = "TraitsAvailableComponent TAG_ALL Column Id";
     
     private Table traitsTable;
     
@@ -85,6 +87,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     private List<GermplasmPair> finalGermplasmPair;
     private List<GermplasmPair> prevfinalGermplasmPair;
     private List<GermplasmPair> environmentPairList;
+    
+    private CheckBox tagUnTagAll;
     
     public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentFilter nextScreen){
         this.mainScreen = mainScreen;
@@ -129,6 +133,13 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);        
         
         addComponent(traitsTable, "top:40px;left:30px");
+        
+        tagUnTagAll = new CheckBox();
+        tagUnTagAll.setValue(false);
+        tagUnTagAll.setImmediate(true);
+        tagUnTagAll.setData(TAG_ALL);
+        tagUnTagAll.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, true));
+        addComponent(tagUnTagAll, "top:42px;left:55px");
         
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
@@ -311,6 +322,15 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 				nextButton.setEnabled(true);
 				selectTraitReminderLabel.setVisible(false);
 			}
+    	}
+    }
+    
+    public void clickTagAllCheckbox(boolean boxChecked){
+    	Object tableItemIds[] = traitsTable.getItemIds().toArray();
+    	for (int i=0; i<tableItemIds.length; i++) {
+    		Item row = traitsTable.getItem(tableItemIds[i]);
+    		CheckBox box = (CheckBox) row.getItemProperty(TAG_COLUMN_ID).getValue();
+			box.setValue(boxChecked);
     	}
     }
     
