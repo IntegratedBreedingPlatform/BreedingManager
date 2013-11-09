@@ -35,6 +35,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -109,6 +111,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	private SaveToListDialog saveGermplasmListDialog;
 	private Map<Integer, String> selectedGermplasmMap;
 	private Map<Object, Boolean> columnOrdering; 
+
+	private CheckBox tagAllCheckBoxOnCombinedScoreTagColTable;
 	
 	public DisplayResults(QueryForAdaptedGermplasmMain mainScreen) {
 		this.mainScreen = mainScreen;
@@ -159,10 +163,12 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		resultTable.addComponent(germplasmColTable, "top:20px;left:20px");
 		resultTable.addComponent(traitsColTable, "top:20px;left:359px");
 		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:919px");
+		
 		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; }" +
 				".v-table-row, .v-table-row-odd { height: 25px; } </style>",Label.CONTENT_XHTML));
 		addComponent(resultTable, "top:0px;left:0px");
 		
+		addTagAllCheckBoxToCombinedScoreTagColTable();
 		
 		prevEntryBtn = new Button(messageSource.getMessage(Message.PREV_ENTRY));
 		prevEntryBtn.setData(NEXT_ENTRY_BUTTON_ID);
@@ -232,7 +238,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		germplasmColTable = createResultsTable(germplasmColTable);
 		traitsColTable = createResultsTable(traitsColTable);
 		combinedScoreTagColTable = createResultsTable(combinedScoreTagColTable);
-		
 		
 		for(Object propertyId : germplasmColTable.getContainerPropertyIds()){
         	if(propertyId.toString().equals(LINE_NO)){ 
@@ -413,7 +418,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		resultTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		resultTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
 		NoOfColumns++;
-		
+				
 		tableRows = getTableRowsResults();
 		currentLineIndex = 0;
 		populateRowsResultsTable(resultTable, NoOfColumns);
@@ -922,4 +927,57 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	    parentWindow.addWindow(saveGermplasmListDialog);
     }
 
+    private void addTagAllCheckBoxToCombinedScoreTagColTable(){
+    	
+    	//ComponentPosition tablePosition = getPosition(table);
+    	//System.out.println("Table position is at "+tablePosition.getLeftValue()+tablePosition.getLeftUnits()+" "+tablePosition.getTopValue()+tablePosition.getTopUnits());
+    	
+    	tagAllCheckBoxOnCombinedScoreTagColTable = new CheckBox();
+	    tagAllCheckBoxOnCombinedScoreTagColTable.setImmediate(true);
+	      
+	    //(combinedScoreTagColTable, "top:20px;left:919px");
+		
+    	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:21px; left:"+(919+combinedScoreTagColTable.getWidth()-27)+"px;");
+    	
+    	tagAllCheckBoxOnCombinedScoreTagColTable.addListener(new ValueChangeListener(){
+    	   	private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				System.out.println("Value change fired!");
+				if((Boolean) tagAllCheckBoxOnCombinedScoreTagColTable.getValue()==true){
+					System.out.println("TagAll is true");
+					tagAllEnvironmentsOnCombinedScoreTagColTable();
+				} else { 
+					System.out.println("TagAll is false");
+					untagAllEnvironmentsOnCombinedScoreTagColTable();
+				}
+			}
+       });
+    	
+    }
+    
+	private void tagAllEnvironmentsOnCombinedScoreTagColTable(){
+		Object tableItemIds[] = combinedScoreTagColTable.getItemIds().toArray();
+		for(int i=0;i<tableItemIds.length;i++){
+			if(combinedScoreTagColTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue() instanceof CheckBox){
+				((CheckBox) combinedScoreTagColTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue()).setValue(true);
+			}
+		}
+		selectedGermplasmMap.clear();
+		for(int i=0;i<tableRows.size();i++){
+			String preferredName = germplasmIdNameMap.get(((TableResultRow) tableRows.get(i)).getGermplasmId());
+			selectedGermplasmMap.put(((TableResultRow) tableRows.get(i)).getGermplasmId(), preferredName);
+		}
+	}
+	
+	private void untagAllEnvironmentsOnCombinedScoreTagColTable(){
+		Object tableItemIds[] = combinedScoreTagColTable.getItemIds().toArray();
+		for(int i=0;i<tableItemIds.length;i++){
+			if(combinedScoreTagColTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue() instanceof CheckBox){
+				((CheckBox) combinedScoreTagColTable.getItem(tableItemIds[i]).getItemProperty(TAG_COLUMN_ID).getValue()).setValue(false);
+			}
+		}		
+		selectedGermplasmMap.clear();
+	}
+    
 }
