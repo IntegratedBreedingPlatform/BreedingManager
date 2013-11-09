@@ -943,12 +943,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
     	   	private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				System.out.println("Value change fired!");
 				if((Boolean) tagAllCheckBoxOnCombinedScoreTagColTable.getValue()==true){
-					System.out.println("TagAll is true");
 					tagAllEnvironmentsOnCombinedScoreTagColTable();
 				} else { 
-					System.out.println("TagAll is false");
 					untagAllEnvironmentsOnCombinedScoreTagColTable();
 				}
 			}
