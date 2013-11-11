@@ -256,15 +256,16 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
             	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
             	btnCloseAllTabs.setVisible(false);
-            	germplasmListBrowserMainLayout.addComponent(btnCloseAllTabs,"top:30px; left:1190px;");
+            	
             	
             	heading = new Label();
             	heading.setWidth("300px");
         		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS));
         		heading.addStyleName("gcp-content-title");
         		germplasmListBrowserMainLayout.addComponent(heading,"top:30px; left:340px;");
+        		germplasmListBrowserMainLayout.addComponent(btnCloseAllTabs,"top:48px; left:340px;");
         		
-            	germplasmListBrowserMainLayout.addComponent(tabSheetGermplasmList, "top:55px;left:340px");
+            	germplasmListBrowserMainLayout.addComponent(tabSheetGermplasmList, "top:67px;left:340px");
                 germplasmListBrowserMainLayout.setWidth("98%");
                 germplasmListBrowserMainLayout.setStyleName(Runo.TABSHEET_SMALL);
             }
