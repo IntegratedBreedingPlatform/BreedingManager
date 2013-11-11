@@ -50,8 +50,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 && (source instanceof ListManagerTreeComponent)) {
             ((ListManagerTreeComponent) source).createTree();
         } else if (event.getButton().getData().equals(ListManagerTreeComponent.CLOSE_ALL_TABS_ID)
-        		&& (source instanceof ListManagerTreeComponent)){// "Close" All Tabs 
-        	System.out.println("Pumasok");
+        		&& (source instanceof ListManagerTreeComponent)){// "Close" All Tabs
         	((ListManagerTreeComponent) source).closeAllListDetailTabButtonClickAction();
         } else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");

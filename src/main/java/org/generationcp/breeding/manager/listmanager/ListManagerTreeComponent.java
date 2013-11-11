@@ -277,8 +277,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void closeAllListDetailTabButtonClickAction() {
-    	System.out.println("Close All Tabs..");
-        Util.closeAllTab(tabSheetGermplasmList);
+    	Util.closeAllTab(tabSheetGermplasmList);
         germplasmListBrowserMainLayout.removeComponent(heading);
         germplasmListBrowserMainLayout.removeComponent(btnCloseAllTabs);
         germplasmListBrowserMainLayout.removeComponent(tabSheetGermplasmList);
