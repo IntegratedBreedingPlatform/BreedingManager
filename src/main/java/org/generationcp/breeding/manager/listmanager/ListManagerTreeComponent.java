@@ -28,6 +28,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
@@ -254,6 +255,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             	btnCloseAllTabs.setImmediate(true);
             	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
             	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
+            	btnCloseAllTabs.setVisible(false);
             	germplasmListBrowserMainLayout.addComponent(btnCloseAllTabs,"top:30px; left:1190px;");
             	
             	heading = new Label();
@@ -270,6 +272,17 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             tabSheetGermplasmList.setSelectedTab(layout);
             tabSheetGermplasmList.setCloseHandler(new SelectedTabCloseHandler());
             tabSheetGermplasmList.addListener(new GermplasmListTabChangeListener(component));
+            tabSheetGermplasmList.addListener(new TabSheet.SelectedTabChangeListener() {
+				@Override
+				public void selectedTabChange(SelectedTabChangeEvent event) {
+					if(tabSheetGermplasmList.getComponentCount() <= 1){
+						btnCloseAllTabs.setVisible(false);
+					}
+					else{
+						btnCloseAllTabs.setVisible(true);
+					}
+				}
+            });
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetGermplasmList, germplasmList.getName());
             tabSheetGermplasmList.setSelectedTab(tab.getComponent());
