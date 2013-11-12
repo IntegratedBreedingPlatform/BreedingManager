@@ -92,7 +92,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private List<String> requiredFactorRows;
     private Boolean fileIsValid;
     private Boolean hasInvalidData=false;
-
+    private boolean readingBlankCrossesTemplateFile = false;
+    
     private GermplasmListManager germplasmListManager;
     
     private List<Integer> invalidMaleEntryIdsOnSecondSheet;
@@ -177,9 +178,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         tempFileName = source.getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/nursery_template.xls";
     }
     
+    public void setReadingFromBlankTemplateFile(boolean readingBlankCrossesTemplateFile){
+    	this.readingBlankCrossesTemplateFile = readingBlankCrossesTemplateFile;
+    }
+    
     @Override
     public void uploadSucceeded(SucceededEvent event) {
-        System.out.println("DEBUG | "+tempFileName);
+    	System.out.println("DEBUG | "+tempFileName);
         System.out.println("DEBUG | Upload succeeded!");
 
         currentSheet = 0;
@@ -366,8 +371,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
         validateRequiredConditions(requiredConditionRows);
 
-        if (TemplateUploadSource.CROSSING_MANAGER.equals(this.uploadSourceType)) {
+        if (TemplateUploadSource.CROSSING_MANAGER.equals(this.uploadSourceType) && !readingBlankCrossesTemplateFile) {
         	// special validation for Crossing Manager only
+        	//don't do this when manually making crosses and having a blank nursery template file read
         	validateCrossingConditionValues();
         }
 
