@@ -908,14 +908,18 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		}
 		
+		toggleSaveButton();
+		
+		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
+	}
+	
+	public void toggleSaveButton() {
 		if(selectedGermplasmMap.size() > 0){
 			this.saveButton.setEnabled(true);
 		}
 		else if(selectedGermplasmMap.size() == 0){
 			this.saveButton.setEnabled(false);
 		}
-		
-		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
 	}
 	
     @SuppressWarnings("deprecation")
@@ -965,6 +969,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			String preferredName = germplasmIdNameMap.get(((TableResultRow) tableRows.get(i)).getGermplasmId());
 			selectedGermplasmMap.put(((TableResultRow) tableRows.get(i)).getGermplasmId(), preferredName);
 		}
+		toggleSaveButton();
 	}
 	
 	private void untagAllEnvironmentsOnCombinedScoreTagColTable(){
@@ -975,6 +980,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		}		
 		selectedGermplasmMap.clear();
+		toggleSaveButton();
 	}
     
 }
