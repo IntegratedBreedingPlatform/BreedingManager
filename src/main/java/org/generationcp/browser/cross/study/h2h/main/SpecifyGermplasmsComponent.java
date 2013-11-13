@@ -390,7 +390,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     private boolean permutationsWillExceedMax(Integer listSize){
 		if (entriesTable != null){
 			Integer tableSize = entriesTable.size();
-			tableSize = tableSize == 0 ? 1 : tableSize; // if table empty, use 1 as divisor
+			tableSize = (tableSize == 0) ? 1 : tableSize; // if table empty, use 1 as divisor
 			
 			BigInteger selectedListSize = new BigInteger(listSize.toString());
 			BigInteger currentTableSize = new BigInteger(Integer.valueOf(tableSize).toString());
@@ -406,11 +406,16 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	// do not allow to select list if resulting pairs will exceed max
     	if (!permutationsWillExceedMax(listSize)){
     		try{
-		    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-		    	if(germplasmList != null){
-	    			doGermplasmPermutationOnTable(isTestEntry, false, germplasmList, null);
+    			
+    			long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+    			List<GermplasmListData> germplasmListData = this.germplasmListManager.getGermplasmListDataByListId(
+    			        germplasmListId, 0, (int) listDataCount);
+		    	
+    			if(germplasmListData != null && !germplasmListData.isEmpty()){
+	    			doGermplasmPermutationOnTable(isTestEntry, false, germplasmListData, null);
 	    			return true;
 		    	}
+		    	
 	    	} catch(Exception e){
 	    		e.printStackTrace();
 	    	}
@@ -441,7 +446,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	}
     }
     
-	private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, GermplasmList germplasmList, Germplasm germplasm ){
+	private void doGermplasmPermutationOnTable(boolean isTestEntry, boolean isGermplasm, 
+			List<GermplasmListData> germplasmListData, Germplasm germplasm ){
+		
     	Map<String, Map<String, String>> map = getBothMapEntries();
     	Map<String, String> testMap = map.get(TEST_ENTRY);
     	Map<String, String> standardMap = map.get(STANDARD_ENTRY);
@@ -453,20 +460,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     	
     	// create a germplasm list with the germplasm as the sole list item
     	if(isGermplasm){
-    		germplasmList = new GermplasmList();
-    		List<GermplasmListData> dataList = new ArrayList<GermplasmListData>();
+    		germplasmListData = new ArrayList<GermplasmListData>();
     		
     		GermplasmListData germplasmData = new GermplasmListData();
     		//GID and Designation are fields that will be checked/used
     		germplasmData.setGid(germplasm.getGid());
     		germplasmData.setDesignation(germplasm.getPreferredName().getNval());
     		
-    		dataList.add(germplasmData);
-    		germplasmList.setListData(dataList);
+    		germplasmListData.add(germplasmData);
     	}
     			
 		permutateGermplasmListToPartnerEntries(isTestEntry, testMap, standardMap,
-						tableEntriesList, germplasmList);
+						tableEntriesList, germplasmListData);
 
 		addToTable(tableEntriesList);
     	
@@ -482,9 +487,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 			boolean isTestEntry,
 			Map<String, String> testMap, Map<String, String> standardMap,
 			List<TablesEntries> tableEntriesList,
-			GermplasmList germplasmList) {
+			List<GermplasmListData> germplasmListData) {
 		
-		List<GermplasmListData> germplasmListData = germplasmList.getListData();
 		Map<String, String> ownMap = testMap;
 		Map<String, String> partnerMap = standardMap;
 		
