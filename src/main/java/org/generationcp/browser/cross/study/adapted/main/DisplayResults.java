@@ -152,7 +152,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		//traitsColTable.setSortDisabled(true);
 		
 		combinedScoreTagColTable = new Table(); 
-		combinedScoreTagColTable.setWidth("60px");
+		combinedScoreTagColTable.setWidth("150px");
 		combinedScoreTagColTable.setHeight("420px");
 		combinedScoreTagColTable.setImmediate(true);
 		combinedScoreTagColTable.setPageLength(15);
@@ -162,10 +162,15 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		resultTable.addComponent(germplasmColTable, "top:20px;left:20px");
 		resultTable.addComponent(traitsColTable, "top:20px;left:359px");
-		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:919px");
+		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:829px");
+		
 		
 		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; }" +
-				".v-table-row, .v-table-row-odd { height: 25px; } </style>",Label.CONTENT_XHTML));
+				".v-table-row, .v-table-row-odd { height: 25px; } " +
+				".v-table-header { height: auto; background-color: #dcdee0;} " +
+				".v-table-header-wrap { height: auto; background-color: #dcdee0; } " +
+				".v-table-caption-container { height: auto; background-color: #dcdee0; } " +
+				" </style>",Label.CONTENT_XHTML));
 		addComponent(resultTable, "top:0px;left:0px");
 		
 		addTagAllCheckBoxToCombinedScoreTagColTable();
@@ -267,6 +272,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
         	else if(propertyId.toString().equals(TAG_COLUMN_ID)){
         		traitsColTable.setColumnCollapsed(propertyId, true);
         	}
+        	else if(propertyId.toString().equals(COMBINED_SCORE_COLUMN_ID)){
+        		traitsColTable.setColumnCollapsed(propertyId, true);
+        	}
         	else{
         		traitsColTable.setColumnCollapsed(propertyId, false);
         	}
@@ -274,6 +282,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		for(Object propertyId : combinedScoreTagColTable.getContainerPropertyIds()){
 			if(propertyId.toString().equals(TAG_COLUMN_ID)){
+				combinedScoreTagColTable.setColumnCollapsed(propertyId, false);
+        	}
+			else if(propertyId.toString().equals(COMBINED_SCORE_COLUMN_ID)){
 				combinedScoreTagColTable.setColumnCollapsed(propertyId, false);
         	}
         	else{
@@ -360,15 +371,15 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
         resultTable.addContainerProperty(LINE_GID, Integer.class, null);
         resultTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
 		
-        resultTable.setColumnHeader(LINE_NO, "Line No");
-        resultTable.setColumnHeader(LINE_GID, "Line GID");
-        resultTable.setColumnHeader(LINE_DESIGNATION, "Line Designation");
+        resultTable.setColumnHeader(LINE_NO, "Line<br/> No");
+        resultTable.setColumnHeader(LINE_GID, "Line<br/> GID");
+        resultTable.setColumnHeader(LINE_DESIGNATION, "Line<br/> Designation");
 		
 		Integer NoOfColumns = 3;
 		NoOfTraitColumns = 0;
 		for(NumericTraitFilter trait : numericTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
 			resultTable.addContainerProperty("DisplayResults " + name + traitId + " numeric", Integer.class, null);
@@ -382,8 +393,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		for(CharacterTraitFilter trait : characterTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
 			resultTable.addContainerProperty("DisplayResults " + name + traitId + " character", Integer.class, null);
@@ -397,8 +408,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		for(CategoricalTraitFilter trait : categoricalTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "\n No Obs";
-			String weight = "Wt = " + trait.getPriority().getWeight() + "\n Score";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
 			resultTable.addContainerProperty("DisplayResults " + name + traitId + " categorical", Integer.class, null);
@@ -412,11 +423,11 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		resultTable.addContainerProperty(COMBINED_SCORE_COLUMN_ID, Double.class, null);
-		resultTable.setColumnHeader(COMBINED_SCORE_COLUMN_ID, "Combined Score");
+		resultTable.setColumnHeader(COMBINED_SCORE_COLUMN_ID, "Combined<br/> Score");
 		NoOfColumns++;
 		
 		resultTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-		resultTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
+		resultTable.setColumnHeader(TAG_COLUMN_ID, "Tag<br/>\n");
 		NoOfColumns++;
 				
 		tableRows = getTableRowsResults();
@@ -454,7 +465,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = numericTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = numericTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "\n No Obs";
+				String name = traitName + "<br/> No Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " numeric");
 				
@@ -469,7 +480,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = characterTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = characterTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "\n No Obs";
+				String name = traitName + "<br/> No Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " character");
 				
@@ -484,7 +495,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = categoricalTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = categoricalTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "\n No Obs";
+				String name = traitName + "<br/> No Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " categorical");
 				
@@ -908,14 +919,18 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		}
 		
+		toggleSaveButton();
+		
+		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
+	}
+	
+	public void toggleSaveButton() {
 		if(selectedGermplasmMap.size() > 0){
 			this.saveButton.setEnabled(true);
 		}
 		else if(selectedGermplasmMap.size() == 0){
 			this.saveButton.setEnabled(false);
 		}
-		
-		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
 	}
 	
     @SuppressWarnings("deprecation")
@@ -965,6 +980,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			String preferredName = germplasmIdNameMap.get(((TableResultRow) tableRows.get(i)).getGermplasmId());
 			selectedGermplasmMap.put(((TableResultRow) tableRows.get(i)).getGermplasmId(), preferredName);
 		}
+		toggleSaveButton();
 	}
 	
 	private void untagAllEnvironmentsOnCombinedScoreTagColTable(){
@@ -975,6 +991,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		}		
 		selectedGermplasmMap.clear();
+		toggleSaveButton();
 	}
     
 }
