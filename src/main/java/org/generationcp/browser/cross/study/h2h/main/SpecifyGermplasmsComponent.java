@@ -51,7 +51,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public static final String SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Test Search Germplasm List Button ID";
     public static final String SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Standard Search Germplasm List Button ID";
     
-    private static final BigInteger MAX_NUM_OF_PAIRS = new BigInteger("1000000"); // 100,000 maximum
+    private static final BigInteger MAX_NUM_OF_PAIRS = new BigInteger("150000"); // 150,000 maximum
     
     private Panel testPanel;
     private Panel standardPanel;
@@ -389,35 +389,39 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
     }
     
-    private boolean permutationsWillExceedMax(GermplasmList list){
-    	List<GermplasmListData> selectedList = list.getListData();
-		if (list != null && selectedList!= null && entriesTable != null){
-			int permutationsCount = entriesTable.size() * selectedList.size();
-    		return MAX_NUM_OF_PAIRS.intValue() < permutationsCount;
+    private boolean permutationsWillExceedMax(Integer listSize){
+		if (entriesTable != null){
+			Integer tableSize = entriesTable.size();
+			tableSize = tableSize == 0 ? 1 : tableSize; // if table empty, use 1 as divisor
+			
+			BigInteger selectedListSize = new BigInteger(listSize.toString());
+			BigInteger currentTableSize = new BigInteger(Integer.valueOf(tableSize).toString());
+			BigInteger maxAllowableSize = MAX_NUM_OF_PAIRS.divide(currentTableSize);
+    		
+			return maxAllowableSize.compareTo(selectedListSize) < 0;
     	}
     	
-    	return false;
+    	return true;
     }
     
-    public boolean addGermplasmList(Integer germplasmListId, boolean isTestEntry){
-    	try{
-	    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-	    	if(germplasmList != null){
-	    		
-	    		if (!permutationsWillExceedMax(germplasmList)){
+    public boolean addGermplasmList(Integer germplasmListId, Integer listSize, boolean isTestEntry){
+    	// do not allow to select list if resulting pairs will exceed max
+    	if (!permutationsWillExceedMax(listSize)){
+    		try{
+		    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+		    	if(germplasmList != null){
 	    			doGermplasmPermutationOnTable(isTestEntry, false, germplasmList, null);
 	    			return true;
-	    			
-	    		} else {
-	    			MessageNotifier.showWarning(getWindow(), "Warning", "The list selected will create too " +
-	    					"many germplasm pairs and may cause the tool to crash. Please select another list.");
-	    		}
-	    		
+		    	}
+	    	} catch(Exception e){
+	    		e.printStackTrace();
 	    	}
-    	}catch(Exception e){
-    		e.printStackTrace();
+	    	
+    	} else {
+			MessageNotifier.showWarning(getWindow(), "Warning", "The list selected will create too " +
+			"many germplasm pairs and may cause the tool to crash. Please select another list.");
     	}
-    	
+
     	return false;
     }
     

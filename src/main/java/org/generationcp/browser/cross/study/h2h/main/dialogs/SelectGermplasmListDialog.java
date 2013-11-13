@@ -179,10 +179,11 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
     public void populateParentList() {
         // retrieve list entries and add them to the parent ListSelect component
     	
-    	doCloseDialog = ((SpecifyGermplasmsComponent)source).addGermplasmList(
-    			selectGermplasmList.getListInfoComponent().getGermplasmListId(), isTestEntry);
+    	SelectGermplasmListInfoComponent listInfoComponent = selectGermplasmList.getListInfoComponent();
+		doCloseDialog = ((SpecifyGermplasmsComponent)source).addGermplasmList(
+    			listInfoComponent.getGermplasmListId(), listInfoComponent.getEntriesTable().size(), isTestEntry);
 
-    	Table listEntryValues = selectGermplasmList.getListInfoComponent().getEntriesTable();
+    	Table listEntryValues = listInfoComponent.getEntriesTable();
         // remove existing list entries if selected list has entries
         if (listEntryValues.size() == 0) {
             doneButton.setEnabled(false);
