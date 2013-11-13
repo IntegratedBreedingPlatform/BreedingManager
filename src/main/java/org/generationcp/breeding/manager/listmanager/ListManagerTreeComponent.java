@@ -157,6 +157,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         for (GermplasmList localParentList : localGermplasmListParent) {
             germplasmListTree.addItem(localParentList.getId());
             germplasmListTree.setItemCaption(localParentList.getId(), localParentList.getName());
+            germplasmListTree.setChildrenAllowed(localParentList.getId(), false);
             germplasmListTree.setParent(localParentList.getId(), "LOCAL");
         }
 
