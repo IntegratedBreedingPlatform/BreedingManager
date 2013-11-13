@@ -378,7 +378,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		Integer NoOfColumns = 3;
 		NoOfTraitColumns = 0;
 		for(NumericTraitFilter trait : numericTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No of Obs";
 			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
@@ -393,7 +393,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		for(CharacterTraitFilter trait : characterTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No of Obs";
 			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
@@ -408,7 +408,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 		
 		for(CategoricalTraitFilter trait : categoricalTraitFilter){
-			String name = trait.getTraitInfo().getName().trim() + "<br/> No Obs";
+			String name = trait.getTraitInfo().getName().trim() + "<br/> No of Obs";
 			String weight = "Wt = " + trait.getPriority().getWeight() + "<br/> Score";
 			Integer traitId = trait.getTraitInfo().getId();
 			
@@ -465,7 +465,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = numericTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = numericTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "<br/> No Obs";
+				String name = traitName + "<br/> No of Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " numeric");
 				
@@ -480,7 +480,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = characterTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = characterTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "<br/> No Obs";
+				String name = traitName + "<br/> No of Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " character");
 				
@@ -495,7 +495,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				String traitName = categoricalTOS.getKey().getTraitInfo().getName().trim();
 				Integer traitId = categoricalTOS.getKey().getTraitInfo().getId();
 				
-				String name = traitName + "<br/> No Obs";
+				String name = traitName + "<br/> No of Obs";
 				
 				int index = columnHeaders.indexOf("DisplayResults " + name + traitId + " categorical");
 				
