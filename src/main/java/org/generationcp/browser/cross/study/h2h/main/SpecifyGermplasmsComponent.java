@@ -180,8 +180,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         entriesTable.setWidth("900px");
         entriesTable.setHeight("330px");
         entriesTable.setImmediate(true);
-        entriesTable.setPageLength(-1);
-        //entriesTable.setCacheRate(cacheRate)
+        entriesTable.setPageLength(0);
         
         entriesTable.addContainerProperty(TEST_ENTRY_COLUMN_ID, String.class, null);
         entriesTable.addContainerProperty(STANDARD_ENTRY_COLUMN_ID, String.class, null);
@@ -192,7 +191,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         entriesTable.setSelectable(true);
         entriesTable.setMultiSelect(true);
         entriesTable.setNullSelectionAllowed(false);
-        entriesTable.setImmediate(true);
         
         entriesTable.addActionHandler(new Action.Handler() {
             private static final long serialVersionUID = 3972058734324800774L;
@@ -204,6 +202,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
             public void handleAction(Action action, Object sender, Object target) {
                 if (ACTION_DELETE == action) {
                     deleteEntriesAction();
+                    entriesTable.setPageLength(0);
                 }
                 else if (ACTION_SELECT_ALL == action) {
                 	entriesTable.setValue(entriesTable.getItemIds());
@@ -226,9 +225,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         if (!selectedIds.isEmpty()){
             for (Object itemId : selectedIds){
             	entriesTable.removeItem(itemId);
-            	tableEntriesId.remove(itemId);            	
+            	tableEntriesId.remove(itemId);      
             }
-            entriesTable.setPageLength(0);
         } else {
            ;// MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
@@ -609,6 +607,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 				}
 			}
 		}
+		
+		entriesTable.setPageLength(0);
+		
 		//we set the new set since we already cleared it
 		if(isTableEntriesEmpty()){
 			singleEntriesSet = new HashSet<String>();
@@ -656,6 +657,8 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
 	    		entriesTable.addItem(new Object[] {tableEntry.getTestEntryName(), tableEntry.getStandardEntryName()}, tableEntry.getTestStandardEntry());
 		    	tableEntriesId.add(newId);
 		    }
+	    	
+	    	entriesTable.setPageLength(0);
     	}
     }
     
