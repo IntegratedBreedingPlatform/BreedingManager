@@ -198,6 +198,10 @@
 	background-repeat: no-repeat;
 }
 
+.v-tree-node-listManagerTreeRegularParentNode .v-tree-node-focused {
+	padding-left: 25px;
+}
+
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
 	padding-left: 25px;
@@ -221,3 +225,5 @@
 	margin: 0;
 	padding: 10px;
 }
+
+
