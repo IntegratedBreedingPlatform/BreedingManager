@@ -86,12 +86,26 @@ public class NumericTraitsSection extends VerticalLayout implements
 	}
 	
 	private void populateTable() {
+		String limitsRequiredMessage = MessageFormat.format(messageSource.getMessage(Message.FIELD_IS_REQUIRED), 
+                messageSource.getMessage(Message.LIMITS));
+		
+		List<NumericTraitInfo> numericTraits = null;
+		
 		try {
-			
-			String limitsRequiredMessage = MessageFormat.format(messageSource.getMessage(Message.FIELD_IS_REQUIRED), 
-                    messageSource.getMessage(Message.LIMITS));
-			
-			List<NumericTraitInfo> numericTraits = crossStudyDataManager.getTraitsForNumericVariates(this.environmentIds);
+			numericTraits = crossStudyDataManager.getTraitsForNumericVariates(this.environmentIds);
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+			LOG.error("Database error!", e);
+			MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting numeric trait info given environment ids."
+					+ " Please report to IBP.", Notification.POSITION_CENTERED);
+		}
+		
+		if (numericTraits != null) {
+			if(numericTraits.isEmpty()){
+				MessageNotifier.showMessage(parentWindow, "Information", "There were no numeric traits observed in the environments you have selected."
+						, 3000, Notification.POSITION_CENTERED);
+				return;
+			}
 			for (NumericTraitInfo trait : numericTraits){
 				double minValue = trait.getMinValue();
 				double maxValue = trait.getMaxValue();
@@ -125,15 +139,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 	    		
 				traitsTable.addItem(itemObj, trait);
 			}	
-				
-			
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-			LOG.error("Database error!", e);
-			MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting numeric trait info given environment ids."
-					+ " Please report to IBP.", Notification.POSITION_CENTERED);
 		}
-		
 	}
 	
 	private void initializeComponents() {
