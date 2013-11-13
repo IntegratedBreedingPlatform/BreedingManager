@@ -135,7 +135,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		germplasmColTable = new Table();
 		germplasmColTable.setWidth("340px");
-		germplasmColTable.setHeight("420px");
+		germplasmColTable.setHeight("425px");
 		germplasmColTable.setImmediate(true);
 		germplasmColTable.setPageLength(15);
 		germplasmColTable.setColumnCollapsingAllowed(true);
@@ -143,8 +143,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		//germplasmColTable.setSortDisabled(true);
 		
 		traitsColTable = new Table();
-		traitsColTable.setWidth("560px");
-		traitsColTable.setHeight("420px");
+		traitsColTable.setWidth("470px");
+		traitsColTable.setHeight("425px");
 		traitsColTable.setImmediate(true);
 		traitsColTable.setPageLength(15);
 		traitsColTable.setColumnCollapsingAllowed(true);
@@ -153,7 +153,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		combinedScoreTagColTable = new Table(); 
 		combinedScoreTagColTable.setWidth("150px");
-		combinedScoreTagColTable.setHeight("420px");
+		combinedScoreTagColTable.setHeight("425px");
 		combinedScoreTagColTable.setImmediate(true);
 		combinedScoreTagColTable.setPageLength(15);
 		combinedScoreTagColTable.setColumnCollapsingAllowed(true);
@@ -952,7 +952,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	      
 	    //(combinedScoreTagColTable, "top:20px;left:919px");
 		
-    	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:21px; left:"+(919+combinedScoreTagColTable.getWidth()-27)+"px;");
+    	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:26px; left:"+(829+combinedScoreTagColTable.getWidth()-27)+"px;");
     	
     	tagAllCheckBoxOnCombinedScoreTagColTable.addListener(new ValueChangeListener(){
     	   	private static final long serialVersionUID = 1L;
