@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -26,14 +27,18 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
@@ -139,6 +144,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 }
             }
         });
+        
     }
     
     protected void initializeValues() {
@@ -175,6 +181,22 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 
                 this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, locationName, methodName, crossExpansion}, germplasm.getGid());
             }
+            
+            germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+    			private static final long serialVersionUID = 1L;
+
+    			public String generateDescription(Component source, Object itemId,
+    					Object propertyId) {
+    				if(propertyId=="Name"){
+    					Item item = germplasmTable.getItem(itemId);
+    					Integer gid = Integer.valueOf(((Button) item.getItemProperty("GID").getValue()).getCaption());
+    					return getGermplasmNames(gid);
+    				} else {
+    					return null;
+    				}
+    			}
+            });
+            
         } catch (MiddlewareQueryException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -241,5 +263,25 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         messageSource.setCaption(doneButton, Message.DONE_LABEL);
     }
 
+    private String getGermplasmNames(int gid) throws InternationalizableException {
+
+        try {
+            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+            StringBuffer germplasmNames = new StringBuffer("");
+            int i = 0;
+            for (Name n : names) {
+                if (i < names.size() - 1) {
+                    germplasmNames.append(n.getNval() + ", ");
+                } else {
+                    germplasmNames.append(n.getNval());
+                }
+                i++;
+            }
+
+            return germplasmNames.toString();
+        } catch (MiddlewareQueryException e) {
+            return null;
+        }
+    }
 
 }
