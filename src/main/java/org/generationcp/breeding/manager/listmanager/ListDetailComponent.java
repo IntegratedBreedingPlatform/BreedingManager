@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -11,6 +13,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,6 +67,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     public GermplasmList germplasmList;
     public ListManagerTreeMenu listManagerTreeMenu;
     
+    private List<UserDefinedField> userDefinedFields;
+    
     private boolean usedForDetailsOnly;
     
     public ListDetailComponent(GermplasmListManager germplasmListManager, int germplasmListId, boolean usedForDetailsOnly){
@@ -95,13 +100,15 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         setSpacing(true);
         setMargin(true);
         
+        userDefinedFields = germplasmListManager.getGermplasmListTypes();
+        
         // get GermplasmList Detail
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         
         lblName = new Label( "<b>" + messageSource.getMessage(Message.NAME_LABEL) + ":</b> " + germplasmList.getName(), Label.CONTENT_XHTML); // "Name"
         lblDescription = new Label("<b>" + messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":</b> " + germplasmList.getDescription(), Label.CONTENT_XHTML ); // "Description"
         lblCreationDate = new Label("<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> " + String.valueOf(germplasmList.getDate()), Label.CONTENT_XHTML); // "Creation Date"
-        lblType = new Label("<b>" + messageSource.getMessage(Message.TYPE_LABEL) + ":</b> " + germplasmList.getType(), Label.CONTENT_XHTML); // "Type"
+        lblType = new Label("<b>" + messageSource.getMessage(Message.TYPE_LABEL) + ":</b> " + getFullListTypeName(germplasmList.getType()), Label.CONTENT_XHTML); // "Type"
         lblStatus = new Label("<b>" + messageSource.getMessage(Message.STATUS_LABEL) + ":</b> " + germplasmList.getStatusString(), Label.CONTENT_XHTML); // "Status"
         lblListOwner = new Label("<b>" + messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":</b> " + getOwnerListName(germplasmList.getUserId()), Label.CONTENT_XHTML); // "List Owner"
        
@@ -112,6 +119,19 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         addComponent(lblListOwner, 2, 1);
         addComponent(lblStatus, 4, 1);
         
+	}
+	
+	public String getFullListTypeName(String fcode){
+		String listType = "";
+		
+		for(UserDefinedField udf : userDefinedFields){
+			if(udf.getFcode().equals(fcode)){
+				listType = udf.getFname();
+				break;
+			}
+		}
+		
+		return listType;
 	}
 	
     private String getOwnerListName(Integer userId) throws MiddlewareQueryException {
