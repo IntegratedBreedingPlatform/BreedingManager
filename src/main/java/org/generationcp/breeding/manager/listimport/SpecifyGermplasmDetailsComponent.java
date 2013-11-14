@@ -82,6 +82,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private List<Name> nameList = new ArrayList();
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
     
+    private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     @Autowired
@@ -130,6 +132,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     public void displaySelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
         SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, viaToolURL);
+        selectGermplasmWindows.add(selectGermplasmWindow);
         this.getWindow().addWindow(selectGermplasmWindow);
     }
     
@@ -587,6 +590,26 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     public void setPedigreeOptionGroupEnabled(Boolean value){
     	pedigreeOptionGroup.setEnabled(value);
+    }
+
+    public List<SelectGermplasmWindow> getSelectGermplasmWindows(){
+    	return selectGermplasmWindows;
+    }
+    
+    public void setSelectedTab(Component component){
+    	accordion.setSelectedTab(component);
+    }
+    
+    public void closeAllSelectGermplasmWindows(){
+    	for(int i=0;i<selectGermplasmWindows.size();i++){
+    		SelectGermplasmWindow selectGermplasmWindow = selectGermplasmWindows.get(i);
+    		try {
+    			selectGermplasmWindow.getParent().removeWindow(selectGermplasmWindow);
+    		} catch(NullPointerException e) {
+    			selectGermplasmWindows.remove(selectGermplasmWindow);
+    		}
+    	}
+    	selectGermplasmWindows.clear();
     }
     
 }

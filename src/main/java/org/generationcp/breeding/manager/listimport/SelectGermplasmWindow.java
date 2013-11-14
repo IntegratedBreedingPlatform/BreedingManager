@@ -14,7 +14,7 @@ package org.generationcp.breeding.manager.listimport;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -221,16 +221,18 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         
         buttonArea.setMargin(false, true, false, true);
         buttonArea.setSpacing(true);
+        buttonArea.addComponent(cancelButton);
         buttonArea.addComponent(doneButton);
         
-        mainLayout.addComponent(buttonArea, "top:265px; left:725px;");
+        mainLayout.addComponent(buttonArea, "top:265px; left:650px;");
         
         this.setContent(mainLayout);
     }
     
     protected void initializeActions() {
         doneButton.addListener(new GermplasmImportButtonClickListener(this));
-        doneButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new CloseWindowAction(this));
+        cancelButton.addListener(new CloseWindowAction(this));
     }
 
     public void doneAction(){
@@ -261,6 +263,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         selectGermplasmLabel.setCaption("Multiple Germplasm Records found with the name " + this.germplasmName);
         messageSource.setCaption(this, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
         messageSource.setCaption(doneButton, Message.DONE_LABEL);
+        messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
     }
 
     private String getGermplasmNames(int gid) throws InternationalizableException {
@@ -283,5 +286,15 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             return null;
         }
     }
+    
 
+    public void cancelButtonClickAction(){
+    	if(source instanceof SpecifyGermplasmDetailsComponent){
+	    	source.closeAllSelectGermplasmWindows();
+	    	source.getSource().enableAllTabs();
+	    	source.setSelectedTab(source);
+	    	source.getSource().enableTab(2);
+	    	source.getSource().alsoEnableTab(1);
+    	}
+    }
 }
