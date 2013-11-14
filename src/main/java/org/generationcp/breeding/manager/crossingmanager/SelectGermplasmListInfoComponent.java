@@ -193,13 +193,16 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
         if (listEntryValues.removeAllItems() && germplasmList != null) {
             int germplasmListId = germplasmList.getId();
             long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
-            List<GermplasmListData> listDatas = this.germplasmListManager.getGermplasmListDataByListId(
-                    germplasmListId, 0, (int) listDataCount);
-            for (GermplasmListData data : listDatas) {
-                listEntryValues.addItem(new Object[] {
-                                data.getEntryId(), data.getGid(), data.getDesignation(),
-                                data.getSeedSource(), data.getGroupName()
-                }, data.getId());
+            int pageSize = 5000;
+            for(int start = 0; start < listDataCount; start = start + pageSize){
+            	List<GermplasmListData> listDatas = this.germplasmListManager.getGermplasmListDataByListId(
+                        germplasmListId, start, pageSize);
+                for (GermplasmListData data : listDatas) {
+                    listEntryValues.addItem(new Object[] {
+                                    data.getEntryId(), data.getGid(), data.getDesignation(),
+                                    data.getSeedSource(), data.getGroupName()
+                    }, data.getId());
+                }
             }
             listEntryValues.sort(new Object[]{ENTRY_ID}, new boolean[]{true});
             listEntryValues.setVisibleColumns(new String[] {ENTRY_ID,GID,DESIGNATION,SEED_SOURCE,GROUP_NAME});

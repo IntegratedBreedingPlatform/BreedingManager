@@ -198,9 +198,33 @@
 	background-repeat: no-repeat;
 }
 
+.v-tree-node-listManagerTreeRootNode .v-tree-node-focused span,
+.v-tree-node-listManagerTreeRegularParentNode .v-tree-node-focused span {
+	padding-left: 25px;
+}
+
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
 	padding-left: 25px;
 	background-image: url(images/icon_document.png);
 	background-repeat: no-repeat;
 }
+
+.componenttree-children {
+	padding-left: 4px;
+}
+.componenttree-parent {
+	padding: 4px 0 4px 0px;
+}
+.componenttree-child {
+	padding: 4px 0 4px 19px;
+}
+
+/* Expand/collapse button: */
+.componenttree-expander {
+	float: left;
+	margin: 0;
+	padding: 10px;
+}
+
+
