@@ -179,7 +179,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 if(method!=null && method.getMname()!=null)
                 	methodName = method.getMname();
                 
-                this.germplasmTable.addItem(new Object[]{gidButton, germplasmName, locationName, methodName, crossExpansion}, germplasm.getGid());
+                this.germplasmTable.addItem(new Object[]{gidButton, getShortenedGermplasmNames(germplasm.getGid()), locationName, methodName, crossExpansion}, germplasm.getGid());
             }
             
             germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
@@ -282,6 +282,30 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             }
 
             return germplasmNames.toString();
+        } catch (MiddlewareQueryException e) {
+            return null;
+        }
+    }
+
+    
+    private String getShortenedGermplasmNames(int gid) throws InternationalizableException {
+        try {
+            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+            StringBuffer germplasmNames = new StringBuffer("");
+            int i = 0;
+            for (Name n : names) {
+                if (i < names.size() - 1) {
+                    germplasmNames.append(n.getNval() + ", ");
+                } else {
+                    germplasmNames.append(n.getNval());
+                }
+                i++;
+            }
+            String n = germplasmNames.toString();
+            if(n.length()>20){
+            	n = n.substring(0, 20) + "...";
+            }
+            return n;
         } catch (MiddlewareQueryException e) {
             return null;
         }
