@@ -234,7 +234,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     
-    private void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
+    public void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
     	VerticalLayout layout = new VerticalLayout();
 
         GermplasmList germplasmList=getGermplasmList(germplasmListId);

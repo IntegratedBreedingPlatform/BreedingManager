@@ -13,6 +13,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 
+import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -52,6 +53,18 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(ListManagerTreeComponent.CLOSE_ALL_TABS_ID)
         		&& (source instanceof ListManagerTreeComponent)){// "Close" All Tabs
         	((ListManagerTreeComponent) source).closeAllListDetailTabButtonClickAction();
+        } else if (event.getButton().getData().equals(ListDetailComponent.LOCK_BUTTON_ID) 
+                && (source instanceof ListDetailComponent)) { // "Lock Germplasm List"
+            ((ListDetailComponent) source).lockGermplasmList();
+
+        } else if (event.getButton().getData().equals(ListDetailComponent.UNLOCK_BUTTON_ID) 
+                && (source instanceof ListDetailComponent)) { // "Unlock Germplasm List"
+            ((ListDetailComponent) source).unlockGermplasmList();            
+            
+        } else if (event.getButton().getData().equals(ListDetailComponent.DELETE_BUTTON_ID)
+                && (source instanceof ListDetailComponent)) { // "Delete Germplasm List"
+            ((ListDetailComponent) source).deleteGermplasmList();
+
         } else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
