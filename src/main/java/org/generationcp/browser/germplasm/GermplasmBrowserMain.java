@@ -40,6 +40,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * The Application's "main" class
@@ -264,7 +265,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         if (tabSheet.getComponentCount() > 0){
             openDialogSaveList();
         } else if (getWindow() != null) {
-            MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED),"");
+            MessageNotifier.showWarning(getWindow(), "Error!", messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
     }
 }
