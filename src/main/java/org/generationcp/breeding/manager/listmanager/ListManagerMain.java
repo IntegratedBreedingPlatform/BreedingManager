@@ -42,7 +42,7 @@ public class ListManagerMain extends VerticalLayout implements
         tabSheet = new TabSheet();
         tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
         tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
-        tabSheet.setHeight("600px");
+        tabSheet.setHeight("780px");
 
         addComponent(titleLayout);
         addComponent(tabSheet);

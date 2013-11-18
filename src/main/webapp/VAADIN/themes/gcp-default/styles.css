@@ -227,4 +227,16 @@
 	padding: 10px;
 }
 
+.list-manager-search-bar {
+	border:1px solid #e0e0e0;
+	background: #efefef;
+	
+}
 
+.search-button {
+	padding: 0 !important;
+	margin: 0 !important;
+	background: transparent !important;
+	background-image: url(images/search_icon.png) !important;
+	background-repeat: no-repeat;
+}
