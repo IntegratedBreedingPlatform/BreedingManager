@@ -155,7 +155,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         if(!usedForDetailsOnly){
             if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
-                    unlockButton = new Button("Open List");
+                    unlockButton = new Button("Click to Open List");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.setIcon(ICON_LOCK);
                     unlockButton.setWidth("200px");
@@ -164,7 +164,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                     addComponent(unlockButton, 7, 1);
                 } else if(germplasmList.getStatus()==1) {
-                    lockButton = new Button("Locked List");
+                    lockButton = new Button("Click to Lock List");
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
                     lockButton.setWidth("200px");
