@@ -153,6 +153,7 @@
 	background: #e0e0e0;
 }
 
+.bold,
 .v-caption-bold {
 	font-weight: bold;
 }
@@ -239,4 +240,23 @@
 	background: transparent !important;
 	background-image: url(images/search_icon.png) !important;
 	background-repeat: no-repeat;
+}
+
+.noResizeTextArea{
+	resize: none;
+}
+
+.gcp_button {
+	background: #1081A3 !important;
+	border: 1px solid #e0e0e0 !important;
+	padding-top:15px !important;
+	padding-bottom:15px !important;
+	padding-left:22px !important;
+	padding-right:22px !important;
+}
+
+.gcp_button span.v-button-caption {
+	color: #ffffff !important;
+	font-weight: bold !important;
+	text-decoration: none !important;
 }

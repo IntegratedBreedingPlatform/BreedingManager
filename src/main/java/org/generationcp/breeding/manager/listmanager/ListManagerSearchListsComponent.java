@@ -115,4 +115,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		return germplasmDataManager.searchForGermplasm(q);
 	}	
 	
+	public SearchResultsComponent getSearchResultsComponent(){
+		return searchResultsComponent;
+	}
+	
 }

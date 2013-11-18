@@ -1,12 +1,14 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -28,7 +30,10 @@ public class ListManagerMain extends VerticalLayout implements
     
     private ListManagerBrowseListsComponent browseListsComponent;
     private ListManagerSearchListsComponent searchListsComponent;
-
+    private BuildNewListComponent buildNewListComponent;
+    
+    private Button buildNewListButton;
+    public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -39,13 +44,21 @@ public class ListManagerMain extends VerticalLayout implements
         browseListsComponent = new ListManagerBrowseListsComponent();
         searchListsComponent = new ListManagerSearchListsComponent();
         
+        buildNewListComponent = new BuildNewListComponent(this);
+        
         tabSheet = new TabSheet();
         tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
         tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
-        tabSheet.setHeight("780px");
+        tabSheet.setHeight("580px");
 
+        buildNewListButton = new Button();
+        buildNewListButton.setCaption(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+        buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
+        buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        
         addComponent(titleLayout);
         addComponent(tabSheet);
+        addComponent(buildNewListButton);
 	}
 
 	@Override
@@ -53,6 +66,10 @@ public class ListManagerMain extends VerticalLayout implements
 		
 	}
 	
+	public void showBuildNewListComponent(){
+		buildNewListButton.setVisible(false);
+		addComponent(buildNewListComponent);
+	}
 	
 	private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
@@ -76,5 +93,14 @@ public class ListManagerMain extends VerticalLayout implements
         titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
         **/
     }
+	
+	
+	public ListManagerBrowseListsComponent getListManagerBrowseListsComponent(){
+		return browseListsComponent;
+	}
+	
+	public ListManagerSearchListsComponent getListManagerSearchListsComponent(){
+		return searchListsComponent;
+	}
 
 }

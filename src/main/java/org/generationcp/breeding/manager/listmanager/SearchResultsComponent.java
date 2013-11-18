@@ -40,6 +40,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private Label matchingGermplasmsDescription;
 	private Table matchingGermplasmsTable;
 	
+	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
+	public static final String MATCHING_LISTS_TABLE_DATA = "Matching Lists Table";
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -63,10 +66,13 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsDescription.setValue(messageSource.getMessage(Message.SELECT_A_LIST_TO_VIEW_THE_DETAILS));
 		
 		matchingListsTable = new Table();
+		matchingListsTable.setData(MATCHING_LISTS_TABLE_DATA);
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
-		matchingListsTable.setHeight("200px");
+		matchingListsTable.setHeight("140px");
+		matchingListsTable.setMultiSelect(false);
+		matchingListsTable.setSelectable(true);
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
@@ -76,11 +82,14 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 		
 		matchingGermplasmsTable = new Table();
+		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
-		matchingGermplasmsTable.setHeight("320px");
+		matchingGermplasmsTable.setHeight("200px");
+		matchingGermplasmsTable.setMultiSelect(false);
+		matchingGermplasmsTable.setSelectable(true);
 		
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 			private static final long serialVersionUID = 1L;
@@ -101,9 +110,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		addComponent(matchingListsDescription, "top:20px; left:0px;");
 		addComponent(matchingListsTable, "top:40px; left:0px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:270px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:290px; left:0px;");
-		addComponent(matchingGermplasmsTable, "top:310px; left:0px;");
+		addComponent(matchingGermplasmsLabel, "top:195px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:215px; left:0px;");
+		addComponent(matchingGermplasmsTable, "top:235px; left:0px;");
 	}
 
 		
@@ -184,5 +193,12 @@ public class SearchResultsComponent extends AbsoluteLayout implements
         }
     }
 	
+    public Table getMatchingGermplasmsTable(){
+    	return matchingGermplasmsTable;
+    }
+    
+    public Table getMatchingListsTable(){
+    	return matchingListsTable;
+    }    
 	
 }
