@@ -25,6 +25,8 @@ import org.generationcp.browser.germplasm.GermplasmDetailModel;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialog;
 import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialogSource;
+import org.generationcp.browser.germplasmlist.dialogs.FillWithMenuWindow;
+import org.generationcp.browser.germplasmlist.dialogs.FillWithMenuWindow.FillColumn;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.util.GermplasmListExporter;
 import org.generationcp.browser.germplasmlist.util.GermplasmListExporterException;
@@ -60,6 +62,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -72,10 +75,10 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     private static final long serialVersionUID = -6487623269938610915L;
 
     private static final String GID = "gid";
-    private static final String GID_VALUE = "gidValue";
+    public static final String GID_VALUE = "gidValue";
     private static final String ENTRY_ID = "entryId";
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String SEED_SOURCE = "seedSource";
+    public static final String ENTRY_CODE = "entryCode";
+    public static final String SEED_SOURCE = "seedSource";
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
     private static final String STATUS = "status";
@@ -163,10 +166,25 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.setSelectable(true);
             listDataTable.setMultiSelect(true);
             listDataTable.setColumnCollapsingAllowed(true);
-            listDataTable.setColumnReorderingAllowed(true);
+            //listDataTable.setColumnReorderingAllowed(true);
             listDataTable.setPageLength(15); // number of rows to display in the Table
             listDataTable.setSizeFull(); // to make scrollbars appear on the Table component
+            listDataTable.setImmediate(true);
             
+            listDataTable.addListener(new Table.HeaderClickListener() {
+            	public void headerClick(HeaderClickEvent event) {
+            		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
+            			String column = (String) event.getPropertyId(); 
+                		if(column.equals(ENTRY_CODE)){
+                			getWindow().addWindow(new FillWithMenuWindow(FillColumn.ENTRY_CODE, event.getClientX(), event.getClientY()
+                					, germplasmDataManager, listDataTable));
+                		} else if(column.equals(SEED_SOURCE)){
+                			getWindow().addWindow(new FillWithMenuWindow(FillColumn.SOURCE, event.getClientX(), event.getClientY()
+                					, germplasmDataManager, listDataTable));
+                		}
+            		}
+            	}
+            });
             
             if(!fromUrl){
                     listDataTable.addActionHandler(new Action.Handler() {
@@ -620,8 +638,8 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         } else {
             germplasmListCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
             germplasmListCopyToNewListDialog.setModal(true);
-            germplasmListCopyToNewListDialog.setWidth(700);
-            germplasmListCopyToNewListDialog.setHeight(350);
+            germplasmListCopyToNewListDialog.setWidth("700px");
+            germplasmListCopyToNewListDialog.setHeight("350px");
             
             try {
                 if(forGermplasmListWindow) {
