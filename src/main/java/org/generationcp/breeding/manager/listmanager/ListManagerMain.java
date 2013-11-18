@@ -8,11 +8,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -31,6 +33,8 @@ public class ListManagerMain extends VerticalLayout implements
     private ListManagerBrowseListsComponent browseListsComponent;
     private ListManagerSearchListsComponent searchListsComponent;
     private BuildNewListComponent buildNewListComponent;
+    
+    private Label buildNewListTitle;
     
     private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
@@ -51,14 +55,29 @@ public class ListManagerMain extends VerticalLayout implements
         tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
         tabSheet.setHeight("580px");
 
+        HorizontalLayout buildNewActionBar = new HorizontalLayout();
+        buildNewActionBar.setWidth("100%");
+        buildNewActionBar.setHeight("30px");
+        
+		buildNewListTitle = new Label();
+		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+		buildNewListTitle.addStyleName("gcp-content-title");
+        
         buildNewListButton = new Button();
-        buildNewListButton.setCaption(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+        buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
         buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
+        buildNewListButton.setStyleName(BaseTheme.BUTTON_LINK);
+        buildNewListButton.addStyleName("link_with_plus_icon");
         buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        
+        buildNewActionBar.addComponent(buildNewListTitle);
+        buildNewActionBar.addComponent(buildNewListButton);
+        buildNewActionBar.setComponentAlignment(buildNewListTitle, Alignment.BOTTOM_LEFT);
+        buildNewActionBar.setComponentAlignment(buildNewListButton, Alignment.BOTTOM_RIGHT);
         
         addComponent(titleLayout);
         addComponent(tabSheet);
-        addComponent(buildNewListButton);
+        addComponent(buildNewActionBar);
 	}
 
 	@Override

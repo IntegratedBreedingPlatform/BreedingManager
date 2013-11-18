@@ -66,7 +66,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
     private String DEFAULT_LIST_TYPE = "LST";
 
-	private Label componentTitle;
+	
 	private Label componentDescription;
 
     private Label listNameLabel;
@@ -107,31 +107,27 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		componentTitle = new Label();
-		componentTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
-		componentTitle.addStyleName("gcp-content-title");
+
 		
 		componentDescription = new Label();
 		componentDescription.setValue(messageSource.getMessage(Message.BUILD_YOUR_LIST_BY_DRAGGING_LISTS_OR_GERMPLASM_RECORDS_INTO_THIS_NEW_LIST_WINDOW));
 
-		addComponent(componentTitle, "top:30px; left:0px;");
-		addComponent(componentDescription, "top:50px; left:0px;");
-		
+		addComponent(componentDescription, "top:0px; left:0px;");
 		
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
         listNameLabel.addStyleName("bold");
-        addComponent(listNameLabel, "top:105px;left:0px");
+        addComponent(listNameLabel, "top:50px;left:0px");
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
-        addComponent(listNameText, "top:85px;left:46px");
+        addComponent(listNameText, "top:30px;left:46px");
 
         
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
         listTypeLabel.addStyleName("bold");
-        addComponent(listTypeLabel, "top:105px;left:270px");
+        addComponent(listTypeLabel, "top:50px;left:270px");
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("200px");
@@ -158,41 +154,41 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
         listTypeComboBox.setTextInputAllowed(false);
         listTypeComboBox.setImmediate(true);
-        addComponent(listTypeComboBox, "top:85px;left:310px");
+        addComponent(listTypeComboBox, "top:30px;left:310px");
 
 
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":");
         listDateLabel.addStyleName("bold");
-        addComponent(listDateLabel, "top:105px;left:540px");
+        addComponent(listDateLabel, "top:50px;left:540px");
       
         listDateField = new DateField();
         listDateField.setDateFormat("yyyy-MM-dd");
         listDateField.setResolution(DateField.RESOLUTION_DAY);
-        addComponent(listDateField, "top:85px;left:580px");
+        addComponent(listDateField, "top:30px;left:580px");
         
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
         descriptionLabel.addStyleName("bold");
-        addComponent(descriptionLabel, "top:145px;left:0px");
+        addComponent(descriptionLabel, "top:90px;left:0px");
         
         descriptionText = new TextField();
         descriptionText.setWidth("595px");
-        addComponent(descriptionText, "top:125px;left:80px");
+        addComponent(descriptionText, "top:70px;left:80px");
 
 		
 		
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
-        addComponent(notesLabel, "top:105px; left: 720px;");
+        addComponent(notesLabel, "top:50px; left: 720px;");
 		
         notesTextArea = new TextArea();
         notesTextArea.setWidth("400px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
-        addComponent(notesTextArea, "top:85px; left: 770px;");
+        addComponent(notesTextArea, "top:30px; left: 770px;");
 		
 		
 		germplasmsTable = new Table();
@@ -208,7 +204,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.setWidth("100%");
 		germplasmsTable.setHeight("280px");
 		
-		addComponent(germplasmsTable, "top:170px; left:0px;");
+		addComponent(germplasmsTable, "top:115px; left:0px;");
 		
 		VerticalLayout buttonRow = new VerticalLayout();
 		buttonRow.setWidth("100%");
@@ -222,7 +218,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		buttonRow.addComponent(saveButton);
 		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
 		
-		addComponent(buttonRow, "top:420px; left:0px;");
+		addComponent(buttonRow, "top:365px; left:0px;");
 		
 		setWidth("100%");
 		setHeight("600px");

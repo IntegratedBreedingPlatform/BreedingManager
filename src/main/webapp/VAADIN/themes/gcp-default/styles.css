@@ -260,3 +260,10 @@
 	font-weight: bold !important;
 	text-decoration: none !important;
 }
+
+.link_with_plus_icon {
+    background: url(images/plus_icon.png) no-repeat !important;
+    padding-left: 22px !important;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;	
+}
