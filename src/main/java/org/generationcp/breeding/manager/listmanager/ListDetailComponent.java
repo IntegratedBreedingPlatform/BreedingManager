@@ -283,7 +283,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	}
 
 	public void deleteGermplasmList() {
-		ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
+		ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Are you sure that you want to delete this list?", "Yes", "No", new ConfirmDialog.Listener() {
             private static final long serialVersionUID = 1L;
 
 		    public void onClose(ConfirmDialog dialog) {
