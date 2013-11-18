@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.List;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;

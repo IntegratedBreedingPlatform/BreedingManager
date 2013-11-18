@@ -15,13 +15,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 @Configurable
 public class ListManagerTreeMenu extends VerticalLayout implements InitializingBean, InternationalizableComponent {

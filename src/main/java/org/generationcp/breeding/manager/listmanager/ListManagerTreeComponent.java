@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;

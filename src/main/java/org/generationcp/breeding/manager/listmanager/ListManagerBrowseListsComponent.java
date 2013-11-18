@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
 
 @Configurable
 public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
@@ -18,7 +17,6 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = -224052511814636864L;
 	
-	private TabSheet tabSheetGermplasmListDatabaseInstance;
 	
 	private Label heading;
 	
