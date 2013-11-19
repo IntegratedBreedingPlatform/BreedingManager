@@ -37,4 +37,6 @@
     <inherits name="com.vaadin.addon.tableexport.widgetset.Tableexport_for_vaadinWidgetset" />
 
     <inherits name="com.vaadin.addon.colorpicker.gwt.ColorPickerWidgetSet" />
+
+    
 </module>
