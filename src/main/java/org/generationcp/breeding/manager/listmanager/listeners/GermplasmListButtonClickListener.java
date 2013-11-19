@@ -15,6 +15,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,9 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         if (event.getButton().getData().equals(ListManagerTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof ListManagerTreeComponent)) {
             ((ListManagerTreeComponent) source).createTree();
-        } else if (event.getButton().getData().equals(ListManagerTreeComponent.CLOSE_ALL_TABS_ID)
+        } else if (event.getButton().getData().equals(ListManagerDetailsLayout.CLOSE_ALL_TABS_ID)
         		&& (source instanceof ListManagerTreeComponent)){// "Close" All Tabs
-        	((ListManagerTreeComponent) source).closeAllListDetailTabButtonClickAction();
+        	((ListManagerDetailsLayout) source).closeAllListDetailTabButtonClickAction();
         } else if (event.getButton().getData().equals(ListDetailComponent.LOCK_BUTTON_ID) 
                 && (source instanceof ListDetailComponent)) { // "Lock Germplasm List"
             ((ListDetailComponent) source).lockGermplasmList();

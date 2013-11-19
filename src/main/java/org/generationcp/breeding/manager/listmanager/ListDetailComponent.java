@@ -28,6 +28,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
@@ -237,12 +238,13 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                         new Date());
                 workbenchDataManager.addProjectActivity(projAct);
                 
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getListManagerTreeComponent().createGermplasmListInfoTab(germplasmListId);
-                tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.setSelectedTab(tab.getComponent());
                 
                 //getWindow().getWindow().showNotification("Germplasm List", "Successfully Locked", Notification.TYPE_WARNING_MESSAGE);
             } catch (MiddlewareQueryException e) {
@@ -260,12 +262,13 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
             try {
                 germplasmListManager.updateGermplasmList(germplasmList);
 
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getListManagerTreeComponent().createGermplasmListInfoTab(germplasmListId);
-                tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.setSelectedTab(tab.getComponent());
                 
                 User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
                 ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
@@ -312,11 +315,12 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 //Close confirmation window
                 
                 //Re-use refresh action on GermplasmListTreeComponent
-                listManagerTreeMenu.getListManagerTreeComponent().createTree();
+                listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
                 
                 //Close tab
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
                 
                 

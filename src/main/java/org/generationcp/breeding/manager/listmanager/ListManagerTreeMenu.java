@@ -43,7 +43,8 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
     
     private BreedingManagerApplication breedingManagerApplication;
-    private ListManagerTreeComponent listManagerTreeComponent;
+//    private ListManagerTreeComponent listManagerTreeComponent;
+    private ListManagerDetailsLayout detailsTabbedLayout;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -71,15 +72,25 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         this.forGermplasmListWindow=forGermplasmListWindow;
     }
     
-    public ListManagerTreeMenu(ListManagerTreeComponent listManagerTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-        this.listManagerTreeComponent = listManagerTreeComponent;
+//    public ListManagerTreeMenu(ListManagerTreeComponent listManagerTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+//        this.listManagerTreeComponent = listManagerTreeComponent;
+//        this.germplasmListId = germplasmListId;
+//        this.fromUrl = fromUrl;
+//        this.listName=listName;
+//        this.germplasmListStatus = germplasmListStatus;
+//        this.userId=userId;
+//        this.forGermplasmListWindow=forGermplasmListWindow;
+//    }   
+    
+    public ListManagerTreeMenu(ListManagerDetailsLayout viewDetailsTabbedLayout, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+        this.detailsTabbedLayout = viewDetailsTabbedLayout;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
-    }   
+    } 
     
     public void refreshListData(){
 
@@ -151,8 +162,12 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	    return breedingManagerApplication;
 	}
 	
-	public ListManagerTreeComponent getListManagerTreeComponent() {
-	    return listManagerTreeComponent;
+//	public ListManagerTreeComponent getListManagerTreeComponent() {
+//	    return listManagerTreeComponent;
+//	}
+	
+	public ListManagerDetailsLayout getDetailsLayout(){
+		return this.detailsTabbedLayout;
 	}
 
 }
