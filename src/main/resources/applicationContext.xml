@@ -116,6 +116,12 @@
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
     </bean>
     
+     <bean id="pedigreeDataManager" class="org.generationcp.middleware.manager.PedigreeDataManagerImpl">
+        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
+        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
+        <property name="germplasmDataManager" ref="germplasmDataManager"/>
+    </bean>
+    
     <bean id="inventoryDataManager" class="org.generationcp.middleware.manager.InventoryDataManagerImpl">
         <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
         <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>

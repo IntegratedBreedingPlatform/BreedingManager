@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 
 import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -64,7 +65,12 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         } else if (event.getButton().getData().equals(ListDetailComponent.DELETE_BUTTON_ID)
                 && (source instanceof ListDetailComponent)) { // "Delete Germplasm List"
             ((ListDetailComponent) source).deleteGermplasmList();
-
+        }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID)
+                    && (source instanceof ListManagerCopyToNewListDialog)) { // "Delete Germplasm List"
+                ((ListManagerCopyToNewListDialog) source).saveGermplasmListButtonClickAction();
+        }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
+                && (source instanceof ListManagerCopyToNewListDialog)) { // "Delete Germplasm List"
+            ((ListManagerCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
         } else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }

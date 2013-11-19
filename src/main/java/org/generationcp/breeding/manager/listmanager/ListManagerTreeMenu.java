@@ -15,13 +15,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 @Configurable
 public class ListManagerTreeMenu extends VerticalLayout implements InitializingBean, InternationalizableComponent {
@@ -55,6 +52,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private GermplasmListManager germplasmListManager;
     private boolean forGermplasmListWindow;
     private GermplasmList germplasmList;
+	private ListDataComponent listDataComponent;
     
     public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
@@ -100,9 +98,13 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.setSizeFull();
+//		this.setSizeFull();
+		setWidth("100%");
+		setHeight("95%");
         listDetailComponent = new ListDetailComponent(this, germplasmListManager, germplasmListId, fromUrl);
         listDetailComponent.setData(LIST_DETAILS);
+        
+        listDataComponent = new ListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this);
 
         layoutListData = new VerticalLayout();
         layoutListData.setData(LIST_DATA);
@@ -111,13 +113,14 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         layoutListDataInventory.setData(LIST_SEED_INVENTORY);
         
         ComponentTree content = new ComponentTree();
+        content.setWidth("95%");
         
         ComponentTreeItem listDetails = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();
         ComponentTreeItem listDetailsContent = listDetails.addChild(listDetailComponent);
         
         ComponentTreeItem listData = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
-        ComponentTreeItem listDataContent = listData.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
+        ComponentTreeItem listDataContent = listData.addChild(listDataComponent);
         
         ComponentTreeItem listSeedInventory = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
         ComponentTreeItem listSeedInventoryContent = listSeedInventory.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
@@ -148,6 +151,10 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	
 	public ListDetailComponent getListManagerListDetailComponent() {
 	    return listDetailComponent;
+	}
+	
+	public ListDataComponent getListManagerListDataComponent() {
+	    return listDataComponent;
 	}
 	
 	public BreedingManagerApplication getBreedingManagerApplication() {
