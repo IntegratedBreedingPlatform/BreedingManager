@@ -15,9 +15,8 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +50,9 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         if (event.getButton().getData().equals(ListManagerTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof ListManagerTreeComponent)) {
             ((ListManagerTreeComponent) source).createTree();
-        } else if (event.getButton().getData().equals(ListManagerTreeComponent.CLOSE_ALL_TABS_ID)
-        		&& (source instanceof ListManagerTreeComponent)){// "Close" All Tabs
-        	((ListManagerTreeComponent) source).closeAllListDetailTabButtonClickAction();
+        } else if (event.getButton().getData().equals(ListManagerDetailsLayout.CLOSE_ALL_TABS_ID)
+        		&& (source instanceof ListManagerDetailsLayout)){// "Close" All Tabs
+        	((ListManagerDetailsLayout) source).closeAllListDetailTabButtonClickAction();
         } else if (event.getButton().getData().equals(ListDetailComponent.LOCK_BUTTON_ID) 
                 && (source instanceof ListDetailComponent)) { // "Lock Germplasm List"
             ((ListDetailComponent) source).lockGermplasmList();
@@ -66,11 +65,12 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 && (source instanceof ListDetailComponent)) { // "Delete Germplasm List"
             ((ListDetailComponent) source).deleteGermplasmList();
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID)
-                    && (source instanceof ListManagerCopyToNewListDialog)) { // "Delete Germplasm List"
+                    && (source instanceof ListManagerCopyToNewListDialog)) { // "Save Germplasm List"
                 ((ListManagerCopyToNewListDialog) source).saveGermplasmListButtonClickAction();
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
-                && (source instanceof ListManagerCopyToNewListDialog)) { // "Delete Germplasm List"
+                && (source instanceof ListManagerCopyToNewListDialog)) { // "Cancel Germplasm List"
             ((ListManagerCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
+
         } else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }

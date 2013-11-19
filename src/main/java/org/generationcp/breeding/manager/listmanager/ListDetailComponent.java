@@ -24,11 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
@@ -155,7 +155,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         if(!usedForDetailsOnly){
             if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
-                    unlockButton = new Button("Open List");
+                    unlockButton = new Button("Click to Open List");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.setIcon(ICON_LOCK);
                     unlockButton.setWidth("200px");
@@ -164,7 +164,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                     addComponent(unlockButton, 7, 1);
                 } else if(germplasmList.getStatus()==1) {
-                    lockButton = new Button("Locked List");
+                    lockButton = new Button("Click to Lock List");
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
                     lockButton.setWidth("200px");
@@ -238,12 +238,13 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                         new Date());
                 workbenchDataManager.addProjectActivity(projAct);
                 
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getListManagerTreeComponent().createGermplasmListInfoTab(germplasmListId);
-                tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.setSelectedTab(tab.getComponent());
                 
                 //getWindow().getWindow().showNotification("Germplasm List", "Successfully Locked", Notification.TYPE_WARNING_MESSAGE);
             } catch (MiddlewareQueryException e) {
@@ -261,12 +262,13 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
             try {
                 germplasmListManager.updateGermplasmList(germplasmList);
 
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getListManagerTreeComponent().createGermplasmListInfoTab(germplasmListId);
-                tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
+                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.setSelectedTab(tab.getComponent());
                 
                 User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
                 ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
@@ -283,7 +285,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	}
 
 	public void deleteGermplasmList() {
-		ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {
+		ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Are you sure that you want to delete this list?", "Yes", "No", new ConfirmDialog.Listener() {
             private static final long serialVersionUID = 1L;
 
 		    public void onClose(ConfirmDialog dialog) {
@@ -313,11 +315,12 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 //Close confirmation window
                 
                 //Re-use refresh action on GermplasmListTreeComponent
-                listManagerTreeMenu.getListManagerTreeComponent().createTree();
+                listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
                 
                 //Close tab
-                Tab tab = Util.getTabAlreadyExist(listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
-                listManagerTreeMenu.getListManagerTreeComponent().getTabSheetGermplasmList().removeTab(tab);
+                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+                parentTabSheet.removeTab(tab);
                 
                 
                 
