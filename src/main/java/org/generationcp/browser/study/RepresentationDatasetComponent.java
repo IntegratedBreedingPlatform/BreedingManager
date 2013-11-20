@@ -143,7 +143,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public void openTableViewerAction() {
         try {
             long expCount = studyDataManager.countExperiments(datasetId);
-            if (expCount > 500) {
+            if (expCount > 1000) {
                 //ask confirmation from user for generating large datasets           
                 String confirmDialogCaption=messageSource.getMessage(Message.TABLE_VIEWER_CAPTION);
                 String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_OPEN_TABLE_VIEWER); 
