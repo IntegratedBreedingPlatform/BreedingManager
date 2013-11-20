@@ -23,6 +23,9 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
@@ -30,6 +33,7 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -40,6 +44,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.TextArea;
@@ -86,6 +91,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private Button saveButton;
 	
+    private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+    private Button toolsButton;
+    
+    private ContextMenu menu;
+    private ContextMenuItem menuSelectAll;
+
     static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL};
 	
@@ -106,7 +117,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -195,7 +205,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesTextArea.addStyleName("noResizeTextArea");
         addComponent(notesTextArea, "top:30px; left: 770px;");
 		
-		
+
 		germplasmsTable = new Table();
 		germplasmsTable.addContainerProperty(GID, Button.class, null);
 		germplasmsTable.addContainerProperty(ENTRY_ID, Integer.class, null);
@@ -211,16 +221,35 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.setWidth("100%");
 		germplasmsTable.setHeight("280px");
 		
-        germplasmsTable.addActionHandler(new Action.Handler() {
-            public Action[] getActions(Object target, Object sender) {
-	            return GERMPLASMS_TABLE_CONTEXT_MENU;
-	        }
-	
-	        public void handleAction(Action action, Object sender, Object target) {
-	        	if(ACTION_SELECT_ALL == action) {
-	        		germplasmsTable.setValue(germplasmsTable.getItemIds());
-	        	}
-	        }
+		menu = new ContextMenu();
+		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+
+        toolsButton = new Button("Tools");
+        toolsButton.setIcon(ICON_TOOLS);
+        toolsButton.setStyleName(BaseTheme.BUTTON_LINK);
+   	 	toolsButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				menu.show(event.getClientX(), event.getClientY());
+			}
+		 });
+	 
+   	 	addComponent(menu);
+   	 	addComponent(toolsButton, "top:0; right:0;");		
+		
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void contextItemClick(ClickEvent event) {
+			    ContextMenuItem clickedItem = event.getClickedItem();
+			    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
+			    }				
+			}
+			
         });
 		
 		addComponent(germplasmsTable, "top:115px; left:0px;");
