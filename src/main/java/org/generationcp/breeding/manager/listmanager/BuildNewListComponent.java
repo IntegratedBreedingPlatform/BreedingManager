@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -84,6 +85,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private Table germplasmsTable;
 	
 	private Button saveButton;
+	
+    static final Action ACTION_SELECT_ALL = new Action("Select All");
+	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL};
+	
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -201,8 +206,22 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.addContainerProperty(STATUS, String.class, null);
 		germplasmsTable.addContainerProperty(COL8, String.class, null);
 		germplasmsTable.addContainerProperty(COL9, String.class, null);
+		germplasmsTable.setSelectable(true);
+		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
 		germplasmsTable.setHeight("280px");
+		
+        germplasmsTable.addActionHandler(new Action.Handler() {
+            public Action[] getActions(Object target, Object sender) {
+	            return GERMPLASMS_TABLE_CONTEXT_MENU;
+	        }
+	
+	        public void handleAction(Action action, Object sender, Object target) {
+	        	if(ACTION_SELECT_ALL == action) {
+	        		germplasmsTable.setValue(germplasmsTable.getItemIds());
+	        	}
+	        }
+        });
 		
 		addComponent(germplasmsTable, "top:115px; left:0px;");
 		
