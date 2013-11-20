@@ -129,50 +129,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
-		HorizontalLayout toolsMenuBar = new HorizontalLayout();
-		toolsMenuBar.setWidth("100%");
-		toolsMenuBar.setHeight("30px");
-
 		componentDescription = new Label();
 		componentDescription.setValue(messageSource.getMessage(Message.BUILD_YOUR_LIST_BY_DRAGGING_LISTS_OR_GERMPLASM_RECORDS_INTO_THIS_NEW_LIST_WINDOW));
 		componentDescription.setWidth("500px");
-		
-		menu = new ContextMenu();
-		menuExportList = menu.addItem(MENU_EXPORT_LIST);
-		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
-		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
-		menu.addListener(new ContextMenu.ClickListener() {
-		   public void contextItemClick(ClickEvent event) {
-		      // Get reference to clicked item
-		      ContextMenuItem clickedItem = event.getClickedItem();
-		      if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
-		    	  exportListAction();
-		      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
-		    	  exportListForGenotypingOrderAction();
-		      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
-		    	  copyToNewListAction();
-		      }
-		   }
-		});
-		
-		toolsButton = new Button("Tools");
-		toolsButton.setData(TOOLS_BUTTON_ID);
-		toolsButton.setIcon(ICON_TOOLS);
-		toolsButton.setWidth("55px");
-		toolsButton.setDescription(TOOLS_TOOLTIP);
-		toolsButton.setStyleName(Reindeer.BUTTON_LINK);
-		toolsButton.addListener(new ClickListener() {
-			@Override
-   		 	public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				menu.show(event.getClientX() - 400, event.getClientY());
-   		 	}	
-	   	 });
-		
-		toolsMenuBar.addComponent(componentDescription);
-		toolsMenuBar.addComponent(toolsButton);
-		toolsMenuBar.setComponentAlignment(componentDescription, Alignment.BOTTOM_LEFT);
-		toolsMenuBar.setComponentAlignment(toolsButton, Alignment.BOTTOM_RIGHT);
-        addComponent(toolsMenuBar,"top:0px;left:0px");
+        addComponent(componentDescription,"top:0px;left:0px");
 		
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
@@ -183,7 +143,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         listNameText.setWidth("200px");
         addComponent(listNameText, "top:35px;left:46px");
 
-        
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
         listTypeLabel.addStyleName("bold");
@@ -268,6 +227,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		menu = new ContextMenu();
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		menuExportList = menu.addItem(MENU_EXPORT_LIST);
+		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
+		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
 
         toolsButton = new Button("Tools");
         toolsButton.setIcon(ICON_TOOLS);
@@ -292,6 +254,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			    ContextMenuItem clickedItem = event.getClickedItem();
 			    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
+			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
+			    	exportListAction();
+			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
+			    	exportListForGenotypingOrderAction();
+			    }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			    	copyToNewListAction();
 			    }				
 			}
 			
