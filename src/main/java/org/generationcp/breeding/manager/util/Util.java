@@ -25,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 
@@ -294,7 +297,15 @@ public class Util{
             isLeapYear = false;
         }
         return isLeapYear;
-    }    
+    }  
+    
+	public static Component createHeaderComponent (String header) {
+        CssLayout l = new CssLayout();
+        l.setWidth("200px");
+        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+        l.addComponent(l1);
+        return l;
+	}
 
 }
 

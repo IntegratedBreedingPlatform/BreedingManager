@@ -4,6 +4,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.ComponentTree;
 import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,9 +16,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -72,17 +70,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
     }
-    
-//    public ListManagerTreeMenu(ListManagerTreeComponent listManagerTreeComponent, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
-//        this.listManagerTreeComponent = listManagerTreeComponent;
-//        this.germplasmListId = germplasmListId;
-//        this.fromUrl = fromUrl;
-//        this.listName=listName;
-//        this.germplasmListStatus = germplasmListStatus;
-//        this.userId=userId;
-//        this.forGermplasmListWindow=forGermplasmListWindow;
-//    }   
-    
+      
     public ListManagerTreeMenu(ListManagerDetailsLayout viewDetailsTabbedLayout, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
         this.detailsTabbedLayout = viewDetailsTabbedLayout;
         this.germplasmListId = germplasmListId;
@@ -126,15 +114,15 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
         
-        ComponentTreeItem listDetails = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
+        ComponentTreeItem listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();
         ComponentTreeItem listDetailsContent = listDetails.addChild(listDetailComponent);
         
-        ComponentTreeItem listData = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
+        ComponentTreeItem listData = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
         ComponentTreeItem listDataContent = listData.addChild(listDataComponent);
         
-        ComponentTreeItem listSeedInventory = content.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
-        ComponentTreeItem listSeedInventoryContent = listSeedInventory.addChild(createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
+        ComponentTreeItem listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
+        ComponentTreeItem listSeedInventoryContent = listSeedInventory.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
         
         
         this.addComponent(content);
@@ -145,15 +133,8 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         
         //this.addListener(new GermplasmListSelectedTabChangeListener(this));
 	}
-	
-	private Component createHeaderComponent (String header) {
-        CssLayout l = new CssLayout();
-        l.setWidth("200px");
-        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-        l.addComponent(l1);
-        return l;
-	}
-	
+
+
 	@Override
 	public void attach() {
 	    super.attach();

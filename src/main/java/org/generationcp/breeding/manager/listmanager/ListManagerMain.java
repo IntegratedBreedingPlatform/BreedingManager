@@ -39,6 +39,7 @@ public class ListManagerMain extends VerticalLayout implements
     private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
+    
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		titleLayout = new HorizontalLayout();
