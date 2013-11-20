@@ -829,7 +829,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
-    		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
+    		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	

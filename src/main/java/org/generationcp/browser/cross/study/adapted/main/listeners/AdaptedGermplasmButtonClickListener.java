@@ -42,9 +42,9 @@ public class AdaptedGermplasmButtonClickListener implements ClickListener {
 
 		if (source instanceof WelcomeScreen){
 			WelcomeScreen screen = (WelcomeScreen) source;
-			System.out.println("instanceof WelcomeScreen");
+			//System.out.println("instanceof WelcomeScreen");
 			if (WelcomeScreen.NEXT_BUTTON_ID.equals(data)){
-				System.out.println("buttondata equals next_button_id");
+				//System.out.println("buttondata equals next_button_id");
 				screen.nextButtonClickAction();
 			}
 		} else if (source instanceof NumericTraitsSection){

@@ -458,7 +458,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     }
     
     public void nextButtonClickAction(){
-    	System.out.println("next button on SpecifyAndWeighEnvironments clicked");
+    	//System.out.println("next button on SpecifyAndWeighEnvironments clicked");
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	List<EnvironmentForComparison> toBeCompared = new ArrayList();
     	    	
@@ -477,7 +477,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
-    		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
+    		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	

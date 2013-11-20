@@ -919,7 +919,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
-    		System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
+    		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	
