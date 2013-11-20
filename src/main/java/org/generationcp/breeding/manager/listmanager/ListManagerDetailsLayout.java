@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -45,6 +47,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     private AbsoluteLayout parentLayout;
 	private Label heading;
 	private Button btnCloseAllTabs;
+	private HorizontalLayout headingBar;
 	
 	private boolean forGermplasmListWindow;
 
@@ -143,48 +146,51 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 
 	private void initializeLayout() {
 		//reset
-		parentLayout.removeComponent(detailsTabSheet);
-		
-		btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
-		btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
-		btnCloseAllTabs.setImmediate(true);
-		btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-		btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
-		btnCloseAllTabs.setVisible(false);
-		
-		
-		heading = new Label();
-		heading.setWidth("300px");
-		
-		if (this.treeComponent != null){
-			heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS)); //Browse Lists heading
-		} else {
-			heading.setValue(messageSource.getMessage(Message.DETAILS)); // Search Lists heading	
-		}
+    	parentLayout.removeComponent(detailsTabSheet);
+    	
+    	btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+    	btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
+    	btnCloseAllTabs.setImmediate(true);
+    	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
+    	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
+    	btnCloseAllTabs.setVisible(false);
+    	
+    	heading = new Label();
+    	heading.setWidth("300px");
+    	if (this.treeComponent != null){
+    		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS)); //Browse Lists screen
+    	} else {
+    		heading.setValue(messageSource.getMessage(Message.DETAILS));
+    	}
 		heading.addStyleName("gcp-content-title");
 		
+		headingBar = new HorizontalLayout();
+		headingBar.setWidth("100%");
+		headingBar.setHeight("30px");
+		headingBar.addComponent(heading);
+		headingBar.addComponent(btnCloseAllTabs);
+		headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
+		headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
+		
 		//Browse Lists exact layout
-		if (this.treeComponent != null){		
-			parentLayout.addComponent(heading,"top:30px; left:340px;");
-			parentLayout.addComponent(btnCloseAllTabs,"top:48px; left:340px;");
-			parentLayout.addComponent(detailsTabSheet, "top:67px;left:340px");
-			
-		//Search Lists exact layout
+		if (this.treeComponent != null){
+			parentLayout.addComponent(headingBar,"top:20px; left:340px;");
+	    	parentLayout.addComponent(detailsTabSheet, "top:55px;left:340px");
+        
+        //Search Lists exact layout
 		} else {
-			parentLayout.addComponent(heading,"top:90px; left:390px;");
-			parentLayout.addComponent(btnCloseAllTabs,"top:108px; left:390px;");
-			parentLayout.addComponent(detailsTabSheet, "top:130px;left:390px");
-
-		}
+			parentLayout.addComponent(headingBar,"top:80px; left:390px;");
+	    	parentLayout.addComponent(detailsTabSheet, "top:115px;left:390px");
+		} 	
 		
 		parentLayout.setWidth("98%");
 		parentLayout.setStyleName(Runo.TABSHEET_SMALL);
 	}
     
+	
     public void closeAllListDetailTabButtonClickAction() {
     	Util.closeAllTab(detailsTabSheet);
-        parentLayout.removeComponent(heading);
-        parentLayout.removeComponent(btnCloseAllTabs);
+        parentLayout.removeComponent(headingBar);
         parentLayout.removeComponent(detailsTabSheet);
     }
     
