@@ -2,10 +2,7 @@ package org.generationcp.browser.cross.study.commons.trait.filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.generationcp.browser.application.Message;
@@ -62,6 +59,8 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	private Table traitsTable;
 
 	private List<CategoricalTraitInfo> categoricalValueObjects;
+	private int categoricalTraitCount;
+	private boolean emptyMessageShown = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -74,10 +73,10 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		this.environmentIds = environmentIds;
 		this.parentWindow = parentWindow;
 		
-		for(int i=0;i<environmentIds.size();i++){
+		/*for(int i=0;i<environmentIds.size();i++){
 			System.out.println("EVT ID: "+environmentIds.get(i).toString());
 		}
-		System.out.println("");
+		System.out.println("");*/
 	}
 
 	private void initializeComponents(){
@@ -175,9 +174,8 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		if(this.environmentIds != null && !this.environmentIds.isEmpty()){
 			
 			if(categoricalValueObjects != null){
+				categoricalTraitCount = categoricalValueObjects.size();
 				if(categoricalValueObjects.isEmpty()){
-					MessageNotifier.showMessage(parentWindow, "Information", "There were no categorical traits observed in the environments you have selected."
-							, 3000, Notification.POSITION_CENTERED);
 					return;
 				}
 				
@@ -239,6 +237,14 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(lblSectionTitle, Message.CATEGORICAL_TRAITS_SECTION_TITLE);
+	}
+	
+	public void showEmptyTraitsMessage() {
+		if(!emptyMessageShown && categoricalTraitCount == 0){
+			MessageNotifier.showMessage(parentWindow, "Information", "There were no categorical traits observed in the environments you have selected."
+					, 3000, Notification.POSITION_CENTERED);
+			emptyMessageShown = true;
+		}
 	}
 
 	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,

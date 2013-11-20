@@ -1,18 +1,13 @@
 package org.generationcp.browser.cross.study.adapted.main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
-import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
-import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
-import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -24,8 +19,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -86,6 +84,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
         	switch (i) {
 				case 0:
 					numericSection = new NumericTraitsSection(this.environmentIds, this.getWindow());
+					numericSection.showEmptyTraitsMessage();
 					layout = numericSection;
 					break;
 				
@@ -104,6 +103,25 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
         	
         	mainTabSheet.addTab(layout, messageSource.getMessage(tabLabels[i]));
         }
+        
+        mainTabSheet.addListener(new SelectedTabChangeListener() {
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selected = mainTabSheet.getSelectedTab();
+                Tab tab = mainTabSheet.getTab(selected);
+
+                if(tab!=null && tab.getCaption().equals(
+                		messageSource.getMessage(tabLabels[0]))){
+                	numericSection.showEmptyTraitsMessage();
+                } else if(tab!=null && tab.getCaption().equals(
+                		messageSource.getMessage(tabLabels[1]))){
+                	characterSection.showEmptyTraitsMessage();
+                } else if(tab!=null && tab.getCaption().equals(
+                		messageSource.getMessage(tabLabels[2]))){
+                	categoricalVariatesSection.showEmptyTraitsMessage();
+                }
+            }
+        });
         
         addComponent(mainTabSheet, "top:20px");
 	}

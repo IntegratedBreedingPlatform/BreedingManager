@@ -62,6 +62,9 @@ public class NumericTraitsSection extends VerticalLayout implements
 
 	private List<Integer> environmentIds = null;
 	private List<Field> fieldsToValidate = new ArrayList<Field>();
+	
+	private int numericTraitCount;
+	private boolean emptyMessageShown = false;
 
 	public NumericTraitsSection(List<Integer> environmentIds, Window parentWindow) {
 		super();
@@ -101,9 +104,8 @@ public class NumericTraitsSection extends VerticalLayout implements
 		}
 		
 		if (numericTraits != null) {
+			numericTraitCount = numericTraits.size();
 			if(numericTraits.isEmpty()){
-				MessageNotifier.showMessage(parentWindow, "Information", "There were no numeric traits observed in the environments you have selected."
-						, 3000, Notification.POSITION_CENTERED);
 				return;
 			}
 			for (NumericTraitInfo trait : numericTraits){
@@ -161,15 +163,20 @@ public class NumericTraitsSection extends VerticalLayout implements
 	
 	}
 	
+	public void showEmptyTraitsMessage() {
+		if(!emptyMessageShown && numericTraitCount == 0){
+			MessageNotifier.showMessage(parentWindow, "Information", "There were no numeric traits observed in the environments you have selected."
+					, 3000, Notification.POSITION_CENTERED);
+			emptyMessageShown = true;
+		}
+	}
+	
 	public void showNumericVariateClickAction(Integer traitId, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
 		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
 	}
-	
-	
-	
-	
+
 	// perform validation on limits textfields
 	public boolean allFieldsValid(){
 		try {

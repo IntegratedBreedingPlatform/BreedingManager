@@ -67,6 +67,9 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	private Label lblSectionTitle;
 	private Table traitsTable;
 	
+	private int characterTraitCount;
+	private boolean emptyMessageShown = false;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -143,9 +146,8 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 			}
 			
 			if(traitInfoObjects != null){
+				characterTraitCount = traitInfoObjects.size();
 				if(traitInfoObjects.isEmpty()){
-					MessageNotifier.showMessage(parentWindow, "Information", "There were no character traits observed in the environments you have selected."
-							, 3000, Notification.POSITION_CENTERED);
 					return;
 				}
 				
@@ -190,6 +192,14 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(lblSectionTitle, Message.CHARACTER_TRAITS_SECTION_TITLE);
+	}
+	
+	public void showEmptyTraitsMessage() {
+		if(!emptyMessageShown && characterTraitCount == 0){
+			MessageNotifier.showMessage(parentWindow, "Information", "There were no character traits observed in the environments you have selected."
+					, 3000, Notification.POSITION_CENTERED);
+			emptyMessageShown = true;
+		}
 	}
 
 	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,
