@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,17 +12,24 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -49,23 +58,28 @@ import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class BuildNewListComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent {
 
+	@SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
+	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	private static final String GID = "GID";
-	private static final String ENTRY_ID = "ENTRY ID";
-	private static final String ENTRY_CODE = "ENTRY CODE";
-	private static final String SEED_SOURCE = "SEED SOURCE";
-	private static final String DESIGNATION = "DESIGNATION";
-	private static final String PARENTAGE = "PARENTAGE";
-	private static final String STATUS = "STATUS";
+	private static final String GID = "gid";
+	private static final String ENTRY_ID = "entryId";
+	private static final String ENTRY_CODE = "entryCode";
+	private static final String SEED_SOURCE = "seedSource";
+	private static final String DESIGNATION = "designation";
+	private static final String PARENTAGE = "parentage";
+	private static final String STATUS = "status";
 	private static final String COL8 = " ";
 	private static final String COL9 = "  ";
 	
@@ -108,11 +122,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
     static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL};
-	
+
 	private GermplasmList currentlySavedGermplasmList;
+	private Window listManagerCopyToNewListDialog;
+	private int germplasmListId;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
 	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -247,7 +266,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		menuExportList = menu.addItem(MENU_EXPORT_LIST);
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
-
+		
+		//initially disabled when the current list building is not yet save
+		menuExportList.setEnabled(false);
+		menuExportForGenotypingOrder.setEnabled(false);
+		menuCopyToList.setEnabled(false);
+		
         toolsButton = new Button("Tools");
         toolsButton.setIcon(ICON_TOOLS);
         toolsButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -256,6 +280,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(isCurrentListSave()){
+					enableMenuOptionsAfterSave();
+				}
 				menu.show(event.getClientX(), event.getClientY());
 			}
 		 });
@@ -545,7 +572,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return itemIds;
 	}
 	
-	
 	private void setupTableHeadersContextMenu(){
 		List<String> propertyIdsEnabled = new ArrayList<String>();
         propertyIdsEnabled.add(ENTRY_CODE);
@@ -556,26 +582,37 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	}
 	
 	
-    //called by GermplasmListButtonClickListener
+	public boolean isCurrentListSave(){
+		boolean isSaved = false;
+		
+		if(currentlySavedGermplasmList != null){
+			isSaved = true;
+		}
+		
+		return isSaved;
+	}
+	
+	public void enableMenuOptionsAfterSave(){
+		menuExportList.setEnabled(true);
+		menuExportForGenotypingOrder.setEnabled(true);
+		menuCopyToList.setEnabled(true);
+	}
+	
     public void exportListAction() throws InternationalizableException {
-    	MessageNotifier.showMessage(getWindow(), "export to list", "export to list");
-/*
-        if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-        
-            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
-    
+    	
+        if(isCurrentListSave()){
+        	String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            
+            germplasmListId = currentlySavedGermplasmList.getId();
+            
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
-    
+            String listName = currentlySavedGermplasmList.getName();
+            
             try {
                 listExporter.exportGermplasmListExcel(tempFileName);
                 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
                 fileDownloadResource.setFilename(listName + ".xls");
     
-                //Window downloadWindow = new Window();
-                //downloadWindow.setWidth(0);
-                //downloadWindow.setHeight(0);
-                //downloadWindow.open(fileDownloadResource);
-                //this.getWindow().addWindow(downloadWindow);
                 this.getWindow().open(fileDownloadResource);
     
                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
@@ -583,96 +620,80 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                     LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError( this.getWindow()
                             , "Error with exporting list."    
                             , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
             }
-        } else {
-//            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
-            ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
-                "Yes", "No", new ConfirmDialog.Listener() {
-
-            public void onClose(ConfirmDialog dialog) {
-                if (dialog.isConfirmed()) {
-                try {
-                lockList();
-                germplasmListStatus=germplasmList.getStatus();
-                exportListAction();
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error with exporting list.", e);
-                e.printStackTrace();
-            }
-                
-                }else{
-
-                }
-            }
-            });
-    }*/
-        }
-
-    //called by GermplasmListButtonClickListener
-    public void exportListForGenotypingOrderAction() throws InternationalizableException {
-    	MessageNotifier.showMessage(getWindow(), "export to list genotyping", "export to list genotyping");
-       /* if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
-            
-                GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
-    
-                try {
-                        listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
-                        FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                        fileDownloadResource.setFilename(listName + "ForGenotyping.xls");
-    
-                        this.getWindow().open(fileDownloadResource);
-    
-                        //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                        //File tempFile = new File(tempFileName);
-                        //tempFile.delete();
-                } catch (GermplasmListExporterException e) {
-                        MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME) 
-                                    , "Error with exporting list."
-                                    , e.getMessage(), Notification.POSITION_CENTERED);
-                }
-        } else {
-            MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
-                        , "Error with exporting list."    
-                        , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
-                    
-        }*/
-    }
-    
-    public void copyToNewListAction(){
-    	MessageNotifier.showMessage(getWindow(), "copy to new list", "copy to new list");
-    /*    Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
-        if (listEntries == null || listEntries.isEmpty()){
-            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
-            
-        } else {
-            listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-            listManagerCopyToNewListDialog.setModal(true);
-            listManagerCopyToNewListDialog.setWidth(700);
-            listManagerCopyToNewListDialog.setHeight(350);
-            
-            try {
-                if(forGermplasmListWindow) {
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-                    this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
-                 
-                } else {
-                    
-//                  listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getMainWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-//                  this.getApplication().getMainWindow().addWindow(listManagerCopyToNewListDialog);
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-                    listManagerTreeMenu.getWindow().addWindow(listManagerCopyToNewListDialog);
-                }
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error copying list entries.", e);
-                e.printStackTrace();
-            }
         }
         
-    */
+    }//end of exportListAction
+
+    public void exportListForGenotypingOrderAction() throws InternationalizableException {
+    	if(isCurrentListSave()){
+            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            
+            germplasmListId = currentlySavedGermplasmList.getId();
+            
+			GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
+			String listName = currentlySavedGermplasmList.getName();
+			
+			try {
+			        listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
+			        FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+			        fileDownloadResource.setFilename(listName + "ForGenotyping.xls");
+			
+			    this.getWindow().open(fileDownloadResource);
+			
+			    //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+			    //File tempFile = new File(tempFileName);
+			    //tempFile.delete();
+			} catch (GermplasmListExporterException e) {
+			        MessageNotifier.showError(this.getWindow() 
+			                    , "Error with exporting list."
+			                    , e.getMessage(), Notification.POSITION_CENTERED);
+			}
+        }
+    }// end of exportListForGenotypingOrderAction
+    
+    public void copyToNewListAction(){
+    	
+    	if(isCurrentListSave()){
+    		
+    		String listName = this.listNameText.getValue().toString();
+    		Collection<?> listEntries = (Collection<?>) germplasmsTable.getValue();
+    		
+            if (listEntries == null || listEntries.isEmpty()){
+                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            } 
+            else {
+                listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+                listManagerCopyToNewListDialog.setModal(true);
+                listManagerCopyToNewListDialog.setWidth(700);
+                listManagerCopyToNewListDialog.setHeight(350);
+                
+                try {
+                	
+	                listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(((ListManagerMain) source).getWindow(), listManagerCopyToNewListDialog, listName, germplasmsTable,getCurrentUserLocalId(), true));
+	                ((ListManagerMain) source).getWindow().addWindow(listManagerCopyToNewListDialog);
+                    
+                } catch (MiddlewareQueryException e) {
+                    LOG.error("Error copying list entries.", e);
+                    e.printStackTrace();
+                }
+            }
+            
+    	}
+    }// end of copyToNewListAction
+    
+    private int getCurrentUserLocalId() throws MiddlewareQueryException {
+        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
+        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+        if (localIbdbUserId != null) {
+            return localIbdbUserId;
+        } else {
+            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+        }
     }
 
     public GermplasmList getCurrentlySavedGermplasmList(){
