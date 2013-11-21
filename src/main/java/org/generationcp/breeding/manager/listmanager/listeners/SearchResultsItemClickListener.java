@@ -26,17 +26,20 @@ public class SearchResultsItemClickListener implements ItemClickListener {
 	@Override
 	public void itemClick(ItemClickEvent event) {
 		Integer itemId = (Integer) event.getItemId();
-		try {
-			
-			if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-				detailsLayout.createGermplasmInfoTab(itemId);
+		
+		if(!event.isCtrlKey() && !event.isShiftKey()){
+			try {
 				
-			} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-				detailsLayout.createListInfoFromSearchScreen(itemId);
+				if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
+					detailsLayout.createGermplasmInfoTab(itemId);
+					
+				} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
+					detailsLayout.createListInfoFromSearchScreen(itemId);
+				}
+				
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
 			}
-			
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
 		}
 
 	}
