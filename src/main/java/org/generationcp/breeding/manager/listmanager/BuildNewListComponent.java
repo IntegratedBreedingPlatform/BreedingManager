@@ -220,6 +220,21 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
 		germplasmsTable.setHeight("280px");
+	
+        germplasmsTable.addActionHandler(new Action.Handler() {
+			private static final long serialVersionUID = 1L;
+
+			public Action[] getActions(Object target, Object sender) {
+            	return GERMPLASMS_TABLE_CONTEXT_MENU;
+            }
+
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if(ACTION_SELECT_ALL == action) {
+	        		germplasmsTable.setValue(germplasmsTable.getItemIds());
+				}
+			}
+        });
 		
 		menu = new ContextMenu();
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
