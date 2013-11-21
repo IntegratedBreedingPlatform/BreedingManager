@@ -344,10 +344,42 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			    
                 //TODO: add handler for source tables from "Browse Lists" tab
                 
+                
+                //Handle drops from MATCHING GERMPLASMS TABLE
                 if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-                	addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+                	
+                	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
+                	
+                	//If table has value (item/s is/are highlighted in the source table, add that)
+                	if(selectedItemIds.size()>0){
+                		for(int i=0;i<selectedItemIds.size();i++){
+                			if(i==0)
+                				addGermplasmToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
+                			else 
+                				addGermplasmToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
+                		}
+                	//Add dragged item itself
+                	} else {
+                		addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+                	}
+                	
+                //Handle drops from MATCHING LISTS TABLE
                 } else if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-                	addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+                	
+                	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
+                	
+                	//If table has value (item/s is/are highlighted in the source table, add that)
+                	if(selectedItemIds.size()>0){
+                		for(int i=0;i<selectedItemIds.size();i++){
+                			if(i==0)
+                				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
+                			else
+                				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
+                		}
+                	//Add dragged item itself
+                	} else {
+                		addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+            		}
                 }
 			    
 			}
@@ -471,7 +503,33 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		id++;
     	}
     }
-
+	
+	
+	/**
+	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getSelectedItemIds(Table table){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+    
+    	System.out.println("Selected Item IDs: "+selectedItemIds);
+    	System.out.println("Item IDs: "+itemIds);
+    	
+    	int i=0;
+    	for(Integer itemId: itemIds){
+    		if(selectedItemIds.contains(itemId)){
+    			trueOrderedSelectedItemIds.add(itemId);
+    			i++;
+    		}
+    	}
+    	
+    	return trueOrderedSelectedItemIds;
+    }
 	
 	/**
 	 * Get item id's of a table, and return it as a list 
@@ -481,7 +539,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	@SuppressWarnings("unchecked")
 	private List<Integer> getItemIds(Table table){
 		List<Integer> itemIds = new ArrayList<Integer>();
-    	itemIds.addAll((Collection<? extends Integer>) germplasmsTable.getItemIds());
+    	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
     	return itemIds;
 	}
 	
