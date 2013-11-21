@@ -13,6 +13,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 
+import org.generationcp.breeding.manager.listmanager.BrowseGermplasmTreeMenu;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerSearchListsComponent;
 import org.slf4j.Logger;
@@ -42,13 +43,21 @@ public class GermplasmListManagerButtonClickListener implements Button.ClickList
     @Override
     public void buttonClick(ClickEvent event) {
         
-    	if (event.getButton().getData().equals(ListManagerSearchListsComponent.SEARCH_BUTTON)
+    	Object data = event.getButton().getData();
+		if (data.equals(ListManagerSearchListsComponent.SEARCH_BUTTON)
                 && (source instanceof ListManagerSearchListsComponent)) { // "Delete Germplasm List"
             ((ListManagerSearchListsComponent) source).searchButtonClickAction();   
-    	} else if (event.getButton().getData().equals(ListManagerMain.BUILD_NEW_LIST_BUTTON_DATA)
+    	
+    	} else if (data.equals(ListManagerMain.BUILD_NEW_LIST_BUTTON_DATA)
                 && (source instanceof ListManagerMain)) { // "Build a new list"
     		((ListManagerMain) source).showBuildNewListComponent();
-        } else {
+        
+    	} else if (data.equals(BrowseGermplasmTreeMenu.SAVE_TO_LIST)
+                && (source instanceof BrowseGermplasmTreeMenu)) { // "Save to List"
+    		BrowseGermplasmTreeMenu component = (BrowseGermplasmTreeMenu) source;
+    		component.getListManagerMain().showBuildNewListComponent();
+        
+    	} else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
     }

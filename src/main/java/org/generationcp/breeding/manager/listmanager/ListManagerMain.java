@@ -47,7 +47,7 @@ public class ListManagerMain extends VerticalLayout implements
         setTitleContent("");
         
         browseListsComponent = new ListManagerBrowseListsComponent();
-        searchListsComponent = new ListManagerSearchListsComponent();
+        searchListsComponent = new ListManagerSearchListsComponent(this);
         
         buildNewListComponent = new BuildNewListComponent(this);
         

@@ -242,7 +242,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
                 parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmListId);
                 tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
                 parentTabSheet.setSelectedTab(tab.getComponent());
                 
@@ -266,7 +266,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
                 parentTabSheet.removeTab(tab);
                 
-                listManagerTreeMenu.getDetailsLayout().createGermplasmListInfoTab(germplasmListId);
+                listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmListId);
                 tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
                 parentTabSheet.setSelectedTab(tab.getComponent());
                 

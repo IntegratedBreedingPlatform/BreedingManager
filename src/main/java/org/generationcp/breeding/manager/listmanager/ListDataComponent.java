@@ -23,6 +23,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
@@ -61,7 +62,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -87,7 +87,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private static final String LOCATION_NAME="location name";
     
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
-    public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
+    public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
     public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
     public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
@@ -147,14 +147,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
-	private ContextMenu fillWithMenu;
-	private ContextMenuItem menuFillWithPrefName;
-	private ContextMenuItem menuFillWithPrefID;
-	private ContextMenuItem menuFillWithLocationName;
-	private ContextMenuItem menuFillWithBreedingMethodInfo;
-	private ContextMenuItem menuFillWithBreedingMethodName;
-	private ContextMenuItem menuFillWithBreedingMethodID;
-	private ContextMenuItem menuFillWithBreedingMethodGroup;
+
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -326,59 +319,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              populateTable();
              
              if(germplasmListId < 0){
-            	 fillWithMenu = new ContextMenu();
-            	 
-            	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
-            	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
-            	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
-            	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
-            	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
-            	 menuFillWithBreedingMethodID = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ID));
-            	 menuFillWithBreedingMethodGroup = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP));
-            	 
-            	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
-            		private static final long serialVersionUID = -2384037190598803030L;
-
-					public void contextItemClick(ClickEvent event) {
-            			 // Get reference to clicked item
-            			 ContextMenuItem clickedItem = event.getClickedItem();
-            			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
-            			 }
-            		 }
-            	 });
-            	 
-            	 listManagerTreeMenu.addComponent(fillWithMenu);
-            	 
-            	 listDataTable.addListener(new Table.HeaderClickListener() {
-                 	private static final long serialVersionUID = 4792602001489368804L;
-
-					public void headerClick(HeaderClickEvent event) {
-                 		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
-                 			String column = (String) event.getPropertyId(); 
-                     		if(column.equals(ENTRY_CODE)){
-                     			menuFillWithLocationName.setVisible(false);
-                     			menuFillWithPrefID.setVisible(true);
-                     			menuFillWithPrefName.setVisible(true);
-                     			fillWithMenu.show(event.getClientX(), event.getClientY());
-                     		} else if(column.equals(SEED_SOURCE)){
-                     			menuFillWithLocationName.setVisible(true);
-                     			menuFillWithPrefID.setVisible(false);
-                     			menuFillWithPrefName.setVisible(false);
-                     			fillWithMenu.show(event.getClientX(), event.getClientY());
-                     		}
-                 		}
-                 	}
-                 });
+            
+	             List<String> propertyIdsEnabled = new ArrayList<String>();
+	             propertyIdsEnabled.add(ENTRY_CODE);
+	             propertyIdsEnabled.add(SEED_SOURCE);
+	             
+	           	 @SuppressWarnings("unused")
+	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID, propertyIdsEnabled);
              }
-             
              setSpacing(true);
              addComponent(listDataTable);
-
+             
          }
     }
 
@@ -984,9 +935,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	     }
 	    	   			 
 	   	return gids;
-   	}
+    }
     
-   
- 
     
+
 }

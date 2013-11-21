@@ -44,6 +44,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	public static final String MATCHING_LISTS_TABLE_DATA = "Matching Lists Table";
 	
 	private ListManagerDetailsLayout displayDetailsLayout;
+	private ListManagerMain listManagerMain;
 	private AbsoluteLayout parentLayout;
 	
 	@Autowired
@@ -53,7 +54,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private GermplasmDataManager germplasmDataManager;
 	
 	
-	public SearchResultsComponent(AbsoluteLayout parentLayout){
+	public SearchResultsComponent(ListManagerMain listManagerMain, AbsoluteLayout parentLayout){
+		this.listManagerMain = listManagerMain;
 		this.parentLayout = parentLayout;
 	}
 	@Override
@@ -63,7 +65,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		displayDetailsLayout = new ListManagerDetailsLayout(this.parentLayout, true);
+		displayDetailsLayout = new ListManagerDetailsLayout(this.listManagerMain, this.parentLayout, true);
 		
 		matchingListsLabel = new Label();
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
@@ -78,8 +80,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
 		matchingListsTable.setHeight("140px");
-		matchingListsTable.setMultiSelect(false);
+		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
+		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
@@ -95,7 +98,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
 		matchingGermplasmsTable.setHeight("200px");
-		matchingGermplasmsTable.setMultiSelect(false);
+		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
 		
