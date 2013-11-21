@@ -80,6 +80,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.setHeight("140px");
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
+		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
