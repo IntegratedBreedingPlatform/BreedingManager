@@ -2,7 +2,8 @@ package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.util.GermplasmQueries;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
 import org.generationcp.breeding.manager.util.ComponentTree;
 import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
@@ -48,7 +49,8 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     
     private Integer germplasmId;
     
-    public BrowseGermplasmTreeMenu(Integer germplasmId){
+    public BrowseGermplasmTreeMenu(ListManagerMain listManagerMain, Integer germplasmId){
+    	this.listManagerMain = listManagerMain;
     	this.germplasmId = germplasmId;
     }
 
@@ -98,6 +100,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		saveToListLink.setImmediate(true);
 		saveToListLink.setStyleName(BaseTheme.BUTTON_LINK);
 		saveToListLink.addStyleName("link_with_plus_icon");
+		saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this));
 		
 		moreDetailsLink = new Button(messageSource.getMessage(Message.MORE_DETAILS));
 		moreDetailsLink.setData(MORE_DETAILS);
@@ -115,6 +118,10 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
         mainLayout.setComponentAlignment(moreDetailsLink, Alignment.BOTTOM_RIGHT);
 
         return mainLayout;
+	}
+	
+	public ListManagerMain getListManagerMain(){
+		return this.listManagerMain;
 	}
 
 }

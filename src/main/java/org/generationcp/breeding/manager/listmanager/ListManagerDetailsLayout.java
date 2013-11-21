@@ -42,6 +42,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	private SimpleResourceBundleMessageSource messageSource;
 	
 	private ListManagerTreeComponent treeComponent;
+	private ListManagerMain listManagerMain;
 	
 	private TabSheet detailsTabSheet;
     private AbsoluteLayout parentLayout;
@@ -58,7 +59,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     	this.forGermplasmListWindow = forGermplasmListWindow;
     }
     
-    public ListManagerDetailsLayout(AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+    public ListManagerDetailsLayout(ListManagerMain listManagerMain, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+    	this.listManagerMain = listManagerMain;
     	this.parentLayout = parentLayout;
     	this.forGermplasmListWindow = forGermplasmListWindow;
     }
@@ -66,7 +68,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		detailsTabSheet = new TabSheet();
-
+		if (this.treeComponent != null){
+			detailsTabSheet.setHeight("465px");
+		} else {
+			detailsTabSheet.setHeight("411px");
+		}
 	}
 
 	@Override
@@ -126,7 +132,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 					tabName,germplasmList.getStatus(), germplasmList.getUserId(), 
 					false, forGermplasmListWindow);
 		} else {
-			return new BrowseGermplasmTreeMenu(id);
+			return new BrowseGermplasmTreeMenu(this.listManagerMain, id);
 		}
 		
 	}
@@ -173,7 +179,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		
 		headingBar = new HorizontalLayout();
 		headingBar.setWidth("100%");
-		headingBar.setHeight("30px");
+		headingBar.setHeight("27px");
 		headingBar.addComponent(heading);
 		headingBar.addComponent(btnCloseAllTabs);
 		headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
@@ -212,5 +218,6 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     public ListManagerTreeComponent getTreeComponent(){
     	return this.treeComponent;
     }
+    
 
 }

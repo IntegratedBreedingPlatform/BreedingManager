@@ -33,6 +33,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	private Label searchLabel;
 	private TextField searchField;
 	private SearchResultsComponent searchResultsComponent;
+	private ListManagerMain listManagerMain;
 	private Button searchButton;
 	
 	@Autowired
@@ -44,6 +45,10 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
+	
+	public ListManagerSearchListsComponent(ListManagerMain listManagerMain){
+		this.listManagerMain = listManagerMain;
+	}
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
@@ -80,7 +85,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		searchBar.addComponent(searchField, "top:10px; left:100px;");
 		searchBar.addComponent(searchButton, "top:8px; left:255px;");
 		
-		searchResultsComponent = new SearchResultsComponent(this);
+		searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
 		
 		addComponent(searchBar, "top:20px; left:20px;");
 		addComponent(searchResultsComponent, "top:90px; left:20px;");
