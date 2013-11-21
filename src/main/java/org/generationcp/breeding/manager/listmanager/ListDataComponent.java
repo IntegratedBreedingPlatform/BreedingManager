@@ -160,6 +160,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuFillWithBreedingMethodGroup;
 	private ContextMenuItem menuFillWithBreedingMethodNumber;
 	private ContextMenuItem menuFillWithBreedingMethodAbbreviation;
+	private ContextMenuItem menuFillWithCrossFemaleInformation;
+	private ContextMenuItem menuFillWithCrossFemaleGID;
+	private ContextMenuItem menuFillWithCrossFemalePreferredName;
+	private ContextMenuItem menuFillWithCrossMaleInformation;
+	private ContextMenuItem menuFillWithCrossMaleGID;
+	private ContextMenuItem menuFillWithCrossMalePreferredName;
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -337,13 +343,20 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
             	 menuFillWithGermplasmDate = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE));
             	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
+            	 
             	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
             	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
             	 menuFillWithBreedingMethodAbbreviation = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION));
             	 menuFillWithBreedingMethodNumber = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER));
             	 menuFillWithBreedingMethodGroup = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP));
+
+            	 menuFillWithCrossFemaleInformation = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_INFORMATION));
+            	 menuFillWithCrossFemaleGID = menuFillWithCrossFemaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_GID));
+            	 menuFillWithCrossFemalePreferredName = menuFillWithCrossFemaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_PREFERRED_NAME));
             	 
-            	 //dennis
+            	 menuFillWithCrossMaleInformation = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_INFORMATION));
+            	 menuFillWithCrossMaleGID = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_GID));
+            	 menuFillWithCrossMalePreferredName = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME));
             	 
             	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
             		private static final long serialVersionUID = -2384037190598803030L;
@@ -367,7 +380,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             				 fillWithMethodNumber((String) fillWithMenu.getData());
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
             				 fillWithMethodGroup((String) fillWithMenu.getData());
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_GID))){
+            				 fillWithCrossFemaleGID((String) fillWithMenu.getData());
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_PREFERRED_NAME))){
+            				 fillWithCrossFemalePreferredName((String) fillWithMenu.getData());
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_GID))){
+            				 fillWithCrossMaleGID((String) fillWithMenu.getData());
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME))){
+            				 fillWithCrossMalePreferredName((String) fillWithMenu.getData());
             			 }
+            			 
             		 }
             	 });
             	 
@@ -1101,5 +1123,67 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
-    }   
+    }
+    
+    public void fillWithCrossFemaleGID(String propertyId){
+ 	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   for(Integer itemId: itemIds){
+			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue();
+			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid1());
+		   }
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }    	
+    }
+    
+    public void fillWithCrossFemalePreferredName(String propertyId){
+  	   try {
+ 		   List<Integer> itemIds = getItemIds(listDataTable);
+ 		   List<Integer> gids = getGidsFromListData();
+ 		   for(Integer itemId: itemIds){
+ 			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue();
+ 			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+ 			   List<Integer> parentGids = new ArrayList<Integer>();
+ 			   parentGids.add(germplasm.getGpid1());
+ 			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
+ 			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid1()));
+ 		   }
+ 	   } catch (MiddlewareQueryException e) {
+ 		   e.printStackTrace();
+ 	   }    	    	
+    }
+    
+    public void fillWithCrossMaleGID(String propertyId){
+  	   try {
+ 		   List<Integer> itemIds = getItemIds(listDataTable);
+ 		   List<Integer> gids = getGidsFromListData();
+ 		   for(Integer itemId: itemIds){
+ 			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue();
+ 			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+ 			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid2());
+ 		   }
+ 	   } catch (MiddlewareQueryException e) {
+ 		   e.printStackTrace();
+ 	   }    	    	
+    }
+    
+    public void fillWithCrossMalePreferredName(String propertyId){
+   	   try {
+  		   List<Integer> itemIds = getItemIds(listDataTable);
+  		   List<Integer> gids = getGidsFromListData();
+  		   for(Integer itemId: itemIds){
+  			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue();
+  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+  			   List<Integer> parentGids = new ArrayList<Integer>();
+  			   parentGids.add(germplasm.getGpid2());
+  			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
+  			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid2()));
+  		   }
+  	   } catch (MiddlewareQueryException e) {
+  		   e.printStackTrace();
+  	   }        	
+    }
 }
