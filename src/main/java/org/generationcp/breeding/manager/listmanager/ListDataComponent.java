@@ -326,11 +326,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	             
 	           	 @SuppressWarnings("unused")
 	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID, propertyIdsEnabled);
-	           	 
-	             setSpacing(true);
-	             addComponent(listDataTable);
-             
              }
+             setSpacing(true);
+             addComponent(listDataTable);
+             
          }
     }
 
