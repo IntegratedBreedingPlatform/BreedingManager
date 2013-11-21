@@ -40,6 +40,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -359,17 +360,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
             						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill "+event.getClickedItem().getName()+" with breeding method name was clicked.", 3000, Notification.POSITION_CENTERED);
+            				 fillWithMethodName((String) fillWithMenu.getData());
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill "+event.getClickedItem().getName()+" with breeding method abbreviation clicked.", 3000, Notification.POSITION_CENTERED);
+            				 fillWithMethodAbbreviation((String) fillWithMenu.getData());
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill "+event.getClickedItem().getName()+" with breeding method number was clicked.", 3000, Notification.POSITION_CENTERED);
+            				 fillWithMethodNumber((String) fillWithMenu.getData());
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill "+event.getClickedItem().getName()+" with breeding method group was clicked.", 3000, Notification.POSITION_CENTERED);
+            				 fillWithMethodGroup((String) fillWithMenu.getData());
             			 }
             		 }
             	 });
@@ -1040,8 +1037,69 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
-	   
     }
  
+    public void fillWithMethodName(String propertyId){
+	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
+		   
+		   for(Integer itemId: itemIds){
+			   Integer gid = Integer.valueOf(((Button) listDataTable.getItem(itemId).getItemProperty(GID).getValue()).getCaption().toString());
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
+		   }
+		   
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }
+    }    
+
+    public void fillWithMethodAbbreviation(String propertyId){
+	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
+		   
+		   for(Integer itemId: itemIds){
+			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
+		   }
+		   
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }
+    }   
     
+    public void fillWithMethodNumber(String propertyId){
+	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
+		   
+		   for(Integer itemId: itemIds){
+			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
+		   }
+		   
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }
+    }       
+    
+    public void fillWithMethodGroup(String propertyId){
+	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
+		   
+		   for(Integer itemId: itemIds){
+			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
+		   }
+		   
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }
+    }   
 }
