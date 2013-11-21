@@ -68,7 +68,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		detailsTabSheet = new TabSheet();
-
+		if (this.treeComponent != null){
+			detailsTabSheet.setHeight("465px");
+		} else {
+			detailsTabSheet.setHeight("411px");
+		}
 	}
 
 	@Override
