@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -16,6 +17,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -58,13 +60,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	private static final String GID = "GID";
-	private static final String ENTRY_ID = "ENTRY ID";
-	private static final String ENTRY_CODE = "ENTRY CODE";
-	private static final String SEED_SOURCE = "SEED SOURCE";
-	private static final String DESIGNATION = "DESIGNATION";
-	private static final String PARENTAGE = "PARENTAGE";
-	private static final String STATUS = "STATUS";
+	public static final String GID = "GID";
+	public static final String ENTRY_ID = "ENTRY ID";
+	public static final String ENTRY_CODE = "ENTRY CODE";
+	public static final String SEED_SOURCE = "SEED SOURCE";
+	public static final String DESIGNATION = "DESIGNATION";
+	public static final String PARENTAGE = "PARENTAGE";
+	public static final String STATUS = "STATUS";
 	private static final String COL8 = " ";
 	private static final String COL9 = "  ";
 	
@@ -118,6 +120,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+	
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
 	
 	public BuildNewListComponent(ListManagerMain source){
 		this.source = source;
@@ -274,6 +279,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
 		saveButton.setStyleName(BaseTheme.BUTTON_LINK);
 		saveButton.addStyleName("gcp_button");
+		saveButton.addListener(new SaveListButtonClickListener(this, germplasmListManager, germplasmsTable, messageSource, workbenchDataManager));
 		
 		buttonRow.addComponent(saveButton);
 		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
