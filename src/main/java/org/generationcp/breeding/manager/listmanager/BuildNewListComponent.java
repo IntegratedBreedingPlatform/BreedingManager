@@ -179,7 +179,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         addComponent(listTypeComboBox, "top:35px;left:310px");
 
         listDateLabel = new Label();
-        listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":");
+        listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
         listDateLabel.addStyleName("bold");
         addComponent(listDateLabel, "top:55px;left:540px");
       
@@ -202,12 +202,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
         addComponent(notesLabel, "top:55px; left: 720px;");
+        notesLabel.setVisible(false);
 		
         notesTextArea = new TextArea();
         notesTextArea.setWidth("400px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
         addComponent(notesTextArea, "top:35px; left: 770px;");
+        notesTextArea.setVisible(false);
 
 		germplasmsTable = new Table();
 		germplasmsTable.addContainerProperty(GID, Button.class, null);
@@ -217,8 +219,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.addContainerProperty(DESIGNATION, String.class, null);
 		germplasmsTable.addContainerProperty(PARENTAGE, String.class, null);
 		germplasmsTable.addContainerProperty(STATUS, String.class, null);
-		germplasmsTable.addContainerProperty(COL8, String.class, null);
-		germplasmsTable.addContainerProperty(COL9, String.class, null);
+		//germplasmsTable.addContainerProperty(COL8, String.class, null);
+		//germplasmsTable.addContainerProperty(COL9, String.class, null);
 		germplasmsTable.setSelectable(true);
 		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
@@ -362,8 +364,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 */
 	private void addGermplasmListDataToGermplasmTable(Integer listId, Object droppedOnItemIdObject){
 		
-		List<Integer> itemIds = getItemIds(germplasmsTable);
-		
 		int start = 0;
         int listDataCount;
         
@@ -379,32 +379,30 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	
         for (GermplasmListData data : listDatas) {
         
-        	if(!itemIds.contains(data.getGid())){
-				Item newItem;
-				if(droppedOnItemIdObject!=null)
-					newItem = germplasmsTable.addItem(data.getGid());
-				else
-					newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, data.getGid());
+			Item newItem;
+			if(droppedOnItemIdObject!=null)
+				newItem = germplasmsTable.addItem(getNextListEntryId());
+			else
+				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
 
-				Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
-	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-				
-	            String crossExpansion = "";
-            	try {
-            		if(germplasmDataManager!=null)
-            			crossExpansion = germplasmDataManager.getCrossExpansion(data.getGid(), 1);
-            	} catch(MiddlewareQueryException ex){
-                    crossExpansion = "-";
-                }
+			Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+			
+            String crossExpansion = "";
+        	try {
+        		if(germplasmDataManager!=null)
+        			crossExpansion = germplasmDataManager.getCrossExpansion(data.getGid(), 1);
+        	} catch(MiddlewareQueryException ex){
+                crossExpansion = "-";
+            }
 
-	            newItem.getItemProperty(GID).setValue(gidButton);
-				//newItem.getItemProperty(SEED_SOURCE).setValue(data.getSeedSource());
-	            newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
-				newItem.getItemProperty(DESIGNATION).setValue(data.getDesignation());
-				newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
-				newItem.getItemProperty(STATUS).setValue("0");
-				
-        	}
+            newItem.getItemProperty(GID).setValue(gidButton);
+			//newItem.getItemProperty(SEED_SOURCE).setValue(data.getSeedSource());
+            newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
+			newItem.getItemProperty(DESIGNATION).setValue(data.getDesignation());
+			newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
+			newItem.getItemProperty(STATUS).setValue("0");
+			
         }		
         assignSerializedEntryCode();
 	}
@@ -416,51 +414,47 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 */
 	private void addGermplasmToGermplasmTable(Integer gid, Object droppedOnItemIdObject){
 
-		List<Integer> itemIds = getItemIds(germplasmsTable);
-		if(!itemIds.contains(gid)){
+		try {
 			
-			try {
-				
-				Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+			Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
-				Item newItem;
-				if(droppedOnItemIdObject!=null)
-					newItem = germplasmsTable.addItem(gid);
-				else
-					newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, gid);
-				
-				Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
-	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-				
-	            String crossExpansion = "";
-	            if(germplasm!=null){
-	            	try {
-	            		if(germplasmDataManager!=null)
-	            			crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
-	            	} catch(MiddlewareQueryException ex){
-	                    crossExpansion = "-";
-	                }
-	        	}
+			Item newItem;
+			if(droppedOnItemIdObject!=null)
+				newItem = germplasmsTable.addItem(getNextListEntryId());
+			else
+				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+			
+			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+			
+            String crossExpansion = "";
+            if(germplasm!=null){
+            	try {
+            		if(germplasmDataManager!=null)
+            			crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+            	} catch(MiddlewareQueryException ex){
+                    crossExpansion = "-";
+                }
+        	}
 
-	            List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-		        importedGermplasmGids.add(gid);
-	            Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-	            String preferredName = preferredNames.get(gid); 
-	            
-	            newItem.getItemProperty(GID).setValue(gidButton);
-				//newItem.getItemProperty(SEED_SOURCE).setValue(location.getLname());
-				newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
-				newItem.getItemProperty(DESIGNATION).setValue(preferredName);
-				newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
-				newItem.getItemProperty(STATUS).setValue("0");
-				
-				assignSerializedEntryCode();
-				
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-			}
-
+            List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+	        importedGermplasmGids.add(gid);
+            Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+            String preferredName = preferredNames.get(gid); 
+            
+            newItem.getItemProperty(GID).setValue(gidButton);
+			//newItem.getItemProperty(SEED_SOURCE).setValue(location.getLname());
+			newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
+			newItem.getItemProperty(DESIGNATION).setValue(preferredName);
+			newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
+			newItem.getItemProperty(STATUS).setValue("0");
+			
+			assignSerializedEntryCode();
+			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
 		}
+
 	}	
 		
 	
@@ -673,5 +667,23 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		toreturn.add(listEntry);
     	}
     	return toreturn;
+    }
+    
+    public int getNextListEntryId(){
+    	Boolean isNegative = false;
+        int maxId = 0;
+    	for(Object id : this.germplasmsTable.getItemIds()){
+    		Integer itemId = (Integer) id;
+    		if(itemId<0){
+    			isNegative = true;
+    			itemId*=-1;
+    		}
+    		if(itemId>maxId)
+    			maxId=itemId;
+    	}
+    	maxId++;
+    	if(isNegative)
+    		maxId*=-1;
+    	return maxId;
     }
 }
