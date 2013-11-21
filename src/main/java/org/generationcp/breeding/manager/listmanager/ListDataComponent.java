@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
@@ -87,7 +88,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private static final String LOCATION_NAME="location name";
     
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
-    public static final String  DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
+    public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
     public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
     public final static String EXPORT_FOR_GENOTYPING_BUTTON_ID = "GermplasmListDataComponent Export For Genotyping Order Button";
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
@@ -148,6 +149,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenu fillWithMenu;
+	private ContextMenuItem menuFillWithGermplasmDate;
 	private ContextMenuItem menuFillWithPrefName;
 	private ContextMenuItem menuFillWithPrefID;
 	private ContextMenuItem menuFillWithLocationName;
@@ -155,6 +157,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuFillWithBreedingMethodName;
 	private ContextMenuItem menuFillWithBreedingMethodID;
 	private ContextMenuItem menuFillWithBreedingMethodGroup;
+	private ContextMenuItem menuFillWithBreedingMethodNumber;
+	private ContextMenuItem menuFillWithBreedingMethodAbbreviation;
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -330,11 +334,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             	 
             	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
             	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
+            	 menuFillWithGermplasmDate = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE));
             	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
             	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
             	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
-            	 menuFillWithBreedingMethodID = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ID));
+            	 menuFillWithBreedingMethodAbbreviation = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION));
+            	 menuFillWithBreedingMethodNumber = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER));
             	 menuFillWithBreedingMethodGroup = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP));
+            	 
+            	 //dennis
             	 
             	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
             		private static final long serialVersionUID = -2384037190598803030L;
@@ -345,9 +353,23 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
             				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
             						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
+            				 fillWithGermplasmDate((String) fillWithMenu.getData());
             			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
             				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
             						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill "+event.getClickedItem().getName()+" with breeding method name was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill "+event.getClickedItem().getName()+" with breeding method abbreviation clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill "+event.getClickedItem().getName()+" with breeding method number was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill "+event.getClickedItem().getName()+" with breeding method group was clicked.", 3000, Notification.POSITION_CENTERED);
             			 }
             		 }
             	 });
@@ -359,7 +381,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 					public void headerClick(HeaderClickEvent event) {
                  		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
-                 			String column = (String) event.getPropertyId(); 
+                 			String column = (String) event.getPropertyId();
+                 			fillWithMenu.setData(column);
                      		if(column.equals(ENTRY_CODE)){
                      			menuFillWithLocationName.setVisible(false);
                      			menuFillWithPrefID.setVisible(true);
@@ -984,9 +1007,41 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	     }
 	    	   			 
 	   	return gids;
-   	}
+    }
     
+    
+    public List<Integer> getGidsFromListData(){
+    	List<Integer> gids = new ArrayList<Integer>();
+    	List<Integer> listDataItemIds = getItemIds(listDataTable);
+    	for(Integer itemId: listDataItemIds){
+    		gids.add((Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue());
+    	}
+    	return gids;
+    }
    
+	@SuppressWarnings("unchecked")
+	private List<Integer> getItemIds(Table table){
+		List<Integer> itemIds = new ArrayList<Integer>();
+    	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
+    	return itemIds;
+	}    
+    
+    public void fillWithGermplasmDate(String propertyId){
+	   try {
+		   List<Integer> itemIds = getItemIds(listDataTable);
+		   List<Integer> gids = getGidsFromListData();
+		   Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
+		   
+		   for(Integer itemId: itemIds){
+			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
+			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
+		   }
+		   
+	   } catch (MiddlewareQueryException e) {
+		   e.printStackTrace();
+	   }
+	   
+    }
  
     
 }
