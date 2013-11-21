@@ -157,7 +157,7 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	                            .append(variable.getVariableType().getLocalName()).toString();
 	                    
 	                    if (NUMERIC_VARIABLE.equals(variable.getVariableType().getStandardVariable().getDataType().getName())) {
-	                    	Double doubleValue = Double.valueOf(variable.getValue());
+	                    	Double doubleValue = Double.valueOf(variable.getDisplayValue());
 	                    	item.getItemProperty(columnId).setValue(doubleValue);
 	                    } else {
 	                    	String stringValue = variable.getDisplayValue();
