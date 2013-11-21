@@ -13,13 +13,8 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 
-import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerSearchListsComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

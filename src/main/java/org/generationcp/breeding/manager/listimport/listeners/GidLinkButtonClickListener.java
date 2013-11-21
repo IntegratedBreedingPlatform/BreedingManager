@@ -51,7 +51,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
     	Window mainWindow;
     	if(viaToolURL)
-    		mainWindow = event.getComponent().getApplication().getMainWindow();
+    		mainWindow = event.getComponent().getWindow();
     	else
     		mainWindow = event.getComponent().getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
         

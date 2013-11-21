@@ -61,6 +61,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -72,7 +73,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
-
 
     private static final String GID = "gid";
     private static final String GID_VALUE = "gidValue";
@@ -93,7 +93,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
     
-
     private Table listDataTable;
     private int germplasmListId;
     private String listName;
@@ -115,7 +114,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     static final Action ACTION_DELETE = new Action("Delete selected entries");
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
-
     
     public ListManagerTreeMenu listManagerTreeMenu;
 
@@ -136,7 +134,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     @Autowired
     private PedigreeDataManager pedigreeDataManager;
     
-    
     private boolean forGermplasmListWindow;
     private Integer germplasmListStatus;
     private GermplasmList germplasmList;
@@ -150,6 +147,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
+	private ContextMenu fillWithMenu;
+	private ContextMenuItem menuFillWithPrefName;
+	private ContextMenuItem menuFillWithPrefID;
+	private ContextMenuItem menuFillWithLocationName;
+	private ContextMenuItem menuFillWithBreedingMethodInfo;
+	private ContextMenuItem menuFillWithBreedingMethodName;
+	private ContextMenuItem menuFillWithBreedingMethodID;
+	private ContextMenuItem menuFillWithBreedingMethodGroup;
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -257,8 +262,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
          if (listDataCount == 0) {
              addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
          } else {
-
-             // create the Vaadin Table to display the Germplasm List Data
+        	 
+        	 // create the Vaadin Table to display the Germplasm List Data
              listDataTable = new Table("");
              listDataTable.setSelectable(true);
              listDataTable.setMultiSelect(true);
@@ -319,6 +324,57 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
              
              populateTable();
+             
+             if(germplasmListId < 0){
+            	 fillWithMenu = new ContextMenu();
+            	 
+            	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
+            	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
+            	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
+            	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
+            	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
+            	 menuFillWithBreedingMethodID = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ID));
+            	 menuFillWithBreedingMethodGroup = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP));
+            	 
+            	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
+            		private static final long serialVersionUID = -2384037190598803030L;
+
+					public void contextItemClick(ClickEvent event) {
+            			 // Get reference to clicked item
+            			 ContextMenuItem clickedItem = event.getClickedItem();
+            			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
+            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+            						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
+            			 }
+            		 }
+            	 });
+            	 
+            	 listManagerTreeMenu.addComponent(fillWithMenu);
+            	 
+            	 listDataTable.addListener(new Table.HeaderClickListener() {
+                 	private static final long serialVersionUID = 4792602001489368804L;
+
+					public void headerClick(HeaderClickEvent event) {
+                 		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
+                 			String column = (String) event.getPropertyId(); 
+                     		if(column.equals(ENTRY_CODE)){
+                     			menuFillWithLocationName.setVisible(false);
+                     			menuFillWithPrefID.setVisible(true);
+                     			menuFillWithPrefName.setVisible(true);
+                     			fillWithMenu.show(event.getClientX(), event.getClientY());
+                     		} else if(column.equals(SEED_SOURCE)){
+                     			menuFillWithLocationName.setVisible(true);
+                     			menuFillWithPrefID.setVisible(false);
+                     			menuFillWithPrefName.setVisible(false);
+                     			fillWithMenu.show(event.getClientX(), event.getClientY());
+                     		}
+                 		}
+                 	}
+                 });
+             }
              
              setSpacing(true);
              addComponent(listDataTable);

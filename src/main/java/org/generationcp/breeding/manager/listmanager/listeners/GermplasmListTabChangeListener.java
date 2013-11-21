@@ -9,16 +9,22 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
 public class GermplasmListTabChangeListener implements TabSheet.SelectedTabChangeListener{
     
+	@SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTabChangeListener.class);
     private static final long serialVersionUID = -5145904396164706110L;
 
-    private ListManagerTreeMenu treeMenu;
+    private Object source;
 
-    public GermplasmListTabChangeListener(ListManagerTreeMenu treeMenu) {
-        this.treeMenu = treeMenu;
+    public GermplasmListTabChangeListener(Object source) {
+        this.source = source;
     }
 	@Override
     public void selectedTabChange(SelectedTabChangeEvent event){
-		treeMenu.refreshListData();
+
+		if (this.source instanceof ListManagerTreeMenu){
+			ListManagerTreeMenu treeMenu = (ListManagerTreeMenu) source;
+			treeMenu.refreshListData();
+			
+		}
 	}
 }

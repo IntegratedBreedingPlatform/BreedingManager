@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -42,21 +43,28 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
 	public static final String MATCHING_LISTS_TABLE_DATA = "Matching Lists Table";
 	
+	private ListManagerDetailsLayout displayDetailsLayout;
+	private AbsoluteLayout parentLayout;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 	
+	
+	public SearchResultsComponent(AbsoluteLayout parentLayout){
+		this.parentLayout = parentLayout;
+	}
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
+		displayDetailsLayout = new ListManagerDetailsLayout(this.parentLayout, true);
+		
 		matchingListsLabel = new Label();
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
 		matchingListsLabel.addStyleName("gcp-content-title");
@@ -89,6 +97,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.setHeight("200px");
 		matchingGermplasmsTable.setMultiSelect(false);
 		matchingGermplasmsTable.setSelectable(true);
+		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
 		
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 			private static final long serialVersionUID = 1L;
@@ -190,6 +199,10 @@ public class SearchResultsComponent extends AbsoluteLayout implements
         } catch (MiddlewareQueryException e) {
             return null;
         }
+    }
+    
+    public enum ResultType {
+    	GERMPLASM, LIST
     }
 	
     public Table getMatchingGermplasmsTable(){

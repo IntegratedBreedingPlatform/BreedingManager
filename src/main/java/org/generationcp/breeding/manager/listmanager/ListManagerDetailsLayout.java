@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -39,25 +42,25 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	private SimpleResourceBundleMessageSource messageSource;
 	
 	private ListManagerTreeComponent treeComponent;
-	private ListManagerTab listManagerTab;
 	
 	private TabSheet detailsTabSheet;
     private AbsoluteLayout parentLayout;
 	private Label heading;
 	private Button btnCloseAllTabs;
+	private HorizontalLayout headingBar;
 	
 	private boolean forGermplasmListWindow;
+
 	
-    
-    private enum ListManagerTab {
-    	BROWSE_LISTS, SEARCH_LISTS_GERMPLASMS
-    }
-    
     public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
     	this.treeComponent = treeComponent;
     	this.parentLayout = parentLayout;
     	this.forGermplasmListWindow = forGermplasmListWindow;
-    	this.listManagerTab = ListManagerTab.BROWSE_LISTS;
+    }
+    
+    public ListManagerDetailsLayout(AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+    	this.parentLayout = parentLayout;
+    	this.forGermplasmListWindow = forGermplasmListWindow;
     }
 
 	@Override
@@ -70,73 +73,124 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	public void updateLabels() {
 
 	}
+
 	
     public void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
-    	VerticalLayout layout = new VerticalLayout();
-
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
+        String tabName = germplasmList.getName();
         
-        if (!Util.isTabExist(detailsTabSheet, germplasmList.getName())) {
-        	ListManagerTreeMenu component = new ListManagerTreeMenu(this, germplasmListId,
-        			germplasmList.getName(),germplasmList.getStatus(), germplasmList.getUserId(), 
-        			false, forGermplasmListWindow);
+		createTab(germplasmListId, germplasmList, tabName);
+    }
+    
+    
+    public void createGermplasmInfoTab(int germplasmId) throws MiddlewareQueryException {
+        String tabName = "Germplasm - " + germplasmId;
+		createTab(germplasmId, null, tabName);
+    }
+
+    
+	private void createTab(int id, GermplasmList germplasmList, String tabName) {
+		
+		if (!Util.isTabExist(detailsTabSheet, tabName)) {
+			
+			VerticalLayout layout = new VerticalLayout();
+        	Component component = createTabContent(id, germplasmList, tabName);
         	layout.addComponent(component);
             
-            Tab tab = detailsTabSheet.addTab(layout, germplasmList.getName(), null);
+            Tab tab = detailsTabSheet.addTab(layout, tabName, null);
             tab.setClosable(true);
             
             if(detailsTabSheet.getComponentCount() <= 1){
-            	
-            	//reset
-            	parentLayout.removeComponent(detailsTabSheet);
-            	
-            	btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
-            	btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
-            	btnCloseAllTabs.setImmediate(true);
-            	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-            	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
-            	btnCloseAllTabs.setVisible(false);
-            	
-            	
-            	heading = new Label();
-            	heading.setWidth("300px");
-            	if (this.treeComponent != null){
-            		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS)); 
-            		// TODO USE Details for search tab
-            	}
-        		heading.addStyleName("gcp-content-title");
-        		parentLayout.addComponent(heading,"top:30px; left:340px;");
-        		parentLayout.addComponent(btnCloseAllTabs,"top:48px; left:340px;");
-        		
-            	parentLayout.addComponent(detailsTabSheet, "top:67px;left:340px");
-                parentLayout.setWidth("98%");
-                parentLayout.setStyleName(Runo.TABSHEET_SMALL);
+            	initializeLayout();
             }
+            addListeners(layout, component);
             
-            detailsTabSheet.setSelectedTab(layout);
-            detailsTabSheet.setCloseHandler(new SelectedTabCloseHandler());
-            detailsTabSheet.addListener(new GermplasmListTabChangeListener(component));
-            detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
-				@Override
-				public void selectedTabChange(SelectedTabChangeEvent event) {
-					if(detailsTabSheet.getComponentCount() <= 1){
-						btnCloseAllTabs.setVisible(false);
-					}
-					else{
-						btnCloseAllTabs.setVisible(true);
-					}
-				}
-            });
+            
         } else {
-            Tab tab = Util.getTabAlreadyExist(detailsTabSheet, germplasmList.getName());
+            Tab tab = Util.getTabAlreadyExist(detailsTabSheet, tabName);
             detailsTabSheet.setSelectedTab(tab.getComponent());
         }
-    }
+	}
+
+	private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
+		
+		if (germplasmList != null){
+			return new ListManagerTreeMenu(this, id,
+					tabName,germplasmList.getStatus(), germplasmList.getUserId(), 
+					false, forGermplasmListWindow);
+		} else {
+			return new BrowseGermplasmTreeMenu(id);
+		}
+		
+	}
+
+	private void addListeners(VerticalLayout layout, Component component) {
+		detailsTabSheet.setSelectedTab(layout);
+		detailsTabSheet.setCloseHandler(new SelectedTabCloseHandler());
+		detailsTabSheet.addListener(new GermplasmListTabChangeListener(component));
+		detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
+
+			private static final long serialVersionUID = -7822326039221887888L;
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				if(detailsTabSheet.getComponentCount() <= 1){
+					btnCloseAllTabs.setVisible(false);
+				}
+				else{
+					btnCloseAllTabs.setVisible(true);
+				}
+			}
+		});
+	}
+
+	private void initializeLayout() {
+		//reset
+    	parentLayout.removeComponent(detailsTabSheet);
+    	
+    	btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+    	btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
+    	btnCloseAllTabs.setImmediate(true);
+    	btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
+    	btnCloseAllTabs.addListener(new GermplasmListButtonClickListener(this));
+    	btnCloseAllTabs.setVisible(false);
+    	
+    	heading = new Label();
+    	heading.setWidth("300px");
+    	if (this.treeComponent != null){
+    		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS)); //Browse Lists screen
+    	} else {
+    		heading.setValue(messageSource.getMessage(Message.DETAILS));
+    	}
+		heading.addStyleName("gcp-content-title");
+		
+		headingBar = new HorizontalLayout();
+		headingBar.setWidth("100%");
+		headingBar.setHeight("30px");
+		headingBar.addComponent(heading);
+		headingBar.addComponent(btnCloseAllTabs);
+		headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
+		headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
+		
+		//Browse Lists exact layout
+		if (this.treeComponent != null){
+			parentLayout.addComponent(headingBar,"top:20px; left:340px;");
+	    	parentLayout.addComponent(detailsTabSheet, "top:55px;left:340px");
+        
+        //Search Lists exact layout
+		} else {
+			parentLayout.addComponent(headingBar,"top:80px; left:390px;");
+	    	parentLayout.addComponent(detailsTabSheet, "top:115px;left:390px");
+		} 	
+		
+		parentLayout.setWidth("98%");
+		parentLayout.setStyleName(Runo.TABSHEET_SMALL);
+	}
     
+	
     public void closeAllListDetailTabButtonClickAction() {
     	Util.closeAllTab(detailsTabSheet);
-        parentLayout.removeComponent(heading);
-        parentLayout.removeComponent(btnCloseAllTabs);
+        parentLayout.removeComponent(headingBar);
         parentLayout.removeComponent(detailsTabSheet);
     }
     
