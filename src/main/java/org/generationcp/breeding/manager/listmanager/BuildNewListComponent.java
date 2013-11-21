@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -302,6 +303,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		setupDragSources();
 		setupDropHandlers();
+		setupTableHeadersContextMenu();
 	}
 
 		
@@ -542,6 +544,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
     	return itemIds;
 	}
+	
+	
+	private void setupTableHeadersContextMenu(){
+		List<String> propertyIdsEnabled = new ArrayList<String>();
+        propertyIdsEnabled.add(ENTRY_CODE);
+        propertyIdsEnabled.add(SEED_SOURCE);
+        
+      	@SuppressWarnings("unused")
+      	FillWith fillWith = new FillWith(this, messageSource, germplasmsTable, GID, propertyIdsEnabled);
+	}
+	
 	
     //called by GermplasmListButtonClickListener
     public void exportListAction() throws InternationalizableException {

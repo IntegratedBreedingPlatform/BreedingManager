@@ -18,12 +18,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
@@ -40,7 +40,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -63,7 +62,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -149,17 +147,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
-	private ContextMenu fillWithMenu;
-	private ContextMenuItem menuFillWithGermplasmDate;
-	private ContextMenuItem menuFillWithPrefName;
-	private ContextMenuItem menuFillWithPrefID;
-	private ContextMenuItem menuFillWithLocationName;
-	private ContextMenuItem menuFillWithBreedingMethodInfo;
-	private ContextMenuItem menuFillWithBreedingMethodName;
-	private ContextMenuItem menuFillWithBreedingMethodID;
-	private ContextMenuItem menuFillWithBreedingMethodGroup;
-	private ContextMenuItem menuFillWithBreedingMethodNumber;
-	private ContextMenuItem menuFillWithBreedingMethodAbbreviation;
+
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -331,74 +319,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              populateTable();
              
              if(germplasmListId < 0){
-            	 fillWithMenu = new ContextMenu();
-            	 
-            	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
-            	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
-            	 menuFillWithGermplasmDate = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE));
-            	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
-            	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
-            	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
-            	 menuFillWithBreedingMethodAbbreviation = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION));
-            	 menuFillWithBreedingMethodNumber = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER));
-            	 menuFillWithBreedingMethodGroup = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP));
-            	 
-            	 //dennis
-            	 
-            	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
-            		private static final long serialVersionUID = -2384037190598803030L;
-
-					public void contextItemClick(ClickEvent event) {
-            			 // Get reference to clicked item
-            			 ContextMenuItem clickedItem = event.getClickedItem();
-            			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
-            				 fillWithGermplasmDate((String) fillWithMenu.getData());
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
-            				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-            						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
-            				 fillWithMethodName((String) fillWithMenu.getData());
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
-            				 fillWithMethodAbbreviation((String) fillWithMenu.getData());
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER))){
-            				 fillWithMethodNumber((String) fillWithMenu.getData());
-            			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
-            				 fillWithMethodGroup((String) fillWithMenu.getData());
-            			 }
-            		 }
-            	 });
-            	 
-            	 listManagerTreeMenu.addComponent(fillWithMenu);
-            	 
-            	 listDataTable.addListener(new Table.HeaderClickListener() {
-                 	private static final long serialVersionUID = 4792602001489368804L;
-
-					public void headerClick(HeaderClickEvent event) {
-                 		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
-                 			String column = (String) event.getPropertyId();
-                 			fillWithMenu.setData(column);
-                     		if(column.equals(ENTRY_CODE)){
-                     			menuFillWithLocationName.setVisible(false);
-                     			menuFillWithPrefID.setVisible(true);
-                     			menuFillWithPrefName.setVisible(true);
-                     			fillWithMenu.show(event.getClientX(), event.getClientY());
-                     		} else if(column.equals(SEED_SOURCE)){
-                     			menuFillWithLocationName.setVisible(true);
-                     			menuFillWithPrefID.setVisible(false);
-                     			menuFillWithPrefName.setVisible(false);
-                     			fillWithMenu.show(event.getClientX(), event.getClientY());
-                     		}
-                 		}
-                 	}
-                 });
-             }
+            
+	             List<String> propertyIdsEnabled = new ArrayList<String>();
+	             propertyIdsEnabled.add(ENTRY_CODE);
+	             propertyIdsEnabled.add(SEED_SOURCE);
+	             
+	           	 @SuppressWarnings("unused")
+	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID, propertyIdsEnabled);
+	           	 
+	             setSpacing(true);
+	             addComponent(listDataTable);
              
-             setSpacing(true);
-             addComponent(listDataTable);
-
+             }
          }
     }
 
@@ -1007,99 +939,5 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
     
     
-    public List<Integer> getGidsFromListData(){
-    	List<Integer> gids = new ArrayList<Integer>();
-    	List<Integer> listDataItemIds = getItemIds(listDataTable);
-    	for(Integer itemId: listDataItemIds){
-    		gids.add((Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue());
-    	}
-    	return gids;
-    }
-   
-	@SuppressWarnings("unchecked")
-	private List<Integer> getItemIds(Table table){
-		List<Integer> itemIds = new ArrayList<Integer>();
-    	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
-    	return itemIds;
-	}    
-    
-    public void fillWithGermplasmDate(String propertyId){
-	   try {
-		   List<Integer> itemIds = getItemIds(listDataTable);
-		   List<Integer> gids = getGidsFromListData();
-		   Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
-		   
-		   for(Integer itemId: itemIds){
-			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
-			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
-		   }
-		   
-	   } catch (MiddlewareQueryException e) {
-		   e.printStackTrace();
-	   }
-    }
- 
-    public void fillWithMethodName(String propertyId){
-	   try {
-		   List<Integer> itemIds = getItemIds(listDataTable);
-		   List<Integer> gids = getGidsFromListData();
-		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
-		   
-		   for(Integer itemId: itemIds){
-			   Integer gid = Integer.valueOf(((Button) listDataTable.getItem(itemId).getItemProperty(GID).getValue()).getCaption().toString());
-			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
-		   }
-		   
-	   } catch (MiddlewareQueryException e) {
-		   e.printStackTrace();
-	   }
-    }    
 
-    public void fillWithMethodAbbreviation(String propertyId){
-	   try {
-		   List<Integer> itemIds = getItemIds(listDataTable);
-		   List<Integer> gids = getGidsFromListData();
-		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
-		   
-		   for(Integer itemId: itemIds){
-			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
-			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
-		   }
-		   
-	   } catch (MiddlewareQueryException e) {
-		   e.printStackTrace();
-	   }
-    }   
-    
-    public void fillWithMethodNumber(String propertyId){
-	   try {
-		   List<Integer> itemIds = getItemIds(listDataTable);
-		   List<Integer> gids = getGidsFromListData();
-		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
-		   
-		   for(Integer itemId: itemIds){
-			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
-			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
-		   }
-		   
-	   } catch (MiddlewareQueryException e) {
-		   e.printStackTrace();
-	   }
-    }       
-    
-    public void fillWithMethodGroup(String propertyId){
-	   try {
-		   List<Integer> itemIds = getItemIds(listDataTable);
-		   List<Integer> gids = getGidsFromListData();
-		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
-		   
-		   for(Integer itemId: itemIds){
-			   Integer gid = (Integer) listDataTable.getItem(itemId).getItemProperty(GID_VALUE).getValue(); 
-			   listDataTable.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
-		   }
-		   
-	   } catch (MiddlewareQueryException e) {
-		   e.printStackTrace();
-	   }
-    }   
 }
