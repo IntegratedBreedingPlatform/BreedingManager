@@ -75,9 +75,16 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	}
 
 	
-    public void createGermplasmListInfoTab(int germplasmListId) throws MiddlewareQueryException {
+    public void createListInfoFromBrowseScreen(int germplasmListId) throws MiddlewareQueryException {
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
         String tabName = germplasmList.getName();
+        
+		createTab(germplasmListId, germplasmList, tabName);
+    }
+    
+    public void createListInfoFromSearchScreen(int germplasmListId) throws MiddlewareQueryException {
+        GermplasmList germplasmList=getGermplasmList(germplasmListId);
+        String tabName = "List - " + germplasmList.getName();
         
 		createTab(germplasmListId, germplasmList, tabName);
     }
