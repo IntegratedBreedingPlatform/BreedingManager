@@ -74,7 +74,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
 
-
     private static final String GID = "gid";
     private static final String GID_VALUE = "gidValue";
     private static final String ENTRY_ID = "entryId";
@@ -94,7 +93,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
     
-
     private Table listDataTable;
     private int germplasmListId;
     private String listName;
@@ -116,7 +114,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     static final Action ACTION_DELETE = new Action("Delete selected entries");
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
-
     
     public ListManagerTreeMenu listManagerTreeMenu;
 
@@ -136,7 +133,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     
     @Autowired
     private PedigreeDataManager pedigreeDataManager;
-    
     
     private boolean forGermplasmListWindow;
     private Integer germplasmListStatus;

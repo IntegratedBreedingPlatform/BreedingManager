@@ -1,7 +1,9 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +17,8 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
@@ -48,13 +49,14 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class BuildNewListComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 5314653969843976836L;
+	
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private static final String GID = "GID";
 	private static final String ENTRY_ID = "ENTRY ID";
@@ -69,7 +71,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private Object source;
 	
     private String DEFAULT_LIST_TYPE = "LST";
-
 	
 	private Label componentDescription;
 
@@ -107,6 +108,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL};
 	
+	private GermplasmList currentlySavedGermplasmList;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -119,6 +121,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	public BuildNewListComponent(ListManagerMain source){
 		this.source = source;
+		this.currentlySavedGermplasmList = null;
 	}
 	
 	@Override
@@ -175,17 +178,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         listTypeComboBox.setImmediate(true);
         addComponent(listTypeComboBox, "top:35px;left:310px");
 
-
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":");
         listDateLabel.addStyleName("bold");
         addComponent(listDateLabel, "top:55px;left:540px");
       
         listDateField = new DateField();
-        listDateField.setDateFormat("yyyy-MM-dd");
+        listDateField.setDateFormat(DATE_FORMAT);
         listDateField.setResolution(DateField.RESOLUTION_DAY);
+        listDateField.setValue(new Date());
         addComponent(listDateField, "top:35px;left:580px");
-        
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
@@ -195,8 +197,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         descriptionText = new TextField();
         descriptionText.setWidth("595px");
         addComponent(descriptionText, "top:70px;left:80px");
-
-		
 		
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
@@ -208,12 +208,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
         addComponent(notesTextArea, "top:35px; left: 770px;");
-		
 
 		germplasmsTable = new Table();
 		germplasmsTable.addContainerProperty(GID, Button.class, null);
 		germplasmsTable.addContainerProperty(ENTRY_ID, Integer.class, null);
-		germplasmsTable.addContainerProperty(ENTRY_CODE, Integer.class, null);
+		germplasmsTable.addContainerProperty(ENTRY_CODE, String.class, null);
 		germplasmsTable.addContainerProperty(SEED_SOURCE, String.class, null);
 		germplasmsTable.addContainerProperty(DESIGNATION, String.class, null);
 		germplasmsTable.addContainerProperty(PARENTAGE, String.class, null);
@@ -315,6 +314,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 */
 	private void setupDropHandlers(){
 		germplasmsTable.setDropHandler(new DropHandler() {
+			private static final long serialVersionUID = -6676297159926786216L;
+
 			public void drop(DragAndDropEvent dropEvent) {
 				TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 				
@@ -340,11 +341,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			}
 		});
 	}
-	
-	
-
-	
-	
+		
 	/**
 	 * Add germplasms from a gemrplasm list to the table
 	 */
@@ -397,7 +394,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         assignSerializedEntryCode();
 	}
 	
-	
 	/**
 	 * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
 	 * @param gid
@@ -435,8 +431,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		        importedGermplasmGids.add(gid);
 	            Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
 	            String preferredName = preferredNames.get(gid); 
-	            
-	            Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
 	            
 	            newItem.getItemProperty(GID).setValue(gidButton);
 				//newItem.getItemProperty(SEED_SOURCE).setValue(location.getLname());
@@ -601,4 +595,68 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     */
     }
 
+    public GermplasmList getCurrentlySavedGermplasmList(){
+    	return this.currentlySavedGermplasmList;
+    }
+    
+    public void setCurrentlySavedGermplasmList(GermplasmList list){
+    	this.currentlySavedGermplasmList = list;
+    }
+    
+    public GermplasmList getCurrentlySetGermplasmListInfo(){
+    	GermplasmList toreturn = new GermplasmList();
+    	Object name = this.listNameText.getValue();
+    	if(name != null){
+    		toreturn.setName(name.toString().trim());
+    	} else{
+    		toreturn.setName(null);
+    	}
+    	Object description = this.descriptionText.getValue();
+    	if(description != null){
+    		toreturn.setDescription(description.toString().trim());
+    	} else{
+    		toreturn.setDescription(null);
+    	}
+    	
+    	SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+    	Object dateValue = this.listDateField.getValue();
+    	if(dateValue != null){
+    		String sDate = formatter.format(dateValue);
+    		Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
+    		toreturn.setDate(dataLongValue);
+    	} else{
+    		toreturn.setDate(null);
+    	}
+        
+        toreturn.setType(this.listTypeComboBox.getValue().toString());
+    	return toreturn;
+    }
+    
+    public List<GermplasmListData> getListEntriesFromTable(){
+    	List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
+    	
+    	for(Object id : this.germplasmsTable.getItemIds()){
+    		Integer entryId = (Integer) id;
+    		Item item = this.germplasmsTable.getItem(entryId);
+    		
+    		GermplasmListData listEntry = new GermplasmListData();
+    		listEntry.setId(entryId);
+    		Object designation = item.getItemProperty(DESIGNATION).getValue();
+    		listEntry.setDesignation(designation.toString());
+    		Object entryCode = item.getItemProperty(ENTRY_CODE).getValue();
+    		listEntry.setEntryCode(entryCode.toString());
+    		
+    		Button gidButton = (Button) item.getItemProperty(GID).getValue();
+    		listEntry.setGid(Integer.parseInt(gidButton.getCaption()));
+    		
+    		Object groupName = item.getItemProperty(PARENTAGE).getValue();
+    		listEntry.setGroupName(groupName.toString());
+    		listEntry.setEntryId((Integer) item.getItemProperty(ENTRY_ID).getValue());
+    		Object seedSource = item.getItemProperty(SEED_SOURCE).getValue();
+    		listEntry.setSeedSource(seedSource.toString());
+    		
+    		toreturn.add(listEntry);
+    	}
+    	return toreturn;
+    }
 }
