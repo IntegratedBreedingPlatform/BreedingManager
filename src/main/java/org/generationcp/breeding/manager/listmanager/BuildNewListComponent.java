@@ -12,6 +12,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -66,8 +67,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class BuildNewListComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent {
 
-	@SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
 	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
@@ -80,8 +80,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public static final String DESIGNATION = "DESIGNATION";
 	public static final String PARENTAGE = "PARENTAGE";
 	public static final String STATUS = "STATUS";
-	private static final String COL8 = " ";
-	private static final String COL9 = "  ";
 	
 	private Object source;
 	
@@ -138,9 +136,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
-	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
 	
 	public BuildNewListComponent(ListManagerMain source){
 		this.source = source;
