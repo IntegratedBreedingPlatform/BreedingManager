@@ -42,6 +42,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     private GermplasmQueries qQuery;
     private GermplasmDetailModel gDetailModel;
     private GermplasmDetailsComponent basicDetailsComponent;
+    private GermplasmPedigreeComponent pedigreeComponent;
     private ListManagerMain listManagerMain;
     
     private Button saveToListLink;
@@ -66,6 +67,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		gDetailModel = qQuery.getGermplasmDetails(this.germplasmId);
 		
 		basicDetailsComponent = new GermplasmDetailsComponent(gDetailModel);
+		pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
 		
 		ComponentTree content = new ComponentTree();
         content.setWidth("95%");
@@ -78,7 +80,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
         attributesDetails.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
         
         ComponentTreeItem pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
-        pedigreeDetails.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
+        pedigreeDetails.addChild(this.pedigreeComponent);
 		
 		
 		addComponent(content);
@@ -100,13 +102,13 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		saveToListLink.setImmediate(true);
 		saveToListLink.setStyleName(BaseTheme.BUTTON_LINK);
 		saveToListLink.addStyleName("link_with_plus_icon");
-		saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this));
+		saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this, this.germplasmId));
 		
 		moreDetailsLink = new Button(messageSource.getMessage(Message.MORE_DETAILS));
 		moreDetailsLink.setData(MORE_DETAILS);
 		moreDetailsLink.setImmediate(true);
 		moreDetailsLink.setStyleName(BaseTheme.BUTTON_LINK);
-		moreDetailsLink.addListener( new GidLinkButtonClickListener(this.germplasmId.toString(), true));
+		moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
         
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.addComponent(layout);

@@ -267,3 +267,10 @@
     padding-top: 3px !important;
     padding-bottom: 3px !important;	
 }
+
+.link_with_eye_icon {
+    background: url(images/eye_icon.png) no-repeat !important;
+    padding-left: 30px !important;
+/*     padding-top: 2px !important; */
+    padding-bottom: 7px !important;	
+}

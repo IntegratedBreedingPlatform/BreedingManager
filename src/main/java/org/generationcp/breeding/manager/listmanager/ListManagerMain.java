@@ -122,5 +122,9 @@ public class ListManagerMain extends VerticalLayout implements
 	public ListManagerSearchListsComponent getListManagerSearchListsComponent(){
 		return searchListsComponent;
 	}
+	
+	public BuildNewListComponent getBuildListComponent(){
+		return buildNewListComponent;
+	}
 
 }

@@ -472,7 +472,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 * @param gid
 	 * @param droppedOn
 	 */
-	private void addGermplasmToGermplasmTable(Integer gid, Object droppedOnItemIdObject){
+	public void addGermplasmToGermplasmTable(Integer gid, Object droppedOnItemIdObject){
 
 		try {
 			

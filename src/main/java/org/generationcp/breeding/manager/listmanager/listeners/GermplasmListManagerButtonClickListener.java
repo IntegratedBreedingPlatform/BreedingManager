@@ -30,7 +30,8 @@ public class GermplasmListManagerButtonClickListener implements Button.ClickList
     private static final long serialVersionUID = 2185217915388685523L;
 
     private Component source;
-
+    private Integer itemId;
+    
     public GermplasmListManagerButtonClickListener(Component source) {
         this.source = source;
     }
@@ -38,7 +39,11 @@ public class GermplasmListManagerButtonClickListener implements Button.ClickList
     public GermplasmListManagerButtonClickListener(Layout source) {
         this.source = source;
     }
-    
+
+    public GermplasmListManagerButtonClickListener(Layout source, Integer itemId) {
+        this.source = source;
+        this.itemId = itemId;
+    }
     
     @Override
     public void buttonClick(ClickEvent event) {
@@ -55,7 +60,9 @@ public class GermplasmListManagerButtonClickListener implements Button.ClickList
     	} else if (data.equals(BrowseGermplasmTreeMenu.SAVE_TO_LIST)
                 && (source instanceof BrowseGermplasmTreeMenu)) { // "Save to List"
     		BrowseGermplasmTreeMenu component = (BrowseGermplasmTreeMenu) source;
-    		component.getListManagerMain().showBuildNewListComponent();
+    		ListManagerMain listManagerMain = component.getListManagerMain();
+			listManagerMain.showBuildNewListComponent();
+			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(this.itemId, null);
         
     	} else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
