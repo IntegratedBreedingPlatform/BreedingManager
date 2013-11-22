@@ -73,13 +73,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	public static final String GID = "GID";
-	public static final String ENTRY_ID = "ENTRY ID";
-	public static final String ENTRY_CODE = "ENTRY CODE";
-	public static final String SEED_SOURCE = "SEED SOURCE";
-	public static final String DESIGNATION = "DESIGNATION";
-	public static final String PARENTAGE = "PARENTAGE";
-	public static final String STATUS = "STATUS";
+	public static final String GID = "gid";
+	public static final String ENTRY_ID = "entryId";
+	public static final String ENTRY_CODE = "entryCode";
+	public static final String SEED_SOURCE = "seedSource";
+	public static final String DESIGNATION = "designation";
+	public static final String PARENTAGE = "parentage";
+	public static final String STATUS = "status";
 	
 	private Object source;
 	
@@ -239,6 +239,15 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.addContainerProperty(STATUS, String.class, null);
 		//germplasmsTable.addContainerProperty(COL8, String.class, null);
 		//germplasmsTable.addContainerProperty(COL9, String.class, null);
+		
+		messageSource.setColumnHeader(germplasmsTable, GID, Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, SEED_SOURCE, Message.LISTDATA_SEEDSOURCE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, PARENTAGE, Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, STATUS, Message.LISTDATA_STATUS_HEADER);
+		
 		germplasmsTable.setSelectable(true);
 		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
@@ -565,10 +574,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
     	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
     	itemIds = getItemIds(table);
-    
-    	System.out.println("Selected Item IDs: "+selectedItemIds);
-    	System.out.println("Item IDs: "+itemIds);
-    	
+        	
     	int i=0;
     	for(Integer itemId: itemIds){
     		if(selectedItemIds.contains(itemId)){
