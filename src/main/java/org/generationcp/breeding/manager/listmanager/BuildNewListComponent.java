@@ -344,6 +344,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			/**
 			 * TODO: enable draggable tables here
 			 */
+
+			//Germplasm list data is initialized in that component itself, and it can be multiple instances so it's best to put it there
 			
 			//Search Lists and Germplasms tab
 			Table matchingGermplasmsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingGermplasmsTable();
@@ -409,6 +411,25 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 	} else {
                 		addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
             		}
+                	
+                //Handle drops from MATCHING GERMPLASMS TABLE
+                } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
+                    	
+                    	List<Integer> selectedGIDs = getSelectedGids(sourceTable, ListDataComponent.GID);
+                    	
+                    	//If table has value (item/s is/are highlighted in the source table, add that)
+                    	if(selectedGIDs.size()>0){
+                    		for(int i=0;i<selectedGIDs.size();i++){
+                    			if(i==0)
+                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), droppedOverItemId);
+                    			else 
+                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), selectedGIDs.get(i-1));
+                    		}
+                    	//Add dragged item itself
+                    	} else {
+                    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataComponent.GID).getValue()).getCaption().toString());
+                    		addGermplasmToGermplasmTable(gid, droppedOverItemId);
+                    	}
                 }
 			    
 			}
@@ -559,6 +580,33 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	
     	return trueOrderedSelectedItemIds;
     }
+	
+	/**
+	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getSelectedGids(Table table, String GIDItemId){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+    
+    	System.out.println("Selected Item IDs: "+selectedItemIds);
+    	System.out.println("Item IDs: "+itemIds);
+    	
+    	int i=0;
+    	for(Integer itemId: itemIds){
+    		if(selectedItemIds.contains(itemId)){
+    			Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue()).getCaption().toString());
+    			trueOrderedSelectedGIDs.add(gid);
+    			i++;
+    		}
+    	}
+    	
+    	return trueOrderedSelectedGIDs;
+    }	
 	
 	/**
 	 * Get item id's of a table, and return it as a list 
