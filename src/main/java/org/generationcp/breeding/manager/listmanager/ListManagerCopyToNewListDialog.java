@@ -74,6 +74,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     private static final String ENTRY_CODE = "entryCode";
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
+    private static final String PARENTAGE = "parentage";
     
     private Label labelListName;
     private Label labelDescription;
@@ -315,6 +316,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 Property pGid= listEntriesTable.getItem(itemId).getItemProperty(GID);
                 Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ENTRY_CODE);
                 Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(DESIGNATION);
+                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(PARENTAGE);
                 String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
                 
                 Button pGidButton = (Button) pGid.getValue();
@@ -323,7 +325,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 String seedSource=listName+"-"+entryCode;
                 String designation=String.valueOf((pDesignation.getValue().toString()));
                 designationOfListEntriesCopied+=designation+",";
-                String groupName = "";
+                String groupName=String.valueOf((pGroupName.getValue().toString()));
 
                 GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
                     designation, groupName, status, localRecordId);

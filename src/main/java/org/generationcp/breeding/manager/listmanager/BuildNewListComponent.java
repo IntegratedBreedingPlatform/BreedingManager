@@ -73,13 +73,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	public static final String GID = "GID";
-	public static final String ENTRY_ID = "ENTRY ID";
-	public static final String ENTRY_CODE = "ENTRY CODE";
-	public static final String SEED_SOURCE = "SEED SOURCE";
-	public static final String DESIGNATION = "DESIGNATION";
-	public static final String PARENTAGE = "PARENTAGE";
-	public static final String STATUS = "STATUS";
+	public static final String GID = "gid";
+	public static final String ENTRY_ID = "entryId";
+	public static final String ENTRY_CODE = "entryCode";
+	public static final String SEED_SOURCE = "seedSource";
+	public static final String DESIGNATION = "designation";
+	public static final String PARENTAGE = "parentage";
+	public static final String STATUS = "status";
 	
 	private Object source;
 	
@@ -239,6 +239,15 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.addContainerProperty(STATUS, String.class, null);
 		//germplasmsTable.addContainerProperty(COL8, String.class, null);
 		//germplasmsTable.addContainerProperty(COL9, String.class, null);
+		
+		messageSource.setColumnHeader(germplasmsTable, GID, Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, SEED_SOURCE, Message.LISTDATA_SEEDSOURCE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, PARENTAGE, Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, STATUS, Message.LISTDATA_STATUS_HEADER);
+		
 		germplasmsTable.setSelectable(true);
 		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
@@ -343,6 +352,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			/**
 			 * TODO: enable draggable tables here
 			 */
+
+			//Germplasm list data is initialized in that component itself, and it can be multiple instances so it's best to put it there
 			
 			//Search Lists and Germplasms tab
 			Table matchingGermplasmsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingGermplasmsTable();
@@ -408,6 +419,25 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 	} else {
                 		addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
             		}
+                	
+                //Handle drops from MATCHING GERMPLASMS TABLE
+                } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
+                    	
+                    	List<Integer> selectedGIDs = getSelectedGids(sourceTable, ListDataComponent.GID);
+                    	
+                    	//If table has value (item/s is/are highlighted in the source table, add that)
+                    	if(selectedGIDs.size()>0){
+                    		for(int i=0;i<selectedGIDs.size();i++){
+                    			if(i==0)
+                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), droppedOverItemId);
+                    			else 
+                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), selectedGIDs.get(i-1));
+                    		}
+                    	//Add dragged item itself
+                    	} else {
+                    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataComponent.GID).getValue()).getCaption().toString());
+                    		addGermplasmToGermplasmTable(gid, droppedOverItemId);
+                    	}
                 }
 			    
 			}
@@ -532,6 +562,18 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	}
     }
 	
+	/**
+	 * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
+	 */
+	private void assignSerializedEntryNumber(){
+		List<Integer> itemIds = getItemIds(germplasmsTable);
+    	    	
+    	int id = 1;
+    	for(Integer itemId : itemIds){
+    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
+    		id++;
+    	}
+    }
 	
 	/**
 	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
@@ -544,10 +586,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
     	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
     	itemIds = getItemIds(table);
-    
-    	System.out.println("Selected Item IDs: "+selectedItemIds);
-    	System.out.println("Item IDs: "+itemIds);
-    	
+        	
     	int i=0;
     	for(Integer itemId: itemIds){
     		if(selectedItemIds.contains(itemId)){
@@ -558,6 +597,33 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	
     	return trueOrderedSelectedItemIds;
     }
+	
+	/**
+	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getSelectedGids(Table table, String GIDItemId){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+    
+    	//System.out.println("Selected Item IDs: "+selectedItemIds);
+    	//System.out.println("Item IDs: "+itemIds);
+    	
+    	int i=0;
+    	for(Integer itemId: itemIds){
+    		if(selectedItemIds.contains(itemId)){
+    			Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue()).getCaption().toString());
+    			trueOrderedSelectedGIDs.add(gid);
+    			i++;
+    		}
+    	}
+    	
+    	return trueOrderedSelectedGIDs;
+    }	
 	
 	/**
 	 * Get item id's of a table, and return it as a list 
@@ -735,6 +801,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public List<GermplasmListData> getListEntriesFromTable(){
     	List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
     	
+    	assignSerializedEntryNumber();
+    	
     	for(Object id : this.germplasmsTable.getItemIds()){
     		Integer entryId = (Integer) id;
     		Item item = this.germplasmsTable.getItem(entryId);
@@ -760,21 +828,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return toreturn;
     }
     
-    public int getNextListEntryId(){
-    	Boolean isNegative = false;
-        int maxId = 0;
+    public Integer getNextListEntryId(){
+    	int maxId = 0;
     	for(Object id : this.germplasmsTable.getItemIds()){
     		Integer itemId = (Integer) id;
     		if(itemId<0){
-    			isNegative = true;
     			itemId*=-1;
     		}
     		if(itemId>maxId)
     			maxId=itemId;
     	}
     	maxId++;
-    	if(isNegative)
-    		maxId*=-1;
-    	return maxId;
+    	return Integer.valueOf(maxId);
     }
 }

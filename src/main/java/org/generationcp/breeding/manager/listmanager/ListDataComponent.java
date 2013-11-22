@@ -64,6 +64,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
@@ -74,7 +75,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
 
-    private static final String GID = "gid";
+    public static final String GID = "gid";
     private static final String GID_VALUE = "gidValue";
     private static final String ENTRY_ID = "entryId";
     private static final String ENTRY_CODE = "entryCode";
@@ -115,6 +116,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
     
+    public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
+    
     public ListManagerTreeMenu listManagerTreeMenu;
 
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
@@ -150,9 +153,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
-	 private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
-	 public static String TOOLS_BUTTON_ID = "Tools";
-	  private static String TOOLS_TOOLTIP = "Tools";
+	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+	public static String TOOLS_BUTTON_ID = "Tools";
+	private static String TOOLS_TOOLTIP = "Tools";
+	  
     
     public ListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu){
         this.germplasmListId = germplasmListId;
@@ -265,7 +269,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 //             listDataTable.setPageLength(15); // number of rows to display in the Table
              listDataTable.setWidth("95%");
              listDataTable.setHeight("95%");
-             
+             listDataTable.setDragMode(TableDragMode.ROW);
+             listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
              
              if(!fromUrl){
                      listDataTable.addActionHandler(new Action.Handler() {
@@ -937,6 +942,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   	return gids;
     }
     
-    
+    public Table getListDataTable(){
+    	return listDataTable;
+    }
 
 }
