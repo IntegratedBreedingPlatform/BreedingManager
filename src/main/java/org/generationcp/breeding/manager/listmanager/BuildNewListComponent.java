@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -66,22 +67,19 @@ import com.vaadin.ui.themes.BaseTheme;
 public class BuildNewListComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent {
 
-	@SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
 	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	private static final String GID = "gid";
-	private static final String ENTRY_ID = "entryId";
-	private static final String ENTRY_CODE = "entryCode";
-	private static final String SEED_SOURCE = "seedSource";
-	private static final String DESIGNATION = "designation";
-	private static final String PARENTAGE = "parentage";
-	private static final String STATUS = "status";
-	private static final String COL8 = " ";
-	private static final String COL9 = "  ";
+	public static final String GID = "GID";
+	public static final String ENTRY_ID = "ENTRY ID";
+	public static final String ENTRY_CODE = "ENTRY CODE";
+	public static final String SEED_SOURCE = "SEED SOURCE";
+	public static final String DESIGNATION = "DESIGNATION";
+	public static final String PARENTAGE = "PARENTAGE";
+	public static final String STATUS = "STATUS";
 	
 	private Object source;
 	
@@ -319,6 +317,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
 		saveButton.setStyleName(BaseTheme.BUTTON_LINK);
 		saveButton.addStyleName("gcp_button");
+		saveButton.addListener(new SaveListButtonClickListener(this, germplasmListManager, germplasmsTable, messageSource, workbenchDataManager));
 		
 		buttonRow.addComponent(saveButton);
 		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
