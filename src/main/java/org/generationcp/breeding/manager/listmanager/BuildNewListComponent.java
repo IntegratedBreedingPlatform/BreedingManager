@@ -556,8 +556,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	    	
     	int id = 1;
     	for(Integer itemId : itemIds){
-    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
-    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_CODE).setValue(id);
+    		Item tableItem = germplasmsTable.getItem(itemId);
+    		tableItem.getItemProperty(ENTRY_ID).setValue(id);
+    		if(tableItem.getItemProperty(ENTRY_CODE).getValue() == null || tableItem.getItemProperty(ENTRY_CODE).getValue().equals("")){
+    			tableItem.getItemProperty(ENTRY_CODE).setValue(id);
+    		}
     		id++;
     	}
     }
@@ -809,19 +812,39 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		
     		GermplasmListData listEntry = new GermplasmListData();
     		listEntry.setId(entryId);
+    		
     		Object designation = item.getItemProperty(DESIGNATION).getValue();
-    		listEntry.setDesignation(designation.toString());
+    		if(designation != null){
+    			listEntry.setDesignation(designation.toString());
+    		} else{
+    			listEntry.setDesignation(null);
+    		}
+    		
     		Object entryCode = item.getItemProperty(ENTRY_CODE).getValue();
-    		listEntry.setEntryCode(entryCode.toString());
+    		if(entryCode != null){
+    			listEntry.setEntryCode(entryCode.toString());
+    		} else{
+    			listEntry.setEntryCode(null);
+    		}
     		
     		Button gidButton = (Button) item.getItemProperty(GID).getValue();
     		listEntry.setGid(Integer.parseInt(gidButton.getCaption()));
     		
     		Object groupName = item.getItemProperty(PARENTAGE).getValue();
-    		listEntry.setGroupName(groupName.toString());
+    		if(groupName != null){
+    			listEntry.setGroupName(groupName.toString());
+    		} else{
+    			listEntry.setGroupName(null);
+    		}
+    		
     		listEntry.setEntryId((Integer) item.getItemProperty(ENTRY_ID).getValue());
+    		
     		Object seedSource = item.getItemProperty(SEED_SOURCE).getValue();
-    		listEntry.setSeedSource(seedSource.toString());
+    		if(seedSource != null){
+    			listEntry.setSeedSource(seedSource.toString());
+    		} else{
+    			listEntry.setSeedSource(null);
+    		}
     		
     		toreturn.add(listEntry);
     	}
