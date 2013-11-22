@@ -48,6 +48,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     private ListManagerDetailsLayout displayDetailsLayout; 
     
     private boolean forGermplasmListWindow;
+
+    private VerticalLayout treeContainerLayout;
     
     public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
@@ -66,16 +68,20 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
 		
 		germplasmListTree = new Tree();
+		germplasmListTree.setImmediate(true);
 		
 		refreshButton = new Button();
 		refreshButton.setData(REFRESH_BUTTON_ID);
 		refreshButton.addListener(new GermplasmListButtonClickListener(this));
 		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
 		
-		createTree();
+		treeContainerLayout = new VerticalLayout();
+		treeContainerLayout.addComponent(germplasmListTree);
 		
-		this.addComponent(germplasmListTree);
-		this.addComponent(refreshButton);
+		addComponent(treeContainerLayout);
+		addComponent(refreshButton);
+		
+		createTree();
 	}
 
 	@Override
@@ -85,7 +91,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	}
 
     public void createTree() {
-        germplasmListTree = createGermplasmListTree();
+    	treeContainerLayout.removeComponent(germplasmListTree);
+   		germplasmListTree.removeAllItems();
+   		germplasmListTree = createGermplasmListTree();
         germplasmListTree.addStyleName("listManagerTree");
         
         germplasmListTree.setItemStyleGenerator(new ItemStyleGenerator() {
@@ -101,8 +109,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             	}
             }
         });
-        
+
+        treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
+
     }
 
     private Tree createGermplasmListTree() {
