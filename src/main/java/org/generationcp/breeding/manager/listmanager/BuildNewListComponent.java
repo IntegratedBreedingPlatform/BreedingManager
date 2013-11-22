@@ -532,6 +532,18 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	}
     }
 	
+	/**
+	 * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
+	 */
+	private void assignSerializedEntryNumber(){
+		List<Integer> itemIds = getItemIds(germplasmsTable);
+    	    	
+    	int id = 1;
+    	for(Integer itemId : itemIds){
+    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
+    		id++;
+    	}
+    }
 	
 	/**
 	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
@@ -545,8 +557,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
     	itemIds = getItemIds(table);
     
-    	System.out.println("Selected Item IDs: "+selectedItemIds);
-    	System.out.println("Item IDs: "+itemIds);
+    	//System.out.println("Selected Item IDs: "+selectedItemIds);
+    	//System.out.println("Item IDs: "+itemIds);
     	
     	int i=0;
     	for(Integer itemId: itemIds){
@@ -735,6 +747,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public List<GermplasmListData> getListEntriesFromTable(){
     	List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
     	
+    	assignSerializedEntryNumber();
+    	
     	for(Object id : this.germplasmsTable.getItemIds()){
     		Integer entryId = (Integer) id;
     		Item item = this.germplasmsTable.getItem(entryId);
@@ -760,21 +774,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return toreturn;
     }
     
-    public int getNextListEntryId(){
-    	Boolean isNegative = false;
-        int maxId = 0;
+    public Integer getNextListEntryId(){
+    	int maxId = 0;
     	for(Object id : this.germplasmsTable.getItemIds()){
     		Integer itemId = (Integer) id;
     		if(itemId<0){
-    			isNegative = true;
     			itemId*=-1;
     		}
     		if(itemId>maxId)
     			maxId=itemId;
     	}
     	maxId++;
-    	if(isNegative)
-    		maxId*=-1;
-    	return maxId;
+    	return Integer.valueOf(maxId);
     }
 }
