@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -41,14 +40,13 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 	private Button applyButton;
 	
 	private Integer germplasmId;
+	
 	public GermplasmPedigreeComponent(Integer germplasmId){
 		this.germplasmId = germplasmId;
 	}
 	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -87,8 +85,7 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         container = new GermplasmIndexContainer(gQueries);
         addComponent(pedigreeHorizontalLayout);
         createTreeComponent();
-
-	}
+    }
 
 	private void createTreeComponent() {
 		germplasmPedigreeTreeComponent = new GermplasmPedigreeTreeComponent(this.germplasmId, gQueries, 
@@ -103,7 +100,6 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         createTreeComponent();
     }
 	
-    
     public GermplasmQueries getGermplasmQueries(){
     	return this.gQueries;
     }

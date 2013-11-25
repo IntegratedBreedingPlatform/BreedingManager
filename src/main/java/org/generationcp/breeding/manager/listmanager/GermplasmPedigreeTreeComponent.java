@@ -20,8 +20,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTreeNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -37,18 +35,10 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
     private static final long serialVersionUID = 1L;
     
-//    private ListManagerDetailsLayout detailsLayout;
     private GermplasmPedigreeTree germplasmPedigreeTree;
     private GermplasmQueries qQuery;
-    private VerticalLayout mainLayout;
-    private TabSheet tabSheet;
-    private GermplasmIndexContainer dataIndexContainer;
     private Boolean includeDerivativeLines;
-    @SuppressWarnings("unused")
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
     
-    private Integer rootGid;
-
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
@@ -57,11 +47,7 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
         super();
 
-        this.mainLayout = mainLayout;
-        this.tabSheet = tabSheet;
         this.qQuery = qQuery;
-        this.dataIndexContainer = dataResultIndexContainer;
-        // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
         this.includeDerivativeLines = false;
 
         this.setSizeFull();
@@ -69,7 +55,6 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
         
-//        this.addListener(new GermplasmItemClickListener(this));
         this.addListener(new GermplasmTreeExpandListener(this));
 
         this.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
@@ -88,23 +73,14 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
         super();
 
-        this.mainLayout = mainLayout;
-//        this.detailsLayout = detailsLayout;
-//        this.tabSheet = tabSheet;
-        
         this.qQuery = qQuery;
-        this.dataIndexContainer = dataResultIndexContainer;
-        // this.gDetailModel = this.qQuery.getGermplasmDetails(gid);
         this.includeDerivativeLines = includeDerivativeLines;
 
         this.setSizeFull();
-        rootGid = Integer.valueOf(gid);
         germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1, includeDerivativeLines); // throws QueryException
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
 
-//        this.addListener(new SearchResultsItemClickListener(
-//        		SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA, this.detailsLayout));
         this.addListener(new GermplasmTreeExpandListener(this));
 
         this.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
@@ -188,42 +164,18 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
     }
 
-//    public void displayNewGermplasmDetailTab(int gid) throws InternationalizableException {
-//        if(this.mainLayout != null && this.tabSheet != null) {
-//            VerticalLayout detailLayout = new VerticalLayout();
-//            detailLayout.setSpacing(true);
-//    
-//            if (!Util.isTabExist(tabSheet, String.valueOf(gid))) {
-//                detailLayout.addComponent(new GermplasmDetail(gid, qQuery, dataIndexContainer, mainLayout, tabSheet, false));
-//                Tab tab = tabSheet.addTab(detailLayout, String.valueOf(gid), null);
-//                tab.setDescription(String.valueOf(gid));
-//                tab.setClosable(true);
-//                tabSheet.setSelectedTab(detailLayout);
-//                mainLayout.addComponent(tabSheet);
-//    
-//            } else {
-//                Tab tab = Util.getTabAlreadyExist(tabSheet, String.valueOf(gid));
-//                tabSheet.setSelectedTab(tab.getComponent());
-//            }
-//        }
-//    }
-
     @Override
     public void afterPropertiesSet() {
-
     }
 
     @Override
     public void attach() {
-
         super.attach();
-
         updateLabels();
     }
 
     @Override
     public void updateLabels() {
-
     }
 
 }

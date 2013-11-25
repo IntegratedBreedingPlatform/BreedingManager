@@ -100,9 +100,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	
