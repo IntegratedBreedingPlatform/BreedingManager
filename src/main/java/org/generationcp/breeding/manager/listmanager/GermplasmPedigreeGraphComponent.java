@@ -38,7 +38,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
     private GermplasmQueries qQuery;
 
     public static final String  UPDATE_PEDIGREE_GRAPH_BUTTON_ID="Update Pedigree Graph";
-    @SuppressWarnings("unused")
+    
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeGraphComponent.class);
 
     @Autowired
@@ -49,7 +49,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
     private Component pedigree_level_label;
     private CheckBox pedigreeDerivativeCheckbox;
     private Panel panelPedigree;
-    private static final String PEDIGREE_IMAGE_PATH = "../gcp-default/graph/";
     private String BSLASH = "\\";
     private String FSLASH = "/";
     private static final int DEFAULT_TREE_LEVEL=3;
@@ -100,13 +99,13 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         try {
             updatePedigreeGraphButtonClickAction();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+        	LOG.error("Error with generating pedigree graph.", e);
             e.printStackTrace();
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
+        	LOG.error("Error with generating pedigree graph.", e);
             e.printStackTrace();
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
+        	LOG.error("Error with generating pedigree graph.", e);
             e.printStackTrace();
         }
     }
@@ -168,8 +167,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
         panelPedigree.addComponent(em);
         panelPedigree.getContent().setSizeUndefined();
-        
-        
     }
 
 }

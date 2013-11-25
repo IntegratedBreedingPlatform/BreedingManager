@@ -9,7 +9,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,7 +40,6 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
     
     private BreedingManagerApplication breedingManagerApplication;
-//    private ListManagerTreeComponent listManagerTreeComponent;
     private ListManagerDetailsLayout detailsTabbedLayout;
     
     @Autowired
@@ -50,8 +48,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     @Autowired
     private GermplasmListManager germplasmListManager;
     private boolean forGermplasmListWindow;
-    private GermplasmList germplasmList;
-	private ListDataComponent listDataComponent;
+    private ListDataComponent listDataComponent;
     
     public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
@@ -82,22 +79,17 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     } 
     
     public void refreshListData(){
-
     }
     
     public void selectedTabChangeAction() throws InternationalizableException{
-        
     }
     
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-//		this.setSizeFull();
 		setWidth("100%");
 		setHeight("95%");
         listDetailComponent = new ListDetailComponent(this, germplasmListManager, germplasmListId, fromUrl);
@@ -116,24 +108,16 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         
         ComponentTreeItem listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();
-        ComponentTreeItem listDetailsContent = listDetails.addChild(listDetailComponent);
+        listDetails.addChild(listDetailComponent);
         
         ComponentTreeItem listData = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
-        ComponentTreeItem listDataContent = listData.addChild(listDataComponent);
+        listData.addChild(listDataComponent);
         
         ComponentTreeItem listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
-        ComponentTreeItem listSeedInventoryContent = listSeedInventory.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
-        
+        listSeedInventory.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
         
         this.addComponent(content);
-        
-        //this.addTab(ListDetailComponent, messageSource.getMessage(Message.LIST_DETAILS)); 
-        //this.addTab(layoutListData, messageSource.getMessage(Message.LIST_DATA)); 
-        //this.addTab(layoutListDataInventory, messageSource.getMessage(Message.LIST_SEED_INVENTORY)); 
-        
-        //this.addListener(new GermplasmListSelectedTabChangeListener(this));
-	}
-
+    }
 
 	@Override
 	public void attach() {
@@ -152,10 +136,6 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	public BreedingManagerApplication getBreedingManagerApplication() {
 	    return breedingManagerApplication;
 	}
-	
-//	public ListManagerTreeComponent getListManagerTreeComponent() {
-//	    return listManagerTreeComponent;
-//	}
 	
 	public ListManagerDetailsLayout getDetailsLayout(){
 		return this.detailsTabbedLayout;

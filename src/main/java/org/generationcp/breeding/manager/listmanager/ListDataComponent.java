@@ -183,7 +183,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
 		
 		menu.addListener(new ContextMenu.ClickListener() {
-			   public void contextItemClick(ClickEvent event) {
+			private static final long serialVersionUID = -2343109406180457070L;
+
+			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
 			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
@@ -215,8 +217,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 toolsButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
  		
     	 toolsButton.addListener(new ClickListener() {
+    		private static final long serialVersionUID = 272707576878821700L;
 
-    		 @Override
+			@Override
     		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
     			 menu.show(event.getClientX(), event.getClientY());
     			 
@@ -274,7 +277,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              
              if(!fromUrl){
                      listDataTable.addActionHandler(new Action.Handler() {
-                         public Action[] getActions(Object target, Object sender) {
+                        private static final long serialVersionUID = -897257270314381555L;
+
+						public Action[] getActions(Object target, Object sender) {
                          if (germplasmListId < 0 &&  germplasmListStatus < 100){
                          return ACTIONS_TABLE_CONTEXT_MENU;
                          }else{
@@ -432,7 +437,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             }
             return prefId;
         } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
         }
 		return prefId;
     }
@@ -499,33 +503,33 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                     LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(this.getWindow()
                             , "Error with exporting list."    
-                            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
+                            , e.getMessage() + " .Please report to IBP.", Notification.POSITION_CENTERED);
             }
         } else {
-//            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
             ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
                 "Yes", "No", new ConfirmDialog.Listener() {
+            		private static final long serialVersionUID = -5502162355464372022L;
 
-            public void onClose(ConfirmDialog dialog) {
-                if (dialog.isConfirmed()) {
-                try {
-                lockList();
-                germplasmListStatus=germplasmList.getStatus();
-                exportListAction();
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error with exporting list.", e);
-                e.printStackTrace();
-            }
-                
-                }else{
-
-                }
-            }
-            });
-    }
+            		public void onClose(ConfirmDialog dialog) {
+            			if (dialog.isConfirmed()) {
+            				try {
+            					lockList();
+            					germplasmListStatus=germplasmList.getStatus();
+            					exportListAction();
+            				} catch (MiddlewareQueryException e) {
+            					LOG.error("Error with exporting list.", e);
+            					MessageNotifier.showError(dialog.getParent().getWindow()
+                                        , "Error with exporting list."    
+                                        , e.getMessage() + " .Please report to IBP.", Notification.POSITION_CENTERED);
+            				}
+            			}else{
+            			}
+            		}
+            	});
         }
+    }
 
     //called by GermplasmListButtonClickListener
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -545,12 +549,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                         //File tempFile = new File(tempFileName);
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                        MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME) 
+                        MessageNotifier.showError(this.getWindow() 
                                     , "Error with exporting list."
                                     , e.getMessage(), Notification.POSITION_CENTERED);
                 }
         } else {
-            MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
+            MessageNotifier.showError(this.getWindow()
                         , "Error with exporting list."    
                         , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
                     
@@ -651,18 +655,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			LOG.error("Error with deleting list entries.", e);
 			e.printStackTrace();
 		}
-        
-//		gidsWithoutChildren=getGidsToDeletedWithOutChildren();
-//		try {
-//			if(gidsWithoutChildren.size() > 0){
-//				deleteGermplasmDialogBox(gidsWithoutChildren);
-//			}
-//		} catch (NumberFormatException e1) {
-//			e1.printStackTrace();
-//		} catch (MiddlewareQueryException e1) {
-//			e1.printStackTrace();
-//		}
-		
     }
 
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
@@ -677,9 +669,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
 
     private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
-//        GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
-        BreedingManagerApplication app = listManagerTreeMenu.getBreedingManagerApplication();
-
         User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
         ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
@@ -709,18 +698,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
             listManagerCopyToNewListDialog.setModal(true);
-            listManagerCopyToNewListDialog.setWidth(700);
-            listManagerCopyToNewListDialog.setHeight(350);
+            listManagerCopyToNewListDialog.setWidth("700px");
+            listManagerCopyToNewListDialog.setHeight("350px");
             
             try {
                 if(forGermplasmListWindow) {
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-                    this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
-                 
+                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+                    this.getWindow().addWindow(listManagerCopyToNewListDialog);
                 } else {
-                    
-//                  listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getMainWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-//                  this.getApplication().getMainWindow().addWindow(listManagerCopyToNewListDialog);
                     listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
                     listManagerTreeMenu.getWindow().addWindow(listManagerCopyToNewListDialog);
                 }
@@ -729,8 +714,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 e.printStackTrace();
             }
         }
-        
-    
     }
     
     public void lockList() throws MiddlewareQueryException{
@@ -746,14 +729,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
         workbenchDataManager.addProjectActivity(projAct);
         
-//        	deleteSelectedEntriesButton.setEnabled(false); 
-//            saveSortingButton.setEnabled(false);
-//            addEntriesButton.setEnabled(false);
-            
             menuDeleteEntries.setVisible(false);
             menuSaveChanges.setVisible(false);
             menuAddEntry.setVisible(false);
-            
            
         }catch (MiddlewareQueryException e) {
             LOG.error("Error with locking list.", e);
@@ -798,7 +776,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 maxEntryId = entryId;
             }
         }
-        
         
         GermplasmListData listData = new GermplasmListData();
         listData.setList(list);
@@ -884,12 +861,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             return;
         }
     }
-    
-//    public void addEntryButtonClickAction(){
-//        Window parentWindow = this.getWindow();
-//        AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
-//        parentWindow.addWindow(addEntriesDialog);
-//    }
     
 	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
 

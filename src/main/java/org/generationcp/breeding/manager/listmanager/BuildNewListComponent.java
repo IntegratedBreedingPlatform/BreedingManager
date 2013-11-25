@@ -106,11 +106,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
-	private static String TOOLS_TOOLTIP = "Tools";
-	
-	private String MENU_EXPORT_LIST="Export List"; 
-	private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
-	private String MENU_COPY_TO_NEW_LIST="Copy to New List";
 	
 	private ContextMenu menu;
 	private ContextMenuItem menuSelectAll;
@@ -266,7 +261,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	return GERMPLASMS_TABLE_CONTEXT_MENU;
             }
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
 				if(ACTION_SELECT_ALL == action) {
@@ -280,9 +274,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		menu = new ContextMenu();
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		menuExportList = menu.addItem(MENU_EXPORT_LIST);
-		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
-		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
+		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
+		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
+		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
 		
 		//initially disabled when the current list building is not yet save
 		menuExportList.setEnabled(false);
@@ -317,11 +311,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
 			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
 			      	deleteSelectedEntries();
-			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
 			    	exportListAction();
-			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
 			    	exportListForGenotypingOrderAction();
-			    }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
 			    	copyToNewListAction();
 			    }				
 			}
@@ -388,8 +382,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 				
 				Table sourceTable = (Table) transferable.getSourceComponent();
-			    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
-			
+			    
 			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object droppedOverItemId = dropData.getItemIdOver();
 			    
@@ -754,8 +747,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth(700);
-                listManagerCopyToNewListDialog.setHeight(350);
+                listManagerCopyToNewListDialog.setWidth("700px");
+                listManagerCopyToNewListDialog.setHeight("350px");
                 
                 try {
                 	
@@ -883,7 +876,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return Integer.valueOf(maxId);
     }
     
-    private void deleteSelectedEntries(){
+    @SuppressWarnings("unchecked")
+	private void deleteSelectedEntries(){
 		List<Integer> selectedItemIds = new ArrayList<Integer>();
 		selectedItemIds.addAll((Collection<? extends Integer>) germplasmsTable.getValue());
 		for(Integer selectedItemId:selectedItemIds){

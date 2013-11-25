@@ -16,21 +16,25 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ListManagerTreeComponent extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean, Serializable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerTreeComponent.class);
+	
 	private static final long serialVersionUID = -224052511814636864L;
 	private final static int BATCH_SIZE = 50;
 	public final static String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
@@ -41,10 +45,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private ListManagerMain listManagerMain;
     private ListManagerDetailsLayout displayDetailsLayout; 
     
     private boolean forGermplasmListWindow;
@@ -56,13 +60,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.forGermplasmListWindow=forGermplasmListWindow;
     }
 
-    public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
-        this.listManagerMain = listManagerMain;
-        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
-        this.forGermplasmListWindow=forGermplasmListWindow;
-    }    
-    
-	@Override
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		
 		displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
@@ -86,8 +84,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-
 	}
 
     public void createTree() {
@@ -97,11 +93,12 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.addStyleName("listManagerTree");
         
         germplasmListTree.setItemStyleGenerator(new ItemStyleGenerator() {
-            @Override
+        	private static final long serialVersionUID = -5690995097357568121L;
+
+			@Override
             public String getStyle(Object itemId) {
             	if(itemId.equals("LOCAL") || itemId.equals("CENTRAL")){
             		return "listManagerTreeRootNode"; 
-            	//} else if(germplasmListTree.hasChildren(itemId)){
             	} else if(isInteger((String) itemId.toString()) && hasChildList((Integer) itemId)){
             		return "listManagerTreeRegularParentNode";
             	} else {
@@ -122,7 +119,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         try {
             localGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.LOCAL);
         } catch (MiddlewareQueryException e) {
-            e.printStackTrace();
+            LOG.error("Error in getting top level lists.", e);
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
                         messageSource.getMessage(Message.ERROR_DATABASE),
@@ -134,7 +131,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         try {
             centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
         } catch (MiddlewareQueryException e) {
-            e.printStackTrace();
+        	LOG.error("Error in getting top level lists.", e);
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
                         messageSource.getMessage(Message.ERROR_DATABASE),
@@ -143,7 +140,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             centralGermplasmListParent = new ArrayList<GermplasmList>();
         }
         
-
         Tree germplasmListTree = new Tree();
 
         germplasmListTree.addItem("LOCAL");
@@ -177,11 +173,13 @@ public class ListManagerTreeComponent extends VerticalLayout implements
                 this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
             }
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+        	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT),
+                    Notification.POSITION_CENTERED);
         }catch (MiddlewareQueryException e){
+        	LOG.error("Error in displaying germplasm list details.", e);
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
                     Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
         }
@@ -195,6 +193,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         try {
             listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, 0, 1);
         } catch (MiddlewareQueryException e) {
+        	LOG.error("Error in getting germplasm lists by parent id.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
                     messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
@@ -215,7 +214,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         try {
             germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
         } catch (MiddlewareQueryException e) {
-            e.printStackTrace();
+            LOG.error("Error in getting germplasm lists by parent id.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
                     messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
@@ -240,10 +239,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         return true;
     }
-    
-//    public TabSheet getTabSheetGermplasmList() {
-//        return tabSheetGermplasmList;
-//    }
     
     public ListManagerDetailsLayout getViewDetailsTabbedLayout(){
     	return this.displayDetailsLayout;

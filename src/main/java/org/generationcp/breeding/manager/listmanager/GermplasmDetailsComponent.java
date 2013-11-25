@@ -4,8 +4,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,9 +23,6 @@ public class GermplasmDetailsComponent extends GridLayout implements
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
-	@Autowired
-	private GermplasmDataManager germplasmDataManager;
 	
 	private Label lblGid;
 	private Label lblCreationMethod;
@@ -51,12 +46,10 @@ public class GermplasmDetailsComponent extends GridLayout implements
 	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
 		setRows(3);
         setColumns(4);
         setColumnExpandRatio(1, 2);
@@ -83,9 +76,7 @@ public class GermplasmDetailsComponent extends GridLayout implements
         addComponent(location, 1, 2);
         addComponent(lblReference, 2, 2);
         addComponent(reference, 3, 2);
-        
-
-	}
+    }
 
 	private void initializeLabels() {
 		lblGid = new Label( "<b>" + messageSource.getMessage(Message.LISTDATA_GID_HEADER) + ":</b> ", Label.CONTENT_XHTML);
@@ -94,7 +85,6 @@ public class GermplasmDetailsComponent extends GridLayout implements
 		lblPreferredName = new Label( "<b>" + messageSource.getMessage(Message.PREFERRED_NAME) + ":</b> ", Label.CONTENT_XHTML); 
 		lblCreationDate = new Label( "<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> ", Label.CONTENT_XHTML); 
 		lblReference = new Label( "<b>" + messageSource.getMessage(Message.REFERENCE) + ":</b> ", Label.CONTENT_XHTML); 
-		
 		
 		gid = new Label(String.valueOf(gDetailModel.getGid()));
         prefName = new Label(gDetailModel.getGermplasmPreferredName());
