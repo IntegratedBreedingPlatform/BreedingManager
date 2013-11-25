@@ -351,12 +351,22 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						boolean thereIsAChange = false;
 						if(!matchingSavedEntry.getDesignation().equals(entryToCheck.getDesignation())){
 							thereIsAChange = true;
-							matchingSavedEntry.setDesignation(entryToCheck.getDesignation());
+							String designation = entryToCheck.getDesignation();
+							if(designation != null && designation.length() != 0){
+								matchingSavedEntry.setDesignation(designation);
+							} else{
+								matchingSavedEntry.setDesignation("-");
+							}
 						}
 						
 						if(!matchingSavedEntry.getEntryCode().equals(entryToCheck.getEntryCode())){
 							thereIsAChange = true;
-							matchingSavedEntry.setEntryCode(entryToCheck.getEntryCode());
+							String entryCode = entryToCheck.getEntryCode();
+							if(entryCode != null && entryCode.length() != 0){
+								matchingSavedEntry.setEntryCode(entryCode);
+							} else{
+								matchingSavedEntry.setEntryCode(entryToCheck.getEntryId().toString());
+							}
 						}
 						
 						if(!matchingSavedEntry.getEntryId().equals(entryToCheck.getEntryId())){
@@ -366,12 +376,22 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						
 						if(!matchingSavedEntry.getGroupName().equals(entryToCheck.getGroupName())){
 							thereIsAChange = true;
-							matchingSavedEntry.setGroupName(entryToCheck.getGroupName());
+							String groupName = entryToCheck.getGroupName();
+							if(groupName != null && groupName.length() != 0){
+								matchingSavedEntry.setGroupName(groupName);
+							} else{
+								matchingSavedEntry.setGroupName("-");
+							}
 						}
 						
 						if(!matchingSavedEntry.getSeedSource().equals(entryToCheck.getSeedSource())){
 							thereIsAChange = true;
-							matchingSavedEntry.setSeedSource(entryToCheck.getSeedSource());
+							String seedSource = entryToCheck.getSeedSource();
+							if(seedSource != null && seedSource.length() != 0){
+								matchingSavedEntry.setSeedSource(seedSource);
+							} else{
+								matchingSavedEntry.setSeedSource("-");
+							}
 						}
 						
 						if(thereIsAChange){
