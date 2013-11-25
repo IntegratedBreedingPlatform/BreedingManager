@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -15,7 +16,9 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,22 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
+		}
+		
+		try{
+			ProjectActivity activity = new ProjectActivity();
+			activity.setCreatedAt(new Date());
+			activity.setName("List Manager Save List");
+			activity.setDescription("Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList.getName());
+			WorkbenchRuntimeData runtimeData = this.workbenchDataManager.getWorkbenchRuntimeData();
+			Project project = this.workbenchDataManager.getLastOpenedProject(runtimeData.getUserId());
+			User user = this.workbenchDataManager.getUserById(runtimeData.getUserId());
+			activity.setProject(project);
+			activity.setUser(user);
+			this.workbenchDataManager.addProjectActivity(activity);
+			
+		} catch(MiddlewareQueryException ex){
+			LOG.error("Error with saving Workbench activity.", ex);
 		}
 		
 		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
