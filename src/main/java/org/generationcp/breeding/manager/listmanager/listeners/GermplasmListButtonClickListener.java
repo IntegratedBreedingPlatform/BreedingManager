@@ -17,6 +17,9 @@ import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +73,48 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
                 && (source instanceof ListManagerCopyToNewListDialog)) { // "Cancel Germplasm List"
             ((ListManagerCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
-
-        } else {
+        }else if (event.getButton().getData().equals(AddEntryDialog.SEARCH_BUTTON_ID)
+                    && (source instanceof AddEntryDialog)){
+                try {
+                    ((AddEntryDialog) source).searchButtonClickAction();
+                } catch (InternationalizableException e){
+                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    e.printStackTrace();
+                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                }
+            
+    	}else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID)
+                && (source instanceof AddEntryDialog)){
+            try {
+                ((AddEntryDialog) source).doneButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        }else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
+                && (source instanceof AddEntryDialog)){
+            try {
+                ((AddEntryDialog) source).backButtonClickAction();
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        }else if (event.getButton().getData().equals(AddEntryDialog.NEXT_BUTTON_ID)
+                && (source instanceof AddEntryDialog)){
+            try {
+                ((AddEntryDialog) source).nextButtonClickAction(event);
+            } catch (InternationalizableException e){
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        }
+        else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
+		
     }
 
 }

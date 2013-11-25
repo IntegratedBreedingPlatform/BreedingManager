@@ -22,6 +22,8 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
@@ -70,7 +72,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
+public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource  {
 
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
@@ -83,9 +85,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
     private static final String STATUS = "status";
-    private static final String PREFERRED_NAME="preferrred name";
-    private static final String PREFERRED_ID="preferrred id";
-    private static final String LOCATION_NAME="location name";
     
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
@@ -107,13 +106,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private String MENU_ADD_ENTRY="Add Entry"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries"; 
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_NAME = new Action("Replace Entry Code with Preferred Name");
-    static final Action ACTION_VIEW_GERMPLASM_PREFERRED_ID = new Action("Replace Entry Code with Preferred ID");
-    static final Action ACTION_VIEW_GERMPLASM_LOCATION_NAME = new Action("Replace Seed Source with Germplasm Location Name");
+
     
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE = new Action("Delete selected entries");
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
     
     public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -195,7 +192,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
 			    	  copyToNewListAction();
 			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
-			    
+			    	  addEntryButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
 			    	  saveChangesAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
@@ -287,13 +284,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                      		//deleteListButtonClickAction();
                      	}else if(ACTION_SELECT_ALL == action) {
                      		listDataTable.setValue(listDataTable.getItemIds());
-                     	}else if(ACTION_VIEW_GERMPLASM_PREFERRED_ID==action){
-                    		setListDataTableColumnWithOtherInfo(PREFERRED_ID);
-                    	}else if(ACTION_VIEW_GERMPLASM_PREFERRED_NAME==action){
-                    		setListDataTableColumnWithOtherInfo(PREFERRED_NAME);
-                    	}else if(ACTION_VIEW_GERMPLASM_LOCATION_NAME==action){
-                    		setListDataTableColumnWithOtherInfo(LOCATION_NAME);
-                    	}
+                     	}
                      }
                      });
              }
@@ -379,63 +370,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         listDataTable.setVisibleColumns(new String[] {GID,ENTRY_ID,ENTRY_CODE,SEED_SOURCE,DESIGNATION,GROUP_NAME,STATUS});
     }
 
-    
-    protected void setListDataTableColumnWithOtherInfo(String gInfo) {
-    	for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
-            //iterate through the table elements' IDs
-            int listDataId = (Integer) i.next();
-            Item item = listDataTable.getItem(listDataId);
-            Object gidObject = item.getItemProperty(GID).getValue();
-            Button b= (Button) gidObject;
-            String gid=b.getCaption();
-            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            if(gInfo.equals(PREFERRED_NAME)){
-            	item.getItemProperty(ENTRY_CODE).setValue(gModel.getGermplasmPreferredName());
-            }else if(gInfo.equals(ENTRY_CODE)){
-            	item.getItemProperty(ENTRY_CODE).setValue(gModel.getPrefID());
-            }else if(gInfo.equals(LOCATION_NAME)){
-            	item.getItemProperty(SEED_SOURCE).setValue(gModel.getGermplasmLocation());
-            }
-    	}
-		
-	}
-    
-    public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
-        try {
-            germplasmDetail = new GermplasmDetailModel();
-            Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
-            Name name = germplasmDataManager.getPreferredNameByGID(gid);
-
-            if (g != null) {
-                germplasmDetail.setGid(g.getGid());
-                germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
-                germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
-                germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
-            }
-            return germplasmDetail;
-        } catch (MiddlewareQueryException e) {
-          
-        }
-		return germplasmDetail;
-    }
-    
-    private String getGermplasmPrefID(int gid) throws InternationalizableException {
-    	 String prefId = "";
-    	try {
-            ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
-           
-            for (Name n : names) {
-                if (n.getNstat() == 8) {
-                    prefId = n.getNval();
-                    break;
-                }
-            }
-            return prefId;
-        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
-        }
-		return prefId;
-    }
 
     public void saveChangesAction() throws InternationalizableException {
         int entryId = 1;
@@ -885,11 +819,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
     }
     
-//    public void addEntryButtonClickAction(){
-//        Window parentWindow = this.getWindow();
-//        AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
-//        parentWindow.addWindow(addEntriesDialog);
-//    }
+    public void addEntryButtonClickAction(){
+        Window parentWindow = this.getWindow();
+        AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+        parentWindow.addWindow(addEntriesDialog);
+    }
     
 	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
 

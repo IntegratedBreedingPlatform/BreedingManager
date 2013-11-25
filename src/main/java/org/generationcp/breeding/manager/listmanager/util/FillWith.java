@@ -2,11 +2,14 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
+import org.generationcp.breeding.manager.util.GermplasmDetailModel;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -14,12 +17,14 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -60,6 +65,10 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossMaleInformation;
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePreferredName;
+
+	private GermplasmDetailModel germplasmDetail;
+    private static final String ENTRY_CODE = "entryCode";
+    private static final String SEED_SOURCE = "seedSource";
     
 	/**
 	 * Add Fill With context menu to a table
@@ -136,14 +145,14 @@ public class FillWith implements InternationalizableComponent  {
 		   			 trackFillWith((String) fillWithMenu.getData());
 		   			 
 		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-		   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-		   						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
+		   				 fillWithLocation();
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
 		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
-		   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-		   						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
-		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
+		   				 fillWithPreferredName();
+		   			 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_ID))){
+		   				 fillWithPreferredID();
+	   				 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
 		   				 fillWithMethodName(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
 		   				 fillWithMethodAbbreviation(targetTable, (String) fillWithMenu.getData());
@@ -355,6 +364,86 @@ public class FillWith implements InternationalizableComponent  {
   	   }        	
     }
 
+    protected void fillWithPreferredName() {
+    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+            Item item = targetTable.getItem(listDataId);
+            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+            Button b= (Button) gidObject;
+            String gid=b.getCaption();
+            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
+            item.getItemProperty(ENTRY_CODE).setValue(gModel.getGermplasmPreferredName());
+    	}
+		
+	}
+    
+    protected void fillWithPreferredID() {
+    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+            Item item = targetTable.getItem(listDataId);
+            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+            Button b= (Button) gidObject;
+            String gid=b.getCaption();
+            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
+            item.getItemProperty(ENTRY_CODE).setValue(gModel.getPrefID());
+    	}
+		
+	}
+    
+    
+    protected void fillWithLocation() {
+    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+            Item item = targetTable.getItem(listDataId);
+            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+            Button b= (Button) gidObject;
+            String gid=b.getCaption();
+            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
+            item.getItemProperty(SEED_SOURCE).setValue(gModel.getGermplasmLocation());
+       
+    	}
+		
+	}
+    
+    public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
+        try {
+            germplasmDetail = new GermplasmDetailModel();
+            Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
+            Name name = germplasmDataManager.getPreferredNameByGID(gid);
+
+            if (g != null) {
+                germplasmDetail.setGid(g.getGid());
+                germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
+                germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
+                germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
+            }
+            return germplasmDetail;
+        } catch (MiddlewareQueryException e) {
+          
+        }
+		return germplasmDetail;
+    }
+    
+    private String getGermplasmPrefID(int gid) throws InternationalizableException {
+   	 String prefId = "";
+   	try {
+           ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
+          
+           for (Name n : names) {
+               if (n.getNstat() == 8) {
+                   prefId = n.getNval();
+                   break;
+               }
+           }
+           return prefId;
+       } catch (MiddlewareQueryException e) {
+//           throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
+       }
+		return prefId;
+   }
 
 	@Override
 	public void updateLabels() {
