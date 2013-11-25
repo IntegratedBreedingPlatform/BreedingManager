@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -29,7 +28,6 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class FillWith implements InternationalizableComponent  {
@@ -49,6 +47,7 @@ public class FillWith implements InternationalizableComponent  {
     private List<String> filledWithPropertyIds;
     
 	private ContextMenu fillWithMenu;
+	private ContextMenuItem menuFillWithEmpty;
 	private ContextMenuItem menuFillWithGermplasmDate;
 	private ContextMenuItem menuFillWithPrefName;
 	private ContextMenuItem menuFillWithPrefID;
@@ -114,6 +113,7 @@ public class FillWith implements InternationalizableComponent  {
     	
 	   	 fillWithMenu = new ContextMenu();
 		 
+	   	 menuFillWithEmpty = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_EMPTY));
 	   	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
 	   	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
 	   	 menuFillWithGermplasmDate = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE));
@@ -144,7 +144,9 @@ public class FillWith implements InternationalizableComponent  {
 		   			 
 		   			 trackFillWith((String) fillWithMenu.getData());
 		   			 
-		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
+		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_EMPTY))){
+		   				 fillWithEmpty(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
 		   				 fillWithLocation();
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
 		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
@@ -212,9 +214,16 @@ public class FillWith implements InternationalizableComponent  {
 		List<Integer> itemIds = new ArrayList<Integer>();
     	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
     	return itemIds;
-	}    
+	}
+	
+    public void fillWithEmpty(Table table, String propertyId){
+       List<Integer> itemIds = getItemIds(table);
+       for(Integer itemId: itemIds){
+           table.getItem(itemId).getItemProperty(propertyId).setValue("");
+       }
+    }
     
-    public void fillWithGermplasmDate(Table table, String propertyId){
+	public void fillWithGermplasmDate(Table table, String propertyId){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
