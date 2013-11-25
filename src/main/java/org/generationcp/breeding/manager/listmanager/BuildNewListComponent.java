@@ -114,16 +114,22 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private ContextMenu menu;
 	private ContextMenuItem menuSelectAll;
+	private ContextMenuItem menuDeleteSelectedEntries;
 	private ContextMenuItem menuExportList;
 	private ContextMenuItem menuExportForGenotypingOrder;
 	private ContextMenuItem menuCopyToList;
 	
     static final Action ACTION_SELECT_ALL = new Action("Select All");
-	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL};
+    static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
+	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
 
 	private GermplasmList currentlySavedGermplasmList;
 	private Window listManagerCopyToNewListDialog;
 	private int germplasmListId;
+	
+	private List<String> propertyIdsEnabled;
+	
+	private FillWith fillWith;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -260,16 +266,20 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	return GERMPLASMS_TABLE_CONTEXT_MENU;
             }
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
 				if(ACTION_SELECT_ALL == action) {
 	        		germplasmsTable.setValue(germplasmsTable.getItemIds());
+				} else if(ACTION_DELETE_SELECTED_ENTRIES == action) {
+					deleteSelectedEntries();
 				}
 			}
         });
 		
 		menu = new ContextMenu();
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		menuExportList = menu.addItem(MENU_EXPORT_LIST);
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
@@ -305,6 +315,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			    ContextMenuItem clickedItem = event.getClickedItem();
 			    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
+			      	deleteSelectedEntries();
 			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
 			    	exportListAction();
 			    }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
@@ -553,11 +565,15 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 */
 	private void assignSerializedEntryCode(){
 		List<Integer> itemIds = getItemIds(germplasmsTable);
-    	    	
+    	List<String> filledWithPropertyIds = fillWith.getFilledWithPropertyIds();    
+		
     	int id = 1;
     	for(Integer itemId : itemIds){
-    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
-    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_CODE).setValue(id);
+    		//Check if filled with was used for this column, if so, do not change values to serialized numbers
+    		if(!filledWithPropertyIds.contains(ENTRY_ID))
+    			germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
+    		if(!filledWithPropertyIds.contains(ENTRY_CODE))
+    			germplasmsTable.getItem(itemId).getItemProperty(ENTRY_CODE).setValue(id);
     		id++;
     	}
     }
@@ -638,12 +654,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	}
 	
 	private void setupTableHeadersContextMenu(){
-		List<String> propertyIdsEnabled = new ArrayList<String>();
+		propertyIdsEnabled = new ArrayList<String>();
         propertyIdsEnabled.add(ENTRY_CODE);
         propertyIdsEnabled.add(SEED_SOURCE);
         
-      	@SuppressWarnings("unused")
-      	FillWith fillWith = new FillWith(this, messageSource, germplasmsTable, GID, propertyIdsEnabled);
+      	fillWith = new FillWith(this, messageSource, germplasmsTable, GID, propertyIdsEnabled);
 	}
 	
 	
@@ -841,4 +856,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	maxId++;
     	return Integer.valueOf(maxId);
     }
+    
+    private void deleteSelectedEntries(){
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		selectedItemIds.addAll((Collection<? extends Integer>) germplasmsTable.getValue());
+		for(Integer selectedItemId:selectedItemIds){
+			germplasmsTable.removeItem(selectedItemId);
+		}
+		assignSerializedEntryCode();
+    }
+
 }

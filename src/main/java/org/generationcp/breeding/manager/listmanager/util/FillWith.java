@@ -41,7 +41,7 @@ public class FillWith implements InternationalizableComponent  {
     private Table targetTable;
     private String GIDPropertyId;
     private List<String> propertyIdsContextMenuAvailableTo;
-    
+    private List<String> filledWithPropertyIds;
     
 	private ContextMenu fillWithMenu;
 	private ContextMenuItem menuFillWithGermplasmDate;
@@ -74,6 +74,7 @@ public class FillWith implements InternationalizableComponent  {
     	this.listManagerTreeMenu = listManagerTreeMenu;
     	this.propertyIdsContextMenuAvailableTo = propertyIdsContextMenuAvailableTo;
     	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
     	
     	setupContextMenu();
     	
@@ -93,6 +94,7 @@ public class FillWith implements InternationalizableComponent  {
     	this.absoluteLayout = absoluteLayout;
     	this.propertyIdsContextMenuAvailableTo = propertyIdsContextMenuAvailableTo;
     	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
     	
     	setupContextMenu();
     	
@@ -127,36 +129,38 @@ public class FillWith implements InternationalizableComponent  {
 	   	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
 	   		private static final long serialVersionUID = -2384037190598803030L;
 	
-				public void contextItemClick(ClickEvent event) {
-	   			 // Get reference to clicked item
-	   			 ContextMenuItem clickedItem = event.getClickedItem();
-	   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-	   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-	   						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
-	   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
-	   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
-	   						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
-	   				 fillWithMethodName(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
-	   				 fillWithMethodAbbreviation(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER))){
-	   				 fillWithMethodNumber(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
-	   				 fillWithMethodGroup(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_GID))){
-	   				 fillWithCrossFemaleGID(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_PREFERRED_NAME))){
-	   				 fillWithCrossFemalePreferredName(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_GID))){
-	   				 fillWithCrossMaleGID(targetTable, (String) fillWithMenu.getData());
-	   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME))){
-	   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
-	   			 }
-	   			 
-	   		 }
+	   			public void contextItemClick(ClickEvent event) {
+		   			 // Get reference to clicked item
+		   			 ContextMenuItem clickedItem = event.getClickedItem();
+		   			 
+		   			 trackFillWith((String) fillWithMenu.getData());
+		   			 
+		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
+		   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+		   						 , "Fill With Location Name was clicked.", 3000, Notification.POSITION_CENTERED);
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
+		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
+		   				 MessageNotifier.showMessage(event.getComponent().getWindow(), "Information"
+		   						 , "Fill With Preferred Name was clicked.", 3000, Notification.POSITION_CENTERED);
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
+		   				 fillWithMethodName(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
+		   				 fillWithMethodAbbreviation(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NUMBER))){
+		   				 fillWithMethodNumber(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_GROUP))){
+		   				 fillWithMethodGroup(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_GID))){
+		   				 fillWithCrossFemaleGID(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_FEMALE_PREFERRED_NAME))){
+		   				 fillWithCrossFemalePreferredName(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_GID))){
+		   				 fillWithCrossMaleGID(targetTable, (String) fillWithMenu.getData());
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME))){
+		   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
+		   			 }
+	   			}
 	   	 });
 	   	 
 	   	 if(absoluteLayout!=null){
@@ -357,6 +361,14 @@ public class FillWith implements InternationalizableComponent  {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public List<String> getFilledWithPropertyIds(){
+		return filledWithPropertyIds;
+	}
 
+	public void trackFillWith(String propertyId){
+		if(!filledWithPropertyIds.contains(propertyId))
+			filledWithPropertyIds.add(propertyId);
+	}
 
 }
