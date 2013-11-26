@@ -122,8 +122,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private Window listManagerCopyToNewListDialog;
 	private int germplasmListId;
 	
-	private List<String> propertyIdsEnabled;
-	
 	private FillWith fillWith;
 	
 	@Autowired
@@ -653,11 +651,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	}
 	
 	private void setupTableHeadersContextMenu(){
-		propertyIdsEnabled = new ArrayList<String>();
-        propertyIdsEnabled.add(ENTRY_CODE);
-        propertyIdsEnabled.add(SEED_SOURCE);
-        
-      	fillWith = new FillWith(this, messageSource, germplasmsTable, GID, propertyIdsEnabled);
+		fillWith = new FillWith(this, messageSource, germplasmsTable, GID);
 	}
 	
 	

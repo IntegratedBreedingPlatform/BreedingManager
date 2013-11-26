@@ -7,16 +7,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -26,11 +31,15 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class FillWith implements InternationalizableComponent  {
+	private static final Logger LOG = LoggerFactory.getLogger(FillWith.class);
 
 	//@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -43,7 +52,6 @@ public class FillWith implements InternationalizableComponent  {
     
     private Table targetTable;
     private String GIDPropertyId;
-    private List<String> propertyIdsContextMenuAvailableTo;
     private List<String> filledWithPropertyIds;
     
 	private ContextMenu fillWithMenu;
@@ -54,7 +62,6 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithLocationName;
 	private ContextMenuItem menuFillWithBreedingMethodInfo;
 	private ContextMenuItem menuFillWithBreedingMethodName;
-	private ContextMenuItem menuFillWithBreedingMethodID;
 	private ContextMenuItem menuFillWithBreedingMethodGroup;
 	private ContextMenuItem menuFillWithBreedingMethodNumber;
 	private ContextMenuItem menuFillWithBreedingMethodAbbreviation;
@@ -64,10 +71,13 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossMaleInformation;
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePreferredName;
-
+	private ContextMenuItem menuFillWithCrossExpansion;
+	
 	private GermplasmDetailModel germplasmDetail;
     private static final String ENTRY_CODE = "entryCode";
     private static final String SEED_SOURCE = "seedSource";
+    
+    private Integer crossExpansionLevel = Integer.valueOf(1);
     
 	/**
 	 * Add Fill With context menu to a table
@@ -76,16 +86,14 @@ public class FillWith implements InternationalizableComponent  {
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 */
-    public FillWith(ListManagerTreeMenu listManagerTreeMenu,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId, final List<String> propertyIdsContextMenuAvailableTo){
+    public FillWith(ListManagerTreeMenu listManagerTreeMenu,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
     	this.listManagerTreeMenu = listManagerTreeMenu;
-    	this.propertyIdsContextMenuAvailableTo = propertyIdsContextMenuAvailableTo;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	
     	setupContextMenu();
-    	
     }
     
     
@@ -96,16 +104,14 @@ public class FillWith implements InternationalizableComponent  {
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 */
-    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId, final List<String> propertyIdsContextMenuAvailableTo){
+    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
     	this.absoluteLayout = absoluteLayout;
-    	this.propertyIdsContextMenuAvailableTo = propertyIdsContextMenuAvailableTo;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	
     	setupContextMenu();
-    	
     }
     
     
@@ -133,7 +139,7 @@ public class FillWith implements InternationalizableComponent  {
 	   	 menuFillWithCrossMaleGID = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_GID));
 	   	 menuFillWithCrossMalePreferredName = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME));
 	   	 
-	   	 
+	   	 menuFillWithCrossExpansion = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION));
 	   	 
 	   	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
 	   		private static final long serialVersionUID = -2384037190598803030L;
@@ -170,7 +176,9 @@ public class FillWith implements InternationalizableComponent  {
 		   				 fillWithCrossMaleGID(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME))){
 		   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
-		   			 }
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION))){
+		   				 displayExpansionLevelPopupWindow((String) fillWithMenu.getData());
+		   			 } 
 	   			}
 	   	 });
 	   	 
@@ -187,10 +195,20 @@ public class FillWith implements InternationalizableComponent  {
         		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
         			String column = (String) event.getPropertyId();
         			fillWithMenu.setData(column);
-        			if(propertyIdsContextMenuAvailableTo.contains(column)){
+        			if(column.equals(ListDataComponent.ENTRY_CODE) || column.equals(BuildNewListComponent.ENTRY_CODE)){
             			menuFillWithLocationName.setVisible(false);
-            			menuFillWithPrefID.setVisible(true);
-            			menuFillWithPrefName.setVisible(true);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataComponent.SEED_SOURCE) || column.equals(BuildNewListComponent.SEED_SOURCE)){
+            			menuFillWithLocationName.setVisible(true);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataComponent.GROUP_NAME) || column.equals(BuildNewListComponent.PARENTAGE)){
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
+            			menuFillWithLocationName.setVisible(false);
+            			menuFillWithCrossExpansion.setVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
             		}
         		}
@@ -417,6 +435,74 @@ public class FillWith implements InternationalizableComponent  {
 		
 	}
     
+    private void displayExpansionLevelPopupWindow(final String propertyId){
+    	crossExpansionLevel = Integer.valueOf(1);
+    	final Window specifyCrossExpansionLevelWindow = new Window("Specify Expansion Level");
+    	specifyCrossExpansionLevelWindow.setHeight("135px");
+    	specifyCrossExpansionLevelWindow.setWidth("210px");
+    	specifyCrossExpansionLevelWindow.setModal(true);
+    	specifyCrossExpansionLevelWindow.setResizable(false);
+    	
+    	AbsoluteLayout layout = new AbsoluteLayout();
+    	final ComboBox levelComboBox = new ComboBox();
+    	for(int ctr = 1; ctr <= 10; ctr++){
+    		levelComboBox.addItem(Integer.valueOf(ctr));
+    	}
+    	levelComboBox.setValue(Integer.valueOf(1));
+    	levelComboBox.setNullSelectionAllowed(false);
+    	layout.addComponent(levelComboBox, "top:10px;left:10px");
+    	
+    	Button okButton = new Button("OK");
+    	okButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -3519880320817778816L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				crossExpansionLevel = (Integer) levelComboBox.getValue();
+				fillWithCrossExpansion(propertyId);
+				targetTable.getWindow().removeWindow(specifyCrossExpansionLevelWindow);
+			}
+		});
+    	layout.addComponent(okButton, "top:50px;left:10px"); 
+    	
+    	Button cancelButton = new Button("Cancel");
+    	cancelButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -3519880320817778816L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				crossExpansionLevel = null;
+				targetTable.getWindow().removeWindow(specifyCrossExpansionLevelWindow);
+			}
+		});
+    	layout.addComponent(cancelButton, "top:50px;left:60px");
+    	
+    	specifyCrossExpansionLevelWindow.setContent(layout);
+    	
+    	this.targetTable.getWindow().addWindow(specifyCrossExpansionLevelWindow);
+    }
+    
+    private void fillWithCrossExpansion(String propertyId){
+    	if(crossExpansionLevel != null){
+	    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+	            //iterate through the table elements' IDs
+	            int listDataId = (Integer) i.next();
+	            Item item = targetTable.getItem(listDataId);
+	            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+	            Button b= (Button) gidObject;
+	            String gid=b.getCaption();
+	            try{
+	            	String crossExpansion = this.germplasmDataManager.getCrossExpansion(Integer.parseInt(gid), crossExpansionLevel.intValue());
+	            	item.getItemProperty(propertyId).setValue(crossExpansion);
+	            } catch(MiddlewareQueryException ex){
+	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);
+	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. Please report IBP.", Notification.POSITION_CENTERED);
+	            	return;
+	            }
+	        }
+    	}
+    }
+    
     public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
         try {
             germplasmDetail = new GermplasmDetailModel();
@@ -469,4 +555,21 @@ public class FillWith implements InternationalizableComponent  {
 			filledWithPropertyIds.add(propertyId);
 	}
 
+	private void setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(boolean visibility){
+		this.menuFillWithBreedingMethodAbbreviation.setVisible(visibility);
+		this.menuFillWithBreedingMethodGroup.setVisible(visibility);
+		this.menuFillWithBreedingMethodInfo.setVisible(visibility);
+		this.menuFillWithBreedingMethodName.setVisible(visibility);
+		this.menuFillWithBreedingMethodNumber.setVisible(visibility);
+		this.menuFillWithCrossFemaleGID.setVisible(visibility);
+		this.menuFillWithCrossFemaleInformation.setVisible(visibility);
+		this.menuFillWithCrossFemalePreferredName.setVisible(visibility);
+		this.menuFillWithCrossMaleGID.setVisible(visibility);
+		this.menuFillWithCrossMaleInformation.setVisible(visibility);
+		this.menuFillWithCrossMalePreferredName.setVisible(visibility);
+		this.menuFillWithEmpty.setVisible(visibility);
+		this.menuFillWithGermplasmDate.setVisible(visibility);
+		this.menuFillWithPrefID.setVisible(visibility);
+		this.menuFillWithPrefName.setVisible(visibility);
+	}
 }

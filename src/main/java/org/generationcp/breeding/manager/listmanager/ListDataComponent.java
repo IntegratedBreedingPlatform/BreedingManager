@@ -80,13 +80,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
 
     public static final String GID = "gid";
-    private static final String GID_VALUE = "gidValue";
-    private static final String ENTRY_ID = "entryId";
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String SEED_SOURCE = "seedSource";
-    private static final String DESIGNATION = "designation";
-    private static final String GROUP_NAME = "groupName";
-    private static final String STATUS = "status";
+    public static final String GID_VALUE = "gidValue";
+    public static final String ENTRY_ID = "entryId";
+    public static final String ENTRY_CODE = "entryCode";
+    public static final String SEED_SOURCE = "seedSource";
+    public static final String DESIGNATION = "designation";
+    public static final String GROUP_NAME = "groupName";
+    public static final String STATUS = "status";
     
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
@@ -325,12 +325,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              
              if(germplasmListId < 0){
             
-	             List<String> propertyIdsEnabled = new ArrayList<String>();
-	             propertyIdsEnabled.add(ENTRY_CODE);
-	             propertyIdsEnabled.add(SEED_SOURCE);
-	             
-	           	 @SuppressWarnings("unused")
-	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID, propertyIdsEnabled);
+	             @SuppressWarnings("unused")
+	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID);
              }
              setSpacing(true);
              addComponent(listDataTable);
