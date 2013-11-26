@@ -34,6 +34,8 @@ public class GermplasmSearchQuery implements Query{
     public static final Object NAMES = "names";
     public static final Object METHOD = "method";
     public static final Object LOCATION = "location";
+    public static final String SEARCH_OPTION_GID = "GID";
+    public static final String SEARCH_OPTION_NAME = "Names";
 
     private GermplasmDataManager germplasmDataManager;
     private String searchChoice;
@@ -80,36 +82,36 @@ public class GermplasmSearchQuery implements Query{
 
         List<GermplasmSearchResultModel> germplasms = new ArrayList<GermplasmSearchResultModel>();
 
-//        try {
-//            List<Germplasm> germplasmList;
-//
-//            if (searchChoice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
-//                if (searchValue.contains("%")) {
-//                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.LIKE);
-//                } else {
-//                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.EQUAL);
-//                }
-//                for (Germplasm g : germplasmList) {
-//                    Germplasm gData = g;
-//                    GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
-//                    germplasms.add(setGermplasmSearchResult(gResult, gData));
-//
-//                }
-//            } else {
-//                Germplasm gData = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue));
-//                GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
-//
-//                if (gData != null) {
-//                    gResult = setGermplasmSearchResult(gResult, gData);
-//                    germplasms.add(gResult);
-//                }
-//
-//            }
-//
-//        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE,
-//                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
-//        }
+        try {
+            List<Germplasm> germplasmList;
+
+            if (searchChoice.equals(SEARCH_OPTION_NAME)) {
+                if (searchValue.contains("%")) {
+                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.LIKE);
+                } else {
+                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.EQUAL);
+                }
+                for (Germplasm g : germplasmList) {
+                    Germplasm gData = g;
+                    GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+                    germplasms.add(setGermplasmSearchResult(gResult, gData));
+
+                }
+            } else {
+                Germplasm gData = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue));
+                GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+
+                if (gData != null) {
+                    gResult = setGermplasmSearchResult(gResult, gData);
+                    germplasms.add(gResult);
+                }
+
+            }
+
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
+        }
 
         for (GermplasmSearchResultModel germplasm : germplasms) {
             PropertysetItem item = new PropertysetItem();
@@ -127,53 +129,53 @@ public class GermplasmSearchQuery implements Query{
         return items;
     }
 
-//    private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
-//            throws InternationalizableException {
-//        gResult.setGid(gData.getGid());
-//        gResult.setNames(getGermplasmNames(gData.getGid()));
-//
-//        try{
-//            Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
-//            if (method != null) {
-//                gResult.setMethod(method.getMname());
-//            } else {
-//                gResult.setMethod("");
-//            }
-//    
-//            Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
-//            if (loc != null) {
-//                gResult.setLocation(loc.getLname());
-//            } else {
-//                gResult.setLocation("");
-//            }
-//    
-//            return gResult;
-//        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
-//        }
-//
-//    }
+    private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
+            throws InternationalizableException {
+        gResult.setGid(gData.getGid());
+        gResult.setNames(getGermplasmNames(gData.getGid()));
 
-//    private String getGermplasmNames(int gid) throws InternationalizableException {
-//
-//        try {
-//            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-//            StringBuffer germplasmNames = new StringBuffer("");
-//            int i = 0;
-//            for (Name n : names) {
-//                if (i < names.size() - 1) {
-//                    germplasmNames.append(n.getNval() + ",");
-//                } else {
-//                    germplasmNames.append(n.getNval());
-//                }
-//                i++;
-//            }
-//
-//            return germplasmNames.toString();
-//        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
-//        }
-//    }
+        try{
+            Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
+            if (method != null) {
+                gResult.setMethod(method.getMname());
+            } else {
+                gResult.setMethod("");
+            }
+    
+            Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
+            if (loc != null) {
+                gResult.setLocation(loc.getLname());
+            } else {
+                gResult.setLocation("");
+            }
+    
+            return gResult;
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
+        }
+
+    }
+
+    private String getGermplasmNames(int gid) throws InternationalizableException {
+
+        try {
+            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+            StringBuffer germplasmNames = new StringBuffer("");
+            int i = 0;
+            for (Name n : names) {
+                if (i < names.size() - 1) {
+                    germplasmNames.append(n.getNval() + ",");
+                } else {
+                    germplasmNames.append(n.getNval());
+                }
+                i++;
+            }
+
+            return germplasmNames.toString();
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
+        }
+    }
 
     @Override
     public void saveItems(List<Item> arg0, List<Item> arg1, List<Item> arg2) {
@@ -185,22 +187,22 @@ public class GermplasmSearchQuery implements Query{
      */
     @Override
     public int size() {
-//        try {
-//            if(this.size == -1){
-//                if (searchChoice.equals(GermplasmBrowserMain.SEARCH_OPTION_NAME)) {
-//                    if (searchValue.contains("%")) {
-//                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.LIKE);
-//                    } else {
-//                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.EQUAL);
-//                    }
-//                } else {
-//                    this.size = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue)) != null ? 1 : 0;
-//                }
-//            }
-//        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE,
-//                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
-//        }
+        try {
+            if(this.size == -1){
+                if (searchChoice.equals(SEARCH_OPTION_NAME)) {
+                    if (searchValue.contains("%")) {
+                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.LIKE);
+                    } else {
+                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.EQUAL);
+                    }
+                } else {
+                    this.size = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue)) != null ? 1 : 0;
+                }
+            }
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
+        }
 
         return this.size;
     }
