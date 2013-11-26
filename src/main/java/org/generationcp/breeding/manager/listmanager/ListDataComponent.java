@@ -62,6 +62,8 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -206,7 +208,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 toolsButton = new Button("Tools");
     	 toolsButton.setData(TOOLS_BUTTON_ID);
     	 toolsButton.setIcon(ICON_TOOLS);
-    	 toolsButton.setWidth("200px");
+    	 toolsButton.setWidth("100px");
     	 toolsButton.setDescription(TOOLS_TOOLTIP);
     	 toolsButton.setStyleName(Reindeer.BUTTON_LINK);
     	 toolsButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
@@ -247,7 +249,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 });
     	 
     	 listManagerTreeMenu.addComponent(menu);
-    	 addComponent(toolsButton);
+    	 
+    	 HorizontalLayout toolsMenuBar = new HorizontalLayout();
+    	 toolsMenuBar.setWidth("100%");
+    	 toolsMenuBar.setHeight("30px");
+    	 toolsMenuBar.addComponent(toolsButton);
+         toolsMenuBar.setComponentAlignment(toolsButton, Alignment.BOTTOM_RIGHT);         
+    	 
+    	 addComponent(toolsMenuBar);
     	
     	 
     	 listDatas = new ArrayList<GermplasmListData>();
