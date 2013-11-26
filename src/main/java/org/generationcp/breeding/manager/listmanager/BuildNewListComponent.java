@@ -828,14 +828,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		if(designation != null){
     			listEntry.setDesignation(designation.toString());
     		} else{
-    			listEntry.setDesignation(null);
+    			listEntry.setDesignation("-");
     		}
     		
     		Object entryCode = item.getItemProperty(ENTRY_CODE).getValue();
     		if(entryCode != null){
     			listEntry.setEntryCode(entryCode.toString());
     		} else{
-    			listEntry.setEntryCode(null);
+    			listEntry.setEntryCode("-");
     		}
     		
     		Button gidButton = (Button) item.getItemProperty(GID).getValue();
@@ -845,7 +845,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		if(groupName != null){
     			listEntry.setGroupName(groupName.toString());
     		} else{
-    			listEntry.setGroupName(null);
+    			listEntry.setGroupName("-");
     		}
     		
     		listEntry.setEntryId((Integer) item.getItemProperty(ENTRY_ID).getValue());
@@ -854,7 +854,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		if(seedSource != null){
     			listEntry.setSeedSource(seedSource.toString());
     		} else{
-    			listEntry.setSeedSource(null);
+    			listEntry.setSeedSource("-");
     		}
     		
     		toreturn.add(listEntry);
