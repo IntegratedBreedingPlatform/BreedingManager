@@ -281,4 +281,6 @@ public enum Message{
 
     ,TYPEDESC_LABEL
     ,ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID
+    ,ADD_COLUMN
+
 }

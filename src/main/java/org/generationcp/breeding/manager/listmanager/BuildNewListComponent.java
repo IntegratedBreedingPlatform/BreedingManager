@@ -12,6 +12,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
@@ -259,7 +260,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				}
 			}
         });
-		
+        
+		addComponent(germplasmsTable, "top:115px; left:0px;");
+        
+        
 		menu = new ContextMenu();
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
@@ -289,7 +293,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 
    	 	addComponent(menu);
    	 	addComponent(toolsButton, "top:0; right:0;");		
-		
+   	 	
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -311,7 +315,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			
         });
 		
-		addComponent(germplasmsTable, "top:115px; left:0px;");
+       
 		
 		VerticalLayout buttonRow = new VerticalLayout();
 		buttonRow.setWidth("100%");
