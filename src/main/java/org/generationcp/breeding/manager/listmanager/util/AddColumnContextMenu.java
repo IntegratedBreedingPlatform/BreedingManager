@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -30,6 +31,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private GermplasmDataManager germplasmDataManager;
 
     private AbsoluteLayout absoluteLayoutSource;
+    private ListDataTablePropertyID gidListDataTablePropertyId;
     private String GIDPropertyId;
     private Button addColumnButton;
     private Table targetTable;
@@ -61,13 +63,15 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	 * @param source - context menu will attach to this
 	 * @param addColumnButton - util will attach event listener to this
 	 * @param targetTable - table where data will be manipulated
-	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
+	 * @param gid - property of GID (button with GID as caption) on that table
 	 */
-    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, Button addColumnButton,Table targetTable, String GIDPropertyId){
-    	this.GIDPropertyId = GIDPropertyId;
+    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, Button addColumnButton,Table targetTable, ListDataTablePropertyID gid){
+    	this.gidListDataTablePropertyId = gid;
     	this.targetTable = targetTable;
     	this.addColumnButton = addColumnButton;
     	this.absoluteLayoutSource = absoluteLayoutSource;
+    	
+    	GIDPropertyId = gid.getName();
     	setupContextMenu();
     }
     

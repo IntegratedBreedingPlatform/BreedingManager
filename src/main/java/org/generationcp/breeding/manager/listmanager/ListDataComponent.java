@@ -334,7 +334,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	         addColumnButton.addStyleName("link_with_plus_icon");
     	    	 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
     	    	 
-    	    	 AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, GID);
+    	    	 AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID);
         	 }    	 
              
          }
