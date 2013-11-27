@@ -25,6 +25,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClick
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -60,6 +61,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Alignment;
@@ -141,6 +143,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private GermplasmList germplasmList;
 	private int germplasListUserId;
 	private Button toolsButton;
+	private Button addColumnButton;
 	private ContextMenu menu;
 	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem menuExportList;
@@ -250,14 +253,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 
     	 listManagerTreeMenu.addComponent(menu);
     	 
-    	 HorizontalLayout toolsMenuBar = new HorizontalLayout();
-    	 toolsMenuBar.setWidth("100%");
-    	 toolsMenuBar.setHeight("30px");
-    	 toolsMenuBar.addComponent(toolsButton);
-         toolsMenuBar.setComponentAlignment(toolsButton, Alignment.BOTTOM_RIGHT);         
     	 
+    	 
+    	 AbsoluteLayout toolsMenuBar = new AbsoluteLayout();
+    	 
+    	 toolsMenuBar.setWidth("100%");
+    	 toolsMenuBar.setHeight("20px");
+       	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:0px;");
+   	 
     	 addComponent(toolsMenuBar);
-    	
     	 
     	 listDatas = new ArrayList<GermplasmListData>();
          long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
@@ -330,6 +334,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              }
              setSpacing(true);
              addComponent(listDataTable);
+   
+        	 if(germplasmListId<0 && germplasmListStatus<100){
+    	         addColumnButton = new Button();
+    	         addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
+    	         addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	         addColumnButton.addStyleName("link_with_plus_icon");
+    	    	 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
+    	    	 
+    	    	 AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, GID);
+        	 }    	 
              
          }
     }

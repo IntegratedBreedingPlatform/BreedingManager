@@ -279,4 +279,5 @@ public enum Message{
     ,ERROR_IN_SEARCH
     ,ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID
 
+    ,ADD_COLUMN
 }
