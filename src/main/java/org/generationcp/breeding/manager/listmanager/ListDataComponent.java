@@ -22,6 +22,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
@@ -79,15 +80,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
 
-    public static final String GID = "gid";
-    public static final String GID_VALUE = "gidValue";
-    public static final String ENTRY_ID = "entryId";
-    public static final String ENTRY_CODE = "entryCode";
-    public static final String SEED_SOURCE = "seedSource";
-    public static final String DESIGNATION = "designation";
-    public static final String GROUP_NAME = "groupName";
-    public static final String STATUS = "status";
-    
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
     public final static String EXPORT_BUTTON_ID = "GermplasmListDataComponent Export List Button";
@@ -300,33 +292,33 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
              //make GID as link only if the page wasn't directly accessed from the URL
              if (!fromUrl) {
-                 listDataTable.addContainerProperty(GID, Button.class, null);
+                 listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
              } else {
-                 listDataTable.addContainerProperty(GID, Integer.class, null);
+                 listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Integer.class, null);
              }
 
-             listDataTable.addContainerProperty(GID_VALUE, Integer.class, null);
-             listDataTable.addContainerProperty(ENTRY_ID, Integer.class, null);
-             listDataTable.addContainerProperty(ENTRY_CODE, String.class, null);
-             listDataTable.addContainerProperty(SEED_SOURCE, String.class, null);
-             listDataTable.addContainerProperty(DESIGNATION, String.class, null);
-             listDataTable.addContainerProperty(GROUP_NAME, String.class, null);
-             listDataTable.addContainerProperty(STATUS, String.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.GID_VALUE.getName(), Integer.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
+             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
          
-             messageSource.setColumnHeader(listDataTable, GID, Message.LISTDATA_GID_HEADER);
-             messageSource.setColumnHeader(listDataTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
-             messageSource.setColumnHeader(listDataTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
-             messageSource.setColumnHeader(listDataTable, SEED_SOURCE, Message.LISTDATA_SEEDSOURCE_HEADER);
-             messageSource.setColumnHeader(listDataTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
-             messageSource.setColumnHeader(listDataTable, GROUP_NAME, Message.LISTDATA_GROUPNAME_HEADER);
-             messageSource.setColumnHeader(listDataTable, STATUS, Message.LISTDATA_STATUS_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
              
              populateTable();
              
              if(germplasmListId < 0){
             
 	             @SuppressWarnings("unused")
-	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, GID);
+	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
              }
              setSpacing(true);
              addComponent(listDataTable);
@@ -372,7 +364,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
 
         listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
-        listDataTable.setVisibleColumns(new String[] {GID,ENTRY_ID,ENTRY_CODE,SEED_SOURCE,DESIGNATION,GROUP_NAME,STATUS});
+        listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
+        		,ListDataTablePropertyID.ENTRY_ID.getName()
+        		,ListDataTablePropertyID.ENTRY_CODE.getName()
+        		,ListDataTablePropertyID.SEED_SOURCE.getName()
+        		,ListDataTablePropertyID.DESIGNATION.getName()
+        		,ListDataTablePropertyID.GROUP_NAME.getName()
+        		,ListDataTablePropertyID.STATUS.getName()});
     }
 
 
@@ -385,14 +383,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
             //update table item's entryId
             Item item = listDataTable.getItem(listDataId);
-            item.getItemProperty(ENTRY_ID).setValue(entryId);
+            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entryId);
 
             //then find the corresponding ListData and assign a new entryId to it
             for (GermplasmListData listData : listDatas) {
                 if (listData.getId().equals(listDataId)) {
                     listData.setEntryId(entryId);
-                    listData.setEntryCode(item.getItemProperty(ENTRY_CODE).getValue().toString());
-                    listData.setSeedSource(item.getItemProperty(SEED_SOURCE).getValue().toString());
+                    listData.setEntryCode(item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue().toString());
+                    listData.setSeedSource(item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue().toString());
                     break;
                 }
             }
@@ -528,8 +526,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 designationOfListEntriesDeleted="";
                 final ArrayList<Integer> gidsWithoutChildren = getGidsToDeletedWithOutChildren();
                 for (final Object itemId : selectedIds) {
-                	Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ENTRY_ID);
-                	Property pDesignation = listDataTable.getItem(itemId).getItemProperty(DESIGNATION);
+                	Property pEntryId = listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+                	Property pDesignation = listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
                 	try {
 					    int entryId=Integer.valueOf(pEntryId.getValue().toString());
 					    designationOfListEntriesDeleted+=String.valueOf(pDesignation.getValue()).toString()+",";
@@ -559,7 +557,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
                     int listDataId = (Integer) i.next();
                     Item item = listDataTable.getItem(listDataId);
-                    item.getItemProperty(ENTRY_ID).setValue(entryId);
+                    item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entryId);
                     for (GermplasmListData listData : listDatas) {
                         if (listData.getId().equals(listDataId)) {
                             listData.setEntryId(entryId);
@@ -732,7 +730,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
             //update table item's entryId
             Item item = listDataTable.getItem(listDataId);
-            Integer entryId = (Integer) item.getItemProperty(ENTRY_ID).getValue();
+            Integer entryId = (Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
             if(maxEntryId < entryId){
                 maxEntryId = entryId;
             }
@@ -867,7 +865,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 	     for (final Object itemId : selectedIds) {
 	      
-	         Property pGid= listDataTable.getItem(itemId).getItemProperty(GID_VALUE);
+	         Property pGid= listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID_VALUE.getName());
 	   		 String gid=pGid.getValue().toString();
 	   		 // only allow deletions for local germplasms
 	   		 if(gid.contains("-")){

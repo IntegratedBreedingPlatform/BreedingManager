@@ -7,6 +7,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -256,13 +257,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkButtonClickListener(entry.getGid().toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				
-	            item.getItemProperty(BuildNewListComponent.GID).setValue(gidButton);
-	            item.getItemProperty(BuildNewListComponent.DESIGNATION).setValue(entry.getDesignation());
-	            item.getItemProperty(BuildNewListComponent.ENTRY_CODE).setValue(entry.getEntryCode());
-	            item.getItemProperty(BuildNewListComponent.ENTRY_ID).setValue(entry.getEntryId());
-	            item.getItemProperty(BuildNewListComponent.PARENTAGE).setValue(entry.getGroupName());
-	            item.getItemProperty(BuildNewListComponent.SEED_SOURCE).setValue(entry.getSeedSource());
-	            item.getItemProperty(BuildNewListComponent.STATUS).setValue(entry.getStatusString());
+	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(entry.getDesignation());
+	            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
+	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
+	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
 			
 			this.listDataTable.requestRepaint();
