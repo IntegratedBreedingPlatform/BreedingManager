@@ -105,15 +105,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			updateListDataTableContent(currentlySavedList);
 			
-			try {
-				dataManager.saveListDataColumns(getListDataCollectionFromTable());
-			} catch (MiddlewareQueryException e) {
-				LOG.error("Error in saving germplasm list columns: " + listToSave, e);
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-						, Notification.POSITION_CENTERED);
-				return;
-			}
-			
 		} else if(currentlySavedList != null){
 			
 			if(areThereChangesToList(currentlySavedList, listToSave)){
@@ -177,6 +168,16 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
+		}
+		
+		System.out.println("Saving!");
+		try {
+			dataManager.saveListDataColumns(getListDataCollectionFromTable());
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error in saving germplasm list columns: " + listToSave, e);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+					, Notification.POSITION_CENTERED);
+			return;
 		}
 		
 		try{
