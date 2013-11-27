@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
 import org.generationcp.breeding.manager.util.ComponentTree;
 import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
@@ -43,6 +44,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     private GermplasmDetailModel gDetailModel;
     private GermplasmDetailsComponent basicDetailsComponent;
     private GermplasmPedigreeComponent pedigreeComponent;
+    private GermplasmAttributesComponent germplasmAttributesComponent;
     private ListManagerMain listManagerMain;
     
     private Button saveToListLink;
@@ -68,6 +70,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		
 		basicDetailsComponent = new GermplasmDetailsComponent(gDetailModel);
 		pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
+		germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel);
 		
 		ComponentTree content = new ComponentTree();
         content.setWidth("95%");
@@ -77,7 +80,9 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
         basicDetails.addChild(basicDetailsComponent);
         
         ComponentTreeItem attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
-        attributesDetails.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
+        VerticalLayout layoutForAttributes = new VerticalLayout();
+        layoutForAttributes.addComponent(germplasmAttributesComponent);
+        attributesDetails.addChild(layoutForAttributes);
         
         ComponentTreeItem pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);

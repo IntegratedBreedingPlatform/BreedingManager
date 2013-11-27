@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
@@ -75,14 +76,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	public static final String GID = "gid";
-	public static final String ENTRY_ID = "entryId";
-	public static final String ENTRY_CODE = "entryCode";
-	public static final String SEED_SOURCE = "seedSource";
-	public static final String DESIGNATION = "designation";
-	public static final String PARENTAGE = "parentage";
-	public static final String STATUS = "status";
-	
 	private Object source;
 	
     private String DEFAULT_LIST_TYPE = "LST";
@@ -234,23 +227,21 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesTextArea.setVisible(false);
 
 		germplasmsTable = new Table();
-		germplasmsTable.addContainerProperty(GID, Button.class, null);
-		germplasmsTable.addContainerProperty(ENTRY_ID, Integer.class, null);
-		germplasmsTable.addContainerProperty(ENTRY_CODE, String.class, null);
-		germplasmsTable.addContainerProperty(SEED_SOURCE, String.class, null);
-		germplasmsTable.addContainerProperty(DESIGNATION, String.class, null);
-		germplasmsTable.addContainerProperty(PARENTAGE, String.class, null);
-		germplasmsTable.addContainerProperty(STATUS, String.class, null);
-		//germplasmsTable.addContainerProperty(COL8, String.class, null);
-		//germplasmsTable.addContainerProperty(COL9, String.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
+		germplasmsTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
 		
-		messageSource.setColumnHeader(germplasmsTable, GID, Message.LISTDATA_GID_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ENTRY_ID, Message.LISTDATA_ENTRY_ID_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ENTRY_CODE, Message.LISTDATA_ENTRY_CODE_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, SEED_SOURCE, Message.LISTDATA_SEEDSOURCE_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, DESIGNATION, Message.LISTDATA_DESIGNATION_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, PARENTAGE, Message.LISTDATA_GROUPNAME_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, STATUS, Message.LISTDATA_STATUS_HEADER);
+		messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
 		
 		germplasmsTable.setSelectable(true);
 		germplasmsTable.setMultiSelect(true);
@@ -444,7 +435,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 //Handle drops from MATCHING GERMPLASMS TABLE
                 } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
                     	
-                    	List<Integer> selectedGIDs = getSelectedGids(sourceTable, ListDataComponent.GID);
+                    	List<Integer> selectedGIDs = getSelectedGids(sourceTable, ListDataTablePropertyID.GID.getName());
                     	
                     	//If table has value (item/s is/are highlighted in the source table, add that)
                     	if(selectedGIDs.size()>0){
@@ -456,7 +447,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     		}
                     	//Add dragged item itself
                     	} else {
-                    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataComponent.GID).getValue()).getCaption().toString());
+                    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString());
                     		addGermplasmToGermplasmTable(gid, droppedOverItemId);
                     	}
                 }
@@ -508,12 +499,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 crossExpansion = "-";
             }
 
-            newItem.getItemProperty(GID).setValue(gidButton);
-			//newItem.getItemProperty(SEED_SOURCE).setValue(data.getSeedSource());
-            newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
-			newItem.getItemProperty(DESIGNATION).setValue(data.getDesignation());
-			newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
-			newItem.getItemProperty(STATUS).setValue("0");
+            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
+			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
         }		
         assignSerializedEntryCode();
@@ -554,12 +544,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
             String preferredName = preferredNames.get(gid); 
             
-            newItem.getItemProperty(GID).setValue(gidButton);
-			//newItem.getItemProperty(SEED_SOURCE).setValue(location.getLname());
-			newItem.getItemProperty(SEED_SOURCE).setValue("From List Manager");
-			newItem.getItemProperty(DESIGNATION).setValue(preferredName);
-			newItem.getItemProperty(PARENTAGE).setValue(crossExpansion);
-			newItem.getItemProperty(STATUS).setValue("0");
+            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
+			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
 			assignSerializedEntryCode();
 			
@@ -580,10 +569,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	int id = 1;
     	for(Integer itemId : itemIds){
     		//Check if filled with was used for this column, if so, do not change values to serialized numbers
-    		if(!filledWithPropertyIds.contains(ENTRY_ID))
-    			germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
-    		if(!filledWithPropertyIds.contains(ENTRY_CODE))
-    			germplasmsTable.getItem(itemId).getItemProperty(ENTRY_CODE).setValue(id);
+    		if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_ID.getName()))
+    			germplasmsTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
+    		if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_CODE.getName()))
+    			germplasmsTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
 
     		//Item tableItem = germplasmsTable.getItem(itemId);
     		//tableItem.getItemProperty(ENTRY_ID).setValue(id);
@@ -602,7 +591,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	    	
     	int id = 1;
     	for(Integer itemId : itemIds){
-    		germplasmsTable.getItem(itemId).getItemProperty(ENTRY_ID).setValue(id);
+    		germplasmsTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
     		id++;
     	}
     }
@@ -670,7 +659,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	}
 	
 	private void setupTableHeadersContextMenu(){
-		fillWith = new FillWith(this, messageSource, germplasmsTable, GID);
+		fillWith = new FillWith(this, messageSource, germplasmsTable, ListDataTablePropertyID.GID.getName());
 	}
 	
 	
@@ -837,33 +826,33 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		GermplasmListData listEntry = new GermplasmListData();
     		listEntry.setId(entryId);
     		
-    		Object designation = item.getItemProperty(DESIGNATION).getValue();
+    		Object designation = item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
     		if(designation != null){
     			listEntry.setDesignation(designation.toString());
     		} else{
     			listEntry.setDesignation("-");
     		}
     		
-    		Object entryCode = item.getItemProperty(ENTRY_CODE).getValue();
+    		Object entryCode = item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
     		if(entryCode != null){
     			listEntry.setEntryCode(entryCode.toString());
     		} else{
     			listEntry.setEntryCode("-");
     		}
     		
-    		Button gidButton = (Button) item.getItemProperty(GID).getValue();
+    		Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
     		listEntry.setGid(Integer.parseInt(gidButton.getCaption()));
     		
-    		Object groupName = item.getItemProperty(PARENTAGE).getValue();
+    		Object groupName = item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
     		if(groupName != null){
     			listEntry.setGroupName(groupName.toString());
     		} else{
     			listEntry.setGroupName("-");
     		}
     		
-    		listEntry.setEntryId((Integer) item.getItemProperty(ENTRY_ID).getValue());
+    		listEntry.setEntryId((Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue());
     		
-    		Object seedSource = item.getItemProperty(SEED_SOURCE).getValue();
+    		Object seedSource = item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
     		if(seedSource != null){
     			listEntry.setSeedSource(seedSource.toString());
     		} else{

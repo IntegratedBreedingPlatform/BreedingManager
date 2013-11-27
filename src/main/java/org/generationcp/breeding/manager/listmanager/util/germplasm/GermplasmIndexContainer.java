@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.report.LotReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
@@ -17,13 +15,14 @@ import com.vaadin.data.util.IndexedContainer;
 
 public final class GermplasmIndexContainer{
 
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmIndexContainer.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmIndexContainer.class);
 
     // Germplasm SearchResult Model
-    private static final Object GERMPLASM_GID = "gid";
-    private static final Object GERMPLASM_NAMES = "names";
-    private static final Object GERMPLASM_METHOD = "method";
-    private static final Object GERMPLASM_LOCATION = "location";
+//    private static final Object GERMPLASM_GID = "gid";
+//    private static final Object GERMPLASM_NAMES = "names";
+//    private static final Object GERMPLASM_METHOD = "method";
+//    private static final Object GERMPLASM_LOCATION = "location";
 
     // GermplasmNamesAttribute Model
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE = "type";
@@ -33,10 +32,10 @@ public final class GermplasmIndexContainer{
     private static final Object GERMPLASM_NAMES_ATTRIBUTE_TYPE_DESC = "typedesc";
 
     // Germplasm Inventory Model
-    private static final Object GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE = "lotbalance";
-    private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
-    private static final Object GERMPLASM_INVENTORY_SCALE_NAME = "scale";
-    private static final Object GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
+//    private static final Object GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE = "lotbalance";
+//    private static final Object GERMPLASM_INVENTORY_LOCATION_NAME = "location";
+//    private static final Object GERMPLASM_INVENTORY_SCALE_NAME = "scale";
+//    private static final Object GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
 
     // Study Information Model
     public static final String STUDY_ID = "studyid";
@@ -46,7 +45,7 @@ public final class GermplasmIndexContainer{
     @SuppressWarnings("unused")
     private static final String GERMPLASM_SEARCH_BY_GID = "GID";
 
-    private static final Object GERMPLASM_PREFNAME = "prefname";
+//    private static final Object GERMPLASM_PREFNAME = "prefname";
 
     private GermplasmQueries qQuery;
 
@@ -99,28 +98,27 @@ public final class GermplasmIndexContainer{
     }
 
 
-    private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_NAMES).setValue(names);
-        item.getItemProperty(GERMPLASM_METHOD).setValue(method);
-        item.getItemProperty(GERMPLASM_LOCATION).setValue(location);
-    }
-
-//    public IndexedContainer getGermplasmAttribute(GermplasmDetailModel g) {
-//        IndexedContainer container = new IndexedContainer();
-//
-//        // Create the container properties
-//        addContainerProperties(container);
-//
-//        final ArrayList<GermplasmNamesAttributesModel> query = qQuery.getAttributes(g.getGid());
-//        LOG.info("Size of the query" + query.size());
-//        for (GermplasmNamesAttributesModel q : query) {
-//            addGermplasmNamesAttributeContainer(container, q.getType(), q.getTypeDesc(), q.getName(), q.getDate(), q.getLocation());
-//        }
-//        return container;
+//    private static void addGermplasmResultContainer(Container container, int gid, String names, String method, String location) {
+//        Object itemId = container.addItem();
+//        Item item = container.getItem(itemId);
+//        item.getItemProperty(GERMPLASM_GID).setValue(gid);
+//        item.getItemProperty(GERMPLASM_NAMES).setValue(names);
+//        item.getItemProperty(GERMPLASM_METHOD).setValue(method);
+//        item.getItemProperty(GERMPLASM_LOCATION).setValue(location);
 //    }
+
+    public IndexedContainer getGermplasmAttribute(GermplasmDetailModel g) throws InternationalizableException{
+        IndexedContainer container = new IndexedContainer();
+
+        // Create the container properties
+        addContainerProperties(container);
+
+        final ArrayList<GermplasmAttributeModel> query = qQuery.getAttributes(g.getGid());
+        for (GermplasmAttributeModel q : query) {
+            addGermplasmNamesAttributeContainer(container, q.getType(), q.getTypeDesc(), q.getName(), q.getDate(), q.getLocation());
+        }
+        return container;
+    }
 //
 //    public IndexedContainer getGermplasmNames(GermplasmDetailModel g) {
 //        IndexedContainer container = new IndexedContainer();
@@ -169,12 +167,12 @@ public final class GermplasmIndexContainer{
 //        return container;
 //    }
 
-    private static void addGermplasmGenerationHistory(Container container, int gid, String prefname) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_GID).setValue(gid);
-        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
-    }
+//    private static void addGermplasmGenerationHistory(Container container, int gid, String prefname) {
+//        Object itemId = container.addItem();
+//        Item item = container.getItem(itemId);
+//        item.getItemProperty(GERMPLASM_GID).setValue(gid);
+//        item.getItemProperty(GERMPLASM_PREFNAME).setValue(prefname);
+//    }
 
     /**
         public IndexedContainer getGermplasmListNames(GermplasmDetailModel g) throws InternationalizableException {
@@ -227,15 +225,15 @@ public final class GermplasmIndexContainer{
 //        return container;
 //    }
 
-    private static void addLotReportRowContainer(Container container, String lotBalance, String locationName, String scaleName,
-            String lotComment) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE).setValue(lotBalance);
-        item.getItemProperty(GERMPLASM_INVENTORY_LOCATION_NAME).setValue(locationName);
-        item.getItemProperty(GERMPLASM_INVENTORY_SCALE_NAME).setValue(scaleName);
-        item.getItemProperty(GERMPLASM_INVENTORY_LOT_COMMENT).setValue(lotComment);
-    }
+//    private static void addLotReportRowContainer(Container container, String lotBalance, String locationName, String scaleName,
+//            String lotComment) {
+//        Object itemId = container.addItem();
+//        Item item = container.getItem(itemId);
+//        item.getItemProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE).setValue(lotBalance);
+//        item.getItemProperty(GERMPLASM_INVENTORY_LOCATION_NAME).setValue(locationName);
+//        item.getItemProperty(GERMPLASM_INVENTORY_SCALE_NAME).setValue(scaleName);
+//        item.getItemProperty(GERMPLASM_INVENTORY_LOT_COMMENT).setValue(lotComment);
+//    }
 
 //    public IndexedContainer getGermplasmStudyInformation(GermplasmDetailModel G) {
 //        IndexedContainer container = new IndexedContainer();
@@ -252,13 +250,13 @@ public final class GermplasmIndexContainer{
 //        return container;
 //    }
 
-    private static void addGermplasmStudyInformation(Container container, StudyReference study) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(STUDY_ID).setValue(study.getId());
-        item.getItemProperty(STUDY_NAME).setValue(study.getName());
-        item.getItemProperty(STUDY_DESCRIPTION).setValue(study.getDescription());
-    }
+//    private static void addGermplasmStudyInformation(Container container, StudyReference study) {
+//        Object itemId = container.addItem();
+//        Item item = container.getItem(itemId);
+//        item.getItemProperty(STUDY_ID).setValue(study.getId());
+//        item.getItemProperty(STUDY_NAME).setValue(study.getName());
+//        item.getItemProperty(STUDY_DESCRIPTION).setValue(study.getDescription());
+//    }
 
 }
 

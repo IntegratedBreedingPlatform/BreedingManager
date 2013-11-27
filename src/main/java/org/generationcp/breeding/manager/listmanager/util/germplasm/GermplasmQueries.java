@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.util.germplasm;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
@@ -8,11 +9,13 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Bibref;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -215,34 +218,34 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 //        }
 //    }
 //
-//    public ArrayList<GermplasmNamesAttributesModel> getAttributes(int gid) throws InternationalizableException {
-//        try {
-//            ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
-//            ArrayList<GermplasmNamesAttributesModel> germplasmAttributes = new ArrayList<GermplasmNamesAttributesModel>();
-//
-//            for (Attribute a : attr) {
-//                GermplasmNamesAttributesModel gAttributeRow = new GermplasmNamesAttributesModel();
-//                gAttributeRow.setName(a.getAval());
-//
-//                Location location = germplasmDataManager.getLocationByID(a.getLocationId());
-//                if (location != null) {
-//                    gAttributeRow.setLocation(location.getLname());
-//                }
-//
-//                UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
-//                if (type != null) {
-//                    gAttributeRow.setType(type.getFcode());
-//                    gAttributeRow.setTypeDesc(type.getFname());
-//                }
-//
-//                gAttributeRow.setDate(a.getAdate().toString());
-//                germplasmAttributes.add(gAttributeRow);
-//            }
-//            return germplasmAttributes;
-//        } catch (MiddlewareQueryException e) {
-//            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID);
-//        }
-//    }
+    public ArrayList<GermplasmAttributeModel> getAttributes(int gid) throws InternationalizableException {
+        try {
+            ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
+            ArrayList<GermplasmAttributeModel> germplasmAttributes = new ArrayList<GermplasmAttributeModel>();
+
+            for (Attribute a : attr) {
+                GermplasmAttributeModel gAttributeRow = new GermplasmAttributeModel();
+                gAttributeRow.setName(a.getAval());
+
+                Location location = germplasmDataManager.getLocationByID(a.getLocationId());
+                if (location != null) {
+                    gAttributeRow.setLocation(location.getLname());
+                }
+
+                UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
+                if (type != null) {
+                    gAttributeRow.setType(type.getFcode());
+                    gAttributeRow.setTypeDesc(type.getFname());
+                }
+
+                gAttributeRow.setDate(a.getAdate().toString());
+                germplasmAttributes.add(gAttributeRow);
+            }
+            return germplasmAttributes;
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID);
+        }
+    }
 
 //    private String getGermplasmPrefID(int gid) throws InternationalizableException {
 //        try {

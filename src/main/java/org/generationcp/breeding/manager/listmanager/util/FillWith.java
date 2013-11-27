@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -74,8 +75,6 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossExpansion;
 	
 	private GermplasmDetailModel germplasmDetail;
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String SEED_SOURCE = "seedSource";
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
     
@@ -195,17 +194,17 @@ public class FillWith implements InternationalizableComponent  {
         		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
         			String column = (String) event.getPropertyId();
         			fillWithMenu.setData(column);
-        			if(column.equals(ListDataComponent.ENTRY_CODE) || column.equals(BuildNewListComponent.ENTRY_CODE)){
+        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
             			menuFillWithLocationName.setVisible(false);
             			menuFillWithCrossExpansion.setVisible(false);
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataComponent.SEED_SOURCE) || column.equals(BuildNewListComponent.SEED_SOURCE)){
+            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
             			menuFillWithLocationName.setVisible(true);
             			menuFillWithCrossExpansion.setVisible(false);
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataComponent.GROUP_NAME) || column.equals(BuildNewListComponent.PARENTAGE)){
+            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
             			menuFillWithLocationName.setVisible(false);
             			menuFillWithCrossExpansion.setVisible(true);
@@ -400,7 +399,7 @@ public class FillWith implements InternationalizableComponent  {
             Button b= (Button) gidObject;
             String gid=b.getCaption();
             GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(ENTRY_CODE).setValue(gModel.getGermplasmPreferredName());
+            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getGermplasmPreferredName());
     	}
 		
 	}
@@ -414,7 +413,7 @@ public class FillWith implements InternationalizableComponent  {
             Button b= (Button) gidObject;
             String gid=b.getCaption();
             GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(ENTRY_CODE).setValue(gModel.getPrefID());
+            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getPrefID());
     	}
 		
 	}
@@ -429,7 +428,7 @@ public class FillWith implements InternationalizableComponent  {
             Button b= (Button) gidObject;
             String gid=b.getCaption();
             GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(SEED_SOURCE).setValue(gModel.getGermplasmLocation());
+            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gModel.getGermplasmLocation());
        
     	}
 		
