@@ -303,7 +303,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
         addColumnButton.addStyleName("link_with_plus_icon");
    	 
-   	 	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID);
+   	 	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
    	 	
    	 	addComponent(addColumnButton, "top:0px; right:115px;");
    	 	addComponent(toolsButton, "top:0; right:0;");		

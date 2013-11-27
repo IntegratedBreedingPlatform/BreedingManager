@@ -31,7 +31,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private GermplasmDataManager germplasmDataManager;
 
     private AbsoluteLayout absoluteLayoutSource;
-    private ListDataTablePropertyID gidListDataTablePropertyId;
     private String GIDPropertyId;
     private Button addColumnButton;
     private Table targetTable;
@@ -65,13 +64,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	 * @param targetTable - table where data will be manipulated
 	 * @param gid - property of GID (button with GID as caption) on that table
 	 */
-    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, Button addColumnButton,Table targetTable, ListDataTablePropertyID gid){
-    	this.gidListDataTablePropertyId = gid;
+    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, Button addColumnButton,Table targetTable, String gid){
+    	this.GIDPropertyId = gid;
     	this.targetTable = targetTable;
     	this.addColumnButton = addColumnButton;
     	this.absoluteLayoutSource = absoluteLayoutSource;
     	
-    	GIDPropertyId = gid.getName();
     	setupContextMenu();
     }
     
