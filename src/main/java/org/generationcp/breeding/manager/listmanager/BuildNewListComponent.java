@@ -23,6 +23,8 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.gms.ListDataColumn;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -305,7 +307,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
    	 
    	 	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
    	 	
-   	 	addComponent(addColumnButton, "top:0px; right:115px;");
+   	 	addComponent(addColumnButton, "top:0px; right:75px;");
    	 	addComponent(toolsButton, "top:0; right:0;");		
    	 	
 		menu.addListener(new ContextMenu.ClickListener() {
@@ -864,6 +866,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return toreturn;
     }
     
+    
     public Integer getNextListEntryId(){
     	int maxId = 0;
     	for(Object id : this.germplasmsTable.getItemIds()){
@@ -895,6 +898,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		addColumnContextMenu.setPreferredIdColumnValues();
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
     		addColumnContextMenu.setPreferredNameColumnValues();
+    }
+    
+    public AddColumnContextMenu getAddColumnContextMenu(){
+    	return addColumnContextMenu;
     }
     
 }

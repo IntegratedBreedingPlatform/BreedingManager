@@ -150,7 +150,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
-	  
+	private AddColumnContextMenu addColumnContextMenu;  
+	
     
     public ListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu){
         this.germplasmListId = germplasmListId;
@@ -334,7 +335,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	         addColumnButton.addStyleName("link_with_plus_icon");
     	    	 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
     	    	 
-    	    	 AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
+    	    	 addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
         	 }    	 
              
          }
@@ -897,4 +898,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	return listDataTable;
     }
 
+    public AddColumnContextMenu getAddColumnContextMenu(){
+    	return addColumnContextMenu;
+    }
+    
 }

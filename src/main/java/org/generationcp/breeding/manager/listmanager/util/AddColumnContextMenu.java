@@ -56,6 +56,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static Class LOCATIONS_TYPE = String.class;
     public static String LOCATIONS = "LOCATIONS";
     
+    public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID, PREFERRED_NAME, LOCATIONS}; 
     
 	/**
 	 * Add "Add column" context menu to a table
@@ -216,9 +217,14 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	List<String> propertyIds = getTablePropertyIds(targetTable);
     	return propertyIds.contains(propertyId);
     }
+
+    public static Boolean propertyExists(String propertyId, Table table){
+    	List<String> propertyIds = getTablePropertyIds(table);
+    	return propertyIds.contains(propertyId);
+    }    
     
     @SuppressWarnings("unchecked")
-	public List<String> getTablePropertyIds(Table table){
+	public static List<String> getTablePropertyIds(Table table){
     	if(table!=null){
     		List<String> propertyIds = new ArrayList<String>();
     		propertyIds.addAll((Collection<? extends String>) table.getContainerPropertyIds());
