@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -104,6 +105,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private Button saveButton;
 	private Button toolsButton;
+	private Button addColumnButton;
 	
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
@@ -122,6 +124,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private GermplasmList currentlySavedGermplasmList;
 	private Window listManagerCopyToNewListDialog;
 	private int germplasmListId;
+	
+	private AddColumnContextMenu addColumnContextMenu;
 	
 	private FillWith fillWith;
 	
@@ -301,6 +305,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		 });
 	 
    	 	addComponent(menu);
+   	 	
+   	 	
+        addColumnButton = new Button();
+        addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
+        addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
+        addColumnButton.addStyleName("link_with_plus_icon");
+   	 
+   	 	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, GID);
+   	 	
+   	 	addComponent(addColumnButton, "top:0px; right:115px;");
    	 	addComponent(toolsButton, "top:0; right:0;");		
    	 	
 		menu.addListener(new ContextMenu.ClickListener() {
@@ -447,6 +461,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     	}
                 }
 			    
+                updateAddedColumnValues();
 			}
 
 			@Override
@@ -884,4 +899,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		assignSerializedEntryCode();
     }
 
+    private void updateAddedColumnValues(){
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+    		addColumnContextMenu.setLocationColumnValues();
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+    		addColumnContextMenu.setPreferredIdColumnValues();
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+    		addColumnContextMenu.setPreferredNameColumnValues();
+    }
+    
 }

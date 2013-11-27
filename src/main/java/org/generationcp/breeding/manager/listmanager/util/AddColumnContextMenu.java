@@ -44,7 +44,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String FILL_WITH_LOCATION = "Fill with Location";
     
     @SuppressWarnings("rawtypes")
-	public static Class PREFERRED_ID_TYPE = Integer.class;
+	public static Class PREFERRED_ID_TYPE = String.class;
     public static String PREFERRED_ID = "PREFERRED ID";
     
     @SuppressWarnings("rawtypes")
@@ -137,11 +137,20 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredIdColumn(){
     	if(!propertyExists(PREFERRED_ID)){
     		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, null);
+    		setPreferredIdColumnValues();
+    	}
+    }
+    
+    public void setPreferredIdColumnValues(){
+    	if(propertyExists(PREFERRED_ID)){
     		try {
     			List<Integer> itemIds = getItemIds(targetTable);
     			for(Integer itemId: itemIds){
     				Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-    				Integer preferredID = germplasmDataManager.getPreferredIdByGID(gid).getGermplasmId();
+    				String preferredID = "";
+    				Name name = germplasmDataManager.getPreferredIdByGID(gid);
+    				if(name!=null && name.getNval()!=null)
+    					preferredID = name.getNval();
     				targetTable.getItem(itemId).getItemProperty(PREFERRED_ID).setValue(preferredID);
     			}
 			   
@@ -154,48 +163,60 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredNameColumn(){
     	if(!propertyExists(PREFERRED_NAME)){
     		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, null);
-    		try {
-    			List<Integer> itemIds = getItemIds(targetTable);
-    			for(Integer itemId: itemIds){
-    				Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-    				String preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
-    				targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
-    			}
+    		setPreferredNameColumnValues();
+    	}
+    }
+    
+    public void setPreferredNameColumnValues(){
+    	if(propertyExists(PREFERRED_NAME)){
+			try {
+				List<Integer> itemIds = getItemIds(targetTable);
+				for(Integer itemId: itemIds){
+					Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+					String preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
+					targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
+				}
 			   
-    		} catch (MiddlewareQueryException e) {
-    			e.printStackTrace();
-    		}
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}  
     	}
     }
     
     private void addLocationColumn(){
     	if(!propertyExists(LOCATIONS)){
     		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, null);
-    		try {
-    			List<Integer> itemIds = getItemIds(targetTable);
-    			for(Integer itemId: itemIds){
-    				Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-    				
-    				List<Integer> gids = new ArrayList<Integer>();
-    				gids.add(gid);
-    				
-    				Map<Integer, String> locationNamesMap = germplasmDataManager.getLocationNamesByGids(gids);
-    				targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
-    			}
-			   
-    		} catch (MiddlewareQueryException e) {
-    			e.printStackTrace();
-    		}
+    		setLocationColumnValues();
     	}
     }
     
-    private Boolean propertyExists(String propertyId){
+    public void setLocationColumnValues(){
+    	if(propertyExists(LOCATIONS)){
+			try {
+				List<Integer> itemIds = getItemIds(targetTable);
+				for(Integer itemId: itemIds){
+					Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+					
+					List<Integer> gids = new ArrayList<Integer>();
+					gids.add(gid);
+					
+					Map<Integer, String> locationNamesMap = germplasmDataManager.getLocationNamesByGids(gids);
+					targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
+				}
+			   
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}    	
+    	}
+    }
+    
+    public Boolean propertyExists(String propertyId){
     	List<String> propertyIds = getTablePropertyIds(targetTable);
     	return propertyIds.contains(propertyId);
     }
     
     @SuppressWarnings("unchecked")
-	private List<String> getTablePropertyIds(Table table){
+	public List<String> getTablePropertyIds(Table table){
     	if(table!=null){
     		List<String> propertyIds = new ArrayList<String>();
     		propertyIds.addAll((Collection<? extends String>) table.getContainerPropertyIds());
