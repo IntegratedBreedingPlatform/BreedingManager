@@ -170,7 +170,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			}
 		}
 		
-		System.out.println("Saving!");
 		try {
 			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable));
 		} catch (MiddlewareQueryException e) {
