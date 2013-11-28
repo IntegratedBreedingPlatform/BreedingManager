@@ -39,6 +39,17 @@ public class ListManagerMain extends VerticalLayout implements
     private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
+    private Integer listId;
+    
+    public ListManagerMain(){
+    	super();
+    	this.listId = null;
+    }
+    
+    public ListManagerMain(Integer listId){
+    	super();
+    	this.listId = listId;
+    }
     
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -46,7 +57,12 @@ public class ListManagerMain extends VerticalLayout implements
         titleLayout.setSpacing(true);
         setTitleContent("");
         
-        browseListsComponent = new ListManagerBrowseListsComponent();
+        if(listId == null){
+        	browseListsComponent = new ListManagerBrowseListsComponent();
+        } else{
+        	browseListsComponent = new ListManagerBrowseListsComponent(listId);
+        }
+        
         searchListsComponent = new ListManagerSearchListsComponent(this);
         
         buildNewListComponent = new BuildNewListComponent(this);

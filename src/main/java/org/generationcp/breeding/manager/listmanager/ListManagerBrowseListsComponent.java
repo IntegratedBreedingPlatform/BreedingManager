@@ -27,8 +27,16 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 	
 	private boolean forGermplasmListWindow;
 	
+	private Integer listId;
+	
     public ListManagerBrowseListsComponent() {
-        
+        super();
+        this.listId = null;
+    }
+    
+    public ListManagerBrowseListsComponent(Integer listId){
+    	super();
+    	this.listId = listId;
     }
     
     public ListManagerBrowseListsComponent(BreedingManagerApplication breedingManagerApplication, boolean forGermplasmListWindow) {
@@ -43,7 +51,13 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		heading.setValue(messageSource.getMessage(Message.BROWSE_LISTS));
 		heading.addStyleName("gcp-content-title");
 		
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow);
+		ListManagerTreeComponent listManagerTreeComponent;
+		
+		if(listId != null){
+			listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow, listId);
+		} else{
+			listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow);
+		}
 		
 		addComponent(heading,"top:30px; left:20px;");
 		addComponent(listManagerTreeComponent, "top:55px; left:20px");

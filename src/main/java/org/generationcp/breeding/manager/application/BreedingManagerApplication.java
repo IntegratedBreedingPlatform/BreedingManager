@@ -36,6 +36,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
+    public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
     
     private Window window;
     
@@ -131,6 +132,15 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 listManagerWindow.setName(LIST_MANAGER_WINDOW_NAME);
                 listManagerWindow.setSizeUndefined();
                 listManagerWindow.addComponent(new ListManagerMain());
+                this.addWindow(listManagerWindow);
+                return listManagerWindow;
+            } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
+            	String listIdPart = name.substring(name.indexOf("-") + 1);
+            	Integer listId = Integer.parseInt(listIdPart);
+            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+                listManagerWindow.setName(name);
+                listManagerWindow.setSizeUndefined();
+                listManagerWindow.addComponent(new ListManagerMain(listId));
                 this.addWindow(listManagerWindow);
                 return listManagerWindow;
             }

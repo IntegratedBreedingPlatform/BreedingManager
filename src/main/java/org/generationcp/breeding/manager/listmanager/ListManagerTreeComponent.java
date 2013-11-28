@@ -55,16 +55,25 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     private VerticalLayout treeContainerLayout;
     
+    private Integer listId;
+    
     public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listId = null;
+    }
+    
+    public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow, Integer listId) {
+        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
+        this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listId = listId;
     }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
 		
-		displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
-		
+    	displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+    	
 		germplasmListTree = new Tree();
 		germplasmListTree.setImmediate(true);
 		
@@ -84,6 +93,18 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
 	@Override
 	public void updateLabels() {
+	}
+	
+	@Override
+	public void attach() {
+		super.attach();
+		if(listId != null){
+			try{
+				displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
+			} catch(MiddlewareQueryException ex){
+				
+			}
+		}
 	}
 
     public void createTree() {

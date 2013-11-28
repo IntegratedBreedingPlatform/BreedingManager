@@ -52,8 +52,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	
 	private boolean forGermplasmListWindow;
 
-	
-    public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+	public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
     	this.treeComponent = treeComponent;
     	this.parentLayout = parentLayout;
     	this.forGermplasmListWindow = forGermplasmListWindow;
