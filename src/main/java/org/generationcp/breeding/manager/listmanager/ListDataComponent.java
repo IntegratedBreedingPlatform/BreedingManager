@@ -538,8 +538,31 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             for (GermplasmListData listData : listDatas) {
                 if (listData.getId().equals(listDataId)) {
                     listData.setEntryId(entryId);
-                    listData.setEntryCode(item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue().toString());
-                    listData.setSeedSource(item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue().toString());
+                    
+                    String entryCode = (String) item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+                    if(entryCode != null && entryCode.length() != 0){
+                    	listData.setEntryCode(entryCode);
+                    } else {
+                    	listData.setEntryCode(Integer.valueOf(entryId).toString());
+                    }
+                    
+                    String seedSource = (String) item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+                    if(seedSource != null && seedSource.length() != 0){
+                    	listData.setSeedSource(seedSource);
+                    } else {
+                    	listData.setSeedSource("-");
+                    }
+                    
+                    String groupName = (String) item.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
+                    if(groupName != null && groupName.length() != 0){
+                    	if(groupName.length() > 255){
+                    		groupName = groupName.substring(0, 255);
+                    	}
+                    	listData.setGroupName(groupName);
+                    } else {
+                    	listData.setGroupName("-");
+                    }
+                    
                     break;
                 }
             }
