@@ -249,7 +249,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.setMultiSelect(true);
 		germplasmsTable.setWidth("100%");
 		germplasmsTable.setHeight("280px");
-	
+		
         germplasmsTable.addActionHandler(new Action.Handler() {
 			private static final long serialVersionUID = 1L;
 
@@ -847,7 +847,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		
     		Object groupName = item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
     		if(groupName != null){
-    			listEntry.setGroupName(groupName.toString());
+    			String groupNameString = groupName.toString();
+    			if(groupNameString.length() > 255){
+    				groupNameString = groupNameString.substring(0, 255);
+    			}
+    			listEntry.setGroupName(groupNameString);
     		} else{
     			listEntry.setGroupName("-");
     		}
