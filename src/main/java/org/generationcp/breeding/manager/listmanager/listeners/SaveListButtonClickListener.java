@@ -8,11 +8,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.gms.ListDataColumn;
-import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
@@ -105,15 +102,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			updateListDataTableContent(currentlySavedList);
 			
-			try {
-				dataManager.saveListDataColumns(getListDataCollectionFromTable());
-			} catch (MiddlewareQueryException e) {
-				LOG.error("Error in saving germplasm list columns: " + listToSave, e);
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-						, Notification.POSITION_CENTERED);
-				return;
-			}
-			
 		} else if(currentlySavedList != null){
 			
 			if(areThereChangesToList(currentlySavedList, listToSave)){
@@ -177,6 +165,15 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
+		}
+		
+		try {
+			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable));
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error in saving germplasm list columns: " + listToSave, e);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+					, Notification.POSITION_CENTERED);
+			return;
 		}
 		
 		try{
@@ -278,8 +275,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
-			
-			populateAddedColumns();
 			
 			this.listDataTable.requestRepaint();
 			return;
@@ -413,6 +408,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 							thereIsAChange = true;
 							String groupName = entryToCheck.getGroupName();
 							if(groupName != null && groupName.length() != 0){
+								if(groupName.length() > 255){
+									groupName = groupName.substring(0, 255);
+								}
 								matchingSavedEntry.setGroupName(groupName);
 							} else{
 								matchingSavedEntry.setGroupName("-");
@@ -467,43 +465,5 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		return toreturn;
 	}
 	
-	/**
-	 * Save erases all values on the table, including the added columns, use this to re-populate it with data
-	 */
-	private void populateAddedColumns(){
-		for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
-			if(source.getAddColumnContextMenu().propertyExists(propertyId)){
-				if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
-					source.getAddColumnContextMenu().setPreferredIdColumnValues();
-				else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
-					source.getAddColumnContextMenu().setPreferredNameColumnValues();
-				else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
-					source.getAddColumnContextMenu().setLocationColumnValues();
-			}
-		}
-	}
-	
-    /**
-     * This has to be called after the list entries has been saved, because it'll need the germplasmListEntryId
-     * call after - updateListDataTableContent()
-     * @return
-     */
-    private List<ListDataInfo> getListDataCollectionFromTable(){
-    	List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
-    	
-    	for(Object itemId : listDataTable.getItemIds()){
-    		Item item = listDataTable.getItem(itemId);
-    		List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
-    		for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
-    			if(AddColumnContextMenu.propertyExists(propertyId, listDataTable)){
-	    			if(item.getItemProperty(propertyId).getValue()!=null)
-	    				columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
-	    			else
-	    				columns.add(new ListDataColumn(propertyId, null));
-    			}
-    		}
-    		listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()),columns));
-    	}
-    	return listDataCollection;
-    }    
+    
 }

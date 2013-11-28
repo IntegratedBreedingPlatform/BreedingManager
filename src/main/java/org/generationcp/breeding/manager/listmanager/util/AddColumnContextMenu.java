@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.middleware.domain.gms.ListDataColumn;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Name;
@@ -18,6 +20,7 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -258,5 +261,47 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 		
 	}
  
+	
+	/**
+	 * Save erases all values on the table, including the added columns, use this to re-populate it with data
+	 */
+	public void populateAddedColumns(){
+		for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
+			if(propertyExists(propertyId)){
+				if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
+					setPreferredIdColumnValues();
+				else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
+					setPreferredNameColumnValues();
+				else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
+					setLocationColumnValues();
+			}
+		}
+	}
+	
+    /**
+     * This has to be called after the list entries has been saved, because it'll need the germplasmListEntryId
+     * @return
+     */
+    public List<ListDataInfo> getListDataCollectionFromTable(Table table){
+    	
+    	populateAddedColumns();
+    	
+    	List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
+    	
+    	for(Object itemId : table.getItemIds()){
+    		Item item = table.getItem(itemId);
+    		List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
+    		for(String propertyId: ADDABLE_PROPERTY_IDS){
+    			if(AddColumnContextMenu.propertyExists(propertyId, table)){
+	    			if(item.getItemProperty(propertyId).getValue()!=null)
+	    				columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
+	    			else
+	    				columns.add(new ListDataColumn(propertyId, null));
+    			}
+    		}
+    		listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()),columns));
+    	}
+    	return listDataCollection;
+    }
 
 }
