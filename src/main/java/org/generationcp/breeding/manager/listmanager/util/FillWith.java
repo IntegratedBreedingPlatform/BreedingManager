@@ -444,7 +444,7 @@ public class FillWith implements InternationalizableComponent  {
     	
     	AbsoluteLayout layout = new AbsoluteLayout();
     	final ComboBox levelComboBox = new ComboBox();
-    	for(int ctr = 1; ctr <= 10; ctr++){
+    	for(int ctr = 1; ctr <= 5; ctr++){
     		levelComboBox.addItem(Integer.valueOf(ctr));
     	}
     	levelComboBox.setValue(Integer.valueOf(1));
@@ -495,7 +495,7 @@ public class FillWith implements InternationalizableComponent  {
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);
-	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. Please report IBP.", Notification.POSITION_CENTERED);
+	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. Please report to IBP.", Notification.POSITION_CENTERED);
 	            	return;
 	            }
 	        }
