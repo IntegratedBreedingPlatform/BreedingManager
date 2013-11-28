@@ -512,6 +512,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 
     public void saveChangesAction() throws InternationalizableException {
+        try {
+        	long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+            listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
+        }
+     
         int entryId = 1;
         //re-assign "Entry ID" field based on table's sorting
         for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
