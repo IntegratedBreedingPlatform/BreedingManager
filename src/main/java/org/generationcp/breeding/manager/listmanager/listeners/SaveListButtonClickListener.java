@@ -8,11 +8,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.gms.ListDataColumn;
-import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
@@ -411,6 +408,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 							thereIsAChange = true;
 							String groupName = entryToCheck.getGroupName();
 							if(groupName != null && groupName.length() != 0){
+								if(groupName.length() > 255){
+									groupName = groupName.substring(0, 255);
+								}
 								matchingSavedEntry.setGroupName(groupName);
 							} else{
 								matchingSavedEntry.setGroupName("-");

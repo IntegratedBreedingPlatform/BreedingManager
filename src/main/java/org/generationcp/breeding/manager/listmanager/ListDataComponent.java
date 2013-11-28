@@ -16,8 +16,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
@@ -58,20 +60,29 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
@@ -106,7 +117,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE = new Action("Delete selected entries");
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE};
+    static final Action ACTION_EDIT = new Action("Edit Value");
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_EDIT };
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
     
     public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -145,14 +157,20 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
 
+	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
+	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
+	
 	private Window listManagerCopyToNewListDialog;
 	private GermplasmDetailModel germplasmDetail;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
+
 	private AddColumnContextMenu addColumnContextMenu;  
+	  
+	Object selectedColumn;
+	Object selectedItemId;
 	
-    
     public ListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu){
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
@@ -290,7 +308,21 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                      		//deleteListButtonClickAction();
                      	}else if(ACTION_SELECT_ALL == action) {
                      		listDataTable.setValue(listDataTable.getItemIds());
+                     	}else if(ACTION_EDIT == action){
+                     		// Make the entire item editable
+    		                HashMap<Object,Field> itemMap = fields.get(selectedItemId);
+    		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+    		        			Object column = entry.getKey();
+    		        			if(column.equals(selectedColumn)){
+    		        				Field f = entry.getValue();
+    			                	f.setReadOnly(false);
+    			                	f.focus();
+    		        			}
+    		                }
+    		                
+    		                listDataTable.select(selectedItemId);
                      	}
+                     	
                      }
                      });
              }
@@ -341,6 +373,94 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
          }
     }
 
+	// This is needed for storing back-references
+	class ItemPropertyId {
+	    Object itemId;
+	    Object propertyId;
+	    
+	    public ItemPropertyId(Object itemId, Object propertyId) {
+	        this.itemId = itemId;
+	        this.propertyId = propertyId;
+	    }
+	    
+	    public Object getItemId() {
+	        return itemId;
+	    }
+	    
+	    public Object getPropertyId() {
+	        return propertyId;
+	    }
+	}
+	
+    public void makeTableEditable(){
+    	
+    	listDataTable.setImmediate(true);
+    	
+    	listDataTable.addListener(new ItemClickListener(){
+			public void itemClick(ItemClickEvent event) {
+				selectedColumn = event.getPropertyId();
+				selectedItemId = event.getItemId();
+			}
+		});
+    	
+    	listDataTable.setTableFieldFactory(new TableFieldFactory() {
+		    public Field createField(Container container, final Object itemId,
+		            final Object propertyId, Component uiContext) {
+		    	
+		    	if(propertyId.equals(ListDataTablePropertyID.GID.getName()) || propertyId.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
+		    		return null;
+		    	}
+		    	
+		    	final TextField tf = new TextField();
+		        tf.setData(new ItemPropertyId(itemId, propertyId));
+		        
+		        // Needed for the generated column
+		        tf.setImmediate(true);
+
+		        // Manage the field in the field storage
+		        HashMap<Object,Field> itemMap = fields.get(itemId);
+		        if (itemMap == null) {
+		            itemMap = new HashMap<Object,Field>();
+		            fields.put(itemId, itemMap);
+		        }
+		        itemMap.put(propertyId, tf);
+		        
+		        itemIds.put(tf, itemId);
+		        
+		        tf.setReadOnly(true);
+		        
+		        tf.addListener(new FocusListener() {
+		            public void focus(FocusEvent event) {
+		                // Make the entire item editable
+		                HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		                	Object column = entry.getKey();
+		        			if(column.equals(selectedColumn)){		        				
+		        				Field f = entry.getValue();
+			                	//f.setReadOnly(false);
+		        			}
+		                }
+		                
+		                listDataTable.select(itemId);
+		            }
+		        });
+		        tf.addListener(new BlurListener() {
+		            public void blur(BlurEvent event) {
+		                // Make the entire item read-only
+		                HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Field f: itemMap.values())
+		                    f.setReadOnly(true);
+		            }
+		        });
+		        
+		        return tf;
+		    }
+		});
+		
+		listDataTable.setEditable(true);
+
+    }
+
 
     @Override
     public void attach() {
@@ -386,10 +506,19 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		,ListDataTablePropertyID.DESIGNATION.getName()
         		,ListDataTablePropertyID.GROUP_NAME.getName()
         		,ListDataTablePropertyID.STATUS.getName()});
+        
+        makeTableEditable();
     }
 
 
     public void saveChangesAction() throws InternationalizableException {
+        try {
+        	long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+            listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
+        }
+     
         int entryId = 1;
         //re-assign "Entry ID" field based on table's sorting
         for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
