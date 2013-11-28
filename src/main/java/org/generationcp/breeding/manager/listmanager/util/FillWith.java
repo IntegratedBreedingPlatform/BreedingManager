@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -60,6 +61,7 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithGermplasmDate;
 	private ContextMenuItem menuFillWithPrefName;
 	private ContextMenuItem menuFillWithPrefID;
+	private ContextMenuItem menuFillWithAttribute;
 	private ContextMenuItem menuFillWithLocationName;
 	private ContextMenuItem menuFillWithBreedingMethodInfo;
 	private ContextMenuItem menuFillWithBreedingMethodName;
@@ -123,6 +125,7 @@ public class FillWith implements InternationalizableComponent  {
 	   	 menuFillWithPrefID = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_ID));
 	   	 menuFillWithGermplasmDate = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE));
 	   	 menuFillWithPrefName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_PREF_NAME));
+	   	 menuFillWithAttribute = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_ATTRIBUTE));
 	   	 
 	   	 menuFillWithBreedingMethodInfo = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_INFO));
 	   	 menuFillWithBreedingMethodName = menuFillWithBreedingMethodInfo.addItem(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME));
@@ -159,6 +162,8 @@ public class FillWith implements InternationalizableComponent  {
 		   				 fillWithPreferredName();
 		   			 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_ID))){
 		   				 fillWithPreferredID();
+		   			 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_ATTRIBUTE))){
+		   			     fillWithAttribute(targetTable, (String) fillWithMenu.getData());
 	   				 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
 		   				 fillWithMethodName(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_ABBREVIATION))){
@@ -238,6 +243,12 @@ public class FillWith implements InternationalizableComponent  {
        for(Integer itemId: itemIds){
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
+    }
+    
+    public void fillWithAttribute(Table table, String propertyId) {
+        Window mainWindow = table.getWindow();
+        Window attributeWindow = new FillWithAttributeWindow(table, GIDPropertyId, propertyId, messageSource);
+        mainWindow.addWindow(attributeWindow);
     }
     
 	public void fillWithGermplasmDate(Table table, String propertyId){
