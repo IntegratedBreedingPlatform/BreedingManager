@@ -413,7 +413,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
         //save the list of Germplasm List Data to the database
         try {
+        	
             germplasmListManager.updateGermplasmListData(listDatas);
+            germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
+            
             listDataTable.requestRepaint();
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
