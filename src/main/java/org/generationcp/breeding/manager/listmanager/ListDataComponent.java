@@ -32,6 +32,7 @@ import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -64,11 +65,11 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -414,6 +415,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		    	final TextField tf = new TextField();
 		        tf.setData(new ItemPropertyId(itemId, propertyId));
 		        
+		        //set the size of textfield based on text of cell
+		        String value = (String) container.getItem(itemId).getItemProperty(propertyId).getValue();
+		        double multiplier = 0.55;
+		        // if all caps, provide bigger space
+		        if (!value.isEmpty() && value.equals(value.toUpperCase())){
+		        	multiplier = 0.75;
+		        }
+				Double d = value.length() * multiplier;
+				tf.setWidth(d.floatValue(), UNITS_EM);
+		        
 		        // Needed for the generated column
 		        tf.setImmediate(true);
 
@@ -506,6 +517,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		,ListDataTablePropertyID.DESIGNATION.getName()
         		,ListDataTablePropertyID.GROUP_NAME.getName()
         		,ListDataTablePropertyID.STATUS.getName()});
+        
+        // render additional columns
+    	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
+    	newColumnsRenderer.render();
         
         makeTableEditable();
     }
