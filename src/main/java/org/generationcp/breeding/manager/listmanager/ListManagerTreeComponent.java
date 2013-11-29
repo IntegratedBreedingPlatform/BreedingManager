@@ -1,7 +1,9 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -185,7 +187,51 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
 
+        if(listId != null && listId < 0){
+        	germplasmListTree.expandItem("LOCAL");
+        	germplasmListTree.select(listId);
+        } else if(listId != null && listId > 0){
+        	try{
+        		GermplasmList list = germplasmListManager.getGermplasmListById(listId);
+        		
+        		if(list != null){
+        			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
+        			traverseParentsOfList(list, parents);
+        			
+        			germplasmListTree.expandItem("CENTRAL");
+        			while(!parents.isEmpty()){
+        				GermplasmList parent = parents.pop();
+        				addGermplasmListNode(parent.getId().intValue());
+        				germplasmListTree.expandItem(parent.getId());
+        			}
+        			
+        			germplasmListTree.select(listId);
+        		}
+        	} catch(MiddlewareQueryException ex){
+        		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
+        	}
+        }
+        
         return germplasmListTree;
+    }
+    
+    private void traverseParentsOfList(GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
+    	if(list == null){
+    		return;
+    	} else{
+    		Integer parentId = list.getParentId();
+    		
+    		if(parentId != null && parentId != 0){
+	    		GermplasmList parent = germplasmListManager.getGermplasmListById(list.getParentId());
+	    		
+	    		if(parent != null){
+	    			parents.push(parent);
+	    			traverseParentsOfList(parent, parents);
+	    		}
+    		}
+    		
+    		return;
+    	}
     }
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
