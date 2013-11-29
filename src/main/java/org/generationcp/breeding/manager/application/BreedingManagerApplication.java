@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.vaadin.terminal.Terminal;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -136,13 +137,21 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return listManagerWindow;
             } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
             	String listIdPart = name.substring(name.indexOf("-") + 1);
-            	Integer listId = Integer.parseInt(listIdPart);
-            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-                listManagerWindow.setName(name);
-                listManagerWindow.setSizeUndefined();
-                listManagerWindow.addComponent(new ListManagerMain(listId));
-                this.addWindow(listManagerWindow);
-                return listManagerWindow;
+            	try{
+	            	Integer listId = Integer.parseInt(listIdPart);
+	            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+	                listManagerWindow.setName(name);
+	                listManagerWindow.setSizeUndefined();
+	                listManagerWindow.addComponent(new ListManagerMain(listId));
+	                this.addWindow(listManagerWindow);
+	                return listManagerWindow;
+            	} catch(NumberFormatException ex){
+            		Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+                    emptyGermplasmListDetailsWindow.setSizeUndefined();
+                    emptyGermplasmListDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.INVALID_LIST_ID)));
+                    this.addWindow(emptyGermplasmListDetailsWindow);
+                    return emptyGermplasmListDetailsWindow;
+            	}
             }
         }
         
