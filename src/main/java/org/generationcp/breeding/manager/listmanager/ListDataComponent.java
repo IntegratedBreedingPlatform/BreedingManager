@@ -415,6 +415,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		    	final TextField tf = new TextField();
 		        tf.setData(new ItemPropertyId(itemId, propertyId));
 		        
+		        //set the size of textfield based on text of cell
+		        String value = (String) container.getItem(itemId).getItemProperty(propertyId).getValue();
+		        double multiplier = 0.55;
+		        // if all caps, provide bigger space
+		        if (!value.isEmpty() && value.equals(value.toUpperCase())){
+		        	multiplier = 0.75;
+		        }
+				Double d = value.length() * multiplier;
+				tf.setWidth(d.floatValue(), UNITS_EM);
+		        
 		        // Needed for the generated column
 		        tf.setImmediate(true);
 
