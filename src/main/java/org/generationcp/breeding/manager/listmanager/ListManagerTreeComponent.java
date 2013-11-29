@@ -201,7 +201,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         			germplasmListTree.expandItem("CENTRAL");
         			while(!parents.isEmpty()){
         				GermplasmList parent = parents.pop();
-        				addGermplasmListNode(parent.getId().intValue());
+        				germplasmListTree.setChildrenAllowed(parent.getId(), true);
+        				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
         				germplasmListTree.expandItem(parent.getId());
         			}
         			
@@ -276,6 +277,29 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
+    	germplasmListTree.select(null);
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+
+        try {
+            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm lists by parent id.", e);
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+            germplasmListChildren = new ArrayList<GermplasmList>();
+        }
+
+        for (GermplasmList listChild : germplasmListChildren) {
+            germplasmListTree.addItem(listChild.getId());
+            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+            // allow children if list has sub-lists
+            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        }
+    }
+    
+    public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
         List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 
         try {
