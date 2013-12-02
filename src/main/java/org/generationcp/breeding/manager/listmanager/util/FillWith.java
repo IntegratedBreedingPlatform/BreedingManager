@@ -263,6 +263,10 @@ public class FillWith implements InternationalizableComponent  {
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
 		   }
 		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -278,6 +282,10 @@ public class FillWith implements InternationalizableComponent  {
 			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
 		   }
+		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -296,6 +304,10 @@ public class FillWith implements InternationalizableComponent  {
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
 		   }
 		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -312,6 +324,10 @@ public class FillWith implements InternationalizableComponent  {
 			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
 		   }
+		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -330,6 +346,10 @@ public class FillWith implements InternationalizableComponent  {
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
 		   }
 		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -345,6 +365,11 @@ public class FillWith implements InternationalizableComponent  {
 			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid1());
 		   }
+		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }    	
@@ -363,6 +388,11 @@ public class FillWith implements InternationalizableComponent  {
  			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
  			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid1()));
  		   }
+ 		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -378,6 +408,11 @@ public class FillWith implements InternationalizableComponent  {
  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
  			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid2());
  		   }
+ 		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -396,6 +431,11 @@ public class FillWith implements InternationalizableComponent  {
   			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
   			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid2()));
   		   }
+  		   
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
   	   }        	
@@ -412,6 +452,10 @@ public class FillWith implements InternationalizableComponent  {
             GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
             item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getGermplasmPreferredName());
     	}
+    	
+	   //To trigger TableFieldFactory (fix for truncated data)
+	   targetTable.setEditable(false);
+	   targetTable.setEditable(true);
 		
 	}
     
@@ -426,6 +470,10 @@ public class FillWith implements InternationalizableComponent  {
             GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
             item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getPrefID());
     	}
+    	
+	   //To trigger TableFieldFactory (fix for truncated data)
+	   targetTable.setEditable(false);
+	   targetTable.setEditable(true);
 		
 	}
     
@@ -443,6 +491,10 @@ public class FillWith implements InternationalizableComponent  {
        
     	}
 		
+	   //To trigger TableFieldFactory (fix for truncated data)
+	   targetTable.setEditable(false);
+	   targetTable.setEditable(true);
+	   
 	}
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
@@ -510,6 +562,11 @@ public class FillWith implements InternationalizableComponent  {
 	            	return;
 	            }
 	        }
+	    	
+		   //To trigger TableFieldFactory (fix for truncated data)
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		   
     	}
     }
     

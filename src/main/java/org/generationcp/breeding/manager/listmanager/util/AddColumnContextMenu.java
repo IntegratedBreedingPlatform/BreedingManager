@@ -2,10 +2,11 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -21,10 +22,18 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.TextField;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -60,6 +69,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String LOCATIONS = "LOCATIONS";
     
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID, PREFERRED_NAME, LOCATIONS}; 
+    
+    
+    
+    private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
     
 	/**
 	 * Add "Add column" context menu to a table
@@ -160,6 +173,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.getItem(itemId).getItemProperty(PREFERRED_ID).setValue(preferredID);
     			}
 			   
+				//To trigger TableFieldFactory (fix for truncated data)
+				targetTable.setEditable(false);
+				targetTable.setEditable(true);
+    			
     		} catch (MiddlewareQueryException e) {
     			e.printStackTrace();
     		}
@@ -184,7 +201,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 							germplasmDataManager.getPreferredNameByGID(gid).getNval();
 					targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
 				}
-			   
+
+				//To trigger TableFieldFactory (fix for truncated data)
+				targetTable.setEditable(false);
+				targetTable.setEditable(true);
+				
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}  
@@ -194,6 +215,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addLocationColumn(){
     	if(!propertyExists(LOCATIONS)){
     		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, null);
+    		targetTable.setColumnWidth(LOCATIONS, 500);
     		setLocationColumnValues();
     	}
     }
@@ -202,6 +224,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(propertyExists(LOCATIONS)){
 			try {
 				List<Integer> itemIds = getItemIds(targetTable);
+				
+				final Map<Integer, String> allLocationNamesMap = new HashMap<Integer, String>();
+				
 				for(Integer itemId: itemIds){
 					Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 					
@@ -209,12 +234,19 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 					gids.add(gid);
 					
 					Map<Integer, String> locationNamesMap = germplasmDataManager.getLocationNamesByGids(gids);
+					allLocationNamesMap.putAll(locationNamesMap);
+					
 					if(locationNamesMap.get(gid)==null)
 						targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue("");
 					else
 						targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
 				}
-			   
+				Integer maxLength = getMaxLocationNameLength(20, allLocationNamesMap);
+
+				//To trigger TableFieldFactory (fix for truncated data)
+				targetTable.setEditable(false);
+				targetTable.setEditable(true);
+					
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}    	
@@ -264,8 +296,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	public void updateLabels() {
 		// TODO Auto-generated method stub
 		
-	}
- 
+	} 
 	
 	/**
 	 * Save erases all values on the table, including the added columns, use this to re-populate it with data
@@ -309,4 +340,27 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	return listDataCollection;
     }
 
+    
+	public void autoColumnWidth(Table table, String propertyId, Integer maxLength){
+    	Integer width = maxLength*10;
+    	//List<Integer> itemIds = getItemIds(table);
+    	table.setColumnWidth(propertyId, 5000);
+    	table.requestRepaintAll();
+    }
+    
+    
+	public Integer getMaxLocationNameLength(Integer defaultLength, Map<Integer, String> locationNameMap){
+		Integer max = defaultLength;
+		for(Integer key : locationNameMap.keySet()){
+			int length = 0;
+			if(locationNameMap.get(key)!=null)
+				length = locationNameMap.get(key).length();
+			if(length>max)
+				max = length;
+		}
+		return max;
+	}
+
+	
+    
 }
