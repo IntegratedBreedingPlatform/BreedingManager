@@ -179,7 +179,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 				List<Integer> itemIds = getItemIds(targetTable);
 				for(Integer itemId: itemIds){
 					Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-					String preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
+					String preferredName = "";
+					if(germplasmDataManager.getPreferredNameByGID(gid)!=null && germplasmDataManager.getPreferredNameByGID(gid).getNval()!=null)
+							germplasmDataManager.getPreferredNameByGID(gid).getNval();
 					targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
 				}
 			   
