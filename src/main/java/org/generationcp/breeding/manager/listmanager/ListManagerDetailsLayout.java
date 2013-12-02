@@ -49,11 +49,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	private Label heading;
 	private Button btnCloseAllTabs;
 	private HorizontalLayout headingBar;
+	private Label noListLabel;
 	
 	private boolean forGermplasmListWindow;
 
-	
-    public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+	public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
     	this.treeComponent = treeComponent;
     	this.parentLayout = parentLayout;
     	this.forGermplasmListWindow = forGermplasmListWindow;
@@ -73,6 +73,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		} else {
 			detailsTabSheet.setHeight("411px");
 		}
+		
+		noListLabel = new Label();
 	}
 
 	@Override
@@ -83,9 +85,13 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	
     public void createListInfoFromBrowseScreen(int germplasmListId) throws MiddlewareQueryException {
         GermplasmList germplasmList=getGermplasmList(germplasmListId);
-        String tabName = germplasmList.getName();
-        
-		createTab(germplasmListId, germplasmList, tabName);
+        if(germplasmList != null){
+        	String tabName = germplasmList.getName();
+        	createTab(germplasmListId, germplasmList, tabName);
+        } else{
+        	noListLabel.setCaption("There is no list in the database with id: " + germplasmListId);
+        	parentLayout.addComponent(noListLabel, "top:20px;left:340px");
+        }
     }
     
     public void createListInfoFromSearchScreen(int germplasmListId) throws MiddlewareQueryException {
@@ -160,6 +166,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	private void initializeLayout() {
 		//reset
     	parentLayout.removeComponent(detailsTabSheet);
+    	parentLayout.removeComponent(noListLabel);
     	
     	btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
     	btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);

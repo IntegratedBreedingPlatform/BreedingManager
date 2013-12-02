@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
@@ -32,6 +33,7 @@ import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -64,11 +66,11 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -92,6 +94,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
+	private static final int DEFAULT_LENGTH = 20;
 
     public final static String SORTING_BUTTON_ID = "GermplasmListDataComponent Save Sorting Button";
     public static final String DELETE_LIST_ENTRIES_BUTTON_ID="Delete list entries";
@@ -414,6 +417,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		    	final TextField tf = new TextField();
 		        tf.setData(new ItemPropertyId(itemId, propertyId));
 		        
+		        //set the size of textfield based on text of cell
+		        Double d = computeTextFieldWidth(container, itemId, propertyId);
+				tf.setWidth(d.floatValue(), UNITS_EM);
+		        
 		        // Needed for the generated column
 		        tf.setImmediate(true);
 
@@ -455,6 +462,21 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		        
 		        return tf;
 		    }
+
+			private Double computeTextFieldWidth(Container container,
+					final Object itemId, final Object propertyId) {
+				String value = (String) container.getItem(itemId).getItemProperty(propertyId).getValue();
+		        double multiplier = 0.55;
+		        int length = DEFAULT_LENGTH; 
+		        if (value != null && !value.isEmpty()){
+		        	length = value.length();
+		        	if (value.equals(value.toUpperCase())){ 
+		        		multiplier = 0.75;  // if all caps, provide bigger space
+		        	}	
+		        }		        
+				Double d = length * multiplier;
+				return d;
+			}
 		});
 		
 		listDataTable.setEditable(true);
@@ -507,6 +529,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		,ListDataTablePropertyID.GROUP_NAME.getName()
         		,ListDataTablePropertyID.STATUS.getName()});
         
+        // render additional columns
+    	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
+    	newColumnsRenderer.render();
+        
         makeTableEditable();
     }
 
@@ -533,8 +559,31 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             for (GermplasmListData listData : listDatas) {
                 if (listData.getId().equals(listDataId)) {
                     listData.setEntryId(entryId);
-                    listData.setEntryCode(item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue().toString());
-                    listData.setSeedSource(item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue().toString());
+                    
+                    String entryCode = (String) item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+                    if(entryCode != null && entryCode.length() != 0){
+                    	listData.setEntryCode(entryCode);
+                    } else {
+                    	listData.setEntryCode(Integer.valueOf(entryId).toString());
+                    }
+                    
+                    String seedSource = (String) item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+                    if(seedSource != null && seedSource.length() != 0){
+                    	listData.setSeedSource(seedSource);
+                    } else {
+                    	listData.setSeedSource("-");
+                    }
+                    
+                    String groupName = (String) item.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
+                    if(groupName != null && groupName.length() != 0){
+                    	if(groupName.length() > 255){
+                    		groupName = groupName.substring(0, 255);
+                    	}
+                    	listData.setGroupName(groupName);
+                    } else {
+                    	listData.setGroupName("-");
+                    }
+                    
                     break;
                 }
             }

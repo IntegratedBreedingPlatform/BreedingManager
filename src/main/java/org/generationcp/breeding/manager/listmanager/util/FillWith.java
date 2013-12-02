@@ -581,5 +581,6 @@ public class FillWith implements InternationalizableComponent  {
 		this.menuFillWithGermplasmDate.setVisible(visibility);
 		this.menuFillWithPrefID.setVisible(visibility);
 		this.menuFillWithPrefName.setVisible(visibility);
+		this.menuFillWithAttribute.setVisible(visibility);
 	}
 }

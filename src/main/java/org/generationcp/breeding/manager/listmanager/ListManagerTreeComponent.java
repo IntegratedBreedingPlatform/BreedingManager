@@ -1,7 +1,9 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -55,16 +57,25 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     private VerticalLayout treeContainerLayout;
     
+    private Integer listId;
+    
     public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listId = null;
+    }
+    
+    public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow, Integer listId) {
+        this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
+        this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listId = listId;
     }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
 		
-		displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
-		
+    	displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+    	
 		germplasmListTree = new Tree();
 		germplasmListTree.setImmediate(true);
 		
@@ -84,6 +95,18 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
 	@Override
 	public void updateLabels() {
+	}
+	
+	@Override
+	public void attach() {
+		super.attach();
+		if(listId != null){
+			try{
+				displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
+			} catch(MiddlewareQueryException ex){
+				
+			}
+		}
 	}
 
     public void createTree() {
@@ -164,7 +187,52 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
 
+        if(listId != null && listId < 0){
+        	germplasmListTree.expandItem("LOCAL");
+        	germplasmListTree.select(listId);
+        } else if(listId != null && listId > 0){
+        	try{
+        		GermplasmList list = germplasmListManager.getGermplasmListById(listId);
+        		
+        		if(list != null){
+        			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
+        			traverseParentsOfList(list, parents);
+        			
+        			germplasmListTree.expandItem("CENTRAL");
+        			while(!parents.isEmpty()){
+        				GermplasmList parent = parents.pop();
+        				germplasmListTree.setChildrenAllowed(parent.getId(), true);
+        				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
+        				germplasmListTree.expandItem(parent.getId());
+        			}
+        			
+        			germplasmListTree.select(listId);
+        		}
+        	} catch(MiddlewareQueryException ex){
+        		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
+        	}
+        }
+        
         return germplasmListTree;
+    }
+    
+    private void traverseParentsOfList(GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
+    	if(list == null){
+    		return;
+    	} else{
+    		Integer parentId = list.getParentId();
+    		
+    		if(parentId != null && parentId != 0){
+	    		GermplasmList parent = germplasmListManager.getGermplasmListById(list.getParentId());
+	    		
+	    		if(parent != null){
+	    			parents.push(parent);
+	    			traverseParentsOfList(parent, parents);
+	    		}
+    		}
+    		
+    		return;
+    	}
     }
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
@@ -209,6 +277,29 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
+    	germplasmListTree.select(null);
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+
+        try {
+            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm lists by parent id.", e);
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+            germplasmListChildren = new ArrayList<GermplasmList>();
+        }
+
+        for (GermplasmList listChild : germplasmListChildren) {
+            germplasmListTree.addItem(listChild.getId());
+            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+            // allow children if list has sub-lists
+            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        }
+    }
+    
+    public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
         List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 
         try {
