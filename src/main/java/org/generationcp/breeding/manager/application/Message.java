@@ -286,4 +286,5 @@ public enum Message{
     ,ADD_COLUMN
 
     ,INVALID_LIST_ID
+    ,INVALID_DESIGNATION_NAME
 }

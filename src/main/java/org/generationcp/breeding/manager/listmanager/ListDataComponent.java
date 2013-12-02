@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
@@ -65,6 +64,7 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
@@ -72,6 +72,8 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -122,6 +124,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     static final Action ACTION_DELETE = new Action("Delete selected entries");
     static final Action ACTION_EDIT = new Action("Edit Value");
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_EDIT };
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
     
     public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -171,7 +174,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private AddColumnContextMenu addColumnContextMenu;  
 	  
-	Object selectedColumn;
+	Object selectedColumn = "";
 	Object selectedItemId;
 	
     public ListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu){
@@ -300,9 +303,19 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                      listDataTable.addActionHandler(new Action.Handler() {
                          public Action[] getActions(Object target, Object sender) {
                          if (germplasmListId < 0 &&  germplasmListStatus < 100){
-                         return ACTIONS_TABLE_CONTEXT_MENU;
+                        	 if(selectedColumn == null){
+                        		 return ACTIONS_TABLE_CONTEXT_MENU;
+                        	 }
+                        	 else {
+                        		 if( selectedColumn.toString().equals(ListDataTablePropertyID.GID.getName()) || selectedColumn.toString().equals(ListDataTablePropertyID.ENTRY_ID.getName()) ){
+                            		 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT;
+                        		 }
+                        		 else{
+                            		 return ACTIONS_TABLE_CONTEXT_MENU;
+                            	 } 
+                        	 }
                          }else{
-                         return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
+                        	 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
                          }
                      }
          
@@ -400,6 +413,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	listDataTable.setImmediate(true);
     	
     	listDataTable.addListener(new ItemClickListener(){
+			private static final long serialVersionUID = 1L;
+
 			public void itemClick(ItemClickEvent event) {
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
@@ -407,7 +422,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		});
     	
     	listDataTable.setTableFieldFactory(new TableFieldFactory() {
-		    public Field createField(Container container, final Object itemId,
+			private static final long serialVersionUID = 1L;
+
+			public Field createField(Container container, final Object itemId,
 		            final Object propertyId, Component uiContext) {
 		    	
 		    	if(propertyId.equals(ListDataTablePropertyID.GID.getName()) || propertyId.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
@@ -437,7 +454,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		        tf.setReadOnly(true);
 		        
 		        tf.addListener(new FocusListener() {
-		            public void focus(FocusEvent event) {
+					private static final long serialVersionUID = 1L;
+
+					public void focus(FocusEvent event) {
 		                // Make the entire item editable
 		                HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
@@ -452,11 +471,65 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		            }
 		        });
 		        tf.addListener(new BlurListener() {
-		            public void blur(BlurEvent event) {
+					private static final long serialVersionUID = 1L;
+
+					public void blur(BlurEvent event) {
+
 		                // Make the entire item read-only
 		                HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Field f: itemMap.values())
 		                    f.setReadOnly(true);
+		            }
+		        });
+		        tf.addListener(new Property.ValueChangeListener() {//this area can be used for validation
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						
+						if( selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName()) ){
+							String designation = event.getProperty().getValue().toString();
+							
+							String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
+							int gid =  Integer.valueOf(items[1]);
+							
+							if(isDesignationValid(designation,gid)){
+								HashMap<Object,Field> itemMap = fields.get(itemId);
+				                for (Field f: itemMap.values())
+				                    f.setReadOnly(true);
+							}
+							else{
+								ConfirmDialog.show(getWindow(), "Update Designation", "The value you entered is not one of the germplasm names. Are you sure you want to update Designation with new value?",
+							                    "Yes", "No", new ConfirmDialog.Listener() {	
+				            			private static final long serialVersionUID = 1L;	
+										public void onClose(ConfirmDialog dialog) {
+				                            if (!dialog.isConfirmed()) {
+				                            	tf.setReadOnly(false);
+				                            	tf.focus();
+								            }
+				                            else{
+				                            	tf.setReadOnly(true);
+				                            	listDataTable.focus();
+				                            }
+				                        }
+									}
+					            );
+							}
+						}
+					}
+	        	});
+		        tf.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+		            public void handleAction(Object sender, Object target) {
+		               
+						HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Field f: itemMap.values())
+		                    f.setReadOnly(true);
+		                
+		                listDataTable.focus();
+		               
 		            }
 		        });
 		        
@@ -481,6 +554,31 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		listDataTable.setEditable(true);
 
+    }
+    
+    public boolean isDesignationValid(String designation, int gid){
+    	List<Name> germplasms = new ArrayList<Name>();
+    	List<String> designations = new ArrayList<String>();
+    	
+    	try{
+    		germplasms = germplasmDataManager.getNamesByGID(gid, null, null);
+    		
+    		for(Name germplasm : germplasms){
+    			designations.add(germplasm.getNval());
+    		}
+    		
+    		if(!designations.contains(designation)){
+    			return false;
+    		}
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+			LOG.error("Database error!", e);
+			MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting numeric trait info given environment ids."
+					+ " Please report to IBP.", Notification.POSITION_CENTERED);
+    	}
+    	
+    	return true; 
     }
 
 
@@ -640,8 +738,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
             ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
                 "Yes", "No", new ConfirmDialog.Listener() {
+			private static final long serialVersionUID = 1L;
 
-            public void onClose(ConfirmDialog dialog) {
+			public void onClose(ConfirmDialog dialog) {
                 if (dialog.isConfirmed()) {
                 try {
                 lockList();
