@@ -207,7 +207,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 					gids.add(gid);
 					
 					Map<Integer, String> locationNamesMap = germplasmDataManager.getLocationNamesByGids(gids);
-					targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
+					if(locationNamesMap.get(gid)==null)
+						targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue("");
+					else
+						targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
 				}
 			   
 			} catch (MiddlewareQueryException e) {
