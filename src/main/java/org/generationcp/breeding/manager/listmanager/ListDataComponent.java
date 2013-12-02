@@ -509,6 +509,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 								            }
 				                            else{
 				                            	tf.setReadOnly(true);
+				                            	Double d = tf.getValue().toString().length() * 0.55;
+				                				tf.setWidth(d.floatValue(), UNITS_EM);
+				                				
 				                            	listDataTable.focus();
 				                            }
 				                        }
