@@ -475,13 +475,57 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 					public void blur(BlurEvent event) {
 
-						Double d = tf.getValue().toString().length() * 0.55;
+						/*Double d = tf.getValue().toString().length() * 0.55;
         				tf.setWidth(d.floatValue(), UNITS_EM);
         				
 		                // Make the entire item read-only
 		                HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Field f: itemMap.values())
-		                    f.setReadOnly(true);
+		                    f.setReadOnly(true);*/
+		                
+						HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		                	Object column = entry.getKey();
+		                	Field f = entry.getValue();
+		                	
+		        			if(column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
+		        				String designation = event.getSource().toString();
+		        				
+		        				String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
+								int gid =  Integer.valueOf(items[1]);
+								
+								if(isDesignationValid(designation,gid)){
+									Double d = f.getValue().toString().length() * 0.75;
+									f.setWidth(d.floatValue(), UNITS_EM);
+									f.setReadOnly(true);
+									listDataTable.focus();
+								}
+								else{
+									ConfirmDialog.show(getWindow(), "Update Designation", "The value you entered is not one of the germplasm names. Are you sure you want to update Designation with new value?",
+													"Yes", "No", new ConfirmDialog.Listener() {	
+											private static final long serialVersionUID = 1L;	
+											public void onClose(ConfirmDialog dialog) {
+												if (!dialog.isConfirmed()) {
+													tf.setReadOnly(false);
+													tf.focus();
+												}
+												else{
+													Double d = tf.getValue().toString().length() * 0.75;
+													tf.setWidth(d.floatValue(), UNITS_EM);
+													tf.setReadOnly(true);
+													listDataTable.focus();
+												}
+											}
+										}
+									);
+								}
+		        			}
+		        			else{
+		        				Double d = f.getValue().toString().length() * 0.75;
+								f.setWidth(d.floatValue(), UNITS_EM);
+		        				f.setReadOnly(true);
+		        			}
+		                }
 		            }
 		        });
 		        tf.addListener(new Property.ValueChangeListener() {//this area can be used for validation
@@ -489,8 +533,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
+						Double d = tf.getValue().toString().length() * 0.75;
+						tf.setWidth(d.floatValue(), UNITS_EM);
+						tf.setReadOnly(true);
 						
-						HashMap<Object,Field> itemMap = fields.get(itemId);
+						/*HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
 		                	Object column = entry.getKey();
 		        			if(column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){		        				
@@ -527,7 +574,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 									);
 								}
 		        			}
-		                }
+		                }*/
 		                
 					}
 	        	});
@@ -536,14 +583,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 					@Override
 		            public void handleAction(Object sender, Object target) {
-						
-						Double d = tf.getValue().toString().length() * 0.55;
-        				tf.setWidth(d.floatValue(), UNITS_EM);
-		               
-						HashMap<Object,Field> itemMap = fields.get(itemId);
-		                for (Field f: itemMap.values())
-		                    f.setReadOnly(true);
-		                
+						Double d = tf.getValue().toString().length() * 0.75;
+						tf.setWidth(d.floatValue(), UNITS_EM);
+						tf.setReadOnly(true);
 		                listDataTable.focus();
 		               
 		            }
