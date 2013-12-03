@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listimport;
 
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -62,7 +63,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
      * @return id of new Germplasm List created
      * @throws MiddlewareQueryException
      */
-    public Integer saveRecords(GermplasmList germplasmList, LinkedHashMap<Germplasm, Name> germplasmMap, String filename, List<Integer> doNotCreateGermplasmsWithId)throws MiddlewareQueryException{
+    public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, String filename, List<Integer> doNotCreateGermplasmsWithId)throws MiddlewareQueryException{
 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
@@ -74,25 +75,25 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         
         
         //
-        List<Integer> germplasmIds = new ArrayList();
+        List<Integer> germplasmIds = new ArrayList<Integer>();
         try {
-            for (Germplasm germplasm : germplasmMap.keySet()) {
-                Name name = germplasmMap.get(germplasm);
+            for(GermplasmName germplasmName : germplasmNameObjects){
+                Name name = germplasmName.getName();
                 name.setNid(null);
                 name.setNstat(Integer.valueOf(1));
                 
-                if(doNotCreateGermplasmsWithId.contains(germplasm.getGid())){
+                if(doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid()) || germplasmIds.contains(germplasmName.getGermplasm().getGid())){
                     //If do not create new germplasm
-                    germplasm = germplasmManager.getGermplasmByGID(germplasm.getGid());
-                    germplasmIds.add(germplasm.getGid());
-                    name.setGermplasmId(germplasm.getGid());
+                	germplasmName.setGermplasm(germplasmManager.getGermplasmByGID(germplasmName.getGermplasm().getGid()));
+                    germplasmIds.add(germplasmName.getGermplasm().getGid());
+                    name.setGermplasmId(germplasmName.getGermplasm().getGid());
                     germplasmManager.addGermplasmName(name);
                 } else {
                     //Create new germplasm
                     //Integer negativeId = germplasmManager.getN .getNegativeId("gid");
-                    germplasm.setGid(null);
-                    germplasm.setLgid(Integer.valueOf(0));
-                    germplasmIds.add(germplasmManager.addGermplasm(germplasm, name));
+                	germplasmName.getGermplasm().setGid(null);
+                	germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
+                    germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
                 }
             }
         } catch (Exception e) {
@@ -104,7 +105,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         System.out.println("GIDs saved: "+germplasmIds);
         
         GermplasmList list = saveGermplasmListRecord(germplasmList);
-        saveGermplasmListDataRecords(germplasmMap, germplasmIds, list, filename);
+        saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename);
 
         // log project activity in Workbench
         addWorkbenchProjectActivity(filename);
@@ -120,19 +121,20 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     }
 
 
-    private void saveGermplasmListDataRecords( LinkedHashMap<Germplasm, Name> germplasmMap,
+    private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
         List<Integer> germplasmIds, GermplasmList list, String filename) throws MiddlewareQueryException {
 
         Iterator<Integer> germplasmIdIterator = germplasmIds.iterator();
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
         int ctr = 1;
 
-        for (Map.Entry<Germplasm, Name> entry : germplasmMap.entrySet()){
-            Integer gid = germplasmIdIterator.next();
+        for (GermplasmName germplasmName : germplasmNameObjects){
+        	
             int entryId = ctr++;
-
-            Germplasm germplasm = entry.getKey();
-            String designation = entry.getValue().getNval();
+            Integer gid = germplasmName.getGermplasm().getGid(); //germplasmIdIterator.next();
+            
+            Germplasm germplasm = germplasmName.getGermplasm();
+            String designation = germplasmName.getName().getNval();
             String source = filename + ":" +entryId;
 
             String groupName = "";   //for simple file, this is blank

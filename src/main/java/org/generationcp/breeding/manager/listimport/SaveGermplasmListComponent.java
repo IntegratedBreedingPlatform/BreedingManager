@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -91,22 +92,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     
     public void setPreviousScreen(Component previousScreen){
         this.previousScreen = previousScreen;
-    }
-
-    public List<Germplasm> getGermplasmList() {
-        return germplasmList;
-    }
-
-    public void setGermplasmList(List<Germplasm> germplasmList) {
-        this.germplasmList = germplasmList;
-    }
-
-    public List<Name> getNameList() {
-        return nameList;
-    }
-
-    public void setNameList(List<Name> nameList) {
-        this.nameList = nameList;
     }
 
     public String getFilename() {
@@ -279,26 +264,52 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
              System.out.println("DoNotCreateGermplasmsWithId : "+doNotCreateGermplasmsWithId);
              
-             LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
-             for(int i = 0 ; i < this.getGermplasmList().size() ; i++){
-                 if(doNotCreateGermplasmsWithId.contains(this.getGermplasmList().get(i).getGid())){
+             //LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
+//             for(int i = 0 ; i < this.getNameList().size() ; i++){
+//                 if(doNotCreateGermplasmsWithId.contains(this.getGermplasmList().get(i).getGid())){
+//                     //Get germplasm using temporarily set GID, then create map
+//                     Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(this.getGermplasmList().get(i).getGid());
+//                     germplasmNameMap.put(germplasmToBeUsed, this.getNameList().get(i));
+//                     
+//                     List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
+//                     germplasmListToBeUsed.set(i, germplasmToBeUsed);
+//                     this.setGermplasmList(germplasmListToBeUsed);
+//                     
+//                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was part of the do not add list");
+//                 } else {
+//                     //Create map from data from previous screen
+//                     germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
+//                     
+//                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was NOT part of the do not add list");
+//                 }
+//             }
+             
+             List<GermplasmName> germplasmNameObjects = ((SpecifyGermplasmDetailsComponent) previousScreen).getGermplasmNameObjects();
+             List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
+             
+             for(int i = 0 ; i < germplasmNameObjects.size() ; i++){
+                 if(doNotCreateGermplasmsWithId.contains(germplasmNameObjects.get(i).getGermplasm().getGid())){
                      //Get germplasm using temporarily set GID, then create map
-                     Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(this.getGermplasmList().get(i).getGid());
-                     germplasmNameMap.put(germplasmToBeUsed, this.getNameList().get(i));
+                     Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(germplasmNameObjects.get(i).getGermplasm().getGid());
+                     //germplasmNameMap.put(germplasmToBeUsed, germplasmNameObjects.get(i).getName());
                      
-                     List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
-                     germplasmListToBeUsed.set(i, germplasmToBeUsed);
-                     this.setGermplasmList(germplasmListToBeUsed);
+                     germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
                      
-                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was part of the do not add list");
+                     //List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
+                     //germplasmListToBeUsed.set(i, germplasmToBeUsed);
+                     //this.setGermplasmList(germplasmListToBeUsed);
+                     
+                     System.out.println("GID: "+germplasmNameObjects.get(i).getGermplasm().getGid()+" was part of the do not add list");
                  } else {
                      //Create map from data from previous screen
-                     germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
+                     //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
+                     germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
                      
-                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was NOT part of the do not add list");
+                     System.out.println("GID: "+germplasmNameObjects.get(i).getGermplasm().getGid()+" was NOT part of the do not add list");
                  }
-             }
-             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameMap, getFilename(), doNotCreateGermplasmsWithId);
+             }             
+             
+             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
 
