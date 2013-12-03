@@ -195,7 +195,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         //Check if columns ENTRY and DESIG is present
         if(importedGermplasmList.getImportedFactors()!=null)
         for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-            if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY")){
+            if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY ID")){
                 entryColumnIsPresent = true;
             } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIGNATION")){
                 desigColumnIsPresent = true;
@@ -222,7 +222,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
                 	
                 	//Map cell (given a column label) with a pojo setter 
-                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY")){
+                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY ID")){
                         importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIGNATION")){
@@ -450,7 +450,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 System.out.println("DEBUG | Label:"+getCellStringValue(currentSheet,currentRow,7));
                 
                 //Factors validation
-                if(importedFactor.getFactor().toUpperCase().equals("ENTRY")){
+                if(importedFactor.getFactor().toUpperCase().equals("ENTRY") || importedFactor.getFactor().toUpperCase().equals("ENTRY ID")){
                     entryColumnIsPresent = true;
                     if(importedFactor.getScale().toUpperCase().equals("NUMBER")){
                     	entryScaleIsValid = true;	
