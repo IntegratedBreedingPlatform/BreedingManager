@@ -533,7 +533,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
-						Double d = tf.getValue().toString().length() * 0.75;
+						Double d = (double) 0;
+						String value = "";
+						if(tf.getValue()!=null)
+							value = tf.getValue().toString();
+						d = value.length() * 0.75;;
 						tf.setWidth(d.floatValue(), UNITS_EM);
 						tf.setReadOnly(true);
 						
