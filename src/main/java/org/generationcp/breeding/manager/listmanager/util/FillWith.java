@@ -159,9 +159,9 @@ public class FillWith implements InternationalizableComponent  {
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
 		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
-		   				 fillWithPreferredName();
+		   				 fillWithPreferredName(targetTable, (String) fillWithMenu.getData());
 		   			 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_ID))){
-		   				 fillWithPreferredID();
+		   				 fillWithPreferredID(targetTable, (String) fillWithMenu.getData());
 		   			 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_ATTRIBUTE))){
 		   			     fillWithAttribute(targetTable, (String) fillWithMenu.getData());
 	   				 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_BREEDING_METHOD_NAME))){
@@ -441,40 +441,38 @@ public class FillWith implements InternationalizableComponent  {
   	   }        	
     }
 
-    protected void fillWithPreferredName() {
-    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+    protected void fillWithPreferredName(Table table, String propertyId) {
+        for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            Item item = targetTable.getItem(listDataId);
+            Item item = table.getItem(listDataId);
             Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-            Button b= (Button) gidObject;
-            String gid=b.getCaption();
-            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getGermplasmPreferredName());
-    	}
-    	
-	   //To trigger TableFieldFactory (fix for truncated data)
-	   targetTable.setEditable(false);
-	   targetTable.setEditable(true);
-		
+            Button b = (Button) gidObject;
+            String gid = b.getCaption();
+            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
+            item.getItemProperty(propertyId).setValue(gModel.getGermplasmPreferredName());
+        }
+        
+        //To trigger TableFieldFactory (fix for truncated data)
+        table.setEditable(false);
+        table.setEditable(true);
 	}
     
-    protected void fillWithPreferredID() {
-    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
+    protected void fillWithPreferredID(Table table, String propertyId) {
+        for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            Item item = targetTable.getItem(listDataId);
+            Item item = table.getItem(listDataId);
             Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-            Button b= (Button) gidObject;
-            String gid=b.getCaption();
-            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(gModel.getPrefID());
-    	}
-    	
-	   //To trigger TableFieldFactory (fix for truncated data)
-	   targetTable.setEditable(false);
-	   targetTable.setEditable(true);
-		
+            Button b = (Button) gidObject;
+            String gid = b.getCaption();
+            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
+            item.getItemProperty(propertyId).setValue(gModel.getPrefID());
+        }
+
+        //To trigger TableFieldFactory (fix for truncated data)
+        table.setEditable(false);
+        table.setEditable(true);
 	}
     
     
