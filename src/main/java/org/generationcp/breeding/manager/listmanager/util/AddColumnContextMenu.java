@@ -178,8 +178,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     			}
 			   
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+    			if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
     			
     		} catch (MiddlewareQueryException e) {
     			e.printStackTrace();
@@ -208,8 +210,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 				}
 
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+				if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
 				
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
@@ -248,8 +252,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 				}
 
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+				if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
 					
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
