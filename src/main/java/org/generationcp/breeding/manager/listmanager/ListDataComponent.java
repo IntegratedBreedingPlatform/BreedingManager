@@ -939,7 +939,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     e.printStackTrace();
                 }
 
-                MessageNotifier.showMessage(getWindow(), "", "Germplasm list entries were deleted successfully.",3000, Notification.POSITION_CENTERED);
+                MessageNotifier.showMessage(getWindow(), "Success!", "Germplasm list entries were deleted successfully.",3000, Notification.POSITION_CENTERED);
                 
             } else {
             	showMessageInvalidDeletingListEntries();

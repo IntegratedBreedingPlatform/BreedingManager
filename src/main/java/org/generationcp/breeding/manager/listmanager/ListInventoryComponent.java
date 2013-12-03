@@ -78,6 +78,8 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
                 listDataInventoryTable.setColumnReorderingAllowed(true);
                 listDataInventoryTable.setPageLength(15); // number of rows to display in the Table
                 listDataInventoryTable.setSizeFull(); // to make scrollbars appear on the Table component
+                listDataInventoryTable.setWidth("95%");
+                listDataInventoryTable.setHeight("95%");
 
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ENTITY_ID, String.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, String.class, "");
