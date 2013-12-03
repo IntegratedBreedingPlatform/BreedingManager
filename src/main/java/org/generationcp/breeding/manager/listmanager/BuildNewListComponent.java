@@ -403,6 +403,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 				
 				Table sourceTable = (Table) transferable.getSourceComponent();
+				
+				setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
 			    
 			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object droppedOverItemId = dropData.getItemIdOver();
@@ -475,7 +477,21 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			}
 		});
 	}
-		
+
+    /**
+     * Should be called just before data is inserted into the destination table, this will copy
+     * whatever columns are available on the source table to the destination table 
+     */
+    private void setupInheritedColumnsFromSourceTable(Table sourceTable, Table destinationTable){
+    	for(String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
+    		if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable) && !AddColumnContextMenu.propertyExists(addablePropertyId, destinationTable)){
+    			AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(destinationTable, ListDataTablePropertyID.GID.getName());
+    			addColumnContextMenu.addColumn(addablePropertyId);
+    		}
+    	}
+    	//dennis
+    }
+	
 	/**
 	 * Add germplasms from a gemrplasm list to the table
 	 */
@@ -924,6 +940,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
     		addColumnContextMenu.setPreferredNameColumnValues();
     }
+    
+
     
     public void setupAddColumnContextMenu(){
     	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
