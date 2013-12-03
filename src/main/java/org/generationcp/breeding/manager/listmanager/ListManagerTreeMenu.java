@@ -34,8 +34,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private int userId;
     private ListDetailComponent listDetailComponent;
     
-    private VerticalLayout layoutListData;
-    private VerticalLayout layoutListDataInventory;
+    private ListInventoryComponent listInventoryComponent;
     
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
     
@@ -96,12 +95,10 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         listDetailComponent.setData(LIST_DETAILS);
         
         listDataComponent = new ListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this);
-
-        layoutListData = new VerticalLayout();
-        layoutListData.setData(LIST_DATA);
-        
-        layoutListDataInventory = new VerticalLayout();
-        layoutListDataInventory.setData(LIST_SEED_INVENTORY);
+        listDataComponent.setData(LIST_DATA);
+       
+        listInventoryComponent = new ListInventoryComponent(germplasmListId);
+        listInventoryComponent.setData(LIST_SEED_INVENTORY);
         
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
@@ -114,7 +111,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         listData.addChild(listDataComponent);
         
         ComponentTreeItem listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
-        listSeedInventory.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
+        listSeedInventory.addChild(listInventoryComponent);
         
         this.addComponent(content);
     }
