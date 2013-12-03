@@ -321,7 +321,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
          
                      public void handleAction(Action action, Object sender, Object target) {
                      	if (ACTION_DELETE == action) {
-                     		//deleteListButtonClickAction();
+                     		deleteListButtonClickAction();
                      	}else if(ACTION_SELECT_ALL == action) {
                      		listDataTable.setValue(listDataTable.getItemIds());
                      	}else if(ACTION_EDIT == action){
@@ -939,7 +939,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     e.printStackTrace();
                 }
 
-            
+                MessageNotifier.showMessage(getWindow(), "", "Germplasm list entries were deleted successfully.",3000, Notification.POSITION_CENTERED);
                 
             } else {
             	showMessageInvalidDeletingListEntries();
