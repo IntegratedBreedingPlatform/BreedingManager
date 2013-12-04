@@ -153,6 +153,9 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	        //Get locations
 	        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
 	        
+	        System.out.println("  favoriteLocation object count: "+favoriteLocations.size());
+	        System.out.println("  favoriteLocation objects: "+favoriteLocations);
+	        
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
