@@ -239,6 +239,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         try {
             if (!hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)) {
                 this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
+            } else if(hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)){
+            	expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
             }
         } catch (NumberFormatException e) {
         	LOG.error("Error clicking of list.", e);
@@ -333,5 +335,13 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public ListManagerDetailsLayout getViewDetailsTabbedLayout(){
     	return this.displayDetailsLayout;
+    }
+    
+    public void expandOrCollapseListTreeNode(Object nodeId){
+    	if(!this.germplasmListTree.isExpanded(nodeId)){
+    		this.germplasmListTree.expandItem(nodeId);
+    	} else{
+    		this.germplasmListTree.collapseItem(nodeId);
+    	}
     }
 }
