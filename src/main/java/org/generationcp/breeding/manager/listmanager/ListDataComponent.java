@@ -1171,7 +1171,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             listDataTable.setVisibleColumns(visibleColumns);
             
             if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_ID)){
-            	addColumnContextMenu.setLocationColumnValues();
+            	addColumnContextMenu.setPreferredIdColumnValues();
             }
             
             if(isColumnVisible(visibleColumns, addColumnContextMenu.LOCATIONS)){
@@ -1181,8 +1181,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_NAME)){
             	addColumnContextMenu.setPreferredNameColumnValues();
             }
-            
-            addColumnContextMenu.setLocationColumnValues();
             
             listDataTable.refreshRowCache();
             listDataTable.setImmediate(true);
