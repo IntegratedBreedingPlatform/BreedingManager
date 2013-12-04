@@ -264,8 +264,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -284,8 +286,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -305,8 +309,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -326,8 +332,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -347,8 +355,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -367,8 +377,10 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -390,8 +402,10 @@ public class FillWith implements InternationalizableComponent  {
  		   }
  		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+ 		  if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -410,8 +424,10 @@ public class FillWith implements InternationalizableComponent  {
  		   }
  		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+ 		  if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -433,8 +449,10 @@ public class FillWith implements InternationalizableComponent  {
   		   }
   		   
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+  		   if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
@@ -454,8 +472,10 @@ public class FillWith implements InternationalizableComponent  {
         }
         
         //To trigger TableFieldFactory (fix for truncated data)
-        table.setEditable(false);
-        table.setEditable(true);
+        if(targetTable.isEditable()){
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		}
 	}
     
     protected void fillWithPreferredID(Table table, String propertyId) {
@@ -471,8 +491,10 @@ public class FillWith implements InternationalizableComponent  {
         }
 
         //To trigger TableFieldFactory (fix for truncated data)
-        table.setEditable(false);
-        table.setEditable(true);
+        if(targetTable.isEditable()){
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+        }
 	}
     
     
@@ -489,9 +511,11 @@ public class FillWith implements InternationalizableComponent  {
        
     	}
 		
-	   //To trigger TableFieldFactory (fix for truncated data)
-	   targetTable.setEditable(false);
-	   targetTable.setEditable(true);
+	    //To trigger TableFieldFactory (fix for truncated data)
+    	if(targetTable.isEditable()){
+		   targetTable.setEditable(false);
+		   targetTable.setEditable(true);
+		}
 	   
 	}
     
@@ -562,8 +586,10 @@ public class FillWith implements InternationalizableComponent  {
 	        }
 	    	
 		   //To trigger TableFieldFactory (fix for truncated data)
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+	    	if(targetTable.isEditable()){
+			   targetTable.setEditable(false);
+			   targetTable.setEditable(true);
+		   }
 		   
     	}
     }
