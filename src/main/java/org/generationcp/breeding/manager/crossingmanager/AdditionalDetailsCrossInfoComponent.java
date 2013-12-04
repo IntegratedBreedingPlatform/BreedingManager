@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
@@ -71,6 +73,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private ComboBox harvestLocComboBox;
     private Map<String, Integer> mapLocation;
     
+    private static String SHOW_OTHER_LOCATIONS = "[ Show other locations ]";
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -84,6 +88,10 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
   
     private CrossesMadeContainer container;
     private Item showOtherLocationsComboBoxItem;
+    
+    private List<Long> favoriteLocationLongIds;
+    private List<Integer> favoriteLocationIds;
+    private List<Location> favoriteLocations;
     
     public ComboBox getHarvestLocComboBox() {
         return harvestLocComboBox;
@@ -135,9 +143,9 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 
     
     private void populateWithFavoriteLocations() {
-        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
-        List<Integer> favoriteLocationIds = new ArrayList<Integer>();
-        List<Location> favoriteLocations = new ArrayList<Location>();
+        favoriteLocationLongIds = new ArrayList<Long>();
+        favoriteLocationIds = new ArrayList<Integer>();
+        favoriteLocations = new ArrayList<Location>();
          
 		try {
 			Integer workbenchUserId;
@@ -168,21 +176,31 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
 		}
 		
-		if(favoriteLocations.size()>0){
-			Button showOtherLocationsButton = new Button("Show other locations");
-			showOtherLocationsComboBoxItem = harvestLocComboBox.addItem(showOtherLocationsButton);
-			showOtherLocationsButton.addListener(new ClickListener(){
+		//if(favoriteLocations.size()>0){
+			showOtherLocationsComboBoxItem = harvestLocComboBox.addItem(SHOW_OTHER_LOCATIONS);
+			harvestLocComboBox.addListener(new Property.ValueChangeListener(){
 				private static final long serialVersionUID = 1L;
 				@Override
-				public void buttonClick(ClickEvent event) {
-					populateWithLocations();
-					harvestLocComboBox.removeItem(showOtherLocationsComboBoxItem);
+				public void valueChange(ValueChangeEvent event) {
+					if(harvestLocComboBox.getValue()!=null && harvestLocComboBox.getValue().equals(SHOW_OTHER_LOCATIONS)){
+						//re populate the combobox minus the show other locations option
+						harvestLocComboBox.removeAllItems();
+						for(Location favoriteLocation : favoriteLocations){
+							harvestLocComboBox.addItem(favoriteLocation.getLname());
+					        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
+						}
+						populateWithLocations();
+						
+						//pre-select first option
+						harvestLocComboBox.select(harvestLocComboBox.getItem(harvestLocComboBox.getItemIds().iterator().next()).toString());
+						harvestLocComboBox.select(harvestLocComboBox.getItemIds().iterator().next());
+					}
 				}
 				
 			});
-		} else {
-			populateWithLocations();
-		}
+		//} else {
+		//	populateWithLocations();
+		//}
     }
     
     private void populateWithLocations(){
