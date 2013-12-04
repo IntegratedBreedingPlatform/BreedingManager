@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -22,18 +21,11 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.TextField;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -71,9 +63,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID, PREFERRED_NAME, LOCATIONS}; 
     
     
-    
-    private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
-    
 	/**
 	 * Add "Add column" context menu to a table
 	 * @param source - context menu will attach to this
@@ -86,6 +75,19 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	this.targetTable = targetTable;
     	this.addColumnButton = addColumnButton;
     	this.absoluteLayoutSource = absoluteLayoutSource;
+    	
+    	setupContextMenu();
+    }
+    
+	/**
+	 * Add "Add column" context menu to a table
+	 * @param addColumnButton - util will attach event listener to this
+	 * @param targetTable - table where data will be manipulated
+	 * @param gid - property of GID (button with GID as caption) on that table
+	 */
+    public AddColumnContextMenu(Table targetTable, String gid){
+    	this.GIDPropertyId = gid;
+    	this.targetTable = targetTable;
     	
     	setupContextMenu();
     }
@@ -120,35 +122,37 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     		absoluteLayoutSource.addComponent(menu);
     	
     	//Attach listener to the "Add Column" button passed to the constructor of this class/util
-    	addColumnButton.addListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				
-				//Check if columns already exist in the table
-				if(propertyExists(PREFERRED_ID)){
-					menuFillWithPreferredId.setEnabled(false);
-				} else {
-					menuFillWithPreferredId.setEnabled(true);
+    	if(addColumnButton!=null){
+	    	addColumnButton.addListener(new ClickListener() {
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+					
+					//Check if columns already exist in the table
+					if(propertyExists(PREFERRED_ID)){
+						menuFillWithPreferredId.setEnabled(false);
+					} else {
+						menuFillWithPreferredId.setEnabled(true);
+					}
+					
+					if(propertyExists(PREFERRED_NAME)){
+						menuFillWithPreferredName.setEnabled(false);
+					} else {
+						menuFillWithPreferredName.setEnabled(true);
+					}
+					
+					if(propertyExists(LOCATIONS)){
+						menuFillWithLocations.setEnabled(false);
+					} else {
+						menuFillWithLocations.setEnabled(true);
+					}
+					
+					//Display context menu
+					menu.show(event.getClientX(), event.getClientY());
 				}
-				
-				if(propertyExists(PREFERRED_NAME)){
-					menuFillWithPreferredName.setEnabled(false);
-				} else {
-					menuFillWithPreferredName.setEnabled(true);
-				}
-				
-				if(propertyExists(LOCATIONS)){
-					menuFillWithLocations.setEnabled(false);
-				} else {
-					menuFillWithLocations.setEnabled(true);
-				}
-				
-				//Display context menu
-				menu.show(event.getClientX(), event.getClientY());
-			}
-		 });
+			 });
+    	 }
 	 
     }
     
@@ -174,8 +178,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     			}
 			   
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+    			if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
     			
     		} catch (MiddlewareQueryException e) {
     			e.printStackTrace();
@@ -204,8 +210,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 				}
 
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+				if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
 				
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
@@ -242,11 +250,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 					else
 						targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
 				}
-				Integer maxLength = getMaxLocationNameLength(20, allLocationNamesMap);
 
 				//To trigger TableFieldFactory (fix for truncated data)
-				targetTable.setEditable(false);
-				targetTable.setEditable(true);
+				if(targetTable.isEditable()){
+    				targetTable.setEditable(false);
+    				targetTable.setEditable(true);
+    			}
 					
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
@@ -315,6 +324,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 		}
 	}
 	
+	
     /**
      * This has to be called after the list entries has been saved, because it'll need the germplasmListEntryId
      * @return
@@ -341,27 +351,17 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	return listDataCollection;
     }
 
-    
-	public void autoColumnWidth(Table table, String propertyId, Integer maxLength){
-    	Integer width = maxLength*10;
-    	//List<Integer> itemIds = getItemIds(table);
-    	table.setColumnWidth(propertyId, 5000);
-    	table.requestRepaintAll();
-    }
-    
-    
-	public Integer getMaxLocationNameLength(Integer defaultLength, Map<Integer, String> locationNameMap){
-		Integer max = defaultLength;
-		for(Integer key : locationNameMap.keySet()){
-			int length = 0;
-			if(locationNameMap.get(key)!=null)
-				length = locationNameMap.get(key).length();
-			if(length>max)
-				max = length;
-		}
-		return max;
-	}
 
-	
+    /**
+     * This can be used to add columns given a property ID (should be one of the addable ID's)
+     */
+	public void addColumn(String propertyId){
+		if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
+			addPreferredIdColumn();
+		else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
+			addPreferredNameColumn();
+		else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
+			addLocationColumn();
+	}
     
 }

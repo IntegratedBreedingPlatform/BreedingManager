@@ -80,6 +80,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     
     private void initializeComponents() {
         attributeBox = new ComboBox();
+        attributeBox.setNullSelectionAllowed(false);
         okButton = new Button();
     }
     

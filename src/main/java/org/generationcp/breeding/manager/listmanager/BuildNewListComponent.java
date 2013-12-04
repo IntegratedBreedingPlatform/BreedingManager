@@ -12,7 +12,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -23,8 +23,6 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.gms.ListDataColumn;
-import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -57,13 +55,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
@@ -76,11 +74,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private Object source;
 	
-    private String DEFAULT_LIST_TYPE = "LST";
+    public String DEFAULT_LIST_TYPE = "LST";
 	
 	private Label componentDescription;
 
@@ -99,6 +97,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private Table germplasmsTable;
 	
 	private Button saveButton;
+	private Button resetButton;
 	private Button toolsButton;
 	private Button addColumnButton;
 	
@@ -121,6 +120,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private int germplasmListId;
 	
 	private AddColumnContextMenu addColumnContextMenu;
+	private SaveListButtonClickListener saveListButtonClickListener;
 	
 	private FillWith fillWith;
 	
@@ -228,6 +228,105 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         addComponent(notesTextArea, "top:35px; left: 770px;");
         notesTextArea.setVisible(false);
 
+        createGermplasmTable();
+        
+		menu = new ContextMenu();
+		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
+		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
+		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+		
+		//initially disabled when the current list building is not yet save
+		menuExportList.setEnabled(false);
+		menuExportForGenotypingOrder.setEnabled(false);
+		menuCopyToList.setEnabled(false);
+		
+        toolsButton = new Button("Tools");
+        toolsButton.setIcon(ICON_TOOLS);
+        toolsButton.setStyleName(BaseTheme.BUTTON_LINK);
+   	 	toolsButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(isCurrentListSave()){
+					enableMenuOptionsAfterSave();
+				}
+				menu.show(event.getClientX(), event.getClientY());
+			}
+		 });
+	 
+   	 	addComponent(menu);
+   	 	
+   	 	
+        addColumnButton = new Button();
+        addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
+        addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
+        addColumnButton.addStyleName("link_with_plus_icon");
+   	 
+   	 	setupAddColumnContextMenu();
+   	 	
+   	 	addComponent(addColumnButton, "top:0px; right:75px;");
+   	 	addComponent(toolsButton, "top:0; right:0;");		
+   	 	
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void contextItemClick(ClickEvent event) {
+			    ContextMenuItem clickedItem = event.getClickedItem();
+			    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
+			      	deleteSelectedEntries();
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
+			    	exportListAction();
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
+			    	exportListForGenotypingOrderAction();
+			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
+			    	copyToNewListAction();
+			    }				
+			}
+			
+        });
+		
+       
+		
+		HorizontalLayout buttonRow = new HorizontalLayout();
+		buttonRow.setWidth("100%");
+		buttonRow.setHeight("150px");
+		
+		saveButton = new Button();
+		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
+		saveButton.setStyleName(BaseTheme.BUTTON_LINK);
+		saveButton.addStyleName("gcp_button");
+		setupSaveButtonClickListener();
+		
+		resetButton = new Button();
+		resetButton.setCaption(messageSource.getMessage(Message.RESET));
+		resetButton.setStyleName(BaseTheme.BUTTON_LINK);
+		resetButton.addStyleName("gcp_button");
+		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
+		
+		buttonRow.addComponent(resetButton);
+		buttonRow.setComponentAlignment(resetButton, Alignment.MIDDLE_RIGHT);
+		buttonRow.addComponent(saveButton);
+		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
+		
+		addComponent(buttonRow, "top:365px; left:0px;");
+		
+		setWidth("100%");
+		setHeight("600px");
+		
+		setupDragSources();
+		setupDropHandlers();
+		setupTableHeadersContextMenu();
+	}
+
+	
+	public void createGermplasmTable(){
+		
 		germplasmsTable = new Table();
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
@@ -268,99 +367,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         });
         
 		addComponent(germplasmsTable, "top:115px; left:0px;");
-        
-        
-		menu = new ContextMenu();
-		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
-		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
-		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
-		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-		
-		//initially disabled when the current list building is not yet save
-		menuExportList.setEnabled(false);
-		menuExportForGenotypingOrder.setEnabled(false);
-		menuCopyToList.setEnabled(false);
-		
-        toolsButton = new Button("Tools");
-        toolsButton.setIcon(ICON_TOOLS);
-        toolsButton.setStyleName(BaseTheme.BUTTON_LINK);
-   	 	toolsButton.addListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				if(isCurrentListSave()){
-					enableMenuOptionsAfterSave();
-				}
-				menu.show(event.getClientX(), event.getClientY());
-			}
-		 });
-	 
-   	 	addComponent(menu);
-   	 	
-   	 	
-        addColumnButton = new Button();
-        addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
-        addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
-        addColumnButton.addStyleName("link_with_plus_icon");
-   	 
-   	 	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
-   	 	
-   	 	addComponent(addColumnButton, "top:0px; right:75px;");
-   	 	addComponent(toolsButton, "top:0; right:0;");		
-   	 	
-		menu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void contextItemClick(ClickEvent event) {
-			    ContextMenuItem clickedItem = event.getClickedItem();
-			    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
-			      	germplasmsTable.setValue(germplasmsTable.getItemIds());
-			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
-			      	deleteSelectedEntries();
-			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
-			    	exportListAction();
-			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
-			    	exportListForGenotypingOrderAction();
-			    }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
-			    	copyToNewListAction();
-			    }				
-			}
-			
-        });
-		
-       
-		
-		VerticalLayout buttonRow = new VerticalLayout();
-		buttonRow.setWidth("100%");
-		buttonRow.setHeight("150px");
-		
-		saveButton = new Button();
-		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
-		saveButton.setStyleName(BaseTheme.BUTTON_LINK);
-		saveButton.addStyleName("gcp_button");
-		saveButton.addListener(new SaveListButtonClickListener(this, germplasmListManager, germplasmsTable, messageSource, workbenchDataManager));
-		
-		buttonRow.addComponent(saveButton);
-		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
-		
-		addComponent(buttonRow, "top:365px; left:0px;");
-		
-		setWidth("100%");
-		setHeight("600px");
-		
-		setupDragSources();
-		setupDropHandlers();
-		setupTableHeadersContextMenu();
 	}
-
 		
 	/**
 	 * Setup drag sources, this will tell Vaadin which tables can the user drag rows from
 	 */
-	private void setupDragSources(){
+	public void setupDragSources(){
 		if(source instanceof ListManagerMain){
 			//Browse Lists tab
 			
@@ -383,7 +395,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	/**
 	 * Setup drop handlers, this will dictate how Vaadin will handle drops (mouse releases) on the germplasm table
 	 */
-	private void setupDropHandlers(){
+	public void setupDropHandlers(){
 		germplasmsTable.setDropHandler(new DropHandler() {
 			private static final long serialVersionUID = -6676297159926786216L;
 
@@ -391,6 +403,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 				
 				Table sourceTable = (Table) transferable.getSourceComponent();
+				
+				setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
 			    
 			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object droppedOverItemId = dropData.getItemIdOver();
@@ -463,7 +477,21 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			}
 		});
 	}
-		
+
+    /**
+     * Should be called just before data is inserted into the destination table, this will copy
+     * whatever columns are available on the source table to the destination table 
+     */
+    private void setupInheritedColumnsFromSourceTable(Table sourceTable, Table destinationTable){
+    	for(String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
+    		if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable) && !AddColumnContextMenu.propertyExists(addablePropertyId, destinationTable)){
+    			AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(destinationTable, ListDataTablePropertyID.GID.getName());
+    			addColumnContextMenu.addColumn(addablePropertyId);
+    		}
+    	}
+    	//dennis
+    }
+	
 	/**
 	 * Add germplasms from a gemrplasm list to the table
 	 */
@@ -660,7 +688,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	return itemIds;
 	}
 	
-	private void setupTableHeadersContextMenu(){
+	public void setupTableHeadersContextMenu(){
 		fillWith = new FillWith(this, messageSource, germplasmsTable, ListDataTablePropertyID.GID.getName());
 	}
 	
@@ -895,6 +923,15 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		assignSerializedEntryCode();
     }
 
+    public void setupSaveButtonClickListener(){
+    	if(saveButton!=null){
+    		if(saveListButtonClickListener!=null)
+    			saveButton.removeListener(saveListButtonClickListener);
+    		saveListButtonClickListener = new SaveListButtonClickListener(this, germplasmListManager, germplasmsTable, messageSource, workbenchDataManager);
+    		saveButton.addListener(saveListButtonClickListener);
+    	}
+    }
+    
     private void updateAddedColumnValues(){
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
     		addColumnContextMenu.setLocationColumnValues();
@@ -904,8 +941,38 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		addColumnContextMenu.setPreferredNameColumnValues();
     }
     
+
+    
+    public void setupAddColumnContextMenu(){
+    	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
+    }
+    
     public AddColumnContextMenu getAddColumnContextMenu(){
     	return addColumnContextMenu;
     }
     
+    public ComboBox getListTypeComboBox(){
+    	return listTypeComboBox;
+    }
+    
+    public DateField getListDateField(){
+    	return listDateField;
+    }
+    
+    public TextField getListNameText(){
+    	return listNameText;
+    }
+    
+    public TextField getDescriptionText(){
+    	return descriptionText;
+    }
+    
+    public TextArea getNotesTextArea(){
+    	return notesTextArea;
+    }
+    
+	public Table getGermplasmsTable(){
+		return germplasmsTable;
+	}
+	
 }

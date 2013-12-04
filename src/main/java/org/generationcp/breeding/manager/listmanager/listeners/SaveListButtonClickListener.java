@@ -169,7 +169,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 		
 		try {
-			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable));
+			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable)); 
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in saving germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)

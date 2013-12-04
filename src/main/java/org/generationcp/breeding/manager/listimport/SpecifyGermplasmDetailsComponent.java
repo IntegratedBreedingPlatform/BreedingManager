@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
@@ -78,11 +79,12 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private List<ImportedGermplasm> importedGermplasms;
     private GermplasmListUploader germplasmListUploader;
 
-    private List<Germplasm> germplasmList = new ArrayList();
-    private List<Name> nameList = new ArrayList();
+    //private List<Germplasm> germplasmList = new ArrayList();
+    //private List<Name> nameList = new ArrayList();
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
     
     private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
+    private List<GermplasmName> germplasmNameObjects;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -297,9 +299,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     public void nextButtonClickAction(){
         if(this.nextScreen != null){
             
-            germplasmList = new ArrayList(); 
-            nameList = new ArrayList();
-            doNotCreateGermplasmsWithId = new ArrayList();
+        	germplasmNameObjects = new ArrayList<GermplasmName>();
+        	
+            //germplasmList = new ArrayList<Germplasm>(); 
+            //nameList = new ArrayList<Name>();
+            doNotCreateGermplasmsWithId = new ArrayList<Integer>();
             
             if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
                 //meaning 1st pedigree
@@ -315,6 +319,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                     String sDate = formatter.format(germplasmDateField.getValue());
 
                     Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                    
+                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+                    
                     for(int i = 0 ; i < getImportedGermplasms().size(); i++){
                         ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
                         Germplasm germplasm = new Germplasm();
@@ -331,7 +338,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         germplasm.setGrplce(0);
                         germplasm.setReferenceId(0);
                         germplasm.setMgid(0);
-                        germplasmList.add(germplasm);
 
                         Name name = new Name();
                         //name.setNid();
@@ -342,7 +348,21 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         name.setLocationId((Integer)locationComboBox.getValue());
                         name.setNdate(dateIntValue);
                         name.setReferenceId(0);
-                        nameList.add(name);
+                        
+                        if(!createdGermplasms.containsKey(name.getNval())){
+                        	//germplasmList.add(germplasm);
+                        	//nameList.add(name);
+                        	createdGermplasms.put(name.getNval(), germplasm);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                        } else {
+                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                        	//nameList.add(name);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                        }
+                        
+                        
                     }
                     //logFirstPedigreeUploadedToWorkbenchProjectActivity();
 
@@ -363,6 +383,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                     String sDate = formatter.format(germplasmDateField.getValue());
 
                     Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                    
+                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
                     
                     for(int i = 0 ; i < getImportedGermplasms().size(); i++){
                         
@@ -406,7 +428,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	                        
                         }
                         
-                        germplasmList.add(germplasm);
+                        
 
                         Name name = new Name();
                         //name.setNid();
@@ -417,8 +439,20 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         name.setLocationId((Integer)locationComboBox.getValue());
                         name.setNdate(dateIntValue);
                         name.setReferenceId(0);
-                        nameList.add(name);
                         
+                        if(!createdGermplasms.containsKey(name.getNval())){
+                        	//germplasmList.add(germplasm);
+                        	//nameList.add(name);
+                        	createdGermplasms.put(name.getNval(), germplasm);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                        } else {
+                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                        	//nameList.add(name);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                        }
+
                         if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
                             displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
                         }
@@ -442,6 +476,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                     String sDate = formatter.format(germplasmDateField.getValue());
 
                     Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                    
+                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+                    
                     for(int i = 0 ; i < getImportedGermplasms().size(); i++){
                         
                         ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
@@ -480,7 +517,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	                        germplasm.setMgid(0);
 	                        
                         }
-                        germplasmList.add(germplasm);
 
                         Name name = new Name();
                         //name.setNid();
@@ -491,7 +527,19 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         name.setLocationId((Integer)locationComboBox.getValue());
                         name.setNdate(dateIntValue);
                         name.setReferenceId(0);
-                        nameList.add(name);
+                        
+                        if(!createdGermplasms.containsKey(name.getNval())){
+                        	//germplasmList.add(germplasm);
+                        	//nameList.add(name);
+                        	createdGermplasms.put(name.getNval(), germplasm);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                        } else {
+                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                        	//nameList.add(name);
+                        	
+                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                        }
                         
                         if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
                             displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
@@ -506,9 +554,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             }
 
            if(nextScreen instanceof SaveGermplasmListComponent){
-               ((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
+               //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
                ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
-               ((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
+               //((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
                ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
                
                 //for 909
@@ -572,7 +620,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             }
             importedGermplasm.setGpid2(selectedGermplasm.getGid());
             
-            germplasmList.set(index, importedGermplasm);
+            //germplasmList.set(index, importedGermplasm);
+            germplasmNameObjects.get(index).setGermplasm(importedGermplasm);
+            
         } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("3")){
             //Add logic here to not insert new record on DB when saved, maybe use existing GID?
             importedGermplasm.setGid(selectedGermplasm.getGid());
@@ -610,6 +660,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     		}
     	}
     	selectGermplasmWindows.clear();
+    }
+    
+    public List<GermplasmName> getGermplasmNameObjects(){
+    	return germplasmNameObjects;
     }
     
 }

@@ -77,6 +77,13 @@ public enum Message{
     ,ERROR_IN_NUMBER_FORMAT
     ,ERROR_IN_GETTING_LAST_SELECTED_LIST
     
+    //List Data Inventory
+    ,NO_LISTDATA_INVENTORY_RETRIEVED_LABEL
+    ,ENTITY_ID_HEADER
+    ,LOT_BALANCE_HEADER
+    ,LOCATION_HEADER
+    ,LOT_COMMENT_HEADER
+    
     //Crossing Manager Additional Details
     ,SELECT_AN_OPTION
     ,CROSSING_METHOD
@@ -287,4 +294,6 @@ public enum Message{
 
     ,INVALID_LIST_ID
     ,INVALID_DESIGNATION_NAME
+    ,RESET
+    ,CONFIRM_RESET_LIST_BUILDER_FIELDS
 }
