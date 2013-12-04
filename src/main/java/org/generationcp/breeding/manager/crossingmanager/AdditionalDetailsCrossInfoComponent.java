@@ -13,6 +13,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +25,15 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectLocationMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,6 +72,10 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+    
     private List<Location> locations;
   
     private CrossesMadeContainer container;
@@ -111,23 +121,62 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         harvestLocComboBox.removeAllItems();
 
         mapLocation = new HashMap<String, Integer>();
+
+        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
+        List<Integer> favoriteLocationIds = new ArrayList<Integer>();
+        List<Location> favoriteLocations = new ArrayList<Location>();
+         
+		try {
+			Integer workbenchUserId;
+			
+			workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
+	        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
+	        
+	        //Get location Id's
+	        for(Project userProject : userProjects){
+	        	favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(userProject.getProjectId(), 0, 10000));
+	        }
+	        
+	        //Convert to int
+	        for(Long favoriteLocationLongId : favoriteLocationLongIds){
+	        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
+	        }
+	        
+	        //Get locations
+	        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
+	        
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+
+		for(Location favoriteLocation : favoriteLocations){
+			harvestLocComboBox.addItem(favoriteLocation.getLname());
+	        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
+		}
+        
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossingManagerUploader() !=null){
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String site = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE.getValue());
             String siteId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE_ID.getValue());
-            if(site.length() > 0 && siteId.length() > 0){
-                harvestLocComboBox.addItem(site);
-                mapLocation.put(site, Integer.valueOf(siteId));
-                harvestLocComboBox.select(site);
-            }else{
-                harvestLocComboBox.select("");
+            
+            if(!mapLocation.containsKey(site)){
+            	if(site.length() > 0 && siteId.length() > 0){
+            		harvestLocComboBox.addItem(site);
+            		mapLocation.put(site, Integer.valueOf(siteId));
+            		harvestLocComboBox.select(site);
+            	}else{
+            		harvestLocComboBox.select("");
+            	}
             }
         }
         
         for (Location loc : locations) {
-        harvestLocComboBox.addItem(loc.getLname());
-        mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
+        	if(!mapLocation.containsKey(loc.getLname())){
+        		harvestLocComboBox.addItem(loc.getLname());
+        		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
+        	}
         }
 
     }
