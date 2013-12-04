@@ -24,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
@@ -83,6 +84,21 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
         this.addListener(new GermplasmTreeExpandListener(this));
 
+        this.addListener(new ItemClickEvent.ItemClickListener() {
+			private static final long serialVersionUID = -6626097251439208783L;
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				String item = event.getItemId().toString();
+				if(isExpanded(item)){
+					collapseItem(item);
+				} else{
+					expandItem(item);
+					pedigreeTreeExpandAction(item);
+				}
+			}
+		});
+        
         this.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
             private static final long serialVersionUID = 3442425534732855473L;
@@ -161,7 +177,6 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
             germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(itemId), 2, includeDerivativeLines);
             addNode(germplasmPedigreeTree.getRoot(), 2);
         }
-
     }
 
     @Override
