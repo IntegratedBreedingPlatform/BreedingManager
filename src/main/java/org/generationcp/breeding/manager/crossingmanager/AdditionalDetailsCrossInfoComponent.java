@@ -40,8 +40,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
@@ -79,6 +81,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private List<Location> locations;
   
     private CrossesMadeContainer container;
+    private Item showOtherLocationsComboBoxItem;
     
     public ComboBox getHarvestLocComboBox() {
         return harvestLocComboBox;
@@ -122,6 +125,14 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 
         mapLocation = new HashMap<String, Integer>();
 
+        populateWithFavoriteLocations();
+        
+        
+
+    }
+
+    
+    private void populateWithFavoriteLocations() {
         List<Long> favoriteLocationLongIds = new ArrayList<Long>();
         List<Integer> favoriteLocationIds = new ArrayList<Integer>();
         List<Location> favoriteLocations = new ArrayList<Location>();
@@ -154,8 +165,17 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			harvestLocComboBox.addItem(favoriteLocation.getLname());
 	        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
 		}
-        
-        if (this.container != null && this.container.getCrossesMade() != null && 
+		
+		if(favoriteLocations.size()>0){
+			Button showOtherLocationsButton = new Button("Show other locations");
+			showOtherLocationsComboBoxItem = harvestLocComboBox.addItem(showOtherLocationsButton);
+		} else {
+			populateWithLocations();
+		}
+    }
+    
+    private void populateWithLocations(){
+    	if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossingManagerUploader() !=null){
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String site = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE.getValue());
@@ -178,9 +198,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
         	}
         }
-
     }
-
+    
     @Override
     public void attach() {
         super.attach();
