@@ -44,6 +44,8 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
@@ -169,6 +171,15 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 		if(favoriteLocations.size()>0){
 			Button showOtherLocationsButton = new Button("Show other locations");
 			showOtherLocationsComboBoxItem = harvestLocComboBox.addItem(showOtherLocationsButton);
+			showOtherLocationsButton.addListener(new ClickListener(){
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick(ClickEvent event) {
+					populateWithLocations();
+					harvestLocComboBox.removeItem(showOtherLocationsComboBoxItem);
+				}
+				
+			});
 		} else {
 			populateWithLocations();
 		}
