@@ -133,6 +133,11 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
 	        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
 	        
+	        System.out.println("Getting favorite locations for: ");
+	        System.out.println("  workbenchUserId: "+workbenchUserId);
+	        System.out.println("  workbenchUser: "+workbenchUser);
+	        System.out.println("  userProjects: "+userProjects);
+	        
 	        //Get location Id's
 	        for(Project userProject : userProjects){
 	        	favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(userProject.getProjectId(), 0, 10000));
@@ -142,6 +147,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	        for(Long favoriteLocationLongId : favoriteLocationLongIds){
 	        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
 	        }
+	        
+	        System.out.println("  favoriteLocationIds: "+favoriteLocationIds);
 	        
 	        //Get locations
 	        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
