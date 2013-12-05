@@ -34,7 +34,6 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	public static final String CLOSE_ALL_TABS_ID = "ListManagerTreeComponent Close All Tabs ID";
 
 	private static final long serialVersionUID = 8092751288890434894L;
-
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
@@ -110,14 +109,18 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     
 	private void createTab(int id, GermplasmList germplasmList, String tabName) {
 		
-		if (!Util.isTabExist(detailsTabSheet, tabName)) {
+		//if (!Util.isTabExist(detailsTabSheet, tabName)) {
+		if (!Util.isTabDescriptionExist(detailsTabSheet, germplasmList.getId().toString())) {
 			
 			VerticalLayout layout = new VerticalLayout();
         	Component component = createTabContent(id, germplasmList, tabName);
         	layout.addComponent(component);
             
             Tab tab = detailsTabSheet.addTab(layout, tabName, null);
+            tab.setDescription(germplasmList.getId().toString());
             tab.setClosable(true);
+            
+            parentLayout.addComponent(new Label("<style> .v-shadow, .v-tooltip { display:none !important; } </style>", Label.CONTENT_XHTML));
             
             if(detailsTabSheet.getComponentCount() <= 1){
             	initializeLayout();
@@ -126,7 +129,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             
             
         } else {
-            Tab tab = Util.getTabAlreadyExist(detailsTabSheet, tabName);
+            //Tab tab = Util.getTabAlreadyExist(detailsTabSheet, tabName);
+            Tab tab = Util.getTabWithDescription(detailsTabSheet, germplasmList.getId().toString());
             detailsTabSheet.setSelectedTab(tab.getComponent());
         }
 	}

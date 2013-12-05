@@ -50,6 +50,19 @@ public class Util{
 
     }
 
+    public static boolean isTabDescriptionExist(TabSheet tabSheet, String tabDescription) {
+
+        int countTabSheet = tabSheet.getComponentCount();
+        for (int i = 0; i < countTabSheet; i++) {
+            Tab tab = tabSheet.getTab(i);
+            if (tab.getDescription().equals(tabDescription)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    
     public static boolean isAccordionDatasetExist(Accordion accordion, String accordionCaption) {
         int countAccordionTab = accordion.getComponentCount();
 
@@ -74,6 +87,18 @@ public class Util{
         return null;
 
     }
+    
+    public static Tab getTabWithDescription(TabSheet tabSheet, String tabDescription) {
+
+        for (int i = 0; i < tabSheet.getComponentCount(); i++) {
+            Tab tab = tabSheet.getTab(i);
+            if (tab.getDescription().equals(tabDescription)) {
+                return tab;
+            }
+        }
+        return null;
+
+    }    
     
     public static Tab getTabToFocus(TabSheet tabSheet, String tabCaption) {
         Tab tabToFocus=tabSheet.getTab(0);
