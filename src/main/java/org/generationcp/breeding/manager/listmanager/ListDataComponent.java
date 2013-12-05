@@ -965,7 +965,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 //		}
 		
     }
-
+    
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
         Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
         Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
@@ -1150,13 +1150,42 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             } else {
                     gidObject = gid;
             }
-
+            
+            listDataTable.setEditable(false);
+ 
+            Object[] visibleColumns = listDataTable.getVisibleColumns();
+            
+            listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
+            		,ListDataTablePropertyID.ENTRY_ID.getName()
+            		,ListDataTablePropertyID.ENTRY_CODE.getName()
+            		,ListDataTablePropertyID.SEED_SOURCE.getName()
+            		,ListDataTablePropertyID.DESIGNATION.getName()
+            		,ListDataTablePropertyID.GROUP_NAME.getName()
+            		,ListDataTablePropertyID.STATUS.getName()});
+            
             listDataTable.addItem(new Object[] {
-                            gidObject,gid,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
+                            gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
                             listData.getDesignation(), listData.getGroupName(), listData.getStatusString()
                     }, listDataId);
-            listDataTable.requestRepaint();
+            
+            listDataTable.setVisibleColumns(visibleColumns);
+            
+            if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_ID)){
+            	addColumnContextMenu.setPreferredIdColumnValues();
+            }
+            
+            if(isColumnVisible(visibleColumns, addColumnContextMenu.LOCATIONS)){
+            	addColumnContextMenu.setLocationColumnValues();
+            }
+            
+            if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_NAME)){
+            	addColumnContextMenu.setPreferredNameColumnValues();
+            }
+            
+            listDataTable.refreshRowCache();
             listDataTable.setImmediate(true);
+            listDataTable.setEditable(true);
+            
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
                     "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
@@ -1184,6 +1213,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     , Notification.POSITION_CENTERED);
             return;
         }
+    }
+    
+    public boolean isColumnVisible(Object[] columns, String columnName){
+    	
+    	for(Object col : columns){
+    		if(col.equals(columnName)){
+    			return true;
+    		}
+    	}
+    	
+    	return false;
     }
     
     public void addEntryButtonClickAction(){
