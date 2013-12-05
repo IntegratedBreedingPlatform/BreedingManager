@@ -48,6 +48,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
@@ -73,8 +74,6 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private ComboBox harvestLocComboBox;
     private Map<String, Integer> mapLocation;
     
-    private static String SHOW_OTHER_LOCATIONS = "[ Show other locations ]";
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -92,6 +91,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private List<Long> favoriteLocationLongIds;
     private List<Integer> favoriteLocationIds;
     private List<Location> favoriteLocations;
+    
+    private CheckBox showFavoriteLocationsCheckBox;
     
     public ComboBox getHarvestLocComboBox() {
         return harvestLocComboBox;
@@ -120,11 +121,31 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         harvestLocComboBox.setWidth("280px");
         harvestLocComboBox.setNullSelectionAllowed(true);
         
+        showFavoriteLocationsCheckBox = new CheckBox();
+        showFavoriteLocationsCheckBox.setCaption(messageSource.getMessage(Message.SHOW_FAVORITE_LOCATIONS));
+        showFavoriteLocationsCheckBox.setImmediate(true);
+        showFavoriteLocationsCheckBox.addListener(new Property.ValueChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				System.out.println("Checkbox value changed to: "+event.getProperty().getValue());
+				if(((Boolean) event.getProperty().getValue()).equals(true)){
+					populateWithFavoriteLocations();
+				} else {
+					populateWithLocations();
+				}
+				//harvestLocComboBox.select(harvestLocComboBox.getItem(harvestLocComboBox.getItemIds().iterator().next()).toString());
+				//harvestLocComboBox.select(harvestLocComboBox.getItemIds().iterator().next());
+			}
+			
+		});
+        
         // layout components
         addComponent(harvestDateLabel, "top:30px;left:0px");
         addComponent(harvestDtDateField, "top:10px;left:120px");
         addComponent(harvestLocationLabel, "top:60px;left:0px");
         addComponent(harvestLocComboBox, "top:40px;left:120px");
+        addComponent(showFavoriteLocationsCheckBox, "top:44px;left:410px");
 
         locations = germplasmDataManager.getAllBreedingLocations();
         populateHarvestLocation();
@@ -135,7 +156,12 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 
         mapLocation = new HashMap<String, Integer>();
 
-        populateWithFavoriteLocations();
+        if(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true)){
+        	populateWithFavoriteLocations();	
+        } else {
+        	populateWithLocations();
+        }
+        
         
         
 
@@ -143,6 +169,9 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 
     
     private void populateWithFavoriteLocations() {
+    	
+    	harvestLocComboBox.removeAllItems();
+    	
         favoriteLocationLongIds = new ArrayList<Long>();
         favoriteLocationIds = new ArrayList<Integer>();
         favoriteLocations = new ArrayList<Location>();
@@ -176,36 +205,15 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 	        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
 		}
 		
-		//if(favoriteLocations.size()>0){
-			showOtherLocationsComboBoxItem = harvestLocComboBox.addItem(SHOW_OTHER_LOCATIONS);
-			harvestLocComboBox.addListener(new Property.ValueChangeListener(){
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					if(harvestLocComboBox.getValue()!=null && harvestLocComboBox.getValue().equals(SHOW_OTHER_LOCATIONS)){
-						//re populate the combobox minus the show other locations option
-						harvestLocComboBox.removeAllItems();
-						for(Location favoriteLocation : favoriteLocations){
-							harvestLocComboBox.addItem(favoriteLocation.getLname());
-					        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
-						}
-						populateWithLocations();
-						
-						//pre-select first option
-						harvestLocComboBox.select(harvestLocComboBox.getItem(harvestLocComboBox.getItemIds().iterator().next()).toString());
-						harvestLocComboBox.select(harvestLocComboBox.getItemIds().iterator().next());
-					}
-				}
-				
-			});
-		//} else {
-		//	populateWithLocations();
-		//}
     }
     
     private void populateWithLocations(){
+    	
+		harvestLocComboBox.removeAllItems();
+		
     	if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossingManagerUploader() !=null){
+    		
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String site = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE.getValue());
             String siteId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.SITE_ID.getValue());
@@ -222,10 +230,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         }
         
         for (Location loc : locations) {
-        	if(!mapLocation.containsKey(loc.getLname())){
-        		harvestLocComboBox.addItem(loc.getLname());
-        		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
-        	}
+    		harvestLocComboBox.addItem(loc.getLname());
+    		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
         }
     }
     
