@@ -219,14 +219,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
         addComponent(notesLabel, "top:55px; left: 720px;");
-        notesLabel.setVisible(false);
+        notesLabel.setVisible(true);
 		
         notesTextArea = new TextArea();
         notesTextArea.setWidth("400px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
         addComponent(notesTextArea, "top:35px; left: 770px;");
-        notesTextArea.setVisible(false);
+        notesTextArea.setVisible(true);
 
         createGermplasmTable();
         
@@ -841,6 +841,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	}
         
         toreturn.setType(this.listTypeComboBox.getValue().toString());
+        toreturn.setNotes(this.notesTextArea.getValue().toString());
     	return toreturn;
     }
     
