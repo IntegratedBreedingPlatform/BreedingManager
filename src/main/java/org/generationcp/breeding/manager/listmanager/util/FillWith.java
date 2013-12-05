@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
-import org.generationcp.breeding.manager.listmanager.ListDataComponent;
+import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -499,24 +497,28 @@ public class FillWith implements InternationalizableComponent  {
     
     
     protected void fillWithLocation() {
-    	for (Iterator<?> i = targetTable.getItemIds().iterator(); i.hasNext();) {
-            //iterate through the table elements' IDs
-            int listDataId = (Integer) i.next();
-            Item item = targetTable.getItem(listDataId);
-            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-            Button b= (Button) gidObject;
-            String gid=b.getCaption();
-            GermplasmDetailModel gModel=getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gModel.getGermplasmLocation());
-       
-    	}
-		
-	    //To trigger TableFieldFactory (fix for truncated data)
-    	if(targetTable.isEditable()){
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
-		}
-	   
+        try {
+            List<Integer> gidList = getGidsFromTable(targetTable);
+            Map<Integer, String> gidLocations;
+            gidLocations = germplasmDataManager.getLocationNamesByGids(gidList);
+            
+            List<Integer> itemIds = getItemIds(targetTable);
+            for (Integer itemId : itemIds) {
+                Item item = targetTable.getItem(itemId);
+                Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+                Button b= (Button) gidObject;
+                String gid=b.getCaption();
+                item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
+            }
+    		
+    	    //To trigger TableFieldFactory (fix for truncated data)
+        	if(targetTable.isEditable()){
+    		   targetTable.setEditable(false);
+    		   targetTable.setEditable(true);
+    		}
+        } catch (MiddlewareQueryException e) {
+            e.printStackTrace();
+        }
 	}
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
