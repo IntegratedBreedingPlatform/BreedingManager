@@ -245,11 +245,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         String prefix = ((String) prefixTextField.getValue()).trim();
         
         if (StringUtils.isEmpty(prefix)){
-            MessageNotifier.showError(window, "Error with Cross Code", messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), Notification.POSITION_CENTERED);
+            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
+            		messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), Notification.POSITION_CENTERED);
             return false;
         
         } else if (prefix.contains(" ")){
-            MessageNotifier.showError(window, "Error with Cross Code", messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), Notification.POSITION_CENTERED);
+            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
+            		messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), Notification.POSITION_CENTERED);
+            return false;
+        
+        } else if (prefix.substring(prefix.length()-1).matches("\\d")){
+            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE),  
+            		messageSource.getMessage(Message.ERROR_PREFIX_ENDS_IN_NUMBER), Notification.POSITION_CENTERED);
             return false;
         } 
         

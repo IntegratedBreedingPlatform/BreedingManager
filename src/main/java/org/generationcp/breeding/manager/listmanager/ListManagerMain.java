@@ -80,17 +80,8 @@ public class ListManagerMain extends VerticalLayout implements
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 		buildNewListTitle.addStyleName("gcp-content-title");
         
-        buildNewListButton = new Button();
-        buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
-        buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
-        buildNewListButton.setStyleName(BaseTheme.BUTTON_LINK);
-        buildNewListButton.addStyleName("link_with_plus_icon");
-        buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
-        
         buildNewActionBar.addComponent(buildNewListTitle);
-        buildNewActionBar.addComponent(buildNewListButton);
         buildNewActionBar.setComponentAlignment(buildNewListTitle, Alignment.BOTTOM_LEFT);
-        buildNewActionBar.setComponentAlignment(buildNewListButton, Alignment.BOTTOM_RIGHT);
         
         addComponent(titleLayout);
         addComponent(tabSheet);
@@ -109,6 +100,7 @@ public class ListManagerMain extends VerticalLayout implements
 	
 	private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
+        titleLayout.setSizeFull();
         
         //TODO put software version in title
         String title =  "<h1>" + messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL)+ "</h1> <h2>" + VERSION + "</h2>";
@@ -117,6 +109,16 @@ public class ListManagerMain extends VerticalLayout implements
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(title);
         titleLayout.addComponent(mainTitle);
+        
+        buildNewListButton = new Button();
+        buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
+        buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
+        buildNewListButton.setStyleName(BaseTheme.BUTTON_LINK);
+        buildNewListButton.addStyleName("link_with_plus_icon");
+        buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        
+        titleLayout.addComponent(buildNewListButton);
+        titleLayout.setComponentAlignment(buildNewListButton, Alignment.MIDDLE_RIGHT);
         
         /**
         Label descLbl = new Label(guideMessage);
