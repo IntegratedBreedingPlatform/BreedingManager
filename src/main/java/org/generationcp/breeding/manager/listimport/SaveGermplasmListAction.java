@@ -88,12 +88,16 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                     germplasmIds.add(germplasmName.getGermplasm().getGid());
                     name.setGermplasmId(germplasmName.getGermplasm().getGid());
                     germplasmManager.addGermplasmName(name);
+                    
+                    System.out.println("Re-used existing germplasm for "+name.getNval()+" with GID "+germplasmName.getGermplasm().getGid());
                 } else {
                     //Create new germplasm
                     //Integer negativeId = germplasmManager.getN .getNegativeId("gid");
                 	germplasmName.getGermplasm().setGid(null);
                 	germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
                     germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
+                    
+                    System.out.println("Created new germplasm for "+name.getNval()+" with GID "+germplasmIds.get(germplasmIds.size()-1));
                 }
             }
         } catch (Exception e) {
