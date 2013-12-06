@@ -55,7 +55,9 @@ public class Util{
         int countTabSheet = tabSheet.getComponentCount();
         for (int i = 0; i < countTabSheet; i++) {
             Tab tab = tabSheet.getTab(i);
-            if (tab.getDescription().equals(tabDescription)) {
+            
+            String currentTabDescription = tab.getDescription();
+			if (currentTabDescription != null &&  currentTabDescription.equals(tabDescription)) {
                 return true;
             }
         }
@@ -92,7 +94,8 @@ public class Util{
 
         for (int i = 0; i < tabSheet.getComponentCount(); i++) {
             Tab tab = tabSheet.getTab(i);
-            if (tab.getDescription().equals(tabDescription)) {
+            String description = tab.getDescription();
+			if (description != null && description.equals(tabDescription)) {
                 return tab;
             }
         }

@@ -109,15 +109,23 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     
 	private void createTab(int id, GermplasmList germplasmList, String tabName) {
 		
-		//if (!Util.isTabExist(detailsTabSheet, tabName)) {
-		if (!Util.isTabDescriptionExist(detailsTabSheet, germplasmList.getId().toString())) {
+		boolean tabExists = false;
+		//workaround since Browse Lists and Search Lists have different tab name formats
+		if (germplasmList != null){
+			tabExists = Util.isTabDescriptionExist(detailsTabSheet, germplasmList.getId().toString());
+		} else { 
+			tabExists = Util.isTabExist(detailsTabSheet, tabName);
+		}
+		if (!tabExists) {
 			
 			VerticalLayout layout = new VerticalLayout();
         	Component component = createTabContent(id, germplasmList, tabName);
         	layout.addComponent(component);
             
             Tab tab = detailsTabSheet.addTab(layout, tabName, null);
-            tab.setDescription(germplasmList.getId().toString());
+            if (germplasmList != null){
+            	tab.setDescription(germplasmList.getId().toString());
+            }
             tab.setClosable(true);
             
             parentLayout.addComponent(new Label("<style> .v-shadow, .v-tooltip { display:none !important; } </style>", Label.CONTENT_XHTML));

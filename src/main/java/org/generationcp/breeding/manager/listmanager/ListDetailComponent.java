@@ -401,11 +401,14 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 //Close confirmation window
                 
                 //Re-use refresh action on GermplasmListTreeComponent
-                listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
+                if (listManagerTreeMenu != null && listManagerTreeMenu.getDetailsLayout()!= null && 
+                		listManagerTreeMenu.getDetailsLayout().getTreeComponent()!= null){
+                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
+                }
                 
                 //Close tab
                 TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
-				Tab tab = Util.getTabAlreadyExist(parentTabSheet, germplasmList.getName());
+				Tab tab = Util.getTabWithDescription(parentTabSheet, germplasmList.getId().toString());
                 parentTabSheet.removeTab(tab);
                 
                 
