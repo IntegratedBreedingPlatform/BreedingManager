@@ -130,6 +130,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 			Integer listId = this.germplasmListManager.updateGermplasmList(listFromDB);
 			
 			source.setNotesCaption(source.getNotes(listFromDB.getNotes()));
+			source.setAddEditNotesCaption();
 			source.requestRepaintRequests();
 			
 			if(listId == null){

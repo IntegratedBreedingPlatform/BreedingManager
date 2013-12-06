@@ -420,4 +420,14 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	public void setNotesCaption(String caption){
 		this.listNotes.setValue(caption);
 	}
+	
+	public void setAddEditNotesCaption(){
+		
+		if(listNotes.getValue().toString().length() > 0){
+			this.addEditViewButton.setCaption("View / Edit Notes");
+		}
+		else{
+			this.addEditViewButton.setCaption("Add Notes");
+		}
+	}
 }
