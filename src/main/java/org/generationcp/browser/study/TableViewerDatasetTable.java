@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.generationcp.browser.study;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +96,7 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
                 
                 // add the column ids to display for the Table
                 if (NUMERIC_VARIABLE.equals(variable.getStandardVariable().getDataType().getName())) {
-                	this.addContainerProperty(columnId, Double.class, null);
+                	this.addContainerProperty(columnId, BigDecimal.class, null);
                 } else {
                 	//define column as Button for GID, else define as String
                 	if (columnId.contains("GID")) {
@@ -118,7 +120,6 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
     
     private void populateDatasetTable(List<String> columnIds) {
         List<Experiment> experiments = new ArrayList<Experiment>();
-        
         int size = -1;
         try {
             Long count = Long.valueOf(studyDataManager.countExperiments(datasetId));
@@ -128,7 +129,31 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
         }
         
         try {
-            experiments = studyDataManager.getExperiments(datasetId, 0, size);
+        	if(size < 100){
+        		experiments = studyDataManager.getExperiments(datasetId, 0, size);
+        	}else{
+        		int noOfRecordToQuery=50;
+        		int batchRecordCount=size%noOfRecordToQuery;
+        		int remainingRecCount=size-(batchRecordCount*noOfRecordToQuery);
+        		int start=0;
+        		int end=noOfRecordToQuery;;
+        		
+        		for(int i=1;i<=batchRecordCount;i++){
+        			List<Experiment> experimentList= new ArrayList<Experiment>();
+        			experimentList=studyDataManager.getExperiments(datasetId, start, end);
+        			start=end+1;
+        			end=end+noOfRecordToQuery;
+        			experiments.addAll(experimentList);
+        		}
+        		
+        		if(remainingRecCount > 0){
+        			start=end+1;
+        			List<Experiment> experimentList= new ArrayList<Experiment>();
+        			experimentList=studyDataManager.getExperiments(datasetId, start, remainingRecCount);
+        			experiments.addAll(experimentList);
+        		}
+        		
+        	}
         } catch (MiddlewareQueryException ex) {
             // Log error in log file
             LOG.error("Error with getting ounitids for representation: " + datasetId + "\n" + ex.toString());
@@ -157,8 +182,16 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	                            .append(variable.getVariableType().getLocalName()).toString();
 	                    
 	                    if (NUMERIC_VARIABLE.equals(variable.getVariableType().getStandardVariable().getDataType().getName())) {
-	                    	Double doubleValue = Double.valueOf(variable.getDisplayValue());
-	                    	item.getItemProperty(columnId).setValue(doubleValue);
+	                    	String cellValue=variable.getDisplayValue();
+	                    	
+	                    	if(cellValue.contains("/")){   // value is in date format but defined as Numeric Variable eg. 10/21/2004
+	                    		item.getItemProperty(columnId).setValue(formatDateToNumber(cellValue));
+	                    	}if(cellValue.equals("") ){
+	                    		// nothing to set
+	                    	}else{
+	                    		item.getItemProperty(columnId).setValue(new BigDecimal(cellValue));
+	                    	}
+	                    	
 	                    } else {
 	                    	String stringValue = variable.getDisplayValue();
 	                    	if (stringValue != null) {
@@ -180,7 +213,17 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
         }
     }
 	
-    public StudyDataManager getStudyDataManager(){
+    private BigDecimal formatDateToNumber(String cellValue) {
+    	try{
+    		String[] cellNewValue=cellValue.split("/");
+    		cellValue=cellNewValue[2]+cellNewValue[0]+cellNewValue[1]; // format to YYYYMMDD
+    		return new BigDecimal(cellValue);
+    	}catch(Exception e){
+    		return new BigDecimal(0);
+    	}
+    }
+
+	public StudyDataManager getStudyDataManager(){
     	return studyDataManager;
     }
     
