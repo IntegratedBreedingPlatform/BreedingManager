@@ -22,7 +22,6 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -33,21 +32,15 @@ import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.ProjectLocationMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -86,7 +79,6 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private List<Location> locations;
   
     private CrossesMadeContainer container;
-    private Item showOtherLocationsComboBoxItem;
     
     private List<Long> favoriteLocationLongIds;
     private List<Integer> favoriteLocationIds;
@@ -128,12 +120,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				System.out.println("Checkbox value changed to: "+event.getProperty().getValue());
-				if(((Boolean) event.getProperty().getValue()).equals(true)){
-					populateWithFavoriteLocations();
-				} else {
-					populateWithLocations();
-				}
+				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
 				//harvestLocComboBox.select(harvestLocComboBox.getItem(harvestLocComboBox.getItemIds().iterator().next()).toString());
 				//harvestLocComboBox.select(harvestLocComboBox.getItemIds().iterator().next());
 			}
@@ -155,18 +142,19 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     }
     
     private void populateHarvestLocation() {
+    	populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
+    }
+    
+    private void populateHarvestLocation(boolean showOnlyFavorites) {
         harvestLocComboBox.removeAllItems();
 
         mapLocation = new HashMap<String, Integer>();
 
-        if(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true)){
+        if(showOnlyFavorites){
         	populateWithFavoriteLocations();	
         } else {
         	populateWithLocations();
         }
-        
-        
-        
 
     }
 
