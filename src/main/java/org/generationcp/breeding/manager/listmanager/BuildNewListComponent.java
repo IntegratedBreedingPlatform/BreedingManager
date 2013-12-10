@@ -75,6 +75,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private static final long serialVersionUID = 5314653969843976836L;
 	
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
+	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 
 	private Object source;
 	
@@ -328,6 +329,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public void createGermplasmTable(){
 		
 		germplasmsTable = new Table();
+		germplasmsTable.setData(GERMPLASMS_TABLE_DATA);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
@@ -366,7 +368,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			}
         });
         
-		addComponent(germplasmsTable, "top:115px; left:0px;");
+        addComponent(germplasmsTable, "top:115px; left:0px;");
 	}
 		
 	/**
@@ -387,7 +389,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			Table matchingListsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingListsTable();
 			
 			matchingGermplasmsTable.setDragMode(TableDragMode.ROW); 
-			matchingListsTable.setDragMode(TableDragMode.ROW); 
+			matchingListsTable.setDragMode(TableDragMode.ROW);
+			germplasmsTable.setDragMode(TableDragMode.ROW);
 		}
 	}
 	
@@ -466,6 +469,30 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString());
                     		addGermplasmToGermplasmTable(gid, droppedOverItemId);
                     	}
+                // Handle drops from within the GERMPLASMS TABLE
+                } else if(sourceTable.getData().equals(GERMPLASMS_TABLE_DATA)){
+                    //Check first if item is dropped on top of itself
+                    if(!transferable.getItemId().equals(droppedOverItemId)) {
+                        
+                        Item oldItem = germplasmsTable.getItem(transferable.getItemId());
+                        Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+                        Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+                        Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+                        Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+                        Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+                        Object oldStatus = oldItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).getValue();
+                        germplasmsTable.removeItem(transferable.getItemId());
+                        
+                        Item newItem = germplasmsTable.addItemAfter(droppedOverItemId, transferable.getItemId());
+                        newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
+                        newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
+                        newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
+                        newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
+                        newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
+                        newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(oldStatus);
+                        
+                        assignSerializedEntryNumber();
+                    }
                 }
 			    
                 updateAddedColumnValues();
@@ -586,8 +613,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			e.printStackTrace();
 		}
 
-	}	
-		
+	}
 	
 	/**
 	 * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
@@ -674,7 +700,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	}
     	
     	return trueOrderedSelectedGIDs;
-    }	
+	}
 	
 	/**
 	 * Get item id's of a table, and return it as a list 
