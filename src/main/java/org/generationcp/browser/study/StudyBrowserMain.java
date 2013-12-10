@@ -37,6 +37,9 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     private VerticalLayout tabSearch;
     private TabSheet tabSheetStudyDatabaseInstance;
     
+    private StudyTreeComponent centralStudyTree;
+    private StudyTreeComponent localStudyTree;
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
@@ -72,8 +75,12 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetStudyDatabaseInstance.addTab(tabSearch).setCaption(messageSource.getMessage(Message.SEARCH_LABEL)); // "Search"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabLocalInstance);
-        tabCentralInstance.addComponent(new StudyTreeComponent(mainLayout, Database.CENTRAL));
-        tabLocalInstance.addComponent(new StudyTreeComponent(mainLayout, Database.LOCAL));
+
+        centralStudyTree = new StudyTreeComponent(mainLayout, Database.CENTRAL);
+        localStudyTree = new StudyTreeComponent(mainLayout, Database.LOCAL);
+
+        tabCentralInstance.addComponent(centralStudyTree);
+        tabLocalInstance.addComponent(localStudyTree);
         tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
 
         mainLayout.addComponent(tabSheetStudyDatabaseInstance);
@@ -95,4 +102,23 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         messageSource.setCaption(tabSearch, Message.SEARCH_LABEL);
     }
     
+    public void setSelectedTab(VerticalLayout layout){
+    	tabSheetStudyDatabaseInstance.setSelectedTab(layout);
+    }
+    
+    public VerticalLayout getTabLocalInstance(){
+    	return tabLocalInstance;
+    }
+    
+    public VerticalLayout getTabCentralInstance(){
+    	return tabCentralInstance;
+    }
+    
+    public StudyTreeComponent getCentralStudyTreeComponent(){
+    	return centralStudyTree;
+    }
+    
+    public StudyTreeComponent getLocalStudyTreeComponent(){
+    	return localStudyTree;
+    }
 }

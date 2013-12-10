@@ -13,7 +13,9 @@
 package org.generationcp.browser.study;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
@@ -25,12 +27,13 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.generationcp.middleware.domain.dms.FolderReference;
 import org.generationcp.middleware.domain.dms.Reference;
 import org.generationcp.middleware.domain.dms.Study;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,6 +68,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private Button refreshButton;
     
     private Database database;
+    
+    private Integer rootNodeProjectId;
+    //private Map<Integer, Integer> childParentItemIdMap;
+    private Map<Integer, Integer> parentChildItemIdMap;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -104,11 +111,13 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         Tree studyTree = new Tree();
 
+        
+        
         for (FolderReference ps : rootFolders) {
             studyTree.addItem(ps.getId());
             studyTree.setItemCaption(ps.getId(), ps.getName());
         }
-
+                
         studyTree.addListener(new StudyTreeExpandListener(this));
         studyTree.addListener(new StudyItemClickListener(this));
 
@@ -139,7 +148,32 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
     }
 
+    public Boolean studyExists(int studyId) throws InternationalizableException {
+        try {
+            Study study = this.studyDataManager.getStudy(Integer.valueOf(studyId));
+            if(study==null) {
+            	return false;
+        	} else {
+        		String studyType = study.getType();
+                if (!hasChildStudy(studyId) && !isFolderType(studyType)){
+                    return true;
+                }
+            	return false;
+        	}
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID),
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID));
+            return false;
+        }
+    }    
+    
     public void addStudyNode(int parentStudyId) throws InternationalizableException{
+    	
+    	System.out.println("Invoked addStudyNode("+parentStudyId+")");
+    	
         List<Reference> studyChildren = new ArrayList<Reference>();
         try {
             studyChildren = this.studyDataManager.getChildrenOfFolder(Integer.valueOf(parentStudyId));
@@ -156,15 +190,19 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             studyTree.addItem(sc.getId());
             studyTree.setItemCaption(sc.getId(), sc.getName());
             studyTree.setParent(sc.getId(), parentStudyId);
+            
             // check if the study has sub study
             if (hasChildStudy(sc.getId())) {
                 studyTree.setChildrenAllowed(sc.getId(), true);
             } else {
                 studyTree.setChildrenAllowed(sc.getId(), false);
             }
+            
         }
     }
 
+    
+    
     private void createStudyInfoTab(int studyId) throws InternationalizableException {
         VerticalLayout layout = new VerticalLayout();
 
@@ -280,4 +318,68 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             return true;
         }
     }
+
+    
+    public void showChild(Integer childItemId){
+    	buildChildMap(childItemId,true);
+    	//System.out.println("ChildParent: "+childParentItemIdMap);
+    	System.out.println("ParentChild: "+parentChildItemIdMap);
+    	Integer rootItemId = rootNodeProjectId; //getRootNodeOfChild(childItemId);
+    	System.out.println("Root item ID: "+rootItemId);
+    	
+    	addStudyNode(rootItemId);
+    	studyTree.expandItem(rootItemId);
+    	
+    	Integer currentItemId = parentChildItemIdMap.get(rootItemId);
+    	addStudyNode(currentItemId);
+    	studyTree.expandItem(currentItemId);
+    	
+    	System.out.println("Item ID: "+currentItemId);
+    	System.out.println("Child item ID: "+childItemId);
+    	
+    	while(parentChildItemIdMap.get(currentItemId)!=childItemId){
+    		currentItemId = parentChildItemIdMap.get(currentItemId);
+    		addStudyNode(currentItemId);
+    		studyTree.expandItem(currentItemId);
+    	}
+    	
+    	studyTree.select(childItemId);
+    	
+    }
+
+    private void buildChildMap(Integer studyId, Boolean endNode){
+    	if(endNode==true){
+    		//childParentItemIdMap = new HashMap<Integer, Integer>();
+    		parentChildItemIdMap = new HashMap<Integer, Integer>();
+    	}
+        try {
+            DmsProject studyParent = this.studyDataManager.getParentFolder(studyId);
+            if(studyParent!=null){
+            	int parentProjectId = studyParent.getProjectId();
+            	//childParentItemIdMap.put(studyId, parentProjectId);
+                parentChildItemIdMap.put(parentProjectId, studyId);
+                System.out.println("Parent of "+studyId+" is "+studyParent.getProjectId());
+            	buildChildMap(studyParent.getProjectId(),false);
+            } else {
+            	rootNodeProjectId = studyId;
+            	System.out.println("Child "+studyId+" is parentless");
+            }
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
+        }
+    }
+
+    
+//    private Integer getRootNodeOfChild(Integer childItemId){
+//    	Integer rootItemId = childParentItemIdMap.get(childItemId);
+//    	while(childParentItemIdMap.get(rootItemId)!=null){
+//    		rootItemId = childParentItemIdMap.get(rootItemId);
+//    		System.out.println("getroot: "+rootItemId);
+//    	}
+//    	return rootItemId;
+//    }
 }

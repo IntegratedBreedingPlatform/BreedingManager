@@ -32,6 +32,7 @@ import org.generationcp.browser.germplasmlist.GermplasmListBrowserMain;
 import org.generationcp.browser.study.StudyAccordionMenu;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.StudyDetailComponent;
+import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -69,6 +70,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String GERMPLASMLIST_WINDOW_NAME = "germplasmlist";
     public static final String STUDY_WINDOW_NAME = "study";
     public static final String STUDY_DETAILS_PREFIX = "study-";
+    public static final String STUDY_BROWSER_PREFIX = "studybrowser-";
     public static final String GERMPLASM_DETAILS_PREFIX = "germplasm-";
     public static final String GERMPLASMLIST_DETAILS_PREFIX = "germplasmlist-";
     public static final String HEAD_TO_HEAD_CROSS_STUDY_QUERY_WINDOW_NAME = "h2h-query";
@@ -223,6 +225,53 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                         MessageNotifier.showError(getMainWindow(), e.getCaption(), e.getDescription());
                     }
                 }
+            } else if(name.startsWith(STUDY_BROWSER_PREFIX)) {
+            	String studyIdPart = name.substring(name.indexOf("-") + 1);
+            	int studyId = 0;
+            	                
+                Window studyBrowserWindow;
+                String windowName = "study"+studyId;
+                
+                this.removeWindow(this.getWindow(windowName));
+                
+                StudyBrowserMain studyBrowserMain = new StudyBrowserMain();
+                studyBrowserWindow = this.getWindow(windowName);
+                
+                if(studyBrowserWindow==null){
+                	studyBrowserWindow = new Window(messageSource.getMessage(Message.STUDY_BROWSER_TITLE)); // Study
+	                studyBrowserWindow.setName(windowName);
+	                studyBrowserWindow.setSizeUndefined();
+	                studyBrowserWindow.addComponent(studyBrowserMain);
+	                this.addWindow(studyBrowserWindow);
+                }
+                
+                StudyTreeComponent studyTreeComponent = null;
+                
+                try {
+                    studyId = Integer.parseInt(studyIdPart);
+                } catch(NumberFormatException e) {
+                	MessageNotifier.showError(getWindow(windowName), messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.INVALID_PARAMETERS_SPECIFIED));
+                	return studyBrowserWindow;
+                }
+                
+                if(studyId>0){
+                	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabCentralInstance());
+                	studyTreeComponent = studyBrowserMain.getCentralStudyTreeComponent();
+                } else {
+                	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabLocalInstance());
+                	studyTreeComponent = studyBrowserMain.getLocalStudyTreeComponent();
+                }
+                
+                if(studyTreeComponent.studyExists(studyId)){
+                	studyTreeComponent.studyTreeItemClickAction(studyId);
+                	studyTreeComponent.showChild(studyId);
+                } else {
+                	MessageNotifier.showError(getWindow(windowName), messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.NO_STUDIES_FOUND));
+                }
+                return studyBrowserWindow;
+                
             } else if(name.startsWith(STUDY_DETAILS_PREFIX)) {
                 String studyIdPart = name.substring(name.indexOf("-") + 1);
                 try {
