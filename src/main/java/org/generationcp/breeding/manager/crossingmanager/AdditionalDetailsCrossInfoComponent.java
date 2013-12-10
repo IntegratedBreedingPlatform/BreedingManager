@@ -122,7 +122,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         harvestLocComboBox.setNullSelectionAllowed(true);
         
         showFavoriteLocationsCheckBox = new CheckBox();
-        showFavoriteLocationsCheckBox.setCaption(messageSource.getMessage(Message.SHOW_FAVORITE_LOCATIONS));
+        showFavoriteLocationsCheckBox.setCaption(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
         showFavoriteLocationsCheckBox.setImmediate(true);
         showFavoriteLocationsCheckBox.addListener(new Property.ValueChangeListener(){
 			private static final long serialVersionUID = 1L;
@@ -139,6 +139,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			}
 			
 		});
+        showFavoriteLocationsCheckBox.setValue(true);
         
         // layout components
         addComponent(harvestDateLabel, "top:30px;left:0px");
