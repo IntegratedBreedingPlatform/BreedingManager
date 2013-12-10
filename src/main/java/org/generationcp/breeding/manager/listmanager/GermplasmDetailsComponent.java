@@ -50,6 +50,7 @@ public class GermplasmDetailsComponent extends GridLayout implements
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		
 		setRows(3);
         setColumns(4);
         setColumnExpandRatio(1, 2);

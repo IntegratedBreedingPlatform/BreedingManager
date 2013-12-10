@@ -112,6 +112,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
+		addStyleName("overflow_x_auto");
+		
 		setRows(5);
         setColumns(8);
         setColumnExpandRatio(1, 2);
