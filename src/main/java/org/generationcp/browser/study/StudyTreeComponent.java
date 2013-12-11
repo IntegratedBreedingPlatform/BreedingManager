@@ -324,17 +324,23 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	buildChildMap(childItemId,true);
     	Integer rootItemId = rootNodeProjectId; //getRootNodeOfChild(childItemId);
     	
-    	addStudyNode(rootItemId);
-    	studyTree.expandItem(rootItemId);
+    	if(rootItemId!=null){
+    		addStudyNode(rootItemId);
+    		studyTree.expandItem(rootItemId);
+    	}
     	
     	Integer currentItemId = parentChildItemIdMap.get(rootItemId);
-    	addStudyNode(currentItemId);
-    	studyTree.expandItem(currentItemId);
+    	if(currentItemId!=null){
+    		addStudyNode(currentItemId);
+    		studyTree.expandItem(currentItemId);
+    	}
     	
     	while(parentChildItemIdMap.get(currentItemId)!=childItemId){
     		currentItemId = parentChildItemIdMap.get(currentItemId);
-    		addStudyNode(currentItemId);
-    		studyTree.expandItem(currentItemId);
+    		if(currentItemId!=null){
+    			addStudyNode(currentItemId);
+    			studyTree.expandItem(currentItemId);
+    		}
     	}
     	
     	studyTree.select(childItemId);
