@@ -356,7 +356,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	}
         try {
             DmsProject studyParent = this.studyDataManager.getParentFolder(studyId);
-            if(studyParent!=null && (studyId<0 && studyParent.getProjectId()!=1)){
+            if(studyParent!=null && ((studyId<0 && studyParent.getProjectId()!=1) || studyId>0)){
             	int parentProjectId = studyParent.getProjectId();
                 parentChildItemIdMap.put(parentProjectId, studyId);
             	buildChildMap(studyParent.getProjectId(),false);
