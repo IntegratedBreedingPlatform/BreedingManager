@@ -322,7 +322,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     public void showChild(Integer childItemId){
     	buildChildMap(childItemId,true);
-    	Integer rootItemId = rootNodeProjectId; //getRootNodeOfChild(childItemId);
+    	Integer rootItemId = rootNodeProjectId;
+    	
+    	System.out.println("Root: "+rootItemId);
+    	System.out.println("Parent Child Map: "+parentChildItemIdMap);
     	
     	if(rootItemId!=null){
     		addStudyNode(rootItemId);
@@ -353,7 +356,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	}
         try {
             DmsProject studyParent = this.studyDataManager.getParentFolder(studyId);
-            if(studyParent!=null){
+            if(studyParent!=null && (studyId<0 && studyParent.getProjectId()!=1)){
             	int parentProjectId = studyParent.getProjectId();
                 parentChildItemIdMap.put(parentProjectId, studyId);
             	buildChildMap(studyParent.getProjectId(),false);
