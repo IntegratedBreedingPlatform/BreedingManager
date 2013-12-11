@@ -159,8 +159,12 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     }
     
     private void populateConditionsTable() throws MiddlewareQueryException{
-    	List<TrialEnvironmentProperty> properties =  
-    		crossStudyDataManager.getPropertiesForTrialEnvironments(environmentIds);
+    	List<TrialEnvironmentProperty> properties = new ArrayList<TrialEnvironmentProperty>();
+    	
+    	if( environmentIds != null  && environmentIds.size() > 0){
+    		 properties = crossStudyDataManager.getPropertiesForTrialEnvironments(environmentIds);
+    	}
+    	
     	this.selectedProperties = new HashSet<TrialEnvironmentProperty>();
     	this.conditionNames = new ArrayList<String>();
     	
