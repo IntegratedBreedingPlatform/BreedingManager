@@ -335,7 +335,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     		studyTree.expandItem(currentItemId);
     	}
     	
-    	while(parentChildItemIdMap.get(currentItemId)!=childItemId){
+    	while(parentChildItemIdMap.get(currentItemId)!=childItemId && currentItemId!=null){
     		currentItemId = parentChildItemIdMap.get(currentItemId);
     		if(currentItemId!=null){
     			addStudyNode(currentItemId);
