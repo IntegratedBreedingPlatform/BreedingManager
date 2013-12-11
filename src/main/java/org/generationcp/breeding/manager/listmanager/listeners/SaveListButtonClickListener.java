@@ -64,7 +64,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					, messageSource.getMessage(Message.NO_ENTRIES_ERROR_MESSAGE), Notification.POSITION_CENTERED);
 			return;
 		}
-		
+	
 		if(!validateListDetails(listToSave, currentlySavedList)){
 			return;
 		}
@@ -225,8 +225,16 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	
 	private boolean validateListName(GermplasmList list){
 		try{
-			List<GermplasmList> lists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
-			if(!lists.isEmpty()){
+			List<GermplasmList> centralLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.CENTRAL);
+			if(!centralLists.isEmpty()){
+				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
+						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE)
+						, Notification.POSITION_CENTERED);
+				return false;
+			}
+			
+			List<GermplasmList> localLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
+			if(!localLists.isEmpty()){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
 						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)
 						, Notification.POSITION_CENTERED);
