@@ -45,6 +45,7 @@ import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -153,7 +154,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             	}
             	
             } else {
-            	source.getAccordion().getWindow().showNotification("File was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
+            	
+            	Window.Notification notif;
+            	notif = new Window.Notification("File was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
+            	notif.setDelayMsec(5000);
+            	source.getAccordion().getWindow().showNotification(notif);
                
             	if(source instanceof GermplasmImportFileComponent){
             		source.updateFilenameLabelValue(originalFilename);
