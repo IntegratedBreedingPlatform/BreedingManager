@@ -17,6 +17,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -52,6 +54,10 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     
     private Integer germplasmId;
     
+    private ComponentTreeItem basicDetails;
+    private ComponentTreeItem attributesDetails;
+    private ComponentTreeItem pedigreeDetails;
+    
     public BrowseGermplasmTreeMenu(ListManagerMain listManagerMain, Integer germplasmId){
     	this.listManagerMain = listManagerMain;
     	this.germplasmId = germplasmId;
@@ -74,19 +80,39 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		
 		ComponentTree content = new ComponentTree();
         content.setWidth("95%");
-        
-        ComponentTreeItem basicDetails = content.addChild(createBasicDetailsHeader(messageSource.getMessage(Message.BASIC_DETAILS)));
+                
+        basicDetails = content.addChild(createBasicDetailsHeader(messageSource.getMessage(Message.BASIC_DETAILS)));
         basicDetails.showChild();
         basicDetails.addChild(basicDetailsComponent);
+        basicDetails.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				basicDetails.toggleChild();
+			}
+        });
         
-        ComponentTreeItem attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
+        attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
         VerticalLayout layoutForAttributes = new VerticalLayout();
         layoutForAttributes.addComponent(germplasmAttributesComponent);
         attributesDetails.addChild(layoutForAttributes);
+        attributesDetails.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				attributesDetails.toggleChild();
+			}
+        });
         
-        ComponentTreeItem pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
+        pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);
-		
+        pedigreeDetails.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				pedigreeDetails.toggleChild();
+			}
+        });
 		
 		addComponent(content);
 	}
