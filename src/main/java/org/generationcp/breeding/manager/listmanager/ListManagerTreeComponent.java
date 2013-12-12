@@ -201,31 +201,33 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
 
-        if(listId != null && listId < 0){
-        	germplasmListTree.expandItem("LOCAL");
-        	germplasmListTree.select(listId);
-        } else if(listId != null && listId > 0){
-        	try{
-        		GermplasmList list = germplasmListManager.getGermplasmListById(listId);
-        		
-        		if(list != null){
-        			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
-        			traverseParentsOfList(list, parents);
-        			
-        			germplasmListTree.expandItem("CENTRAL");
-        			while(!parents.isEmpty()){
-        				GermplasmList parent = parents.pop();
-        				germplasmListTree.setChildrenAllowed(parent.getId(), true);
-        				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
-        				germplasmListTree.expandItem(parent.getId());
-        			}
-        			
-        			germplasmListTree.select(listId);
-        		}
-        	} catch(MiddlewareQueryException ex){
-        		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
-        	}
-        }
+        try{
+        	if(listId != null){
+	        	GermplasmList list = germplasmListManager.getGermplasmListById(listId);
+	    		
+	    		if(list != null){
+	    			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
+	    			traverseParentsOfList(list, parents);
+	    			
+	    			if(listId < 0){
+	                	germplasmListTree.expandItem("LOCAL");
+	    			} else{
+	    				germplasmListTree.expandItem("CENTRAL");
+	    			}
+	    			
+	    			while(!parents.isEmpty()){
+	    				GermplasmList parent = parents.pop();
+	    				germplasmListTree.setChildrenAllowed(parent.getId(), true);
+	    				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
+	    				germplasmListTree.expandItem(parent.getId());
+	    			}
+	    			
+	    			germplasmListTree.select(listId);
+	    		}
+	        }
+        } catch(MiddlewareQueryException ex){
+    		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
+    	}
         
         return germplasmListTree;
     }
