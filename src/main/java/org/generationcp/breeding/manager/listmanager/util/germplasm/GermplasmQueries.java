@@ -154,7 +154,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
                 germplasmDetail.setGid(g.getGid());
                 germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
                 germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
-                germplasmDetail.setGermplasmCreationDate(name == null ? "" : String.valueOf(name.getNdate()));
+                germplasmDetail.setGermplasmCreationDate(name == null ? "" : String.valueOf(g.getGdate()));
 //                germplasmDetail.setPrefID(getGermplasmPrefID(g.getGid()));
                 germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
                 germplasmDetail.setReference(getReference(g.getReferenceId()));
