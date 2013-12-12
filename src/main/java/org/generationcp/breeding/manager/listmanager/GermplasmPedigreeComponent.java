@@ -59,6 +59,8 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 		
 		HorizontalLayout includeDerivativeLayout = new HorizontalLayout();
 		includeDerivativeLayout.setWidth("200px");
+		includeDerivativeLayout.setMargin(true);
+		includeDerivativeLayout.setSpacing(true);
         pedigreeDerivativeCheckbox = new CheckBox();
         pedigreeDerivativeCheckbox.setCaption(messageSource.getMessage(Message.INCLUDE_DERIVATIVE_LINES));
         pedigreeDerivativeCheckbox.setData(INCLUDE_DERIVATIVE_LINES);
