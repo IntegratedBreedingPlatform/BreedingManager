@@ -111,6 +111,9 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     }
     
     public void searchStudy(String name, String country, Season season, Integer date){
+    	if (searchResultTable != null){
+    		searchResultTable.removeAllItems();
+    	}
         IndexedContainer dataSourceResult = studyDataIndexContainer.getStudies(name, country, season, date);
         
         if (dataSourceResult.size() == 0){
