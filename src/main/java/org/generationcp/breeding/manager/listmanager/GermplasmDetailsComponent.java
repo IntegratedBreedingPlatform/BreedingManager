@@ -51,6 +51,8 @@ public class GermplasmDetailsComponent extends GridLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
+		addStyleName("overflow_x_auto");
+
 		setRows(3);
         setColumns(4);
         setColumnExpandRatio(1, 2);
