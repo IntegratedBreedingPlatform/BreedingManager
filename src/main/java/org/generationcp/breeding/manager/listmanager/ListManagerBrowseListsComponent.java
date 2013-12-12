@@ -16,7 +16,7 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		InternationalizableComponent, InitializingBean {
 
 	private static final long serialVersionUID = -224052511814636864L;
-	
+    private ListManagerTreeComponent listManagerTreeComponent;	
 	
 	private Label heading;
 	
@@ -51,8 +51,6 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		heading.setValue(messageSource.getMessage(Message.BROWSE_LISTS));
 		heading.addStyleName("gcp-content-title");
 		
-		ListManagerTreeComponent listManagerTreeComponent;
-		
 		if(listId != null){
 			listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow, listId);
 		} else{
@@ -69,4 +67,8 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		// TODO Auto-generated method stub
 	}
 
+	public ListManagerTreeComponent getListManagerTreeComponent(){
+		return listManagerTreeComponent;
+	}
+	
 }
