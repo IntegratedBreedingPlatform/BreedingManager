@@ -13,6 +13,7 @@ import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -112,12 +113,14 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         searchButton.addStyleName("addTopSpace");
         searchButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         searchButton.setClickShortcut(KeyCode.ENTER);
+        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         searchFormLayout.addComponent(searchButton);
         
         mainLayout.addComponent(searchFormLayout);
         
         resultComponent = new GermplasmSearchResultComponent(germplasmDataManager, GID, "0");
         resultComponent.addListener(new GermplasmItemClickListener(this));
+        resultComponent.setHeight("320px");
         mainLayout.addComponent(resultComponent);
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -139,6 +142,7 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         doneButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         doneButton.addListener(new CloseWindowAction());
         doneButton.setEnabled(false);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         buttonLayout.addComponent(doneButton);
         buttonLayout.addComponent(cancelButton);
         

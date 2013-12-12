@@ -17,6 +17,7 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -120,6 +121,7 @@ public class SelectGermplasmListDialog extends Window implements InitializingBea
         doneButton = new Button(); // "Done"
         doneButton.setData(ADD_BUTTON_ID);
         doneButton.setEnabled(false);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     }
     
     public void setDoneButton(boolean bool){

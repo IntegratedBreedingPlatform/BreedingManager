@@ -101,7 +101,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 
         AbsoluteLayout mainLayout = new AbsoluteLayout();
         mainLayout.setWidth("900px");
-        mainLayout.setHeight("450px");
+        mainLayout.setHeight("420px");
         
         mainLayout.addComponent(popUpLabel, "top:10px;left:20px");
         mainLayout.addComponent(locationTable, "top:35px;left:20px");

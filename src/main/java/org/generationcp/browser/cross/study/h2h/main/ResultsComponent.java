@@ -19,6 +19,7 @@ import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExpo
 import org.generationcp.browser.cross.study.util.HeadToHeadResultsUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.domain.h2h.Observation;
@@ -92,26 +93,27 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         setHeight("550px");
         setWidth("1000px");
    
-        
-    
-    exportButton = new Button("Export");
-    exportButton.setData(EXPORT_BUTTON_ID);
-    exportButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
-    exportButton.setEnabled(true);
-    addComponent(exportButton, "top:515px;left:900px");
-
-       backButton = new Button("Back");
-       backButton.setData(BACK_BUTTON_ID);
-       backButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
-       addComponent(backButton, "top:515px;left:820px");
+	    exportButton = new Button("Export");
+	    exportButton.setData(EXPORT_BUTTON_ID);
+	    exportButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
+	    exportButton.setEnabled(true);
+	    exportButton.setWidth("80px");
+	    exportButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+	    addComponent(exportButton, "top:505px;left:900px");
+		
+		backButton = new Button("Back");
+		backButton.setData(BACK_BUTTON_ID);
+		backButton.setWidth("80px");
+		backButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
+		addComponent(backButton, "top:505px;left:810px");
     }
     
     private void createEnvironmentsResultTable(List<EnvironmentForComparison> environmentForComparisonList, 
     		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, ObservationList> observationMap){
     	 
     	mainTabs = new TabSheet();    
-    	mainTabs.setWidth("950px");   
-        addComponent(mainTabs, "top:20px;left:10px");
+    	mainTabs.setWidth("957px");   
+        addComponent(mainTabs, "top:20px;left:20px");
         
     	this.finalEnvironmentForComparisonList = environmentForComparisonList; 
         EnvironmentForComparison envForComparison = environmentForComparisonList.get(0);
@@ -149,7 +151,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
                 */
         		
         		resultsTable[counter] = new Table();
-        	    resultsTable[counter].setWidth("900px");
+        	    resultsTable[counter].setWidth("912px");
         	    resultsTable[counter].setHeight("400px");
         	    resultsTable[counter].setImmediate(true);
         	    resultsTable[counter].setColumnCollapsingAllowed(true);

@@ -308,9 +308,9 @@ private static final long serialVersionUID = -3667517088395779496L;
 						backButtonClickAction();
 					}
 		       });
-		       backButton.setWidth("100px");
+		       backButton.setWidth("80px");
 		       backButton.setEnabled(true);
-		       addComponent(backButton, "top:490px;left:750px");
+		       addComponent(backButton, "top:490px;left:810px");
 	       }
 	}
 	

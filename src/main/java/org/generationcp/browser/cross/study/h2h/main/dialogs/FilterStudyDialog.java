@@ -207,7 +207,10 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     public void showStudyInfo(Integer studyId){
     	if(parentWindow==null && windowName!=null)
     		parentWindow = this.getApplication().getWindow(windowName);
-    	this.parentWindow.addWindow(new StudyInfoDialog(this, this.parentWindow, studyId,h2hCall));
+    	
+    	StudyInfoDialog studyInfoDialog = new StudyInfoDialog(this, this.parentWindow, studyId,h2hCall);
+    	studyInfoDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+    	this.parentWindow.addWindow(studyInfoDialog);
     }
     
     private void initializeStudyTable(){

@@ -18,6 +18,7 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.TablesEntries;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -36,6 +37,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SpecifyGermplasmsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -128,18 +130,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         testSearchGermplasm = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_SEARCH_GERMPLASM));
         testSearchGermplasm.setData(SELECT_TEST_SEARCH_GERMPLASM_BUTTON_ID);
-        testSearchGermplasm.setWidth("150px");
+        testSearchGermplasm.setWidth("130px");
         testSearchGermplasm.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
         testSearchGermplasmList = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_BROWSE_LIST));
         testSearchGermplasmList.setData(SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID);
-        testSearchGermplasmList.setWidth("150px");
+        testSearchGermplasmList.setWidth("130px");
         testSearchGermplasmList.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
         absLayout.addComponent(testSearchGermplasmLabel, "top:13px;left:2px");
         absLayout.addComponent(testSearchGermplasmListLabel, "top:53px;left:2px");
-        absLayout.addComponent(testSearchGermplasm, "top:10px;left:220px");
-        absLayout.addComponent(testSearchGermplasmList, "top:50px;left:220px");
+        absLayout.addComponent(testSearchGermplasm, "top:10px;left:260px");
+        absLayout.addComponent(testSearchGermplasmList, "top:50px;left:260px");
         testPanel.addComponent(absLayout);
         
         AbsoluteLayout absLayoutStandard = new AbsoluteLayout();
@@ -154,30 +156,30 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         
         standardSearchGermplasm = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_SEARCH_GERMPLASM));
         standardSearchGermplasm.setData(SELECT_STANDARD_SEARCH_GERMPLASM_BUTTON_ID);
-        standardSearchGermplasm.setWidth("150px");
+        standardSearchGermplasm.setWidth("130px");
         standardSearchGermplasm.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
         standardSearchGermplasmList = new Button(messageSource.getMessage(Message.HEAD_TO_HEAD_BROWSE_LIST));
         standardSearchGermplasmList.setData(SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID);
-        standardSearchGermplasmList.setWidth("150px");
+        standardSearchGermplasmList.setWidth("130px");
         standardSearchGermplasmList.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         
         //absLayout.addComponent(specifyTestEntryLabel, "top:20px;left:30px");
         absLayoutStandard.addComponent(standardSearchGermplasmLabel, "top:13px;left:2px");
         absLayoutStandard.addComponent(standardSearchGermplasmListLabel, "top:53px;left:2px");
-        absLayoutStandard.addComponent(standardSearchGermplasm, "top:10px;left:250px");
-        absLayoutStandard.addComponent(standardSearchGermplasmList, "top:50px;left:250px");
+        absLayoutStandard.addComponent(standardSearchGermplasm, "top:10px;left:290px");
+        absLayoutStandard.addComponent(standardSearchGermplasmList, "top:50px;left:290px");
         standardPanel.addComponent(absLayoutStandard);
         
         headerLabel = new Label(messageSource.getMessage(Message.SELECT_TEST_STANDARD_COMPARE));
         headerLabel.setImmediate(true);
         
-        addComponent(headerLabel, "top:10px;left:10px");
-        addComponent(testPanel, "top:30px;left:10px");
-        addComponent(standardPanel, "top:30px;left:460px");
+        addComponent(headerLabel, "top:10px;left:20px");
+        addComponent(testPanel, "top:30px;left:20px");
+        addComponent(standardPanel, "top:30px;left:470px");
         
         entriesTable = new Table();
-        entriesTable.setWidth("900px");
+        entriesTable.setWidth("920px");
         entriesTable.setHeight("330px");
         entriesTable.setImmediate(true);
         entriesTable.setPageLength(0);
@@ -215,7 +217,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         nextButton.setEnabled(false);
-        addComponent(nextButton, "top:550px;left:900px");
+        nextButton.setWidth("80px");
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        addComponent(nextButton, "top:550px;left:860px");
         
         addComponent(entriesTable, "top:200px;left:20px");
     }
@@ -249,24 +253,28 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public void selectTestEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         SelectGermplasmEntryDialog selectAGermplasmDialog = new SelectGermplasmEntryDialog(this, parentWindow, true);
+        selectAGermplasmDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
     public void selectStandardEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         SelectGermplasmEntryDialog selectAGermplasmDialog = new SelectGermplasmEntryDialog(this, parentWindow, false);
+        selectAGermplasmDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
     public void selectTestGermplasmListButtonClickAction(){
         Window parentWindow = this.getWindow();
         SelectGermplasmListDialog selectAGermplasmDialog = new SelectGermplasmListDialog(this, parentWindow, true);
+        selectAGermplasmDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
     public void selectStandardGermplasmListButtonClickAction(){
         Window parentWindow = this.getWindow();
         SelectGermplasmListDialog selectAGermplasmDialog = new SelectGermplasmListDialog(this, parentWindow, false);
+        selectAGermplasmDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     

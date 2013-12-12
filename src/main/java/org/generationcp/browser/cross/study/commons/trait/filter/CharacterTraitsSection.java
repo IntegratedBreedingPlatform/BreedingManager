@@ -206,7 +206,9 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	public void showTraitObservationClickAction(Integer traitId, String variateType, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
-		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow, variateType , traitId, traitName, envIds));
+		ViewTraitObservationsDialog viewTraitDialog = new ViewTraitObservationsDialog(this, parentWindow, variateType, traitId, traitName, envIds);
+		viewTraitDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+		parentWindow.addWindow(viewTraitDialog);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -129,8 +129,8 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                     layoutPedigreeTree.addComponent(btnViewPedigreeGraph);
                     
                     HorizontalLayout derivativeHorizontalLayout = new HorizontalLayout();
-                    derivativeHorizontalLayout.setMargin(true);
-                    
+                    derivativeHorizontalLayout.setMargin(true); 
+                    derivativeHorizontalLayout.setSpacing(true); 
                     pedigreeDerivativeCheckbox = new CheckBox();
                     pedigreeDerivativeCheckbox.setCaption("Include Derivative Lines");
                     pedigreeDerivativeCheckbox.setData(INCLUDE_DERIVATIVE_LINES);

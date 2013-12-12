@@ -84,17 +84,17 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
     }
     
     protected void initializeLayout() {
-        this.setSpacing(true);
+        //this.setSpacing(true);
         this.setMargin(true);
         
         mainLayout.setSizeFull();
         mainLayout.setSpacing(true);
         
         tabSheetGermplasmListDatabaseInstance.setWidth("275px");
-        tabSheetGermplasmListDatabaseInstance.setHeight("420px");
+        tabSheetGermplasmListDatabaseInstance.setHeight("400px");
         
         listInfoComponent.setWidth("475px");
-        listInfoComponent.setHeight("420px");
+        listInfoComponent.setHeight("400px");
         
         tabCentralInstance.addComponent(centralGermplasmListTreeComponent);
         tabLocalInstance.addComponent(localGermplasmListTreeComponent);

@@ -14,6 +14,7 @@ import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossSt
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
@@ -129,7 +130,7 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);        
         traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 150);
         traitsTable.setColumnWidth(TRAIT_DESCRIPTION_COLUMN_ID, 400);
-        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 150);
+        traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 175);
         traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);        
         
         addComponent(traitsTable, "top:40px;left:30px");
@@ -139,19 +140,21 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         tagUnTagAll.setImmediate(true);
         tagUnTagAll.setData(TAG_ALL);
         tagUnTagAll.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, true));
-        addComponent(tagUnTagAll, "top:42px;left:55px");
+        addComponent(tagUnTagAll, "top:44px;left:60px");
         
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         nextButton.setEnabled(false);
-        
+        nextButton.setWidth("80px");
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:450px;left:900px");
         
         backButton = new Button("Back");
         backButton.setData(BACK_BUTTON_ID);
         backButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
-        addComponent(backButton, "top:450px;left:820px");
+        backButton.setWidth("80px");
+        addComponent(backButton, "top:450px;left:810px");
         
     }
     

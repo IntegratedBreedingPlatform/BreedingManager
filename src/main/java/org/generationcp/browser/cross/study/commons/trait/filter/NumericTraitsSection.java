@@ -179,7 +179,9 @@ public class NumericTraitsSection extends VerticalLayout implements
 	public void showNumericVariateClickAction(Integer traitId, String traitName,
 			List<Integer> envIds) {
 		Window parentWindow = this.getWindow();
-		parentWindow.addWindow(new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds));
+		ViewTraitObservationsDialog viewTraitDialog = new ViewTraitObservationsDialog(this, parentWindow,"Numeric Variate", traitId, traitName, envIds);
+		viewTraitDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+		parentWindow.addWindow(viewTraitDialog);
 	}
 
 	// perform validation on limits textfields
