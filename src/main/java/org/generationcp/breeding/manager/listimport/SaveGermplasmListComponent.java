@@ -146,7 +146,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
             listTypeComboBox.setValue(firstId);
            }
 
-        listTypeComboBox.setTextInputAllowed(false);
+        listTypeComboBox.setTextInputAllowed(true);
+        listTypeComboBox.setNewItemsAllowed(false);
         listTypeComboBox.setImmediate(true);
         addComponent(listTypeComboBox, "top:70px;left:200px");
         
