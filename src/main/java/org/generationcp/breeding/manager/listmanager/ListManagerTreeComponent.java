@@ -120,13 +120,27 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
 			@Override
             public String getStyle(Object itemId) {
+				
+				GermplasmList currentList = null;
+				
+				try {
+					currentList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MiddlewareQueryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+				
             	if(itemId.equals("LOCAL") || itemId.equals("CENTRAL")){
             		return "listManagerTreeRootNode"; 
-            	} else if(isInteger((String) itemId.toString()) && hasChildList((Integer) itemId)){
+            	} else if(currentList!=null && currentList.getType().equals("FOLDER")){
             		return "listManagerTreeRegularParentNode";
             	} else {
             		return "listManagerTreeRegularChildNode";
             	}
+
             }
         });
 
@@ -174,7 +188,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         for (GermplasmList localParentList : localGermplasmListParent) {
             germplasmListTree.addItem(localParentList.getId());
             germplasmListTree.setItemCaption(localParentList.getId(), localParentList.getName());
-            germplasmListTree.setChildrenAllowed(localParentList.getId(), false);
+            germplasmListTree.setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));
             germplasmListTree.setParent(localParentList.getId(), "LOCAL");
         }
 
