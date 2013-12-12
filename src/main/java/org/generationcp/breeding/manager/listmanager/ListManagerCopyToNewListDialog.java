@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -67,13 +68,12 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
     
-    private static final String GID = "gid";
-    private static final String ENTRY_ID = "entryId";
-    private static final String GID_VALUE = "gidValue";
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String DESIGNATION = "designation";
-    private static final String GROUP_NAME = "groupName";
-    private static final String PARENTAGE = "parentage";
+//    private static final String GID = "gid";
+//    private static final String ENTRY_ID = "entryId";
+//    private static final String ENTRY_CODE = "entryCode";
+//    private static final String DESIGNATION = "designation";
+//    private static final String GROUP_NAME = "groupName";
+//    private static final String PARENTAGE = "parentage";
     
     private Label labelListName;
     private Label labelDescription;
@@ -230,9 +230,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 		Boolean proceedWithSave = true;
 		
 		try {
-			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.LOCAL);
+//			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.LOCAL);
 			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
-			if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+			if(matchingNamesCountOnCentral>0){
 				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
 				proceedWithSave = false;
 			}
@@ -260,32 +260,32 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	                try {
 	                    newListid = germplasmListManager.addGermplasmList(listNameData);
 	                    try{
-	                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
-	                AddGermplasmListData(germList,1);
-	                } catch (Exception e){
-	                germplasmListManager.deleteGermplasmListByListId(newListid);
-	                LOG.error("Error with copying list entries", e);
-	                MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-	                    , "Copying of entries to a new list failed.  Please report to Workbench developers."
-	                    , Notification.POSITION_CENTERED);
-	                }
-	                this.mainWindow.removeWindow(dialogWindow);
+			                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
+			                addGermplasmListData(germList,1);
+	                    } catch (MiddlewareQueryException e){
+			                germplasmListManager.deleteGermplasmListByListId(newListid);
+			                LOG.error("Error with copying list entries", e);
+			                MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
+			                    , "Copying of entries to a new list failed.  Please report to Workbench developers."
+			                    , Notification.POSITION_CENTERED);
+		                }
+	                    this.mainWindow.removeWindow(dialogWindow);
 	
-	            } catch (MiddlewareQueryException e) {
-	                LOG.error("Error with copying list entries", e);
-	                e.printStackTrace();
-	                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-	                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
-	                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
-	                    , Notification.POSITION_CENTERED);
-	            }
+		            } catch (MiddlewareQueryException e) {
+		                LOG.error("Error with copying list entries", e);
+		                e.printStackTrace();
+		                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+		                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
+		                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
+		                    , Notification.POSITION_CENTERED);
+		            }
 	            }else{
 	            
 	        try {
 	                    String listId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
 	                    GermplasmList  germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
 	                    int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
-	                    AddGermplasmListData(germList,countOfExistingList+1);
+	                    addGermplasmListData(germList,countOfExistingList+1);
 	                    this.mainWindow.removeWindow(dialogWindow);
 	        } catch (MiddlewareQueryException e) {
 	            LOG.error("Error with copying list entries", e);
@@ -303,7 +303,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 		}
     }
 
-    private void AddGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
+    private void addGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
         int status = 0;
         int localRecordId = 0;
         designationOfListEntriesCopied="";
@@ -311,11 +311,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         for (final Object itemId : selectedIds) {
         	
         	if(fromBuildNewList){
-        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ENTRY_ID);
-                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(GID);
-                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ENTRY_CODE);
-                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(DESIGNATION);
-                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(PARENTAGE);
+        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
+                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
+                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
                 String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
                 
                 Button pGidButton = (Button) pGid.getValue();
@@ -331,14 +331,15 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 germplasmListManager.addGermplasmListData(germplasmListData);
         	}
         	else{
-        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ENTRY_ID);
-                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(GID_VALUE);
-                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ENTRY_CODE);
-                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(DESIGNATION);
-                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(GROUP_NAME);
+        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+        		Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
+        		Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
+                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName());
 
+                Button pGidButton = (Button) pGid.getValue();
+                int gid=Integer.valueOf(pGidButton.getCaption().toString());
                 String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-                int gid=Integer.valueOf(pGid.getValue().toString());
                 String entryCode=String.valueOf((pEntryCode.getValue().toString()));
                 String seedSource=listName+"-"+entryCode;
                 String designation=String.valueOf((pDesignation.getValue().toString()));
