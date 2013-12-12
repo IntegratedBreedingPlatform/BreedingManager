@@ -144,7 +144,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
               }
         if(hasDefault == false && firstId != null){
             listTypeComboBox.setValue(firstId);
-           }
+        }
 
         listTypeComboBox.setTextInputAllowed(true);
         listTypeComboBox.setNewItemsAllowed(false);
@@ -325,10 +325,11 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
     }
 
-    public void setListDetails(String name, String description, Date date){
+    public void setListDetails(String name, String description, Date date, String listType){
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);
+        listTypeComboBox.setValue(listType);
     }
     
     public GermplasmImportMain getSource() {

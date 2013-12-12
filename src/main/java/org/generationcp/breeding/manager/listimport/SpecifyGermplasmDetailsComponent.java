@@ -560,7 +560,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
                
                 //for 909
-               ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate());
+               ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
            }
             source.enableAllTabs();
            	this.accordion.setSelectedTab(this.nextScreen);

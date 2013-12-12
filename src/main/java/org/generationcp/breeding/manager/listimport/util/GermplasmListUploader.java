@@ -36,6 +36,7 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -103,6 +104,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         return listTitle;
     }
 
+    public String getListType() {
+        return listType;
+    }
+
+    
     public GermplasmListUploader(GermplasmImportFileComponent source) {
         this.source = source;
     }
@@ -324,6 +330,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
 					showInvalidFileError("There is already an existing germplasm list with the name specified on the file");
 				}
+				
 			} catch (MiddlewareQueryException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -348,7 +355,26 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         		}
             	listType = getCellStringValue(0,3,1,true);
             }
-                        
+
+            try {
+				List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+				List<String> listTypeCodes = new ArrayList<String>();
+				for(UserDefinedField listType : listTypes){
+					if(listType.getFcode()!=null){
+						listTypeCodes.add(listType.getFcode());
+					}
+				}
+				
+				System.out.println("List Types: "+listTypeCodes);
+				
+				if(!listTypeCodes.contains(listType)){
+					showInvalidFileError("Invalid list type "+listType);
+				}
+			} catch (MiddlewareQueryException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            
             importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
             
             System.out.println("DEBUG | Original Filename:" + originalFilename);
