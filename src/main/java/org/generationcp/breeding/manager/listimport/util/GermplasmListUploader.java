@@ -169,7 +169,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (IOException e) {
-            showInvalidFileError(e.getMessage());
+            showInvalidFileTypeError();
         } catch (ReadOnlyException e) {
             showInvalidFileTypeError();
         } catch (ConversionException e) {
@@ -643,7 +643,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private void showInvalidFileTypeError(){
         if(fileIsValid){
             //source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
-            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type.", "Please upload an XLS file."
+            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type.", "Please upload a properly formatted XLS file."
                     , Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
