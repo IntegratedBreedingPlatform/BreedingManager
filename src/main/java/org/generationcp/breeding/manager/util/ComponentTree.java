@@ -81,5 +81,10 @@ public class ComponentTree extends CssLayout {
 			this.children.setVisible(this.expanded);
 		}
 		
+		public void toggleChild(){
+			this.expanded = !this.expanded;
+			this.expander.setIcon(this.expanded ? ICON_EXPANDED : ICON_COLLAPSED);
+			this.children.setVisible(this.expanded);
+		}
 	}
 }
