@@ -170,7 +170,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         } catch (ConversionException e) {
             showInvalidFileTypeError();
         } catch (OfficeXmlFileException e){
-            showInvalidFileError(e.getMessage());
+            showInvalidFileTypeError();
         }
     }
 
@@ -638,7 +638,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private void showInvalidFileTypeError(){
         if(fileIsValid){
             //source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
-            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type, you need to upload an XLS file", ""
+            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type.", "Please upload an XLS file."
                     , Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
