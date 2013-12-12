@@ -29,6 +29,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
@@ -153,7 +154,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             	
             } else {
             	source.getAccordion().getWindow().showNotification("File was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
-            	
+               
             	if(source instanceof GermplasmImportFileComponent){
             		source.updateFilenameLabelValue(originalFilename);
             		source.enableNextButton();
@@ -627,14 +628,18 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private void showInvalidFileError(String message){
         if(fileIsValid){
-            source.getAccordion().getWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
+            //source.getAccordion().getWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
+            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File: ", message
+                    , Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
     }
     
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+            //source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
+            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type, you need to upload an XLS file", ""
+                    , Notification.POSITION_CENTERED);
             fileIsValid = false;
         }
     }    
