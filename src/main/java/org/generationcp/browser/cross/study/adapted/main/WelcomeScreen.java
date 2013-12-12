@@ -5,6 +5,7 @@ import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermpl
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,8 +57,9 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
        nextButton = new Button(messageSource.getMessage(Message.NEXT));
        nextButton.setData(NEXT_BUTTON_ID);
        nextButton.addListener(new AdaptedGermplasmButtonClickListener(this));
-       nextButton.setWidth("100px");
-       addComponent(nextButton, "top:90px;left:880px");
+       nextButton.setWidth("80px");
+       nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+       addComponent(nextButton, "top:90px;left:900px");
 	}
 
     

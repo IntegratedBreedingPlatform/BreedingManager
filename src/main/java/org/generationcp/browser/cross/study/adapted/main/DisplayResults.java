@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.vaadin.ui.Alignment;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.dialogs.SaveToListDialog;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitEvaluator;
@@ -23,6 +25,7 @@ import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.Observation;
 import org.generationcp.middleware.domain.h2h.ObservationKey;
@@ -43,11 +46,13 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class DisplayResults extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -130,12 +135,12 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		setWidth("1000px");	
 		
 		AbsoluteLayout resultTable = new AbsoluteLayout();
-		resultTable.setHeight("450px");
+		resultTable.setHeight("470px");
 		resultTable.setWidth("1000px");
 		
 		germplasmColTable = new Table();
 		germplasmColTable.setWidth("340px");
-		germplasmColTable.setHeight("425px");
+		germplasmColTable.setHeight("445px");
 		germplasmColTable.setImmediate(true);
 		germplasmColTable.setPageLength(15);
 		germplasmColTable.setColumnCollapsingAllowed(true);
@@ -143,8 +148,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		//germplasmColTable.setSortDisabled(true);
 		
 		traitsColTable = new Table();
-		traitsColTable.setWidth("470px");
-		traitsColTable.setHeight("425px");
+		traitsColTable.setWidth("490px");
+		traitsColTable.setHeight("445px");
 		traitsColTable.setImmediate(true);
 		traitsColTable.setPageLength(15);
 		traitsColTable.setColumnCollapsingAllowed(true);
@@ -152,8 +157,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		//traitsColTable.setSortDisabled(true);
 		
 		combinedScoreTagColTable = new Table(); 
-		combinedScoreTagColTable.setWidth("150px");
-		combinedScoreTagColTable.setHeight("425px");
+		combinedScoreTagColTable.setWidth("160px");
+		combinedScoreTagColTable.setHeight("445px");
 		combinedScoreTagColTable.setImmediate(true);
 		combinedScoreTagColTable.setPageLength(15);
 		combinedScoreTagColTable.setColumnCollapsingAllowed(true);
@@ -161,8 +166,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		//combinedScoreTagColTable.setSortDisabled(true);
 		
 		resultTable.addComponent(germplasmColTable, "top:20px;left:20px");
-		resultTable.addComponent(traitsColTable, "top:20px;left:359px");
-		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:829px");
+		resultTable.addComponent(traitsColTable, "top:20px;left:345px");
+		resultTable.addComponent(combinedScoreTagColTable, "top:20px;left:819px");
 		
 		
 		addComponent(new Label("<style> .v-table-column-selector { width:0; height:0; overflow:hidden; }" +
@@ -170,6 +175,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				".v-table-header { height: auto; background-color: #dcdee0;} " +
 				".v-table-header-wrap { height: auto; background-color: #dcdee0; } " +
 				".v-table-caption-container { height: auto; background-color: #dcdee0; } " +
+				".v-table { border-radius: 0px; } " +
 				" </style>",Label.CONTENT_XHTML));
 		addComponent(resultTable, "top:0px;left:0px");
 		
@@ -183,9 +189,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				prevEntryButtonClickAction();
 			}
 		});
-		prevEntryBtn.setWidth("100px");
+		prevEntryBtn.setWidth("80px");
 		prevEntryBtn.setEnabled(true);
-		addComponent(prevEntryBtn, "top:450px;left:770px");
+		prevEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		addComponent(prevEntryBtn, "top:470px;left:445px");
 		
 		nextEntryBtn = new Button(messageSource.getMessage(Message.NEXT_ENTRY));
 		nextEntryBtn.setData(NEXT_ENTRY_BUTTON_ID);
@@ -195,10 +202,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				nextEntryButtonClickAction();
 			}
 		});
-		nextEntryBtn.setWidth("100px");
+		nextEntryBtn.setWidth("80px");
 		nextEntryBtn.setEnabled(true);
-		addComponent(nextEntryBtn, "top:450px;left:880px");
-		
+		nextEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		addComponent(nextEntryBtn, "top:470px;left:535x");
 		
 		backButton = new Button(messageSource.getMessage(Message.BACK));
 		backButton.setData(BACK_BUTTON_ID);
@@ -208,9 +215,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				backButtonClickAction();
 			}
 		});
-		backButton.setWidth("100px");
+		backButton.setWidth("80px");
 		backButton.setEnabled(true);
-		addComponent(backButton, "top:510px;left:770px");
+		addComponent(backButton, "top:510px;left:790px");
 
 		saveButton = new Button(messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL));
 		saveButton.setData(SAVE_BUTTON_ID);
@@ -221,6 +228,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		});
 		saveButton.setWidth("100px");
+		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		saveButton.setEnabled(false);
 		addComponent(saveButton, "top:510px;left:880px");
 	}
@@ -938,6 +946,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
     	Window parentWindow = this.getWindow();
     	
     	saveGermplasmListDialog = new SaveToListDialog(mainScreen, this, parentWindow, selectedGermplasmMap);
+    	saveGermplasmListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 	    
 	    parentWindow.addWindow(saveGermplasmListDialog);
     }
@@ -952,7 +961,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 	      
 	    //(combinedScoreTagColTable, "top:20px;left:919px");
 		
-    	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:26px; left:"+(829+combinedScoreTagColTable.getWidth()-27)+"px;");
+    	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:30px; left:"+(817+combinedScoreTagColTable.getWidth()-27)+"px;");
     	
     	tagAllCheckBoxOnCombinedScoreTagColTable.addListener(new ValueChangeListener(){
     	   	private static final long serialVersionUID = 1L;

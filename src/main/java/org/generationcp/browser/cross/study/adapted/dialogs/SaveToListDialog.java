@@ -15,6 +15,7 @@ import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -148,6 +149,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
         btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save Germplasm List ");
+        btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         btnSave.addListener(new Button.ClickListener(){
 			private static final long serialVersionUID = 1L;
 

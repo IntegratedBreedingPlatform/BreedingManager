@@ -17,6 +17,7 @@ import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.domain.dms.TrialEnvironmentProperty;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -89,8 +90,8 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("800px");
-        setHeight("530px");
+        setWidth("780px");
+        setHeight("520px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.ADD_ENVT_CONDITION_COLUMNS_LABEL));
         // center window within the browser
@@ -100,8 +101,8 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
-        mainLayout.setWidth("800px");
-        mainLayout.setHeight("450px");
+        mainLayout.setWidth("780px");
+        mainLayout.setHeight("440px");
         
         initializeConditionsTable();
         populateConditionsTable();
@@ -114,7 +115,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(conditionsTable, "top:30px;left:20px");
         
-        mainLayout.addComponent(tagUnTagAll, "top:30px;left:620px");
+        mainLayout.addComponent(tagUnTagAll, "top:33px;left:630px");
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -129,12 +130,13 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         applyButton.setData(APPLY_BUTTON_ID);
         applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
+        applyButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         //TODO disable
         applyButton.setEnabled(true);
         
         buttonLayout.addComponent(cancelButton);
         buttonLayout.addComponent(applyButton);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:600px");
+        mainLayout.addComponent(buttonLayout, "top:410px;left:587px");
         
         
         addComponent(mainLayout);
@@ -209,9 +211,9 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         conditionsTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, messageSource.getMessage(Message.NUMBER_OF_ENVIRONMENTS_HEADER));
         conditionsTable.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_TAG));
         
-        conditionsTable.setColumnWidth(CONDITION_COLUMN_ID, 120);
-        conditionsTable.setColumnWidth(DESCRIPTION_COLUMN_ID, 300);
-        conditionsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 116);
+        conditionsTable.setColumnWidth(CONDITION_COLUMN_ID, 116);
+        conditionsTable.setColumnWidth(DESCRIPTION_COLUMN_ID, 290);
+        conditionsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 130);
         conditionsTable.setColumnWidth(TAG_COLUMN_ID, 110);
         
     }

@@ -42,7 +42,7 @@ public class NumericTraitEvaluator {
 		}
 		else if(condition == NumericTraitCriteria.GREATER_THAN_EQUAL){
 			Double limit = Double.valueOf(limits.get(0));
-			result = (value > limit)? true: false;
+			result = (value >= limit)? true: false;
 		}
 		else if(condition == NumericTraitCriteria.BETWEEN){
 			//limit a-b or a - b
@@ -57,7 +57,7 @@ public class NumericTraitEvaluator {
 			
 			for(int i = 0; i < limit.length; i++){
 				limit[i] = limit[i].trim();
-				if(value == Double.valueOf(limit[i])){
+				if(value.equals(limit[i])){
 					result = true;
 				}
 			}
@@ -69,7 +69,7 @@ public class NumericTraitEvaluator {
 			boolean flag = true;
 			for(int i = 0; i < limit.length; i++){
 				limit[i] = limit[i].trim();
-				if(value == Double.valueOf(limit[i])){
+				if(value.equals(limit[i])){
 					flag = false;
 				}
 			}

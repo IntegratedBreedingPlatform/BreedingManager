@@ -1,4 +1,4 @@
-@import url(../reindeer/styles.css);
+@import url(../vaadin-retro/styles.css);
 
 .gcp-window-title {
     font-size: 20px;
@@ -95,23 +95,21 @@
 
 
 .gcp-popup-view {
-     background-color: #FF8109;
+     background-color: #5A5A5A;
      border-radius: 1px 1px 1px 1px;
      box-shadow: 0px 0px 3px #000000;
      color: white;
      font-size: 12px;
      margin-right: 20px;
-     padding: 1px 3px;
-     text-decoration: none;
+     padding: 0px 5px;
+     text-decoration: none;	
+     border-radius: 50%;
 }
 
 .gcp-popup-view:hover {
      color: white;
 }
-.v-popupview-popup-gcp-popup-view {
-	background-color: #FF8109;
-    color: white;
-}
+
 .gcp-bold-italic{
 	font-weight: bold;
 	font-style: italic;

@@ -15,6 +15,7 @@ import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("800px");
+        setWidth("785px");
         setHeight("530px");
         setResizable(false);
         setCaption("Filter by Study");
@@ -104,7 +105,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         
          
         AbsoluteLayout mainLayout = new AbsoluteLayout();
-        mainLayout.setWidth("800px");
+        mainLayout.setWidth("780px");
         mainLayout.setHeight("450px");
         
         initializeStudyTable();
@@ -123,7 +124,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(studyTable, "top:30px;left:20px");
         
-        mainLayout.addComponent(tagUnTagAll, "top:30px;left:620px");
+        mainLayout.addComponent(tagUnTagAll, "top:33px;left:630px");
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -141,12 +142,13 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
         applyButton.setEnabled(false);
+        applyButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         buttonLayout.addComponent(cancelButton);
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:600px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:587px");
         
         
         addComponent(mainLayout);
@@ -231,9 +233,9 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         studyTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
         studyTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
         
-        studyTable.setColumnWidth(STUDY_NAME_COLUMN_ID, 120);
-        studyTable.setColumnWidth(STUDY_DESCRIPTION_COLUMN_ID, 300);
-        studyTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 116);
+        studyTable.setColumnWidth(STUDY_NAME_COLUMN_ID, 111);
+        studyTable.setColumnWidth(STUDY_DESCRIPTION_COLUMN_ID, 295);
+        studyTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 130);
         studyTable.setColumnWidth(TAG_COLUMN_ID, 110);
         
     }
