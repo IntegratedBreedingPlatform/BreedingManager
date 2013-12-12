@@ -145,4 +145,7 @@ public class ListManagerMain extends VerticalLayout implements
 		return buildNewListComponent;
 	}
 
+	public ListManagerBrowseListsComponent getBrowseListsComponent(){
+		return browseListsComponent;
+	}
 }

@@ -1001,5 +1001,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public Table getGermplasmsTable(){
 		return germplasmsTable;
 	}
+
+	public Object getSource(){
+		return source;
+	}
 	
 }

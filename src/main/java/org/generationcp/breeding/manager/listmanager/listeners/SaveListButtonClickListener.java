@@ -7,6 +7,8 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -81,6 +83,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					GermplasmList listSaved = this.dataManager.getGermplasmListById(listId);
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
+					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
