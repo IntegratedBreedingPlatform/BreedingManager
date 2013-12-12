@@ -15,6 +15,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -48,6 +50,10 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private GermplasmListManager germplasmListManager;
     private boolean forGermplasmListWindow;
     private ListDataComponent listDataComponent;
+    
+    private ComponentTreeItem listDetails;
+    private ComponentTreeItem listData;
+    private ComponentTreeItem listSeedInventory;
     
     public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
         this.germplasmListId = germplasmListId;
@@ -103,15 +109,37 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
         
-        ComponentTreeItem listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
+        listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();
         listDetails.addChild(listDetailComponent);
+        listDetails.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				listDetails.toggleChild();
+			}
+        });
         
-        ComponentTreeItem listData = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
+        listData = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
         listData.addChild(listDataComponent);
+        listData.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				listData.toggleChild();
+			}
+        });
         
-        ComponentTreeItem listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
+        listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
         listSeedInventory.addChild(listInventoryComponent);
+        listSeedInventory.addListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				listSeedInventory.toggleChild();
+			}
+        });
+        
         
         this.addComponent(content);
     }
