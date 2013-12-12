@@ -11,6 +11,7 @@ import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSe
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -139,12 +140,12 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	
 	
 	private void createButtonLayout(){
-		nextButton = new Button();
-		nextButton.setWidth("100px");
+		nextButton = new Button(messageSource.getMessage(Message.NEXT));
+		nextButton.setWidth("80px");
 		nextButton.setData(NEXT_BUTTON_ID);
 		nextButton.addListener(new AdaptedGermplasmButtonClickListener(this));
-		
-		addComponent(nextButton, "top:500px;left:880px");
+		nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		addComponent(nextButton, "top:500px;left:900px");
 		updateLabels();
 	}
 	

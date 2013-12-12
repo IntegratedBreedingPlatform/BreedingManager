@@ -150,10 +150,11 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	private void initializeLayout(){
 		setMargin(true);
 		setSpacing(true);
+		setWidth("995px");
 		addComponent(lblSectionTitle);
 		addComponent(traitsTable);
 		traitsTable.setHeight("360px");
-		traitsTable.setWidth("920px");
+		traitsTable.setWidth("960px");
 	}
 	
 	
@@ -227,7 +228,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	public void afterPropertiesSet() throws Exception {
 		setSpacing(true);
     	setMargin(true);
-    	setHeight("500px");
+    	//setHeight("500px");
     	
 		initializeComponents();
 		initializeLayout();

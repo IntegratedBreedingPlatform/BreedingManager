@@ -126,10 +126,11 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	private void initializeLayout(){
 		setMargin(true);
 		setSpacing(true);
+		setWidth("995px");
 		addComponent(lblSectionTitle);
 		
 		traitsTable.setHeight("360px");
-		traitsTable.setWidth("920px");
+		traitsTable.setWidth("960px");
 		addComponent(traitsTable);
 	}
 	

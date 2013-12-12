@@ -81,8 +81,8 @@ public class NumericTraitsSection extends VerticalLayout implements
 	public void afterPropertiesSet() throws Exception {
     	setSpacing(true);
     	setMargin(true);
-    	setHeight("500px");
-    	setWidth("1000px");
+    	//setHeight("450px");
+    	//setWidth("980px");
     	
     	initializeComponents();
     	populateTable();
@@ -151,6 +151,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 		traitsTable.setImmediate(true);
 		traitsTable.setColumnCollapsingAllowed(true);
 		traitsTable.setColumnReorderingAllowed(true);
+		traitsTable.setPageLength(10);
 		
 		for (TableColumn column : TableColumn.values()){
 			traitsTable.addContainerProperty(column, column.getColumnClass(), null);
@@ -158,6 +159,10 @@ public class NumericTraitsSection extends VerticalLayout implements
 			traitsTable.setColumnAlignment(column, Table.ALIGN_CENTER);
 			traitsTable.setColumnWidth(column, column.getWidth());				
 		}
+		
+		traitsTable.setHeight("360px");
+		traitsTable.setWidth("950px");
+		
 		addComponent(lblSectionTitle);
 		addComponent(traitsTable);
 	
@@ -240,15 +245,15 @@ public class NumericTraitsSection extends VerticalLayout implements
 	
 
 	private enum TableColumn {
-		NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, Button.class, 130)
-		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 85)
+		NUM_TRAIT_COL_ID (Message.HEAD_TO_HEAD_TRAIT, Button.class, 80)
+		, NUM_NUMBER_OF_ENVTS_COL_ID (Message.NUMBER_OF_LOCATIONS, Integer.class, 97)
 		, NUM_NUMBER_OF_LINES_COL_ID (Message.NUMBER_OF_LINES, Integer.class, 65)
-		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 105)
+		, NUM_NUMBER_OF_OBS_COL_ID (Message.NUMBER_OF_OBSERVATIONS, Integer.class, 123)
 		, NUM_MIN_COL_ID (Message.MIN, Double.class, 40)
 		, NUM_MEDIAN_COL_ID (Message.MEDIAN, Double.class, 50)
 		, NUM_MAX_COL_ID(Message.MAX, Double.class, 40)
-		, NUM_CONDITION_COL_ID (Message.CONDITION_HEADER, ComboBox.class, 105)
-		, NUM_LIMITS_COL_ID (Message.LIMITS, TextField.class, 90)
+		, NUM_CONDITION_COL_ID (Message.CONDITION_HEADER, ComboBox.class, 100)
+		, NUM_LIMITS_COL_ID (Message.LIMITS, TextField.class, 85)
 		, NUM_PRIORITY_COL_ID (Message.PRIORITY, ComboBox.class, 105);
 		
 		private Message message;

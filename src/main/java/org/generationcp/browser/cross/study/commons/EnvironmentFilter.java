@@ -29,6 +29,7 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.StudyReference;
@@ -61,6 +62,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class EnvironmentFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -188,7 +190,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       addComponent(headerValLabel, "top:20px;left:150px");
 	       
 	       filterByLocationBtn = new Button(messageSource.getMessage(Message.FILTER_BY_LOCATION));
-	       filterByLocationBtn.setWidth("200px");
+	       filterByLocationBtn.setWidth("150px");
 	       filterByLocationBtn.setData(FILTER_LOCATION_BUTTON_ID);
 	       filterByLocationBtn.addListener(new Button.ClickListener(){
 	    	   private static final long serialVersionUID = 6624555365983829849L;
@@ -203,7 +205,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       addComponent(filterByLocationBtn, "top:50px;left:20px");
 	       
 	       filterByStudyBtn = new Button(messageSource.getMessage(Message.FILTER_BY_STUDY));
-	       filterByStudyBtn.setWidth("200px");
+	       filterByStudyBtn.setWidth("150px");
 	       filterByStudyBtn.setData(FILTER_STUDY_BUTTON_ID);
 	       filterByStudyBtn.addListener(new Button.ClickListener(){
 				private static final long serialVersionUID = -8782138170364187141L;
@@ -215,7 +217,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 					}
 				}
 	       });
-	       addComponent(filterByStudyBtn, "top:50px;left:240px");
+	       addComponent(filterByStudyBtn, "top:50px;left:180px");
 	       
 	       addEnvConditionsBtn = new Button(messageSource.getMessage(Message.ADD_ENV_CONDITION));
 	       addEnvConditionsBtn.setWidth("400px");
@@ -258,7 +260,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       tagAllCheckBox = new CheckBox();
 	       tagAllCheckBox.setImmediate(true);
 	       
-	       addComponent(tagAllCheckBox, "top:111px; left:49px;");
+	       addComponent(tagAllCheckBox, "top:115px; left:52px;");
 	       
 	       tagAllCheckBox.addListener(new ValueChangeListener(){
 	    	   	private static final long serialVersionUID = 1L;
@@ -290,9 +292,10 @@ private static final long serialVersionUID = -3667517088395779496L;
 					nextButtonClickAction();
 				}
 	       });
-	       nextButton.setWidth("100px");
+	       nextButton.setWidth("80px");
 	       nextButton.setEnabled(false);
-	       addComponent(nextButton, "top:490px;left:880px");
+	       nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+	       addComponent(nextButton, "top:490px;left:900px");
 	       
 	       if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
 		       backButton = new Button(messageSource.getMessage(Message.BACK));
@@ -486,8 +489,13 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    } else {
 	    	filterStudy = new FilterStudyDialog(this, parentWindow, studyEnvironmentMap);
 	    }
+	    
 	    filterLocation = new FilterLocationDialog(this, parentWindow, filterLocationCountryMap);
         addConditionsDialog = new AddEnvironmentalConditionsDialog(this, parentWindow, environmentIdsList);
+        
+        filterStudy.addStyleName(Reindeer.WINDOW_LIGHT);
+        filterLocation.addStyleName(Reindeer.WINDOW_LIGHT);
+        addConditionsDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;

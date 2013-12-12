@@ -17,6 +17,7 @@ import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -92,7 +93,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("1000px");
+        setWidth("980px");
         setHeight("530px");
         setResizable(false);
         setCaption("Filter by Location");
@@ -125,7 +126,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         mainLayout.addComponent(popupLabel, "top:10px;left:20px");
         mainLayout.addComponent(locationTreeTable, "top:30px;left:20px");
         
-        mainLayout.addComponent(tagUnTagAll, "top:32px;left:800px");
+        mainLayout.addComponent(tagUnTagAll, "top:33px;left:810px");
         
         
         HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -144,12 +145,13 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         applyButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this,source));
         applyButton.addListener(new CloseWindowAction());
         applyButton.setEnabled(false);
+        applyButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         buttonLayout.addComponent(cancelButton);
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:810px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:782px");
         
         
         addComponent(mainLayout);
@@ -210,8 +212,8 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         locationTreeTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, "# of Environments");
         locationTreeTable.setColumnHeader(TAG_COLUMN_ID, "Tag");
         
-        locationTreeTable.setColumnWidth(COUNTRY_LOCATION_COLUMN_ID, 607);
-        locationTreeTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 120);
+        locationTreeTable.setColumnWidth(COUNTRY_LOCATION_COLUMN_ID, 597);
+        locationTreeTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 130);
         locationTreeTable.setColumnWidth(TAG_COLUMN_ID, 115);
         
     }
