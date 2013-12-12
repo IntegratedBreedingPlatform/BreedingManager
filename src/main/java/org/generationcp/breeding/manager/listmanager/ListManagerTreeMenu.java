@@ -116,7 +116,9 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				listDetails.toggleChild();
+				if(event.getRelativeY()<20){
+					listDetails.toggleChild();
+				}
 			}
         });
         
@@ -126,7 +128,9 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				listData.toggleChild();
+				if(event.getRelativeY()<20){
+					listData.toggleChild();
+				}
 			}
         });
         
@@ -136,7 +140,9 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				listSeedInventory.toggleChild();
+				if(event.getRelativeY()<20){
+					listSeedInventory.toggleChild();
+				}
 			}
         });
         
