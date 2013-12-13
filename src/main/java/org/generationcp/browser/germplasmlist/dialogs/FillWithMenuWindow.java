@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.GermplasmListDataComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -19,7 +23,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-
+@Configurable
 public class FillWithMenuWindow extends Window {
 	
 	private static final long serialVersionUID = 8256299016887449218L;
@@ -34,6 +38,9 @@ public class FillWithMenuWindow extends Window {
 	
 	private ListSelect fillWithOptionsSelect;
 	private Button cancelButton;
+	
+	 @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
 	
 	public enum FillColumn {
 		ENTRY_CODE
@@ -153,7 +160,7 @@ public class FillWithMenuWindow extends Window {
 				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with getting preferred names by gids, given gids: " + gids, ex);
-				MessageNotifier.showError(this, "Database Error", "Error with getting preferred names by gids. Please report to IBP.", Notification.POSITION_CENTERED);
+				MessageNotifier.showError(this, "Database Error", "Error with getting preferred names by gids. "+messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 			}
 		}
 	}

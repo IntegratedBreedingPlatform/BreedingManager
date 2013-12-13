@@ -845,7 +845,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		} catch (MiddlewareQueryException ex) {
 			ex.printStackTrace();
             LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 		}
 		
 		return germplasmIdNameMap;

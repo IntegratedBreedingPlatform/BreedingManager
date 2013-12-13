@@ -87,8 +87,8 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 				categoricalValueObjects = crossStudyDataManager.getTraitsForCategoricalVariates(environmentIds);
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with getting categorical variate info given environment ids: " + this.environmentIds.toString(), ex);
-				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting categorical variate info given environment ids."
-						+ " Please report to IBP.", Notification.POSITION_CENTERED);
+				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting categorical variate info given environment ids. "
+						+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 			}
 		}
 		

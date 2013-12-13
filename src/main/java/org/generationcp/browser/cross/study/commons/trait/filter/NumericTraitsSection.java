@@ -99,8 +99,8 @@ public class NumericTraitsSection extends VerticalLayout implements
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error("Database error!", e);
-			MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting numeric trait info given environment ids."
-					+ " Please report to IBP.", Notification.POSITION_CENTERED);
+			MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting numeric trait info given environment ids. "
+					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 		}
 		
 		if (numericTraits != null) {

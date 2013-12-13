@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.pojos.Result;
 import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
@@ -51,6 +53,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
     
     public ResultsComponent(){
         this.currentStandardEntryGID = null;
@@ -190,12 +194,12 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         } catch(MiddlewareQueryException ex){
             ex.printStackTrace();
             LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
             return new ArrayList<Result>();
         } catch(Exception ex){
             ex.printStackTrace();
             LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
             return new ArrayList<Result>();
         }
         

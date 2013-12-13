@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.listeners.H2HComparisonQueryButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.pojos.TraitForComparison;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
@@ -52,6 +54,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
     
     public TraitsAvailableComponent(HeadToHeadComparisonMain mainScreen, EnvironmentsAvailableComponent nextScreen){
         this.mainScreen = mainScreen;
@@ -152,12 +156,12 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         } catch(MiddlewareQueryException ex){
             ex.printStackTrace();
             LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
             return new ArrayList<TraitForComparison>();
         } catch(Exception ex){
             ex.printStackTrace();
             LOG.error("Database error!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
             return new ArrayList<TraitForComparison>();
         }
         

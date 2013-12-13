@@ -345,7 +345,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 		} catch(MiddlewareQueryException ex){
 	   		 ex.printStackTrace();
 	         LOG.error("Database error!", ex);
-	         MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+	         MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 		}
    }
     	
@@ -508,7 +508,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     }
     
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
-    	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+    	//MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	
     	isFilterLocationClicked = true;
     	filterSetLevel1 = new HashMap();

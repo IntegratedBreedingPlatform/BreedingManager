@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.AddEnvironmentalConditionsDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialog;
@@ -24,6 +25,7 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.StudyReference;
@@ -112,6 +114,8 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     
     @Autowired
     private CrossStudyDataManager crossStudyDataManager;
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -351,7 +355,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	}catch(MiddlewareQueryException ex){
     		 ex.printStackTrace();
              LOG.error("Database error!", ex);
-             MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+             MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
              //return new ArrayList<EnvironmentForComparison>();
     	}
     	//get trait names for columns        
@@ -618,7 +622,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     }
     
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
-    	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+    	//MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	
     	
     	isFilterLocationClicked = true;

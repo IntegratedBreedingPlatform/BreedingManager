@@ -186,11 +186,11 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with gid: " + this.selectedGid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with gid: " 
-                    + this.selectedGid + ". Please report to IBP.", Notification.POSITION_CENTERED);
+                    + this.selectedGid + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
         } catch (Exception ex){
             LOG.error("Error with setting selected germplasm.", ex);
             MessageNotifier.showError(getWindow(), "Application Error!", "Error with setting selected germplasm." 
-                    + " Please report to IBP.", Notification.POSITION_CENTERED);
+                    + " " + messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
         }
     }
 

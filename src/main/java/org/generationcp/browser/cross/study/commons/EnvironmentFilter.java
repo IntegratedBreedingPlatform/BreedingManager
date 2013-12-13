@@ -446,7 +446,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	}catch(MiddlewareQueryException ex){
     		 ex.printStackTrace();
              LOG.error("Database error!", ex);
-             MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+             MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
              //return new ArrayList<EnvironmentForComparison>();
     	}
     	//get trait names for columns        
@@ -599,7 +599,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     		} catch(MiddlewareQueryException ex){
     	   		 ex.printStackTrace();
     	         LOG.error("Database error!", ex);
-    	         MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+    	         MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     		}
     	}
     	else if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
@@ -974,7 +974,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     }
     
     public void clickFilterByLocationApply(List<FilterLocationDto> filterLocationDtoListLevel1, List<FilterLocationDto> filterLocationDtoListLevel3){
-    	//MessageNotifier.showError(getWindow(), "Database Error!", "Please report to IBP.", Notification.POSITION_CENTERED);
+    	//MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	
     	isFilterLocationClicked = true;
     	filterSetLevel1 = new HashMap<String, String>();
