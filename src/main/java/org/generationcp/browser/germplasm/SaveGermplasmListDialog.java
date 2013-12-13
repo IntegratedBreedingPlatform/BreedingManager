@@ -21,6 +21,7 @@ import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -122,6 +123,7 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save Germplasm List ");
+        btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         btnSave.addListener(new GermplasmButtonClickListener(this));
 
         hButton.addComponent(btnSave);

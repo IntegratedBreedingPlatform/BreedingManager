@@ -34,6 +34,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GermplasmDetail extends Accordion implements InitializingBean, InternationalizableComponent{
@@ -276,6 +277,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                 pedigreeGraphWindow.setWidth("100%");
                 pedigreeGraphWindow.setHeight("620px");
                 pedigreeGraphWindow.setName("Pedigree Graph");
+                pedigreeGraphWindow.addStyleName(Reindeer.WINDOW_LIGHT);
                 pedigreeGraphWindow.addComponent(new GermplasmPedigreeGraphComponent(this.gid, this.qQuery));
                 getWindow().addWindow(pedigreeGraphWindow);
                 

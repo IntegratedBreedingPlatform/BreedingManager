@@ -21,6 +21,7 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Application's "main" class
@@ -191,6 +193,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         btnSearch.setData(SEARCH_BUTTON_ID);
         btnSearch.addStyleName("addTopSpace");
         btnSearch.setClickShortcut(KeyCode.ENTER);
+        btnSearch.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
         btnSearch.addListener(new GermplasmButtonClickListener(this));
         searchFormLayout.addComponent(btnSearch);
@@ -209,6 +212,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         btnSaveGermplasmList = new Button();
         btnSaveGermplasmList.setData(SAVE_GERMPLASMLIST_ID);
         btnSaveGermplasmList.addListener(new GermplasmButtonClickListener(this));
+        btnSaveGermplasmList.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         hLayoutForButtons.addComponent(btnSaveGermplasmList);
 
         // close all GermplasmDetail tab button
@@ -243,6 +247,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         saveGermplasmListDialog.setModal(true);
         saveGermplasmListDialog.setWidth(700);
         saveGermplasmListDialog.setHeight(350);
+        saveGermplasmListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         if(this.forGermplasmWindow) {
             saveGermplasmListDialog.addComponent(new SaveGermplasmListDialog(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASM_WINDOW_NAME)
                     , saveGermplasmListDialog, tabSheet));

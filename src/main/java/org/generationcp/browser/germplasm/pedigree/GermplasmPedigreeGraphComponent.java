@@ -24,6 +24,7 @@ import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,8 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
     @Override
     public void afterPropertiesSet() {
-
+    	setSpacing(true);
+    	
         HorizontalLayout hLayout= new HorizontalLayout();
         hLayout.setSpacing(true);
         pedigree_level_label = new Label();
@@ -88,6 +90,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         btnDisplay.setData(UPDATE_PEDIGREE_GRAPH_BUTTON_ID);
         btnDisplay.setWidth("80px");
         btnDisplay.addListener(new GermplasmButtonClickListener(this));
+        btnDisplay.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
         hLayout.addComponent(pedigree_level_label);
         hLayout.addComponent(txtLevel);
