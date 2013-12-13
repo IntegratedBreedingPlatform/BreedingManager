@@ -33,7 +33,6 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -155,7 +154,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private Button toolsButton;
 	private Button addColumnButton;
 	private ContextMenu menu;
-	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem menuExportList;
 	private ContextMenuItem menuExportForGenotypingOrder;
 	private ContextMenuItem menuCopyToList;
@@ -167,7 +165,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
 	
 	private Window listManagerCopyToNewListDialog;
-	private GermplasmDetailModel germplasmDetail;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
@@ -193,7 +190,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menu = new ContextMenu();
 
 		// Generate main level items
-		menuSelectAll = menu.addItem(MENU_SELECT_ALL);
+		menu.addItem(MENU_SELECT_ALL);
 		menuExportList = menu.addItem(MENU_EXPORT_LIST);
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
@@ -202,7 +199,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
 		
 		menu.addListener(new ContextMenu.ClickListener() {
-			   public void contextItemClick(ClickEvent event) {
+			private static final long serialVersionUID = -2343109406180457070L;
+
+			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
 			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
@@ -234,8 +233,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 toolsButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
  		
     	 toolsButton.addListener(new ClickListener() {
+    		 private static final long serialVersionUID = 272707576878821700L;
 
-    		 @Override
+			 @Override
     		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
     			 menu.show(event.getClientX(), event.getClientY());
     			 
@@ -267,13 +267,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
     		 }
     	 });
-    	 
     	 listManagerTreeMenu.addComponent(menu);
     	 
-    	 
-    	 
     	 AbsoluteLayout toolsMenuBar = new AbsoluteLayout();
-    	 
     	 toolsMenuBar.setWidth("100%");
     	 toolsMenuBar.setHeight("20px");
        	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:0px;");
@@ -301,7 +297,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              
              if(!fromUrl){
                      listDataTable.addActionHandler(new Action.Handler() {
-                         public Action[] getActions(Object target, Object sender) {
+                    	 private static final long serialVersionUID = -897257270314381555L;
+
+						public Action[] getActions(Object target, Object sender) {
                          if (germplasmListId < 0 &&  germplasmListStatus < 100){
                         	 if(selectedColumn == null){
                         		 return ACTIONS_TABLE_CONTEXT_MENU;
@@ -369,10 +367,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              populateTable();
              
              if(germplasmListId < 0){
-            
-	             //@SuppressWarnings("unused")
 	             if(germplasmListId<0 && germplasmListStatus<100){
-	                 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	                 @SuppressWarnings("unused")
+					FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	             }
              }
              setSpacing(false);
@@ -801,7 +798,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                     LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
+                listManagerTreeMenu.getBreedingManagerApplication();
+				MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                             , "Error with exporting list."    
                             , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
             }
@@ -848,12 +846,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                         //File tempFile = new File(tempFileName);
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                        MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME) 
+                        listManagerTreeMenu.getBreedingManagerApplication();
+						MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
                                     , "Error with exporting list."
                                     , e.getMessage(), Notification.POSITION_CENTERED);
                 }
         } else {
-            MessageNotifier.showError(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME)
+            listManagerTreeMenu.getBreedingManagerApplication();
+			MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                         , "Error with exporting list."    
                         , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
                     
@@ -980,10 +980,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
 
     private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
-//        GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
-        BreedingManagerApplication app = listManagerTreeMenu.getBreedingManagerApplication();
-
-        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+    	User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
         ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                 workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
@@ -1012,14 +1009,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
             listManagerCopyToNewListDialog.setModal(true);
-            listManagerCopyToNewListDialog.setWidth(700);
-            listManagerCopyToNewListDialog.setHeight(350);
+            listManagerCopyToNewListDialog.setWidth("700px");
+            listManagerCopyToNewListDialog.setHeight("350px");
             listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
             
             try {
                 if(forGermplasmListWindow) {
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
-                    this.getApplication().getWindow(listManagerTreeMenu.getBreedingManagerApplication().LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
+                    listManagerTreeMenu.getBreedingManagerApplication();
+					listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+                    listManagerTreeMenu.getBreedingManagerApplication();
+					this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
                  
                 } else {
                     
@@ -1033,8 +1032,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 e.printStackTrace();
             }
         }
-        
-    
     }
     
     public void lockList() throws MiddlewareQueryException{
@@ -1173,15 +1170,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             
             listDataTable.setVisibleColumns(visibleColumns);
             
-            if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_ID)){
+            if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
             	addColumnContextMenu.setPreferredIdColumnValues();
             }
             
-            if(isColumnVisible(visibleColumns, addColumnContextMenu.LOCATIONS)){
+            if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
             	addColumnContextMenu.setLocationColumnValues();
             }
             
-            if(isColumnVisible(visibleColumns, addColumnContextMenu.PREFERRED_NAME)){
+            if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
             	addColumnContextMenu.setPreferredNameColumnValues();
             }
             
