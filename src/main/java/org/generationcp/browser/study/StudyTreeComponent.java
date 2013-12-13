@@ -26,6 +26,7 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.FolderReference;
 import org.generationcp.middleware.domain.dms.Reference;
@@ -267,6 +268,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         refreshButton = new Button(); // "Refresh"
         refreshButton.setData(REFRESH_BUTTON_ID);
+        refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         if (database == Database.LOCAL) {
 

@@ -20,6 +20,7 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -163,6 +164,7 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         buttonLayout.setMargin(true, false, false, false);
 
         searchButton = new Button();
+        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         messageSource.setCaption(searchButton, Message.SEARCH_LABEL);
         
         clearButton = new Button();
