@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -104,6 +104,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     public final static String COPY_TO_NEW_LIST_BUTTON_ID = "GermplasmListDataComponent Copy to New List Button";
     public final static String ADD_ENTRIES_BUTTON_ID = "GermplasmListDataComponent Add Entries Button";
     
+    private ListManagerTreeMenu source;
     private Table listDataTable;
     private int germplasmListId;
     private String listName;
@@ -116,15 +117,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private String MENU_COPY_TO_NEW_LIST="Copy List Entries"; 
     private String MENU_ADD_ENTRY="Add Entry"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
-    private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries"; 
-
+    private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
+    
     
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE = new Action("Delete selected entries");
     static final Action ACTION_EDIT = new Action("Edit Value");
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_EDIT };
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE};
-    static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
+    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_EDIT, ACTION_COPY_TO_NEW_LIST };
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_COPY_TO_NEW_LIST };
+    static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL, ACTION_COPY_TO_NEW_LIST };
     
     public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
     
@@ -146,6 +148,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     
     @Autowired
     private PedigreeDataManager pedigreeDataManager;
+    
+    private ListManagerMain listManagerMain;
     
     private boolean forGermplasmListWindow;
     private Integer germplasmListStatus;
@@ -174,7 +178,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	Object selectedColumn = "";
 	Object selectedItemId;
 	
-    public ListDataComponent(int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu){
+    public ListDataComponent(ListManagerTreeMenu source, int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu, ListManagerMain listManagerMain){
+    	this.source = source;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
@@ -182,6 +187,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.germplasmListStatus=germplasmListStatus;
         this.listManagerTreeMenu = listManagerTreeMenu;
+        this.listManagerMain = listManagerMain;
     }
 
     @Override
@@ -218,7 +224,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			    	  saveChangesAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
 			    	  deleteListButtonClickAction();
-			    	  
 			      }
 			   }
 			});
@@ -317,6 +322,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                          }
                      }
          
+                     @SuppressWarnings("unchecked")
                      public void handleAction(Action action, Object sender, Object target) {
                      	if (ACTION_DELETE == action) {
                      		deleteListButtonClickAction();
@@ -335,6 +341,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		                }
     		                
     		                listDataTable.select(selectedItemId);
+                     	}else if(ACTION_COPY_TO_NEW_LIST == action){
+                     		listManagerMain.showBuildNewListComponent();
+                     		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
+                     		for(Integer gid : gids){
+                     			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
+                     		}
                      	}
                      	
                      }
@@ -354,7 +366,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
              listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
              listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
+//             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
          
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
@@ -362,7 +374,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
+//             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
              
              populateTable();
              
@@ -675,7 +687,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
             listDataTable.addItem(new Object[] {
                     gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
-                    data.getDesignation(), data.getGroupName(), data.getStatusString()
+                    data.getDesignation(), data.getGroupName() 
+//                    , data.getStatusString()
             }, data.getId());
         }
 
@@ -686,7 +699,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		,ListDataTablePropertyID.SEED_SOURCE.getName()
         		,ListDataTablePropertyID.DESIGNATION.getName()
         		,ListDataTablePropertyID.GROUP_NAME.getName()
-        		,ListDataTablePropertyID.STATUS.getName()});
+//        		,ListDataTablePropertyID.STATUS.getName()
+        		});
         
         // render additional columns
     	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
@@ -1016,7 +1030,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             try {
                 if(forGermplasmListWindow) {
                     listManagerTreeMenu.getBreedingManagerApplication();
-					listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+					listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId(), listManagerMain));
                     listManagerTreeMenu.getBreedingManagerApplication();
 					this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
                  
@@ -1024,7 +1038,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     
 //                  listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getMainWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
 //                  this.getApplication().getMainWindow().addWindow(listManagerCopyToNewListDialog);
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId(), listManagerMain));
                     listManagerTreeMenu.getWindow().addWindow(listManagerCopyToNewListDialog);
                 }
             } catch (MiddlewareQueryException e) {
@@ -1161,11 +1175,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             		,ListDataTablePropertyID.SEED_SOURCE.getName()
             		,ListDataTablePropertyID.DESIGNATION.getName()
             		,ListDataTablePropertyID.GROUP_NAME.getName()
-            		,ListDataTablePropertyID.STATUS.getName()});
+//            		,ListDataTablePropertyID.STATUS.getName()
+        		});
             
             listDataTable.addItem(new Object[] {
                             gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
-                            listData.getDesignation(), listData.getGroupName(), listData.getStatusString()
+                            listData.getDesignation(), listData.getGroupName()
+//                            , listData.getStatusString()
                     }, listDataId);
             
             listDataTable.setVisibleColumns(visibleColumns);

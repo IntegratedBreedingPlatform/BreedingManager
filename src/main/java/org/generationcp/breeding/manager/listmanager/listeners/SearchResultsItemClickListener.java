@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ public class SearchResultsItemClickListener implements ItemClickListener {
 				
 				if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
 					detailsLayout.createGermplasmInfoTab(itemId);
-					
 				} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
 					detailsLayout.createListInfoFromSearchScreen(itemId);
 				}

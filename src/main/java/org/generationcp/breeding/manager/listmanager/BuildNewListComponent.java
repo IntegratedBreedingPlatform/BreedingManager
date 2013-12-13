@@ -335,7 +335,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
 		germplasmsTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-		germplasmsTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
+//		germplasmsTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
 		
 		messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
         messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
@@ -343,7 +343,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
         messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
         messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
+//        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
 		
 		germplasmsTable.setSelectable(true);
 		germplasmsTable.setMultiSelect(true);
@@ -479,7 +479,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                         Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
                         Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
                         Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-                        Object oldStatus = oldItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).getValue();
+//                        Object oldStatus = oldItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).getValue();
                         germplasmsTable.removeItem(transferable.getItemId());
                         
                         Item newItem = germplasmsTable.addItemAfter(droppedOverItemId, transferable.getItemId());
@@ -488,7 +488,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                         newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
                         newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
                         newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
-                        newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(oldStatus);
+//                        newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(oldStatus);
                         
                         assignSerializedEntryNumber();
                     }
@@ -559,7 +559,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
 			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
 			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
-			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
+//			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
         }		
         assignSerializedEntryCode();
@@ -604,7 +604,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
 			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
 			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
-			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
+//			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
 			assignSerializedEntryCode();
 			
@@ -676,7 +676,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getSelectedGids(Table table, String GIDItemId){
+	public List<Integer> getSelectedGids(Table table, String GIDItemId){
 		List<Integer> itemIds = new ArrayList<Integer>();
 		List<Integer> selectedItemIds = new ArrayList<Integer>();
 		List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();

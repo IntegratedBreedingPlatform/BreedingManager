@@ -77,7 +77,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
         layoutForGermplasm.setWidth("620px");
-        layoutForGermplasm.setHeight("400px");
+        layoutForGermplasm.setHeight("500px");
         
         Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
@@ -87,7 +87,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 //        germplasmWindow.addComponent(layoutForGermplasm);
         germplasmWindow.setContent(layoutForGermplasm);
         germplasmWindow.setWidth("645px");
-        germplasmWindow.setHeight("500px");
+        germplasmWindow.setHeight("600px");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
         

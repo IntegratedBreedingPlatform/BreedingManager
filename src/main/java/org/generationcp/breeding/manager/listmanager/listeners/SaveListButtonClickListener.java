@@ -84,6 +84,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
@@ -286,7 +287,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
 	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
+//	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
 			
 			this.listDataTable.requestRepaint();

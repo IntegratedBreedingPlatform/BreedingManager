@@ -37,6 +37,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private ListDetailComponent listDetailComponent;
     
     private ListInventoryComponent listInventoryComponent;
+    private ListManagerMain listManagerMain;
     
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
     
@@ -55,15 +56,16 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private ComponentTreeItem listData;
     private ComponentTreeItem listSeedInventory;
     
-    public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl) {
+    public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl, ListManagerMain listManagerMain) {
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
         this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
+        this.listManagerMain=listManagerMain;
     }
 
-    public ListManagerTreeMenu(BreedingManagerApplication breedingManagerApplication, int germplasmListId,String listName, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+    public ListManagerTreeMenu(BreedingManagerApplication breedingManagerApplication, int germplasmListId,String listName, int userId, boolean fromUrl,boolean forGermplasmListWindow, ListManagerMain listManagerMain) {
         this.breedingManagerApplication = breedingManagerApplication;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
@@ -71,9 +73,10 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         this.germplasmListStatus = 101;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listManagerMain=listManagerMain;
     }
       
-    public ListManagerTreeMenu(ListManagerDetailsLayout viewDetailsTabbedLayout, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow) {
+    public ListManagerTreeMenu(ListManagerDetailsLayout viewDetailsTabbedLayout, int germplasmListId,String listName,int germplasmListStatus, int userId, boolean fromUrl,boolean forGermplasmListWindow, ListManagerMain listManagerMain) {
         this.detailsTabbedLayout = viewDetailsTabbedLayout;
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
@@ -81,6 +84,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
+        this.listManagerMain=listManagerMain;
     } 
     
     public void refreshListData(){
@@ -100,7 +104,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         listDetailComponent = new ListDetailComponent(this, germplasmListManager, germplasmListId, fromUrl);
         listDetailComponent.setData(LIST_DETAILS);
         
-        listDataComponent = new ListDataComponent(germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this);
+        listDataComponent = new ListDataComponent(this, germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this, listManagerMain);
         listDataComponent.setData(LIST_DATA);
        
         listInventoryComponent = new ListInventoryComponent(germplasmListId);

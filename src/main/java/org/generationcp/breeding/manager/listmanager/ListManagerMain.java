@@ -4,7 +4,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -59,9 +58,9 @@ public class ListManagerMain extends VerticalLayout implements
         setTitleContent("");
         
         if(listId == null){
-        	browseListsComponent = new ListManagerBrowseListsComponent();
+        	browseListsComponent = new ListManagerBrowseListsComponent(this);
         } else{
-        	browseListsComponent = new ListManagerBrowseListsComponent(listId);
+        	browseListsComponent = new ListManagerBrowseListsComponent(this, listId);
         }
         
         searchListsComponent = new ListManagerSearchListsComponent(this);
@@ -95,8 +94,10 @@ public class ListManagerMain extends VerticalLayout implements
 	}
 	
 	public void showBuildNewListComponent(){
-		buildNewListButton.setVisible(false);
-		addComponent(buildNewListComponent);
+		if(buildNewListButton.isVisible()){
+			buildNewListButton.setVisible(false);
+			addComponent(buildNewListComponent);
+		}
 	}
 	
 	private void setTitleContent(String guideMessage){
