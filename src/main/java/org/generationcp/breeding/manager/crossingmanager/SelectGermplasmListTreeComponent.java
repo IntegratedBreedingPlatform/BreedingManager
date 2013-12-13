@@ -137,6 +137,7 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
         for (GermplasmList parentList : germplasmListParent) {
             germplasmListTree.addItem(parentList.getId());
             germplasmListTree.setItemCaption(parentList.getId(), parentList.getName());
+            germplasmListTree.setChildrenAllowed(parentList.getId(), hasChildList(parentList.getId()));
         }
 
         germplasmListTree.addListener(new SelectListTreeExpandListener(this));
