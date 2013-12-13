@@ -10,8 +10,8 @@ import com.vaadin.ui.Button.ClickListener;
 public class ComponentTree extends CssLayout {
 
 	private static final long serialVersionUID = 740158017459466809L;
-	private final ThemeResource ICON_COLLAPSED = new ThemeResource("img/componenttree-node-collapsed.png");
-	private final ThemeResource ICON_EXPANDED = new ThemeResource("img/componenttree-node-expanded.png");
+	private final ThemeResource ICON_COLLAPSED = new ThemeResource("images/componenttree-collapsed.png");
+	private final ThemeResource ICON_EXPANDED = new ThemeResource("images/componenttree-expanded.png");
 
 	public ComponentTree () {
 		super();

@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTree
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Tree;
@@ -59,6 +61,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     private Integer listId;
     
+    private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
+    
     public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
@@ -73,6 +77,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     @Override
 	public void afterPropertiesSet() throws Exception {
+		setSpacing(true);
 		
     	displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
     	
@@ -82,7 +87,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		refreshButton = new Button();
 		refreshButton.setData(REFRESH_BUTTON_ID);
 		refreshButton.addListener(new GermplasmListButtonClickListener(this));
+		//refreshButton.setIcon(ICON_REFRESH);
 		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
+		refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);

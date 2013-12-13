@@ -52,6 +52,7 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		setMargin(true, false, false, false);
+		setSpacing(true);
 		
 		HorizontalLayout pedigreeHorizontalLayout = new HorizontalLayout();
 		pedigreeHorizontalLayout.setWidth("400px");
@@ -59,7 +60,6 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 		
 		HorizontalLayout includeDerivativeLayout = new HorizontalLayout();
 		includeDerivativeLayout.setWidth("200px");
-		includeDerivativeLayout.setMargin(true);
 		includeDerivativeLayout.setSpacing(true);
         pedigreeDerivativeCheckbox = new CheckBox();
         pedigreeDerivativeCheckbox.setCaption(messageSource.getMessage(Message.INCLUDE_DERIVATIVE_LINES));
@@ -81,6 +81,7 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         
         pedigreeHorizontalLayout.addComponent(includeDerivativeLayout);
         pedigreeHorizontalLayout.addComponent(btnViewPedigreeGraph);
+        pedigreeHorizontalLayout.setComponentAlignment(includeDerivativeLayout, Alignment.BOTTOM_LEFT);
         pedigreeHorizontalLayout.setComponentAlignment(btnViewPedigreeGraph, Alignment.BOTTOM_RIGHT);
                 
         gQueries = new GermplasmQueries();

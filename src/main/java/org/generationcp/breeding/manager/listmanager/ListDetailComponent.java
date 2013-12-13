@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButt
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -23,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -216,6 +217,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     deleteButton = new Button("Delete");
                     deleteButton.setData(DELETE_BUTTON_ID);
                     deleteButton.setWidth("80px");
+                    deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
                     deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                    
                     addComponent(deleteButton, 0, 4);
@@ -276,7 +278,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	
 	public void addEditListNotes(String title){
 		Window parentWindow = this.getWindow();
-		parentWindow.addWindow(new AddEditListNotes(this, germplasmListManager, germplasmListId, title));
+		AddEditListNotes addEditListNotes = new AddEditListNotes(this, germplasmListManager, germplasmListId, title);
+		addEditListNotes.addStyleName(Reindeer.WINDOW_LIGHT);
+		parentWindow.addWindow(addEditListNotes);
 	}
 
 	public void lockGermplasmList() {

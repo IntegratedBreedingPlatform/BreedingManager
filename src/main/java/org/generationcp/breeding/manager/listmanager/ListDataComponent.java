@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -373,7 +373,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	             @SuppressWarnings("unused")
 	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
              }
-             setSpacing(true);
+             setSpacing(false);
              addComponent(listDataTable);
    
         	 if(germplasmListId<0 && germplasmListStatus<100){
@@ -1012,6 +1012,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             listManagerCopyToNewListDialog.setModal(true);
             listManagerCopyToNewListDialog.setWidth(700);
             listManagerCopyToNewListDialog.setHeight(350);
+            listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
             
             try {
                 if(forGermplasmListWindow) {
@@ -1229,6 +1230,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     public void addEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+        addEntriesDialog.addStyleName(Reindeer.WINDOW_LIGHT);
         parentWindow.addWindow(addEntriesDialog);
     }
     
@@ -1241,6 +1243,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		private static final long serialVersionUID = 1L;
         		
         		public void onClose(ConfirmDialog dialog) {
+        			
         			if (dialog.isConfirmed()) {
         				ArrayList<Germplasm> gList = new ArrayList<Germplasm>();
         				try {

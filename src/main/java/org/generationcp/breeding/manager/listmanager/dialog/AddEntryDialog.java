@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQue
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -264,6 +265,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         searchButton.addStyleName("addTopSpace");
         searchButton.addListener(new GermplasmListButtonClickListener(this));
         searchButton.setClickShortcut(KeyCode.ENTER);
+        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         searchFormLayout.addComponent(searchButton);
         
         firstTabLayout.addComponent(searchFormLayout);
@@ -322,6 +324,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new GermplasmListButtonClickListener(this));
         nextButton.setEnabled(false);
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         buttonLayout.addComponent(nextButton);
         
         firstTabLayout.addComponent(buttonLayout);
@@ -371,6 +374,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(new GermplasmListButtonClickListener(this));
         doneButton.addListener(new CloseWindowAction());
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         secondTabLayout.addComponent(doneButton, "top:180px;left:90px");
     }
     

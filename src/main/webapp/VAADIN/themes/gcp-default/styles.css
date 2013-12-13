@@ -1,16 +1,15 @@
-@import url(../reindeer/styles.css);
+@import url(../vaadin-retro/styles.css);
 
 .gcp-window-title {
-    /*font-size: 20px;*/
     font-size: 16px;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
 	color: rgb(34, 34, 34);
 }
 
 .gcp-window-title H1:first-child {
 	text-transform: uppercase;
 	font-weight: normal;
-    font-size: 24px;
+    font-size: 22px;
 	color: rgb(68,72,55);
 }
 
@@ -44,7 +43,7 @@
 }
 
 .gcp-popup-view {
-	background-color: #FF8109;
+	background-color: #5A5A5A;
 	font-size: 12px;
 	box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
 	padding: 1px 3px;
@@ -59,7 +58,7 @@
 	color: white;
 }
 .v-popupview-popup-gcp-popup-view {
-	background-color: #FF8109;
+	background-color: #5A5A5A;
     color: white;
 }
 
@@ -160,11 +159,15 @@
 
 .listManagerTree {
 	padding: 10px;
-	border: 1px solid black;
-	background: #efefef;
-	width: 280px;
+	border: 1px solid e3e3e3;
+	background: #e3e3e3;
+	width: 200px;
 	height: 320px;
 	overflow: scroll;
+	border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    color: #33333;
 }
 
 .v-tree-node {
@@ -172,14 +175,14 @@
 }
 
 .v-tree-node-listManagerTreeRootNode {
-	font-size: 16px;
+	font-size: 12px;
 	padding-bottom:5px;
 }
 	
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(images/icon_folder.png);
+	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
@@ -195,7 +198,7 @@
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(images/icon_folder.png);
+	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
@@ -207,7 +210,7 @@
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(images/icon_document.png);
+	background-image: url(images/document-icon.png);
 	background-repeat: no-repeat;
 }
 
