@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -124,6 +125,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
         doneButton.setData(DONE_BUTTON_ID);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         warnOnClickDone = new Label();
         
         germplasmListName.setWidth("250px");

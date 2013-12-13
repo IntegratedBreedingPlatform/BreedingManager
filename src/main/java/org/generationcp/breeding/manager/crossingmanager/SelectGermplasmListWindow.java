@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.SelectListBut
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -113,6 +114,7 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         cancelButton.setData(CANCEL_BUTTON_ID);
         doneButton = new Button(); // "Done"
         doneButton.setData(DONE_BUTTON_ID);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     }
     
     protected void initializeValues() {
