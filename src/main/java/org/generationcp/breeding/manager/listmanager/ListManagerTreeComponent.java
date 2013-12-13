@@ -126,11 +126,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 				try {
 					currentList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					currentList = null;
 				} catch (MiddlewareQueryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error("Erro with getting list by id: " + itemId, e);
+					currentList = null;
 				} 
 				
             	if(itemId.equals("LOCAL") || itemId.equals("CENTRAL")){

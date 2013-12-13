@@ -17,7 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -64,6 +66,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
     private static final long serialVersionUID = 1L;
+    
+    private static final String FOLDER_TYPE = "FOLDER";
         
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
@@ -97,6 +101,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     private boolean lastAdded = false;
     private boolean existingListSelected = false;
     private boolean fromBuildNewList = false;
+    private Set<String> localFolderNames = new HashSet<String>();
 
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -209,15 +214,18 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     }
     
     private void populateComboBoxListName() throws MiddlewareQueryException {
-        // TODO Auto-generated method stub
         germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
         mapExistingList = new HashMap<String, Integer>();
         comboBoxListName.addItem("");
         for (GermplasmList gList : germplasmList) {
             if(!gList.getName().equals(listName)){
-            comboBoxListName.addItem(gList.getName());
-            mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-            }
+            	if(!gList.getType().equals(FOLDER_TYPE)){
+            		comboBoxListName.addItem(gList.getName());
+            		mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+            	} else{
+            		localFolderNames.add(gList.getName());
+            	}
+	        }
         }
         comboBoxListName.select("");
     }
@@ -234,6 +242,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
 			if(matchingNamesCountOnCentral>0){
 				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+				proceedWithSave = false;
+			}
+			
+			if(localFolderNames.contains(listNameValue)){
+				getWindow().showNotification("There is already an existing germplasm list folder with that name","",Notification.TYPE_ERROR_MESSAGE);
 				proceedWithSave = false;
 			}
 		} catch (MiddlewareQueryException e) {
