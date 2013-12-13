@@ -107,8 +107,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public static String TOOLS_BUTTON_ID = "Tools";
 	
 	private ContextMenu menu;
-	private ContextMenuItem menuSelectAll;
-	private ContextMenuItem menuDeleteSelectedEntries;
 	private ContextMenuItem menuExportList;
 	private ContextMenuItem menuExportForGenotypingOrder;
 	private ContextMenuItem menuCopyToList;
@@ -145,7 +143,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -233,8 +230,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         createGermplasmTable();
         
 		menu = new ContextMenu();
-		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
-		menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
 		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
@@ -666,11 +663,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
     	itemIds = getItemIds(table);
         	
-    	int i=0;
     	for(Integer itemId: itemIds){
     		if(selectedItemIds.contains(itemId)){
     			trueOrderedSelectedItemIds.add(itemId);
-    			i++;
     		}
     	}
     	
@@ -692,12 +687,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	//System.out.println("Selected Item IDs: "+selectedItemIds);
     	//System.out.println("Item IDs: "+itemIds);
     	
-    	int i=0;
     	for(Integer itemId: itemIds){
     		if(selectedItemIds.contains(itemId)){
     			Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue()).getCaption().toString());
     			trueOrderedSelectedGIDs.add(gid);
-    			i++;
     		}
     	}
     	
