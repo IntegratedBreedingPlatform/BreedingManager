@@ -27,6 +27,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButt
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -165,6 +166,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save New Germplasm List ");
         btnSave.addListener(new GermplasmListButtonClickListener(this));
+        btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         hButton.addComponent(btnSave);
         btnCancel = new Button();

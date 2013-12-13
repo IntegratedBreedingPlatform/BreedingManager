@@ -7,7 +7,7 @@ import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;

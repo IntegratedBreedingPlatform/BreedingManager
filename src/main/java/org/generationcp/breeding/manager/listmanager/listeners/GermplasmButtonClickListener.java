@@ -6,12 +6,14 @@ import java.net.URISyntaxException;
 import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeGraphComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
 
 public class GermplasmButtonClickListener implements ClickListener {
 
@@ -61,6 +63,7 @@ public class GermplasmButtonClickListener implements ClickListener {
             pedigreeGraphWindow.setWidth("100%");
             pedigreeGraphWindow.setHeight("620px");
             pedigreeGraphWindow.setName("Pedigree Graph");
+            pedigreeGraphWindow.addStyleName(Reindeer.WINDOW_LIGHT);
             pedigreeGraphWindow.addComponent(new GermplasmPedigreeGraphComponent(this.gid, component.getGermplasmQueries()));
             component.getWindow().addWindow(pedigreeGraphWindow);
             

@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -103,6 +104,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
         
         saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         saveButton.setWidth("80px");
+        saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         saveButton.addListener(new Button.ClickListener() {
 			
 			@Override

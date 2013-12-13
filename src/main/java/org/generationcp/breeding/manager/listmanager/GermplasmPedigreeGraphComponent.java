@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQue
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         btnDisplay = new Button("Display");
         btnDisplay.setData(UPDATE_PEDIGREE_GRAPH_BUTTON_ID);
         btnDisplay.setWidth("80px");
+        btnDisplay.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         btnDisplay.addListener(new GermplasmButtonClickListener(this, this.gid));
 
         hLayout.addComponent(pedigree_level_label);

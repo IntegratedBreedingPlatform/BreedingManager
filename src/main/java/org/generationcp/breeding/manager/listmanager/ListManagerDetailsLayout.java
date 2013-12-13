@@ -206,8 +206,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		
 		//Browse Lists exact layout
 		if (this.treeComponent != null){
-			parentLayout.addComponent(headingBar,"top:20px; left:340px;");
-	    	parentLayout.addComponent(detailsTabSheet, "top:55px;left:340px");
+			parentLayout.addComponent(headingBar,"top:20px; left:250px;");
+	    	parentLayout.addComponent(detailsTabSheet, "top:55px;left:250px");
         
         //Search Lists exact layout
 		} else {

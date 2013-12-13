@@ -22,6 +22,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -162,7 +163,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
-        addComponent(listNameText, "top:35px;left:46px");
+        addComponent(listNameText, "top:35px;left:50px");
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
@@ -194,7 +195,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
         listTypeComboBox.setTextInputAllowed(false);
         listTypeComboBox.setImmediate(true);
-        addComponent(listTypeComboBox, "top:35px;left:310px");
+        addComponent(listTypeComboBox, "top:35px;left:312px");
 
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
@@ -205,7 +206,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         listDateField.setDateFormat(DATE_FORMAT);
         listDateField.setResolution(DateField.RESOLUTION_DAY);
         listDateField.setValue(new Date());
-        addComponent(listDateField, "top:35px;left:580px");
+        addComponent(listDateField, "top:35px;left:582px");
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
@@ -214,7 +215,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         descriptionText = new TextField();
         descriptionText.setWidth("595px");
-        addComponent(descriptionText, "top:70px;left:80px");
+        addComponent(descriptionText, "top:70px;left:89px");
 		
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
@@ -297,17 +298,18 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		HorizontalLayout buttonRow = new HorizontalLayout();
 		buttonRow.setWidth("100%");
 		buttonRow.setHeight("150px");
+		buttonRow.setSpacing(true);
 		
 		saveButton = new Button();
 		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
-		saveButton.setStyleName(BaseTheme.BUTTON_LINK);
-		saveButton.addStyleName("gcp_button");
+		saveButton.setWidth("80px");
+		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		setupSaveButtonClickListener();
 		
 		resetButton = new Button();
 		resetButton.setCaption(messageSource.getMessage(Message.RESET));
-		resetButton.setStyleName(BaseTheme.BUTTON_LINK);
-		resetButton.addStyleName("gcp_button");
+		resetButton.setWidth("80px");
+		resetButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 		
 		buttonRow.addComponent(resetButton);
