@@ -28,6 +28,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GidLinkButtonClickListener implements Button.ClickListener {
@@ -48,6 +49,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
     	Window mainWindow;
     	Window eventWindow = event.getComponent().getWindow();
+    	eventWindow.addStyleName(Reindeer.WINDOW_LIGHT);
     	if (TableViewerComponent.TABLE_VIEWER_WINDOW_NAME.equals(eventWindow.getName())) {
     		mainWindow = eventWindow.getParent();
     	} else {
@@ -74,8 +76,8 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        layoutForGermplasm.setWidth("640px");
-        layoutForGermplasm.setHeight("560px");
+        layoutForGermplasm.setWidth("620px");
+        layoutForGermplasm.setHeight("500px");
         
         Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
@@ -88,7 +90,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmWindow.setHeight("600px");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
-        
+        germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         germplasmWindow.setModal(true);
         
         mainWindow.addWindow(germplasmWindow);

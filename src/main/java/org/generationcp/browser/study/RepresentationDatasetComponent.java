@@ -48,6 +48,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 //import org.generationcp.middleware.domain.dms.TermId;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * This class creates the Vaadin Table where a dataset can be displayed.
@@ -173,9 +174,11 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
 		try {
 			studyName = studyDataManager.getStudy(studyIdHolder).getName();
 			Window tableViewer = new TableViewerComponent(tableViewerDataset,studyName);
+			tableViewer.addStyleName(Reindeer.WINDOW_LIGHT);
 			mainWindow.addWindow(tableViewer);
 		} catch (MiddlewareQueryException e) {
 			Window tableViewer = new TableViewerComponent(tableViewerDataset);
+			tableViewer.addStyleName(Reindeer.WINDOW_LIGHT);
 			mainWindow.addWindow(tableViewer);
 		}
     }

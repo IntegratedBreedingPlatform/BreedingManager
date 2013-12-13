@@ -22,6 +22,7 @@ import org.generationcp.browser.study.util.TableViewerExporter;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +82,12 @@ public class TableViewerComponent extends Window implements InitializingBean, In
         exportExcelButton = new Button(); // "Export to Fieldbook Excel File"
         exportExcelButton.setData(EXPORT_EXCEL_BUTTON_ID);
         exportExcelButton.addListener(new StudyButtonClickListener(this));
-
+        exportExcelButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         verticalLayout = new VerticalLayout();
         
         verticalLayout.addComponent(exportExcelButton);
         verticalLayout.addComponent(displayTable);
+        verticalLayout.setSpacing(true);
         
         addComponent(verticalLayout);
 	}
