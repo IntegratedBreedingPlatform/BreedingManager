@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -169,6 +170,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         doneButton = new Button();
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(clickListener);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(doneButton, "top:200px;left:670px");
         
         doneLabel = new Label();

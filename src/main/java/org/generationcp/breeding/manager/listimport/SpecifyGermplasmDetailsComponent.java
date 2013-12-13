@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -275,6 +276,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(clickListener);
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:450px;left:670px");
     }
     

@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,6 +80,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new GermplasmImportButtonClickListener(this));
         nextButton.setEnabled(false);
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:250px;left:700px");
         
     }
