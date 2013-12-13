@@ -370,8 +370,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              
              if(germplasmListId < 0){
             
-	             @SuppressWarnings("unused")
-	           	 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	             //@SuppressWarnings("unused")
+	             if(germplasmListId<0 && germplasmListStatus<100){
+	                 FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	             }
              }
              setSpacing(true);
              addComponent(listDataTable);
