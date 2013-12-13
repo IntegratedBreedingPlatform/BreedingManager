@@ -48,7 +48,7 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.BROWSE_LISTS));
+		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
 		heading.addStyleName("gcp-content-title");
 		
 		if(listId != null){
