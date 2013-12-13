@@ -676,7 +676,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getSelectedGids(Table table, String GIDItemId){
+	public List<Integer> getSelectedGids(Table table, String GIDItemId){
 		List<Integer> itemIds = new ArrayList<Integer>();
 		List<Integer> selectedItemIds = new ArrayList<Integer>();
 		List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();

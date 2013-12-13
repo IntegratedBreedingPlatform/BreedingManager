@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.Action;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -42,6 +45,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
 	public static final String MATCHING_LISTS_TABLE_DATA = "Matching Lists Table";
+	
+    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
+    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
 	private ListManagerDetailsLayout displayDetailsLayout;
 	private ListManagerMain listManagerMain;
@@ -116,6 +122,28 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 				}
 			}
         });
+		
+		matchingGermplasmsTable.addActionHandler(new Action.Handler() {
+       	 private static final long serialVersionUID = -897257270314381555L;
+
+			public Action[] getActions(Object target, Object sender) {
+				return GERMPLASMS_TABLE_CONTEXT_MENU;
+            }
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+             	if (ACTION_COPY_TO_NEW_LIST == action) {
+             		listManagerMain.showBuildNewListComponent();
+             		List<Integer> gids = new ArrayList<Integer>();
+             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
+             		for(Integer gid : gids){
+             			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
+             		}
+             	}
+			}
+		});
+
 		
 		addComponent(matchingListsLabel, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:20px; left:0px;");

@@ -43,6 +43,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	private final static int BATCH_SIZE = 50;
 	public final static String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
 	
+	private ListManagerMain listManagerMain;
 	private Tree germplasmListTree;
     private AbsoluteLayout germplasmListBrowserMainLayout;
 	private Button refreshButton;
@@ -63,13 +64,15 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
     
-    public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
+    public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
+    	this.listManagerMain = listManagerMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.listId = null;
     }
     
-    public ListManagerTreeComponent(AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow, Integer listId) {
+    public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow, Integer listId) {
+    	this.listManagerMain = listManagerMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.listId = listId;
@@ -79,7 +82,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	public void afterPropertiesSet() throws Exception {
 		setSpacing(true);
 		
-    	displayDetailsLayout = new ListManagerDetailsLayout(this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+    	displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
     	
 		germplasmListTree = new Tree();
 		germplasmListTree.setImmediate(true);

@@ -52,7 +52,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 	
 	private boolean forGermplasmListWindow;
 
-	public ListManagerDetailsLayout(ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+	public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerTreeComponent treeComponent, AbsoluteLayout parentLayout, boolean forGermplasmListWindow){
+		this.listManagerMain = listManagerMain;
     	this.treeComponent = treeComponent;
     	this.parentLayout = parentLayout;
     	this.forGermplasmListWindow = forGermplasmListWindow;
@@ -148,7 +149,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		if (germplasmList != null){
 			return new ListManagerTreeMenu(this, id,
 					tabName,germplasmList.getStatus(), germplasmList.getUserId(), 
-					false, forGermplasmListWindow);
+					false, forGermplasmListWindow, listManagerMain);
 		} else {
 			return new BrowseGermplasmTreeMenu(this.listManagerMain, id);
 		}

@@ -17,6 +17,7 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = -224052511814636864L;
     private ListManagerTreeComponent listManagerTreeComponent;	
+    private ListManagerMain listManagerMain;
 	
 	private Label heading;
 	
@@ -29,13 +30,15 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 	
 	private Integer listId;
 	
-    public ListManagerBrowseListsComponent() {
+    public ListManagerBrowseListsComponent(ListManagerMain listManagerMain) {
         super();
+        this.listManagerMain = listManagerMain;
         this.listId = null;
     }
     
-    public ListManagerBrowseListsComponent(Integer listId){
+    public ListManagerBrowseListsComponent(ListManagerMain listManagerMain, Integer listId){
     	super();
+    	this.listManagerMain = listManagerMain;
     	this.listId = listId;
     }
     
@@ -52,9 +55,9 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		heading.addStyleName("gcp-content-title");
 		
 		if(listId != null){
-			listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow, listId);
+			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow, listId);
 		} else{
-			listManagerTreeComponent = new ListManagerTreeComponent(this, forGermplasmListWindow);
+			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow);
 		}
 		
 		addComponent(heading,"top:30px; left:20px;");
