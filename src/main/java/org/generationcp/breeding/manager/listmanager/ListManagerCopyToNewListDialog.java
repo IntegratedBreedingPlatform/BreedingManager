@@ -282,7 +282,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 			                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
 			                addGermplasmListData(germList,1);
 			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid);
+			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid, true);
 	                    } catch (MiddlewareQueryException e){
 			                germplasmListManager.deleteGermplasmListByListId(newListid);
 			                LOG.error("Error with copying list entries", e);
@@ -310,7 +310,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	                    this.mainWindow.removeWindow(dialogWindow);
 	                    
 	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId));
+	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId), true);
 	        } catch (MiddlewareQueryException e) {
 	            LOG.error("Error with copying list entries", e);
 	                e.printStackTrace();
