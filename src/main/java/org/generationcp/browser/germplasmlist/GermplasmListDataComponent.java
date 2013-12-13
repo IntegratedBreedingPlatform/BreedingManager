@@ -35,6 +35,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -67,6 +68,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GermplasmListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource {
@@ -640,6 +642,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             germplasmListCopyToNewListDialog.setModal(true);
             germplasmListCopyToNewListDialog.setWidth("700px");
             germplasmListCopyToNewListDialog.setHeight("350px");
+            germplasmListCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
             
             try {
                 if(forGermplasmListWindow) {
@@ -810,6 +813,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     public void addEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+        addEntriesDialog.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         parentWindow.addWindow(addEntriesDialog);
     }
     

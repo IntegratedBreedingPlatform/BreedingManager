@@ -19,6 +19,7 @@ import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClick
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -151,17 +152,19 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
                     unlockButton = new Button("Unlock");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    unlockButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
                     addComponent(unlockButton, 0, 7);
                 } else if(germplasmList.getStatus()==1) {
                     lockButton = new Button("Lock");
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+                    lockButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
                     addComponent(lockButton, 0, 7);
                     
                     deleteButton = new Button("Delete");
                     deleteButton.setData(DELETE_BUTTON_ID);
                     deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                   
+                    deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
                     addComponent(deleteButton, 1, 7);
                 }
             }
