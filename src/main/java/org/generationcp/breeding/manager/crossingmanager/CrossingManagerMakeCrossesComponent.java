@@ -14,6 +14,7 @@ import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
@@ -22,6 +23,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -184,6 +186,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
         btnMakeCross= new Button();
         btnMakeCross.setData(MAKE_CROSS_BUTTON_ID);
+        btnMakeCross.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         btnMakeCross.addListener(new CrossingManagerImportButtonClickListener(this));
         
         lblMaleParent=new Label();
@@ -246,6 +249,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(listener);
         nextButton.setEnabled(false);
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
         //Widget Layout
         gridLayoutSelectingParents = new GridLayout(2,2);
@@ -371,11 +375,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
     public void selectFemaleParentList() {
         SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(femaleParents, this,this.listnameFemaleParent);
+        selectListWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         this.getWindow().addWindow(selectListWindow);
     }
     
     public void selectMaleParentList() {
         SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(maleParents, this,this.listnameMaleParent);
+        selectListWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         this.getWindow().addWindow(selectListWindow);
     }
 

@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -131,6 +132,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(listener);
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         // Layout Components
         addComponent(crossingMethodForm, "top:40px;left:170px");

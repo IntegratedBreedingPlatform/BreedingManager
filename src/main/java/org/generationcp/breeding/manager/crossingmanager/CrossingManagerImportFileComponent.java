@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -143,6 +144,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:300px;left:700px");
         
         filenameLabel = new Label();

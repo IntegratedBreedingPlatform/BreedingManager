@@ -106,7 +106,7 @@ public class ListManagerMain extends VerticalLayout implements
         //TODO put software version in title
         String title =  messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL)+ "<h2>" + VERSION + "</h2>";
         mainTitle = new Label();
-        mainTitle.addStyleName(Bootstrap.Typography.H3.styleName());
+        mainTitle.setStyleName("gcp-window-title");
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(title);
         titleLayout.addComponent(mainTitle);
