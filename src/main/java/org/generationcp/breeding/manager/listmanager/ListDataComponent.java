@@ -639,7 +639,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		e.printStackTrace();
 			LOG.error("Database error!", e);
 			MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting numeric trait info given environment ids."
-					+ " Please report to IBP.", Notification.POSITION_CENTERED);
+					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	}
     	
     	return true; 

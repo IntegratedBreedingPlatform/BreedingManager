@@ -301,4 +301,6 @@ public enum Message{
     ,CONFIRM_RESET_LIST_BUILDER_FIELDS
     ,SHOW_FAVORITE_LOCATIONS
     ,SHOW_ONLY_FAVORITE_LOCATIONS
+    //General error msg
+    ,ERROR_REPORT_TO
 }

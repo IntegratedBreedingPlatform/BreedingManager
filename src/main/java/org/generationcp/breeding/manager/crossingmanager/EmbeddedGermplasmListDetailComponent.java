@@ -170,7 +170,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 crossesList = germplasmListManager.getGermplasmListById(listId);
             } catch(MiddlewareQueryException ex){
                 LOG.error("Error getting list with id: " + listId, ex);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting the list of crosses made.  Please report to IBP."
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting the list of crosses made.  "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                         ,Notification.POSITION_CENTERED);
                 return;
             }
@@ -181,7 +181,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 listCreator = userDataManager.getUserById(crossesList.getUserId());
             } catch(MiddlewareQueryException ex){
                 LOG.error("Error getting users for list creator.", ex);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list owner.  Please report to IBP."
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list owner.  "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                         ,Notification.POSITION_CENTERED);
                 return;
             }
@@ -193,7 +193,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 listExporter = userDataManager.getUserById(userId);
             } catch(MiddlewareQueryException ex){
                 LOG.error("Error getting users for list exporter.", ex);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list exporter.  Please report to IBP."
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting user record for list exporter.  "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                         ,Notification.POSITION_CENTERED);
                 return;
             }

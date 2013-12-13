@@ -582,7 +582,7 @@ public class FillWith implements InternationalizableComponent  {
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);
-	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. Please report to IBP.", Notification.POSITION_CENTERED);
+	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. "+messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
 	            	return;
 	            }
 	        }
