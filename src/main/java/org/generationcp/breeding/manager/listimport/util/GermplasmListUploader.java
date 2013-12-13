@@ -20,7 +20,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
@@ -28,7 +27,6 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -37,7 +35,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -53,6 +50,18 @@ import com.vaadin.ui.Window.Notification;
 public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private static final long serialVersionUID = 1L;
+    
+    private static final String ENTRY_PROPERTY = "GERMPLASM ENTRY";
+    private static final String ENTRY_SCALE = "NUMBER";
+    private static final String DESIG_PROPERTY = "GERMPLASM ID";
+    private static final String DESIG_SCALE = "DBCV";
+    private static final String GID_PROPERTY = "GERMPLASM ID";
+    private static final String GID_SCALE = "DBID";
+    
+    private String entryFactor;
+    private String desigFactor;
+    private String gidFactor;
+    
     private GermplasmImportFileComponent source;
     
     public File file;
@@ -61,7 +70,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private Integer currentSheet;
     private Integer currentRow;
-    private Integer currentColumn;
     
     private String originalFilename;
     private String listName;
@@ -139,7 +147,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         
         currentSheet = 0;
         currentRow = 0;
-        currentColumn = 0;
         
         fileIsValid = true;
         
@@ -197,7 +204,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private void readSheet2(){
         currentSheet = 1;
         currentRow = 0;
-        currentColumn = 0;
                 
         ImportedGermplasm importedGermplasm;
         Boolean entryColumnIsPresent = false;
@@ -207,21 +213,22 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         //Check if columns ENTRY and DESIG is present
         if(importedGermplasmList.getImportedFactors()!=null)
         for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-            if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY ID")){
+        	String columnName = getCellStringValue(currentSheet, currentRow, col, true); 
+            if(columnName.equals(entryFactor)){
                 entryColumnIsPresent = true;
-            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIG") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("DESIGNATION")){
+            } else if(desigFactor != null && columnName.equals(desigFactor)){
                 desigColumnIsPresent = true;
-            } else if(getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GID") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("GERMPLASM ID")){
+            } else if(gidFactor != null && columnName.equals(gidFactor)){
                 gidColumnIsPresent = true;
             }  
         }
         
         if(entryColumnIsPresent==false){
             showInvalidFileError("ENTRY column missing from Observation sheet.");
-            System.out.println("DEBUG | Invalid file on missing ENTRY on readSheet2");
         } else if(gidColumnIsPresent==false && desigColumnIsPresent==false){
-            showInvalidFileError("DESIG/DESIGNATION column missing from Observation sheet.");
-            System.out.println("DEBUG | Invalid file on missing DESIG/DESIGNATION on readSheet2");
+            showInvalidFileError("DESIGNATION column missing from Observation sheet.");
+        } else if(gidFactor != null && !gidColumnIsPresent){
+        	showInvalidFileError("GID column missing from Observation sheet.");
         }
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
@@ -234,13 +241,13 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
                 	
                 	//Map cell (given a column label) with a pojo setter 
-                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY") || getCellStringValue(currentSheet, currentRow, col, true).toUpperCase().equals("ENTRY ID")){
+                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(entryFactor)){
                         importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIG") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("DESIGNATION")){
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(desigFactor)){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GID") || importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("GERMPLASM ID")){
+                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(gidFactor)){
                         importedGermplasm.setGid(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
@@ -432,18 +439,14 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 
     private void readFactors(){
         Boolean entryColumnIsPresent = false;
-        Boolean entryPropertyIsValid = false;
-        Boolean entryScaleIsValid = false;
-        
         Boolean desigColumnIsPresent = false;
-        Boolean desigPropertyIsValid = false;
-        Boolean desigScaleIsValid = false;
-        
         Boolean gidColumnIsPresent = false;
-        Boolean gidPropertyIsValid = false;
-        Boolean gidScaleIsValid = false;
-
+        
         importFileIsAdvanced = false;
+        
+        entryFactor = null;
+        desigFactor = null;
+        gidFactor = null;
         
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("FACTOR") 
@@ -482,31 +485,18 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 System.out.println("DEBUG | Label:"+getCellStringValue(currentSheet,currentRow,7));
                 
                 //Factors validation
-                if(importedFactor.getFactor().toUpperCase().equals("ENTRY") || importedFactor.getFactor().toUpperCase().equals("ENTRY ID")){
-                    entryColumnIsPresent = true;
-                    if(importedFactor.getScale().toUpperCase().equals("NUMBER")){
-                    	entryScaleIsValid = true;	
-                    }
-                    if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ENTRY")){
-                    	entryPropertyIsValid = true;	
-                    }
-                } else if(importedFactor.getFactor().toUpperCase().equals("DESIG") || importedFactor.getFactor().toUpperCase().equals("DESIGNATION")){
-                    desigColumnIsPresent = true;
-                    if(importedFactor.getScale().toUpperCase().equals("DBCV")){
-                    	desigScaleIsValid = true;	
-                    }
-                    if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
-                    	desigPropertyIsValid = true;	
-                    }                
-                } else if(importedFactor.getFactor().toUpperCase().equals("GID") || importedFactor.getFactor().toUpperCase().equals("GERMPLASM ID") ){
+                String property = importedFactor.getProperty().toUpperCase();
+                String scale = importedFactor.getScale().toUpperCase();
+                if(property.equals(ENTRY_PROPERTY) && scale.equals(ENTRY_SCALE)){
+                	entryColumnIsPresent = true;
+                	entryFactor = importedFactor.getFactor();
+                } else if(property.equals(DESIG_PROPERTY) && scale.equals(DESIG_SCALE)){
+                	desigColumnIsPresent = true;
+                	desigFactor = importedFactor.getFactor();
+                } else if(property.equals(GID_PROPERTY) && scale.equals(GID_SCALE)){
                 	gidColumnIsPresent = true;
-                	if(importedFactor.getProperty().toUpperCase().equals("GERMPLASM ID")){
-                		gidPropertyIsValid = true;
-                	}
-                	if(importedFactor.getScale().toUpperCase().equals("DBID")){
-                		gidScaleIsValid = true;
-                	}
                 	importFileIsAdvanced = true;
+                	gidFactor = importedFactor.getFactor();
                 }
                 currentRow++;
             }
@@ -516,32 +506,9 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         //If ENTRY or DESIG is not present on Factors, return error
         if(entryColumnIsPresent==false){
         	showInvalidFileError("There is no ENTRY factor.");
-            System.out.println("DEBUG | Invalid file on missing ENTRY on readFactors");
         } else if(desigColumnIsPresent==false && gidColumnIsPresent==false){
-            showInvalidFileError("There is no DESIG/DESIGNATION factor.");
-            System.out.println("DEBUG | Invalid file on missing DESIG/DESIGNATION on readFactors");
-
-	    } else if(entryPropertyIsValid==false){
-	        showInvalidFileError("ENTRY must have GERMPLASM ENTRY as property");
-	        System.out.println("DEBUG | ENTRY must have GERMPLASM ENTRY as property");
-	    } else if(entryScaleIsValid==false){
-	        showInvalidFileError("ENTRY must have NUMBER as scale");
-	        System.out.println("DEBUG | ENTRY must have NUMBER as scale");
-
-	    } else if(desigPropertyIsValid==false && desigColumnIsPresent==true){
-	        showInvalidFileError("DESIG/DESIGNATION must have GERMPLASM ID as property");
-	        System.out.println("DEBUG | DESIG/DESIGNATION must have GERMPLASM ID as property");
-	    } else if(desigScaleIsValid==false && desigColumnIsPresent==true){
-	        showInvalidFileError("DESIG/DESIGNATION must have DBCV as scale");
-	        System.out.println("DEBUG | DESIG/DESIGNATION must have DBCV as scale");
-	        
-		} else if(gidColumnIsPresent==true && gidPropertyIsValid==false){
-		    showInvalidFileError("GID must have GERMPLASM ID as property");
-		    System.out.println("DEBUG | ENTRY must have GERMPLASM ID as property");
-		} else if(gidColumnIsPresent==true && gidScaleIsValid==false){
-		    showInvalidFileError("GID must have DBID as scale");
-		    System.out.println("DEBUG | GID must have DBID as scale");
-		}
+            showInvalidFileError("There is no DESIGNATION factor.");
+        } 
 	}
 
 
@@ -639,7 +606,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         if(followThisPosition){
             currentSheet = sheetNumber;
             currentRow = rowNumber;
-            currentColumn = columnNumber;
         }
     
         try {
