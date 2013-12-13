@@ -20,6 +20,7 @@ import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphCompone
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +140,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                     Button refreshButton = new Button("Apply");
                     refreshButton.setData(REFRESH_BUTTON_ID);
                     refreshButton.addListener(new GermplasmButtonClickListener(this));
+                    refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
                     derivativeHorizontalLayout.addComponent(refreshButton);
                     
                     layoutPedigreeTree.addComponent(derivativeHorizontalLayout);

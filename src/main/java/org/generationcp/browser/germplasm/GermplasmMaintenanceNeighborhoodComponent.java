@@ -20,6 +20,7 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.GermplasmPedigreeTreeNode;
 import org.slf4j.Logger;
@@ -134,6 +135,7 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
         btnDisplay.setData(DISPLAY_BUTTON_ID);
         btnDisplay.setDescription("Display Germplasm Maintenance Neighborhood ");
         btnDisplay.addListener(new GermplasmButtonClickListener(this));
+        btnDisplay.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         hLayout.addComponent(labelNumberOfStepsBackward);
         hLayout.addComponent(selectNumberOfStepBackward);
