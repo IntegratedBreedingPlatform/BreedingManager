@@ -84,6 +84,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)

@@ -112,13 +112,17 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
-  
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId) {
+    
+    
+    private ListManagerMain listManagerMain;
+    
+    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, ListManagerMain listManagerMain) {
         this.dialogWindow = dialogWindow;
-    this.mainWindow = mainWindow;
-    this.listEntriesTable=listEntriesTable;
-    this.listName=listName;
-    this.ibdbUserId=ibdbUserId;
+        this.mainWindow = mainWindow;
+        this.listEntriesTable=listEntriesTable;
+        this.listName=listName;
+        this.ibdbUserId=ibdbUserId;
+        this.listManagerMain= listManagerMain; 
     }
     
     public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, boolean fromBuildNewList) {
@@ -277,6 +281,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	                    try{
 			                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
 			                addGermplasmListData(germList,1);
+			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
+			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid, true);
 	                    } catch (MiddlewareQueryException e){
 			                germplasmListManager.deleteGermplasmListByListId(newListid);
 			                LOG.error("Error with copying list entries", e);
@@ -302,6 +308,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	                    int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
 	                    addGermplasmListData(germList,countOfExistingList+1);
 	                    this.mainWindow.removeWindow(dialogWindow);
+	                    
+	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
+	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId), true);
 	        } catch (MiddlewareQueryException e) {
 	            LOG.error("Error with copying list entries", e);
 	                e.printStackTrace();

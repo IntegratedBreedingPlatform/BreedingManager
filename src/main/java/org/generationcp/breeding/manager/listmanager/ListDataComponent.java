@@ -1030,7 +1030,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             try {
                 if(forGermplasmListWindow) {
                     listManagerTreeMenu.getBreedingManagerApplication();
-					listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+					listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId(), listManagerMain));
                     listManagerTreeMenu.getBreedingManagerApplication();
 					this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(listManagerCopyToNewListDialog);
                  
@@ -1038,7 +1038,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     
 //                  listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.getApplication().getMainWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
 //                  this.getApplication().getMainWindow().addWindow(listManagerCopyToNewListDialog);
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId()));
+                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(listManagerTreeMenu.getWindow(), listManagerCopyToNewListDialog,listName,listDataTable,getCurrentUserLocalId(), listManagerMain));
                     listManagerTreeMenu.getWindow().addWindow(listManagerCopyToNewListDialog);
                 }
             } catch (MiddlewareQueryException e) {

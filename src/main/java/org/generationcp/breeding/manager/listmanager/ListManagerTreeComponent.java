@@ -118,6 +118,19 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			}
 		}
 	}
+	
+	public void simulateItemClickForNewlyAdded(Integer listId, boolean openDetails ){
+	    //System.out.println(listId);
+	    germplasmListTree.expandItem("LOCAL");
+	    if(openDetails){
+    	    try{
+                displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
+            } catch(MiddlewareQueryException ex){
+                
+            }
+    	    germplasmListTree.setValue(listId);
+	    }
+	}
 
     public void createTree() {
     	treeContainerLayout.removeComponent(germplasmListTree);
