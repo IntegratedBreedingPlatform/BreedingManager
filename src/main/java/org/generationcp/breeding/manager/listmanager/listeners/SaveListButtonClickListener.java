@@ -286,7 +286,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
 	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
+//	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
 			
 			this.listDataTable.requestRepaint();

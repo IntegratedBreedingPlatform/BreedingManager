@@ -366,7 +366,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
              listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
              listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
+//             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
          
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
@@ -374,7 +374,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
              messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
+//             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
              
              populateTable();
              
@@ -687,7 +687,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
             listDataTable.addItem(new Object[] {
                     gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
-                    data.getDesignation(), data.getGroupName(), data.getStatusString()
+                    data.getDesignation(), data.getGroupName() 
+//                    , data.getStatusString()
             }, data.getId());
         }
 
@@ -698,7 +699,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		,ListDataTablePropertyID.SEED_SOURCE.getName()
         		,ListDataTablePropertyID.DESIGNATION.getName()
         		,ListDataTablePropertyID.GROUP_NAME.getName()
-        		,ListDataTablePropertyID.STATUS.getName()});
+//        		,ListDataTablePropertyID.STATUS.getName()
+        		});
         
         // render additional columns
     	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
@@ -1173,11 +1175,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             		,ListDataTablePropertyID.SEED_SOURCE.getName()
             		,ListDataTablePropertyID.DESIGNATION.getName()
             		,ListDataTablePropertyID.GROUP_NAME.getName()
-            		,ListDataTablePropertyID.STATUS.getName()});
+//            		,ListDataTablePropertyID.STATUS.getName()
+        		});
             
             listDataTable.addItem(new Object[] {
                             gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
-                            listData.getDesignation(), listData.getGroupName(), listData.getStatusString()
+                            listData.getDesignation(), listData.getGroupName()
+//                            , listData.getStatusString()
                     }, listDataId);
             
             listDataTable.setVisibleColumns(visibleColumns);
