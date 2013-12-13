@@ -12,6 +12,8 @@
 
 package org.generationcp.browser.study;
 
+import java.util.Iterator;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;

@@ -12,7 +12,11 @@
 
 package org.generationcp.browser.study.containers;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -55,6 +59,7 @@ public class StudyDataIndexContainer{
 
     private StudyDataManagerImpl studyDataManager;
     private int studyId;
+    
 
     public StudyDataIndexContainer(StudyDataManagerImpl studyDataManager, int studyId) {
         this.studyDataManager = studyDataManager;
@@ -192,7 +197,7 @@ public class StudyDataIndexContainer{
         // Create the container properties
         container.addContainerProperty(STUDY_ID, Integer.class, "");
         container.addContainerProperty(STUDY_NAME, String.class, "");
-        
+        Map mapChecker = new HashMap();
         try {
             BrowseStudyQueryFilter filter = new BrowseStudyQueryFilter();
             filter.setName(name);
@@ -204,7 +209,10 @@ public class StudyDataIndexContainer{
             if(studyResultSet != null){
                 while(studyResultSet.hasMore()){
                     StudyReference studyRef = studyResultSet.next();
-                    addStudyData(container, studyRef.getId(), studyRef.getName()); 
+                    if(mapChecker.get(studyRef.getId().toString()) == null){
+                        mapChecker.put(studyRef.getId().toString(), studyRef);
+                        addStudyData(container, studyRef.getId(), studyRef.getName());
+                    }
                 }
             }
         } catch (MiddlewareQueryException e) {
@@ -215,11 +223,12 @@ public class StudyDataIndexContainer{
         return container;
     }
 
-    private static void addStudyData(Container container, Integer id, String name) {
-        Object itemId = container.addItem();
-        Item item = container.getItem(itemId);
-        item.getItemProperty(STUDY_ID).setValue(id);
-        item.getItemProperty(STUDY_NAME).setValue(name);
+    private void addStudyData(Container container, Integer id, String name) {
+            Object itemId = container.addItem();
+            Item item = container.getItem(itemId);
+            item.getItemProperty(STUDY_ID).setValue(id);
+            item.getItemProperty(STUDY_NAME).setValue(name);
+        
     }
 
 }
