@@ -815,7 +815,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 listManagerTreeMenu.getBreedingManagerApplication();
 				MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                             , "Error with exporting list."    
-                            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                            , Notification.POSITION_CENTERED);
             }
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
@@ -1072,7 +1073,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
            
         }catch (MiddlewareQueryException e) {
             LOG.error("Error with locking list.", e);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1086,7 +1087,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm list with id: " + germplasmListId, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm list with id: " + germplasmListId  
-                    + ". Please report to IBWS developers."
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1096,7 +1097,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with id: " + gid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
-                    + ". Please report to IBWS developers."
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1216,7 +1217,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 workbenchDataManager.addProjectActivity(projAct);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error with adding workbench activity log.", e);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. Please report to IBWS developers."
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                         , Notification.POSITION_CENTERED);
             }
             //populateTable();
@@ -1225,7 +1226,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 //                this.germplasmListAccordionMenu.refreshListData();
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }

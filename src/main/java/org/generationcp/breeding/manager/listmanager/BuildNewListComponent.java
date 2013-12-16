@@ -754,7 +754,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     LOG.error("Error with exporting list.", e);
                 MessageNotifier.showError( this.getWindow()
                             , "Error with exporting list."    
-                            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                            , Notification.POSITION_CENTERED);
             }
         }
         
