@@ -1138,7 +1138,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
         listData.setEntryCode(preferredId);
         
-        listData.setSeedSource("From Add Entry Feature of Germplasm List Browser");
+        listData.setSeedSource("From Add Entry Feature of List Manager");
         
         String groupName = "-";
         try{
