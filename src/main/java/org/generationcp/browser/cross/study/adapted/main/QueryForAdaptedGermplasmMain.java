@@ -51,10 +51,10 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	    
 	    @Override
 	    public void afterPropertiesSet() throws Exception {
-	    setMargin(false);
-	    setSpacing(true);
-
-	    titleLayout = new HorizontalLayout();
+		    setMargin(false);
+		    setSpacing(true);
+	
+		    titleLayout = new HorizontalLayout();
 	        titleLayout.setSpacing(true);
 	        setTitleContent(GUIDE_MESSAGE);
 	        addComponent(titleLayout);
@@ -109,7 +109,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	    private void setTitleContent(String guideMessage){
 	        titleLayout.removeAllComponents();
 
-	        String title =  "Query for Adapted Germplasm <h2>" + VERSION + "</h2>";
+	        String title =  "Adapted Germplasm Query  <h2>" + VERSION + "</h2>";
 	        mainTitle = new Label();
 	        mainTitle.setStyleName("gcp-window-title");
 	        mainTitle.setContentMode(Label.CONTENT_XHTML);

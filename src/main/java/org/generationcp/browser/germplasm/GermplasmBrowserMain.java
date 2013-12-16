@@ -177,7 +177,7 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
         mainLayout.setSpacing(true);
         mainLayout.setMargin(false, true, true, true);
 
-        String title =  "<h1>Germplasm Browser</h1> <h2>: " + VERSION + "</h2>";
+        String title =  "Germplasm Browser  <h2>" + VERSION + "</h2>";
         Label applicationTitle = new Label();
         applicationTitle.setStyleName("gcp-window-title");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);

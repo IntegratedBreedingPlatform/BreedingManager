@@ -52,7 +52,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         this.setSpacing(true);
         this.setMargin(false, true, true, true);
         
-        String title =  "<h1>Study Browser</h1> <h2>: " + VERSION + "</h2>";
+        String title =  "Study Browser  <h2>" + VERSION + "</h2>";
         Label applicationTitle = new Label();
         applicationTitle.setStyleName("gcp-window-title");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);

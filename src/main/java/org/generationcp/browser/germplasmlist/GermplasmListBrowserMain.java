@@ -60,7 +60,7 @@ public class GermplasmListBrowserMain extends VerticalLayout implements Initiali
         this.setSpacing(true);
         this.setMargin(false, true, true, true);
         
-        String title =  "<h1>Germplasm List Browser</h1> <h2>: " + VERSION + "</h2>";
+        String title =  "Germplasm List Browser  <h2>" + VERSION + "</h2>";
         Label applicationTitle = new Label();
         applicationTitle.setStyleName("gcp-window-title");
         applicationTitle.setContentMode(Label.CONTENT_XHTML);

@@ -1,41 +1,46 @@
 @import url(../vaadin-retro/styles.css);
 
 .gcp-window-title {
-    font-size: 20px;
-	color: rgb(68,72,55);
+    text-transform: uppercase;
+    font-size: 14px;
+	color: #333333;
 }
 
+
 .gcp-window-title H1:first-child {
-	/*text-transform: uppercase;*/
+	text-transform: uppercase;
 	font-weight: normal;
-    font-size: 18px;
-	color: rgb(68,72,55);
+    font-size: 14px;
+	color: #333333;
 }
 
 .gcp-window-title H1 {
-	/*text-transform: uppercase;*/
+	text-transform: uppercase;
     font-size: 14px;
     font-weight: normal;
     display: inline-block; 
-	color: rgb(68,72,55);
+	color: #333333;
 }
 
 .gcp-window-title H2 {
     font-size: 12px;
     font-weight: normal;
     display: inline-block; 
-	color: rgb(128,134,106);
+	color: #333333;
 }
 
 .gcp-content-title {
 	font-weight: bold;
-	font-size: 16px;
+	font-size: 14px;
+	color: #333333;
 }
 
 .gcp-section-title {
 	font-weight: bold;
 	font-size: 12px;
+	color: #333333;
 }
+
 
 .gcp-form-title {
 	font-weight: bold;
