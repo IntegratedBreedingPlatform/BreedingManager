@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.listeners.EnterShortcutListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,7 +16,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -80,6 +84,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		searchButton.setData(SEARCH_BUTTON);
 		searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
 		searchButton.setClickShortcut(KeyCode.ENTER);
+		searchButton.addShortcutListener(new EnterShortcutListener("Enter Shortcut", this));
 		
 		searchBar.addComponent(searchLabel, "top:13px; left:20px;");
 		searchBar.addComponent(searchField, "top:10px; left:100px;");
