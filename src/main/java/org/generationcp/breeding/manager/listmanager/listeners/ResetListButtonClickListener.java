@@ -29,7 +29,7 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 	@Override
 	public void buttonClick(ClickEvent event) {
 
-		ConfirmDialog.show(source.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
+		ConfirmDialog.show(source.getWindow(), "Reset List Builder", 
             messageSource.getMessage(Message.CONFIRM_RESET_LIST_BUILDER_FIELDS), 
             messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
             new ConfirmDialog.Listener() {
