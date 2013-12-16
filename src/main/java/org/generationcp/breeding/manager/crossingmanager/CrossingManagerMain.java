@@ -257,7 +257,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     public void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();        
         //String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
-        String title =  "Crossing Manager: Make Crosses <h2>" + VERSION + "</h2>";
+        String title =  "Manage Crosses  <h2>" + VERSION + "</h2>";
         crossingManagerTitle = new Label();
         crossingManagerTitle.setStyleName("gcp-window-title");
         crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
