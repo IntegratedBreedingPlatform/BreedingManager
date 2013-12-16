@@ -66,32 +66,26 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	}
 
-	@Override
+	@SuppressWarnings("deprecation")
+    @Override
 	public void afterPropertiesSet() throws Exception {
-	    /*
-	    WebApplicationContext context = ((WebApplicationContext) getApplication()
-                .getContext());
-        WebBrowser webBrowser = context.getBrowser();
-        */
-        boolean isNotFF = true;
+	    
         
-        searchPanel = new AbsoluteLayout();
-        searchPanel.setWidth("20%");
-        searchPanel.setHeight("45px");
         Panel p = new Panel();
-        p.setWidth(Sizeable.SIZE_UNDEFINED, 0);
-        p.setHeight(Sizeable.SIZE_UNDEFINED, 0);
+        //p.setWidth("100%");
+        //p.setHeight("47px");
         p.addStyleName("search-panel");
         p.addStyleName(Runo.PANEL_LIGHT);
-        
+        p.addStyleName("list-manager-search-bar");
+        p.setScrollable(false);
         
         searchBar = new AbsoluteLayout();
-        searchBar.setWidth("98%");
-        searchBar.setHeight("45px");
-        searchBar.addStyleName("list-manager-search-bar");
+        searchBar.setWidth("80%");
+        searchBar.setHeight("40px");
+        //searchBar.addStyleName("list-manager-search-bar");
         
         searchLabel = new Label();
-        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+":");
+        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
         searchLabel.setWidth("200px");
         
         searchField = new TextField();
@@ -108,46 +102,39 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         searchButton.addStyleName("search-button");
         searchButton.setData(SEARCH_BUTTON);
         searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
-        searchButton.setClickShortcut(KeyCode.ENTER);
-        searchButton.addShortcutListener(new EnterShortcutListener("Enter Shortcut", this));
+        //searchButton.setClickShortcut(KeyCode.ENTER);
+        /*
+        p.addComponent(searchLabel);
+        p.addComponent(searchField);
+        p.addComponent(searchButton);
+        */
+        p.addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                // The panel is the sender, loop trough content
+                searchButtonClickAction();
+            }
+        });
         
-        
-        if (isNotFF) {
-            p.addComponent(searchButton);
-            searchPanel.addComponent(p, "top:0px; left:3px;");
-        }else{
-            ;  
-        }
+            
+            //p.addComponent(searchButton);
+        //searchPanel.addComponent(p, "top:0px; left:3px;");
+       
         
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
-        //
+        searchBar.addComponent(searchButton, "top:8px; left:255px;");
         
-        if (isNotFF) {
-            searchBar.addComponent(searchPanel, "top:8px; left:255px;");
-        }else{
-            searchBar.addComponent(searchButton, "top:8px; left:255px;");  
-        }
         
         searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
-        addComponent(searchBar, "top:20px; left:20px;");
+        //addComponent(searchBar, "top:20px; left:20px;");
+        //p.addComponent(searchBar);
+        p.setLayout(searchBar);
+        addComponent(p, "top:20px; left:20px;");
         addComponent(searchResultsComponent, "top:90px; left:20px;");
         
         
-        /*
-        if (webBrowser.isChrome()) {
-           
-        } else if (webBrowser.isOpera()) {
-            
-        } else  else if (webBrowser.isSafari()) {
-          
-        } else if (webBrowser.isIE()) {
-          
-        } else {
-            
-        }
-        */
 	    
 
 	}

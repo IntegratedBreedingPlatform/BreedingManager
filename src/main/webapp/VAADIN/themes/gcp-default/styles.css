@@ -300,7 +300,7 @@
 .overflow_scroll {
 	overflow: scroll !important;
 }
-.v-panel-content-search-panel .v-verticallayout{
+.v-panel-search-panel {
 	background-color: #EFEFEF;	
-	margin-top: -17px; margin-left: -15px;
+	max-width: 98%;
 }
