@@ -224,12 +224,13 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 		Boolean proceedWithSave = true;
 		
 		try {
-			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
+			//Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
 			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
-			if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
+			if(matchingNamesCountOnCentral>0){
 				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
 				proceedWithSave = false;
 			}
+			
 		} catch (MiddlewareQueryException e) {
 			
 		}
@@ -276,7 +277,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
             int statusListName = 1;
             String GIDListString = "";
 
-            if (listId == "null") {
+            if ("null".equals(listId)) {
                 GermplasmList listNameData = new GermplasmList(null, listName,
                         currentDate, type, userId, description, parent,
                         statusListName);
