@@ -20,11 +20,16 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Runo;
 
 @Configurable
 public class ListManagerSearchListsComponent extends AbsoluteLayout implements
@@ -49,6 +54,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
+	private AbsoluteLayout searchPanel;
+	
 	
 	public ListManagerSearchListsComponent(ListManagerMain listManagerMain){
 		this.listManagerMain = listManagerMain;
@@ -61,39 +68,87 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
-		searchBar = new AbsoluteLayout();
-		searchBar.setWidth("98%");
-		searchBar.setHeight("45px");
-		searchBar.addStyleName("list-manager-search-bar");
-		
-		searchLabel = new Label();
-		searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+":");
-		searchLabel.setWidth("200px");
-		
-		searchField = new TextField();
-		
-		/**
-		 * TODO: replace with image button
-		 */
-		searchButton = new Button();
-		searchButton.setWidth("30px");
-		searchButton.setHeight("30px");
-		searchButton.setStyleName(BaseTheme.BUTTON_LINK);
-		searchButton.addStyleName("search-button");
-		searchButton.setData(SEARCH_BUTTON);
-		searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
-		searchButton.setClickShortcut(KeyCode.ENTER);
-		searchButton.addShortcutListener(new EnterShortcutListener("Enter Shortcut", this));
-		
-		searchBar.addComponent(searchLabel, "top:13px; left:20px;");
-		searchBar.addComponent(searchField, "top:10px; left:100px;");
-		searchBar.addComponent(searchButton, "top:8px; left:255px;");
-		
-		searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
-		
-		addComponent(searchBar, "top:20px; left:20px;");
-		addComponent(searchResultsComponent, "top:90px; left:20px;");
+	    /*
+	    WebApplicationContext context = ((WebApplicationContext) getApplication()
+                .getContext());
+        WebBrowser webBrowser = context.getBrowser();
+        */
+        boolean isNotFF = true;
+        
+        searchPanel = new AbsoluteLayout();
+        searchPanel.setWidth("20%");
+        searchPanel.setHeight("45px");
+        Panel p = new Panel();
+        p.setWidth(Sizeable.SIZE_UNDEFINED, 0);
+        p.setHeight(Sizeable.SIZE_UNDEFINED, 0);
+        p.addStyleName("search-panel");
+        p.addStyleName(Runo.PANEL_LIGHT);
+        
+        
+        searchBar = new AbsoluteLayout();
+        searchBar.setWidth("98%");
+        searchBar.setHeight("45px");
+        searchBar.addStyleName("list-manager-search-bar");
+        
+        searchLabel = new Label();
+        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+":");
+        searchLabel.setWidth("200px");
+        
+        searchField = new TextField();
+        
+        /**
+         * TODO: replace with image button
+         */
+        
+        
+        searchButton = new Button();
+        searchButton.setWidth("30px");
+        searchButton.setHeight("30px");
+        searchButton.setStyleName(BaseTheme.BUTTON_LINK);
+        searchButton.addStyleName("search-button");
+        searchButton.setData(SEARCH_BUTTON);
+        searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        searchButton.setClickShortcut(KeyCode.ENTER);
+        searchButton.addShortcutListener(new EnterShortcutListener("Enter Shortcut", this));
+        
+        
+        if (isNotFF) {
+            p.addComponent(searchButton);
+            searchPanel.addComponent(p, "top:0px; left:3px;");
+        }else{
+            ;  
+        }
+        
+        searchBar.addComponent(searchLabel, "top:13px; left:20px;");
+        searchBar.addComponent(searchField, "top:10px; left:100px;");
+        //
+        
+        if (isNotFF) {
+            searchBar.addComponent(searchPanel, "top:8px; left:255px;");
+        }else{
+            searchBar.addComponent(searchButton, "top:8px; left:255px;");  
+        }
+        
+        searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
+        
+        addComponent(searchBar, "top:20px; left:20px;");
+        addComponent(searchResultsComponent, "top:90px; left:20px;");
+        
+        
+        /*
+        if (webBrowser.isChrome()) {
+           
+        } else if (webBrowser.isOpera()) {
+            
+        } else  else if (webBrowser.isSafari()) {
+          
+        } else if (webBrowser.isIE()) {
+          
+        } else {
+            
+        }
+        */
+	    
 
 	}
 
