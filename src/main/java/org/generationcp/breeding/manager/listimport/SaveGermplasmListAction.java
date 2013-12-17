@@ -87,17 +87,12 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                 	germplasmName.setGermplasm(germplasmManager.getGermplasmByGID(germplasmName.getGermplasm().getGid()));
                     germplasmIds.add(germplasmName.getGermplasm().getGid());
                     name.setGermplasmId(germplasmName.getGermplasm().getGid());
-                    germplasmManager.addGermplasmName(name);
-                    
-                    System.out.println("Re-used existing germplasm for "+name.getNval()+" with GID "+germplasmName.getGermplasm().getGid());
                 } else {
                     //Create new germplasm
                     //Integer negativeId = germplasmManager.getN .getNegativeId("gid");
                 	germplasmName.getGermplasm().setGid(null);
                 	germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
                     germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
-                    
-                    System.out.println("Created new germplasm for "+name.getNval()+" with GID "+germplasmIds.get(germplasmIds.size()-1));
                 }
             }
         } catch (Exception e) {
@@ -105,9 +100,6 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         
         //GermplasmListData germplasmListData = new GermplasmListData();
         //germplasmList.setListData();
-
-        System.out.println("GIDs saved: "+germplasmIds);
-        
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename);
 

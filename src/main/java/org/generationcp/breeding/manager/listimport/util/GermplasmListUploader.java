@@ -156,6 +156,38 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             inp = new FileInputStream(tempFileName);
             wb = new HSSFWorkbook(inp);
             
+            try{
+                Sheet sheet1 = wb.getSheetAt(0);
+                
+                if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
+                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                            , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                    fileIsValid = false;
+                    return;
+                }
+            } catch(Exception ex){
+                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                        , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                fileIsValid = false;
+                return;
+            }
+            
+            try{
+                Sheet sheet2 = wb.getSheetAt(1);
+                
+                if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
+                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                            , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                    fileIsValid = false;
+                    return;
+                }
+            } catch(Exception ex){
+                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
+                        , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                fileIsValid = false;
+                return;
+            }
+            
             readSheet1();
             readSheet2();
 
@@ -248,7 +280,12 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(gidFactor)){
-                        importedGermplasm.setGid(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                    	String gidString = getCellStringValue(currentSheet, currentRow, col, true);
+                    	Integer gidInteger = null;
+                    	if(gidString != null && gidString.length() > 0){
+                    		gidInteger = Integer.valueOf(gidString);
+                    	} 
+                    	importedGermplasm.setGid(gidInteger);
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
                         importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
@@ -289,35 +326,10 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 						e.printStackTrace();
 					}
                 	
-                //GID and DESIG are given, make sure DESIG matches value of GID
-                } else if (importedGermplasm.getGid()!=null && importedGermplasm.getDesig()!=null && importedGermplasm.getDesig()!=""){
-                	try {
-                		
-                		//Check if germplasm exists
-				        Germplasm currentGermplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
-				        if(currentGermplasm==null){
-				        	showInvalidFileError("Germplasm with GID "+importedGermplasm.getGid()+" not found in database");
-				        } else {
-
-					        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-					        importedGermplasmGids.add(importedGermplasm.getGid());
-					        
-							Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-							
-							if(preferredNames.get(importedGermplasm.getGid())!=null && !importedGermplasm.getDesig().toUpperCase().equals(preferredNames.get(importedGermplasm.getGid()).toUpperCase())){
-								showInvalidFileError("Invalid GID and DESIG/DESIGNATION combination on Sheet 2, DESIG on file for GID "+importedGermplasm.getGid()+" is \""+importedGermplasm.getDesig()+"\" but preferred name on database is \""+preferredNames.get(importedGermplasm.getGid())+"\".");
-							} else {
-								importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
-							}
-							
-				        }
-					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
-					}
-                	
-                //GID is not given, and DESIG is given
-                } else {
-                	
+                //GID is not given or 0, and DESIG is not given
+                } else if((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
+                		 && (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)){
+                	showInvalidFileError("Row " + currentRow + " on Observation sheet of file doesn't have a GID or a DESIGNATION value.");
                 }
                 
                 importedGermplasmList.addImportedGermplasm(importedGermplasm);
