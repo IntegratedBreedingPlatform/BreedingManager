@@ -96,8 +96,11 @@
      color: white;
 }
 
-.gcp-bold-italic{
+.gcp-bold-italic {
 	font-weight: bold;
 	font-style: italic;
 }
 
+.gcp-form-label {
+	font-weight: bold;
+}

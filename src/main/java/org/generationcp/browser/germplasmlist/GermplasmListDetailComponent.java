@@ -116,6 +116,13 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         lblStatus = new Label(messageSource.getMessage(Message.STATUS_LABEL)); // "Status"
         lblListOwner = new Label(messageSource.getMessage(Message.LIST_OWNER_LABEL)); // "List Owner"
         
+        lblName.addStyleName("gcp-form-label");
+        lblDescription.addStyleName("gcp-form-label");
+        lblCreationDate.addStyleName("gcp-form-label");
+        lblType.addStyleName("gcp-form-label");
+        lblStatus.addStyleName("gcp-form-label");
+        lblListOwner.addStyleName("gcp-form-label");
+        
         // get GermplasmList Detail
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
 
