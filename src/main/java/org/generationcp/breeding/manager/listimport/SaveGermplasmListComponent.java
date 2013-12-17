@@ -3,12 +3,12 @@ package org.generationcp.breeding.manager.listimport;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -312,7 +312,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                  }
              }             
              
-             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId);
+             List<ImportedGermplasm> importedGermplasms = ((SpecifyGermplasmDetailsComponent) previousScreen).getImportedGermplasms();
+             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
 

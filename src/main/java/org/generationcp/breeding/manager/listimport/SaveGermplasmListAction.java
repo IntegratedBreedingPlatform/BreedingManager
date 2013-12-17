@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -63,7 +64,8 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
      * @return id of new Germplasm List created
      * @throws MiddlewareQueryException
      */
-    public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, String filename, List<Integer> doNotCreateGermplasmsWithId)throws MiddlewareQueryException{
+    public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, String filename
+    		, List<Integer> doNotCreateGermplasmsWithId, List<ImportedGermplasm> importedGermplasms)throws MiddlewareQueryException{
 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
@@ -101,7 +103,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         //GermplasmListData germplasmListData = new GermplasmListData();
         //germplasmList.setListData();
         GermplasmList list = saveGermplasmListRecord(germplasmList);
-        saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename);
+        saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
 
         // log project activity in Workbench
         addWorkbenchProjectActivity(filename);
@@ -118,25 +120,36 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 
 
     private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
-        List<Integer> germplasmIds, GermplasmList list, String filename) throws MiddlewareQueryException {
+        List<Integer> germplasmIds, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
 
-        Iterator<Integer> germplasmIdIterator = germplasmIds.iterator();
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
         int ctr = 1;
 
         for (GermplasmName germplasmName : germplasmNameObjects){
         	
             int entryId = ctr++;
+            ImportedGermplasm importedGermplasm = importedGermplasms.get(entryId - 1);
             Integer gid = germplasmName.getGermplasm().getGid(); //germplasmIdIterator.next();
             
-            Germplasm germplasm = germplasmName.getGermplasm();
             String designation = germplasmName.getName().getNval();
+            
             String source = filename + ":" +entryId;
+            if(importedGermplasm.getSource() != null && importedGermplasm.getSource().length() > 0){
+            	source = importedGermplasm.getSource();
+            }
 
-            String groupName = "";   //for simple file, this is blank
+            String groupName = "-";
+            if(importedGermplasm.getCross() != null && importedGermplasm.getCross().length() > 0){
+            	groupName = importedGermplasm.getCross();
+            }
+            
+            String entryCode = String.valueOf(entryId);
+            if(importedGermplasm.getEntryCode() != null && importedGermplasm.getEntryCode().length() > 0){
+            	entryCode = importedGermplasm.getEntryCode();
+            }
 
             GermplasmListData germplasmListData = buildGermplasmListData(
-                list, gid, entryId, designation, groupName, source);
+                list, gid, entryId, designation, groupName, source, entryCode);
 
             listToSave.add(germplasmListData);
         }
@@ -144,13 +157,13 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         this.germplasmListManager.addGermplasmListData(listToSave);
     }
     private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId,
-            String designation, String groupName, String source) {
+            String designation, String groupName, String source, String entryCode) {
 
             GermplasmListData germplasmListData = new GermplasmListData();
             germplasmListData.setList(list);
             germplasmListData.setGid(gid);
             germplasmListData.setEntryId(entryId);
-            germplasmListData.setEntryCode(String.valueOf(entryId));
+            germplasmListData.setEntryCode(entryCode);
             germplasmListData.setSeedSource(source);
             germplasmListData.setDesignation(designation);
             germplasmListData.setStatus(LIST_DATA_STATUS);
