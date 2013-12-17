@@ -346,7 +346,7 @@ public class CrossingManagerExporter{
                 break;
             }
             case TITLE : {
-                cell.setCellValue(this.crossesList.getName());
+                cell.setCellValue(this.crossesList.getDescription());
                 break;
             }
             case LIST_TYPE : {
