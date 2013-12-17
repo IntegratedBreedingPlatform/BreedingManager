@@ -71,7 +71,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         germplasmList.setUserId(ibdbUserId);
 
         List<Integer> germplasmIds = new ArrayList<Integer>();
-        Map<Integer, Germplasm> addedGermplasmMap = new HashMap<Integer, Germplasm>();
+        Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
         
         try {
             for(GermplasmName germplasmName : germplasmNameObjects){
@@ -85,7 +85,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                     germplasmIds.add(germplasmName.getGermplasm().getGid());
                     name.setGermplasmId(germplasmName.getGermplasm().getGid());
                 } else {
-                	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName.getGermplasm(), addedGermplasmMap);
+                	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName, addedGermplasmNameMap);
                 	
             		germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
             		
@@ -93,7 +93,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                 	if(addedGermplasmMatch==null){
                 		germplasmName.getGermplasm().setGid(null);
                         germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
-                		addedGermplasmMap.put(germplasmName.getGermplasm().getGid(), germplasmName.getGermplasm());
+                		addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
                 	//if already addded (re-use that one)
                 	} else {
                 		germplasmName.setGermplasm(addedGermplasmMatch);
@@ -114,12 +114,14 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         return list.getId();
     }
 
-    private Germplasm getAlreadyAddedGermplasm(Germplasm germplasm, Map<Integer, Germplasm> addedGermplasmMap){
-    	for(Integer gid : addedGermplasmMap.keySet()){
-    		if(addedGermplasmMap.get(gid).getGpid1().equals(germplasm.getGpid1()) 
-    			&& addedGermplasmMap.get(gid).getGpid1().equals(germplasm.getGpid1())
+    private Germplasm getAlreadyAddedGermplasm(GermplasmName germplasmName, Map<Integer, GermplasmName> addedGermplasmNameMap){
+    	Germplasm germplasm = germplasmName.getGermplasm();
+    	for(Integer gid : addedGermplasmNameMap.keySet()){
+    		if(addedGermplasmNameMap.get(gid).getGermplasm().getGpid1().equals(germplasm.getGpid1()) 
+        			&& addedGermplasmNameMap.get(gid).getGermplasm().getGpid1().equals(germplasm.getGpid1())
+        			&& addedGermplasmNameMap.get(gid).getName().getNval().equals(germplasmName.getName().getNval())
     		  ){
-    			return addedGermplasmMap.get(gid);
+    			return addedGermplasmNameMap.get(gid).getGermplasm();
     		}
     	}
     	return null;
