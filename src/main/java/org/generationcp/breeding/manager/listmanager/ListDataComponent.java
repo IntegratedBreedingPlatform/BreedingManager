@@ -165,6 +165,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
 	private AbsoluteLayout toolsMenuBar;
+	private Label noListDataLabel;
 
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
 	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
@@ -285,8 +286,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 listDatas = new ArrayList<GermplasmListData>();
          long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
 
+     	 // "No Germplasm List Data retrieved."
          if (listDataCount == 0) {
-             addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
+            noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+			addComponent(noListDataLabel); 
          } else {
         	 
         	 initializeListDataTable(toolsMenuBar);    	 
@@ -1176,8 +1179,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             
             // create table if added entry is first listdata record
             if (listDataTable == null){
+            	if (noListDataLabel != null){
+            		removeComponent(noListDataLabel);
+            	}
             	initializeListDataTable(toolsMenuBar);
-
             	
             } else {
             	listDataTable.setEditable(false);

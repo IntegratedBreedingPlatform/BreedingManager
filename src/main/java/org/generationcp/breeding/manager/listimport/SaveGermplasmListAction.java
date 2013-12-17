@@ -70,14 +70,9 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
 
-        //-- ORIG --
-        // save the IBDB records
-        //List<Integer> germplasmIds = this.germplasmManager.addGermplasm(germplasmMap);
-        //-- END --
-        
-        
-        //
         List<Integer> germplasmIds = new ArrayList<Integer>();
+        Map<Integer, Germplasm> addedGermplasmMap = new HashMap<Integer, Germplasm>();
+        
         try {
             for(GermplasmName germplasmName : germplasmNameObjects){
                 Name name = germplasmName.getName();
@@ -90,18 +85,26 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                     germplasmIds.add(germplasmName.getGermplasm().getGid());
                     name.setGermplasmId(germplasmName.getGermplasm().getGid());
                 } else {
-                    //Create new germplasm
-                    //Integer negativeId = germplasmManager.getN .getNegativeId("gid");
-                	germplasmName.getGermplasm().setGid(null);
-                	germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
-                    germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
+                	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName.getGermplasm(), addedGermplasmMap);
+                	
+            		germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
+            		
+                	//not yet added, create new germplasm record
+                	if(addedGermplasmMatch==null){
+                		germplasmName.getGermplasm().setGid(null);
+                        germplasmIds.add(germplasmManager.addGermplasm(germplasmName.getGermplasm(), name));
+                		addedGermplasmMap.put(germplasmName.getGermplasm().getGid(), germplasmName.getGermplasm());
+                	//if already addded (re-use that one)
+                	} else {
+                		germplasmName.setGermplasm(addedGermplasmMatch);
+                	}
+                	
+                	
                 }
             }
         } catch (Exception e) {
         }
         
-        //GermplasmListData germplasmListData = new GermplasmListData();
-        //germplasmList.setListData();
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
 
@@ -111,6 +114,17 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         return list.getId();
     }
 
+    private Germplasm getAlreadyAddedGermplasm(Germplasm germplasm, Map<Integer, Germplasm> addedGermplasmMap){
+    	for(Integer gid : addedGermplasmMap.keySet()){
+    		if(addedGermplasmMap.get(gid).getGpid1().equals(germplasm.getGpid1()) 
+    			&& addedGermplasmMap.get(gid).getGpid1().equals(germplasm.getGpid1())
+    		  ){
+    			return addedGermplasmMap.get(gid);
+    		}
+    	}
+    	return null;
+    }
+    
     private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
         int newListId = this.germplasmListManager.addGermplasmList(germplasmList);
         GermplasmList list = this.germplasmListManager.getGermplasmListById(newListId);
