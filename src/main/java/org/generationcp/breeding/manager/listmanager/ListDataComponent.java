@@ -355,9 +355,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		         	}else if(ACTION_COPY_TO_NEW_LIST == action){
 		         		listManagerMain.showBuildNewListComponent();
 		         		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
-		         		for(Integer gid : gids){
-		         			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
-		         		}
+	         			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(listDataTable, null);
 		         	}
 		         	
 		         }

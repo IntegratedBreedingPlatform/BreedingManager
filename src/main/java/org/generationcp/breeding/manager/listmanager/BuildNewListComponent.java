@@ -415,9 +415,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object droppedOverItemId = dropData.getItemIdOver();
 			    
-                //TODO: add handler for source tables from "Browse Lists" tab
-                
-                
                 //Handle drops from MATCHING GERMPLASMS TABLE
                 if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
                 	
@@ -457,22 +454,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 //Handle drops from MATCHING GERMPLASMS TABLE
                 } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
                     	
-                    	List<Integer> selectedGIDs = getSelectedGids(sourceTable, ListDataTablePropertyID.GID.getName());
+                    	addGermplasmToGermplasmTable(transferable, droppedOverItemId);
                     	
-                    	//If table has value (item/s is/are highlighted in the source table, add that)
-                    	if(selectedGIDs.size()>0){
-                    		for(int i=0;i<selectedGIDs.size();i++){
-                    			if(i==0)
-                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), droppedOverItemId);
-                    			else 
-                    				addGermplasmToGermplasmTable(selectedGIDs.get(i), selectedGIDs.get(i-1));
-                    		}
-                    	//Add dragged item itself
-                    	} else {
-                    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(transferable.getItemId()).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString());
-                    		addGermplasmToGermplasmTable(gid, droppedOverItemId);
-                    	}
-                // Handle drops from within the GERMPLASMS TABLE
                 } else if(sourceTable.getData().equals(GERMPLASMS_TABLE_DATA)){
                     //Check first if item is dropped on top of itself
                     if(!transferable.getItemId().equals(droppedOverItemId)) {
@@ -522,6 +505,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	//dennis
     }
 	
+    
 	/**
 	 * Add germplasms from a gemrplasm list to the table
 	 */
@@ -566,8 +550,123 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 //			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
         }		
-        assignSerializedEntryCode();
+        assignSerializedEntryNumber();
 	}
+
+	
+	/**
+	 * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+	 * @param transferable
+	 * @param droppedOn
+	 */
+	private void addGermplasmToGermplasmTable(TableTransferable transferable, Object droppedOnItemIdObject){
+		Integer itemId = (Integer) transferable.getItemId();
+		Table sourceTable = (Table) transferable.getSourceComponent();
+		
+        List<Integer> itemIds = getSelectedItemIds(sourceTable);
+
+        Item newItem;
+
+        setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
+        
+        if(itemIds.size()>0){
+        	for(Integer currentItemId : itemIds){
+        		if(droppedOnItemIdObject!=null)
+        			newItem = germplasmsTable.addItem(getNextListEntryId());
+        		else
+        			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+        		
+        		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
+        		
+        		Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+        		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+        		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
+        		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
+        		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
+                
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+            		newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+            		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+            		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+        		
+        	}
+        } else {
+    		if(droppedOnItemIdObject!=null)
+    			newItem = germplasmsTable.addItem(getNextListEntryId());
+    		else
+    			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+
+    		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
+    		
+    		Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+    		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+    		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
+    		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
+    		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
+            
+        	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+        		newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
+        	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+        		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
+        	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+        		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());        	
+        }
+        
+		assignSerializedEntryNumber();
+	}
+    
+
+	/**
+	 * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+	 * @param transferable
+	 * @param droppedOn
+	 */
+	public void addGermplasmToGermplasmTable(Table sourceTable, Object droppedOnItemIdObject){
+        List<Integer> itemIds = getSelectedItemIds(sourceTable);
+
+        Item newItem;
+
+        setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
+        
+        if(itemIds.size()>0){
+        	for(Integer currentItemId : itemIds){
+        		if(droppedOnItemIdObject!=null)
+        			newItem = germplasmsTable.addItem(getNextListEntryId());
+        		else
+        			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+        		
+        		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
+        		
+        		Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+        		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+        		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
+        		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
+        		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
+                
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+            		newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+            		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+            		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+        		
+        	}
+        }
+		assignSerializedEntryNumber();
+	}
+	
+	
 	
 	/**
 	 * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
@@ -610,7 +709,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
 //			newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue("0");
 			
-			assignSerializedEntryCode();
+			assignSerializedEntryNumber();
 			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
@@ -947,7 +1046,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		for(Integer selectedItemId:selectedItemIds){
 			germplasmsTable.removeItem(selectedItemId);
 		}
-		assignSerializedEntryCode();
+		assignSerializedEntryNumber();
     }
 
     public void setupSaveButtonClickListener(){
