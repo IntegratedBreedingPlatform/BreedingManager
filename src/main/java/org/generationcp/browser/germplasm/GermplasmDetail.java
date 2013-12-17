@@ -124,11 +124,14 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                     layoutGenerationHistory.setMargin(true);
                 }
             } else if (((VerticalLayout) tab.getComponent()).getData().equals(FIFTH_TAB)) {
-                if (layoutPedigreeTree.getComponentCount() == 0) {
-                    btnViewPedigreeGraph = new Button("View Pedigree Graph");
-                    btnViewPedigreeGraph.setData(VIEW_PEDIGREE_GRAPH_ID);
-                    btnViewPedigreeGraph.addListener(new GermplasmButtonClickListener(this));
-                    layoutPedigreeTree.addComponent(btnViewPedigreeGraph);
+                if (layoutPedigreeTree.getComponentCount() == 0) {                    
+                    if(fromUrl == false){
+                        btnViewPedigreeGraph = new Button("View Pedigree Graph");
+                        btnViewPedigreeGraph.setData(VIEW_PEDIGREE_GRAPH_ID);
+                        btnViewPedigreeGraph.addListener(new GermplasmButtonClickListener(this));
+                        layoutPedigreeTree.addComponent(btnViewPedigreeGraph);
+                    }
+                    //btnViewPedigreeGraph.setVisible(!fromUrl);
                     
                     HorizontalLayout derivativeHorizontalLayout = new HorizontalLayout();
                     derivativeHorizontalLayout.setMargin(true); 
