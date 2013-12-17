@@ -16,6 +16,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -208,7 +210,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
     public void nextButtonClickAction() throws InternationalizableException {
          //do the saving now
-        if (validateRequiredFields()){
+    	
+
+    	
+        if (validateListName() && validateRequiredFields()){
 
         saveRecords();
         
@@ -341,5 +346,22 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 
     public void setDoNotCreateGermplasmsWithId(List<Integer> doNotCreateGermplasmsWithId) {
         this.doNotCreateGermplasmsWithId = doNotCreateGermplasmsWithId;
-    }    
+    }
+    
+    private Boolean validateListName(){
+    	Long nameMatches = Long.valueOf(0);
+    	try {
+			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL, Database.LOCAL);
+			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL, Database.CENTRAL);
+			if(nameMatches>0){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+		                messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE), Window.Notification.POSITION_CENTERED);
+				return false;
+			}
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return true;
+    }
 }
