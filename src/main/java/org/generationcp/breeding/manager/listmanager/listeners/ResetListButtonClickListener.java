@@ -60,6 +60,9 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 		source.setupAddColumnContextMenu();
 		source.setupSaveButtonClickListener();
 		
+		//disabled the menu options when the build new list table has no rows
+		source.resetMenuOptions();
+		
 		//Clear flag, this is used for saving logic (to save new list or update)
 		source.setCurrentlySavedGermplasmList(null);
 	}
