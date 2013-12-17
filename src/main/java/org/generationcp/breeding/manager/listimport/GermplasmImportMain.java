@@ -175,8 +175,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     public void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();        
-        //String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
-        String title =  "Import Germplasm List  <h2>" + VERSION + "</h2>";
+        String title =  "Germplasm Import  <h2>" + VERSION + "</h2>";
         crossingManagerTitle = new Label();
         crossingManagerTitle.setStyleName("gcp-window-title");
         crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);

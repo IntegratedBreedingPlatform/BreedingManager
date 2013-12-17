@@ -195,8 +195,16 @@ public class GermplasmListExporter {
         
         // retrieve user details
         User listUser = new User();
+        Integer currentWorkbenchUserId = 0;
+        Integer currentLocalIbdbUserId = 0;
         try {
-            listUser = userDataManager.getUserById(germplasmList.getUserId());
+            //listUser = userDataManager.getUserById(germplasmList.getUserId());
+            currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+            Project lastProject = workbenchDataManager.getLastOpenedProject(currentWorkbenchUserId);
+            Integer listOwnerWorkbenchUserid = workbenchDataManager.getWorkbenchUserId(germplasmList.getUserId(), lastProject.getProjectId());
+            listUser = workbenchDataManager.getUserById(listOwnerWorkbenchUserid);
+            
+            //listUser = workbenchDataManager.getUserById(listUser.getPersonid());
         } catch (MiddlewareQueryException e) {
             throw new GermplasmListExporterException("Error with getting user information.", e);
         }
@@ -210,6 +218,7 @@ public class GermplasmListExporter {
         listUserRow.createCell(5).setCellValue("C");
         if(listUser!=null && listUser.getName()!=null)
             listUserRow.createCell(6).setCellValue(listUser.getName());
+        
         listUserRow.createCell(7).setCellValue("LIST");
         
         HSSFRow listUserIdRow = descriptionSheet.createRow(actualRow + 2); 
@@ -225,8 +234,7 @@ public class GermplasmListExporter {
         listUserIdRow.createCell(7).setCellValue("LIST");
         
         // retrieve current workbench user and last opened project
-        Integer currentWorkbenchUserId = 0;
-        Integer currentLocalIbdbUserId = 0;
+        
         User exporterUser = new User();
         try {
             currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();

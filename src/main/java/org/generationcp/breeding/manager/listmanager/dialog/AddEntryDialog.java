@@ -451,7 +451,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 } catch(MiddlewareQueryException mex){
                     LOG.error("Error with getting germplasm with id: " + this.selectedGid, mex);
                     MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + this.selectedGid 
-                            +".  Please report to IBWS developers."
+                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                             , Notification.POSITION_CENTERED);
                 }
         }
@@ -497,7 +497,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             return;
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with saving germplasm and name records!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records.  Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -518,7 +518,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting breeding methods!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding methods.  Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding methods. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             Integer unknownId = Integer.valueOf(0);
             this.breedingMethodComboBox.addItem(unknownId);
@@ -542,7 +542,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm name types!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm name types.  Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm name types. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             Integer unknownId = Integer.valueOf(0);
             this.nameTypeComboBox.addItem(unknownId);
@@ -567,7 +567,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting breeding locations!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding locations.  Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding locations. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             Integer unknownId = Integer.valueOf(0);
             this.locationComboBox.addItem(unknownId);
@@ -588,7 +588,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
        } catch(MiddlewareQueryException ex){
            LOG.error("Error with getting local IBDB user!", ex);
-               MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting local IBDB user id.  Please report to IBWS developers."
+               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO)
                        , Notification.POSITION_CENTERED);
            return -1;
        }

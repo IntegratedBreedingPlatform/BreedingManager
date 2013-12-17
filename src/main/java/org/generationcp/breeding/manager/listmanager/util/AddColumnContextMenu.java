@@ -331,7 +331,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      */
     public List<ListDataInfo> getListDataCollectionFromTable(Table table){
     	
-    	populateAddedColumns();
+//    	populateAddedColumns();
     	
     	List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
     	

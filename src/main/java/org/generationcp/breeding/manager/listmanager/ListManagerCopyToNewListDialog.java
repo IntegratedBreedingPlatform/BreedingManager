@@ -287,7 +287,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 			                germplasmListManager.deleteGermplasmListByListId(newListid);
 			                LOG.error("Error with copying list entries", e);
 			                MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-			                    , "Copying of entries to a new list failed.  Please report to Workbench developers."
+			                    , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
 			                    , Notification.POSITION_CENTERED);
 		                }
 	                    this.mainWindow.removeWindow(dialogWindow);

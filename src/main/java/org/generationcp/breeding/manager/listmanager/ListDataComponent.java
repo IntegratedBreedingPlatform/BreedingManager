@@ -164,6 +164,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
+	private AbsoluteLayout toolsMenuBar;
 
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
 	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
@@ -274,7 +275,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 });
     	 listManagerTreeMenu.addComponent(menu);
     	 
-    	 AbsoluteLayout toolsMenuBar = new AbsoluteLayout();
+    	 toolsMenuBar = new AbsoluteLayout();
     	 toolsMenuBar.setWidth("100%");
     	 toolsMenuBar.setHeight("20px");
        	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:0px;");
@@ -288,117 +289,122 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
              addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
          } else {
         	 
-        	 // create the Vaadin Table to display the Germplasm List Data
-             listDataTable = new Table("");
-             listDataTable.setSelectable(true);
-             listDataTable.setMultiSelect(true);
-             listDataTable.setColumnCollapsingAllowed(true);
-             listDataTable.setColumnReorderingAllowed(true);
-//             listDataTable.setPageLength(15); // number of rows to display in the Table
-             listDataTable.setWidth("95%");
-             listDataTable.setHeight("95%");
-             listDataTable.setDragMode(TableDragMode.ROW);
-             listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
-             
-             if(!fromUrl){
-                     listDataTable.addActionHandler(new Action.Handler() {
-                    	 private static final long serialVersionUID = -897257270314381555L;
-
-						public Action[] getActions(Object target, Object sender) {
-                         if (germplasmListId < 0 &&  germplasmListStatus < 100){
-                        	 if(selectedColumn == null){
-                        		 return ACTIONS_TABLE_CONTEXT_MENU;
-                        	 }
-                        	 else {
-                        		 if( selectedColumn.toString().equals(ListDataTablePropertyID.GID.getName()) || selectedColumn.toString().equals(ListDataTablePropertyID.ENTRY_ID.getName()) ){
-                            		 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT;
-                        		 }
-                        		 else{
-                            		 return ACTIONS_TABLE_CONTEXT_MENU;
-                            	 } 
-                        	 }
-                         }else{
-                        	 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
-                         }
-                     }
-         
-                     @SuppressWarnings("unchecked")
-                     public void handleAction(Action action, Object sender, Object target) {
-                     	if (ACTION_DELETE == action) {
-                     		deleteListButtonClickAction();
-                     	}else if(ACTION_SELECT_ALL == action) {
-                     		listDataTable.setValue(listDataTable.getItemIds());
-                     	}else if(ACTION_EDIT == action){
-                     		// Make the entire item editable
-    		                HashMap<Object,Field> itemMap = fields.get(selectedItemId);
-    		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-    		        			Object column = entry.getKey();
-    		        			if(column.equals(selectedColumn)){
-    		        				Field f = entry.getValue();
-    			                	f.setReadOnly(false);
-    			                	f.focus();
-    		        			}
-    		                }
-    		                
-    		                listDataTable.select(selectedItemId);
-                     	}else if(ACTION_COPY_TO_NEW_LIST == action){
-                     		listManagerMain.showBuildNewListComponent();
-                     		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
-                     		for(Integer gid : gids){
-                     			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
-                     		}
-                     	}
-                     	
-                     }
-                     });
-             }
-
-             //make GID as link only if the page wasn't directly accessed from the URL
-             if (!fromUrl) {
-                 listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-             } else {
-                 listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Integer.class, null);
-             }
-
-             listDataTable.addContainerProperty(ListDataTablePropertyID.GID_VALUE.getName(), Integer.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
-             listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
-//             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
-         
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
-             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
-//             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
-             
-             populateTable();
-             
-             if(germplasmListId < 0){
-	             if(germplasmListId<0 && germplasmListStatus<100){
-	                 @SuppressWarnings("unused")
-					FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
-	             }
-             }
-             setSpacing(false);
-             addComponent(listDataTable);
-   
-        	 if(germplasmListId<0 && germplasmListStatus<100){
-    	         addColumnButton = new Button();
-    	         addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
-    	         addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	         addColumnButton.addStyleName("link_with_plus_icon");
-    	    	 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
-    	    	 
-    	    	 addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
-        	 }    	 
+        	 initializeListDataTable(toolsMenuBar);    	 
              
          }
     }
+
+	private void initializeListDataTable(AbsoluteLayout toolsMenuBar)
+			throws MiddlewareQueryException {
+		// create the Vaadin Table to display the Germplasm List Data
+		 listDataTable = new Table("");
+		 listDataTable.setSelectable(true);
+		 listDataTable.setMultiSelect(true);
+		 listDataTable.setColumnCollapsingAllowed(true);
+		 listDataTable.setColumnReorderingAllowed(true);
+//             listDataTable.setPageLength(15); // number of rows to display in the Table
+		 listDataTable.setWidth("95%");
+		 listDataTable.setHeight("95%");
+		 listDataTable.setDragMode(TableDragMode.ROW);
+		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
+		 
+		 if(!fromUrl){
+		         listDataTable.addActionHandler(new Action.Handler() {
+		        	 private static final long serialVersionUID = -897257270314381555L;
+
+					public Action[] getActions(Object target, Object sender) {
+		             if (germplasmListId < 0 &&  germplasmListStatus < 100){
+		            	 if(selectedColumn == null){
+		            		 return ACTIONS_TABLE_CONTEXT_MENU;
+		            	 }
+		            	 else {
+		            		 if( selectedColumn.toString().equals(ListDataTablePropertyID.GID.getName()) || selectedColumn.toString().equals(ListDataTablePropertyID.ENTRY_ID.getName()) ){
+		                		 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT;
+		            		 }
+		            		 else{
+		                		 return ACTIONS_TABLE_CONTEXT_MENU;
+		                	 } 
+		            	 }
+		             }else{
+		            	 return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
+		             }
+		         }
+       
+		         @SuppressWarnings("unchecked")
+		         public void handleAction(Action action, Object sender, Object target) {
+		         	if (ACTION_DELETE == action) {
+		         		deleteListButtonClickAction();
+		         	}else if(ACTION_SELECT_ALL == action) {
+		         		listDataTable.setValue(listDataTable.getItemIds());
+		         	}else if(ACTION_EDIT == action){
+		         		// Make the entire item editable
+		                HashMap<Object,Field> itemMap = fields.get(selectedItemId);
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		        			Object column = entry.getKey();
+		        			if(column.equals(selectedColumn)){
+		        				Field f = entry.getValue();
+			                	f.setReadOnly(false);
+			                	f.focus();
+		        			}
+		                }
+		                
+		                listDataTable.select(selectedItemId);
+		         	}else if(ACTION_COPY_TO_NEW_LIST == action){
+		         		listManagerMain.showBuildNewListComponent();
+		         		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
+		         		for(Integer gid : gids){
+		         			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
+		         		}
+		         	}
+		         	
+		         }
+		         });
+		 }
+
+		 //make GID as link only if the page wasn't directly accessed from the URL
+		 if (!fromUrl) {
+		     listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
+		 } else {
+		     listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Integer.class, null);
+		 }
+
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.GID_VALUE.getName(), Integer.class, null);
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+		 listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
+//             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
+       
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
+		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+//             messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.STATUS.getName(), Message.LISTDATA_STATUS_HEADER);
+		 
+		 populateTable();
+		 
+		 if(germplasmListId < 0){
+		     if(germplasmListId<0 && germplasmListStatus<100){
+		         @SuppressWarnings("unused")
+				FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+		     }
+		 }
+		 setSpacing(false);
+		 addComponent(listDataTable);
+   
+		 if(germplasmListId<0 && germplasmListStatus<100){
+		     addColumnButton = new Button();
+		     addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
+		     addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
+		     addColumnButton.addStyleName("link_with_plus_icon");
+			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
+			 
+			 addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
+		 }
+	}
 
 	// This is needed for storing back-references
 	class ItemPropertyId {
@@ -815,7 +821,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 listManagerTreeMenu.getBreedingManagerApplication();
 				MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                             , "Error with exporting list."    
-                            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                            , Notification.POSITION_CENTERED);
             }
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
@@ -1072,7 +1079,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
            
         }catch (MiddlewareQueryException e) {
             LOG.error("Error with locking list.", e);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1086,7 +1093,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm list with id: " + germplasmListId, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm list with id: " + germplasmListId  
-                    + ". Please report to IBWS developers."
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1096,22 +1103,24 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with id: " + gid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
-                    + ". Please report to IBWS developers."
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
         
-        Integer maxEntryId = Integer.valueOf(1);
-        for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
-            //iterate through the table elements' IDs
-            int listDataId = (Integer) i.next();
-
-            //update table item's entryId
-            Item item = listDataTable.getItem(listDataId);
-            Integer entryId = (Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
-            if(maxEntryId < entryId){
-                maxEntryId = entryId;
-            }
+        Integer maxEntryId = Integer.valueOf(0);
+        if (listDataTable != null){
+        	for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+        		//iterate through the table elements' IDs
+        		int listDataId = (Integer) i.next();
+        		
+        		//update table item's entryId
+        		Item item = listDataTable.getItem(listDataId);
+        		Integer entryId = (Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+        		if(maxEntryId < entryId){
+        			maxEntryId = entryId;
+        		}
+        	}
         }
         
         
@@ -1165,42 +1174,49 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     gidObject = gid;
             }
             
-            listDataTable.setEditable(false);
- 
-            Object[] visibleColumns = listDataTable.getVisibleColumns();
-            
-            listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
-            		,ListDataTablePropertyID.ENTRY_ID.getName()
-            		,ListDataTablePropertyID.ENTRY_CODE.getName()
-            		,ListDataTablePropertyID.SEED_SOURCE.getName()
-            		,ListDataTablePropertyID.DESIGNATION.getName()
-            		,ListDataTablePropertyID.GROUP_NAME.getName()
+            // create table if added entry is first listdata record
+            if (listDataTable == null){
+            	initializeListDataTable(toolsMenuBar);
+
+            	
+            } else {
+            	listDataTable.setEditable(false);
+            	
+            	Object[] visibleColumns = listDataTable.getVisibleColumns();
+            	
+            	listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
+            			,ListDataTablePropertyID.ENTRY_ID.getName()
+            			,ListDataTablePropertyID.ENTRY_CODE.getName()
+            			,ListDataTablePropertyID.SEED_SOURCE.getName()
+            			,ListDataTablePropertyID.DESIGNATION.getName()
+            			,ListDataTablePropertyID.GROUP_NAME.getName()
 //            		,ListDataTablePropertyID.STATUS.getName()
-        		});
-            
-            listDataTable.addItem(new Object[] {
-                            gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
-                            listData.getDesignation(), listData.getGroupName()
+            	});
+            	
+            	listDataTable.addItem(new Object[] {
+            			gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
+            			listData.getDesignation(), listData.getGroupName()
 //                            , listData.getStatusString()
-                    }, listDataId);
-            
-            listDataTable.setVisibleColumns(visibleColumns);
-            
-            if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
-            	addColumnContextMenu.setPreferredIdColumnValues();
+            	}, listDataId);
+            	
+            	listDataTable.setVisibleColumns(visibleColumns);
+            	
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
+            		addColumnContextMenu.setPreferredIdColumnValues();
+            	}
+            	
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
+            		addColumnContextMenu.setLocationColumnValues();
+            	}
+            	
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
+            		addColumnContextMenu.setPreferredNameColumnValues();
+            	}
+            	
+            	listDataTable.refreshRowCache();
+            	listDataTable.setImmediate(true);
+            	listDataTable.setEditable(true);
             }
-            
-            if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
-            	addColumnContextMenu.setLocationColumnValues();
-            }
-            
-            if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
-            	addColumnContextMenu.setPreferredNameColumnValues();
-            }
-            
-            listDataTable.refreshRowCache();
-            listDataTable.setImmediate(true);
-            listDataTable.setEditable(true);
             
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
@@ -1216,7 +1232,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 workbenchDataManager.addProjectActivity(projAct);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error with adding workbench activity log.", e);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. Please report to IBWS developers."
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                         , Notification.POSITION_CENTERED);
             }
             //populateTable();
@@ -1225,7 +1241,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 //                this.germplasmListAccordionMenu.refreshListData();
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. Please report to IBWS developers."
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             return;
         }
@@ -1287,14 +1303,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	Collection<?> selectedIds = (Collection<?>)listDataTable.getValue();
 	     for (final Object itemId : selectedIds) {
 	      
-	         Property pGid= listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID_VALUE.getName());
-	   		 String gid=pGid.getValue().toString();
+//	         Property pGid= listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID_VALUE.getName());
+//	   		 String gid=pGid.getValue().toString();
+	    	 
+    		Button gidButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+    		Integer germplasmID = Integer.parseInt(gidButton.getCaption());
 	   		 // only allow deletions for local germplasms
-	   		 if(gid.contains("-")){
-	   			 long count = pedigreeDataManager.countDescendants(Integer.valueOf(gid));
+	   		 if(germplasmID.toString().contains("-")){
+	   			 long count = pedigreeDataManager.countDescendants(germplasmID);
 	   			 if(count == 0){
-	   				 gids.add(Integer.valueOf(gid));
-	   			 }
+//	   				 gids.add(Integer.valueOf(gid));
+	   				 gids.add(germplasmID)
+;	   			 }
 	   		 }
 	     }
 	    	   			 

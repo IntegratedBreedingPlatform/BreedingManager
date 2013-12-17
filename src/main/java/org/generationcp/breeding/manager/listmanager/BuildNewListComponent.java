@@ -236,10 +236,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
 		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
 		
-		//initially disabled when the current list building is not yet save
-		menuExportList.setEnabled(false);
-		menuExportForGenotypingOrder.setEnabled(false);
-		menuCopyToList.setEnabled(false);
+		resetMenuOptions();
 		
         toolsButton = new Button("Tools");
         toolsButton.setIcon(ICON_TOOLS);
@@ -322,6 +319,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		setupDragSources();
 		setupDropHandlers();
 		setupTableHeadersContextMenu();
+	}
+	
+	public void resetMenuOptions(){
+		//initially disabled when the current list building is not yet save or being reset
+		menuExportList.setEnabled(false);
+		menuExportForGenotypingOrder.setEnabled(false);
+		menuCopyToList.setEnabled(false);
 	}
 
 	
@@ -754,7 +758,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     LOG.error("Error with exporting list.", e);
                 MessageNotifier.showError( this.getWindow()
                             , "Error with exporting list."    
-                            , e.getMessage() + " .Please report to Workbench developers.", Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                            , Notification.POSITION_CENTERED);
             }
         }
         
