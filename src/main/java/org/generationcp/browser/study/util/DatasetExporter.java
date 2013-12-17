@@ -456,7 +456,7 @@ public class DatasetExporter {
                                     double elemValue = 0;
                                     if(variateVariable.getValue() != null){
                                         try{
-                                            elemValue = Double.valueOf(variateVariable.getValue());
+                                            elemValue = Double.valueOf(variateVariable.getDisplayValue());
                                             cell.setCellValue(elemValue);
                                         }catch(NumberFormatException ex){
                                             String value = variateVariable.getValue();
