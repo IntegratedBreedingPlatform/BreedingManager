@@ -1,5 +1,6 @@
 package org.generationcp.browser.cross.study.commons.trait.filter;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.validators.CategoricalTraitLimitsValidator;
 import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
@@ -26,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -53,6 +57,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	public static final String TRAIT_BUTTON_ID = "CharacterTraitsSection Trait Button ID";
 	
 	private List<Integer> environmentIds = null;
+	private List<Field> fieldsToValidate = new ArrayList<Field>();
 	
 	private Window parentWindow;
 	private Label lblSectionTitle;
@@ -172,6 +177,9 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 
 	
 	private void populateTraitsTable(){
+		String limitsRequiredMessage = MessageFormat.format(messageSource.getMessage(Message.FIELD_IS_REQUIRED), 
+                messageSource.getMessage(Message.LIMITS));
+		
 		if(this.environmentIds != null && !this.environmentIds.isEmpty()){
 			
 			if(categoricalValueObjects != null){
@@ -193,6 +201,12 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 					
 					ComboBox priorityComboBox = CrossStudyUtil.getTraitWeightsComboBox();
 					TextField txtLimits = new TextField();
+					txtLimits.setEnabled(false);
+					txtLimits.setImmediate(true);
+					txtLimits.setRequired(true);
+					txtLimits.setRequiredError(limitsRequiredMessage);
+					txtLimits.addValidator(new CategoricalTraitLimitsValidator(conditionComboBox, traitInfo.getValues()));
+					this.fieldsToValidate.add(txtLimits);
 					txtLimits.setEnabled(false);
 					
 					Object[] itemObj = new Object[traitsTable.getColumnHeaders().length];
@@ -256,6 +270,25 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		parentWindow.addWindow(viewTraitDialog);
 	}
 	
+	// perform validation on limits textfields
+	public boolean allFieldsValid(){
+		try {
+			for (Field field : this.fieldsToValidate){
+				if (field.isEnabled())
+					field.validate();
+			}
+			
+			return true;
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showWarning(getWindow(), 
+					this.messageSource.getMessage(Message.INCORRECT_LIMITS_VALUE), 
+					e.getMessage(), Notification.POSITION_CENTERED);
+			return false;
+		}
+	
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<CategoricalTraitFilter> getFilters(){
 		List<CategoricalTraitFilter> toreturn = new ArrayList<CategoricalTraitFilter>();

@@ -155,6 +155,10 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 			if (!numericSection.allFieldsValid()){
 				return;
 			}
+			
+			if (!categoricalVariatesSection.allFieldsValid()){
+				return;
+			}
 		}
 		
 		this.mainScreen.selectThirdTab();
