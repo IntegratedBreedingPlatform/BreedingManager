@@ -311,6 +311,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                  } else {
                      //Create map from data from previous screen
                      //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
+                	 
+                	 if(listTypeComboBox.getValue().equals("DER"))
+                	 	 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
+                	 
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
                      
                      System.out.println("GID: "+germplasmNameObjects.get(i).getGermplasm().getGid()+" was NOT part of the do not add list");
