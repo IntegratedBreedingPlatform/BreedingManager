@@ -827,7 +827,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             }
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
-            ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
+            ConfirmDialog.show(this.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM),
                 "Yes", "No", new ConfirmDialog.Listener() {
 			private static final long serialVersionUID = 1L;
 
@@ -837,6 +837,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 lockList();
                 germplasmListStatus=germplasmList.getStatus();
                 exportListAction();
+                if (source != null && source.getListManagerListDetailComponent() != null){
+                	source.getListManagerListDetailComponent().recreateTab();
+                }
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error with exporting list.", e);
                 e.printStackTrace();
