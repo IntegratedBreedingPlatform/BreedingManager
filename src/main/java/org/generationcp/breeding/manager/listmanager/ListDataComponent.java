@@ -176,6 +176,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private static String TOOLS_TOOLTIP = "Tools";
 
 	private AddColumnContextMenu addColumnContextMenu;  
+	private String lastCellvalue;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -346,6 +347,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		        			Object column = entry.getKey();
 		        			if(column.equals(selectedColumn)){
 		        				Field f = entry.getValue();
+		        				Object fieldValue = f.getValue();
+								lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
 			                	f.setReadOnly(false);
 			                	f.focus();
 		        			}
@@ -525,14 +528,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 											public void onClose(ConfirmDialog dialog) {
 												if (!dialog.isConfirmed()) {
 													tf.setReadOnly(false);
-													tf.focus();
+													tf.setValue(lastCellvalue);
 												}
 												else{
 													Double d = tf.getValue().toString().length() * 0.75;
 													tf.setWidth(d.floatValue(), UNITS_EM);
-													tf.setReadOnly(true);
-													listDataTable.focus();
 												}
+												tf.setReadOnly(true);
+												listDataTable.focus();
 											}
 										}
 									);
