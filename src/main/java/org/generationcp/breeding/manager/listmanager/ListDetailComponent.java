@@ -129,7 +129,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         
         lblName = new Label( "<b>" + messageSource.getMessage(Message.NAME_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Name"
-        lblDescription = new Label("<b>" + messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":</b> ", Label.CONTENT_XHTML ); // "Description"
+        lblDescription = new Label("<b>" + messageSource.getMessage(Message.DESCRIPTION_LABEL) + "</b> ", Label.CONTENT_XHTML ); // "Description"
         lblCreationDate = new Label("<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Creation Date"
         lblType = new Label("<b>" + messageSource.getMessage(Message.TYPE_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Type"
         lblStatus = new Label("<b>" + messageSource.getMessage(Message.STATUS_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Status"
