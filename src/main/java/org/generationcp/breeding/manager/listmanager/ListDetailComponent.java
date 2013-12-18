@@ -298,29 +298,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                         new Date());
                 workbenchDataManager.addProjectActivity(projAct);
                 
-                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
-                String tabSheetName = germplasmList.getName();
-                Tab tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-				if(tab != null){
-					parentTabSheet.removeTab(tab);
-				}
-				else{
-					tabSheetName = "List - " + germplasmList.getName();
-					tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-					if(tab != null){
-						parentTabSheet.removeTab(tab);
-					}
-				}
-                
-				if(tabSheetName.contains("List - ")){
-	                listManagerTreeMenu.getDetailsLayout().createListInfoFromSearchScreen(germplasmListId);					
-				}
-				else{
-					listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmListId);
-				}
-				
-                tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-                parentTabSheet.setSelectedTab(tab.getComponent());
+                recreateTab();
                 
                 //getWindow().getWindow().showNotification("Germplasm List", "Successfully Locked", Notification.TYPE_WARNING_MESSAGE);
             } catch (MiddlewareQueryException e) {
@@ -332,35 +310,39 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         deleteButton.setEnabled(false);      
 	}
 
+	public void recreateTab() throws MiddlewareQueryException {
+		TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+		String tabSheetName = germplasmList.getName();
+		Tab tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+		if(tab != null){
+			parentTabSheet.removeTab(tab);
+		}
+		else{
+			tabSheetName = "List - " + germplasmList.getName();
+			tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+			if(tab != null){
+				parentTabSheet.removeTab(tab);
+			}
+		}
+		
+		if(tabSheetName.contains("List - ")){
+		    listManagerTreeMenu.getDetailsLayout().createListInfoFromSearchScreen(germplasmListId);					
+		}
+		else{
+			listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmListId);
+		}
+		
+		tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+		parentTabSheet.setSelectedTab(tab.getComponent());
+	}
+
 	public void unlockGermplasmList() {
 		if(germplasmList.getStatus()>=100){
             germplasmList.setStatus(germplasmList.getStatus()-100);
             try {
                 germplasmListManager.updateGermplasmList(germplasmList);
 
-                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
-                String tabSheetName = germplasmList.getName();
-                Tab tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-				if(tab != null){
-					parentTabSheet.removeTab(tab);
-				}
-				else{
-					tabSheetName = "List - " + germplasmList.getName();
-					tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-					if(tab != null){
-						parentTabSheet.removeTab(tab);
-					}
-				}
-                
-				if(tabSheetName.contains("List - ")){
-	                listManagerTreeMenu.getDetailsLayout().createListInfoFromSearchScreen(germplasmListId);					
-				}
-				else{
-					listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmListId);
-				}
-				
-                tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
-                parentTabSheet.setSelectedTab(tab.getComponent());
+                recreateTab();
                 
                 User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
                 ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
