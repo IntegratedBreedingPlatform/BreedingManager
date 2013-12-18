@@ -134,6 +134,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 			source.setNotesCaption(source.getNotes(listFromDB.getNotes()));
 			source.setAddEditNotesCaption();
 			source.requestRepaintRequests();
+			source.germplasmList.setNotes(txtNotes.getValue().toString());
 			
 			if(listId == null){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)

@@ -158,6 +158,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         List<Method> methodList = germplasmDataManager.getAllMethods();
         Map methodMap = new HashMap();
         for(Method method : methodList){
+        	
             //method.getMcode()
             breedingMethodComboBox.addItem(method.getMid());
             breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
@@ -167,6 +168,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             }
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
+        
+        System.out.println("Breeding Method: "+breedingMethodComboBox.getValue());
+        if(breedingMethodComboBox.getValue()==null)
+        	breedingMethodComboBox.setValue(methodList.get(0).getMid());
+        
         breedingMethodComboBox.setImmediate(true);
         breedingMethodComboBox.addListener(new MethodValueChangeListener(breedingMethodComboBox, methodMap));
         addComponent(breedingMethodComboBox, "top:10px;left:200px");

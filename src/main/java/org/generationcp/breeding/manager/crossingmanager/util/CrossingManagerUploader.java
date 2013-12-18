@@ -346,11 +346,11 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 importedGermplasmCrosses.addImportedCondition(importedCondition);
 
                 //Retrieve Male GermplasmList object specified in the template file
-                if (TemplateCrossingCondition.MALE_LIST_ID.getValue().equals(importedCondition.getCondition().toUpperCase())){
+                if (TemplateCrossingCondition.MALE_LIST_ID.getValue().equals(importedCondition.getCondition())){
                     maleGermplasmList = retrieveGermplasmList(importedCondition, "male");
                 }
                 //Retrieve Male GermplasmList object specified in the template file
-                else if (TemplateCrossingCondition.FEMALE_LIST_ID.getValue().equals(importedCondition.getCondition().toUpperCase())){
+                else if (TemplateCrossingCondition.FEMALE_LIST_ID.getValue().equals(importedCondition.getCondition())){
                     femaleGermplasmList = retrieveGermplasmList(importedCondition, "female");
                 }
 
@@ -447,13 +447,32 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         HashMap<String, ImportedCondition> fileConditions = new HashMap<String, ImportedCondition>();
         List<ImportedCondition> conditions = importedGermplasmCrosses.getImportedConditions();
         for (ImportedCondition c : conditions) {
-            fileConditions.put(c.getCondition().toUpperCase(), c);
+            fileConditions.put(c.getCondition(), c);
         }
         
         ImportedCondition templateFemaleListId = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_ID.getValue());
+        if(templateFemaleListId == null){
+        	showInvalidFileError("Invalid file", "Missing condition with name - " + TemplateCrossingCondition.FEMALE_LIST_ID.getValue() + ".");
+        	return;
+        }
+        
         ImportedCondition templateFemaleListName = fileConditions.get(TemplateCrossingCondition.FEMALE_LIST_NAME.getValue());
+        if(templateFemaleListName == null){
+        	showInvalidFileError("Invalid file", "Missing condition with name - " + TemplateCrossingCondition.FEMALE_LIST_NAME.getValue() + ".");
+        	return;
+        }
+        
         ImportedCondition templateMaleListId = fileConditions.get(TemplateCrossingCondition.MALE_LIST_ID.getValue());
+        if(templateMaleListId == null){
+        	showInvalidFileError("Invalid file", "Missing condition with name - " + TemplateCrossingCondition.MALE_LIST_ID.getValue() + ".");
+        	return;
+        }
+        
         ImportedCondition templateMaleListName = fileConditions.get(TemplateCrossingCondition.MALE_LIST_NAME.getValue());
+        if(templateMaleListName == null){
+        	showInvalidFileError("Invalid file", "Missing condition with name - " + TemplateCrossingCondition.MALE_LIST_NAME.getValue() + ".");
+        	return;
+        }
         
         String conditionErrors = "";
         
