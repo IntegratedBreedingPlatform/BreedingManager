@@ -41,6 +41,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
@@ -138,6 +139,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     public void displaySelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
         SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, viaToolURL);
+        selectGermplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         selectGermplasmWindows.add(selectGermplasmWindow);
         this.getWindow().addWindow(selectGermplasmWindow);
     }
