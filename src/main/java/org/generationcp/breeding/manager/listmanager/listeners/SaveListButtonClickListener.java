@@ -219,6 +219,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG)
 					, Notification.POSITION_CENTERED);
 			return false;
+		} else if(list.getDate() == null){
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please select a date."
+					, Notification.POSITION_CENTERED);
+			return false;
 		} else {
 			if(currentlySavedList == null){
 				return validateListName(list);
