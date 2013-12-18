@@ -1,9 +1,12 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.pojos.GermplasmInventory;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -81,8 +84,8 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
                 listDataInventoryTable.setWidth("95%");
                 listDataInventoryTable.setHeight("95%");
 
-                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ENTITY_ID, String.class, "");
-                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, String.class, "");
+                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ENTITY_ID, Integer.class, "");
+                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, Long.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_LOCATION_NAME, String.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_SCALE_NAME, String.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_LOT_COMMENT, String.class, "");
@@ -93,10 +96,28 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
                 messageSource.setColumnHeader(listDataInventoryTable, GERMPLASM_INVENTORY_SCALE_NAME, Message.SCALE_HEADER);
                 messageSource.setColumnHeader(listDataInventoryTable, GERMPLASM_INVENTORY_LOT_COMMENT, Message.LOT_COMMENT_HEADER);
                 
+                // sum of lot balancer per germplasm ID
+                Map<Integer, GermplasmInventory> inventoryMap = new HashMap<Integer, GermplasmInventory>();
                 for (LotReportRow lotReportRow : lotReportRowData) {
-                    listDataInventoryTable.addItem(new Object[] {String.valueOf(lotReportRow.getEntityIdOfLot()), String.valueOf(lotReportRow.getActualLotBalance()),
-                            lotReportRow.getLocationOfLot() == null ? null : lotReportRow.getLocationOfLot().getLname(),
-                                    lotReportRow.getScaleOfLot() == null ? null : lotReportRow.getScaleOfLot().getName(), lotReportRow.getCommentOfLot()},lotReportRow.getEntityIdOfLot());
+                    Integer entityId = lotReportRow.getEntityIdOfLot();
+                    if (inventoryMap.containsKey(entityId)){
+                    	GermplasmInventory germplasmInventory = inventoryMap.get(entityId);
+                    	germplasmInventory.addInventory(lotReportRow.getActualLotBalance());
+                    } else {
+                    	inventoryMap.put(entityId, new GermplasmInventory(entityId, 
+                    			lotReportRow.getActualLotBalance(), 
+                    			(lotReportRow.getLocationOfLot() == null) ? null : lotReportRow.getLocationOfLot().getLname(), 
+            					lotReportRow.getScaleOfLot() == null ? null : lotReportRow.getScaleOfLot().getName(), 
+    							lotReportRow.getCommentOfLot()));
+                    }
+                }
+                
+                for (GermplasmInventory germplasmInventory : inventoryMap.values()){
+					listDataInventoryTable.addItem(new Object[] {germplasmInventory.getGid(), 
+							germplasmInventory.getBalance(), germplasmInventory.getLocation(),
+                            germplasmInventory.getScale(), germplasmInventory.getComment()
+                        }, germplasmInventory.getGid()
+					);
                 }
                 addComponent(listDataInventoryTable);
             }
