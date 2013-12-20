@@ -271,7 +271,7 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
                         }
                     }
                     
-                    dateValue = Util.getIBPDate(yearValue, monthValue, dayValue);
+                    dateValue = Util.getIBPDateNoZeroes(yearValue, monthValue, dayValue);
                     if (dateValue == 0) {
                         dateValue = null;
                     }

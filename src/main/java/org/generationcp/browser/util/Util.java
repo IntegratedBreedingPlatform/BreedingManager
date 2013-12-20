@@ -244,6 +244,38 @@ public class Util{
 
     }
     
+    /** 
+     * Returns integer value of year month date concatenation
+     * if no date value, yyyymm
+     * eg. if month = 1, and year = 2005 => 200501
+     * if no month and date, yyyy
+     * 
+     * Return 0 if no year, month and date
+     * 
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
+    public static Integer getIBPDateNoZeroes(int year, int month, int day) throws InvalidDateException{
+        String dayString = (day == 0) ? "" : String.valueOf(day);
+        if (!dayString.isEmpty() && dayString.length() == 1){
+        	dayString = "0" + dayString;
+        }
+        String monthString = (month == 0) ? "" : String.valueOf(month);
+        if (!monthString.isEmpty() && monthString.length() == 1){
+        	monthString = "0" + monthString;
+        }
+        String yearString = (year == 0) ? "" : String.valueOf(year);
+        String fulldate = yearString + monthString + dayString;
+        if (!fulldate.isEmpty()){
+        	return new Integer(fulldate);
+        }
+        return 0;
+    }
+    
+    
+    
     /**
      * Checks if a given date is valid.
      * 
