@@ -114,8 +114,9 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         if (listDataId == null) {
             if (other.listDataId != null)
                 return false;
-        } else if (!listDataId.equals(other.listDataId))
+        } else if (!listDataId.equals(other.listDataId) || !gid.equals(other.gid)){
             return false;
+        }
         
         return true;
     }
