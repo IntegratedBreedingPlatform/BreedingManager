@@ -169,8 +169,9 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
         
-        if(breedingMethodComboBox.getValue()==null)
+        if(breedingMethodComboBox.getValue()==null){
         	breedingMethodComboBox.setValue(methodList.get(0).getMid());
+        }
         
         breedingMethodComboBox.setImmediate(true);
         breedingMethodComboBox.addListener(new MethodValueChangeListener(breedingMethodComboBox, methodMap));
@@ -236,7 +237,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                   }
               }
         if(hasDefault == false && firstId != null){
-                    locationComboBox.setValue(firstId);
+                    nameTypeComboBox.setValue(firstId);
                 }
 
         nameTypeComboBox.setImmediate(true);
