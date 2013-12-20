@@ -608,6 +608,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				for(NumericTraitFilter trait : numericTraitFilter){
 					Double envWt = 0.0;
 					Integer noOfObservation = 0;
+					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
@@ -624,6 +625,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							envWt = Double.valueOf(weight.getWeight());
 							
 							noOfObservation = obsList.getObservationList().size();
+							noObsForAllEnvs += noOfObservation;
+									
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testNumericTraitVal(trait, obs)){
@@ -633,6 +636,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 									scorePerEnv = scorePerEnv + (-1);
 								}
 							}
+						
 							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
 							scorePerEnv = envWt * ( scorePerEnv / noOfObservation );
 							
@@ -642,7 +646,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
-					TraitObservationScore tos = new TraitObservationScore(germplasmId,noOfObservation,scorePerTrait);
+					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					numericTOSMap.put(trait,tos);
 				}
 				
@@ -651,6 +655,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				for(CharacterTraitFilter trait : characterTraitFilter){
 					Double envWt = 0.0;
 					Integer noOfObservation = 0;
+					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
@@ -667,6 +672,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							envWt = Double.valueOf(weight.getWeight());
 							
 							noOfObservation = obsList.getObservationList().size();
+							noObsForAllEnvs += noOfObservation;
+							
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testCharacterTraitVal(trait, obs)){
@@ -685,7 +692,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
-					TraitObservationScore tos = new TraitObservationScore(germplasmId,noOfObservation,scorePerTrait);
+					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					characterTOSMap.put(trait,tos);
 				}
 				
@@ -693,6 +700,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				for(CategoricalTraitFilter trait : categoricalTraitFilter){
 					Double envWt = 0.0;
 					Integer noOfObservation = 0;
+					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
 					List<Integer> obsResults = new ArrayList<Integer>();
 					
@@ -709,6 +717,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							envWt = Double.valueOf(weight.getWeight());
 							
 							noOfObservation = obsList.getObservationList().size();
+							noObsForAllEnvs += noOfObservation;
+							
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testCategoricalTraitVal(trait, obs)){
@@ -727,7 +737,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
-					TraitObservationScore tos = new TraitObservationScore(germplasmId,noOfObservation,scorePerTrait);
+					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					categoricalTOSMap.put(trait,tos);
 				}
 				
