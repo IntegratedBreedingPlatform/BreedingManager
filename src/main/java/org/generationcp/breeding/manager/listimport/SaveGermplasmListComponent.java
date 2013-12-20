@@ -134,7 +134,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         String firstId = null;
               boolean hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
-                  //method.getMcode()
+                  
             if(firstId == null){
                           firstId = userDefinedField.getFcode();
                       }

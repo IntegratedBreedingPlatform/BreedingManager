@@ -156,7 +156,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         breedingMethodComboBox.setWidth("400px");
         breedingMethodComboBox.setNullSelectionAllowed(false);
         List<Method> methodList = germplasmDataManager.getAllMethods();
-        Map methodMap = new HashMap();
+        Map<String, String> methodMap = new HashMap<String, String>();
         for(Method method : methodList){
         	
             //method.getMcode()
@@ -169,7 +169,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
         
-        System.out.println("Breeding Method: "+breedingMethodComboBox.getValue());
         if(breedingMethodComboBox.getValue()==null)
         	breedingMethodComboBox.setValue(methodList.get(0).getMid());
         
@@ -193,7 +192,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         locationComboBox.setWidth("400px");
         locationComboBox.setNullSelectionAllowed(false);
         List<Location> locationList = germplasmDataManager.getAllBreedingLocations();
-        Map locationMap = new HashMap();
+        Map<Integer, String> locationMap = new HashMap<Integer, String>();
         Integer firstId = null;
         boolean hasDefault = false;
        for(Location location : locationList){
@@ -206,7 +205,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
            if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
                locationComboBox.setValue(location.getLocid());
                hasDefault = true;
-               //locationComboBox.setDescription(location.get);
            }
            locationMap.put(location.getLocid(), location.getLname());
        }
@@ -214,8 +212,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             locationComboBox.setValue(firstId);
         }
         locationComboBox.setImmediate(true);
-        //locationComboBox.addListener(new MethodValueChangeListener(locationComboBox, locationMap));
-
+        
         addComponent(locationComboBox, "top:70px;left:200px");
         
         nameTypeLabel = new Label();
@@ -228,7 +225,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
          firstId = null;
          hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
-                  //method.getMcode()
                     if(firstId == null){
                           firstId = userDefinedField.getFldno();
                       }
@@ -237,7 +233,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                   if(DEFAULT_NAME_TYPE.equalsIgnoreCase(userDefinedField.getFname())){
                       nameTypeComboBox.setValue(userDefinedField.getFldno());
                       hasDefault = true;
-                      //locationComboBox.setDescription(location.get);
                   }
               }
         if(hasDefault == false && firstId != null){

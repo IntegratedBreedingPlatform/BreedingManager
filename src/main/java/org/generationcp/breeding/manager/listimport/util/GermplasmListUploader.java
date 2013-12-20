@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
+import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
@@ -35,6 +36,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -50,6 +53,13 @@ import com.vaadin.ui.Window.Notification;
 public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmListUploader.class);
+    
+    private static final String LIST_NAME_HEADER_LABEL = "LIST NAME";
+    private static final String LIST_DESC_HEADER_LABEL = "LIST DESCRIPTION";
+    private static final String TITLE_HEADER_LABEL = "TITLE";
+    private static final String LIST_DATE_HEADER_LABEL = "LIST DATE";
+    private static final String LIST_TYPE_HEADER_LABEL = "LIST TYPE";
     
     private static final String ENTRY_PROPERTY = "GERMPLASM ENTRY";
     private static final String ENTRY_SCALE = "NUMBER";
@@ -339,9 +349,53 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     }
 
     private void readGermplasmListFileInfo(){
-            listName = getCellStringValue(0,0,1,true);
-            listTitle = getCellStringValue(0,1,1,true);
-            
+    	boolean listNameHeaderFound = false;
+    	boolean listDescHeaderFound = false;
+    	boolean listTypeHeaderFound = false;
+    	boolean listDateHeaderFound = false;
+    	
+    	for(int ctr = 0; ctr < 4; ctr++){
+    		String header =  getCellStringValue(0,ctr,0,true).trim().toUpperCase();
+    		String value = getCellStringValue(0,ctr,1,true);
+    		
+    		if(header.equals(LIST_NAME_HEADER_LABEL)){
+    			listName = value.trim();
+    			listNameHeaderFound = true;
+    		} else if(header.equals(LIST_DESC_HEADER_LABEL) || header.equals(TITLE_HEADER_LABEL)){
+    			listTitle = value.trim();
+    			listDescHeaderFound = true;
+    		} else if(header.equals(LIST_DATE_HEADER_LABEL)){
+    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+    			try{
+    				listDate = simpleDateFormat.parse(value);
+    			} catch(ParseException ex){
+    				showInvalidFileError("LIST DATE has wrong format. Please follow the format - yyyyMMdd.");
+    				return;
+    			}
+    			listDateHeaderFound = true;
+    		} else if(header.equals(LIST_TYPE_HEADER_LABEL)){
+    			listType = value.trim();
+    			listTypeHeaderFound = true;
+    		}
+    	}
+    	
+    	StringBuilder errorString = new StringBuilder();
+    	if(!listNameHeaderFound){
+    		errorString.append(LIST_NAME_HEADER_LABEL + " header not found. ");
+    	} else if(!listDescHeaderFound){
+    		errorString.append(LIST_DESC_HEADER_LABEL + " or " + TITLE_HEADER_LABEL + " header not found. ");
+    	} else if(!listDateHeaderFound){
+    		errorString.append(LIST_DATE_HEADER_LABEL + " header not found. ");
+    	} else if(!listTypeHeaderFound){
+    		errorString.append(LIST_TYPE_HEADER_LABEL + " header not found. ");
+    	}
+    	
+    	if(errorString.toString().length() > 0){
+    		showInvalidFileError(errorString.toString());
+    		return;
+    	}
+    	
+        if(listName != null && listName.length() > 0){
             try {
 				Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
 				Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
@@ -349,64 +403,41 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
 					showInvalidFileError("There is already an existing germplasm list with the name specified on the file");
 				}
-				
 			} catch (MiddlewareQueryException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LOG.error("Error with count Germplasm List by name = " + listName, e1);
 			}
+        }
 
-            if(getCellStringValue(0,2,0,true).toUpperCase().equals("LIST TYPE")){
-            //LIST TYPE on ROW3, LIST DATE on ROW4
-            	listType = getCellStringValue(0,2,1,true);
-        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        		try {
-        			listDate = simpleDateFormat.parse(getCellStringValue(0,3,1,true));
-        		} catch(ParseException e){
-        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
-        		}
-            } else {
-            //LIST TYPE on ROW4, LIST DATE on ROW3
-        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        		try {
-        			listDate = simpleDateFormat.parse(getCellStringValue(0,2,1,true));
-        		} catch(ParseException e){
-        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
-        		}
-            	listType = getCellStringValue(0,3,1,true);
-            }
-
-            try {
-				List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-				List<String> listTypeCodes = new ArrayList<String>();
-				for(UserDefinedField listType : listTypes){
-					if(listType.getFcode()!=null){
-						listTypeCodes.add(listType.getFcode());
-					}
+        try {
+			List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+			List<String> listTypeCodes = new ArrayList<String>();
+			for(UserDefinedField listType : listTypes){
+				if(listType.getFcode()!=null){
+					listTypeCodes.add(listType.getFcode());
 				}
-				
-				System.out.println("List Types: "+listTypeCodes);
-				
-				if(!listTypeCodes.contains(listType)){
-					showInvalidFileError("Invalid list type "+listType);
-				}
-			} catch (MiddlewareQueryException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
-            
-            importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
-            
-            System.out.println("DEBUG | Original Filename:" + originalFilename);
-            System.out.println("DEBUG | List Name:" + listName);
-            System.out.println("DEBUG | List Title:" + listTitle);
-            System.out.println("DEBUG | List Type:" + listType);
-            System.out.println("DEBUG | List Date:" + listDate);
-            
+			
+			System.out.println("List Types: "+listTypeCodes);
+			
+			if(!listTypeCodes.contains(listType)){
+				showInvalidFileError("Invalid list type "+listType);
+			}
+		} catch (MiddlewareQueryException e1) {
+			LOG.error("Error with getting germplasm list types.", e1);
+		}
+        
+        importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
+        
+        System.out.println("DEBUG | Original Filename:" + originalFilename);
+        System.out.println("DEBUG | List Name:" + listName);
+        System.out.println("DEBUG | List Title:" + listTitle);
+        System.out.println("DEBUG | List Type:" + listType);
+        System.out.println("DEBUG | List Date:" + listDate);
+    	    
         //Prepare for next set of data
         while(!rowIsEmpty()){
             currentRow++;
         }
-        
     }
     
     private void readConditions(){
