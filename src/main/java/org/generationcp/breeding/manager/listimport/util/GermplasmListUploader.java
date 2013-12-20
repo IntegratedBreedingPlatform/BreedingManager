@@ -408,23 +408,25 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 			}
         }
 
-        try {
-			List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-			List<String> listTypeCodes = new ArrayList<String>();
-			for(UserDefinedField listType : listTypes){
-				if(listType.getFcode()!=null){
-					listTypeCodes.add(listType.getFcode());
+        if(listType != null && listType.length() > 0){
+	        try {
+				List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+				List<String> listTypeCodes = new ArrayList<String>();
+				for(UserDefinedField listType : listTypes){
+					if(listType.getFcode()!=null){
+						listTypeCodes.add(listType.getFcode());
+					}
 				}
+				
+				System.out.println("List Types: "+listTypeCodes);
+				
+				if(!listTypeCodes.contains(listType)){
+					showInvalidFileError("Invalid list type "+listType);
+				}
+			} catch (MiddlewareQueryException e1) {
+				LOG.error("Error with getting germplasm list types.", e1);
 			}
-			
-			System.out.println("List Types: "+listTypeCodes);
-			
-			if(!listTypeCodes.contains(listType)){
-				showInvalidFileError("Invalid list type "+listType);
-			}
-		} catch (MiddlewareQueryException e1) {
-			LOG.error("Error with getting germplasm list types.", e1);
-		}
+        }
         
         importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
         
@@ -453,8 +455,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
 	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
 	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
-	            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")){
+	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")){
 	            showInvalidFileError("Incorrect headers for conditions.");
 	            System.out.println("DEBUG | Invalid file on readConditions header");
 	            System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
@@ -497,8 +498,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
             || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
             || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
-            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")) {
+            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")){
             showInvalidFileError("Incorrect headers for factors.");
             System.out.println("DEBUG | Invalid file on readFactors header");
         }

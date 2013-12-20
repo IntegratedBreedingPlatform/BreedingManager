@@ -341,7 +341,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);
-        listTypeComboBox.setValue(listType);
+        if(listType != null && listType.length() > 0){
+        	listTypeComboBox.setValue(listType);
+        }
     }
     
     public GermplasmImportMain getSource() {
