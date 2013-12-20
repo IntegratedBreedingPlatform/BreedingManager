@@ -16,9 +16,11 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
@@ -273,6 +275,22 @@ public class Util{
         }
         return 0;
     }
+    
+    /**
+     * Returns true if given data type id is the id of one of the following data types:
+     * - Numeric Variable
+     * - Numeric DBID variable
+     * - Date variable
+     * -
+     * @param dataTypeId
+     * @return
+     */
+    public static boolean isNumericVariable(int dataTypeId){
+    	return ArrayUtils.contains(new int[]{TermId.NUMERIC_VARIABLE.getId(), 
+    			TermId.NUMERIC_DBID_VARIABLE.getId(), TermId.DATE_VARIABLE.getId()}, dataTypeId);
+    }
+    
+    
     
     
     

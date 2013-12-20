@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.generationcp.browser.util.Util;
 import org.generationcp.commons.util.PoiUtil;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.Experiment;
@@ -22,6 +23,7 @@ import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
 import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.StudyDataManagerImpl;
 
@@ -29,7 +31,6 @@ import org.generationcp.middleware.manager.StudyDataManagerImpl;
 public class DatasetExporter {
 
     private static final int CONDITION_LIST_HEADER_ROW_INDEX = 7;
-    private static final String NUMERIC_VARIABLE = "Numeric variable";
     
     private StudyDataManagerImpl studyDataManager;
 //    private Object traitDataManager;
@@ -199,7 +200,7 @@ public class DatasetExporter {
                 if(conditionName != null) {
                     conditionName = conditionName.trim();
                 }
-                String conditionType = conditionVariable.getVariableType().getStandardVariable().getDataType().getName();
+                Term dataType = conditionVariable.getVariableType().getStandardVariable().getDataType();
                 
                 Row conditionRow = descriptionSheet.createRow(conditionRowIndex);
                 conditionRow.createCell(0).setCellValue(conditionName);
@@ -215,8 +216,9 @@ public class DatasetExporter {
                 }
                 conditionRow.createCell(3).setCellValue(conditionVariable.getVariableType().getStandardVariable().getScale().getName());
                 conditionRow.createCell(4).setCellValue(conditionVariable.getVariableType().getStandardVariable().getMethod().getName());
-                conditionRow.createCell(5).setCellValue(conditionType);
-                if(conditionType.equals(NUMERIC_VARIABLE)) {
+                conditionRow.createCell(5).setCellValue(dataType.getName());
+                boolean isNumeric = Util.isNumericVariable(dataType.getId());
+                if (isNumeric) {
                     Double thevalue = Double.valueOf(conditionVariable.getValue());
                     conditionRow.createCell(6).setCellValue(thevalue);
                 } else {
@@ -413,7 +415,9 @@ public class DatasetExporter {
                             short columnIndex = columnIndexInteger.shortValue();
                             if(columnIndex >= 0) {
                                 Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                                if(factorVariable.getVariableType().getStandardVariable().getDataType().getName().equals(NUMERIC_VARIABLE)){
+                                boolean isNumeric = Util.isNumericVariable(
+                                		factorVariable.getVariableType().getStandardVariable().getDataType().getId());
+                                if(isNumeric){
                                     double elemValue = 0;
                                     if(factorVariable.getValue() != null){
                                         try{
@@ -452,7 +456,9 @@ public class DatasetExporter {
                             short columnIndex = columnIndexInteger.shortValue();
                             if(columnIndex >= 0) {
                                 Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
-                                if(variateVariable.getVariableType().getStandardVariable().getDataType().getName().equals(NUMERIC_VARIABLE)){
+                                boolean isNumeric = Util.isNumericVariable(
+                                		variateVariable.getVariableType().getStandardVariable().getDataType().getId());
+                                if(isNumeric){
                                     double elemValue = 0;
                                     if(variateVariable.getValue() != null){
                                         try{
