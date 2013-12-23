@@ -617,7 +617,15 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                
                 //for 909
                ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
-           }
+               
+			   try {
+				   Method breedingMethod = germplasmDataManager.getMethodByID((Integer) breedingMethodComboBox.getValue());
+				   ((SaveGermplasmListComponent) nextScreen).setBreedingMethod(breedingMethod);
+			   } catch (MiddlewareQueryException e) {
+				   e.printStackTrace();
+			   }
+              
+           	}
             source.enableAllTabs();
            	this.accordion.setSelectedTab(this.nextScreen);
            	source.enableTab(3);
