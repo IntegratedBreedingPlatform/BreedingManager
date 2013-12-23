@@ -23,6 +23,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
@@ -75,6 +76,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private List<Name> nameList;
 
     private String DEFAULT_LIST_TYPE = "LST";
+    private Method breedingMethod; 
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -134,7 +136,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         String firstId = null;
               boolean hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
-                  //method.getMcode()
+                  
             if(firstId == null){
                           firstId = userDefinedField.getFcode();
                       }
@@ -312,7 +314,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                      //Create map from data from previous screen
                      //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
                 	 
-                	 if(listTypeComboBox.getValue().equals("DER"))
+                	 if(breedingMethod.getMcode().equals("DER"))
                 	 	 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
                 	 
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
@@ -341,7 +343,13 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);
-        listTypeComboBox.setValue(listType);
+        if(listType != null && listType.length() > 0){
+        	listTypeComboBox.setValue(listType);
+        }
+    }
+    
+    public void setBreedingMethod(Method method){
+    	this.breedingMethod = method;
     }
     
     public GermplasmImportMain getSource() {

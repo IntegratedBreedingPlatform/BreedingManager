@@ -4,16 +4,16 @@ package org.generationcp.breeding.manager.constants;
 public enum ExportCrossesObservationSheetHeaders {
     
     //order the values as they are expected to appear on file
-    ENTRY_ID("Entry ID")
+    ENTRY_ID("ENTRY")
     ,GID("GID")
-    ,ENTRY_CODE("Entry Code")
-    ,DESIG("Designation")
-    ,CROSS("Cross")
-    ,SOURCE("Source")
-    ,FEMALE("Female")
-    ,MALE("Male")
-    ,FEMALE_GID("Female GID")
-    ,MALE_GID("Male GID");
+    ,ENTRY_CODE("ENTRY CODE")
+    ,DESIG("DESIGNATION")
+    ,CROSS("CROSS")
+    ,SOURCE("SOURCE")
+    ,FEMALE("FEMALE")
+    ,MALE("MALE")
+    ,FEMALE_GID("FEMALE GID")
+    ,MALE_GID("MALE GID");
     
     private String value;
     

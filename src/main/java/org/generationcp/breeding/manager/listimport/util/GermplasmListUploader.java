@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
+import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
@@ -35,6 +36,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -50,6 +53,13 @@ import com.vaadin.ui.Window.Notification;
 public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmListUploader.class);
+    
+    private static final String LIST_NAME_HEADER_LABEL = "LIST NAME";
+    private static final String LIST_DESC_HEADER_LABEL = "LIST DESCRIPTION";
+    private static final String TITLE_HEADER_LABEL = "TITLE";
+    private static final String LIST_DATE_HEADER_LABEL = "LIST DATE";
+    private static final String LIST_TYPE_HEADER_LABEL = "LIST TYPE";
     
     private static final String ENTRY_PROPERTY = "GERMPLASM ENTRY";
     private static final String ENTRY_SCALE = "NUMBER";
@@ -57,10 +67,19 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private static final String DESIG_SCALE = "DBCV";
     private static final String GID_PROPERTY = "GERMPLASM ID";
     private static final String GID_SCALE = "DBID";
+    private static final String ENTRY_CODE_PROPERTY = "GERMPLASM ENTRY";
+    private static final String ENTRY_CODE_SCALE = "CODE";
+    private static final String CROSS_PROPERTY = "CROSS NAME";
+    private static final String CROSS_SCALE = "NAME";
+    private static final String SOURCE_PROPERTY = "SEED SOURCE";
+    private static final String SOURCE_SCALE = "NAME";
     
     private String entryFactor;
     private String desigFactor;
     private String gidFactor;
+    private String entryCodeFactor;
+    private String crossFactor;
+    private String sourceFactor;
     
     private GermplasmImportFileComponent source;
     
@@ -265,21 +284,21 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
         if(fileIsValid){
-            currentRow++;
+            currentRow = 1;
         
             while(!rowIsEmpty() && fileIsValid){
                 System.out.println("");
                 importedGermplasm = new ImportedGermplasm();
                 for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-                	
-                	//Map cell (given a column label) with a pojo setter 
-                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(entryFactor)){
-                        importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                	//Map cell (given a column label) with a pojo setter
+                	String columnHeader = getCellStringValue(currentSheet, 0, col, false);
+                	if(columnHeader.equals(entryFactor)){
+                    	importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(desigFactor)){
+                    } else if(columnHeader.equals(desigFactor)){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(gidFactor)){
+                    } else if(columnHeader.equals(gidFactor)){
                     	String gidString = getCellStringValue(currentSheet, currentRow, col, true);
                     	Integer gidInteger = null;
                     	if(gidString != null && gidString.length() > 0){
@@ -287,17 +306,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                     	} 
                     	importedGermplasm.setGid(gidInteger);
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
+                    } else if(columnHeader.equals(crossFactor)){
                         importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | CROSS:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("SOURCE")){
+                    } else if(columnHeader.equals(sourceFactor)){
                         importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | SOURCE:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY CODE")){
+                    } else if(columnHeader.equals(entryCodeFactor)){
                         importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | ENTRY CODE:"+getCellStringValue(currentSheet, currentRow, col));
                     } else {
-                        System.out.println("DEBUG | Unhandled Column - "+importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase()+":"+getCellStringValue(currentSheet, currentRow, col));
+                        System.out.println("DEBUG | Unhandled Column - " + columnHeader + ":" + getCellStringValue(currentSheet, currentRow, col));
                     }
                 }
                 
@@ -339,9 +358,53 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     }
 
     private void readGermplasmListFileInfo(){
-            listName = getCellStringValue(0,0,1,true);
-            listTitle = getCellStringValue(0,1,1,true);
-            
+    	boolean listNameHeaderFound = false;
+    	boolean listDescHeaderFound = false;
+    	boolean listTypeHeaderFound = false;
+    	boolean listDateHeaderFound = false;
+    	
+    	for(int ctr = 0; ctr < 4; ctr++){
+    		String header =  getCellStringValue(0,ctr,0,true).trim().toUpperCase();
+    		String value = getCellStringValue(0,ctr,1,true);
+    		
+    		if(header.equals(LIST_NAME_HEADER_LABEL)){
+    			listName = value.trim();
+    			listNameHeaderFound = true;
+    		} else if(header.equals(LIST_DESC_HEADER_LABEL) || header.equals(TITLE_HEADER_LABEL)){
+    			listTitle = value.trim();
+    			listDescHeaderFound = true;
+    		} else if(header.equals(LIST_DATE_HEADER_LABEL)){
+    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+    			try{
+    				listDate = simpleDateFormat.parse(value);
+    			} catch(ParseException ex){
+    				showInvalidFileError("LIST DATE has wrong format. Please follow the format - yyyyMMdd.");
+    				return;
+    			}
+    			listDateHeaderFound = true;
+    		} else if(header.equals(LIST_TYPE_HEADER_LABEL)){
+    			listType = value.trim();
+    			listTypeHeaderFound = true;
+    		}
+    	}
+    	
+    	StringBuilder errorString = new StringBuilder();
+    	if(!listNameHeaderFound){
+    		errorString.append(LIST_NAME_HEADER_LABEL + " header not found. ");
+    	} else if(!listDescHeaderFound){
+    		errorString.append(LIST_DESC_HEADER_LABEL + " or " + TITLE_HEADER_LABEL + " header not found. ");
+    	} else if(!listDateHeaderFound){
+    		errorString.append(LIST_DATE_HEADER_LABEL + " header not found. ");
+    	} else if(!listTypeHeaderFound){
+    		errorString.append(LIST_TYPE_HEADER_LABEL + " header not found. ");
+    	}
+    	
+    	if(errorString.toString().length() > 0){
+    		showInvalidFileError(errorString.toString());
+    		return;
+    	}
+    	
+        if(listName != null && listName.length() > 0){
             try {
 				Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
 				Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
@@ -349,33 +412,13 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
 					showInvalidFileError("There is already an existing germplasm list with the name specified on the file");
 				}
-				
 			} catch (MiddlewareQueryException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LOG.error("Error with count Germplasm List by name = " + listName, e1);
 			}
+        }
 
-            if(getCellStringValue(0,2,0,true).toUpperCase().equals("LIST TYPE")){
-            //LIST TYPE on ROW3, LIST DATE on ROW4
-            	listType = getCellStringValue(0,2,1,true);
-        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        		try {
-        			listDate = simpleDateFormat.parse(getCellStringValue(0,3,1,true));
-        		} catch(ParseException e){
-        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
-        		}
-            } else {
-            //LIST TYPE on ROW4, LIST DATE on ROW3
-        		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        		try {
-        			listDate = simpleDateFormat.parse(getCellStringValue(0,2,1,true));
-        		} catch(ParseException e){
-        			showInvalidFileError("Invalid file headers, list date value should be on column B row 4");
-        		}
-            	listType = getCellStringValue(0,3,1,true);
-            }
-
-            try {
+        if(listType != null && listType.length() > 0){
+	        try {
 				List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 				List<String> listTypeCodes = new ArrayList<String>();
 				for(UserDefinedField listType : listTypes){
@@ -390,23 +433,22 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 					showInvalidFileError("Invalid list type "+listType);
 				}
 			} catch (MiddlewareQueryException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LOG.error("Error with getting germplasm list types.", e1);
 			}
-            
-            importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
-            
-            System.out.println("DEBUG | Original Filename:" + originalFilename);
-            System.out.println("DEBUG | List Name:" + listName);
-            System.out.println("DEBUG | List Title:" + listTitle);
-            System.out.println("DEBUG | List Type:" + listType);
-            System.out.println("DEBUG | List Date:" + listDate);
-            
+        }
+        
+        importedGermplasmList = new ImportedGermplasmList(originalFilename, listName, listTitle, listType, listDate); 
+        
+        System.out.println("DEBUG | Original Filename:" + originalFilename);
+        System.out.println("DEBUG | List Name:" + listName);
+        System.out.println("DEBUG | List Title:" + listTitle);
+        System.out.println("DEBUG | List Type:" + listType);
+        System.out.println("DEBUG | List Date:" + listDate);
+    	    
         //Prepare for next set of data
         while(!rowIsEmpty()){
             currentRow++;
         }
-        
     }
     
     private void readConditions(){
@@ -422,8 +464,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
 	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
 	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
-	            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")){
+	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")){
 	            showInvalidFileError("Incorrect headers for conditions.");
 	            System.out.println("DEBUG | Invalid file on readConditions header");
 	            System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
@@ -459,6 +500,9 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         entryFactor = null;
         desigFactor = null;
         gidFactor = null;
+        entryCodeFactor = null;
+        sourceFactor = null;
+        crossFactor = null;
         
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("FACTOR") 
@@ -466,8 +510,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             || !getCellStringValue(currentSheet,currentRow,2,true).toUpperCase().equals("PROPERTY")
             || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
             || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
-            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
-            || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")) {
+            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")){
             showInvalidFileError("Incorrect headers for factors.");
             System.out.println("DEBUG | Invalid file on readFactors header");
         }
@@ -509,7 +552,14 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 	gidColumnIsPresent = true;
                 	importFileIsAdvanced = true;
                 	gidFactor = importedFactor.getFactor();
+                } else if(property.equals(ENTRY_CODE_PROPERTY) && scale.equals(ENTRY_CODE_SCALE)){
+                	entryCodeFactor = importedFactor.getFactor();
+                } else if(property.equals(SOURCE_PROPERTY) && scale.equals(SOURCE_SCALE)){
+                	sourceFactor = importedFactor.getFactor();
+                } else if(property.equals(CROSS_PROPERTY) && scale.equals(CROSS_SCALE)){
+                	crossFactor = importedFactor.getFactor();
                 }
+                
                 currentRow++;
             }
         }

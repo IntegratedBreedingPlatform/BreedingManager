@@ -5,7 +5,7 @@ public enum TemplateForExportListDetails {
     
     //order the values as they are expected to appear on file
     LIST_NAME("LIST NAME")
-    ,TITLE("TITLE")
+    ,TITLE("LIST DESCRIPTION")
     ,LIST_TYPE("LIST TYPE")
     ,LIST_DATE("LIST DATE");
     
