@@ -67,10 +67,19 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private static final String DESIG_SCALE = "DBCV";
     private static final String GID_PROPERTY = "GERMPLASM ID";
     private static final String GID_SCALE = "DBID";
+    private static final String ENTRY_CODE_PROPERTY = "GERMPLASM ENTRY";
+    private static final String ENTRY_CODE_SCALE = "CODE";
+    private static final String CROSS_PROPERTY = "CROSS NAME";
+    private static final String CROSS_SCALE = "NAME";
+    private static final String SOURCE_PROPERTY = "SEED SOURCE";
+    private static final String SOURCE_SCALE = "NAME";
     
     private String entryFactor;
     private String desigFactor;
     private String gidFactor;
+    private String entryCodeFactor;
+    private String crossFactor;
+    private String sourceFactor;
     
     private GermplasmImportFileComponent source;
     
@@ -275,21 +284,21 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
         if(fileIsValid){
-            currentRow++;
+            currentRow = 1;
         
             while(!rowIsEmpty() && fileIsValid){
                 System.out.println("");
                 importedGermplasm = new ImportedGermplasm();
                 for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-                	
-                	//Map cell (given a column label) with a pojo setter 
-                    if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(entryFactor)){
-                        importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                	//Map cell (given a column label) with a pojo setter
+                	String columnHeader = getCellStringValue(currentSheet, 0, col, false);
+                	if(columnHeader.equals(entryFactor)){
+                    	importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                         System.out.println("DEBUG | ENTRY:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(desigFactor)){
+                    } else if(columnHeader.equals(desigFactor)){
                         importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | DESIG:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().equals(gidFactor)){
+                    } else if(columnHeader.equals(gidFactor)){
                     	String gidString = getCellStringValue(currentSheet, currentRow, col, true);
                     	Integer gidInteger = null;
                     	if(gidString != null && gidString.length() > 0){
@@ -297,17 +306,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                     	} 
                     	importedGermplasm.setGid(gidInteger);
                         System.out.println("DEBUG | GID:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
+                    } else if(columnHeader.equals(crossFactor)){
                         importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | CROSS:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("SOURCE")){
+                    } else if(columnHeader.equals(sourceFactor)){
                         importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | SOURCE:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else if(importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase().equals("ENTRY CODE")){
+                    } else if(columnHeader.equals(entryCodeFactor)){
                         importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
                         System.out.println("DEBUG | ENTRY CODE:"+getCellStringValue(currentSheet, currentRow, col));
                     } else {
-                        System.out.println("DEBUG | Unhandled Column - "+importedGermplasmList.getImportedFactors().get(col).getFactor().toUpperCase()+":"+getCellStringValue(currentSheet, currentRow, col));
+                        System.out.println("DEBUG | Unhandled Column - " + columnHeader + ":" + getCellStringValue(currentSheet, currentRow, col));
                     }
                 }
                 
@@ -491,6 +500,9 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         entryFactor = null;
         desigFactor = null;
         gidFactor = null;
+        entryCodeFactor = null;
+        sourceFactor = null;
+        crossFactor = null;
         
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("FACTOR") 
@@ -540,7 +552,14 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
                 	gidColumnIsPresent = true;
                 	importFileIsAdvanced = true;
                 	gidFactor = importedFactor.getFactor();
+                } else if(property.equals(ENTRY_CODE_PROPERTY) && scale.equals(ENTRY_CODE_SCALE)){
+                	entryCodeFactor = importedFactor.getFactor();
+                } else if(property.equals(SOURCE_PROPERTY) && scale.equals(SOURCE_SCALE)){
+                	sourceFactor = importedFactor.getFactor();
+                } else if(property.equals(CROSS_PROPERTY) && scale.equals(CROSS_SCALE)){
+                	crossFactor = importedFactor.getFactor();
                 }
+                
                 currentRow++;
             }
         }

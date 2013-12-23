@@ -147,7 +147,7 @@ public class GermplasmListExporter {
         HSSFRow titleRow = descriptionSheet.createRow(actualRow + 1); 
         descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow + 1, actualRow + 1, 1, 7));
         Cell titleLabel = titleRow.createCell(0);
-        titleLabel.setCellValue("TITLE");
+        titleLabel.setCellValue("LIST DESCRIPTION");
         titleLabel.setCellStyle(styles.get(LABEL_STYLE));
         titleRow.createCell(1).setCellValue(germplasmList.getDescription());
 
@@ -194,9 +194,6 @@ public class GermplasmListExporter {
         Cell valueCell = conditionDetailsHeading.createCell(6);
         valueCell.setCellValue("VALUE");
         valueCell.setCellStyle(styles.get(HEADING_STYLE));
-        Cell labelCell = conditionDetailsHeading.createCell(7);
-        labelCell.setCellValue("LABEL");
-        labelCell.setCellStyle(styles.get(HEADING_STYLE));
         
         // retrieve user details
         String ownerName = "";
@@ -222,7 +219,6 @@ public class GermplasmListExporter {
         listUserRow.createCell(4).setCellValue("ASSIGNED");
         listUserRow.createCell(5).setCellValue("C");
         listUserRow.createCell(6).setCellValue(ownerName.trim());
-        listUserRow.createCell(7).setCellValue("LIST");
         
         HSSFRow listUserIdRow = descriptionSheet.createRow(actualRow + 2); 
         listUserIdRow.createCell(0).setCellValue("LIST USER ID");
@@ -234,7 +230,6 @@ public class GermplasmListExporter {
         Cell userIdCell = listUserIdRow.createCell(6);
         userIdCell.setCellValue(germplasmList.getUserId());
         userIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
-        listUserIdRow.createCell(7).setCellValue("LIST");
         
         // retrieve current workbench user and last opened project
         
@@ -262,7 +257,6 @@ public class GermplasmListExporter {
         listExporterRow.createCell(4).setCellValue("ASSIGNED");
         listExporterRow.createCell(5).setCellValue("C");
         listExporterRow.createCell(6).setCellValue(exporterName.trim());
-        listExporterRow.createCell(7).setCellValue("LIST");
         
         HSSFRow listExporterIdRow = descriptionSheet.createRow(actualRow + 4); 
         listExporterIdRow.createCell(0).setCellValue("LIST EXPORTER ID");
@@ -274,7 +268,6 @@ public class GermplasmListExporter {
         Cell localIdCell = listExporterIdRow.createCell(6);
         localIdCell.setCellValue(currentLocalIbdbUserId);
         localIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
-        listExporterIdRow.createCell(7).setCellValue("LIST");
     }
     
     private void writeListFactorSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
@@ -300,71 +293,62 @@ public class GermplasmListExporter {
         dataTypeCell.setCellValue("DATA TYPE");
         dataTypeCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell spaceCell = factorDetailsHeader.createCell(6);
-        spaceCell.setCellValue("");
+        spaceCell.setCellValue("NESTED IN");
         spaceCell.setCellStyle(styles.get(HEADING_STYLE));
-        Cell labelCell = factorDetailsHeader.createCell(7);
-        labelCell.setCellValue("LABEL");
-        labelCell.setCellStyle(styles.get(HEADING_STYLE));
         
         HSSFRow entryIdRow = descriptionSheet.createRow(actualRow + 1);
-        entryIdRow.createCell(0).setCellValue("Entry ID");
-        entryIdRow.createCell(1).setCellValue("ENTRY NUMBER");
+        entryIdRow.createCell(0).setCellValue("ENTRY");
+        entryIdRow.createCell(1).setCellValue("The germplasm entry number");
         entryIdRow.createCell(2).setCellValue("GERMPLASM ENTRY");
         entryIdRow.createCell(3).setCellValue("NUMBER");
-        entryIdRow.createCell(4).setCellValue("ASSIGNED");
+        entryIdRow.createCell(4).setCellValue("ENUMERATED");
         entryIdRow.createCell(5).setCellValue("N");
         entryIdRow.createCell(6).setCellValue("");
-        entryIdRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow gidRow = descriptionSheet.createRow(actualRow + 2);
         gidRow.createCell(0).setCellValue("GID");
-        gidRow.createCell(1).setCellValue("GERMPLASM IDENTIFIER");
+        gidRow.createCell(1).setCellValue("The GID of the germplasm");
         gidRow.createCell(2).setCellValue("GERMPLASM ID");
         gidRow.createCell(3).setCellValue("DBID");
         gidRow.createCell(4).setCellValue("ASSIGNED");
         gidRow.createCell(5).setCellValue("N");
         gidRow.createCell(6).setCellValue("");
-        gidRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow entryCodeRow = descriptionSheet.createRow(actualRow + 3);
-        entryCodeRow.createCell(0).setCellValue("Entry Code");
-        entryCodeRow.createCell(1).setCellValue("ENTRY CODE");
+        entryCodeRow.createCell(0).setCellValue("ENTRY CODE");
+        entryCodeRow.createCell(1).setCellValue("Germplasm entry code");
         entryCodeRow.createCell(2).setCellValue("GERMPLASM ENTRY");
-        entryCodeRow.createCell(3).setCellValue("TEXT");
+        entryCodeRow.createCell(3).setCellValue("CODE");
         entryCodeRow.createCell(4).setCellValue("ASSIGNED");
         entryCodeRow.createCell(5).setCellValue("C");
         entryCodeRow.createCell(6).setCellValue("");
-        entryCodeRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow designationRow = descriptionSheet.createRow(actualRow + 4);
-        designationRow.createCell(0).setCellValue("Designation");
-        designationRow.createCell(1).setCellValue("ENTRY NAME");
+        designationRow.createCell(0).setCellValue("DESIGNATION");
+        designationRow.createCell(1).setCellValue("The name of the germplasm");
         designationRow.createCell(2).setCellValue("GERMPLASM ID");
         designationRow.createCell(3).setCellValue("DBCV");
         designationRow.createCell(4).setCellValue("ASSIGNED");
         designationRow.createCell(5).setCellValue("C");
         designationRow.createCell(6).setCellValue("");
-        designationRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow crossRow = descriptionSheet.createRow(actualRow + 5);
-        crossRow.createCell(0).setCellValue("Cross");
-        crossRow.createCell(1).setCellValue("PEDIGREE");
-        crossRow.createCell(2).setCellValue("CROSS HISTORY");
-        crossRow.createCell(3).setCellValue("PEDIGREE STRING");
+        crossRow.createCell(0).setCellValue("CROSS");
+        crossRow.createCell(1).setCellValue("The pedigree string of the germplasm");
+        crossRow.createCell(2).setCellValue("CROSS NAME");
+        crossRow.createCell(3).setCellValue("NAME");
         crossRow.createCell(4).setCellValue("ASSIGNED");
         crossRow.createCell(5).setCellValue("C");
         crossRow.createCell(6).setCellValue("");
-        crossRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow sourceRow = descriptionSheet.createRow(actualRow + 6);
-        sourceRow.createCell(0).setCellValue("Source");
-        sourceRow.createCell(1).setCellValue("SEED SOURCE");
+        sourceRow.createCell(0).setCellValue("SOURCE");
+        sourceRow.createCell(1).setCellValue("The seed source of the germplasm");
         sourceRow.createCell(2).setCellValue("SEED SOURCE");
         sourceRow.createCell(3).setCellValue("NAME");
-        sourceRow.createCell(4).setCellValue("ASSIGNED");
+        sourceRow.createCell(4).setCellValue("Seed Source");
         sourceRow.createCell(5).setCellValue("C");
         sourceRow.createCell(6).setCellValue("");
-        sourceRow.createCell(7).setCellValue("Entry ID");
         
         HSSFRow uniqueIdRow = descriptionSheet.createRow(actualRow + 7);
         uniqueIdRow.createCell(0).setCellValue("Unique ID");
@@ -374,31 +358,30 @@ public class GermplasmListExporter {
         uniqueIdRow.createCell(4).setCellValue("ASSIGNED");
         uniqueIdRow.createCell(5).setCellValue("C");
         uniqueIdRow.createCell(6).setCellValue("");
-        uniqueIdRow.createCell(7).setCellValue("Entry ID");
     }
     
     private void writeObservationSheet(HashMap<String, CellStyle> styles, HSSFSheet observationSheet) throws GermplasmListExporterException {
         HSSFRow listEntriesHeader = observationSheet.createRow(0);
         Cell entryIdCell = listEntriesHeader.createCell(0);
-        entryIdCell.setCellValue("Entry ID");
+        entryIdCell.setCellValue("ENTRY");
         entryIdCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell gidCell = listEntriesHeader.createCell(1);
         gidCell.setCellValue("GID");
         gidCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell entryCodeCell = listEntriesHeader.createCell(2);
-        entryCodeCell.setCellValue("Entry Code");
+        entryCodeCell.setCellValue("ENTRY CODE");
         entryCodeCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell designationCell = listEntriesHeader.createCell(3);
-        designationCell.setCellValue("Designation");
+        designationCell.setCellValue("DESIGNATION");
         designationCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell crossCell = listEntriesHeader.createCell(4);
-        crossCell.setCellValue("Cross");
+        crossCell.setCellValue("CROSS");
         crossCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell sourceCell = listEntriesHeader.createCell(5);
-        sourceCell.setCellValue("Source");
+        sourceCell.setCellValue("SOURCE");
         sourceCell.setCellStyle(styles.get(HEADING_STYLE));
         Cell uniqueIdCell = listEntriesHeader.createCell(6);
-        uniqueIdCell.setCellValue("Unique ID");
+        uniqueIdCell.setCellValue("UNIQUE ID");
         uniqueIdCell.setCellStyle(styles.get(HEADING_STYLE));
         
         List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();

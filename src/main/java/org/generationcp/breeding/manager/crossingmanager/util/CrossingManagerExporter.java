@@ -79,25 +79,25 @@ public class CrossingManagerExporter{
         conditionsToWriteOnFile.add(exporterIdCondition);
         
         factorsToWriteOnFile = new ArrayList<ImportedFactor>();
-        ImportedFactor entryIdFactor = new ImportedFactor("Entry ID", "ENTRY NUMBER", "GERMPLASM ENTRY", "NUMBER", "ASSIGNED", "N", "Entry ID");
+        ImportedFactor entryIdFactor = new ImportedFactor("ENTRY", "The germplasm entry number", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED", "N", "Entry ID");
         factorsToWriteOnFile.add(entryIdFactor);
-        ImportedFactor gidFactor = new ImportedFactor("GID", "GERMPLASM IDENTIFIER", "GERMPLASM ID", "DBID", "ASSIGNED", "N", "Entry ID");
+        ImportedFactor gidFactor = new ImportedFactor("GID", "The GID of the germplasm", "GERMPLASM ID", "DBID", "ASSIGNED", "N", "Entry ID");
         factorsToWriteOnFile.add(gidFactor);
-        ImportedFactor entryCodeFactor = new ImportedFactor("Entry Code", "ENTRY CODE", "GERMPLASM ENTRY", "TEXT", "ASSIGNED", "C", "Entry ID");
+        ImportedFactor entryCodeFactor = new ImportedFactor("ENTRY CODE", "Germplasm entry code", "GERMPLASM ENTRY", "CODE", "ASSIGNED", "C", "Entry ID");
         factorsToWriteOnFile.add(entryCodeFactor);
-        ImportedFactor designationFactor = new ImportedFactor("Designation", "ENTRY NAME", "GERMPLASM ID", "DBCV", "ASSIGNED", "C", "Entry ID");
+        ImportedFactor designationFactor = new ImportedFactor("DESIGNATION", "The name of the germplasm", "GERMPLASM ID", "DBCV", "ASSIGNED", "C", "Entry ID");
         factorsToWriteOnFile.add(designationFactor);
-        ImportedFactor crossFactor = new ImportedFactor("Cross", "PEDIGREE", "CROSS HISTORY", "PEDIGREE STRING", "ASSIGNED", "C", "Entry ID");
+        ImportedFactor crossFactor = new ImportedFactor("CROSS", "The pedigree string of the germplasm", "CROSS NAME", "NAME", "ASSIGNED", "C", "Entry ID");
         factorsToWriteOnFile.add(crossFactor);
-        ImportedFactor femaleFactor = new ImportedFactor("Female", "NAME OF FEMALE PARENT", "GERMPLASM ID", "DBCV", "FEMALE SELECTED", "C", "Entry ID");
+        ImportedFactor femaleFactor = new ImportedFactor("FEMALE", "NAME OF FEMALE PARENT", "GERMPLASM ID", "DBCV", "FEMALE SELECTED", "C", "Entry ID");
         factorsToWriteOnFile.add(femaleFactor);
-        ImportedFactor maleFactor = new ImportedFactor("Male", "NAME OF MALE PARENT", "GERMPLASM ID", "DBCV", "MALE SELECTED", "C", "Entry ID");
+        ImportedFactor maleFactor = new ImportedFactor("MALE", "NAME OF MALE PARENT", "GERMPLASM ID", "DBCV", "MALE SELECTED", "C", "Entry ID");
         factorsToWriteOnFile.add(maleFactor);
-        ImportedFactor femaleGIDFactor = new ImportedFactor("Female GID", "GID OF FEMALE PARENT", "GERMPLASM ID", "DBID", "FEMALE SELECTED", "N", "Entry ID");
+        ImportedFactor femaleGIDFactor = new ImportedFactor("FEMALE GID", "GID OF FEMALE PARENT", "GERMPLASM ID", "DBID", "FEMALE SELECTED", "N", "Entry ID");
         factorsToWriteOnFile.add(femaleGIDFactor);
-        ImportedFactor maleGIDFactor = new ImportedFactor("Male GID", "GID OF MALE PARENT", "GERMPLASM ID", "DBID", "MALE SELECTED", "N", "Entry ID");
+        ImportedFactor maleGIDFactor = new ImportedFactor("MALE GID", "GID OF MALE PARENT", "GERMPLASM ID", "DBID", "MALE SELECTED", "N", "Entry ID");
         factorsToWriteOnFile.add(maleGIDFactor);
-        ImportedFactor sourceFactor = new ImportedFactor("Source", "SEED SOURCE", "SEED SOURCE", "NAME", "ASSIGNED", "C", "Entry ID");
+        ImportedFactor sourceFactor = new ImportedFactor("SOURCE", "The seed source of the germplasm", "SEED SOURCE", "NAME", "Seed Source", "C", "Entry ID");
         factorsToWriteOnFile.add(sourceFactor);
     }
     
@@ -239,10 +239,9 @@ public class CrossingManagerExporter{
             conditionRow.createCell(4).setCellValue(condition.getMethod());
             conditionRow.createCell(5).setCellValue(condition.getDataType());
             conditionRow.createCell(6).setCellValue(condition.getValue());
-            conditionRow.createCell(7).setCellValue(condition.getLabel());
         }
     
-        return currentRow + 1;
+        return currentRow;
     }
     
     
@@ -271,7 +270,6 @@ public class CrossingManagerExporter{
             conditionRow.createCell(4).setCellValue(factor.getMethod());
             conditionRow.createCell(5).setCellValue(factor.getDataType());
             conditionRow.createCell(6).setCellValue(factor.getNestedIn());
-            conditionRow.createCell(7).setCellValue(factor.getLabel());
         }
     
         return currentRow + 1;

@@ -10,8 +10,8 @@ public enum TemplateConditionHeader {
     ,SCALE("SCALE")
     ,METHOD("METHOD")
     ,DATA_TYPE("DATA TYPE")
-    ,VALUE("VALUE")
-    ,LABEL("LABEL");
+    ,VALUE("VALUE");
+    
     
     private String header;
     
