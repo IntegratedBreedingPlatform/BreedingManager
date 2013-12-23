@@ -242,8 +242,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		
     	} else if(PVAL_COLUMN_ID.equalsIgnoreCase(columnId)){
     		Integer numOfEnvts = (Integer) valuesMap.get(NUM_OF_ENV_COLUMN_ID);
-    		Double standardMean = (Double) valuesMap.get(MEAN_STD_COLUMN_ID);
-    		value = HeadToHeadResultsUtil.getPvalue(numOfEnvts, standardMean);
+    		Integer numOfSucceses = (Integer) valuesMap.get(NUM_SUP_COLUMN_ID);
+    		value = HeadToHeadResultsUtil.getPvalue(numOfEnvts, numOfSucceses);
     		
     	}else if(MEAN_DIFF_COLUMN_ID.equalsIgnoreCase(columnId)){
     		value = HeadToHeadResultsUtil.getMeanDiff(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);

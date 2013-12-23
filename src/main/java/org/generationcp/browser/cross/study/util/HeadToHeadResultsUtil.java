@@ -19,10 +19,9 @@ public class HeadToHeadResultsUtil {
 	private static final double DEF_PROBABILITY = 0.5;
 	
 	
-	public static double getPvalue(int numOfEnvts, Double standardMean){
+	public static double getPvalue(int numOfEnvts, int numOfSucesses){
 		BinomialDistribution binomial = new BinomialDistribution(numOfEnvts, DEF_PROBABILITY);
-		double cumulativeProbability = binomial.cumulativeProbability(standardMean.intValue());
-		System.out.println("x="+ standardMean.intValue() + ", cumulativeProbability=" + cumulativeProbability);
+		double cumulativeProbability = binomial.cumulativeProbability(numOfSucesses);
 		return 1 - cumulativeProbability;
 	}
 	

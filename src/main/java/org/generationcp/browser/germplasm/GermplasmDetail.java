@@ -21,6 +21,9 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -82,6 +87,9 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private GermplasmDataManager germplasmManager;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -192,7 +200,29 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
     @Override
     public void afterPropertiesSet() {
 
-        layoutDetails = new VerticalLayout();
+    	try {
+			if (this.germplasmManager.getGermplasmByGID(gid) != null){
+				renderGermplasmDetailsAccordion();
+			} else {
+				VerticalLayout layout = new VerticalLayout();
+				layout.setMargin(true);
+				Label label = new Label(messageSource.getMessage(Message.NULL_GERMPLASM_DETAILS) + " " + gid);
+				layout.addComponent(label);
+				
+				addTab(layout, messageSource.getMessage(Message.CHARACTERISTICS_LABEL));
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+			MessageNotifier.showError( this.getWindow()
+                    , "Error with viewing Germplasm"    
+                    , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                    , Notification.POSITION_CENTERED);
+		}
+    }
+
+	private void renderGermplasmDetailsAccordion() {
+		layoutDetails = new VerticalLayout();
         layoutDetails.setData(FIRST_TAB);
         gDetailModel = qQuery.getGermplasmDetails(gid);
         layoutDetails.addComponent(new GermplasmCharacteristicsComponent(gDetailModel));
@@ -249,7 +279,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
         
 
         this.addListener(new GermplasmSelectedTabChangeListener(this));
-    }
+	}
 
     @Override
     public void attach() {
