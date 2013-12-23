@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -19,16 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class ViewTraitObservationsDialog extends Window implements InitializingBean, InternationalizableComponent {
 	
+	public static final String LINE_BY_TRAIT_WINDOW_NAME = "line-by-trait";
 	private static final long serialVersionUID = 1L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(ViewTraitObservationsDialog.class);
@@ -86,6 +90,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	public void afterPropertiesSet() throws Exception {
         //set as modal window, other components are disabled while window is open
         setModal(true);
+        setName(LINE_BY_TRAIT_WINDOW_NAME);
         // define window size, set as not resizable
         setWidth("900px");
         setHeight("530px");
@@ -124,7 +129,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
         
         locationTable.addContainerProperty(OBSERVATION_NO, Integer.class, null);
         locationTable.addContainerProperty(LINE_NO, Integer.class, null);
-        locationTable.addContainerProperty(LINE_GID, Integer.class, null);
+        locationTable.addContainerProperty(LINE_GID, Button.class, null);
         locationTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
         
         locationTable.setColumnHeader(OBSERVATION_NO, messageSource.getMessage(Message.OBSERVATION_NO));
@@ -168,7 +173,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 				lineNo++;
 				currentGid = gid;
 			}
-			
+			 
 			try{
 				Object[] itemObj = getTableRow(observationNo, lineNo, gid, gidName, location, traitVal);
 				locationTable.addItem(itemObj, observationNo);
@@ -196,7 +201,14 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 		
 		row[0] = observationNo;
 		row[1] = lineNo;
-		row[2] = gid;
+		
+		// make GID as link 
+        String gidString = String.valueOf(gid);
+		Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString));
+        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+        gidButton.setDescription("Click to view Germplasm information");
+		
+		row[2] = gidButton;
 		row[3] = gidName;
 		
 		if(this.variateType.equals("Numeric Variate")){
