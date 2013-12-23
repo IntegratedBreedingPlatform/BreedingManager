@@ -33,19 +33,18 @@ public class TestHeadToHeadResultsUtil {
 	private static final List<EnvironmentForComparison> equalWeightEnvts = MockCrossStudyDataUtil.getEqualEnvironmentForComparisons();
 	private static final List<EnvironmentForComparison> variedWeightEnvts = MockCrossStudyDataUtil.getVariedEnvironmentForComparisons();
 	
-	private static DecimalFormat decimalFormmatter = new DecimalFormat("#,##0.00");
+	private static DecimalFormat decimalFormatter = new DecimalFormat("#,##0.00");
 	
 	@Test
 	public void testGetPvalue(){
 		int trials =HeadToHeadResultsUtil.getTotalNumOfEnv(pair, TRAIT1, data, equalWeightEnvts);
-		Double standardMean = HeadToHeadResultsUtil.getMeanValue(pair, 2, TRAIT1, data, equalWeightEnvts);
+		int successes = HeadToHeadResultsUtil.getTotalNumOfSup(pair, TRAIT1, data, equalWeightEnvts);
 		
-		double pValue = HeadToHeadResultsUtil.getPvalue(trials, standardMean);
-		Assert.assertTrue(pValue >= 0);
-		Assert.assertTrue(pValue <= 0);
+		double pValue = HeadToHeadResultsUtil.getPvalue(trials, successes);
+		String pValueFormatted = decimalFormatter.format(pValue);
+		Assert.assertEquals("0.09", pValueFormatted);
 		
-		System.out.println("PVAL for (trial= " + trials + ", stdMean=" + standardMean + "): "
-				+ pValue);
+		System.out.println("PVAL for (trial= " + trials + ", succeses=" + successes + "): " + pValueFormatted);
 	}
 
 	@Test
@@ -77,11 +76,11 @@ public class TestHeadToHeadResultsUtil {
 		
 		// Trait 1 Mean values
 		Double meanTest = HeadToHeadResultsUtil.getMeanValue(pair, 1, TRAIT1, data, equalWeightEnvts);
-		String meanTestFormatted = decimalFormmatter.format(meanTest);
+		String meanTestFormatted = decimalFormatter.format(meanTest);
 		Assert.assertEquals("2,305.19", meanTestFormatted);
 		
 		Double meanStandard = HeadToHeadResultsUtil.getMeanValue(pair, 2, TRAIT1, data, equalWeightEnvts);
-		String meanStdFormatted = decimalFormmatter.format(meanStandard);
+		String meanStdFormatted = decimalFormatter.format(meanStandard);
 		Assert.assertEquals("1,843.20", meanStdFormatted);
 		
 		System.out.println("Trait 1 >>> MeanTest = " + meanTestFormatted + ", MeanStandard = " + meanStdFormatted);
@@ -89,11 +88,11 @@ public class TestHeadToHeadResultsUtil {
 		
 		// Trait 2 Mean values
 		meanTest = HeadToHeadResultsUtil.getMeanValue(pair, 1, TRAIT2, data, equalWeightEnvts);
-		meanTestFormatted = decimalFormmatter.format(meanTest);
+		meanTestFormatted = decimalFormatter.format(meanTest);
 		Assert.assertEquals("94.30", meanTestFormatted);
 		
 		meanStandard = HeadToHeadResultsUtil.getMeanValue(pair, 2, TRAIT2, data, equalWeightEnvts);
-		meanStdFormatted = decimalFormmatter.format(meanStandard);
+		meanStdFormatted = decimalFormatter.format(meanStandard);
 		Assert.assertEquals("86.68", meanStdFormatted);
 		
 		System.out.println("Trait 2 >>> MeanTest = " + meanTestFormatted + ", MeanStandard = " + meanStdFormatted);
@@ -104,14 +103,14 @@ public class TestHeadToHeadResultsUtil {
 	public void testGetMeanDiffEqualWeights(){
 		//Trait 1 Mean Diff
 		Double meanDiff = HeadToHeadResultsUtil.getMeanDiff(pair, TRAIT1, data, equalWeightEnvts);
-		String diffFormatted = decimalFormmatter.format(meanDiff);
+		String diffFormatted = decimalFormatter.format(meanDiff);
 		Assert.assertEquals("461.99", diffFormatted);
 		
 		System.out.println("Trait 1 >>> MeanDiff (equal weights) = " + diffFormatted);
 		
 		//Trait 2 Mean Diff (Decreasing)
 		meanDiff = HeadToHeadResultsUtil.getMeanDiff(pair, TRAIT2, data, equalWeightEnvts);
-		diffFormatted = decimalFormmatter.format(meanDiff);
+		diffFormatted = decimalFormatter.format(meanDiff);
 		Assert.assertEquals("-7.63", diffFormatted);
 		
 		System.out.println("Trait 2 >>> MeanDiff (equal weights) = " + diffFormatted);
@@ -121,14 +120,14 @@ public class TestHeadToHeadResultsUtil {
 	public void testGetMeanDiffVaryingWeights(){
 		// Trait 1 Mean Diff
 		Double meanDiff = HeadToHeadResultsUtil.getMeanDiff(pair, TRAIT1, data, variedWeightEnvts);
-		String meanFormatted = decimalFormmatter.format(meanDiff);
+		String meanFormatted = decimalFormatter.format(meanDiff);
 		Assert.assertEquals("264.82", meanFormatted);
 		
 		System.out.println("Trait 1 >>> MeanDiff (varied weights) = " + meanFormatted);
 		
 		// Trait 2 Mean Diff (Decreasing)
 		meanDiff = HeadToHeadResultsUtil.getMeanDiff(pair, TRAIT2, data, variedWeightEnvts);
-		meanFormatted = decimalFormmatter.format(meanDiff);
+		meanFormatted = decimalFormatter.format(meanDiff);
 		Assert.assertEquals("-8.01", meanFormatted);
 		
 		System.out.println("Trait 2 >>> MeanDiff (varied weights) = " + meanFormatted);
