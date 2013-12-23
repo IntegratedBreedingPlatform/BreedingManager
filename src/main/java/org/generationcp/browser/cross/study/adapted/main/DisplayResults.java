@@ -23,6 +23,7 @@ import org.generationcp.browser.cross.study.adapted.main.pojos.TableResultRow;
 import org.generationcp.browser.cross.study.adapted.main.pojos.TraitObservationScore;
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
+import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -48,10 +49,12 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -376,7 +379,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
         resultTable.removeAllItems();
 		
         resultTable.addContainerProperty(LINE_NO, Integer.class, null);
-        resultTable.addContainerProperty(LINE_GID, Integer.class, null);
+        resultTable.addContainerProperty(LINE_GID, Button.class, null);
         resultTable.addContainerProperty(LINE_DESIGNATION, String.class, null);
 		
         resultTable.setColumnHeader(LINE_NO, "Line<br/> No");
@@ -462,7 +465,13 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			Object[] itemObj = new Object[NoOfColumns];   
 			
 			itemObj[0] = line_no;
-			itemObj[1] = gid;
+			
+            // make GID as link 
+            String gidString = String.valueOf(gid);
+			Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+            gidButton.setDescription("Click to view Germplasm information");
+			itemObj[1] = gidButton;
 			itemObj[2] = (germplasmName == null)? "" : germplasmName;
 			
 			columnHeaders = getColumnProperties(resultTable.getContainerPropertyIds());
