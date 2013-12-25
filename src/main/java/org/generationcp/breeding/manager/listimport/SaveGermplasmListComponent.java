@@ -314,7 +314,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                      //Create map from data from previous screen
                      //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
                 	 
-                	 if(breedingMethod.getMcode().equals("DER"))
+                	 if(breedingMethod.getMcode().equals("DER")
+                	 || breedingMethod.getMcode().equals("CDM")
+                	 )
                 	 	 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
                 	 
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
