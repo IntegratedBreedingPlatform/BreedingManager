@@ -316,6 +316,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                 	 
                 	 if(breedingMethod.getMcode().equals("DER")
                 	 || breedingMethod.getMcode().equals("CDM")
+                	 || breedingMethod.getMcode().equals("MAN")
                 	 )
                 	 	 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
                 	 
