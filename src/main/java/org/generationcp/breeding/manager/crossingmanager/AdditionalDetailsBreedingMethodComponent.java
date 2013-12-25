@@ -12,6 +12,7 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,8 +26,11 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,6 +40,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -61,6 +66,9 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager; 
       
     private Label selectOptionLabel;
     private Label selectCrossingMethodLabel;
@@ -69,11 +77,15 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     private OptionGroup crossingMethodOptionGroup;
     private ComboBox crossingMethodComboBox;
+    private CheckBox favoriteMethodsCheckbox;
     private HashMap<String, Integer> mapMethods;
     
     private CrossesMadeContainer container;
     
     private List<Method> methods;
+    private List<Integer> favoriteMethodIds;
+    private List<Method> favoriteMethods;
+    
     
     private enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
@@ -101,29 +113,27 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
         crossingMethodOptionGroup.setImmediate(true);
         crossingMethodOptionGroup.addListener(new Property.ValueChangeListener() {
-            @Override
+			private static final long serialVersionUID = -818940519031621592L;
+
+			@Override
             public void valueChange(ValueChangeEvent event) {
-                if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
-                selectCrossingMethodLabel.setEnabled(true);
-                methodDescriptionLabel.setEnabled(true);
-                crossingMethodComboBox.setEnabled(true);
-                crossingMethodComboBox.focus();
-                try {
-		    populateBreedingMethod();
-		} catch (MiddlewareQueryException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
+                boolean sameForAllCrossesOptionSelected = 
+                	crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES);
+				
+                selectCrossingMethodLabel.setEnabled(sameForAllCrossesOptionSelected);
+                methodDescriptionLabel.setEnabled(sameForAllCrossesOptionSelected);
+                favoriteMethodsCheckbox.setEnabled(sameForAllCrossesOptionSelected);
+                crossingMethodComboBox.setEnabled(sameForAllCrossesOptionSelected);
+                if(sameForAllCrossesOptionSelected){
+	                crossingMethodComboBox.focus();
+	                populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
+					
                 }else{
-                selectCrossingMethodLabel.setEnabled(false);
-                methodDescriptionLabel.setEnabled(false);
-                crossingMethodComboBox.setEnabled(false);
-                crossingMethodComboBox.removeAllItems();
-                crossingMethodDescriptionTextArea.setReadOnly(false);
-                crossingMethodDescriptionTextArea.setValue("");
-                crossingMethodDescriptionTextArea.setReadOnly(true);
+	                crossingMethodComboBox.removeAllItems();
+	                resetMethodTextArea();
                 }
             }
+
         });
         
         
@@ -141,48 +151,67 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         crossingMethodDescriptionTextArea.setReadOnly(true);
                    
         crossingMethodComboBox = new ComboBox();
-        crossingMethodComboBox.setWidth("300px");
+        crossingMethodComboBox.setWidth("280px");
         crossingMethodComboBox.setEnabled(false);
         crossingMethodComboBox.setImmediate(true);
         crossingMethodComboBox.setNullSelectionAllowed(false);
         // Change ComboBox back to TextField when it loses focus
         
         crossingMethodComboBox.addListener(new Property.ValueChangeListener() {
-	    
-	    @Override
-	    public void valueChange(ValueChangeEvent event) {
-		if(crossingMethodComboBox.size() > 0){
-        		Integer breedingMethodSelected = mapMethods.get(event.getProperty().getValue());
-        		try {
-        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
-        		    crossingMethodDescriptionTextArea.setReadOnly(false);
-        		    crossingMethodDescriptionTextArea.setValue(methodDescription);
-        		    crossingMethodDescriptionTextArea.setReadOnly(true);
-     
-        		} catch (MiddlewareQueryException e) {
-        		    // TODO Auto-generated catch block
-        		    e.printStackTrace();
-        		}
-		}
-		 
-	    }
-	});
+			private static final long serialVersionUID = 6294894800193942274L;
 
+			@Override
+		    public void valueChange(ValueChangeEvent event) {
+			if(crossingMethodComboBox.size() > 0){
+	        		Integer breedingMethodSelected = mapMethods.get(event.getProperty().getValue());
+	        		try {
+	        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
+	        		    crossingMethodDescriptionTextArea.setReadOnly(false);
+	        		    crossingMethodDescriptionTextArea.setValue(methodDescription);
+	        		    crossingMethodDescriptionTextArea.setReadOnly(true);
+	     
+	        		} catch (MiddlewareQueryException e) {
+	        		    e.printStackTrace();
+	        		}
+			}
+			 
+		    }
+		});
+
+        favoriteMethodsCheckbox = new CheckBox(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
+        favoriteMethodsCheckbox.setImmediate(true);
+        favoriteMethodsCheckbox.setEnabled(false);
+        favoriteMethodsCheckbox.addListener(new Property.ValueChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				resetMethodTextArea();
+				populateBreedingMethods(((Boolean) event.getProperty().getValue()));
+			}
+			
+		});
+        
         //layout components
         addComponent(selectOptionLabel, "top:20px;left:0px");
         addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
         addComponent(selectCrossingMethodLabel, "top:100px;left:0px");
         addComponent(crossingMethodComboBox, "top:80px;left:150px");
+        addComponent(favoriteMethodsCheckbox, "top:84px;left:435px");
         addComponent(methodDescriptionLabel, "top:130px;left:0px");
         addComponent(crossingMethodDescriptionTextArea, "top:110px;left:150px");
         
         methods = germplasmDataManager.getMethodsByType("GEN");
     }
 
+	private void resetMethodTextArea() {
+		crossingMethodDescriptionTextArea.setReadOnly(false);
+		crossingMethodDescriptionTextArea.setValue("");
+		crossingMethodDescriptionTextArea.setReadOnly(true);
+	}
 
-    public void populateBreedingMethod() throws MiddlewareQueryException {
+    public void populateBreedingMethod(){
 
-	crossingMethodComboBox.removeAllItems();
+    	crossingMethodComboBox.removeAllItems();
         mapMethods = new HashMap<String, Integer>();
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossingManagerUploader() !=null){
@@ -204,7 +233,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             crossingMethodComboBox.addItem(m.getMname());
             mapMethods.put(m.getMname(), new Integer(m.getMid()));
         }
-         //Integer mId = mapMethods.get(breedingMethodComboBox.getValue());
         
     }
 
@@ -214,6 +242,56 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         updateLabels();
     }
     
+    private void populateBreedingMethods(boolean showOnlyFavorites) {
+        crossingMethodComboBox.removeAllItems();
+
+        mapMethods = new HashMap<String, Integer>();
+
+        if(showOnlyFavorites){
+        	populateWithFavoriteMethods();	
+        } else {
+        	populateBreedingMethod();
+        }
+
+    }
+
+    
+    private void populateWithFavoriteMethods() {
+    	
+    	crossingMethodComboBox.removeAllItems();
+    	
+        favoriteMethodIds = new ArrayList<Integer>();
+        favoriteMethods = new ArrayList<Method>();
+         
+		try {
+			Integer workbenchUserId;
+			
+			workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
+	        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
+	        
+	        //Get Method IDs
+	        for(Project userProject : userProjects){
+	        	favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(userProject, 0, 10000));
+	        }
+	        
+	        //Get Methods
+	        if (!favoriteMethodIds.isEmpty()){
+	        	favoriteMethods = germplasmDataManager.getMethodsByIDs(favoriteMethodIds);
+	        }
+	        
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+
+		for(Method favoriteMethod : favoriteMethods){
+			crossingMethodComboBox.addItem(favoriteMethod.getMname());
+	        mapMethods.put(favoriteMethod.getMname(), favoriteMethod.getMid());
+		}
+		
+    }
+    
+        
     @Override
     public void updateLabels() {
         messageSource.setCaption(selectOptionLabel, Message.SELECT_AN_OPTION);
