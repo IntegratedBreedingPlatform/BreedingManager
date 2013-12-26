@@ -204,7 +204,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         
         
         locationTreeTable.addContainerProperty(COUNTRY_LOCATION_COLUMN_ID, String.class, null);
-        locationTreeTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, String.class, null);
+        locationTreeTable.addContainerProperty(NUMBER_OF_ENV_COLUMN_ID, Integer.class, null);
         locationTreeTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         
         
