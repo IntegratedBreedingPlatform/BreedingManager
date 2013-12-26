@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -41,6 +42,8 @@ public class ListManagerMain extends VerticalLayout implements
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
     private Integer listId;
+    
+    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
     public ListManagerMain(){
     	super();
@@ -118,8 +121,8 @@ public class ListManagerMain extends VerticalLayout implements
         buildNewListButton = new Button();
         buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
         buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
-        buildNewListButton.setStyleName(BaseTheme.BUTTON_LINK);
-        buildNewListButton.addStyleName("link_with_plus_icon");
+        buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        buildNewListButton.setIcon(ICON_PLUS);
         buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
         
         titleLayout.addComponent(buildNewListButton);

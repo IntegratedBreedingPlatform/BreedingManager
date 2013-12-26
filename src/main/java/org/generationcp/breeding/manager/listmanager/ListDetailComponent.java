@@ -137,7 +137,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         lblListNotes = new Label("<b>" + messageSource.getMessage(Message.NOTES) + ":</b> ", Label.CONTENT_XHTML); // "Notes"
         
         listName = new Label(germplasmList.getName());
-        listDescription = new Label(germplasmList.getDescription());
+        listDescription = new Label(getDescription(germplasmList.getDescription()));
+        listDescription.setWidth("150px");
         listCreationDate = new Label(String.valueOf(germplasmList.getDate()));
         listType = new Label(getFullListTypeName(germplasmList.getType()));
         listStatus = new Label(germplasmList.getStatusString());
@@ -259,11 +260,22 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         }
     }
     
+    public String getDescription(String desc){
+    	String processedDesc = desc;
+    	int endIndex = 25; // TODO Calculate the maximum no of character for 2 lines of text 
+    	
+    	if(desc != null && desc.length() > 25){
+    		processedDesc = processedDesc.substring(0, endIndex) + "...";
+    	}
+    	
+    	return processedDesc;
+    }
+    
     public String getNotes(String notes){
     	String processedNotes = notes;
-    	int endIndex = 250; // TODO Calculate the maximum no of character for 2 lines of text 
+    	int endIndex = 150; // TODO Calculate the maximum no of character for 2 lines of text 
     	
-    	if(notes != null && notes.length() > 250){
+    	if(notes != null && notes.length() > 150){
     		processedNotes = processedNotes.substring(0, endIndex) + "...";
     	}
     	

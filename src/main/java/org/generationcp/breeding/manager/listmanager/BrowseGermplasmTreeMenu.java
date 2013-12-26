@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -57,6 +59,8 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     private ComponentTreeItem basicDetails;
     private ComponentTreeItem attributesDetails;
     private ComponentTreeItem pedigreeDetails;
+    
+    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
     public BrowseGermplasmTreeMenu(ListManagerMain listManagerMain, Integer germplasmId){
     	this.listManagerMain = listManagerMain;
@@ -125,20 +129,21 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 	
 	private Component createBasicDetailsHeader (String header) {
 		HorizontalLayout mainLayout = new HorizontalLayout();
-		mainLayout.setWidth("95%");
-		mainLayout.setHeight("25px");
+		mainLayout.setWidth("90%");
+		mainLayout.setHeight("30px");
 		
         CssLayout layout = new CssLayout();
         layout.setWidth("130px");
         
         Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+        l1.setStyleName(Bootstrap.Typography.H4.styleName());
         layout.addComponent(l1);
         
         saveToListLink = new Button(messageSource.getMessage(Message.SAVE_TO_LIST));
 		saveToListLink.setData(SAVE_TO_LIST);
 		saveToListLink.setImmediate(true);
-		saveToListLink.setStyleName(BaseTheme.BUTTON_LINK);
-		saveToListLink.addStyleName("link_with_plus_icon");
+		saveToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
+		saveToListLink.setIcon(ICON_PLUS);
 		saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this, this.germplasmId));
 		
 		moreDetailsLink = new Button(messageSource.getMessage(Message.MORE_DETAILS));
