@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
+import org.generationcp.browser.cross.study.h2h.main.dialogs.GermplasmListTreeComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -47,6 +48,23 @@ public class SelectListItemClickListener implements ItemClickEvent.ItemClickList
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
                 }
             }
+        } else if (source instanceof GermplasmListTreeComponent) {
+        	String item = event.getItemId().toString();
+        	//System.out.println("item: " + item);
+        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
+        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
+                if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+                    try {
+                        ((GermplasmListTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
+                    } catch (InternationalizableException e) {
+                        LOG.error(e.toString() + "\n" + e.getStackTrace());
+                        e.printStackTrace();
+                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                    }
+                }
+        	} else{
+        		((GermplasmListTreeComponent) source).expandOrCollapseListTreeNode(item);
+        	}
         }
     }
 

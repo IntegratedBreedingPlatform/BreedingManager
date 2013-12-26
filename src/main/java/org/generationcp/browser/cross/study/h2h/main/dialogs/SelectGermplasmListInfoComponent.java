@@ -171,6 +171,7 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
         if (germplasmList != null) {
             listName = germplasmList.getName();
             listDesc = germplasmList.getDescription();
+            germplasmListId = germplasmList.getId();
             
             // assign Germplasm List ID as data for List Entries table, to be retrieved in 
             // SelectGermplasmListWindow.populateParentList() to remember last selected Germplasm List

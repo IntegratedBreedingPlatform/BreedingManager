@@ -336,4 +336,5 @@ public enum Message {
      ,INVALID_PARAMETERS_SPECIFIED
      
      ,ERROR_REPORT_TO
+     ,PROJECT_LISTS
 }
