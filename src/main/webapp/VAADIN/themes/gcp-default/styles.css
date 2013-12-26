@@ -105,6 +105,7 @@
 	font-weight: bold;
 }
 
+<<<<<<< Updated upstream
 .listManagerTree {
 	padding: 10px;
 	border: 1px solid e3e3e3;
@@ -161,3 +162,25 @@
 	background-image: url(image/document-icon.png);
 	background-repeat: no-repeat;
 }
+
+/* context menu tools button */
+.v-ctxmenu .ctxmenu-menu-item:hover {
+	background: #bed6b2 !important;
+	border-radius: 3px !important;
+}
+.v-ctxmenu .ctxmenu-menu-item {
+	color: #333 !important;
+}
+.v-ctxmenu{
+	border-radius: 3px !important;
+	font-family: "Open Sans","Helvetica Neue","Segoe UI","Arial",sans-serif !important;
+	background: #ffffff !important;
+	font-weight: bold !important;
+}
+
+.v-captiontext {
+	font-size: 13px;
+	text-transform: none;
+	font-weight: bold;
+}
+
