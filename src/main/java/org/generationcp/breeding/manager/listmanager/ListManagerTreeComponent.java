@@ -292,9 +292,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
-    	if (listManagerMain != null){
-    		
-    	}
+
         try {
         	GermplasmList list = getGermplasmList(germplasmListId);
             boolean isEmptyFolder = isEmptyFolder(list);
