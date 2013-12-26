@@ -104,6 +104,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private Button addColumnButton;
 	
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+	private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
 	
 	private ContextMenu menu;
@@ -238,9 +239,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		resetMenuOptions();
 		
-        toolsButton = new Button("Tools");
+        toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
         toolsButton.setIcon(ICON_TOOLS);
-        toolsButton.setStyleName(BaseTheme.BUTTON_LINK);
+        toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
    	 	toolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -258,12 +259,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
    	 	
         addColumnButton = new Button();
         addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
-        addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
-        addColumnButton.addStyleName("link_with_plus_icon");
+        addColumnButton.setIcon(ICON_PLUS);
+        addColumnButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
    	 
    	 	setupAddColumnContextMenu();
    	 	
-   	 	addComponent(addColumnButton, "top:0px; right:75px;");
+   	 	addComponent(addColumnButton, "top:0px; right:100px;");
    	 	addComponent(toolsButton, "top:0; right:0;");		
    	 	
 		menu.addListener(new ContextMenu.ClickListener() {

@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.util.SelectedTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -195,7 +196,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     	} else {
     		heading.setValue(messageSource.getMessage(Message.DETAILS));
     	}
-		heading.addStyleName("gcp-content-title");
+		heading.setStyleName(Bootstrap.Typography.H3.styleName());
 		
 		headingBar = new HorizontalLayout();
 		headingBar.setWidth("100%");

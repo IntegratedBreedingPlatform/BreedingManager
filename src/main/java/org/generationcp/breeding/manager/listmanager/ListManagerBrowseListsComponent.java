@@ -4,6 +4,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -52,7 +53,7 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 		// TODO Auto-generated method stub
 		heading = new Label();
 		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.addStyleName("gcp-content-title");
+		heading.setStyleName(Bootstrap.Typography.H3.styleName());
 		
 		if(listId != null){
 			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow, listId);
@@ -60,7 +61,7 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow);
 		}
 		
-		addComponent(heading,"top:30px; left:20px;");
+		addComponent(heading,"top:20px; left:20px;");
 		addComponent(listManagerTreeComponent, "top:55px; left:20px");
 		
 	}
