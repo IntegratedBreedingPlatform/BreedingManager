@@ -337,4 +337,6 @@ public enum Message {
      
      ,ERROR_REPORT_TO
      ,PROJECT_LISTS
+     ,LOAD_ENVIRONMENTS
+     ,LOAD_ENVIRONMENTS_CONFIRM
 }

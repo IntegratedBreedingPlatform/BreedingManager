@@ -252,7 +252,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       }
 	       else if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
 	    	   createEnvironmentsTable();
-		       populateEnvironmentsTable();
+//		       populateEnvironmentsTable();
 	       }
 	       
 	       addComponent(environmentsTable, "top:110px;left:20px");

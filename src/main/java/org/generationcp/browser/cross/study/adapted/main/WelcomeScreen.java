@@ -6,6 +6,10 @@ import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.CrossStudyDataManager;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,6 +35,9 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 	private Label introductionMessage;
 	
 	private Button nextButton;
+	
+	@Autowired
+	private CrossStudyDataManager crossStudyManager;
 
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -64,8 +71,36 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 
     
     public void nextButtonClickAction(){
-        this.mainScreen.selectFirstTab();
+    	
+    	try {
+    		// show confirm dialog first if trial envts count is > 1k
+			if (crossStudyManager.countAllTrialEnvironments() > 1000L){
+				ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.LOAD_ENVIRONMENTS), 
+						messageSource.getMessage(Message.LOAD_ENVIRONMENTS_CONFIRM), "Yes", "No", new ConfirmDialog.Listener() {
+
+					private static final long serialVersionUID = 1L;
+					@Override
+					public void onClose(ConfirmDialog dialog) {
+						if (dialog.isConfirmed()){
+							proceedToNextScreen();
+						}
+					}
+				});
+				
+				
+			} else {
+				proceedToNextScreen();
+			}
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
+
+	private void proceedToNextScreen() {
+		this.mainScreen.selectFirstTab();
+		this.nextScreen.populateEnvironmentsTable();
+	}
     
 }
 
