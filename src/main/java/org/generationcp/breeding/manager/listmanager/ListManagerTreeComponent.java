@@ -19,7 +19,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,27 +26,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Transferable;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptAll;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.event.dd.acceptcriteria.SourceIsTarget;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Table.TableTransferable;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
-import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerTreeComponent extends VerticalLayout implements
@@ -61,6 +52,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	public static final String CENTRAL = "CENTRAL";
 	public static final String LOCAL = "LOCAL";
 	
+	private Label heading;
 	private ListManagerMain listManagerMain;
 	private Tree germplasmListTree;
     private AbsoluteLayout germplasmListBrowserMainLayout;
@@ -76,12 +68,20 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     private boolean forGermplasmListWindow;
 
+    private HorizontalLayout controlButtonsLayout; 
     private VerticalLayout treeContainerLayout;
     
     private Integer listId;
     private GermplasmListTreeUtil germplasmListTreeUtil;
     
     private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
+    
+    
+    private Button addFolderBtn;
+    private Button deleteFolderBtn;
+    private Button renameFolderBtn;
+    
+    private Integer selectedListId;
     
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
     	this.listManagerMain = listManagerMain;
@@ -99,9 +99,57 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     @Override
 	public void afterPropertiesSet() throws Exception {
+    	
 		setSpacing(true);
 		
     	displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+    	//setComponentAlignment(displayDetailsLayout, Alignment.MIDDLE_RIGHT);
+    	
+		heading = new Label();
+		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
+		heading.addStyleName("gcp-content-title");
+    	
+        renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px'></span>");
+        renameFolderBtn.setHtmlContentAllowed(true);
+        renameFolderBtn.setDescription("Rename Folder");
+        renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        renameFolderBtn.setWidth("40px");
+        renameFolderBtn.setEnabled(false);
+        renameFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				germplasmListTreeUtil.renameFolder(selectedListId);
+            }
+        });
+        
+        addFolderBtn = new Button("<span class='glyphicon glyphicon-plus' style='right: 2px'></span>");
+        addFolderBtn.setHtmlContentAllowed(true);
+        addFolderBtn.setDescription("Add New Folder");
+        addFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        addFolderBtn.setWidth("40px");
+        addFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				germplasmListTreeUtil.addFolder();
+            }
+        });
+        
+
+        deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='right: 2px'></span>");
+        deleteFolderBtn.setHtmlContentAllowed(true);
+        deleteFolderBtn.setDescription("Delete Selected Folder");
+        deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
+        deleteFolderBtn.setWidth("40px");
+        deleteFolderBtn.setEnabled(false);
+
+        controlButtonsLayout = new HorizontalLayout();
+        
+        controlButtonsLayout.addComponent(heading);
+        controlButtonsLayout.addComponent(renameFolderBtn);
+        controlButtonsLayout.addComponent(addFolderBtn);
+        controlButtonsLayout.addComponent(deleteFolderBtn);
     	
 		germplasmListTree = new Tree();
 		germplasmListTree.setImmediate(true);
@@ -109,18 +157,19 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		refreshButton = new Button();
 		refreshButton.setData(REFRESH_BUTTON_ID);
 		refreshButton.addListener(new GermplasmListButtonClickListener(this));
-		//refreshButton.setIcon(ICON_REFRESH);
 		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
 		refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);
 		
+		addComponent(controlButtonsLayout);
 		addComponent(treeContainerLayout);
 		addComponent(refreshButton);
 		
 		createTree();
 		
+		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
 	}
 
 	@Override
@@ -186,7 +235,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             }
         });
 
-        germplasmListTreeUtil = new GermplasmListTreeUtil(getWindow(), germplasmListTree);
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
 
@@ -298,6 +346,16 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
         try {
+        	if(germplasmListManager.getGermplasmListById(germplasmListId).getType().equalsIgnoreCase("FOLDER") && germplasmListId<0){
+        		renameFolderBtn.setEnabled(true);
+        		deleteFolderBtn.setEnabled(true);
+        	} else {
+        		renameFolderBtn.setEnabled(false);
+        		deleteFolderBtn.setEnabled(false);
+        	}
+        	
+        	selectedListId = germplasmListId;
+        	
             if (!hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)) {
                 this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
             } else if(hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)){
@@ -340,7 +398,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
-    	germplasmListTree.select(null);
         List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 
         try {
@@ -360,6 +417,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             // allow children if list has sub-lists
             germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
         }
+        
     }
     
     public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
@@ -404,9 +462,12 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	} else{
     		this.germplasmListTree.collapseItem(nodeId);
     	}
+    	germplasmListTree.select(nodeId);
+    	germplasmListTree.setValue(nodeId);
     }
     
-
-    
+    public Tree getGermplasmListTree(){
+    	return germplasmListTree;
+    }
 
 }

@@ -19,8 +19,6 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
     private ListManagerTreeComponent listManagerTreeComponent;	
     private ListManagerMain listManagerMain;
 	
-	private Label heading;
-	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -50,9 +48,6 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
-		heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.addStyleName("gcp-content-title");
 		
 		if(listId != null){
 			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow, listId);
@@ -60,7 +55,6 @@ public class ListManagerBrowseListsComponent extends AbsoluteLayout implements
 			listManagerTreeComponent = new ListManagerTreeComponent(listManagerMain, this, forGermplasmListWindow);
 		}
 		
-		addComponent(heading,"top:30px; left:20px;");
 		addComponent(listManagerTreeComponent, "top:55px; left:20px");
 		
 	}
