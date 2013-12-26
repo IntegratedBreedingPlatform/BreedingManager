@@ -339,8 +339,8 @@ private static final long serialVersionUID = -3667517088395779496L;
         tableColumnSize = 4;
         
         for(TraitInfo traitInfo : traitInfos){
-            environmentsTable.addContainerProperty(traitInfo.getName(), Integer.class, null);
-            environmentsTable.setColumnHeader(traitInfo.getName(), traitInfo.getName());
+            environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
+            environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
             tableColumnSize++;
         }
         
