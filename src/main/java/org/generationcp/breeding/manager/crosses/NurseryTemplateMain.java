@@ -15,6 +15,7 @@ package org.generationcp.breeding.manager.crosses;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -161,7 +162,7 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
         //String title =  "<h1>Crossing Manager:</h1> <h1>Nursery Template File</h1> <h2>" + VERSION + "</h2>";
         String title =  "Crossing Manager: Nursery Template File <h2>" + VERSION + "</h2>";
         nurseryTemplateTitle = new Label();
-        nurseryTemplateTitle.setStyleName("gcp-window-title");
+        nurseryTemplateTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         nurseryTemplateTitle.setContentMode(Label.CONTENT_XHTML);
         nurseryTemplateTitle.setValue(title);
         titleLayout.addComponent(nurseryTemplateTitle);

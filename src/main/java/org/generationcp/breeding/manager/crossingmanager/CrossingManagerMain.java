@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -259,7 +260,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         //String title =  "<h1>Crossing Manager:</h1> <h1>Make Crosses</h1> <h2>" + VERSION + "</h2>";
         String title =  "Manage Crosses  <h2>" + VERSION + "</h2>";
         crossingManagerTitle = new Label();
-        crossingManagerTitle.setStyleName("gcp-window-title");
+        crossingManagerTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
         crossingManagerTitle.setValue(title);
         titleLayout.addComponent(crossingManagerTitle);

@@ -133,10 +133,10 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         germplasmListType.setWidth("250px");
         germplasmListType.setNullSelectionAllowed(false);
         
-        addComponent(germplasmListNameLabel, "top:45px; left:170px;");
-        addComponent(germplasmListDescriptionLabel, "top:75px; left:170px;");
-        addComponent(germplasmListTypeLabel, "top:105px; left:170px;");
-        addComponent(germplasmListDateLabel, "top:135px; left:170px;");
+        addComponent(germplasmListNameLabel, "top:45px; left:140px;");
+        addComponent(germplasmListDescriptionLabel, "top:75px; left:140px;");
+        addComponent(germplasmListTypeLabel, "top:105px; left:140px;");
+        addComponent(germplasmListDateLabel, "top:135px; left:140px;");
         
         addComponent(germplasmListName, "top:25px; left:340px;");
         addComponent(germplasmListDescription, "top:55px; left:340px;");
