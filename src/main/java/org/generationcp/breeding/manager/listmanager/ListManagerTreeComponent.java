@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -18,6 +19,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,25 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.SourceIsTarget;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
+import com.vaadin.ui.Tree.TreeDragMode;
+import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
@@ -42,6 +58,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	private static final long serialVersionUID = -224052511814636864L;
 	private final static int BATCH_SIZE = 50;
 	public final static String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
+	public static final String CENTRAL = "CENTRAL";
+	public static final String LOCAL = "LOCAL";
 	
 	private ListManagerMain listManagerMain;
 	private Tree germplasmListTree;
@@ -61,6 +79,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     private VerticalLayout treeContainerLayout;
     
     private Integer listId;
+    private GermplasmListTreeUtil germplasmListTreeUtil;
     
     private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
     
@@ -101,6 +120,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		addComponent(refreshButton);
 		
 		createTree();
+		
 	}
 
 	@Override
@@ -121,7 +141,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	
 	public void simulateItemClickForNewlyAdded(Integer listId, boolean openDetails ){
 	    //System.out.println(listId);
-	    germplasmListTree.expandItem("LOCAL");
+	    germplasmListTree.expandItem(LOCAL);
 	    if(openDetails){
     	    try{
                 displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
@@ -155,7 +175,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 					currentList = null;
 				} 
 				
-            	if(itemId.equals("LOCAL") || itemId.equals("CENTRAL")){
+            	if(itemId.equals(LOCAL) || itemId.equals(CENTRAL)){
             		return "listManagerTreeRootNode"; 
             	} else if(currentList!=null && currentList.getType().equals("FOLDER")){
             		return "listManagerTreeRegularParentNode";
@@ -166,6 +186,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             }
         });
 
+        germplasmListTreeUtil = new GermplasmListTreeUtil(getWindow(), germplasmListTree);
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
 
@@ -200,25 +221,26 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         
         Tree germplasmListTree = new Tree();
+		germplasmListTree.setDragMode(TreeDragMode.NODE);
 
-        germplasmListTree.addItem("LOCAL");
-        germplasmListTree.setItemCaption("LOCAL", "Program Lists");
+        germplasmListTree.addItem(LOCAL);
+        germplasmListTree.setItemCaption(LOCAL, "Program Lists");
         
-        germplasmListTree.addItem("CENTRAL");
-        germplasmListTree.setItemCaption("CENTRAL", "Public Lists");        
+        germplasmListTree.addItem(CENTRAL);
+        germplasmListTree.setItemCaption(CENTRAL, "Public Lists");        
         
         for (GermplasmList localParentList : localGermplasmListParent) {
             germplasmListTree.addItem(localParentList.getId());
             germplasmListTree.setItemCaption(localParentList.getId(), localParentList.getName());
             germplasmListTree.setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));
-            germplasmListTree.setParent(localParentList.getId(), "LOCAL");
+            germplasmListTree.setParent(localParentList.getId(), LOCAL);
         }
 
         for (GermplasmList centralParentList : centralGermplasmListParent) {
             germplasmListTree.addItem(centralParentList.getId());
             germplasmListTree.setItemCaption(centralParentList.getId(), centralParentList.getName());
             germplasmListTree.setChildrenAllowed(centralParentList.getId(), hasChildList(centralParentList.getId()));
-            germplasmListTree.setParent(centralParentList.getId(), "CENTRAL");
+            germplasmListTree.setParent(centralParentList.getId(), CENTRAL);
         }        
         
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
@@ -233,9 +255,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	    			traverseParentsOfList(list, parents);
 	    			
 	    			if(listId < 0){
-	                	germplasmListTree.expandItem("LOCAL");
+	                	germplasmListTree.expandItem(LOCAL);
 	    			} else{
-	    				germplasmListTree.expandItem("CENTRAL");
+	    				germplasmListTree.expandItem(CENTRAL);
 	    			}
 	    			
 	    			while(!parents.isEmpty()){
@@ -383,4 +405,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     		this.germplasmListTree.collapseItem(nodeId);
     	}
     }
+    
+
+    
+
 }
