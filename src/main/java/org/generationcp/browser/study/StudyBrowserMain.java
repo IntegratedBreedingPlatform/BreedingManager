@@ -15,6 +15,7 @@ package org.generationcp.browser.study;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.manager.Database;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         
         String title =  "Study Browser  <h2>" + VERSION + "</h2>";
         Label applicationTitle = new Label();
-        applicationTitle.setStyleName("gcp-window-title");
+        applicationTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         applicationTitle.setContentMode(Label.CONTENT_XHTML);
         applicationTitle.setValue(title);
         this.addComponent(applicationTitle);

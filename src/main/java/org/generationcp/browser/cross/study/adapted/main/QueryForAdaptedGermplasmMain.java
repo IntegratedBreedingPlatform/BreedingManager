@@ -4,6 +4,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 
 	        String title =  "Adapted Germplasm Query  <h2>" + VERSION + "</h2>";
 	        mainTitle = new Label();
-	        mainTitle.setStyleName("gcp-window-title");
+	        mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 	        mainTitle.setContentMode(Label.CONTENT_XHTML);
 	        mainTitle.setValue(title);
 	        titleLayout.addComponent(mainTitle);
