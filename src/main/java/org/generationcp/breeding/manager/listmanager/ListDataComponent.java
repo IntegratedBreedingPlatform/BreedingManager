@@ -37,6 +37,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -172,6 +173,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+	private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
 
@@ -230,14 +232,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			      }
 			   }
 			});
-
-    	
-    	 toolsButton = new Button("Tools");
+ 
+    	 toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
     	 toolsButton.setData(TOOLS_BUTTON_ID);
     	 toolsButton.setIcon(ICON_TOOLS);
     	 toolsButton.setWidth("100px");
     	 toolsButton.setDescription(TOOLS_TOOLTIP);
-    	 toolsButton.setStyleName(Reindeer.BUTTON_LINK);
+    	 toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
     	 toolsButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
  		
     	 toolsButton.addListener(new ClickListener() {
@@ -279,8 +280,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 
     	 toolsMenuBar = new AbsoluteLayout();
     	 toolsMenuBar.setWidth("100%");
-    	 toolsMenuBar.setHeight("20px");
-       	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:0px;");
+    	 toolsMenuBar.setHeight("50px");
+       	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:30px;");
    	 
     	 addComponent(toolsMenuBar);
     	 
@@ -402,9 +403,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		 if(germplasmListId<0 && germplasmListStatus<100){
 		     addColumnButton = new Button();
 		     addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
-		     addColumnButton.setStyleName(BaseTheme.BUTTON_LINK);
-		     addColumnButton.addStyleName("link_with_plus_icon");
-			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:115px;");
+		     addColumnButton.setIcon(ICON_PLUS);
+		     addColumnButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
+			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:140px;");
 			 
 			 addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
 		 }

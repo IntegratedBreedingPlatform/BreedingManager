@@ -4,6 +4,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -109,7 +110,7 @@ public class ListManagerMain extends VerticalLayout implements
         //TODO put software version in title
         String title =  messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL)+ "  <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
-        mainTitle.setStyleName("gcp-window-title");
+        mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(title);
         titleLayout.addComponent(mainTitle);

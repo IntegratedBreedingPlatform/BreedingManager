@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
@@ -331,6 +332,7 @@ public class Util{
         CssLayout l = new CssLayout();
         l.setWidth("200px");
         Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+        l1.setStyleName(Bootstrap.Typography.H4.styleName());
         l.addComponent(l1);
         return l;
 	}

@@ -195,7 +195,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         addComponent(selectOptionLabel, "top:20px;left:0px");
         addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
         addComponent(selectCrossingMethodLabel, "top:100px;left:0px");
-        addComponent(crossingMethodComboBox, "top:80px;left:150px");
+        addComponent(crossingMethodComboBox, "top:80px;left:155px");
         addComponent(favoriteMethodsCheckbox, "top:84px;left:435px");
         addComponent(methodDescriptionLabel, "top:130px;left:0px");
         addComponent(crossingMethodDescriptionTextArea, "top:110px;left:150px");

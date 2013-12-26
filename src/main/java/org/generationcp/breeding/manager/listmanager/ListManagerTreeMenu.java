@@ -112,6 +112,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
+        content.setMargin(true);
         
         listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();

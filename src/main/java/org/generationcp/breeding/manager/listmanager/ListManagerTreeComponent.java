@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
@@ -31,14 +32,11 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerTreeComponent extends VerticalLayout implements
@@ -73,6 +71,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     private Integer listId;
     private GermplasmListTreeUtil germplasmListTreeUtil;
+    private SelectGermplasmListComponent selectListComponent;
     
     private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
     
@@ -96,6 +95,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.listId = listId;
     }
+    
+    public ListManagerTreeComponent(SelectGermplasmListComponent selectListComponent){
+    	this.selectListComponent = selectListComponent;
+    }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
@@ -107,7 +110,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	
 		heading = new Label();
 		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.addStyleName("gcp-content-title");
+		heading.setStyleName(Bootstrap.Typography.H3.styleName());
     	
         renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
@@ -150,6 +153,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         controlButtonsLayout.addComponent(renameFolderBtn);
         controlButtonsLayout.addComponent(addFolderBtn);
         controlButtonsLayout.addComponent(deleteFolderBtn);
+        
+		if (this.germplasmListBrowserMainLayout != null){
+			displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+		}
     	
 		germplasmListTree = new Tree();
 		germplasmListTree.setImmediate(true);
@@ -189,7 +196,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	}
 	
 	public void simulateItemClickForNewlyAdded(Integer listId, boolean openDetails ){
-	    //System.out.println(listId);
 	    germplasmListTree.expandItem(LOCAL);
 	    if(openDetails){
     	    try{
@@ -235,6 +241,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             }
         });
 
+        if (this.listManagerMain != null){
+        	germplasmListTreeUtil = new GermplasmListTreeUtil(getWindow(), germplasmListTree);
+        }
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
 
@@ -345,8 +354,11 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
+
         try {
-        	if(germplasmListManager.getGermplasmListById(germplasmListId).getType().equalsIgnoreCase("FOLDER") && germplasmListId<0){
+        	
+        	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId); 
+        	if(germplasmList.getType().equalsIgnoreCase("FOLDER") && germplasmListId<0){
         		renameFolderBtn.setEnabled(true);
         		deleteFolderBtn.setEnabled(true);
         	} else {
@@ -356,10 +368,26 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         	
         	selectedListId = germplasmListId;
         	
-            if (!hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)) {
+            if (!hasChildList(germplasmListId) && !isEmptyFolder(germplasmList)) {
                 this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
-            } else if(hasChildList(germplasmListId) && !isEmptyFolder(germplasmListId)){
-            	expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
+            } else if(hasChildList(germplasmListId) && !isEmptyFolder(germplasmList)){
+	        	GermplasmList list = getGermplasmList(germplasmListId);
+	            boolean isEmptyFolder = isEmptyFolder(list);
+				boolean hasChildList = hasChildList(germplasmListId);
+				if (!hasChildList && !isEmptyFolder) {
+					
+					//open details of list in List Manager
+					if (this.listManagerMain != null){
+						this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
+						
+					} else if (this.selectListComponent != null){
+						this.selectListComponent.getListInfoComponent().displayListInfo(list);
+					}
+	                
+				//toggle folder
+	            } else if(hasChildList && !isEmptyFolder){
+	            	expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
+	            }
             }
         } catch (NumberFormatException e) {
         	LOG.error("Error clicking of list.", e);
@@ -392,9 +420,13 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return !listChildren.isEmpty();
     }
 
-    private boolean isEmptyFolder(int listId) throws MiddlewareQueryException{
-        boolean isFolder = germplasmListManager.getGermplasmListById(listId).getType().equalsIgnoreCase("FOLDER");
-        return isFolder && !hasChildList(listId);
+    private boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException{
+        boolean isFolder = list.getType().equalsIgnoreCase("FOLDER");
+        return isFolder && !hasChildList(list.getId());
+    }
+    
+    private GermplasmList getGermplasmList(int listId) throws MiddlewareQueryException{
+    	return germplasmListManager.getGermplasmListById(listId);
     }
     
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{

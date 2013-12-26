@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCros
 import org.generationcp.breeding.manager.listimport.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -177,9 +178,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         titleLayout.removeAllComponents();        
         String title =  "Germplasm Import  <h2>" + VERSION + "</h2>";
         crossingManagerTitle = new Label();
-        crossingManagerTitle.setStyleName("gcp-window-title");
+        crossingManagerTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
         crossingManagerTitle.setValue(title);
+        crossingManagerTitle.setWidth("270px");
         titleLayout.addComponent(crossingManagerTitle);
         
         Label descLbl = new Label(guideMessage);
