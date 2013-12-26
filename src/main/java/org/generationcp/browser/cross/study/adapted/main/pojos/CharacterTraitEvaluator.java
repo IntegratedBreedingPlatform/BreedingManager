@@ -25,23 +25,20 @@ public class CharacterTraitEvaluator {
 		}
 		else if(condition == CharacterTraitCondition.IN){
 			//limit a,b ,c, d
-			String[] limit = limits.get(0).split(",");
-			
-			for(int i = 0; i < limit.length; i++){
-				limit[i] = limit[i].trim();
-				if(value.equals(limit[i])){
+			int size = limits.size();
+			for(int i = 0; i < size; i++){				
+				if(value.equals(limits.get(i))){
 					result = true;
 				}
 			}
+
 		}
 		else if(condition == CharacterTraitCondition.NOT_IN){
 			//limit a,b ,c, d
-			String[] limit = limits.get(0).split(",");
-			
+			int size = limits.size();
 			boolean flag = true;
-			for(int i = 0; i < limit.length; i++){
-				limit[i] = limit[i].trim();
-				if(value.equals(limit[i])){
+			for(int i = 0; i < size; i++){
+				if(value.equals(limits.get(i))){
 					flag = false;
 				}
 			}
