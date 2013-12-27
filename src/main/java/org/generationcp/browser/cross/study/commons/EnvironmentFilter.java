@@ -242,10 +242,10 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       addComponent(chooseEnvLabel, "top:90px;left:20px");
 	       
 	       environmentsTable = new Table();
-	       //environmentsTable.setWidth("960px");
-	       environmentsTable.setHeight("370px");
+	       environmentsTable.setWidth("960px");
+	       environmentsTable.setHeight("350px");
 	       environmentsTable.setImmediate(true);
-	       environmentsTable.setPageLength(-1);
+	       environmentsTable.setPageLength(11);
 	       environmentsTable.setColumnCollapsingAllowed(true);
 	       environmentsTable.setColumnReorderingAllowed(true);
 	       
