@@ -34,7 +34,9 @@ import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.dms.DmsProject;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,6 +49,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -91,6 +94,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         this.removeComponent(studyTree);
         studyTree.removeAllItems();
         studyTree = createStudyTree(Database.LOCAL);
+                
         this.addComponent(studyTree);
     }
 
@@ -122,6 +126,35 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         studyTree.addListener(new StudyTreeExpandListener(this));
         studyTree.addListener(new StudyItemClickListener(this));
 
+        studyTree.setItemStyleGenerator(new ItemStyleGenerator() {
+        	private static final long serialVersionUID = -5690995097357568121L;
+
+			@Override
+            public String getStyle(Object itemId) {
+				Study currentStudy = null;
+				try {
+					currentStudy = studyDataManager.getStudy(Integer.valueOf(itemId.toString()));
+				} catch (NumberFormatException e) {
+					currentStudy = null;
+				} catch (MiddlewareQueryException e) {
+					LOG.error("Error with getting study by id: " + itemId, e);
+					currentStudy = null;
+		        } catch (Exception e) {
+		        	//e.printStackTrace();
+				} 
+				
+            	//if(itemId.equals(LOCAL) || itemId.equals(CENTRAL)){
+            	//	return "listManagerTreeRootNode"; 
+				
+            	if(currentStudy!=null && isFolderType(currentStudy.getType())){
+            		return "listManagerTreeRegularParentNode";
+            	} else {
+            		return "listManagerTreeRegularChildNode";
+            	}
+            }
+        });
+
+        
         return studyTree;
     }
 
