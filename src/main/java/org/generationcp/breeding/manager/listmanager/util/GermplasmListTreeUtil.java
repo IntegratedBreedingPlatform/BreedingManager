@@ -1,11 +1,12 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -13,8 +14,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.springframework.beans.factory.InitializingBean;
+import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -30,9 +32,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -48,7 +50,11 @@ public class GermplasmListTreeUtil implements Serializable {
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
+
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+
+    
 	public GermplasmListTreeUtil(Component source, Tree targetTree){
 		this.source = source;
 		this.targetTree = targetTree;
@@ -159,7 +165,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		});
     }
     
-    public void addFolder(){
+    public void addFolder(final Object parentItemId){
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
         w.setHeight("150px");
@@ -193,37 +199,71 @@ public class GermplasmListTreeUtil implements Serializable {
         ok.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Integer newItem = null;
+                Integer newFolderId = null;
+                GermplasmList newFolder = new GermplasmList();
                 try {
-//                    if (treeView.getValue() instanceof String)
-//                        newItem = presenter.addGermplasmListFolder(name.getValue().toString(), null);
-//                    else
-//                        newItem = presenter.addGermplasmListFolder(name.getValue().toString(), (Integer) treeView.getValue());
+                	
+                	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
+                	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.CENTRAL));
+
+                	if(matchingGermplasmLists.size()==0) {
+                		
+                        User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+                        Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+                        Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
+                		
+	                	newFolder.setName(name.getValue().toString());
+	                	newFolder.setDescription(name.getValue().toString());
+	                	newFolder.setType("FOLDER");
+	                	newFolder.setStatus(1);
+	                	newFolder.setUserId(ibdbUserId);
+	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
+	                	
+	                    if (parentItemId instanceof String)
+	                        newFolder.setParent(null);
+	                    else
+	                        newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
+	                	
+	                	newFolderId = germplasmListManager.addGermplasmList(newFolder);
+	                	
+	            	} else {
+	        			MessageNotifier.showWarning(source.getWindow(),
+	                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+	            	}
+                	
+                	
+                } catch (MiddlewareQueryException e){
+                	MessageNotifier.showError(source.getWindow(), 
+                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+        			e.printStackTrace();
                 } catch (Error e) {
-                    MessageNotifier.showError(event.getComponent().getWindow(), e.getMessage(), "");
+                	MessageNotifier.showError(source.getWindow(), 
+                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+        			e.printStackTrace();
                     return;
                 }
 
                 //update UI
-                if (newItem != null) {
-//                    treeView.addItem(newItem);
-//                    treeView.setItemCaption(newItem, name.getValue().toString());
-//                    treeView.setChildrenAllowed(newItem, true);
-//                    treeView.setItemIcon(newItem, folderResource);
-//
-//                    if (presenter.getGermplasmListParent(newItem) != null) {
-//                        treeView.setParent(newItem, treeView.getValue());
-//                    } else {
-//                        treeView.setParent(newItem, MY_LIST);
-//                    }
-//
-//                    if (treeView.getValue() != null) {
-//                        if (!treeView.isExpanded(treeView.getValue()))
-//                            expandTree(treeView.getValue());
-//                    } else
-//                        treeView.expandItem(MY_LIST);
-//
-//                    treeView.select(newItem);
+                if (newFolderId != null) {
+                    targetTree.addItem(newFolderId);
+                    targetTree.setItemCaption(newFolderId, name.getValue().toString());
+                    targetTree.setChildrenAllowed(newFolderId, true);
+                    if (newFolder.getParent() != null) {
+                        targetTree.setParent(newFolderId, parentItemId);
+                    } else {
+                    	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
+                    }
+
+                    if (targetTree.getValue() != null) {
+                        if (!targetTree.isExpanded(targetTree.getValue()))
+                            targetTree.expandItem(parentItemId);
+                    } else {
+                    	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
+					}
+                    targetTree.select(newFolderId);
                 }
 
                 // close popup
@@ -328,7 +368,10 @@ public class GermplasmListTreeUtil implements Serializable {
                             messageSource.getMessage(Message.ERROR_DATABASE), 
                             messageSource.getMessage(Message.ERROR_REPORT_TO));
                 } catch (Error e) {
-                    MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
+                	MessageNotifier.showError(source.getWindow(), 
+                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+        			e.printStackTrace();
                     return;
                 }
 

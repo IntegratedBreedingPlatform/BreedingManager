@@ -110,9 +110,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	
 		heading = new Label();
 		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.setStyleName(Bootstrap.Typography.H3.styleName());
+		heading.setStyleName(Bootstrap.Typography.H4.styleName());
     	
-        renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px'></span>");
+        renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
         renameFolderBtn.setDescription("Rename Folder");
         renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -135,7 +135,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.addFolder();
+				germplasmListTreeUtil.addFolder(selectedListId);
             }
         });
         
@@ -150,6 +150,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         controlButtonsLayout = new HorizontalLayout();
         
         controlButtonsLayout.addComponent(heading);
+        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
         controlButtonsLayout.addComponent(renameFolderBtn);
         controlButtonsLayout.addComponent(addFolderBtn);
         controlButtonsLayout.addComponent(deleteFolderBtn);
