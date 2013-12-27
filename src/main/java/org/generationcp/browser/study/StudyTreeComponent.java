@@ -154,6 +154,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
 
+        studyTree.setImmediate(true);
         
         return studyTree;
     }
