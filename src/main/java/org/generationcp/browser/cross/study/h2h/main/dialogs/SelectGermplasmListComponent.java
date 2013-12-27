@@ -15,6 +15,7 @@ package org.generationcp.browser.cross.study.h2h.main.dialogs;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -63,7 +64,7 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
         
         treeComponent = new GermplasmListTreeComponent(this);
         treeLabel = new Label(messageSource.getMessage(Message.PROJECT_LISTS));
-        treeLabel.addStyleName("gcp-content-title");
+        treeLabel.addStyleName(Bootstrap.Typography.H3.styleName());
         
         listInfoComponent = new SelectGermplasmListInfoComponent(lastOpenedListId, source);
     }
