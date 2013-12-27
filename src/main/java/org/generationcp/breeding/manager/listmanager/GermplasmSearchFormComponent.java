@@ -24,8 +24,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -86,6 +89,7 @@ public class GermplasmSearchFormComponent extends VerticalLayout implements Prop
         txtSearchValue.setImmediate(true);
         txtSearchValue.addStyleName("addTopSpace");
         grid.addComponent(txtSearchValue, 2, 1);
+        
         addComponent(grid);
 
         this.choice = SEARCH_OPTION_NAME;

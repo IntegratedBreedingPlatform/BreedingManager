@@ -25,9 +25,11 @@ import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
@@ -39,7 +41,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = 5314653969843976836L;
 	public static final String SEARCH_BUTTON = "List Manager Search Button";
-
+	private static final String GUIDE = "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full) <br/><br/><b>Matching lists would contain</b> <br/>  - Lists with names containing the search query <br/>  - Lists containing germplasms given a GID <br/>  - Lists containing germplasms with names <br/> containing the search query <br/><br/><b>Matching germplasms would contain</b> <br/>  - Germplasms with matching GID's <br/>  - Germplasms with name containing search query <br/>  - Parents of the result germplasms ";
+	
 	private AbsoluteLayout searchBar;
 	private Label searchLabel;
 	private TextField searchField;
@@ -122,11 +125,18 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
             //p.addComponent(searchButton);
         //searchPanel.addComponent(p, "top:0px; left:3px;");
        
+
+        Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
+        descLbl.setWidth("300px");
+        PopupView popup = new PopupView(" ? ",descLbl);
+        popup.setStyleName("gcp-popup-view");
         
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
         searchBar.addComponent(searchButton, "top:8px; left:255px;");
+        searchBar.addComponent(popup, "top:14px; left:285px;");
         
+
         
         searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
