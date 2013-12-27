@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.EnterShortcutList
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -28,6 +29,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
@@ -149,8 +151,14 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		try {
 			List<GermplasmList> germplasmLists = doGermplasmListSearch(q);
 			List<Germplasm> germplasms = doGermplasmSearch(q);
+			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
+					(germplasms == null || germplasms.isEmpty())){
+				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
+						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+			} 
 			searchResultsComponent.applyGermplasmListResults(germplasmLists);
 			searchResultsComponent.applyGermplasmResults(germplasms);
+			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
