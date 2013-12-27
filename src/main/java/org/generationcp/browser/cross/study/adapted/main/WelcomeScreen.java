@@ -75,7 +75,7 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
     	try {
     		// show confirm dialog first if trial envts count is > 1k
 			if (crossStudyManager.countAllTrialEnvironments() > 1000L){
-				ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.LOAD_ENVIRONMENTS), 
+				ConfirmDialog.show(getWindow(), "", 
 						messageSource.getMessage(Message.LOAD_ENVIRONMENTS_CONFIRM), "Yes", "No", new ConfirmDialog.Listener() {
 
 					private static final long serialVersionUID = 1L;
