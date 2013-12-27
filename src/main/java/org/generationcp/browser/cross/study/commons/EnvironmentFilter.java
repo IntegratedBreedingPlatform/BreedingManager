@@ -57,6 +57,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.Window;
@@ -152,6 +153,9 @@ private static final long serialVersionUID = -3667517088395779496L;
     
     private CrossStudyToolType crossStudyToolType;
     
+    private Panel tablePanel;
+    AbsoluteLayout tableLayout;
+    
     /*Constructors*/
     public EnvironmentFilter(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen1 = mainScreen;
@@ -238,7 +242,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       addComponent(chooseEnvLabel, "top:90px;left:20px");
 	       
 	       environmentsTable = new Table();
-	       environmentsTable.setWidth("960px");
+	       //environmentsTable.setWidth("960px");
 	       environmentsTable.setHeight("370px");
 	       environmentsTable.setImmediate(true);
 	       environmentsTable.setPageLength(-1);
@@ -254,12 +258,25 @@ private static final long serialVersionUID = -3667517088395779496L;
 //		       populateEnvironmentsTable();
 	       }
 	       
-	       addComponent(environmentsTable, "top:110px;left:20px");
+	       tablePanel = new Panel();
+	       tablePanel.setWidth("960px");
+	       tablePanel.setHeight("370px");
+	       
+	       
+	       tableLayout = new AbsoluteLayout();
+	       
+	       tableLayout.addComponent(environmentsTable, "top:0px;left:0px");
+	       //addComponent(environmentsTable, "top:110px;left:20px");
 	
 	       tagAllCheckBox = new CheckBox();
 	       tagAllCheckBox.setImmediate(true);
 	       
-	       addComponent(tagAllCheckBox, "top:115px; left:52px;");
+	       tableLayout.addComponent(tagAllCheckBox, "top:5px;left:32px");
+	       //addComponent(tagAllCheckBox, "top:115px; left:52px;");
+	       
+	       tablePanel.setContent(tableLayout);
+	       //tablePanel.getContent().setSizeUndefined();
+	       addComponent(tablePanel, "top:110px;left:20px");
 	       
 	       tagAllCheckBox.addListener(new ValueChangeListener(){
 	    	   	private static final long serialVersionUID = 1L;
@@ -337,6 +354,8 @@ private static final long serialVersionUID = -3667517088395779496L;
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
         tableColumnSize = 4;
         
+        environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
+        
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
             environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
@@ -373,6 +392,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 		environmentsTable.setColumnHeader(COUNTRY_COLUMN_ID, "COUNTRY");
 		environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
 		tableColumnSize = 5;
+		
+		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
 		
 		environmentsTable.addContainerProperty(WEIGHT_COLUMN_ID, ComboBox.class, null);
 		environmentsTable.setColumnHeader(WEIGHT_COLUMN_ID, "WEIGHT");
@@ -1076,8 +1097,36 @@ private static final long serialVersionUID = -3667517088395779496L;
     		});
     	
     		
-    	}	
+    	}
+    	
+    	resizeEnviromentTable(conditions);
+    	
     }
+    
+    private void resizeEnviromentTable(Set<TrialEnvironmentProperty> columns) {
+    	int tableWidth = 960;
+    	
+    	for(int i = 0; i < columns.size(); i++){
+    		tableWidth += 133;
+    	}
+    	
+    	List<String> cols = new ArrayList<String>();
+    	for(TrialEnvironmentProperty col : columns){
+    		cols.add(col.getName());
+    	}
+    	
+    	Object[] visibleCols = environmentsTable.getVisibleColumns();
+    	for(Object col : visibleCols){
+    		if(cols.contains(col)){
+    			environmentsTable.setColumnWidth(col, 120);
+    		}
+    	}
+    	
+		String width = String.valueOf(tableWidth) + "px";
+		tableLayout.setWidth(width);
+		environmentsTable.setWidth(width);
+		tablePanel.requestRepaint();
+	}
 	
 	private void removeAddedEnvironmentConditionsColumns() {
 		if (this.environmentsTable != null && this.addedEnvironmentColumns != null){
