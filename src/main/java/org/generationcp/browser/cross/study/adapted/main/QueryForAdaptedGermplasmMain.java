@@ -113,6 +113,7 @@ public class QueryForAdaptedGermplasmMain extends VerticalLayout implements Init
 	        String title =  "Adapted Germplasm Query  <h2>" + VERSION + "</h2>";
 	        mainTitle = new Label();
 	        mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+	        mainTitle.setWidth("380px");
 	        mainTitle.setContentMode(Label.CONTENT_XHTML);
 	        mainTitle.setValue(title);
 	        titleLayout.addComponent(mainTitle);

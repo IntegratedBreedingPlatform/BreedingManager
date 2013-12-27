@@ -97,6 +97,7 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         String title =  "Main Head to Head Query <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
         mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+        mainTitle.setWidth("370px");
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(title);
         titleLayout.addComponent(mainTitle);
