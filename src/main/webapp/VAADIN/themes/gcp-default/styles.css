@@ -129,7 +129,7 @@
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(image/folder-icon.png);
+	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
@@ -145,7 +145,7 @@
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(image/folder-icon.png);
+	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
@@ -157,7 +157,7 @@
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
 	padding-left: 25px;
-	background-image: url(image/document-icon.png);
+	background-image: url(images/document-icon.png);
 	background-repeat: no-repeat;
 }
 
