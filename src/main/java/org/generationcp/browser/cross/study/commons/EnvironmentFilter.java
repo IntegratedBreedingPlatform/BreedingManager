@@ -53,7 +53,6 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -252,7 +251,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       }
 	       else if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
 	    	   createEnvironmentsTable();
-		       populateEnvironmentsTable();
+//		       populateEnvironmentsTable();
 	       }
 	       
 	       addComponent(environmentsTable, "top:110px;left:20px");
@@ -325,7 +324,7 @@ private static final long serialVersionUID = -3667517088395779496L;
             environmentsTable.removeContainerProperty(propertyId);
         }
 
-        removeAddedEnvironmentConditionsColumns(this.addedEnvironmentColumns);
+        removeAddedEnvironmentConditionsColumns();
         
         environmentsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         environmentsTable.addContainerProperty(LOCATION_COLUMN_ID, String.class, null);
@@ -339,8 +338,8 @@ private static final long serialVersionUID = -3667517088395779496L;
         tableColumnSize = 4;
         
         for(TraitInfo traitInfo : traitInfos){
-            environmentsTable.addContainerProperty(traitInfo.getName(), Integer.class, null);
-            environmentsTable.setColumnHeader(traitInfo.getName(), traitInfo.getName());
+            environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
+            environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
             tableColumnSize++;
         }
         
@@ -360,7 +359,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		    environmentsTable.removeContainerProperty(propertyId);
 		}
 		
-		removeAddedEnvironmentConditionsColumns(this.addedEnvironmentColumns);
+		removeAddedEnvironmentConditionsColumns();
 		
 		environmentsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		environmentsTable.addContainerProperty(ENV_NUMBER_COLUMN_ID, Integer.class, null);
@@ -1049,12 +1048,13 @@ private static final long serialVersionUID = -3667517088395779496L;
      * Callback method for AddEnvironmentalConditionsDialog button
      */
     
-    public void addEnviromentalConditionColumns(List<String> names, Set<TrialEnvironmentProperty> conditions){
+    public void addEnviromentalConditionColumns(Set<TrialEnvironmentProperty> conditions){
     	// remove previously added envt conditions columns, if any
-    	removeAddedEnvironmentConditionsColumns(names);
+    	removeAddedEnvironmentConditionsColumns();
 
     	// add the selected envt condition column(s)
     	for (final TrialEnvironmentProperty condition: conditions){
+    		addedEnvironmentColumns.add(condition.getName());
     		
 			this.environmentsTable.addGeneratedColumn(condition.getName(), new ColumnGenerator() {
 				private static final long serialVersionUID = 1L;
@@ -1066,7 +1066,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     				String envtIdStr = st.nextToken();
     				if (envtIdStr != null && !envtIdStr.isEmpty()){
     					Integer envtId = Integer.parseInt(envtIdStr);
-    					addedEnvironmentColumns.add(condition.getName());
     					
     					return condition.getEnvironmentValuesMap().get(envtId);
     				}
@@ -1080,9 +1079,9 @@ private static final long serialVersionUID = -3667517088395779496L;
     	}	
     }
 	
-	private void removeAddedEnvironmentConditionsColumns(List<String> columns) {
-		if (this.environmentsTable != null && columns != null){
-			for (String columnHeader : columns){
+	private void removeAddedEnvironmentConditionsColumns() {
+		if (this.environmentsTable != null && this.addedEnvironmentColumns != null){
+			for (String columnHeader : addedEnvironmentColumns){
 				String existingColumn = this.environmentsTable.getColumnHeader(columnHeader);
 				if (existingColumn != null && !existingColumn.isEmpty()){
 					this.environmentsTable.removeGeneratedColumn(columnHeader);

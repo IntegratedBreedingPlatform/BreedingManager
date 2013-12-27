@@ -2,34 +2,18 @@ package org.generationcp.browser.study.util;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.generationcp.browser.study.TableViewerDatasetTable;
-import org.generationcp.commons.util.PoiUtil;
-import org.generationcp.middleware.domain.dms.DataSet;
-import org.generationcp.middleware.domain.dms.Experiment;
-import org.generationcp.middleware.domain.dms.Variable;
-import org.generationcp.middleware.domain.dms.VariableList;
-import org.generationcp.middleware.domain.dms.VariableType;
-import org.generationcp.middleware.domain.dms.VariableTypeList;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 
 import com.vaadin.ui.Button;
 
@@ -93,11 +77,24 @@ public class TableViewerExporter {
         	rows[y] = sheet1.createRow(y+1);
         	for(int x=0;x<columnHeaders.size();x++){
         		//if(columnHeadersStringArray[x].toString().toUpperCase().equals("GID") || columnHeadersStringArray[x].toString().toUpperCase().equals("GERMPLASM ID") ) {
+        		String stringValue = "";
         		if(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue() instanceof Button){
-        			rows[y].createCell(x).setCellValue(((Button) table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue()).getCaption().toString());
+        			stringValue = ((Button) table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue()).getCaption().toString();
         		} else {
-        			rows[y].createCell(x).setCellValue(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).toString());
+        			stringValue = table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).toString();
         		}
+        		
+        		//set as number if value is numeric
+    			if (NumberUtils.isNumber(stringValue)){
+    				if (NumberUtils.isDigits(stringValue)){ // integer
+    					rows[y].createCell(x).setCellValue(Long.valueOf(stringValue));
+    				} else {
+    					rows[y].createCell(x).setCellValue(Double.valueOf(stringValue));
+    				}
+    				
+    			} else {
+    				rows[y].createCell(x).setCellValue(stringValue);
+    			}
         		
         		currentColor = tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString());	
         		if(currentColor!=null){

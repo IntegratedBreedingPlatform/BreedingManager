@@ -12,10 +12,8 @@
 
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
-
-
+import org.generationcp.browser.cross.study.h2h.main.dialogs.GermplasmListTreeComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
-import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListTreeComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +34,9 @@ public class SelectListButtonClickListener implements Button.ClickListener {
     @Override
     public void buttonClick(ClickEvent event) {
         
-        if (event.getButton().getData().equals(SelectGermplasmListTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
-                && (source instanceof SelectGermplasmListTreeComponent)) {
-            ((SelectGermplasmListTreeComponent) source).createTree();
+        if (event.getButton().getData().equals(GermplasmListTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
+                && (source instanceof GermplasmListTreeComponent)) {
+            ((GermplasmListTreeComponent) source).createTree();
 
         } else if (event.getButton().getData().equals(SelectGermplasmListDialog.ADD_BUTTON_ID)
                 && (source instanceof SelectGermplasmListDialog)) {

@@ -15,14 +15,14 @@ package org.generationcp.browser.cross.study.h2h.main.dialogs;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.Database;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -30,16 +30,12 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
 
     private static final long serialVersionUID = 1L;
     
-    private VerticalLayout tabLocalInstance;
-    private VerticalLayout tabCentralInstance;
-    private TabSheet tabSheetGermplasmListDatabaseInstance;
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    private SelectGermplasmListTreeComponent localGermplasmListTreeComponent;
-    private SelectGermplasmListTreeComponent centralGermplasmListTreeComponent;
+    private GermplasmListTreeComponent treeComponent;
     private SelectGermplasmListInfoComponent listInfoComponent;
+    private Label treeLabel;
 
     private HorizontalLayout mainLayout;
     
@@ -66,17 +62,11 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
     protected void initializeComponents() {
         mainLayout = new HorizontalLayout();
         
-        tabSheetGermplasmListDatabaseInstance = new TabSheet();
-        tabLocalInstance = new VerticalLayout();
-        tabCentralInstance = new VerticalLayout();
-        
-        tabSheetGermplasmListDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
-        tabSheetGermplasmListDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
-        tabSheetGermplasmListDatabaseInstance.setSelectedTab(tabLocalInstance);
+        treeComponent = new GermplasmListTreeComponent(this);
+        treeLabel = new Label(messageSource.getMessage(Message.PROJECT_LISTS));
+        treeLabel.addStyleName(Bootstrap.Typography.H3.styleName());
         
         listInfoComponent = new SelectGermplasmListInfoComponent(lastOpenedListId, source);
-        centralGermplasmListTreeComponent = new SelectGermplasmListTreeComponent(Database.CENTRAL, listInfoComponent);
-        localGermplasmListTreeComponent = new SelectGermplasmListTreeComponent(Database.LOCAL, listInfoComponent);
     }
     
     protected void initializeValues() {
@@ -90,16 +80,16 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
         mainLayout.setSizeFull();
         mainLayout.setSpacing(true);
         
-        tabSheetGermplasmListDatabaseInstance.setWidth("275px");
-        tabSheetGermplasmListDatabaseInstance.setHeight("400px");
+        listInfoComponent.setWidth("495px");
+        listInfoComponent.setHeight("420px");
         
-        listInfoComponent.setWidth("475px");
-        listInfoComponent.setHeight("400px");
+        VerticalLayout treeLayout = new VerticalLayout();
+        treeLayout.setWidth("240px");
+        treeLayout.setHeight("420px");
+        treeLayout.addComponent(treeLabel);
+        treeLayout.addComponent(treeComponent);
         
-        tabCentralInstance.addComponent(centralGermplasmListTreeComponent);
-        tabLocalInstance.addComponent(localGermplasmListTreeComponent);
-
-        mainLayout.addComponent(tabSheetGermplasmListDatabaseInstance);
+        mainLayout.addComponent(treeLayout);
         mainLayout.addComponent(listInfoComponent);
         mainLayout.setExpandRatio(listInfoComponent, 1.0f);
         
@@ -118,8 +108,6 @@ public class SelectGermplasmListComponent extends HorizontalLayout implements In
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(tabLocalInstance, Message.DB_LOCAL_TEXT);
-        messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
     }
     
     public SelectGermplasmListInfoComponent getListInfoComponent() {

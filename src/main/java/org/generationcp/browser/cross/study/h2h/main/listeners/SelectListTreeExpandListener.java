@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
+import org.generationcp.browser.cross.study.h2h.main.dialogs.GermplasmListTreeComponent;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -36,15 +37,19 @@ public class SelectListTreeExpandListener implements Tree.ExpandListener{
 
     @Override
     public void nodeExpand(ExpandEvent event) {
-        if (source instanceof SelectGermplasmListTreeComponent) {
-            try {
-                ((SelectGermplasmListTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
-            } catch (InternationalizableException e) {
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
-            }
-        }
+    	try {
+	        if (source instanceof SelectGermplasmListTreeComponent) {
+	                ((SelectGermplasmListTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+	        
+	        } else if (source instanceof GermplasmListTreeComponent && 
+	        		(!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL"))) {
+	           		((GermplasmListTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+	        }
+    	} catch (InternationalizableException e) {
+    		LOG.error(e.toString() + "\n" + e.getStackTrace());
+    		e.printStackTrace();
+    		MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
+    	}
     }
 
 }

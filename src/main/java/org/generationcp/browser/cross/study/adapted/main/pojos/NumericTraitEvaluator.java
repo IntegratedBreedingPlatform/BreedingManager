@@ -53,11 +53,10 @@ public class NumericTraitEvaluator {
 		}
 		else if(condition == NumericTraitCriteria.IN){
 			//limit a,b ,c, d
-			String[] limit = limits.get(0).split(",");
 			
-			for(int i = 0; i < limit.length; i++){
-				limit[i] = limit[i].trim();
-				Double limitVal = Double.valueOf(limit[i]);
+			int size = limits.size();
+			for(int i = 0; i < size; i++){
+				Double limitVal = Double.valueOf(limits.get(i));
 				if(value.equals(limitVal)){
 					result = true;
 				}
@@ -65,12 +64,10 @@ public class NumericTraitEvaluator {
 		}
 		else if(condition == NumericTraitCriteria.NOT_IN){
 			//limit a,b ,c, d
-			String[] limit = limits.get(0).split(",");
-			
+			int size = limits.size();
 			boolean flag = true;
-			for(int i = 0; i < limit.length; i++){
-				limit[i] = limit[i].trim();
-				Double limitVal = Double.valueOf(limit[i]);
+			for(int i = 0; i < size; i++){
+				Double limitVal = Double.valueOf(limits.get(i));
 				if(value.equals(limitVal)){
 					flag = false;
 				}

@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.h2h;
 
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -95,7 +96,8 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         //String title =  "<h1>Breeder Queries:</h1> <h1>Simple Head-to-Head Comparison Query</h1> <h2>" + VERSION + "</h2>";
         String title =  "Main Head to Head Query <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
-        mainTitle.setStyleName("gcp-window-title");
+        mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+        mainTitle.setWidth("370px");
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(title);
         titleLayout.addComponent(mainTitle);

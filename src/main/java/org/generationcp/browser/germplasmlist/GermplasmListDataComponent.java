@@ -214,12 +214,12 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                     });
             }
 
-            //make GID as link only if the page wasn't directly accessed from the URL
-            if (!fromUrl) {
-                listDataTable.addContainerProperty(GID, Button.class, null);
-            } else {
-                listDataTable.addContainerProperty(GID, Integer.class, null);
-            }
+            /*
+             *  GCP-6227 DEC 2013 : don't check if from URL anymore, always make a link,
+             *  since List Browser is phased out
+             */
+            listDataTable.addContainerProperty(GID, Button.class, null);
+
 
             listDataTable.addContainerProperty(GID_VALUE, Integer.class, null);
             listDataTable.addContainerProperty(ENTRY_ID, Integer.class, null);
@@ -334,17 +334,15 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         for (GermplasmListData data : listDatas) {
             Object gidObject;
 
-            if (!fromUrl) {
-                // make GID as link only if the page wasn't directly accessed from the URL
-                String gid = String.format("%s", data.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-                gidButton.setDescription("Click to view Germplasm information");
-                gidObject = gidButton;
-                //item.addItemProperty(columnId, new ObjectProperty<Button>(gidButton));
-            } else {
-                gidObject = data.getGid();
-            }
+            /*
+             *  GCP-6227 DEC 2013 : don't check if from URL anymore, always make a link,
+             *  since List Browser is phased out
+             */
+            String gid = String.format("%s", data.getGid().toString());
+            Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+            gidButton.setDescription("Click to view Germplasm information");
+            gidObject = gidButton;
 
             listDataTable.addItem(new Object[] {
                     gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),

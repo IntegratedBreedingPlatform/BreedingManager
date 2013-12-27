@@ -12,6 +12,8 @@
 
 package org.generationcp.browser.study.listeners;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservationsDialog;
 import org.generationcp.browser.study.TableViewerComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -35,6 +37,8 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 
     private static final long serialVersionUID = -6751894969990825730L;
     private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
+    private String[] CHILD_WINDOWS = {TableViewerComponent.TABLE_VIEWER_WINDOW_NAME, 
+    		ViewTraitObservationsDialog.LINE_BY_TRAIT_WINDOW_NAME};
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
@@ -50,7 +54,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     	Window mainWindow;
     	Window eventWindow = event.getComponent().getWindow();
     	eventWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-    	if (TableViewerComponent.TABLE_VIEWER_WINDOW_NAME.equals(eventWindow.getName())) {
+    	if (ArrayUtils.contains(CHILD_WINDOWS, eventWindow.getName())) {
     		mainWindow = eventWindow.getParent();
     	} else {
     		mainWindow = eventWindow;

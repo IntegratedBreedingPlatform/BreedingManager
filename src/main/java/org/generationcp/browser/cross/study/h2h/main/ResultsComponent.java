@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -99,18 +100,22 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 	    exportButton.setEnabled(true);
 	    exportButton.setWidth("80px");
 	    exportButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-	    addComponent(exportButton, "top:505px;left:900px");
+	    
 		
 		backButton = new Button("Back");
 		backButton.setData(BACK_BUTTON_ID);
 		backButton.setWidth("80px");
 		backButton.addListener(new org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener(this));
-		addComponent(backButton, "top:505px;left:810px");
+		
     }
     
     private void createEnvironmentsResultTable(List<EnvironmentForComparison> environmentForComparisonList, 
     		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, ObservationList> observationMap){
-    	 
+    	    	
+    	this.removeAllComponents();
+    	addComponent(exportButton, "top:505px;left:900px");
+    	addComponent(backButton, "top:505px;left:810px");
+    	
     	mainTabs = new TabSheet();    
     	mainTabs.setWidth("957px");   
         addComponent(mainTabs, "top:20px;left:20px");
@@ -237,8 +242,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		
     	} else if(PVAL_COLUMN_ID.equalsIgnoreCase(columnId)){
     		Integer numOfEnvts = (Integer) valuesMap.get(NUM_OF_ENV_COLUMN_ID);
-    		Double standardMean = (Double) valuesMap.get(MEAN_STD_COLUMN_ID);
-    		value = HeadToHeadResultsUtil.getPvalue(numOfEnvts, standardMean);
+    		Integer numOfSucceses = (Integer) valuesMap.get(NUM_SUP_COLUMN_ID);
+    		value = HeadToHeadResultsUtil.getPvalue(numOfEnvts, numOfSucceses);
     		
     	}else if(MEAN_DIFF_COLUMN_ID.equalsIgnoreCase(columnId)){
     		value = HeadToHeadResultsUtil.getMeanDiff(germplasmPair, traitForComparison, observationMap,environmentForComparisonList);

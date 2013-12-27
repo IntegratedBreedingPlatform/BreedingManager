@@ -299,7 +299,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
                     Integer gid = entry.getKey(); 
                     designation = (entry.getValue() == null)? "-" : entry.getValue();
                     
-                    String entryCode = designation;
+                    String entryCode = String.valueOf(entryid);
                     String seedSource= "Browse for "+ designation;
                     
                     GermplasmListData germplasmListData = new GermplasmListData(

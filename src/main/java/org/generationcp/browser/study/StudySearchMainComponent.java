@@ -122,7 +122,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
             searchResultTable = new StudySearchResultTable(dataSourceResult).getResultTable();
             searchResultTable.setCaption(messageSource.getMessage(Message.SEARCH_RESULT_LABEL) + ": " + dataSourceResult.size());
             searchResultTable.addListener(new StudyItemClickListener(this));
-            searchResultTable.setWidth(8, UNITS_CM);
+            searchResultTable.setWidth(7, UNITS_CM);
             searchResultTable.setHeight(8, UNITS_CM);
             searchResultLayout.removeAllComponents();
             searchResultLayout.addComponent(searchResultTable);
@@ -197,7 +197,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
             tab.setClosable(true);
 
             studyBrowserMainLayout.addComponent(tabSheetStudy);
-            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
+            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 0.75f);
             tabSheetStudy.setSelectedTab(layout);
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));

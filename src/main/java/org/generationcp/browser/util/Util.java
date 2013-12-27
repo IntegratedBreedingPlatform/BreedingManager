@@ -16,9 +16,11 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
@@ -243,6 +245,54 @@ public class Util{
         return Integer.valueOf(year * 10000 + month * 100 + day);
 
     }
+    
+    /** 
+     * Returns integer value of year month date concatenation
+     * if no date value, yyyymm
+     * eg. if month = 1, and year = 2005 => 200501
+     * if no month and date, yyyy
+     * 
+     * Return 0 if no year, month and date
+     * 
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
+    public static Integer getIBPDateNoZeroes(int year, int month, int day) throws InvalidDateException{
+        String dayString = (day == 0) ? "" : String.valueOf(day);
+        if (!dayString.isEmpty() && dayString.length() == 1){
+        	dayString = "0" + dayString;
+        }
+        String monthString = (month == 0) ? "" : String.valueOf(month);
+        if (!monthString.isEmpty() && monthString.length() == 1){
+        	monthString = "0" + monthString;
+        }
+        String yearString = (year == 0) ? "" : String.valueOf(year);
+        String fulldate = yearString + monthString + dayString;
+        if (!fulldate.isEmpty()){
+        	return new Integer(fulldate);
+        }
+        return 0;
+    }
+    
+    /**
+     * Returns true if given data type id is the id of one of the following data types:
+     * - Numeric Variable
+     * - Numeric DBID variable
+     * - Date variable
+     * -
+     * @param dataTypeId
+     * @return
+     */
+    public static boolean isNumericVariable(int dataTypeId){
+    	return ArrayUtils.contains(new int[]{TermId.NUMERIC_VARIABLE.getId(), 
+    			TermId.NUMERIC_DBID_VARIABLE.getId(), TermId.DATE_VARIABLE.getId()}, dataTypeId);
+    }
+    
+    
+    
+    
     
     /**
      * Checks if a given date is valid.
