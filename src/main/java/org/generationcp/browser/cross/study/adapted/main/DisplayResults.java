@@ -608,6 +608,21 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		}
 	}
 	
+	private Double getTotalEnvWeightForTrait(Integer traitId, Integer gid){
+		Double totalEnvWeight = 0.0;
+		for(EnvironmentForComparison env : environments){
+			ObservationKey key = new ObservationKey(traitId, gid, env.getEnvironmentNumber());
+			ObservationList obsList = observationsMap.get(key);
+			
+			if(obsList != null){
+				ComboBox weightComboBox = env.getWeightComboBox();
+				EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
+				totalEnvWeight = totalEnvWeight + Double.valueOf(weight.getWeight());
+			}
+		}
+		return totalEnvWeight;
+	}
+	
 	public List<TableResultRow> getTableRowsResults(){
 		List<TableResultRow> tableRows = new ArrayList<TableResultRow>();
 		
@@ -618,13 +633,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			
 			List<Integer> germplasmIds = new ArrayList<Integer>();
 			germplasmIds.addAll(germplasmIdNameMap.keySet());
-			
-			Double totalEnvWeight = 0.0;
-			for(EnvironmentForComparison env : environments){
-				ComboBox weightComboBox = env.getWeightComboBox();
-				EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
-				totalEnvWeight = totalEnvWeight + Double.valueOf(weight.getWeight());
-			}
 			
 			for(Map.Entry<String, Integer> germplasm : germplasmNameIdMap.entrySet()){
 				int germplasmId = germplasm.getValue();
@@ -640,6 +648,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					Integer noOfObservation = 0;
 					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
+					
+					Double totalEnvWeight = getTotalEnvWeightForTrait(trait.getTraitInfo().getId(), germplasmId);
 					
 					for(EnvironmentForComparison env : environments){
 						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
@@ -659,15 +669,15 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testNumericTraitVal(trait, obs)){
-									scorePerEnv = scorePerEnv + 1;
+									scorePerEnv = scorePerEnv + Double.valueOf(1);
 								}
 								else{
-									scorePerEnv = scorePerEnv + (-1);
+									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
 						
 							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
-							scorePerEnv = envWt * ( scorePerEnv / noOfObservation );
+							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation) );
 							
 							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
@@ -687,6 +697,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
 					
+					Double totalEnvWeight = getTotalEnvWeightForTrait(trait.getTraitInfo().getId(), germplasmId);
+					
 					for(EnvironmentForComparison env : environments){
 						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
 						ObservationList obsList = observationsMap.get(key);
@@ -705,14 +717,14 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testCharacterTraitVal(trait, obs)){
-									scorePerEnv = scorePerEnv + 1;
+									scorePerEnv = scorePerEnv + Double.valueOf(1);
 								}
 								else{
-									scorePerEnv = scorePerEnv + (-1);
+									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
 							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
-							scorePerEnv = envWt * ( scorePerEnv / noOfObservation );
+							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation) );
 							
 							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
@@ -730,6 +742,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					Integer noOfObservation = 0;
 					Integer noObsForAllEnvs = 0;
 					Double scorePerTrait = 0.0;
+					
+					Double totalEnvWeight = getTotalEnvWeightForTrait(trait.getTraitInfo().getId(), germplasmId);
 					
 					for(EnvironmentForComparison env : environments){
 						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
@@ -749,14 +763,14 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testCategoricalTraitVal(trait, obs)){
-									scorePerEnv = scorePerEnv + 1;
+									scorePerEnv = scorePerEnv + Double.valueOf(1);
 								}
 								else{
-									scorePerEnv = scorePerEnv + (-1);
+									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
 							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
-							scorePerEnv = envWt * ( scorePerEnv / noOfObservation );
+							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation));
 							
 							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
