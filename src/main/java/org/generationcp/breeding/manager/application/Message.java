@@ -307,6 +307,7 @@ public enum Message{
     ,LOCK_AND_EXPORT_CONFIRM
     ,SEARCH_RESULTS
     ,NO_SEARCH_RESULTS
+    ,TOTAL_LIST_ENTRIES
     
     //General error msg
     ,ERROR_REPORT_TO

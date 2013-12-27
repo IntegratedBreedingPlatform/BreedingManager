@@ -168,6 +168,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuDeleteEntries;
 	private AbsoluteLayout toolsMenuBar;
 	private Label noListDataLabel;
+	private Label totalListEntries;
 
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
 	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
@@ -180,6 +181,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private AddColumnContextMenu addColumnContextMenu;  
 	private String lastCellvalue;
+	private long listDataCount;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -198,6 +200,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception{
+    	listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
     	
 		menu = new ContextMenu();
 
@@ -281,20 +284,21 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 
     	 toolsMenuBar = new AbsoluteLayout();
     	 toolsMenuBar.setWidth("100%");
-    	 toolsMenuBar.setHeight("50px");
+    	 toolsMenuBar.setHeight("30px");
        	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:30px;");
    	 
     	 addComponent(toolsMenuBar);
     	 
     	 listDatas = new ArrayList<GermplasmListData>();
-         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
 
      	 // "No Germplasm List Data retrieved."
          if (listDataCount == 0) {
             noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 			addComponent(noListDataLabel); 
          } else {
-        	 
+        	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
+        			 + "  " + listDataCount, Label.CONTENT_XHTML);
+        	 toolsMenuBar.addComponent(totalListEntries,"top:12px");
         	 initializeListDataTable(toolsMenuBar);    	 
              
          }
