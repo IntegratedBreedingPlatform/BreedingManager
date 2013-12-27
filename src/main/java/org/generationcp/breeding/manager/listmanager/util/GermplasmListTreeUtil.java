@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -44,6 +45,11 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	private Component source;
 	private Tree targetTree;
+	private static final String NO_SELECTION = "Please select a folder item";
+    public final static String NOT_FOLDER = "Selected item is not a folder.";
+    public final static String NO_PARENT = "Selected item is a root item, please choose another item on the list.";
+    public final static String HAS_CHILDREN = "Folder has child items.";
+    public static String MY_LIST = "";
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -53,7 +59,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
-
+    
     
 	public GermplasmListTreeUtil(Component source, Tree targetTree){
 		this.source = source;
@@ -397,6 +403,76 @@ public class GermplasmListTreeUtil implements Serializable {
 
         // show window
         source.getWindow().addWindow(w);    	
-    }    
+    }
+
+	public void deleteFolder(final Integer lastItemId) {
+		 
+		GermplasmList gpList = null; 
+		try {
+			if (lastItemId== null) {
+				throw new Error(NO_SELECTION);
+			}
+
+			try {
+				gpList = germplasmListManager.getGermplasmListById(lastItemId);
+
+			} catch (MiddlewareQueryException e) {
+				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
+			}
+
+			if (gpList == null) {
+				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
+			}
+
+			if (!gpList.isFolder()) {
+				throw new Error(NOT_FOLDER);
+			}
+
+			try {
+				if (hasChildren(gpList.getId())) {
+					throw new Error(HAS_CHILDREN);
+				}
+			} catch (MiddlewareQueryException e) {
+				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
+			}
+
+		} catch (Error e) {
+			MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR),e.getMessage());
+			return;
+		}
+
+		final GermplasmList finalGpList = gpList;
+		ConfirmDialog.show(source.getWindow(),
+				messageSource.getMessage(Message.DELETE_LIST_FOLDER,targetTree.getItemCaption(lastItemId)),
+				messageSource.getMessage(Message.DELETE_LIST_FOLDER_CONFIRM,targetTree.getItemCaption(lastItemId)),
+				messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+			@Override
+			public void onClose(ConfirmDialog dialog) {
+				if (dialog.isConfirmed()) {
+					try {
+						GermplasmList parent = germplasmListManager.getGermplasmListById(finalGpList.getId()).getParent();
+						germplasmListManager.deleteGermplasmList(finalGpList);
+						targetTree.removeItem(lastItemId);
+						targetTree.select(null);
+						if (parent == null) {
+							targetTree.select(MY_LIST);
+						} else {
+							targetTree.select(parent.getId());
+						}
+					} catch (Error e) {
+						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
+					} catch (MiddlewareQueryException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		
+	}    
+	
+    public boolean hasChildren(Integer id) throws MiddlewareQueryException {
+        return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
+    }
     
 }

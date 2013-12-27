@@ -174,7 +174,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
         deleteFolderBtn.setWidth("40px");
         deleteFolderBtn.setEnabled(false);
-
+        deleteFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				germplasmListTreeUtil.deleteFolder(selectedListId);
+            }
+        });
+        
         controlButtonsLayout = new HorizontalLayout();
         
         controlButtonsLayout.addComponent(heading);
