@@ -127,9 +127,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			
 		});
         
-        if(showFavoriteLocationsCheckBox!=null && showFavoriteLocationsCheckBox instanceof CheckBox)
-        	showFavoriteLocationsCheckBox.setValue((Boolean) true);
-        
+                
         // layout components
         addComponent(harvestDateLabel, "top:30px;left:0px");
         addComponent(harvestDtDateField, "top:10px;left:120px");
