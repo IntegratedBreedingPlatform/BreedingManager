@@ -3,6 +3,7 @@ package org.generationcp.browser.cross.study.h2h.main.dialogs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     private Label popupLabel;
     private Map<String, CheckBox> checkBoxMap = new HashMap();
     private List<String> conditionNames = new ArrayList<String>();
-    private Set<TrialEnvironmentProperty> selectedProperties = new HashSet<TrialEnvironmentProperty>();    
+    private Set<TrialEnvironmentProperty> selectedProperties = new LinkedHashSet<TrialEnvironmentProperty>();    
     private CheckBox tagUnTagAll;
     
     public AddEnvironmentalConditionsDialog(Component source, Window parentWindow, List<Integer> environmentIds){
@@ -171,20 +172,22 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     	this.conditionNames = new ArrayList<String>();
     	
     	for (TrialEnvironmentProperty environmentCondition : properties){
-    		CheckBox box = new CheckBox();
-   		 	box.setImmediate(true);
-   		 	box.setValue(true);
-   		 	box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, environmentCondition));
-   		 	
     		String condition = environmentCondition.getName();
-			Object[] itemObj = new Object[]{ environmentCondition.getName(), environmentCondition.getDescription(), 
-    				environmentCondition.getNumberOfEnvironments(), box};
-    		conditionsTable.addItem(itemObj, environmentCondition);
-    		
-    		this.selectedProperties.add(environmentCondition);
-    		this.conditionNames.add(condition);
-    		
-    		this.checkBoxMap.put(condition, box);
+    		if (condition != null && !condition.isEmpty()){
+	    		CheckBox box = new CheckBox();
+	   		 	box.setImmediate(true);
+	   		 	box.setValue(true);
+	   		 	box.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, null, environmentCondition));
+   		 	
+    			Object[] itemObj = new Object[]{ environmentCondition.getName(), environmentCondition.getDescription(), 
+    					environmentCondition.getNumberOfEnvironments(), box};
+    			conditionsTable.addItem(itemObj, environmentCondition);
+    			
+    			this.selectedProperties.add(environmentCondition);
+    			this.conditionNames.add(condition);
+    			
+    			this.checkBoxMap.put(condition, box);
+    		}
     	}
     }
     
@@ -246,7 +249,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     	} else if(classname.equals("SpecifyAndWeighEnvironments")){
     		((SpecifyAndWeighEnvironments)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
     	} else if(classname.equals("EnvironmentFilter")){
-    		((EnvironmentFilter)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
+    		((EnvironmentFilter)source).addEnviromentalConditionColumns(this.selectedProperties);
     	}
     	
     }
