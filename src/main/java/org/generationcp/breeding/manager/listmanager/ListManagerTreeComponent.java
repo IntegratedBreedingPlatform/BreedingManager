@@ -256,7 +256,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.setImmediate(true);
         
         if (this.listManagerMain != null){
-        	germplasmListTreeUtil = new GermplasmListTreeUtil(getWindow(), germplasmListTree);
+        	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
         }
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
@@ -473,7 +473,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return isFolder && !hasChildList(list.getId());
     }
     
-    private boolean isFolder(Object itemId){
+    public boolean isFolder(Object itemId){
     	try {
     		int listId = Integer.valueOf(itemId.toString());
     		GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
