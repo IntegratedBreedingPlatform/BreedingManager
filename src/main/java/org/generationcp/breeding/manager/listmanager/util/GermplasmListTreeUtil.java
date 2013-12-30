@@ -116,10 +116,16 @@ public class GermplasmListTreeUtil implements Serializable {
             	sourceGermplasmList.setParent(null);
             }
             germplasmListManager.updateGermplasmList(sourceGermplasmList);
-            if(targetItemId==null)
+            if(targetItemId==null){
             	targetTree.setParent(sourceItemId, ListManagerTreeComponent.LOCAL);
-            else
+            	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
+    		} else {
+    			targetTree.setChildrenAllowed(targetItemId, true);
             	targetTree.setParent(sourceItemId, targetItemId);
+            	targetTree.expandItem(targetItemId);
+    		}
+            targetTree.select(sourceItemId);
+            
 		} catch (MiddlewareQueryException e) {
 			MessageNotifier.showError(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_INTERNAL), 
