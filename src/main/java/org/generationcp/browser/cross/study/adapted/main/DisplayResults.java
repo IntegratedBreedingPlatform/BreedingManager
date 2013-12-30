@@ -623,6 +623,11 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		return totalEnvWeight;
 	}
 	
+	private Double roundOffDoubleToTwoDecimalPlaces(Double toRoundOff){
+		double roundedOff = Math.round(toRoundOff.doubleValue() * 100.0) / 100.0;
+		return Double.valueOf(roundedOff);
+	}
+	
 	public List<TableResultRow> getTableRowsResults(){
 		List<TableResultRow> tableRows = new ArrayList<TableResultRow>();
 		
@@ -685,6 +690,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
+					scorePerTrait = roundOffDoubleToTwoDecimalPlaces(scorePerTrait);
 					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					numericTOSMap.put(trait,tos);
 				}
@@ -732,6 +738,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
+					scorePerTrait = roundOffDoubleToTwoDecimalPlaces(scorePerTrait);
 					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					characterTOSMap.put(trait,tos);
 				}
@@ -778,6 +785,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					}
 					
 					//No Of Observation and Wt Score Per Trait
+					scorePerTrait = roundOffDoubleToTwoDecimalPlaces(scorePerTrait);
 					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
 					categoricalTOSMap.put(trait,tos);
 				}
