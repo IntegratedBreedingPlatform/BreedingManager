@@ -155,7 +155,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             	//if(itemId.equals(LOCAL) || itemId.equals(CENTRAL)){
             	//	return "listManagerTreeRootNode"; 
 				
-				if(isFolder(currentStudy.getId())){
+				if(currentStudy!=null && isFolder(currentStudy.getId())){
 					return "listManagerTreeRegularParentNode";
 				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
             		return "listManagerTreeRegularParentNode";
@@ -205,7 +205,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 				
 				if(itemId.toString().equals(LOCAL) || itemId.toString().equals(CENTRAL)){
 					return "listManagerTreeRegularParentNode";
-				} else if(isFolder(currentStudy.getId())){
+				} else if(currentStudy!=null && isFolder(currentStudy.getId())){
 					return "listManagerTreeRegularParentNode";
 				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
             		return "listManagerTreeRegularParentNode";
