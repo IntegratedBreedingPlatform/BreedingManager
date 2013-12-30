@@ -123,7 +123,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             rootFolders = new ArrayList<FolderReference>();
         }
 
-        Tree studyTree = new Tree();
+        final Tree studyTree = new Tree();
 
         
         
@@ -236,6 +236,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             studyTree.addItem(ps.getId());
             studyTree.setItemCaption(ps.getId(), ps.getName());
             studyTree.setParent(ps.getId(), rootNodeId);
+            if (!hasChildStudy(ps.getId())){
+            	studyTree.setChildrenAllowed(ps.getId(), false);
+            }
         }
     }
     
