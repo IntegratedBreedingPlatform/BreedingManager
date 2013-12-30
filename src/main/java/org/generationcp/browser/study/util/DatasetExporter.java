@@ -218,8 +218,9 @@ public class DatasetExporter {
                 conditionRow.createCell(4).setCellValue(conditionVariable.getVariableType().getStandardVariable().getMethod().getName());
                 conditionRow.createCell(5).setCellValue(dataType.getName());
                 boolean isNumeric = Util.isNumericVariable(dataType.getId());
-                if (isNumeric) {
-                    Double thevalue = Double.valueOf(conditionVariable.getValue());
+                String conditionValue = conditionVariable.getValue();
+                if (isNumeric && conditionValue != null && !conditionValue.isEmpty()) {
+					Double thevalue = Double.valueOf(conditionValue);
                     conditionRow.createCell(6).setCellValue(thevalue);
                 } else {
                     conditionRow.createCell(6).setCellValue(conditionVariable.getDisplayValue());
