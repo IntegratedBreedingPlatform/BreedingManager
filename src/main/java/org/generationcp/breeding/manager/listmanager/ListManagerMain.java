@@ -82,7 +82,7 @@ public class ListManagerMain extends VerticalLayout implements
         
 		buildNewListTitle = new Label();
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
-		buildNewListTitle.addStyleName("gcp-content-title");
+		buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
 		buildNewListTitle.setVisible(false);
         
         buildNewActionBar.addComponent(buildNewListTitle);
