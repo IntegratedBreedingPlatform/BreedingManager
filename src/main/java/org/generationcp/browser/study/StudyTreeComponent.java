@@ -155,7 +155,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             	//if(itemId.equals(LOCAL) || itemId.equals(CENTRAL)){
             	//	return "listManagerTreeRootNode"; 
 				
-            	if(currentStudy!=null && isFolderType(currentStudy.getType())){
+				if(isFolder(currentStudy.getId())){
+					return "listManagerTreeRegularParentNode";
+				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
             		return "listManagerTreeRegularParentNode";
             	} else {
             		return "listManagerTreeRegularChildNode";
@@ -203,6 +205,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 				
 				if(itemId.toString().equals(LOCAL) || itemId.toString().equals(CENTRAL)){
 					return "listManagerTreeRegularParentNode";
+				} else if(isFolder(currentStudy.getId())){
+					return "listManagerTreeRegularParentNode";
 				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
             		return "listManagerTreeRegularParentNode";
             	} else {
@@ -239,6 +243,15 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             if (!hasChildStudy(ps.getId())){
             	studyTree.setChildrenAllowed(ps.getId(), false);
             }
+        }
+    }
+    
+    private Boolean isFolder(Integer studyId) {
+        try {
+            boolean isStudy = studyDataManager.isStudy(studyId);
+            return !isStudy;
+        } catch (MiddlewareQueryException e) {
+        	return false;
         }
     }
     
