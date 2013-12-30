@@ -532,4 +532,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	return germplasmListTree;
     }
 
+    public void setSelectedListId(Object listId){
+    	this.selectedListId = listId;
+    }
+    
 }

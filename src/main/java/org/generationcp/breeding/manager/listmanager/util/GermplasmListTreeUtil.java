@@ -172,6 +172,7 @@ public class GermplasmListTreeUtil implements Serializable {
     }
     
     public void addFolder(final Object parentItemId){
+    	
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
         w.setHeight("150px");
@@ -214,7 +215,7 @@ public class GermplasmListTreeUtil implements Serializable {
                             messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
                 	return;
                 }
-                
+
                 GermplasmList newFolder = new GermplasmList();
                 try {
                 	
@@ -234,7 +235,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setUserId(ibdbUserId);
 	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
 	                	
-	                    if (parentItemId instanceof String)
+	                    if (parentItemId==null || parentItemId instanceof String)
 	                        newFolder.setParent(null);
 	                    else
 	                        newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));

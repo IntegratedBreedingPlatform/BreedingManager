@@ -56,6 +56,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 	        	} else{
 	        		((ListManagerTreeComponent) source).expandOrCollapseListTreeNode(item);
 	        	}
+	        	((ListManagerTreeComponent) source).setSelectedListId(event.getItemId());
             	((ListManagerTreeComponent) source).updateButtons(event.getItemId());
             }
         }
