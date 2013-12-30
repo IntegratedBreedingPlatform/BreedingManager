@@ -273,6 +273,8 @@ public class GermplasmListTreeUtil implements Serializable {
                     targetTree.addItem(newFolderId);
                     targetTree.setItemCaption(newFolderId, name.getValue().toString());
                     targetTree.setChildrenAllowed(newFolderId, true);
+                    ((ListManagerTreeComponent) source).setSelectedListId(newFolderId);
+                    
                     if (newFolder.getParent() != null) {
                         targetTree.setParent(newFolderId, parentItemId);
                     } else {

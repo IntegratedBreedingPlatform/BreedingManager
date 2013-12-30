@@ -384,6 +384,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 				addFolderBtn.setEnabled(false);
 				renameFolderBtn.setEnabled(false);
 				deleteFolderBtn.setEnabled(false);
+    		} else if(itemId.toString().equals(CENTRAL) || itemId.toString().equals(LOCAL)) {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
     		} else {
 				addFolderBtn.setEnabled(true);
 				renameFolderBtn.setEnabled(true);
