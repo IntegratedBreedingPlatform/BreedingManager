@@ -255,13 +255,16 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                 	return studyBrowserWindow;
                 }
                 
-                if(studyId>0){
-                	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabCentralInstance());
-                	studyTreeComponent = studyBrowserMain.getCentralStudyTreeComponent();
-                } else {
-                	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabLocalInstance());
-                	studyTreeComponent = studyBrowserMain.getLocalStudyTreeComponent();
-                }
+                //if(studyId>0){
+                //	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabCentralInstance());
+                //	studyTreeComponent = studyBrowserMain.getCentralStudyTreeComponent();
+                //} else {
+                //	studyBrowserMain.setSelectedTab(studyBrowserMain.getTabLocalInstance());
+                //	studyTreeComponent = studyBrowserMain.getLocalStudyTreeComponent();
+                //}
+                
+                studyBrowserMain.setSelectedTab(studyBrowserMain.getTabStudies());
+                studyTreeComponent = studyBrowserMain.getCombinedStudyTreeComponent();
                 
                 if(studyTreeComponent.studyExists(studyId)){
                 	studyTreeComponent.studyTreeItemClickAction(studyId);

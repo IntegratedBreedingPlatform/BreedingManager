@@ -42,6 +42,7 @@ public class StudyTreeExpandListener implements Tree.ExpandListener{
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription()); // TESTED 
+            } catch (NumberFormatException e) {
             }
         }
     }
