@@ -235,7 +235,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setUserId(ibdbUserId);
 	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
 	                	
-	                    if (parentItemId==null || parentItemId instanceof String)
+	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null)
 	                        newFolder.setParent(null);
 	                    else
 	                        newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
@@ -273,6 +273,8 @@ public class GermplasmListTreeUtil implements Serializable {
                     	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
                     }
 
+                    System.out.println("New folder parent: "+newFolder.getParent());
+                    
                     if (targetTree.getValue() != null) {
                         if (!targetTree.isExpanded(targetTree.getValue()))
                             targetTree.expandItem(parentItemId);
