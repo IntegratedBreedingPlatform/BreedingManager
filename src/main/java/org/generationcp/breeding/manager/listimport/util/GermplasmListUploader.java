@@ -376,7 +376,11 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     		} else if(header.equals(LIST_DATE_HEADER_LABEL)){
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
     			try{
-    				listDate = simpleDateFormat.parse(value);
+    				if(value != null && value.length() > 0){
+    					listDate = simpleDateFormat.parse(value);
+    				} else{
+    					listDate = null;
+    				}
     			} catch(ParseException ex){
     				showInvalidFileError("LIST DATE has wrong format. Please follow the format - yyyyMMdd.");
     				return;
