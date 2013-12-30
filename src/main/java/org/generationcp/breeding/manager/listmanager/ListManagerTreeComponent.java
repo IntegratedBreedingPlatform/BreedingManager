@@ -80,7 +80,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     private Button deleteFolderBtn;
     private Button renameFolderBtn;
     
-    private Integer selectedListId;
+    private Object selectedListId;
     
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
     	this.listManagerMain = listManagerMain;
@@ -120,7 +120,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		}
     	
 		germplasmListTree = new Tree();
-		germplasmListTree.setImmediate(true);
 		
 		refreshButton = new Button();
 		refreshButton.setData(REFRESH_BUTTON_ID);
@@ -150,7 +149,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolder(selectedListId);
+				germplasmListTreeUtil.renameFolder(Integer.valueOf(selectedListId.toString()));
             }
         });
         
@@ -159,6 +158,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         addFolderBtn.setDescription("Add New Folder");
         addFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
         addFolderBtn.setWidth("40px");
+        addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -178,7 +178,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolder(selectedListId);
+				germplasmListTreeUtil.deleteFolder(Integer.valueOf(selectedListId.toString()));
             }
         });
         
@@ -253,6 +253,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             }
         });
 
+        germplasmListTree.setImmediate(true);
+        
         if (this.listManagerMain != null){
         	germplasmListTreeUtil = new GermplasmListTreeUtil(getWindow(), germplasmListTree);
         }
@@ -365,21 +367,37 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	}
     }
     
+    public void updateButtons(Object itemId){
+    	
+    	try {
+			if(Integer.valueOf(itemId.toString())>0){
+				addFolderBtn.setEnabled(false);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+			} else {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(true);
+				deleteFolderBtn.setEnabled(true);
+			}
+    	} catch(NumberFormatException e) {
+    		if(itemId.toString().equals("CENTRAL")) {
+				addFolderBtn.setEnabled(false);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+    		} else {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(true);
+				deleteFolderBtn.setEnabled(true);
+    		}
+    	}
+    }
+    	
+    
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
 
         try {
-        	
-        	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId); 
-        	// no buttons to toggle for Select List pop-up windows
-        	if (listManagerMain != null){
-        		if(germplasmList.getType().equalsIgnoreCase("FOLDER") && germplasmListId<0){
-        			renameFolderBtn.setEnabled(true);
-        			deleteFolderBtn.setEnabled(true);
-        		} else {
-        			renameFolderBtn.setEnabled(false);
-        			deleteFolderBtn.setEnabled(false);
-        		}
-        	}
+    		
+        	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         	
         	selectedListId = germplasmListId;
         	

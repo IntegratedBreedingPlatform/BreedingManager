@@ -41,20 +41,23 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
         if (source instanceof ListManagerTreeComponent) {
         	String item = event.getItemId().toString();
         	//System.out.println("item: " + item);
-        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
-        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
-                if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-                    try {
-                        ((ListManagerTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
-                    } catch (InternationalizableException e) {
-                        LOG.error(e.toString() + "\n" + e.getStackTrace());
-                        e.printStackTrace();
-                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-                    }
-                }
-        	} else{
-        		((ListManagerTreeComponent) source).expandOrCollapseListTreeNode(item);
-        	}
+        	
+            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
+	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
+	            
+	                    try {
+	                        ((ListManagerTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
+	                    } catch (InternationalizableException e) {
+	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                        e.printStackTrace();
+	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	                    }
+	        	} else{
+	        		((ListManagerTreeComponent) source).expandOrCollapseListTreeNode(item);
+	        	}
+            	((ListManagerTreeComponent) source).updateButtons(event.getItemId());
+            }
         }
         
         if (source instanceof AddEntryDialog) {

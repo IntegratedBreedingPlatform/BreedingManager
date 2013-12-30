@@ -188,6 +188,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
         Label l = new Label("Folder Name");
         final TextField name = new TextField();
+        name.setMaxLength(50);
 
         formContainer.addComponent(l);
         formContainer.addComponent(name);
@@ -206,6 +207,14 @@ public class GermplasmListTreeUtil implements Serializable {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Integer newFolderId = null;
+                
+                if(name.getValue().toString().replace(" ","").equals("")){
+                	MessageNotifier.showWarning(source.getWindow(),
+                            messageSource.getMessage(Message.INVALID_INPUT), 
+                            messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
+                	return;
+                }
+                
                 GermplasmList newFolder = new GermplasmList();
                 try {
                 	
@@ -234,7 +243,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	
 	            	} else {
 	        			MessageNotifier.showWarning(source.getWindow(),
-	                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+	                            messageSource.getMessage(Message.INVALID_INPUT), 
 	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
 	            	}
                 	
@@ -299,7 +308,23 @@ public class GermplasmListTreeUtil implements Serializable {
 
     
     public void renameFolder(final Integer listId){
-        final Window w = new Window("Rename folder");
+
+    	GermplasmList germplasmList = null;
+        try {
+			germplasmList = germplasmListManager.getGermplasmListById(listId);
+		} catch (MiddlewareQueryException e1) {
+			e1.printStackTrace();
+		}
+    	
+        final Window w = new Window();
+        
+    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
+    		w.setCaption("Rename Folder");
+    	} else {
+    		w.setCaption("Rename List");
+    	}
+    	
+        
         w.setWidth("300px");
         w.setHeight("150px");
         w.setModal(true);
@@ -313,15 +338,16 @@ public class GermplasmListTreeUtil implements Serializable {
         HorizontalLayout formContainer = new HorizontalLayout();
         formContainer.setSpacing(true);
 
-        Label l = new Label("Folder Name");
-        final TextField name = new TextField();
+        Label l = new Label();
+        
+    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
+    		l.setCaption("Folder Name");
+    	} else {
+    		l.setCaption("List Name");
+    	}
 
-        GermplasmList germplasmList = null;
-        try {
-			germplasmList = germplasmListManager.getGermplasmListById(listId);
-		} catch (MiddlewareQueryException e1) {
-			e1.printStackTrace();
-		}
+        final TextField name = new TextField();
+        name.setMaxLength(50);
         
         if(germplasmList!=null){
         	name.setValue(germplasmList.getName());
@@ -344,6 +370,14 @@ public class GermplasmListTreeUtil implements Serializable {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Integer newItem = null;
+                
+                if(name.getValue().toString().replace(" ","").equals("")){
+                	MessageNotifier.showWarning(source.getWindow(),
+                            messageSource.getMessage(Message.INVALID_INPUT), 
+                            messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
+                	return;
+                }
+                
                 try {
                 	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
                 	
@@ -365,7 +399,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                    targetTree.select(listId);
                 	} else {
             			MessageNotifier.showWarning(source.getWindow(),
-                                messageSource.getMessage(Message.ERROR_INTERNAL), 
+                                messageSource.getMessage(Message.INVALID_INPUT), 
                                 messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
                 	}
                 	
