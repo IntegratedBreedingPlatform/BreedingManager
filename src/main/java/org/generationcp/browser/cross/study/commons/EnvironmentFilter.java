@@ -249,6 +249,12 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       environmentsTable.setColumnCollapsingAllowed(true);
 	       environmentsTable.setColumnReorderingAllowed(true);
 	       
+	       tablePanel = new Panel();
+	       tablePanel.setWidth("960px");
+	       tablePanel.setHeight("370px");
+	       
+	       tableLayout = new AbsoluteLayout();
+	       
 	       if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
 	    	   Set<TraitInfo> traitInfos = new HashSet<TraitInfo>();
 	    	   createEnvironmentsTable(traitInfos);
@@ -257,13 +263,6 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    	   createEnvironmentsTable();
 //		       populateEnvironmentsTable();
 	       }
-	       
-	       tablePanel = new Panel();
-	       tablePanel.setWidth("960px");
-	       tablePanel.setHeight("370px");
-	       
-	       
-	       tableLayout = new AbsoluteLayout();
 	       
 	       tableLayout.addComponent(environmentsTable, "top:0px;left:0px");
 	       //addComponent(environmentsTable, "top:110px;left:20px");
@@ -356,15 +355,28 @@ private static final long serialVersionUID = -3667517088395779496L;
         
         environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
         
+        int tableWidth = 960;
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
             environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
+            tableWidth += 120;
             tableColumnSize++;
         }
         
         environmentsTable.addContainerProperty(WEIGHT_COLUMN_ID, ComboBox.class, null);
         environmentsTable.setColumnHeader(WEIGHT_COLUMN_ID, "WEIGHT");
         tableColumnSize++;
+        
+        environmentsTable.setColumnWidth(TAG_COLUMN_ID, 41);
+		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 400);
+		environmentsTable.setColumnWidth(COUNTRY_COLUMN_ID, 76);
+		environmentsTable.setColumnWidth(STUDY_COLUMN_ID, 108);
+		environmentsTable.setColumnWidth(WEIGHT_COLUMN_ID, 178);
+		
+		String width = String.valueOf(tableWidth) + "px";
+		tableLayout.setWidth(width);
+		environmentsTable.setWidth("100%");
+		
 	}
 	
 	private void createEnvironmentsTable() {
@@ -393,11 +405,16 @@ private static final long serialVersionUID = -3667517088395779496L;
 		environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
 		tableColumnSize = 5;
 		
-		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
-		
 		environmentsTable.addContainerProperty(WEIGHT_COLUMN_ID, ComboBox.class, null);
 		environmentsTable.setColumnHeader(WEIGHT_COLUMN_ID, "WEIGHT");
 		tableColumnSize++;
+		
+		environmentsTable.setColumnWidth(TAG_COLUMN_ID, 41);
+		environmentsTable.setColumnWidth(ENV_NUMBER_COLUMN_ID, 60);
+		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 400);
+		environmentsTable.setColumnWidth(COUNTRY_COLUMN_ID, 76);
+		environmentsTable.setColumnWidth(STUDY_COLUMN_ID, 108);
+		environmentsTable.setColumnWidth(WEIGHT_COLUMN_ID, 178);
 	}
 
 	public void populateEnvironmentsTable(List<TraitForComparison> traitForComparisonsListTemp,
@@ -1124,7 +1141,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
 		String width = String.valueOf(tableWidth) + "px";
 		tableLayout.setWidth(width);
-		environmentsTable.setWidth(width);
+		environmentsTable.setWidth("100%");
 		tablePanel.requestRepaint();
 	}
 	
