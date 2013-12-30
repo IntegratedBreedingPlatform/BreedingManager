@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItem
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -75,7 +76,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		
 		matchingListsLabel = new Label();
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
-		matchingListsLabel.addStyleName("gcp-content-title");
+		matchingListsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
 		
 		matchingListsDescription = new Label();
 		matchingListsDescription.setValue(messageSource.getMessage(Message.SELECT_A_LIST_TO_VIEW_THE_DETAILS));
@@ -92,7 +93,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
-		matchingGermplasmsLabel.addStyleName("gcp-content-title");
+		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
 		
 		matchingGermplasmsDescription = new Label();
 		matchingGermplasmsDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
