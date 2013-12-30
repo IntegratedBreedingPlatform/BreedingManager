@@ -370,24 +370,34 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     public void updateButtons(Object itemId){
     	
     	try {
+    		//If any of the central lists/folders is selected
 			if(Integer.valueOf(itemId.toString())>0){
 				addFolderBtn.setEnabled(false);
 				renameFolderBtn.setEnabled(false);
 				deleteFolderBtn.setEnabled(false);
-			} else {
+    		//If any of the local folders is selected
+			} else if(Integer.valueOf(itemId.toString())<=0 && isFolder(itemId)){
 				addFolderBtn.setEnabled(true);
 				renameFolderBtn.setEnabled(true);
 				deleteFolderBtn.setEnabled(true);
+			//The rest of the local lists
+			} else {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(true);
+				deleteFolderBtn.setEnabled(false);
 			}
     	} catch(NumberFormatException e) {
+    		//If selected item is "Shared Lists"
     		if(itemId.toString().equals("CENTRAL")) {
 				addFolderBtn.setEnabled(false);
 				renameFolderBtn.setEnabled(false);
 				deleteFolderBtn.setEnabled(false);
-    		} else if(itemId.toString().equals(CENTRAL) || itemId.toString().equals(LOCAL)) {
+			//If selected item is "Program Lists"
+    		} else if(itemId.toString().equals(LOCAL)) {
 				addFolderBtn.setEnabled(true);
 				renameFolderBtn.setEnabled(false);
 				deleteFolderBtn.setEnabled(false);
+			//Any non-numeric itemID (nothing goes here as of the moment)
     		} else {
 				addFolderBtn.setEnabled(true);
 				renameFolderBtn.setEnabled(true);
@@ -461,6 +471,24 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     private boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException{
         boolean isFolder = list.getType().equalsIgnoreCase("FOLDER");
         return isFolder && !hasChildList(list.getId());
+    }
+    
+    private boolean isFolder(Object itemId){
+    	try {
+    		int listId = Integer.valueOf(itemId.toString());
+    		GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+    		if(germplasmList==null)
+    			return false;
+    		return germplasmList.getType().equalsIgnoreCase("FOLDER");
+    	} catch (MiddlewareQueryException e){
+    		return false;
+    	} catch (NumberFormatException e){
+    		if(listId.toString().equals(LOCAL) || listId.toString().equals(CENTRAL)){
+    			return true;
+    		} else {
+    			return false;
+    		}
+    	}
     }
     
     public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
