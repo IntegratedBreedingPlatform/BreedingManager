@@ -36,7 +36,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnResizeEvent;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -91,6 +93,9 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     private CheckBox tagUnTagAll;
     
+    private Panel tablePanel;
+    private AbsoluteLayout tableLayout;
+    
     public TraitsAvailableComponent(HeadToHeadCrossStudyMain mainScreen, EnvironmentFilter nextScreen){
         this.mainScreen = mainScreen;
         this.nextScreen = nextScreen;
@@ -110,9 +115,16 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         selectTraitReminderLabel.setStyleName("gcp-bold-italic");
         addComponent(selectTraitReminderLabel, "top:20px;left:400px");
         
+		tablePanel = new Panel();
+		tablePanel.setWidth("950px");
+		tablePanel.setHeight("400px");
+		
+		tableLayout = new AbsoluteLayout();
+		tableLayout.setWidth("950px");
+		
         traitsTable = new Table();
         traitsTable.setWidth("950px");
-        traitsTable.setHeight("400px");
+        traitsTable.setHeight("380px");
         traitsTable.setImmediate(true);
         
         traitsTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
@@ -127,20 +139,42 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         traitsTable.setColumnHeader(NUMBER_OF_ENV_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_NO_OF_ENVS));        
         traitsTable.setColumnHeader(DIRECTION_COLUMN_ID, messageSource.getMessage(Message.HEAD_TO_HEAD_DIRECTION));
         
+        
         traitsTable.setColumnWidth(TAG_COLUMN_ID, 50);        
         traitsTable.setColumnWidth(TRAIT_COLUMN_ID, 150);
         traitsTable.setColumnWidth(TRAIT_DESCRIPTION_COLUMN_ID, 310);
         traitsTable.setColumnWidth(NUMBER_OF_ENV_COLUMN_ID, 155);
         traitsTable.setColumnWidth(DIRECTION_COLUMN_ID, 200);        
         
-        addComponent(traitsTable, "top:40px;left:30px");
+        
+        //addComponent(traitsTable, "top:40px;left:30px");
+        tableLayout.addComponent(traitsTable,"top:0px;left:0px");
+        
+        traitsTable.addListener(new Table.ColumnResizeListener() {
+			
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void columnResize(ColumnResizeEvent event) {
+				int diff = event.getCurrentWidth() - event.getPreviousWidth();
+				float newWidth = diff + traitsTable.getWidth();
+				
+				String widthPx = String.valueOf(newWidth) + "px";
+				traitsTable.setWidth(widthPx);
+				tableLayout.setWidth(widthPx);
+			}
+		});
         
         tagUnTagAll = new CheckBox();
         tagUnTagAll.setValue(false);
         tagUnTagAll.setImmediate(true);
         tagUnTagAll.setData(TAG_ALL);
         tagUnTagAll.addListener(new HeadToHeadCrossStudyMainValueChangeListener(this, true));
-        addComponent(tagUnTagAll, "top:44px;left:60px");
+        //addComponent(tagUnTagAll, "top:44px;left:60px");
+        tableLayout.addComponent(tagUnTagAll,"top:4px;left:30px");
+        
+        tablePanel.setContent(tableLayout);
+        addComponent(tablePanel, "top:40px;left:30px");
         
         nextButton = new Button("Next");
         nextButton.setData(NEXT_BUTTON_ID);
