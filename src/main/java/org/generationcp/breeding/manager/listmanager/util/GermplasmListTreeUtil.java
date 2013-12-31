@@ -232,6 +232,7 @@ public class GermplasmListTreeUtil implements Serializable {
                 }
 
                 GermplasmList newFolder = new GermplasmList();
+                GermplasmList parentList = null;
                 try {
                 	
                 	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
@@ -250,10 +251,14 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setUserId(ibdbUserId);
 	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
 	                	
-	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null)
+	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null) {
 	                        newFolder.setParent(null);
-	                    else
+	                    } else if (!source.isFolder(parentItemId)) {
+	                    	parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
+	                        newFolder.setParent(germplasmListManager.getGermplasmListById(parentList.getParentId()));
+	                    } else {
 	                        newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
+	                    }
 	                	
 	                	newFolderId = germplasmListManager.addGermplasmList(newFolder);
 	                	
@@ -284,13 +289,6 @@ public class GermplasmListTreeUtil implements Serializable {
                     targetTree.setChildrenAllowed(newFolderId, true);
                     
                     source.setSelectedListId(newFolderId);
-                    
-                    GermplasmList parentList = null;
-    		        try {
-    					parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
-    				} catch (MiddlewareQueryException e) {
-    				} catch (ClassCastException e) {
-    				}
     		        
                     //If parent of list does not exist
     		        if (parentList==null && !source.isFolder(parentItemId)){

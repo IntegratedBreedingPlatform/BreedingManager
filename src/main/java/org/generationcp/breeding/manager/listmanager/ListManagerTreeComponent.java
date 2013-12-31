@@ -409,7 +409,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
 
-    	System.out.println("Clicked "+germplasmListId);
         try {
     		
         	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
