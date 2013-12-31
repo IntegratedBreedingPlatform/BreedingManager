@@ -409,6 +409,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
 
+    	System.out.println("Clicked "+germplasmListId);
         try {
     		
         	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
@@ -483,7 +484,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	} catch (MiddlewareQueryException e){
     		return false;
     	} catch (NumberFormatException e){
-    		if(listId.toString().equals(LOCAL) || listId.toString().equals(CENTRAL)){
+    		if(listId!=null && (listId.toString().equals(LOCAL) || listId.toString().equals(CENTRAL))){
     			return true;
     		} else {
     			return false;

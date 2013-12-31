@@ -125,6 +125,7 @@ public class GermplasmListTreeUtil implements Serializable {
         
         //apply to UI
         if(targetItemId==null || targetTree.getItem(targetItemId)==null){
+        	targetTree.setChildrenAllowed(sourceItemId, true);
         	targetTree.setParent(sourceItemId, ListManagerTreeComponent.LOCAL);
         	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
 		} else {
@@ -168,12 +169,12 @@ public class GermplasmListTreeUtil implements Serializable {
 				//Dropped on a folder
 		        } else if (location == VerticalDropLocation.MIDDLE && targetList.getType().equals("FOLDER")){
 	        		setParent(sourceItemId, targetItemId);
-		        //Dropped on a list with parent = LOCAL
-		        } else if (targetList.getParentId()==0){
-		        	setParent(sourceItemId, "LOCAL");
-		        //Dropped on a list with parent != LOCAL (subfolder)
+		        //Dropped on a list with parent != LOCAL
+		        } else if (targetList!=null && targetList.getParentId()>=0){
+		        	setParent(sourceItemId, targetList.getParentId());
+		        //Dropped on a list with parent == LOCAL 
 				} else {
-					setParent(sourceItemId, targetList.getParentId());
+					setParent(sourceItemId, "LOCAL");
 				}
 			}
 
@@ -281,6 +282,7 @@ public class GermplasmListTreeUtil implements Serializable {
                     targetTree.addItem(newFolderId);
                     targetTree.setItemCaption(newFolderId, name.getValue().toString());
                     targetTree.setChildrenAllowed(newFolderId, true);
+                    
                     source.setSelectedListId(newFolderId);
                     
                     GermplasmList parentList = null;
@@ -290,20 +292,27 @@ public class GermplasmListTreeUtil implements Serializable {
     				} catch (ClassCastException e) {
     				}
     		        
-                    //If parent list does not exist
-    		        if (parentList==null){
+                    //If parent of list does not exist
+    		        if (parentList==null && !source.isFolder(parentItemId)){
+    		        	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
     		        	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
-    		        //If parent list is root node
-    		        } else if (parentList!=null && (parentList.getParentId()==null || parentList.getParentId()==0)){
+    		        //If parent of list is root node
+    		        } else if (parentList!=null && !source.isFolder(parentItemId) && (parentList.getParentId()==null || parentList.getParentId()==0)){
+    		        	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
         		        targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
                     //If folder
     		        } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
-                        targetTree.setParent(newFolderId, parentItemId);
+    		        	targetTree.setChildrenAllowed(parentItemId, true);
+                        Boolean parentSet = targetTree.setParent(newFolderId, parentItemId);
+                        if(!parentSet)
+                        	parentSet = targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
                     //If list, add to parent
                     } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null) {
+                    	targetTree.setChildrenAllowed(parentList.getParentId(), true);
                     	targetTree.setParent(newFolderId, parentList.getParentId());
                     //All else, add to LOCAL list
                     } else {
+                    	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
                     	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
                     }
 
