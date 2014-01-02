@@ -1135,7 +1135,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     }
     
     private void resizeEnviromentTable(Set<TrialEnvironmentProperty> columns) {
-    	int tableWidth = 960;
+    	float tableWidth = environmentsTable.getWidth();
     	
     	for(int i = 0; i < columns.size(); i++){
     		tableWidth += 133;
@@ -1155,7 +1155,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
 		String width = String.valueOf(tableWidth) + "px";
 		tableLayout.setWidth(width);
-		environmentsTable.setWidth("100%");
+		environmentsTable.setWidth(width);
 		tablePanel.requestRepaint();
 	}
 	
