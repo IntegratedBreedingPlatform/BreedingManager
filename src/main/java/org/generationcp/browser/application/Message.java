@@ -343,4 +343,6 @@ public enum Message {
      ,PROGRAM_STUDIES
      ,PUBLIC_STUDIES
      ,PROJECT_STUDIES
+     ,ALL_TRAITS_DROPPED_WARNING
+     ,WARNING
 }

@@ -3,8 +3,12 @@ package org.generationcp.browser.cross.study.adapted.main;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.impl.NumFacetImpl;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
+import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
@@ -12,6 +16,7 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForCompari
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -161,10 +166,21 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 			}
 		}
 		
-		this.mainScreen.selectThirdTab();
+		List<NumericTraitFilter> numericFilters = numericSection.getFilters();
+		List<CharacterTraitFilter> characterFilters = characterSection.getFilters();
+		List<CategoricalTraitFilter> categoricalFilters = categoricalVariatesSection.getFilters();
 		
-		this.nextScreen.populateResultsTable(environmentsForComparisonList,numericSection.getFilters(),
-				characterSection.getFilters(),categoricalVariatesSection.getFilters());
+		// Do not allow user to proceed if all traits dropped
+		if (numericSection.allTraitsDropped() && characterSection.allTraitsDropped() 
+				&& categoricalVariatesSection.allTraitsDropped()){
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
+					messageSource.getMessage(Message.ALL_TRAITS_DROPPED_WARNING));
+			
+		} else {
+			this.mainScreen.selectThirdTab();
+			this.nextScreen.populateResultsTable(environmentsForComparisonList,numericFilters,
+					characterFilters,categoricalFilters);
+		}
 	}
 	
 
@@ -174,6 +190,8 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		super.attach();
 		updateLabels();
 	}
+	
+	
 
 
 }

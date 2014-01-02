@@ -62,6 +62,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 
 	private List<Integer> environmentIds = null;
 	private List<Field> fieldsToValidate = new ArrayList<Field>();
+	private List<NumericTraitFilter> filters;
 	
 	private int numericTraitCount;
 	private boolean emptyMessageShown = false;
@@ -205,7 +206,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 	
 	@SuppressWarnings("unchecked")
 	public List<NumericTraitFilter> getFilters(){
-		List<NumericTraitFilter> toreturn = new ArrayList<NumericTraitFilter>();
+		this.filters = new ArrayList<NumericTraitFilter>();
 		
 		Collection<NumericTraitInfo> traitInfoObjects = (Collection<NumericTraitInfo>) this.traitsTable.getContainerDataSource().getItemIds();
 		for(NumericTraitInfo traitInfo : traitInfoObjects){
@@ -223,7 +224,7 @@ public class NumericTraitsSection extends VerticalLayout implements
 			if(condition != NumericTraitCriteria.DROP_TRAIT && priority != TraitWeight.IGNORED){
 				if(condition == NumericTraitCriteria.KEEP_ALL){
 					NumericTraitFilter filter = new NumericTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
-					toreturn.add(filter);
+					this.filters.add(filter);
 				} else{
 					if(limitsString != null && limitsString.length() > 0){
 						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
@@ -235,14 +236,13 @@ public class NumericTraitsSection extends VerticalLayout implements
 						}
 						
 						NumericTraitFilter filter = new NumericTraitFilter(traitInfo, condition, givenLimits, priority);
-						toreturn.add(filter);
+						this.filters.add(filter);
 					}
 				}
 				
 			}
 		}
-		
-		return toreturn;
+		return this.filters;
 	}
 	
 
@@ -278,6 +278,23 @@ public class NumericTraitsSection extends VerticalLayout implements
 			return width;
 		}
 		
+	}
+	
+	/*
+	 * If at least one trait is NOT dropped, allow to proceed
+	 */
+	public boolean allTraitsDropped(){
+		if (this.filters == null){
+			this.filters = getFilters();
+		}
+		if (!this.filters.isEmpty()){
+			for (NumericTraitFilter filter: this.filters){
+				if (!NumericTraitCriteria.DROP_TRAIT.equals(filter.getCondition())){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }
