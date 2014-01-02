@@ -130,7 +130,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             }
             tab.setClosable(true);
             
-            parentLayout.addComponent(new Label("<style> .v-shadow, .v-tooltip { display:none !important; } </style>", Label.CONTENT_XHTML));
+            //parentLayout.addComponent(new Label("<style> .v-shadow, .v-tooltip { display:none !important; } </style>", Label.CONTENT_XHTML));
             
             if(detailsTabSheet.getComponentCount() <= 1){
             	initializeLayout();
