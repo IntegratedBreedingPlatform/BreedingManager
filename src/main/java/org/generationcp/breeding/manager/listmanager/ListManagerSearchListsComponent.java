@@ -133,8 +133,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
-        searchBar.addComponent(searchButton, "top:8px; left:255px;");
-        searchBar.addComponent(popup, "top:14px; left:285px;");
+        searchBar.addComponent(searchButton, "top:8px; left:280px;");
+        searchBar.addComponent(popup, "top:14px; left:310px;");
         
 
         
