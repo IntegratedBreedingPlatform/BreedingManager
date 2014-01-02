@@ -175,7 +175,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         breedingMethodComboBox.setImmediate(true);
         breedingMethodComboBox.addListener(new MethodValueChangeListener(breedingMethodComboBox, methodMap));
-        addComponent(breedingMethodComboBox, "top:10px;left:200px");
+        addComponent(breedingMethodComboBox, "top:10px;left:220px");
         
         germplasmDateLabel = new Label();
         addComponent(germplasmDateLabel, "top:60px;left:20px");
@@ -184,7 +184,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
         germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);
         germplasmDateField.setValue(new Date());
-        addComponent(germplasmDateField, "top:40px;left:200px");
+        addComponent(germplasmDateField, "top:40px;left:220px");
         
         locationLabel = new Label();
         addComponent(locationLabel, "top:90px;left:20px");
@@ -214,7 +214,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         }
         locationComboBox.setImmediate(true);
         
-        addComponent(locationComboBox, "top:70px;left:200px");
+        addComponent(locationComboBox, "top:70px;left:220px");
         
         nameTypeLabel = new Label();
         addComponent(nameTypeLabel, "top:120px;left:20px");
@@ -242,7 +242,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
         nameTypeComboBox.setImmediate(true);
 
-        addComponent(nameTypeComboBox, "top:100px;left:200px");
+        addComponent(nameTypeComboBox, "top:100px;left:220px");
         
         germplasmDetailsLabel = new Label();
         addComponent(germplasmDetailsLabel, "top:150px;left:20px");
