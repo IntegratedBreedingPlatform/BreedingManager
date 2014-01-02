@@ -415,7 +415,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             try {
                 listExporter.exportGermplasmListExcel(tempFileName);
                 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                fileDownloadResource.setFilename(listName + ".xls");
+                fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
     
                 //Window downloadWindow = new Window();
                 //downloadWindow.setWidth(0);
@@ -467,7 +467,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 try {
                         listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
                         FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                        fileDownloadResource.setFilename(listName + "ForGenotyping.xls");
+                        fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
     
                         this.getWindow().open(fileDownloadResource);
     
