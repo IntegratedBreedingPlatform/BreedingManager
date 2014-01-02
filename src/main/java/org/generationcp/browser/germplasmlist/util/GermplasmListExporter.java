@@ -89,7 +89,7 @@ public class GermplasmListExporter {
         
         try {
             //write the excel file
-            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            FileOutputStream fileOutputStream = new FileOutputStream(filename.replace(" ", "_"));
             wb.write(fileOutputStream);
             fileOutputStream.close();
             return fileOutputStream;
