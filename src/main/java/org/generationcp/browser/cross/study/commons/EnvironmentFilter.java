@@ -368,12 +368,11 @@ private static final long serialVersionUID = -3667517088395779496L;
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
         tableColumnSize = 4;
         
-        environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
-        
         int tableWidth = 960;
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
             environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
+            environmentsTable.setColumnWidth(traitInfo.getId(), 120);
             tableWidth += 120;
             tableColumnSize++;
         }
@@ -390,7 +389,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		
 		String width = String.valueOf(tableWidth) + "px";
 		tableLayout.setWidth(width);
-		environmentsTable.setWidth("100%");
+		environmentsTable.setWidth(width);
 		
 	}
 	
