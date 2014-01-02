@@ -9,6 +9,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -27,6 +28,7 @@ import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
@@ -41,7 +43,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = 5314653969843976836L;
 	public static final String SEARCH_BUTTON = "List Manager Search Button";
-	private static final String GUIDE = "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full) <br/><br/><b>Matching lists would contain</b> <br/>  - Lists with names containing the search query <br/>  - Lists containing germplasms given a GID <br/>  - Lists containing germplasms with names <br/> containing the search query <br/><br/><b>Matching germplasms would contain</b> <br/>  - Germplasms with matching GID's <br/>  - Germplasms with name containing search query <br/>  - Parents of the result germplasms ";
+	private static final String GUIDE = "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full) <br/><br/><b>Matching lists would contain</b> <br/>  - Lists with names containing the search query <br/>  - Lists containing germplasms given a GID <br/>  - Lists containing germplasms with names <br/> containing the search query <br/><br/><b>Matching germplasms would contain</b> <br/>  - Germplasms with matching GID's <br/>  - Germplasms with name containing search query <br/>  - Parents of the result germplasms <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked) or to only return results which match the query exactly (when checked).";
 	
 	private AbsoluteLayout searchBar;
 	private Label searchLabel;
@@ -49,6 +51,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	private SearchResultsComponent searchResultsComponent;
 	private ListManagerMain listManagerMain;
 	private Button searchButton;
+    private CheckBox likeOrEqualCheckBox;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
@@ -131,12 +134,15 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         PopupView popup = new PopupView(" ? ",descLbl);
         popup.setStyleName("gcp-popup-view");
         
+        
+        likeOrEqualCheckBox = new CheckBox();
+        likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
+        
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
         searchBar.addComponent(searchButton, "top:8px; left:280px;");
         searchBar.addComponent(popup, "top:14px; left:310px;");
-        
-
+        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
         
         searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
@@ -159,8 +165,17 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	
 	public void doSearch(String q){
 		try {
-			List<GermplasmList> germplasmLists = doGermplasmListSearch(q);
-			List<Germplasm> germplasms = doGermplasmSearch(q);
+			
+			List<GermplasmList> germplasmLists;
+			List<Germplasm> germplasms;
+			if((Boolean) likeOrEqualCheckBox.getValue() == true){
+				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
+				germplasms = doGermplasmSearch(q, Operation.EQUAL);
+			} else {
+				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
+				germplasms = doGermplasmSearch(q, Operation.LIKE);
+			}
+			
 			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
 					(germplasms == null || germplasms.isEmpty())){
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
@@ -176,12 +191,12 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		
 	}
 	
-	private List<GermplasmList> doGermplasmListSearch(String q) throws MiddlewareQueryException{
-		return germplasmListManager.searchForGermplasmList(q);
+	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
+		return germplasmListManager.searchForGermplasmList(q, o);
 	}
 	
-	private List<Germplasm> doGermplasmSearch(String q) throws MiddlewareQueryException{
-		return germplasmDataManager.searchForGermplasm(q);
+	private List<Germplasm> doGermplasmSearch(String q, Operation o) throws MiddlewareQueryException{
+		return germplasmDataManager.searchForGermplasm(q, o);
 	}	
 	
 	public SearchResultsComponent getSearchResultsComponent(){

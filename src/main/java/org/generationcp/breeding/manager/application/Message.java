@@ -309,6 +309,7 @@ public enum Message{
     ,SEARCH_RESULTS
     ,NO_SEARCH_RESULTS
     ,TOTAL_LIST_ENTRIES
+    ,EXACT_MATCHES_ONLY
     
     //General error msg
     ,ERROR_REPORT_TO
