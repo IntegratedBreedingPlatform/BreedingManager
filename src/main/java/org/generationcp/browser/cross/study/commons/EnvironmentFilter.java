@@ -1165,6 +1165,9 @@ private static final long serialVersionUID = -3667517088395779496L;
 				String existingColumn = this.environmentsTable.getColumnHeader(columnHeader);
 				if (existingColumn != null && !existingColumn.isEmpty()){
 					this.environmentsTable.removeGeneratedColumn(columnHeader);
+					float previousWidth = environmentsTable.getWidth() - 133;
+					String width = String.valueOf(previousWidth) + "px";
+					environmentsTable.setWidth(width);
 				}
 			}
 		}
