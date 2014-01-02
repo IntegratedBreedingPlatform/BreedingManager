@@ -11,8 +11,10 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.listeners.CharacterTraitLimitsValueChangeListener;
 import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
+import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -69,6 +71,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	
 	private int characterTraitCount;
 	private boolean emptyMessageShown = false;
+	private List<CharacterTraitFilter> filters;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -213,7 +216,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	
 	@SuppressWarnings("unchecked")
 	public List<CharacterTraitFilter> getFilters(){
-		List<CharacterTraitFilter> toreturn = new ArrayList<CharacterTraitFilter>();
+		this.filters = new ArrayList<CharacterTraitFilter>();
 		
 		Collection<CharacterTraitInfo> traitInfoObjects = (Collection<CharacterTraitInfo>) this.traitsTable.getItemIds();
 		for(CharacterTraitInfo traitInfo : traitInfoObjects){
@@ -231,7 +234,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 			if(condition != CharacterTraitCondition.DROP_TRAIT && priority != TraitWeight.IGNORED){
 				if(condition == CharacterTraitCondition.KEEP_ALL){ 
 					CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
-					toreturn.add(filter);
+					this.filters.add(filter);
 				} else {
 					if(limitsString != null && limitsString.length() > 0){
 						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
@@ -243,13 +246,30 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 						}
 						
 						CharacterTraitFilter filter = new CharacterTraitFilter(traitInfo, condition, givenLimits, priority);
-						toreturn.add(filter);
+						this.filters.add(filter);
 					}
 				}
 			}
 		}
 		
-		return toreturn;
+		return this.filters;
+	}
+	
+	/*
+	 * If at least one trait is NOT dropped, allow to proceed
+	 */
+	public boolean allTraitsDropped(){
+		if (this.filters == null){
+			this.filters = getFilters();
+		}
+		if (!this.filters.isEmpty()){
+			for (CharacterTraitFilter filter: this.filters){
+				if (!CharacterTraitCondition.DROP_TRAIT.equals(filter.getCondition())){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }

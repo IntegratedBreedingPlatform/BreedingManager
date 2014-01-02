@@ -11,8 +11,10 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
+import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.validators.CategoricalTraitLimitsValidator;
 import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
+import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -66,6 +68,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	private List<CategoricalTraitInfo> categoricalValueObjects;
 	private int categoricalTraitCount;
 	private boolean emptyMessageShown = false;
+	private List<CategoricalTraitFilter> filters;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -291,7 +294,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 
 	@SuppressWarnings("unchecked")
 	public List<CategoricalTraitFilter> getFilters(){
-		List<CategoricalTraitFilter> toreturn = new ArrayList<CategoricalTraitFilter>();
+		this.filters = new ArrayList<CategoricalTraitFilter>();
 		
 		Collection<CategoricalTraitInfo> traitInfoObjects = (Collection<CategoricalTraitInfo>) this.traitsTable.getItemIds();
 		for(CategoricalTraitInfo traitInfo : traitInfoObjects){
@@ -309,7 +312,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 			if(condition != CategoricalVariatesCondition.DROP_TRAIT && priority != TraitWeight.IGNORED){
 				if(condition == CategoricalVariatesCondition.KEEP_ALL){
 					CategoricalTraitFilter filter = new CategoricalTraitFilter(traitInfo, condition, new ArrayList<String>(), priority);
-					toreturn.add(filter);
+					this.filters.add(filter);
 				} else{
 					if(limitsString != null && limitsString.length() > 0){
 						StringTokenizer tokenizer = new StringTokenizer(limitsString, ",");
@@ -321,13 +324,30 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 						}
 						
 						CategoricalTraitFilter filter = new CategoricalTraitFilter(traitInfo, condition, givenLimits, priority);
-						toreturn.add(filter);
+						this.filters.add(filter);
 					}
 				}
 			}
 		}
 		
-		return toreturn;
+		return this.filters;
+	}
+	
+	/*
+	 * If at least one trait is NOT dropped, allow to proceed
+	 */
+	public boolean allTraitsDropped(){
+		if (this.filters == null){
+			this.filters = getFilters();
+		}
+		if (!this.filters.isEmpty()){
+			for (CategoricalTraitFilter filter: this.filters){
+				if (!CategoricalVariatesCondition.DROP_TRAIT.equals(filter.getCondition())){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }
