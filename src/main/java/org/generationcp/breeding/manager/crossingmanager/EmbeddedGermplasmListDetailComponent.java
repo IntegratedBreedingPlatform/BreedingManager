@@ -203,7 +203,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
             try {
                 exporter.exportCrossingManagerExcel(tempFileName);
                 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName() + ".xls");
+                fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName().replace(" ", "_") + ".xls");
     
                 this.getWindow().open(fileDownloadResource);
         

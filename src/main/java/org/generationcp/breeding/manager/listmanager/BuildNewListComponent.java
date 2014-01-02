@@ -847,7 +847,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             try {
                 listExporter.exportGermplasmListExcel(tempFileName);
                 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                fileDownloadResource.setFilename(listName + ".xls");
+                fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
     
                 this.getWindow().open(fileDownloadResource);
     
@@ -877,7 +877,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			try {
 			        listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
 			        FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-			        fileDownloadResource.setFilename(listName + "ForGenotyping.xls");
+			        fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
 			
 			    this.getWindow().open(fileDownloadResource);
 			

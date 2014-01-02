@@ -582,7 +582,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     try {
         exporter.exportNurseryTemplateManagerExcel(tempFileName);
         FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-        fileDownloadResource.setFilename(nurseryTemplateData.getFilename());
+        fileDownloadResource.setFilename(nurseryTemplateData.getFilename().replace(" ", "_"));
 
         this.getWindow().open(fileDownloadResource);
 
