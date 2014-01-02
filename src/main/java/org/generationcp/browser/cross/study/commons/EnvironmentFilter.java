@@ -60,6 +60,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.Table.ColumnResizeEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
@@ -154,7 +155,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     private CrossStudyToolType crossStudyToolType;
     
     private Panel tablePanel;
-    AbsoluteLayout tableLayout;
+    private AbsoluteLayout tableLayout;
     
     /*Constructors*/
     public EnvironmentFilter(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
@@ -248,6 +249,20 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       environmentsTable.setPageLength(11);
 	       environmentsTable.setColumnCollapsingAllowed(true);
 	       environmentsTable.setColumnReorderingAllowed(true);
+	       environmentsTable.addListener(new Table.ColumnResizeListener() {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void columnResize(ColumnResizeEvent event) {
+					int diff = event.getCurrentWidth() - event.getPreviousWidth();
+					float newWidth = diff + environmentsTable.getWidth();
+					
+					String widthPx = String.valueOf(newWidth) + "px";
+					environmentsTable.setWidth(widthPx);
+					tableLayout.setWidth(widthPx);
+				}
+			});
 	       
 	       tablePanel = new Panel();
 	       tablePanel.setWidth("960px");
@@ -353,12 +368,11 @@ private static final long serialVersionUID = -3667517088395779496L;
         environmentsTable.setColumnHeader(STUDY_COLUMN_ID, "STUDY");
         tableColumnSize = 4;
         
-        environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 417);
-        
         int tableWidth = 960;
         for(TraitInfo traitInfo : traitInfos){
             environmentsTable.addContainerProperty(traitInfo.getId(), Integer.class, null);
             environmentsTable.setColumnHeader(traitInfo.getId(), traitInfo.getName());
+            environmentsTable.setColumnWidth(traitInfo.getId(), 120);
             tableWidth += 120;
             tableColumnSize++;
         }
@@ -375,7 +389,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		
 		String width = String.valueOf(tableWidth) + "px";
 		tableLayout.setWidth(width);
-		environmentsTable.setWidth("100%");
+		environmentsTable.setWidth(width);
 		
 	}
 	
@@ -1121,7 +1135,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     }
     
     private void resizeEnviromentTable(Set<TrialEnvironmentProperty> columns) {
-    	int tableWidth = 960;
+    	float tableWidth = environmentsTable.getWidth();
     	
     	for(int i = 0; i < columns.size(); i++){
     		tableWidth += 133;
@@ -1141,7 +1155,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
 		String width = String.valueOf(tableWidth) + "px";
 		tableLayout.setWidth(width);
-		environmentsTable.setWidth("100%");
+		environmentsTable.setWidth(width);
 		tablePanel.requestRepaint();
 	}
 	
