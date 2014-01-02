@@ -224,7 +224,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         buttonArea.addComponent(cancelButton);
         buttonArea.addComponent(doneButton);
         
-        mainLayout.addComponent(buttonArea, "top:265px; left:650px;");
+        mainLayout.addComponent(buttonArea, "top:265px; left:505px;");
         
         this.setContent(mainLayout);
     }
@@ -262,7 +262,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     public void updateLabels() {
         selectGermplasmLabel.setCaption("Multiple Germplasm Records found with the name " + this.germplasmName);
         messageSource.setCaption(this, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
-        messageSource.setCaption(doneButton, Message.DONE_LABEL);
+        messageSource.setCaption(doneButton, Message.SELECT_HIGHLIGHTED_GERMPLASM);
         messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
     }
 
