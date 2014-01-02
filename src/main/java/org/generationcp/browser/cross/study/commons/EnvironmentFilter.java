@@ -30,6 +30,7 @@ import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.StudyReference;
@@ -962,7 +963,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	
 	public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
-    	List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
+    	final List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
 
     	int total = 0;
     	//get the total of weights
@@ -981,11 +982,28 @@ private static final long serialVersionUID = -3667517088395779496L;
     		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
-    	
-    	nextTabAction(toBeCompared);
+    	if (environmentForComparison.size() > 1000){
+			ConfirmDialog.show(getWindow(), "", messageSource.getMessage(Message.LOAD_TRAITS_CONFIRM), 
+					messageSource.getMessage(Message.OK_LABEL), 
+					messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+						
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()){
+								nextTabAction(toBeCompared);
+							}
+							
+						}
+					});
+		} else {
+			nextTabAction(toBeCompared);
+		}
     }
 	
 	public void nextTabAction(List<EnvironmentForComparison> toBeCompared){
+		
 		if(crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
 			this.nextScreen1.populateResultsTable(toBeCompared, germplasmIdNameMap, finalGermplasmPairs, observationMap);
 	        this.mainScreen1.selectFourthTab();
