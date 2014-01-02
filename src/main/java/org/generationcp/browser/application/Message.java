@@ -342,4 +342,5 @@ public enum Message {
      ,STUDIES
      ,PROGRAM_STUDIES
      ,PUBLIC_STUDIES
+     ,PROJECT_STUDIES
 }
