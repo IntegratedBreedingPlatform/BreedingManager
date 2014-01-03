@@ -167,7 +167,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 				
 				if(currentStudy!=null && isFolder(currentStudy.getId())){
 					return "listManagerTreeRegularParentNode";
-				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
+				} else if(currentStudy!=null && isFolder(currentStudy.getId())){
             		return "listManagerTreeRegularParentNode";
             	} else {
             		return "listManagerTreeRegularChildNode";
@@ -217,8 +217,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 					return "listManagerTreeRegularParentNode";
 				} else if(currentStudy!=null && isFolder(currentStudy.getId())){
 					return "listManagerTreeRegularParentNode";
-				} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
-            		return "listManagerTreeRegularParentNode";
+				//} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
+            	//	return "listManagerTreeRegularParentNode";
             	} else {
             		return "listManagerTreeRegularChildNode";
             	}
@@ -280,22 +280,13 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         		}
         	}
         	
-            Study study = this.studyDataManager.getStudy(studyId);
-            //don't show study details if study record is a Folder ("F")
-            String studyType = study.getType();
-            if (!hasChildStudy(studyId) && !isFolderType(studyType)){
+            if (!hasChildStudy(studyId) && !isFolder(studyId)){
                 createStudyInfoTab(studyId);
             }
             
             
         } catch (NumberFormatException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
-        } catch (MiddlewareQueryException e) {
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
-            MessageNotifier.showWarning(getWindow(), 
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID));
         } finally{
         	updateButtons(itemId);
         	selectedStudyTreeNodeId = itemId;
@@ -308,8 +299,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             if(study==null) {
             	return false;
         	} else {
-        		String studyType = study.getType();
-                if (!hasChildStudy(studyId) && !isFolderType(studyType)){
+                if (!hasChildStudy(studyId) && !isFolder(studyId)){
                     return true;
                 }
             	return false;
@@ -521,22 +511,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         return tabSheetStudy;
     }
 
-    private boolean isFolderType(String type){
-        if(type != null){
-            type = type.toLowerCase();
-            if(type.equals("f") || type.equals("folder")){
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return true;
-        }
-    }
-
-    
     public void showChild(Integer childItemId){
     	buildChildMap(childItemId,true);
     	Integer rootItemId = rootNodeProjectId;
