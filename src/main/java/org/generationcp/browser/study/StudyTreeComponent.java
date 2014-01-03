@@ -21,6 +21,7 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
+import org.generationcp.browser.study.util.StudyTreeUtil;
 import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -45,6 +46,7 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
@@ -70,12 +72,20 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private static TabSheet tabSheetStudy;
     private HorizontalLayout studyBrowserMainLayout;
     
+    private Label controlButtonsHeading;
+    private HorizontalLayout controlButtonsLayout;
+    private Button addFolderBtn;
+    private Button deleteFolderBtn;
+    private Button renameFolderBtn;
+    
     private Button refreshButton;
     
     private Database database;
     
     private Integer rootNodeProjectId;
     private Map<Integer, Integer> parentChildItemIdMap;
+    private Object selectedStudyTreeNodeId;
+    private StudyTreeUtil studyTreeUtil;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -246,7 +256,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
     }
     
-    private Boolean isFolder(Integer studyId) {
+    public Boolean isFolder(Integer studyId) {
         try {
             boolean isStudy = studyDataManager.isStudy(studyId);
             return !isStudy;
@@ -259,7 +269,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public void studyTreeItemClickAction(Object itemId) throws InternationalizableException{
     	
         try {
-        	expandOrCollapseListTreeNode(itemId);
+        	expandOrCollapseStudyTreeNode(itemId);
         	int studyId = Integer.valueOf(itemId.toString());
         	
         	if(database==null){
@@ -276,6 +286,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             if (!hasChildStudy(studyId) && !isFolderType(studyType)){
                 createStudyInfoTab(studyId);
             }
+            
+            
         } catch (NumberFormatException e) {
             LOG.error(e.toString() + "\n" + e.getStackTrace());
         } catch (MiddlewareQueryException e) {
@@ -284,6 +296,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID),
                     messageSource.getMessage(Message.ERROR_IN_GETTING_STUDY_DETAIL_BY_ID));
+        } finally{
+        	updateButtons(itemId);
+        	selectedStudyTreeNodeId = itemId;
         }
     }
 
@@ -404,6 +419,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         	studyTree = createStudyTree(database);
         } else {
         	studyTree = createCombinedStudyTree();
+        	initializeButtonPanel();
+        	addComponent(controlButtonsLayout);
         }
 
         // add tooltip
@@ -430,7 +447,63 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             addComponent(refreshButton);
         }
 
+        studyTreeUtil = new StudyTreeUtil(studyTree, this);
     }
+    
+    private void initializeButtonPanel() {
+    	controlButtonsHeading = new Label();
+		controlButtonsHeading.setValue(messageSource.getMessage(Message.PROJECT_STUDIES));
+		controlButtonsHeading.setStyleName(Bootstrap.Typography.H4.styleName());
+		
+		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
+        renameFolderBtn.setHtmlContentAllowed(true);
+        renameFolderBtn.setDescription("Rename Folder");
+        renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        renameFolderBtn.setWidth("40px");
+        renameFolderBtn.setEnabled(false);
+        renameFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				//TODO
+            }
+        });
+        
+        addFolderBtn = new Button("<span class='glyphicon glyphicon-plus' style='right: 2px'></span>");
+        addFolderBtn.setHtmlContentAllowed(true);
+        addFolderBtn.setDescription("Add New Folder");
+        addFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        addFolderBtn.setWidth("40px");
+        addFolderBtn.setEnabled(false);
+        addFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				studyTreeUtil.addFolder(selectedStudyTreeNodeId);
+            }
+        });
+        
+        deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='right: 2px'></span>");
+        deleteFolderBtn.setHtmlContentAllowed(true);
+        deleteFolderBtn.setDescription("Delete Selected Folder");
+        deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
+        deleteFolderBtn.setWidth("40px");
+        deleteFolderBtn.setEnabled(false);
+        deleteFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				//TODO
+            }
+        });
+        
+        controlButtonsLayout = new HorizontalLayout();
+        //controlButtonsLayout.addComponent(controlButtonsHeading);
+        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
+        controlButtonsLayout.addComponent(renameFolderBtn);
+        controlButtonsLayout.addComponent(addFolderBtn);
+        controlButtonsLayout.addComponent(deleteFolderBtn);
+	}
     
     @Override
     public void attach() {
@@ -517,7 +590,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     
-    public void expandOrCollapseListTreeNode(Object itemId){
+    public void expandOrCollapseStudyTreeNode(Object itemId){
     	if(!this.studyTree.isExpanded(itemId)){
     		this.studyTree.expandItem(itemId);
     	} else{
@@ -525,5 +598,46 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	}
     }
     
-
+    public void setSelectedStudyTreeNodeId(Object id){
+    	this.selectedStudyTreeNodeId = id;
+    }
+    
+    public void updateButtons(Object itemId){
+    	
+    	try {
+    		//If any of the central lists/folders is selected
+			if(Integer.valueOf(itemId.toString())>0){
+				addFolderBtn.setEnabled(false);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+    		//If any of the local folders is selected
+			} else if(Integer.valueOf(itemId.toString())<=0 && isFolder((Integer) itemId)){
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(true);
+				deleteFolderBtn.setEnabled(true);
+			//The rest of the local lists
+			} else {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(true);
+				deleteFolderBtn.setEnabled(false);
+			}
+    	} catch(NumberFormatException e) {
+    		//If selected item is "Shared Lists"
+    		if(itemId.toString().equals("CENTRAL")) {
+				addFolderBtn.setEnabled(false);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+			//If selected item is "Program Lists"
+    		} else if(itemId.toString().equals(LOCAL)) {
+				addFolderBtn.setEnabled(true);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+			//Any non-numeric itemID (nothing goes here as of the moment)
+    		} else {
+				addFolderBtn.setEnabled(false);
+				renameFolderBtn.setEnabled(false);
+				deleteFolderBtn.setEnabled(false);
+    		}
+    	}
+    }
 }
