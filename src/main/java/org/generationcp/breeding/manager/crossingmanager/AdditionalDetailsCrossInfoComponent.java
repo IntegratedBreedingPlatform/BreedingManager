@@ -13,7 +13,6 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,16 +21,16 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,10 +78,6 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private List<Location> locations;
   
     private CrossesMadeContainer container;
-    
-    private List<Long> favoriteLocationLongIds;
-    private List<Integer> favoriteLocationIds;
-    private List<Location> favoriteLocations;
     
     private CheckBox showFavoriteLocationsCheckBox;
     
@@ -145,55 +140,24 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     
     private void populateHarvestLocation(boolean showOnlyFavorites) {
         harvestLocComboBox.removeAllItems();
-
         mapLocation = new HashMap<String, Integer>();
 
         if(showOnlyFavorites){
-        	populateWithFavoriteLocations();	
+        	try {
+        		
+				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
+						germplasmDataManager, harvestLocComboBox, mapLocation);
+				
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+						"Error getting favorite locations!");
+			}
+			
         } else {
         	populateWithLocations();
         }
 
-    }
-
-    
-    private void populateWithFavoriteLocations() {
-    	
-    	harvestLocComboBox.removeAllItems();
-    	
-        favoriteLocationLongIds = new ArrayList<Long>();
-        favoriteLocationIds = new ArrayList<Integer>();
-        favoriteLocations = new ArrayList<Location>();
-         
-		try {
-			Integer workbenchUserId;
-			
-			workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-	        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
-	        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
-	        
-	        //Get location Id's
-	        for(Project userProject : userProjects){
-	        	favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(userProject.getProjectId(), 0, 10000));
-	        }
-	        
-	        //Convert to int
-	        for(Long favoriteLocationLongId : favoriteLocationLongIds){
-	        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
-	        }
-	        
-	        //Get locations
-	        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
-	        
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-
-		for(Location favoriteLocation : favoriteLocations){
-			harvestLocComboBox.addItem(favoriteLocation.getLname());
-	        mapLocation.put(favoriteLocation.getLname(), new Integer(favoriteLocation.getLocid()));
-		}
-		
     }
     
     private void populateWithLocations(){
@@ -219,7 +183,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         }
         
         for (Location loc : locations) {
-    		harvestLocComboBox.addItem(loc.getLname());
+        	harvestLocComboBox.addItem(loc.getLocid());
+    		harvestLocComboBox.setItemCaption(loc.getLocid(), loc.getLname());
     		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
         }
     }
@@ -247,7 +212,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
                     Integer harvestLocationId = 0;
                     
                     if(harvestLocComboBox.getValue() != null){
-                        harvestLocationId = mapLocation.get(harvestLocComboBox.getValue());
+                        harvestLocationId = (Integer) harvestLocComboBox.getValue();
                     }
                     
                     if(harvestDtDateField.getValue() != null){

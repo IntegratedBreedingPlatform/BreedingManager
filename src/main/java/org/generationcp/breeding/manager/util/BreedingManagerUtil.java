@@ -1,17 +1,25 @@
 package org.generationcp.breeding.manager.util;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -155,6 +163,56 @@ public class BreedingManagerUtil{
                     messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "", Notification.POSITION_CENTERED);
         }
 
+    }
+    
+    
+    /**
+     * Queries for user's favorite locations and sets the values to combobox and map
+     * 
+     * @param workbenchDataManager
+     * @param germplasmDataManager
+     * @param locationComboBox
+     * @param mapLocation
+     * @throws MiddlewareQueryException
+     */
+    public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
+    	
+    	locationComboBox.removeAllItems();
+    	
+        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
+        List<Integer> favoriteLocationIds = new ArrayList<Integer>();
+        List<Location> favoriteLocations = new ArrayList<Location>();
+         
+		Integer workbenchUserId;
+		
+		workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
+        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
+        
+        //Get location Id's
+        for(Project userProject : userProjects){
+        	favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(userProject.getProjectId(), 0, 10000));
+        }
+        
+        //Convert to int
+        for(Long favoriteLocationLongId : favoriteLocationLongIds){
+        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
+        }
+        
+        //Get locations
+        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
+	        
+
+		for(Location favoriteLocation : favoriteLocations){
+			Integer locId = favoriteLocation.getLocid();
+			locationComboBox.addItem(locId);
+			locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
+			if (mapLocation != null){
+				mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
+			}
+		}
+		
     }
     
     

@@ -2,7 +2,11 @@ package org.generationcp.breeding.manager.listimport;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
@@ -10,6 +14,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -20,7 +25,11 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
@@ -29,11 +38,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
@@ -90,6 +102,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
     private List<GermplasmName> germplasmNameObjects;
+    
+    private List<Location> locations;
+    
+    private CheckBox showFavoriteLocationsCheckBox;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -190,31 +206,27 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         addComponent(locationLabel, "top:90px;left:20px");
         
         locationComboBox = new ComboBox();
-        locationComboBox.setWidth("400px");
+        locationComboBox.setWidth("300px");
         locationComboBox.setNullSelectionAllowed(false);
-        List<Location> locationList = germplasmDataManager.getAllBreedingLocations();
-        Map<Integer, String> locationMap = new HashMap<Integer, String>();
-        Integer firstId = null;
-        boolean hasDefault = false;
-       for(Location location : locationList){
-           //method.getMcode()
-           if(firstId == null){
-               firstId = location.getLocid();
-           }
-           locationComboBox.addItem(location.getLocid());
-           locationComboBox.setItemCaption(location.getLocid(), location.getLname());
-           if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
-               locationComboBox.setValue(location.getLocid());
-               hasDefault = true;
-           }
-           locationMap.put(location.getLocid(), location.getLname());
-       }
-        if(hasDefault == false && firstId != null){
-            locationComboBox.setValue(firstId);
-        }
+        locations = germplasmDataManager.getAllBreedingLocations();
+        populateHarvestLocation(false);
         locationComboBox.setImmediate(true);
         
         addComponent(locationComboBox, "top:70px;left:220px");
+        
+        
+        showFavoriteLocationsCheckBox = new CheckBox();
+        showFavoriteLocationsCheckBox.setCaption(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
+        showFavoriteLocationsCheckBox.setImmediate(true);
+        showFavoriteLocationsCheckBox.addListener(new Property.ValueChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
+			}
+			
+		});
+        addComponent(showFavoriteLocationsCheckBox, "top:73px;left:527px");
         
         nameTypeLabel = new Label();
         addComponent(nameTypeLabel, "top:120px;left:20px");
@@ -223,8 +235,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         nameTypeComboBox.setWidth("400px");
         nameTypeComboBox.setNullSelectionAllowed(false);
         List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
-         firstId = null;
-         hasDefault = false;
+        Integer firstId = null;
+        boolean hasDefault = false;
         for(UserDefinedField userDefinedField : userDefinedFieldList){
                     if(firstId == null){
                           firstId = userDefinedField.getFldno();
@@ -305,6 +317,50 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         messageSource.setCaption(nextButton, Message.NEXT);
     }
     
+    private void populateHarvestLocation(boolean showOnlyFavorites) {
+    	locationComboBox.removeAllItems();
+
+        if(showOnlyFavorites){
+        	try {
+        		
+				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
+						germplasmDataManager, locationComboBox, null);
+				
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+						"Error getting favorite locations!");
+			}
+			
+        } else {
+        	populateLocations();
+        }
+
+    }
+
+    /*
+     * Fill with all locations
+     */
+	private void populateLocations() {
+		Integer firstId = null;
+		boolean hasDefault = false;
+		for(Location location : locations){
+		   //method.getMcode()
+		   if(firstId == null){
+		       firstId = location.getLocid();
+		   }
+		   locationComboBox.addItem(location.getLocid());
+		   locationComboBox.setItemCaption(location.getLocid(), location.getLname());
+		   if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
+		       locationComboBox.setValue(location.getLocid());
+		       hasDefault = true;
+		   }
+         }
+		if(hasDefault == false && firstId != null){
+		    locationComboBox.setValue(firstId);
+		}
+	}
+        
     public void nextButtonClickAction(){
         if(this.nextScreen != null){
             

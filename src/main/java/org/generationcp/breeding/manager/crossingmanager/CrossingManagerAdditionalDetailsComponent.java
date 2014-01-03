@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Form;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
