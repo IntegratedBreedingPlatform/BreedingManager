@@ -90,7 +90,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
 
         mainLayout.addComponent(tabSheetStudyDatabaseInstance);
-        mainLayout.setExpandRatio(tabSheetStudyDatabaseInstance, .45f);
+        mainLayout.setExpandRatio(tabSheetStudyDatabaseInstance, 0.60f);
         
         this.addComponent(mainLayout);
     }
