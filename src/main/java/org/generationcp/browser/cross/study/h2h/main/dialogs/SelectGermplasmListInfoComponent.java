@@ -96,11 +96,11 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     }
     
     protected void initializeComponents() {
-        selectedListLabel = new Label();
+        selectedListLabel = new Label(messageSource.getMessage(Message.SELECTED_LIST_LABEL));
         selectedListValue = new Label();
-        descriptionLabel = new Label();
+        descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
         descriptionValue = new Label();
-        listEntriesLabel = new Label();
+        listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         listEntryValues = createEntryTable();
     }
     
@@ -161,9 +161,7 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(selectedListLabel, Message.SELECTED_LIST_LABEL);
-        messageSource.setCaption(descriptionLabel, Message.DESCRIPTION_LABEL);
-        messageSource.setCaption(listEntriesLabel, Message.LIST_ENTRIES_LABEL);
+        
     }
     
     public void displayListInfo(GermplasmList germplasmList) throws MiddlewareQueryException {
@@ -177,8 +175,8 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
             // SelectGermplasmListWindow.populateParentList() to remember last selected Germplasm List
             listEntryValues.setData(germplasmList.getId());
         }
-        selectedListValue.setCaption(listName);
-        descriptionValue.setCaption(listDesc);
+        selectedListValue.setValue(listName);
+        descriptionValue.setValue(listDesc);
         
         populateEntryTable(germplasmList);
         
