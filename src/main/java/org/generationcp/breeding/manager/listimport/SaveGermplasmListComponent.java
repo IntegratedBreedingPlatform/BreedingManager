@@ -117,6 +117,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         
         listNameText = new TextField();
         listNameText.setWidth("400px");
+        listNameText.setMaxLength(50);
         addComponent(listNameText, "top:10px;left:200px");
         
         descriptionLabel = new Label();
@@ -344,6 +345,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void setListDetails(String name, String description, Date date, String listType){
+    	name = name.substring(0, 50);
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);
