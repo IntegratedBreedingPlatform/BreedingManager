@@ -1,9 +1,6 @@
 package org.generationcp.browser.study.util;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.StudyTreeComponent;
@@ -11,22 +8,25 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -50,6 +50,7 @@ public class StudyTreeUtil implements Serializable {
 	public StudyTreeUtil(Tree targetTree, StudyTreeComponent source){
 		this.targetTree = targetTree;
 		this.source = source;
+		setupTreeDragAndDropHandler();
 	}
 
 	public void addFolder(final Object parentItemId){
@@ -187,5 +188,115 @@ public class StudyTreeUtil implements Serializable {
 
         // show window
         source.getWindow().addWindow(w);    	
+    }
+	
+	private void setParent(Object sourceItemId, Object targetItemId){
+
+    	if(sourceItemId.equals(StudyTreeComponent.LOCAL) || sourceItemId.equals(StudyTreeComponent.CENTRAL)){
+    		MessageNotifier.showWarning(source.getWindow(), 
+                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_STUDY_TREE), 
+                    messageSource.getMessage(Message.MOVE_ROOT_FOLDERS_NOT_ALLOWED));
+    		return;
+    	}
+    	
+    	if(targetItemId!=null && targetItemId.equals(StudyTreeComponent.CENTRAL)){
+    		MessageNotifier.showWarning(source.getWindow(), 
+                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_STUDY_TREE), 
+                    messageSource.getMessage(Message.MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS_NOT_ALLOWED));
+    		return;
+    	}
+    	
+    	Integer sourceId = null;
+    	Integer targetId = null;
+    	
+    	if(sourceItemId!=null && !sourceItemId.equals(StudyTreeComponent.LOCAL) && !sourceItemId.equals(StudyTreeComponent.CENTRAL))
+    		sourceId = Integer.valueOf(sourceItemId.toString());
+    	if(targetItemId!=null && !targetItemId.equals(StudyTreeComponent.LOCAL) && !targetItemId.equals(StudyTreeComponent.CENTRAL))
+    		targetId = Integer.valueOf(targetItemId.toString());
+    	
+		if(sourceId!=null && sourceId>0){
+			MessageNotifier.showWarning(source.getWindow(), 
+					messageSource.getMessage(Message.ERROR_WITH_MODIFYING_STUDY_TREE), 
+					messageSource.getMessage(Message.MOVE_PUBLIC_LISTS_NOT_ALLOWED));
+			return;
+		}    	
+	
+    	if(targetId!=null && targetId>0){
+    		MessageNotifier.showWarning(source.getWindow(),
+                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_STUDY_TREE), 
+                    messageSource.getMessage(Message.MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS_NOT_ALLOWED));
+    		return;
+    	}    	
+    	
+		//TODO Apply to back-end data    	
+    	/**try {
+            studyDataManager.moveFolder(sourceId.intValue(), targetId.intValue());
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error with moving node to target folder.", e);
+			MessageNotifier.showError(source.getWindow(), 
+                    messageSource.getMessage(Message.ERROR_INTERNAL), 
+                    messageSource.getMessage(Message.ERROR_REPORT_TO));
+		}*/
+        
+        //apply to UI
+        if(targetItemId==null || targetTree.getItem(targetItemId)==null){
+        	targetTree.setChildrenAllowed(sourceItemId, true);
+        	targetTree.setParent(sourceItemId, StudyTreeComponent.LOCAL);
+        	targetTree.expandItem(StudyTreeComponent.LOCAL);
+		} else {
+			targetTree.setChildrenAllowed(targetItemId, true);
+        	targetTree.setParent(sourceItemId, targetItemId);
+        	targetTree.expandItem(targetItemId);
+		}
+        targetTree.select(sourceItemId);
+    }
+	
+	private void setupTreeDragAndDropHandler(){
+		targetTree.setDropHandler(new DropHandler() {
+			private static final long serialVersionUID = -6676297159926786216L;
+
+			public void drop(DragAndDropEvent dropEvent) {
+		        Transferable t = dropEvent.getTransferable();
+		        if (t.getSourceComponent() != targetTree)
+		            return;
+		        
+		        TreeTargetDetails target = (TreeTargetDetails) dropEvent.getTargetDetails();
+		        
+		        Object sourceItemId = t.getData("itemId");
+		        Object targetItemId = target.getItemIdOver();
+		        
+		        if(targetItemId instanceof Integer){
+		        	if(source.isFolder((Integer) targetItemId)){
+		        		setParent(sourceItemId, targetItemId);
+		        	} else{
+		        		try{
+				        	DmsProject parentFolder = studyDataManager.getParentFolder(((Integer) targetItemId).intValue());
+				        	if(parentFolder != null){
+				        		if(((Integer) targetItemId).intValue() < 0 && parentFolder.getProjectId().equals(Integer.valueOf(1))){
+				        			setParent(sourceItemId, StudyTreeComponent.LOCAL);
+				        		} else{
+				        			setParent(sourceItemId, parentFolder.getProjectId());
+				        		}
+				        	} else{
+				        		setParent(sourceItemId, StudyTreeComponent.LOCAL);
+				        	}
+		        		} catch (MiddlewareQueryException e) {
+		        			LOG.error("Error with getting parent folder of a project record.", e);
+		        			MessageNotifier.showError(source.getWindow(), 
+		                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+		                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+		        		}
+		        	}
+		        } else{
+		        	setParent(sourceItemId, targetItemId);
+		        }
+			}
+
+			@Override
+			public AcceptCriterion getAcceptCriterion() {
+				return AcceptAll.get();
+				//return SourceIsTarget.get();
+			}
+		});
     }
 }
