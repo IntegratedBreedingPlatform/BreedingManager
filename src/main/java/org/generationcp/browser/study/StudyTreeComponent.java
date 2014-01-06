@@ -51,6 +51,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
+import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -134,8 +135,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
 
         final Tree studyTree = new Tree();
-
-        
+        studyTree.setDragMode(TreeDragMode.NODE);
         
         for (FolderReference ps : rootFolders) {
             studyTree.addItem(ps.getId());
@@ -183,6 +183,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private Tree createCombinedStudyTree() {
     	
     	final Tree studyTree = new Tree();
+    	studyTree.setDragMode(TreeDragMode.NODE);
     	
     	studyTree.addItem(LOCAL);
         studyTree.setItemCaption(LOCAL, messageSource.getMessage(Message.PROGRAM_STUDIES));
