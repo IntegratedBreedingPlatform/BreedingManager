@@ -129,7 +129,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 	
 	private Component createBasicDetailsHeader (String header) {
 		HorizontalLayout mainLayout = new HorizontalLayout();
-		mainLayout.setWidth("90%");
+		mainLayout.setWidth("85%");
 		mainLayout.setHeight("30px");
 		
         CssLayout layout = new CssLayout();
