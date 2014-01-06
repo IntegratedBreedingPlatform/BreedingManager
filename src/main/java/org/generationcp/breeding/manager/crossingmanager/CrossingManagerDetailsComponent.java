@@ -121,6 +121,8 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         germplasmListType = new ComboBox();
         germplasmListDate = new DateField();
         
+        germplasmListName.setMaxLength(50);
+        
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
