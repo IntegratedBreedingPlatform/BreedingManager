@@ -53,7 +53,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     public static final String SELECT_TEST_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Test Search Germplasm List Button ID";
     public static final String SELECT_STANDARD_SEARCH_GERMPLASM_LIST_BUTTON_ID = "SpecifyGermplasmsComponent Standard Search Germplasm List Button ID";
     
-    private static final BigInteger MAX_NUM_OF_PAIRS = new BigInteger("150000"); // 150,000 maximum
+    private static final BigInteger MAX_NUM_OF_PAIRS = new BigInteger("2500"); // 150,000 maximum
     
     private Panel testPanel;
     private Panel standardPanel;
