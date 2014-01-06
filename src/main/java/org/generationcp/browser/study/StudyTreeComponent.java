@@ -423,7 +423,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
                 return messageSource.getMessage(Message.STUDY_DETAILS_LABEL); // "Click to view study details"
             }
         });
-
+        
+        studyTree.addStyleName("studyBrowserTree");
+        
         treeContainer = new VerticalLayout();
         treeContainer.addComponent(studyTree);
         addComponent(treeContainer);

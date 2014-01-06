@@ -117,6 +117,19 @@
     color: #33333;
 }
 
+.studyBrowserTree {
+	padding: 10px;
+	border: 1px solid e3e3e3;
+	background: #e3e3e3;
+	width: 284px;
+	height: 320px;
+	overflow: scroll;
+	border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    color: #33333;
+}
+
 .v-tree-node {
 	font-size: 12px;
 }
