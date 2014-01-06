@@ -161,6 +161,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
+        listNameText.setMaxLength(50);
         addComponent(listNameText, "top:35px;left:50px");
 
         listTypeLabel = new Label();
