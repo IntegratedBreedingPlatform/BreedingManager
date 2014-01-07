@@ -218,6 +218,15 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	    germplasmListTree.setValue(listId);
 	    }
 	}
+	
+	/*
+	 * Resets listid to null (in case list was launched via Dashboard)
+	 * so that tree can be refreshed
+	 */
+	public void refreshTree(){
+		this.listId = null; 
+		createTree();
+	}
 
     public void createTree() {
     	treeContainerLayout.removeComponent(germplasmListTree);

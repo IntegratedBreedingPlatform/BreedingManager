@@ -52,7 +52,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         
         if (event.getButton().getData().equals(ListManagerTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof ListManagerTreeComponent)) {
-            ((ListManagerTreeComponent) source).createTree();
+            ((ListManagerTreeComponent) source).refreshTree();
         } else if (event.getButton().getData().equals(ListManagerDetailsLayout.CLOSE_ALL_TABS_ID)
         		&& (source instanceof ListManagerDetailsLayout)){// "Close" All Tabs
         	((ListManagerDetailsLayout) source).closeAllListDetailTabButtonClickAction();
