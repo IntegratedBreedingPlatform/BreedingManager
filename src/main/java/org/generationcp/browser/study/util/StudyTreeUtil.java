@@ -190,7 +190,7 @@ public class StudyTreeUtil implements Serializable {
         source.getWindow().addWindow(w);    	
     }
 	
-	private void setParent(Object sourceItemId, Object targetItemId){
+	private void setParent(Object sourceItemId, Object targetItemId, boolean isStudy){
 
     	if(sourceItemId.equals(StudyTreeComponent.LOCAL) || sourceItemId.equals(StudyTreeComponent.CENTRAL)){
     		MessageNotifier.showWarning(source.getWindow(), 
@@ -211,8 +211,14 @@ public class StudyTreeUtil implements Serializable {
     	
     	if(sourceItemId!=null && !sourceItemId.equals(StudyTreeComponent.LOCAL) && !sourceItemId.equals(StudyTreeComponent.CENTRAL))
     		sourceId = Integer.valueOf(sourceItemId.toString());
-    	if(targetItemId!=null && !targetItemId.equals(StudyTreeComponent.LOCAL) && !targetItemId.equals(StudyTreeComponent.CENTRAL))
-    		targetId = Integer.valueOf(targetItemId.toString());
+    	
+    	if(targetItemId!=null) {
+    		if (StudyTreeComponent.LOCAL.equals(targetItemId)){
+    			targetId = 1; // 1 = Local Root folder
+    		} else if (!StudyTreeComponent.CENTRAL.equals(targetItemId)){
+    			targetId = Integer.valueOf(targetItemId.toString());
+    		}
+    	}
     	
 		if(sourceId!=null && sourceId>0){
 			MessageNotifier.showWarning(source.getWindow(), 
@@ -221,22 +227,24 @@ public class StudyTreeUtil implements Serializable {
 			return;
 		}    	
 	
-    	if(targetId!=null && targetId>0){
+    	if(targetId!=null && targetId>1){ // 1 = Local Root Folder
     		MessageNotifier.showWarning(source.getWindow(),
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_STUDY_TREE), 
                     messageSource.getMessage(Message.MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS_NOT_ALLOWED));
     		return;
     	}    	
     	
-		//TODO Apply to back-end data    	
-    	/**try {
-            studyDataManager.moveFolder(sourceId.intValue(), targetId.intValue());
+    	
+    	try {
+    		if (targetId != null && sourceId != null){
+    			studyDataManager.moveDmsProject(sourceId.intValue(), targetId.intValue(), isStudy);
+    		}
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error with moving node to target folder.", e);
 			MessageNotifier.showError(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_INTERNAL), 
                     messageSource.getMessage(Message.ERROR_REPORT_TO));
-		}*/
+		}
         
         //apply to UI
         if(targetItemId==null || targetTree.getItem(targetItemId)==null){
@@ -265,20 +273,27 @@ public class StudyTreeUtil implements Serializable {
 		        Object sourceItemId = t.getData("itemId");
 		        Object targetItemId = target.getItemIdOver();
 		        
+		        // if source item is dropped to itself, do nothing
+		        if (sourceItemId.equals(targetItemId)){
+		        	return;
+		        }
+		        
+		        boolean sourceIsStudy = !source.isFolder((Integer) sourceItemId);
 		        if(targetItemId instanceof Integer){
-		        	if(source.isFolder((Integer) targetItemId)){
-		        		setParent(sourceItemId, targetItemId);
+		        	Boolean targetIsFolder = source.isFolder((Integer) targetItemId);
+					if(targetIsFolder){
+		        		setParent(sourceItemId, targetItemId, sourceIsStudy);
 		        	} else{
 		        		try{
 				        	DmsProject parentFolder = studyDataManager.getParentFolder(((Integer) targetItemId).intValue());
 				        	if(parentFolder != null){
 				        		if(((Integer) targetItemId).intValue() < 0 && parentFolder.getProjectId().equals(Integer.valueOf(1))){
-				        			setParent(sourceItemId, StudyTreeComponent.LOCAL);
+				        			setParent(sourceItemId, StudyTreeComponent.LOCAL, sourceIsStudy);
 				        		} else{
-				        			setParent(sourceItemId, parentFolder.getProjectId());
+				        			setParent(sourceItemId, parentFolder.getProjectId(), sourceIsStudy);
 				        		}
 				        	} else{
-				        		setParent(sourceItemId, StudyTreeComponent.LOCAL);
+				        		setParent(sourceItemId, StudyTreeComponent.LOCAL, sourceIsStudy);
 				        	}
 		        		} catch (MiddlewareQueryException e) {
 		        			LOG.error("Error with getting parent folder of a project record.", e);
@@ -288,7 +303,7 @@ public class StudyTreeUtil implements Serializable {
 		        		}
 		        	}
 		        } else{
-		        	setParent(sourceItemId, targetItemId);
+		        	setParent(sourceItemId, targetItemId, sourceIsStudy);
 		        }
 			}
 
