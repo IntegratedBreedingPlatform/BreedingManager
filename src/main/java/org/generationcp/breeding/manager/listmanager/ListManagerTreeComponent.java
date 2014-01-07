@@ -292,7 +292,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         
         Tree germplasmListTree = new Tree();
-		germplasmListTree.setDragMode(TreeDragMode.NODE);
+        if (listManagerMain != null){
+        	germplasmListTree.setDragMode(TreeDragMode.NODE);
+        }
 
         germplasmListTree.addItem(LOCAL);
         germplasmListTree.setItemCaption(LOCAL, "Program Lists");
