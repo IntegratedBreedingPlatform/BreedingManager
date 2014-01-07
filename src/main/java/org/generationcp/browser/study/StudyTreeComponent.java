@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -491,11 +492,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         });
         
         controlButtonsLayout = new HorizontalLayout();
+        controlButtonsLayout.setWidth("304px");
         //controlButtonsLayout.addComponent(controlButtonsHeading);
-        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
-        controlButtonsLayout.addComponent(renameFolderBtn);
+        //controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",Label.CONTENT_XHTML));
+        //controlButtonsLayout.addComponent(renameFolderBtn);
         controlButtonsLayout.addComponent(addFolderBtn);
-        controlButtonsLayout.addComponent(deleteFolderBtn);
+        //controlButtonsLayout.addComponent(deleteFolderBtn);
+        
+        controlButtonsLayout.setComponentAlignment(addFolderBtn, Alignment.TOP_RIGHT);
 	}
     
     @Override
