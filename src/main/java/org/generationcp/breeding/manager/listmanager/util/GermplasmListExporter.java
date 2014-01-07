@@ -93,10 +93,8 @@ public class GermplasmListExporter {
         }
         
         try {
-        	System.out.println("Filename: "+filename);
-        	System.out.println("New Filename: "+filename.replace(" ", "_"));
             //write the excel file
-            FileOutputStream fileOutputStream = new FileOutputStream(filename.replace(" ", "_"));
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             wb.write(fileOutputStream);
             fileOutputStream.close();
             return fileOutputStream;
@@ -509,7 +507,7 @@ public class GermplasmListExporter {
         
         try {
             //write the excel file
-            FileOutputStream fileOutputStream = new FileOutputStream(filename.replace(" ", "_"));
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             wb.write(fileOutputStream);
             fileOutputStream.close();
             return fileOutputStream;
