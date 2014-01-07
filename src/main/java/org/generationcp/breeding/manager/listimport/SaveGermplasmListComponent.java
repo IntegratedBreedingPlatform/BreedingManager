@@ -345,7 +345,8 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void setListDetails(String name, String description, Date date, String listType){
-    	name = name.substring(0, 50);
+    	if(name.length()>50)
+    		name = name.substring(0, 50);
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);
