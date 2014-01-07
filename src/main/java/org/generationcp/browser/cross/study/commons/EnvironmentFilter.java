@@ -426,7 +426,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		
 		environmentsTable.setColumnWidth(TAG_COLUMN_ID, 41);
 		environmentsTable.setColumnWidth(ENV_NUMBER_COLUMN_ID, 60);
-		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 400);
+		environmentsTable.setColumnWidth(LOCATION_COLUMN_ID, 390);
 		environmentsTable.setColumnWidth(COUNTRY_COLUMN_ID, 76);
 		environmentsTable.setColumnWidth(STUDY_COLUMN_ID, 108);
 		environmentsTable.setColumnWidth(WEIGHT_COLUMN_ID, 178);
