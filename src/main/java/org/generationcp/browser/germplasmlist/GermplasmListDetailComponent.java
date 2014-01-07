@@ -103,7 +103,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
     @Override
     public void afterPropertiesSet() throws Exception{
         setRows(8);
-        setColumns(4);
+        setColumns(6);
         setColumnExpandRatio(0, 1);
         setColumnExpandRatio(1, 1);
         setSpacing(true);
@@ -133,19 +133,19 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         listStatus = new Label(germplasmList.getStatusString());
         listOwner= new Label(getOwnerListName(germplasmList.getUserId()));
         
-        addComponent(lblName, 0, 0, 1, 0);
-        addComponent(lblDescription, 0, 1, 1, 1);
-        addComponent(lblCreationDate, 0, 2, 1, 2);
-        addComponent(lblType, 0, 3, 1, 3);
-        addComponent(lblStatus, 0, 4, 1, 4);
-        addComponent(lblListOwner, 0, 5, 1, 5);
+        addComponent(lblName, 0, 0, 2, 0);
+        addComponent(lblDescription, 0, 1, 2, 1);
+        addComponent(lblCreationDate, 0, 2, 2, 2);
+        addComponent(lblType, 0, 3, 2, 3);
+        addComponent(lblStatus, 0, 4, 2, 4);
+        addComponent(lblListOwner, 0, 5, 2, 5);
         
-        addComponent(listName, 2, 0, 3, 0);
-        addComponent(listDescription, 2, 1, 3, 1);
-        addComponent(listCreationDate, 2, 2, 3, 2);
-        addComponent(listType, 2, 3, 3, 3);
-        addComponent(listStatus, 2, 4, 3, 4);
-        addComponent(listOwner, 2, 5, 3, 5);
+        addComponent(listName, 3, 0, 5, 0);
+        addComponent(listDescription, 3, 1, 5, 1);
+        addComponent(listCreationDate, 3, 2, 5, 2);
+        addComponent(listType, 3, 3, 5, 3);
+        addComponent(listStatus, 3, 4, 5, 4);
+        addComponent(listOwner, 3, 5, 5, 5);
         
         Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
         workbenchDataManager.getWorkbenchRuntimeData();
