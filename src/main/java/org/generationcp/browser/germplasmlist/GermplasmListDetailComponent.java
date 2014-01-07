@@ -38,6 +38,7 @@ import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView.Content;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.Notification;
 
@@ -111,7 +112,7 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 
         lblName = new Label(messageSource.getMessage(Message.NAME_LABEL)); // "Name"
         lblDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL)); // "Description"
-        lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL)); // "Creation Date"
+        lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", Label.CONTENT_XHTML); // "Creation Date"
         lblType = new Label(messageSource.getMessage(Message.TYPE_LABEL)); // "Type"
         lblStatus = new Label(messageSource.getMessage(Message.STATUS_LABEL)); // "Status"
         lblListOwner = new Label(messageSource.getMessage(Message.LIST_OWNER_LABEL)); // "List Owner"
