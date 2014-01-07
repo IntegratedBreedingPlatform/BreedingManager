@@ -271,6 +271,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         pedigreeOptionComboBox = new ComboBox();
         pedigreeOptionComboBox.setRequired(true);
+        pedigreeOptionComboBox.setWidth("410px");
         pedigreeOptionComboBox.addItem(1);
         pedigreeOptionComboBox.addItem(2);
         pedigreeOptionComboBox.addItem(3);
