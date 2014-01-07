@@ -50,7 +50,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
@@ -71,7 +70,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private Label locationLabel;
     private Label nameTypeLabel;
     private Label germplasmDetailsLabel;
-    private Label pedigreeOptionsLabel;
     
     private ComboBox breedingMethodComboBox;
     private ComboBox locationComboBox;
@@ -81,7 +79,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     private Table germplasmDetailsTable;
     
-    private OptionGroup pedigreeOptionGroup;
+    private ComboBox pedigreeOptionComboBox;
     
     private Button backButton;
     private Button nextButton;
@@ -271,19 +269,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         germplasmDetailsTable.setWidth("700px");
         addComponent(germplasmDetailsTable, "top:160px;left:20px");
         
-        pedigreeOptionsLabel = new Label();
-        addComponent(pedigreeOptionsLabel, "top:380px;left:20px");
-        
-        pedigreeOptionGroup = new OptionGroup();
-        pedigreeOptionGroup.addItem(1);
-        pedigreeOptionGroup.addItem(2);
-        pedigreeOptionGroup.addItem(3);
-        pedigreeOptionGroup.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
-        pedigreeOptionGroup.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
-        pedigreeOptionGroup.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
-        pedigreeOptionGroup.select(1);
-        pedigreeOptionGroup.setNullSelectionAllowed(false);
-        addComponent(pedigreeOptionGroup, "top:390px;left:20px");
+        pedigreeOptionComboBox = new ComboBox();
+        pedigreeOptionComboBox.setRequired(true);
+        pedigreeOptionComboBox.addItem(1);
+        pedigreeOptionComboBox.addItem(2);
+        pedigreeOptionComboBox.addItem(3);
+        pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
+        pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
+        pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+        pedigreeOptionComboBox.setNullSelectionAllowed(true);
+        addComponent(pedigreeOptionComboBox, "top:390px;left:20px");
         
         GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
         
@@ -312,7 +307,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         messageSource.setCaption(locationLabel, Message.GERMPLASM_LOCATION_LABEL);
         messageSource.setCaption(nameTypeLabel, Message.GERMPLASM_NAME_TYPE_LABEL);
         messageSource.setCaption(germplasmDetailsLabel, Message.GERMPLASM_DETAILS_LABEL);
-        messageSource.setCaption(pedigreeOptionsLabel, Message.PEDIGREE_OPTIONS_LABEL);
+        messageSource.setCaption(pedigreeOptionComboBox, Message.PEDIGREE_OPTIONS_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(nextButton, Message.NEXT);
     }
@@ -362,333 +357,340 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	}
         
     public void nextButtonClickAction(){
-        if(this.nextScreen != null){
-            
-        	germplasmNameObjects = new ArrayList<GermplasmName>();
-        	
-            //germplasmList = new ArrayList<Germplasm>(); 
-            //nameList = new ArrayList<Name>();
-            doNotCreateGermplasmsWithId = new ArrayList<Integer>();
-            
-            if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
-                //meaning 1st pedigree
-                //we should create the germplasm and named pojos here
-                try{
-                    WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
-
-                    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-                    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-                    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
-
-                    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-                    String sDate = formatter.format(germplasmDateField.getValue());
-
-                    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-                    
-                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-                    
-                    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
-                        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
-                        Germplasm germplasm = new Germplasm();
-                        germplasm.setGid(i);
-                        germplasm.setUserId(ibdbUserId);
-                        germplasm.setLocationId((Integer)locationComboBox.getValue());
-                        germplasm.setGdate(dateIntValue);
-                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
-
-                        germplasm.setGnpgs(-1);
-                        germplasm.setGpid1(0);
-                        germplasm.setGpid2(0);
-                        germplasm.setLgid(0);
-                        germplasm.setGrplce(0);
-                        germplasm.setReferenceId(0);
-                        germplasm.setMgid(0);
-
-                        Name name = new Name();
-                        //name.setNid();
-                        //name.setGermplasmId();
-                        name.setTypeId((Integer)nameTypeComboBox.getValue());
-                        name.setUserId(ibdbUserId);
-                        name.setNval(importedGermplasm.getDesig());
-                        name.setLocationId((Integer)locationComboBox.getValue());
-                        name.setNdate(dateIntValue);
-                        name.setReferenceId(0);
-                        
-                        if(!createdGermplasms.containsKey(name.getNval())){
-                        	//germplasmList.add(germplasm);
-                        	//nameList.add(name);
-                        	createdGermplasms.put(name.getNval(), germplasm);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
-                        } else {
-                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
-                        	//nameList.add(name);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
-                        }
-                        
-                        
-                    }
-                    //logFirstPedigreeUploadedToWorkbenchProjectActivity();
-
-                }catch (MiddlewareQueryException mqe){
-                    mqe.printStackTrace();
-                }
+        if (validatePedigreeOption()) {
+            if(this.nextScreen != null){
                 
-            } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("2") && getImportedGermplasms() != null){
-                //meaning 2nd pedigree
-                try{
-                    WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
-                    
-                    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-                    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-                    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());                    
-                    
-                    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-                    String sDate = formatter.format(germplasmDateField.getValue());
-
-                    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-                    
-                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-                    
-                    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
-                        
-                        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
-                        int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
-                        
-                        Germplasm germplasm = new Germplasm();
-                        
-                        if(importedGermplasm.getGid()!=null){
-                        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
-                        } else {
-	                        germplasm.setGid(i);
-	                        germplasm.setUserId(ibdbUserId);
-	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
-	                        germplasm.setGdate(dateIntValue);
-	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
-	
-	                        germplasm.setGnpgs(-1);
-	                        if(germplasmMatchesCount==1){
-	                            //If a single match is found, multiple matches will be 
-	                            //   handled by SelectGemrplasmWindow and 
-	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-	                            if(foundGermplasm.get(0).getGnpgs()<2){
-	                            	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
-	                            } else {
-	                            	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
-	                            }
-	                            germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
-	                        } else {
-	                            //If no matches are found
-	                            germplasm.setGpid1(0); 
-	                            germplasm.setGpid2(0);
-	                        }
-	                        
-	                        germplasm.setUserId(ibdbUserId); 
-	                        germplasm.setLgid(0);
-	                        germplasm.setGrplce(0);
-	                        germplasm.setReferenceId(0);
-	                        germplasm.setMgid(0);
-	                        
-                        }
-                        
-                        
-
-                        Name name = new Name();
-                        //name.setNid();
-                        //name.setGermplasmId();
-                        name.setTypeId((Integer)nameTypeComboBox.getValue());
-                        name.setUserId(ibdbUserId);
-                        name.setNval(importedGermplasm.getDesig());
-                        name.setLocationId((Integer)locationComboBox.getValue());
-                        name.setNdate(dateIntValue);
-                        name.setReferenceId(0);
-                        
-                        if(!createdGermplasms.containsKey(name.getNval())){
-                        	//germplasmList.add(germplasm);
-                        	//nameList.add(name);
-                        	createdGermplasms.put(name.getNval(), germplasm);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
-                        } else {
-                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
-                        	//nameList.add(name);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
-                        }
-
-                        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
-                            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
-                        }
-
-                    }
-                    //logFirstPedigreeUploadedToWorkbenchProjectActivity();
-                }catch (MiddlewareQueryException mqe){
-                    mqe.printStackTrace();
-                }
-               
-            } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("3") && getImportedGermplasms() != null){
-                //meaning 3rd pedigree
-                try{
-                    WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
-                    
-                    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-                    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-                    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
-                    
-                    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-                    String sDate = formatter.format(germplasmDateField.getValue());
-
-                    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-                    
-                    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-                    
-                    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
-                        
-                        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
-                        int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
-                        
-                        Germplasm germplasm = new Germplasm();
-                        
-                        boolean searchByNameOrNewGermplasmIsNeeded = true;
-                        if(importedGermplasm.getGid()!=null && !importedGermplasm.getGid().equals(Integer.valueOf(0))){
-                        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
-                        	
-                        	if(germplasm != null){
-                        		List<Name> names = germplasmDataManager.getNamesByGID(importedGermplasm.getGid(), 0, null);
-                        		boolean thereIsMatchingName = false;
-                        		for(Name name : names){
-                        			if(name.getNval().equals(importedGermplasm.getDesig())){
-                        				thereIsMatchingName = true;
-                        			}
-                        		}
-                        		
-                        		if(thereIsMatchingName){
-                        			doNotCreateGermplasmsWithId.add(importedGermplasm.getGid());
-                        		} else{
-                        			final Integer gidFinal = importedGermplasm.getGid(); 
-                        			final String desigFinal = importedGermplasm.getDesig();
-                        			final Integer finalIbdbUserId = ibdbUserId;
-                        			final Integer finalDateIntValue = dateIntValue;
-                        			final int index = i;
-                        			final int finalGermplasmMatchesCount = germplasmMatchesCount;
-                        			final Map<String, Germplasm> finalCreatedGermplasms = createdGermplasms;
-                        			ConfirmDialog.show(source.getWindow(), "New Name" 
-                        		            ,"The name \"" + importedGermplasm.getDesig() + "\" is not recorded as a name of GID " + importedGermplasm.getGid() + "."
-                        		            + " Do you want to add the name to the GID or search/create another germplasm record?"
-                        		            , "Add name to GID"  //confirm option
-                        		            , "Search/create another germplasm record"  //the other option 
-                        		            , new ConfirmDialog.Listener() {
-                        						private static final long serialVersionUID = 1L;
-                        						public void onClose(ConfirmDialog dialog) {
-                        		                    if (dialog.isConfirmed()) {
-                        		                    	addGermplasmName(desigFinal, gidFinal, finalIbdbUserId, finalDateIntValue);
-                        		                    	doNotCreateGermplasmsWithId.add(gidFinal);
-                        		                    } else{
-                        		                    	searchOrAddANewGermplasm(finalGermplasmMatchesCount, finalIbdbUserId
-                        		                    			, finalDateIntValue, desigFinal, index, finalCreatedGermplasms);
-                        		                    }
-                        		                }
-                        		            }
-                        			);
-                        		}
-                        		searchByNameOrNewGermplasmIsNeeded = false;
-                        	} else{
-                        		MessageNotifier.showWarning(getWindow(), "Warning!", "GID: " + importedGermplasm.getGid() + " written on file does not exist in database."
-                        				, Notification.POSITION_CENTERED);
-                        	}
-                        } 
-                        
-                        if(germplasm == null){
-                        	germplasm = new Germplasm();
-                        }
-                        
-                        if(searchByNameOrNewGermplasmIsNeeded) {
-                        	if(germplasmMatchesCount==1){
-	                            //If a single match is found, multiple matches will be 
-	                            //   handled by SelectGemrplasmWindow and 
-	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-	                            germplasm.setGid(foundGermplasm.get(0).getGid());
-	                            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-	                        } else {
-	                            //If no matches found
-	                            germplasm.setGid(i);
-	                        }
-	                        
-	                        germplasm.setUserId(ibdbUserId);
-	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
-	                        germplasm.setGdate(dateIntValue);
-	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
-	
-	                        germplasm.setGnpgs(0);
-	                        germplasm.setGpid1(0);
-	                        germplasm.setGpid2(0);
-	                        germplasm.setLgid(0);
-	                        germplasm.setGrplce(0);
-	                        germplasm.setReferenceId(0);
-	                        germplasm.setMgid(0);
-	                        
-                        }
-
-                        Name name = new Name();
-                        name.setTypeId((Integer)nameTypeComboBox.getValue());
-                        name.setUserId(ibdbUserId);
-                        name.setNval(importedGermplasm.getDesig());
-                        name.setLocationId((Integer)locationComboBox.getValue());
-                        name.setNdate(dateIntValue);
-                        name.setReferenceId(0);
-                        
-                        if(!createdGermplasms.containsKey(name.getNval())){
-                        	//germplasmList.add(germplasm);
-                        	//nameList.add(name);
-                        	createdGermplasms.put(name.getNval(), germplasm);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
-                        } else {
-                        	//germplasmList.add(createdGermplasms.get(name.getNval()));
-                        	//nameList.add(name);
-                        	
-                        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
-                        }
-                        
-                        if(germplasmMatchesCount>1 && searchByNameOrNewGermplasmIsNeeded){
-                            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
-                        }
-                    }
-                    //logFirstPedigreeUploadedToWorkbenchProjectActivity();
-
-                }catch (MiddlewareQueryException mqe){
-                    LOG.error("Database error: " + mqe.getMessage(), mqe);
-                }
+            	germplasmNameObjects = new ArrayList<GermplasmName>();
+            	
+                //germplasmList = new ArrayList<Germplasm>(); 
+                //nameList = new ArrayList<Name>();
+                doNotCreateGermplasmsWithId = new ArrayList<Integer>();
                 
+                if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
+                    //meaning 1st pedigree
+                    //we should create the germplasm and named pojos here
+                    try{
+                        WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+    
+                        Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+                        Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+                        Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
+    
+                        SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+                        String sDate = formatter.format(germplasmDateField.getValue());
+    
+                        Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                        
+                        Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+                        
+                        for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+                            ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+                            Germplasm germplasm = new Germplasm();
+                            germplasm.setGid(i);
+                            germplasm.setUserId(ibdbUserId);
+                            germplasm.setLocationId((Integer)locationComboBox.getValue());
+                            germplasm.setGdate(dateIntValue);
+                            germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
+    
+                            germplasm.setGnpgs(-1);
+                            germplasm.setGpid1(0);
+                            germplasm.setGpid2(0);
+                            germplasm.setLgid(0);
+                            germplasm.setGrplce(0);
+                            germplasm.setReferenceId(0);
+                            germplasm.setMgid(0);
+    
+                            Name name = new Name();
+                            //name.setNid();
+                            //name.setGermplasmId();
+                            name.setTypeId((Integer)nameTypeComboBox.getValue());
+                            name.setUserId(ibdbUserId);
+                            name.setNval(importedGermplasm.getDesig());
+                            name.setLocationId((Integer)locationComboBox.getValue());
+                            name.setNdate(dateIntValue);
+                            name.setReferenceId(0);
+                            
+                            if(!createdGermplasms.containsKey(name.getNval())){
+                            	//germplasmList.add(germplasm);
+                            	//nameList.add(name);
+                            	createdGermplasms.put(name.getNval(), germplasm);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                            } else {
+                            	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                            	//nameList.add(name);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                            }
+                            
+                            
+                        }
+                        //logFirstPedigreeUploadedToWorkbenchProjectActivity();
+    
+                    }catch (MiddlewareQueryException mqe){
+                        mqe.printStackTrace();
+                    }
+                    
+                } else if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("2") && getImportedGermplasms() != null){
+                    //meaning 2nd pedigree
+                    try{
+                        WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+                        
+                        Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+                        Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+                        Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());                    
+                        
+                        SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+                        String sDate = formatter.format(germplasmDateField.getValue());
+    
+                        Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                        
+                        Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+                        
+                        for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+                            
+                            ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+                            int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
+                            
+                            Germplasm germplasm = new Germplasm();
+                            
+                            if(importedGermplasm.getGid()!=null){
+                            	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
+                            } else {
+    	                        germplasm.setGid(i);
+    	                        germplasm.setUserId(ibdbUserId);
+    	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
+    	                        germplasm.setGdate(dateIntValue);
+    	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
+    	
+    	                        germplasm.setGnpgs(-1);
+    	                        if(germplasmMatchesCount==1){
+    	                            //If a single match is found, multiple matches will be 
+    	                            //   handled by SelectGemrplasmWindow and 
+    	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+    	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+    	                            if(foundGermplasm.get(0).getGnpgs()<2){
+    	                            	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
+    	                            } else {
+    	                            	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
+    	                            }
+    	                            germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
+    	                        } else {
+    	                            //If no matches are found
+    	                            germplasm.setGpid1(0); 
+    	                            germplasm.setGpid2(0);
+    	                        }
+    	                        
+    	                        germplasm.setUserId(ibdbUserId); 
+    	                        germplasm.setLgid(0);
+    	                        germplasm.setGrplce(0);
+    	                        germplasm.setReferenceId(0);
+    	                        germplasm.setMgid(0);
+    	                        
+                            }
+                            
+                            
+    
+                            Name name = new Name();
+                            //name.setNid();
+                            //name.setGermplasmId();
+                            name.setTypeId((Integer)nameTypeComboBox.getValue());
+                            name.setUserId(ibdbUserId);
+                            name.setNval(importedGermplasm.getDesig());
+                            name.setLocationId((Integer)locationComboBox.getValue());
+                            name.setNdate(dateIntValue);
+                            name.setReferenceId(0);
+                            
+                            if(!createdGermplasms.containsKey(name.getNval())){
+                            	//germplasmList.add(germplasm);
+                            	//nameList.add(name);
+                            	createdGermplasms.put(name.getNval(), germplasm);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                            } else {
+                            	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                            	//nameList.add(name);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                            }
+    
+                            if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
+                                displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
+                            }
+    
+                        }
+                        //logFirstPedigreeUploadedToWorkbenchProjectActivity();
+                    }catch (MiddlewareQueryException mqe){
+                        mqe.printStackTrace();
+                    }
+                   
+                } else if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("3") && getImportedGermplasms() != null){
+                    //meaning 3rd pedigree
+                    try{
+                        WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+                        
+                        Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+                        Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+                        Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
+                        
+                        SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+                        String sDate = formatter.format(germplasmDateField.getValue());
+    
+                        Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+                        
+                        Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+                        
+                        for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+                            
+                            ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+                            int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
+                            
+                            Germplasm germplasm = new Germplasm();
+                            
+                            boolean searchByNameOrNewGermplasmIsNeeded = true;
+                            if(importedGermplasm.getGid()!=null && !importedGermplasm.getGid().equals(Integer.valueOf(0))){
+                            	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
+                            	
+                            	if(germplasm != null){
+                            		List<Name> names = germplasmDataManager.getNamesByGID(importedGermplasm.getGid(), 0, null);
+                            		boolean thereIsMatchingName = false;
+                            		for(Name name : names){
+                            			if(name.getNval().equals(importedGermplasm.getDesig())){
+                            				thereIsMatchingName = true;
+                            			}
+                            		}
+                            		
+                            		if(thereIsMatchingName){
+                            			doNotCreateGermplasmsWithId.add(importedGermplasm.getGid());
+                            		} else{
+                            			final Integer gidFinal = importedGermplasm.getGid(); 
+                            			final String desigFinal = importedGermplasm.getDesig();
+                            			final Integer finalIbdbUserId = ibdbUserId;
+                            			final Integer finalDateIntValue = dateIntValue;
+                            			final int index = i;
+                            			final int finalGermplasmMatchesCount = germplasmMatchesCount;
+                            			final Map<String, Germplasm> finalCreatedGermplasms = createdGermplasms;
+                            			ConfirmDialog.show(source.getWindow(), "New Name" 
+                            		            ,"The name \"" + importedGermplasm.getDesig() + "\" is not recorded as a name of GID " + importedGermplasm.getGid() + "."
+                            		            + " Do you want to add the name to the GID or search/create another germplasm record?"
+                            		            , "Add name to GID"  //confirm option
+                            		            , "Search/create another germplasm record"  //the other option 
+                            		            , new ConfirmDialog.Listener() {
+                            						private static final long serialVersionUID = 1L;
+                            						public void onClose(ConfirmDialog dialog) {
+                            		                    if (dialog.isConfirmed()) {
+                            		                    	addGermplasmName(desigFinal, gidFinal, finalIbdbUserId, finalDateIntValue);
+                            		                    	doNotCreateGermplasmsWithId.add(gidFinal);
+                            		                    } else{
+                            		                    	searchOrAddANewGermplasm(finalGermplasmMatchesCount, finalIbdbUserId
+                            		                    			, finalDateIntValue, desigFinal, index, finalCreatedGermplasms);
+                            		                    }
+                            		                }
+                            		            }
+                            			);
+                            		}
+                            		searchByNameOrNewGermplasmIsNeeded = false;
+                            	} else{
+                            		MessageNotifier.showWarning(getWindow(), "Warning!", "GID: " + importedGermplasm.getGid() + " written on file does not exist in database."
+                            				, Notification.POSITION_CENTERED);
+                            	}
+                            } 
+                            
+                            if(germplasm == null){
+                            	germplasm = new Germplasm();
+                            }
+                            
+                            if(searchByNameOrNewGermplasmIsNeeded) {
+                            	if(germplasmMatchesCount==1){
+    	                            //If a single match is found, multiple matches will be 
+    	                            //   handled by SelectGemrplasmWindow and 
+    	                            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+    	                            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+    	                            germplasm.setGid(foundGermplasm.get(0).getGid());
+    	                            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+    	                        } else {
+    	                            //If no matches found
+    	                            germplasm.setGid(i);
+    	                        }
+    	                        
+    	                        germplasm.setUserId(ibdbUserId);
+    	                        germplasm.setLocationId((Integer)locationComboBox.getValue());
+    	                        germplasm.setGdate(dateIntValue);
+    	                        germplasm.setMethodId((Integer)breedingMethodComboBox.getValue());
+    	
+    	                        germplasm.setGnpgs(0);
+    	                        germplasm.setGpid1(0);
+    	                        germplasm.setGpid2(0);
+    	                        germplasm.setLgid(0);
+    	                        germplasm.setGrplce(0);
+    	                        germplasm.setReferenceId(0);
+    	                        germplasm.setMgid(0);
+    	                        
+                            }
+    
+                            Name name = new Name();
+                            name.setTypeId((Integer)nameTypeComboBox.getValue());
+                            name.setUserId(ibdbUserId);
+                            name.setNval(importedGermplasm.getDesig());
+                            name.setLocationId((Integer)locationComboBox.getValue());
+                            name.setNdate(dateIntValue);
+                            name.setReferenceId(0);
+                            
+                            if(!createdGermplasms.containsKey(name.getNval())){
+                            	//germplasmList.add(germplasm);
+                            	//nameList.add(name);
+                            	createdGermplasms.put(name.getNval(), germplasm);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+                            } else {
+                            	//germplasmList.add(createdGermplasms.get(name.getNval()));
+                            	//nameList.add(name);
+                            	
+                            	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+                            }
+                            
+                            if(germplasmMatchesCount>1 && searchByNameOrNewGermplasmIsNeeded){
+                                displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
+                            }
+                        }
+                        //logFirstPedigreeUploadedToWorkbenchProjectActivity();
+    
+                    }catch (MiddlewareQueryException mqe){
+                        LOG.error("Database error: " + mqe.getMessage(), mqe);
+                    }
+                    
+                }
+    
+               if(nextScreen instanceof SaveGermplasmListComponent){
+                   //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
+                   ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
+                   //((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
+                   ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
+                   
+                    //for 909
+                   ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
+                   
+    			   try {
+    				   Method breedingMethod = germplasmDataManager.getMethodByID((Integer) breedingMethodComboBox.getValue());
+    				   ((SaveGermplasmListComponent) nextScreen).setBreedingMethod(breedingMethod);
+    			   } catch (MiddlewareQueryException e) {
+    				   e.printStackTrace();
+    			   }
+                  
+               	}
+                source.enableAllTabs();
+               	this.accordion.setSelectedTab(this.nextScreen);
+               	source.enableTab(3);
+               	source.alsoEnableTab(2);
+            } else {
+                this.nextButton.setEnabled(false);
             }
-
-           if(nextScreen instanceof SaveGermplasmListComponent){
-               //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
-               ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
-               //((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
-               ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
-               
-                //for 909
-               ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
-               
-			   try {
-				   Method breedingMethod = germplasmDataManager.getMethodByID((Integer) breedingMethodComboBox.getValue());
-				   ((SaveGermplasmListComponent) nextScreen).setBreedingMethod(breedingMethod);
-			   } catch (MiddlewareQueryException e) {
-				   e.printStackTrace();
-			   }
-              
-           	}
-            source.enableAllTabs();
-           	this.accordion.setSelectedTab(this.nextScreen);
-           	source.enableTab(3);
-           	source.alsoEnableTab(2);
-        } else {
-            this.nextButton.setEnabled(false);
         }
+    }
+    
+    private boolean validatePedigreeOption() {
+        return BreedingManagerUtil.validateRequiredField(getWindow(), pedigreeOptionComboBox,
+                messageSource, pedigreeOptionComboBox.getCaption());
     }
   
     private void searchOrAddANewGermplasm(int germplasmMatchesCount, Integer ibdbUserId, Integer dateIntValue, String desig, int index
@@ -789,7 +791,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
      * Called by the listener of the "Done" button on the select germplasm window
      */
     public void receiveGermplasmFromWindowAndUpdateGermplasmData(int index, Germplasm importedGermplasm, Germplasm selectedGermplasm) {
-        if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("2")){
+        if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("2")){
             //Update GPID 1 & 2 to values of selected germplasm, and update germplasmList using the updated germplasm
             
             if(selectedGermplasm.getGnpgs()<2){
@@ -802,7 +804,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
             //germplasmList.set(index, importedGermplasm);
             germplasmNameObjects.get(index).setGermplasm(importedGermplasm);
             
-        } else if(pedigreeOptionGroup.getValue().toString().equalsIgnoreCase("3")){
+        } else if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("3")){
             //Add logic here to not insert new record on DB when saved, maybe use existing GID?
             importedGermplasm.setGid(selectedGermplasm.getGid());
             doNotCreateGermplasmsWithId.add(selectedGermplasm.getGid());
@@ -811,15 +813,15 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     }
     
     public void setPedigreeOptionGroupValue(Integer value){
-    	pedigreeOptionGroup.setValue(value);
+    	pedigreeOptionComboBox.setValue(value);
     }
     
     public Integer getPedigreeOptionGroupValue(){
-    	return (Integer) pedigreeOptionGroup.getValue();
+    	return (Integer) pedigreeOptionComboBox.getValue();
     }
     
     public void setPedigreeOptionGroupEnabled(Boolean value){
-    	pedigreeOptionGroup.setEnabled(value);
+    	pedigreeOptionComboBox.setEnabled(value);
     }
 
     public List<SelectGermplasmWindow> getSelectGermplasmWindows(){

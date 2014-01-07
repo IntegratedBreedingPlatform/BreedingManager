@@ -29,7 +29,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,16 +263,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         favoriteMethods = new ArrayList<Method>();
          
 		try {
-			Integer workbenchUserId;
-			
-			workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-	        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
-	        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
-	        
-	        //Get Method IDs
-	        for(Project userProject : userProjects){
-	        	favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(userProject, 0, 10000));
-	        }
+			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
+
+			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
 	        
 	        //Get Methods
 	        if (!favoriteMethodIds.isEmpty()){

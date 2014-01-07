@@ -14,9 +14,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
-import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
@@ -184,16 +182,11 @@ public class BreedingManagerUtil{
         List<Integer> favoriteLocationIds = new ArrayList<Integer>();
         List<Location> favoriteLocations = new ArrayList<Location>();
          
-		Integer workbenchUserId;
-		
-		workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-        User workbenchUser = workbenchDataManager.getUserById(workbenchUserId);
-        List<Project> userProjects = workbenchDataManager.getProjectsByUser(workbenchUser);
+		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		Long lastProjectId = workbenchDataManager.getLastOpenedProject(workbenchUserId).getProjectId();
         
         //Get location Id's
-        for(Project userProject : userProjects){
-        	favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(userProject.getProjectId(), 0, 10000));
-        }
+        favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(lastProjectId, 0, 10000));
         
         //Convert to int
         for(Long favoriteLocationLongId : favoriteLocationLongIds){
