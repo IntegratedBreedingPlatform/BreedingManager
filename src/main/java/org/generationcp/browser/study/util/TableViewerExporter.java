@@ -117,7 +117,7 @@ public class TableViewerExporter {
         
         try {
             //write the excel file
-            FileOutputStream fileOutputStream = new FileOutputStream(filename.replace(" ", "_"));
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             workbook.write(fileOutputStream);
             fileOutputStream.close();
             return fileOutputStream;

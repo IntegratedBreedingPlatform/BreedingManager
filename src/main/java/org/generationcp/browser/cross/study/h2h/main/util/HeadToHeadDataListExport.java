@@ -209,7 +209,7 @@ public class HeadToHeadDataListExport {
         
         try {
             //write the excel file
-            FileOutputStream fileOutputStream = new FileOutputStream(filename.replace(" ", "_"));
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             wb.write(fileOutputStream);
             fileOutputStream.close();
             return fileOutputStream;
