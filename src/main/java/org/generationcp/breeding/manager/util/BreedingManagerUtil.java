@@ -14,7 +14,9 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
@@ -165,7 +167,7 @@ public class BreedingManagerUtil{
     
     
     /**
-     * Queries for user's favorite locations and sets the values to combobox and map
+     * Queries for program's favorite locations and sets the values to combobox and map
      * 
      * @param workbenchDataManager
      * @param germplasmDataManager
@@ -203,6 +205,50 @@ public class BreedingManagerUtil{
 			locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
 			if (mapLocation != null){
 				mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
+			}
+		}
+		
+    }
+    
+    
+    /**
+     * Queries for program's favorite locations and sets the values to combobox and map
+     * 
+     * @param workbenchDataManager
+     * @param germplasmDataManager
+     * @param locationComboBox
+     * @param mapLocation
+     * @throws MiddlewareQueryException
+     */
+    public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox methodComboBox, Map<String, Integer> mapMethods) throws MiddlewareQueryException {
+    	
+		methodComboBox.removeAllItems();
+    	
+        List<Integer> favoriteMethodIds = new ArrayList<Integer>();
+        List<Method> favoriteMethods = new ArrayList<Method>();
+         
+		try {
+			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
+
+			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
+	        
+	        //Get Methods
+	        if (!favoriteMethodIds.isEmpty()){
+	        	favoriteMethods = germplasmDataManager.getMethodsByIDs(favoriteMethodIds);
+	        }
+	        
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+
+		for(Method favoriteMethod : favoriteMethods){
+			Integer methodId = favoriteMethod.getMid();
+			methodComboBox.addItem(methodId);
+			methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
+			if (mapMethods != null){
+				mapMethods.put(favoriteMethod.getMname(), methodId);
 			}
 		}
 		

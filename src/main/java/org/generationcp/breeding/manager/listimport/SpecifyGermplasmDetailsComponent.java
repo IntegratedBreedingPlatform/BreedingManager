@@ -11,7 +11,6 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.MethodValueChangeListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -102,8 +101,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private List<GermplasmName> germplasmNameObjects;
     
     private List<Location> locations;
+    private List<Method> methods;
     
     private CheckBox showFavoriteLocationsCheckBox;
+    private CheckBox showFavoriteMethodsCheckBox;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -167,29 +168,26 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         addComponent(breedingMethodLabel, "top:30px;left:20px");
         
         breedingMethodComboBox = new ComboBox();
-        breedingMethodComboBox.setWidth("400px");
+        breedingMethodComboBox.setWidth("320px");
         breedingMethodComboBox.setNullSelectionAllowed(false);
-        List<Method> methodList = germplasmDataManager.getAllMethods();
-        Map<String, String> methodMap = new HashMap<String, String>();
-        for(Method method : methodList){
-        	
-            //method.getMcode()
-            breedingMethodComboBox.addItem(method.getMid());
-            breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
-            if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
-                breedingMethodComboBox.setValue(method.getMid());
-                breedingMethodComboBox.setDescription(method.getMdesc());
-            }
-            methodMap.put(method.getMid().toString(), method.getMdesc());
-        }
-        
-        if(breedingMethodComboBox.getValue()==null){
-        	breedingMethodComboBox.setValue(methodList.get(0).getMid());
-        }
+        methods = germplasmDataManager.getAllMethods();
+        populateMethods();
         
         breedingMethodComboBox.setImmediate(true);
-        breedingMethodComboBox.addListener(new MethodValueChangeListener(breedingMethodComboBox, methodMap));
         addComponent(breedingMethodComboBox, "top:10px;left:220px");
+        
+        showFavoriteMethodsCheckBox = new CheckBox();
+        showFavoriteMethodsCheckBox.setCaption(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
+        showFavoriteMethodsCheckBox.setImmediate(true);
+        showFavoriteMethodsCheckBox.addListener(new Property.ValueChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				populateMethods(((Boolean) event.getProperty().getValue()).equals(true));
+			}
+			
+		});
+        addComponent(showFavoriteMethodsCheckBox, "top:13px;left:547px");
         
         germplasmDateLabel = new Label();
         addComponent(germplasmDateLabel, "top:60px;left:20px");
@@ -293,6 +291,47 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:450px;left:670px");
     }
+    
+    private void populateMethods(boolean showOnlyFavorites) {
+    	breedingMethodComboBox.removeAllItems();
+
+        if(showOnlyFavorites){
+        	try {
+        		
+				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, 
+						germplasmDataManager, breedingMethodComboBox, null);
+				
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+						"Error getting favorite methods!");
+			}
+			
+        } else {
+        	populateMethods();
+        }
+
+    }
+
+	private Map<String, String> populateMethods() {
+		Map<String, String> methodMap = new HashMap<String, String>();
+        for(Method method : methods){
+        	
+            //method.getMcode()
+            breedingMethodComboBox.addItem(method.getMid());
+            breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
+            if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
+                breedingMethodComboBox.setValue(method.getMid());
+                breedingMethodComboBox.setDescription(method.getMdesc());
+            }
+            methodMap.put(method.getMid().toString(), method.getMdesc());
+        }
+        
+        if(breedingMethodComboBox.getValue()==null && methods.get(0) != null){
+        	breedingMethodComboBox.setValue(methods.get(0).getMid());
+        }
+		return methodMap;
+	}
     
     @Override
     public void attach() {

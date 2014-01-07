@@ -12,7 +12,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -162,7 +160,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 			@Override
 		    public void valueChange(ValueChangeEvent event) {
 			if(crossingMethodComboBox.size() > 0){
-	        		Integer breedingMethodSelected = mapMethods.get(event.getProperty().getValue());
+	        		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
 	        		try {
 	        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
 	        		    crossingMethodDescriptionTextArea.setReadOnly(false);
@@ -229,8 +227,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         }
     
         for (Method m : methods) {
-            crossingMethodComboBox.addItem(m.getMname());
-            mapMethods.put(m.getMname(), new Integer(m.getMid()));
+        	Integer methodId = m.getMid();
+        	crossingMethodComboBox.addItem(methodId);
+            crossingMethodComboBox.setItemCaption(methodId, m.getMname());
+			mapMethods.put(m.getMname(), new Integer(methodId));
         }
         
     }
@@ -247,43 +247,22 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         mapMethods = new HashMap<String, Integer>();
 
         if(showOnlyFavorites){
-        	populateWithFavoriteMethods();	
+        	try {
+				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, 
+						crossingMethodComboBox, mapMethods);
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+				"Error getting favorite methods!");
+			}
+			
         } else {
         	populateBreedingMethod();
         }
 
     }
-
-    
-    private void populateWithFavoriteMethods() {
-    	
-    	crossingMethodComboBox.removeAllItems();
-    	
-        favoriteMethodIds = new ArrayList<Integer>();
-        favoriteMethods = new ArrayList<Method>();
-         
-		try {
-			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
-
-			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
-	        
-	        //Get Methods
-	        if (!favoriteMethodIds.isEmpty()){
-	        	favoriteMethods = germplasmDataManager.getMethodsByIDs(favoriteMethodIds);
-	        }
-	        
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-
-		for(Method favoriteMethod : favoriteMethods){
-			crossingMethodComboBox.addItem(favoriteMethod.getMname());
-	        mapMethods.put(favoriteMethod.getMname(), favoriteMethod.getMid());
-		}
-		
-    }
-    
+   
+   
         
     @Override
     public void updateLabels() {
@@ -313,7 +292,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             
             //Use same breeding method for all crosses
             if (sameBreedingMethodForAllSelected()){
-                Integer breedingMethodSelected = mapMethods.get(crossingMethodComboBox.getValue());
+                Integer breedingMethodSelected = (Integer) crossingMethodComboBox.getValue();
                 for (Germplasm germplasm : container.getCrossesMade().getCrossesMap().keySet()){
                     germplasm.setMethodId(breedingMethodSelected);
                 }
