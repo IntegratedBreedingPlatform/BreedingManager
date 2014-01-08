@@ -147,11 +147,11 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 
 		
 		addComponent(matchingListsLabel, "top:0px; left:0px;");
-		addComponent(matchingListsDescription, "top:20px; left:0px;");
+		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTable, "top:40px; left:0px;");
 		
 		addComponent(matchingGermplasmsLabel, "top:195px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:215px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:218px; left:0px;");
 		addComponent(matchingGermplasmsTable, "top:235px; left:0px;");
 	}
 
