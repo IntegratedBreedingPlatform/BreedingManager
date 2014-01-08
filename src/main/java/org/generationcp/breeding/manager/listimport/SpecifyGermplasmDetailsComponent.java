@@ -397,7 +397,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	}
         
     public void nextButtonClickAction(){
-        if (validatePedigreeOption()) {
+        if (validateMethod() && validateLocation() && validatePedigreeOption()) {
             if(this.nextScreen != null){
                 
             	germplasmNameObjects = new ArrayList<GermplasmName>();
@@ -731,6 +731,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private boolean validatePedigreeOption() {
         return BreedingManagerUtil.validateRequiredField(getWindow(), pedigreeOptionComboBox,
                 messageSource, pedigreeOptionComboBox.getCaption());
+    }
+    
+    private boolean validateLocation() {
+        return BreedingManagerUtil.validateRequiredField(getWindow(), locationComboBox,
+                messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
+    }
+    
+    private boolean validateMethod() {
+        return BreedingManagerUtil.validateRequiredField(getWindow(), breedingMethodComboBox,
+                messageSource, messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL));
     }
   
     private void searchOrAddANewGermplasm(int germplasmMatchesCount, Integer ibdbUserId, Integer dateIntValue, String desig, int index
