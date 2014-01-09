@@ -115,7 +115,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         } else { 
         	studyTree = createCombinedStudyTree();
         }
-                
+        
+        studyTreeUtil = new StudyTreeUtil(studyTree, this);
         treeContainer.addComponent(studyTree);
     }
 
