@@ -139,6 +139,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         listName = new Label(germplasmList.getName());
         listDescription = new Label(getDescription(germplasmList.getDescription()));
         listDescription.setWidth("150px");
+        listDescription.setDescription(germplasmList.getDescription());
         listCreationDate = new Label(String.valueOf(germplasmList.getDate()));
         listType = new Label(getFullListTypeName(germplasmList.getType()));
         listStatus = new Label(germplasmList.getStatusString());
