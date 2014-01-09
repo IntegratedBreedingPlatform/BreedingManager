@@ -298,6 +298,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
          } else {
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
+        	 totalListEntries.setWidth("150px");
         	 toolsMenuBar.addComponent(totalListEntries,"top:12px");
         	 initializeListDataTable(toolsMenuBar);    	 
              
