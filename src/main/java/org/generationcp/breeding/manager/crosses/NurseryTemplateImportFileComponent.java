@@ -19,6 +19,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,9 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
 
     private NurseryTemplateMain source;
     private Accordion accordion;
@@ -115,7 +119,7 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     }
     
     protected void initializeActions() {
-        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
+        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager, germplasmDataManager);
         uploadComponents.setReceiver(crossingManagerUploader);
         uploadComponents.addListener(crossingManagerUploader);
         

@@ -219,10 +219,19 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String breedingMethod = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD.getValue());
             String beedingMethodId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue());
+            int bmid = 0;
+            try {
+            	bmid = Integer.valueOf(beedingMethodId);
+				Method method = germplasmDataManager.getMethodByID(bmid);
+			} catch (MiddlewareQueryException e) {            	
+				// TODO Auto-generated catch block
+				e.printStackTrace();            	
+            } catch (ClassCastException e) {}
             if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
-                crossingMethodComboBox.addItem(breedingMethod);
-                mapMethods.put(breedingMethod, Integer.valueOf(beedingMethodId));
-                crossingMethodComboBox.select(breedingMethod);
+                crossingMethodComboBox.addItem(bmid);
+                crossingMethodComboBox.setItemCaption(bmid, breedingMethod);
+                mapMethods.put(breedingMethod, bmid);
+                crossingMethodComboBox.select(bmid);
             }else{
                 crossingMethodComboBox.select("");
             }
@@ -295,6 +304,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             
             //Use same breeding method for all crosses
             if (sameBreedingMethodForAllSelected()){
+            	System.out.println("Crossing Method Value: "+crossingMethodComboBox.getValue()); //dennis
                 Integer breedingMethodSelected = (Integer) crossingMethodComboBox.getValue();
                 for (Germplasm germplasm : container.getCrossesMade().getCrossesMap().keySet()){
                     germplasm.setMethodId(breedingMethodSelected);

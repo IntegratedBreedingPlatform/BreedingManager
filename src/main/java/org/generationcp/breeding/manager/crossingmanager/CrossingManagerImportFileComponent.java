@@ -16,6 +16,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
@@ -71,6 +72,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
     
     public CrossingManagerImportFileComponent(CrossingManagerMain source, Accordion accordion){
         this.source = source;
@@ -173,7 +176,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     }
     
     protected void initializeActions() {
-        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager);
+        crossingManagerUploader = new CrossingManagerUploader(this, germplasmListManager, germplasmDataManager);
         uploadComponents.setReceiver(crossingManagerUploader);
         uploadComponents.addListener(crossingManagerUploader);
         
