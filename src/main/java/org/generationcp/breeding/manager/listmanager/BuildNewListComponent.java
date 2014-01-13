@@ -1102,6 +1102,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public Table getGermplasmsTable(){
 		return germplasmsTable;
 	}
+	
+	public Button getResetButton(){
+		return resetButton;
+	}
 
 	public Object getSource(){
 		return source;
