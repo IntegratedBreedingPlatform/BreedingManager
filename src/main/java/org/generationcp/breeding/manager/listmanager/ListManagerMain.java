@@ -15,6 +15,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -103,6 +104,10 @@ public class ListManagerMain extends VerticalLayout implements
 			buildNewListButton.setVisible(false);
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
+			TextField listNameText = buildNewListComponent.getListNameText();
+			if (listNameText != null){
+				listNameText.focus();
+			}
 		}
 	}
 	
@@ -156,4 +161,6 @@ public class ListManagerMain extends VerticalLayout implements
 	public ListManagerBrowseListsComponent getBrowseListsComponent(){
 		return browseListsComponent;
 	}
+	
+	
 }
