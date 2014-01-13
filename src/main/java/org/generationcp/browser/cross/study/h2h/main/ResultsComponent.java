@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
+import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
@@ -19,6 +20,7 @@ import org.generationcp.browser.cross.study.h2h.main.util.HeadToHeadDataListExpo
 import org.generationcp.browser.cross.study.util.HeadToHeadResultsUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
@@ -26,6 +28,7 @@ import org.generationcp.middleware.domain.h2h.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
@@ -77,6 +80,9 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     public List<ResultsData> resultsDataList = new ArrayList<ResultsData>();
     private TabSheet mainTabs;
     
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+	
     public ResultsComponent(HeadToHeadCrossStudyMain mainScreen){
         this.mainScreen = mainScreen;
         
@@ -285,34 +291,38 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     }
     
     public void exportButtonClickAction(){
-        //this.nextScreen.populateEnvironmentsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
-        //this.mainScreen.selectThirdTab();
+            	
+    	EnvironmentForComparison envForComparison = this.finalEnvironmentForComparisonList.get(0);
+    	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
     	
-    	 String tempFileName = System.getProperty( "user.home" ) + "/HeadToHeadDataList.xls";
+    	 // in current export format, if # of traits > 42, will exceed Excel's 255 columns limitation	
+    	 if (traitsIterator.size() > 42){
+    		 MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING),
+    				 messageSource.getMessage(Message.H2H_NUM_OF_TRAITS_EXCEEDED));
+
+    	 } else {
+    		 String tempFileName = System.getProperty( "user.home" ) + "/HeadToHeadDataList.xls";
+    		 HeadToHeadDataListExport listExporter = new HeadToHeadDataListExport();
+    		 
+    		 try {
+    			 
+    			 listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
+    			 FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+    			 fileDownloadResource.setFilename("HeadToHeadDataList.xls");
+    			 
+    			 this.getWindow().open(fileDownloadResource);
+    			 this.mainScreen.selectFirstTab();
+    			 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+    			 //File tempFile = new File(tempFileName);
+    			 //tempFile.delete();
+    		 } catch (HeadToHeadDataListExportException e) {
+    			 MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.HEAD_TO_HEAD_COMPARISON_WINDOW_NAME) 
+    					 , "Error with exporting list."
+    					 , e.getMessage(), Notification.POSITION_CENTERED);
+    		 }
          
-         HeadToHeadDataListExport listExporter = new HeadToHeadDataListExport();
-
-         try {
-        	EnvironmentForComparison envForComparison = this.finalEnvironmentForComparisonList.get(0);
-         	Set<TraitForComparison> traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-         	 
-            listExporter.exportHeadToHeadDataListExcel(tempFileName, resultsDataList, traitsIterator, columnIdData, columnIdDataMsgMap);
-            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-            fileDownloadResource.setFilename("HeadToHeadDataList.xls");
-
-            this.getWindow().open(fileDownloadResource);
-            this.mainScreen.selectFirstTab();
-            //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-            //File tempFile = new File(tempFileName);
-            //tempFile.delete();
-         } catch (HeadToHeadDataListExportException e) {
-             MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.HEAD_TO_HEAD_COMPARISON_WINDOW_NAME) 
-                        , "Error with exporting list."
-                        , e.getMessage(), Notification.POSITION_CENTERED);
          }
          
-    	//MessageNotifier.showWarning(getWindow(), "Warning!", "Do the export now", Notification.POSITION_CENTERED);
-        return;
     }
         
     public void backButtonClickAction(){
