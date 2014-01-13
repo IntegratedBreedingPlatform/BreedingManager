@@ -47,9 +47,11 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,12 +97,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private boolean readingBlankCrossesTemplateFile = false;
     
     private GermplasmListManager germplasmListManager;
+    private GermplasmDataManager germplasmDataManager;
     
     private List<Integer> invalidMaleEntryIdsOnSecondSheet;
     private List<Integer> invalidFemaleEntryIdsOnSecondSheet;
 
     // TODO: consider renaming class to "NurseryTemplateUploader" or something so that it's a generic uploader utility class
-    public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager) {
+    public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager, GermplasmDataManager germplasmDataManager) {
         System.out.println("CROSSING MANAGER: " + (source instanceof CrossingManagerImportFileComponent));
         System.out.println("NURSERY TEMPLATE: " + (source instanceof NurseryTemplateImportFileComponent));
         
@@ -113,6 +116,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         
         this.source = source;
         this.germplasmListManager = germplasmListManager;
+        this.germplasmDataManager = germplasmDataManager;
         initializeUploadBehavior();
     }
     
@@ -314,7 +318,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
     }
     
-    private void readConditions(){
+    @SuppressWarnings("unused")
+	private void readConditions(){
         currentRow++; //Skip row from file info
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONDITION") 
@@ -334,7 +339,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         if(fileIsValid){
             ImportedCondition importedCondition;
             currentRow++; 
-            while(!rowIsEmpty()){
+            while(!rowIsEmpty() && fileIsValid){
                 importedCondition = new ImportedCondition(getCellStringValue(currentSheet,currentRow,0,true)
                         ,getCellStringValue(currentSheet,currentRow,1,true)
                         ,getCellStringValue(currentSheet,currentRow,2,true)
@@ -344,7 +349,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                         ,getCellStringValue(currentSheet,currentRow,6,true)
                         ,getCellStringValue(currentSheet,currentRow,7,true));
                 importedGermplasmCrosses.addImportedCondition(importedCondition);
-
+                
                 //Retrieve Male GermplasmList object specified in the template file
                 if (TemplateCrossingCondition.MALE_LIST_ID.getValue().equals(importedCondition.getCondition())){
                     maleGermplasmList = retrieveGermplasmList(importedCondition, "male");
@@ -353,7 +358,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 else if (TemplateCrossingCondition.FEMALE_LIST_ID.getValue().equals(importedCondition.getCondition())){
                     femaleGermplasmList = retrieveGermplasmList(importedCondition, "female");
                 }
-
+                
                 System.out.println("");
                 System.out.println("DEBUG | Condition:"+getCellStringValue(currentSheet,currentRow,0));
                 System.out.println("DEBUG | Description:"+getCellStringValue(currentSheet,currentRow,1));
@@ -416,6 +421,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     }
     
     private void validateRequiredConditions(List<String> requiredConditions) {
+    	
         if (requiredConditions.size() > 0) {
             // build HashSet of Conditions read from the template file
             HashSet<String> fileConditions = new HashSet<String>();
@@ -439,8 +445,58 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 String missingConditionString = missingConditions.toString().replace("[", "").replace("]", "").replace(", ", "<br/>");
                 showInvalidFileError("Required Conditions not found in template file:", missingConditionString);
             }
+            
+            validateMethodInput();
         }
+
     }
+    
+    private void validateMethodInput() {
+    	
+    	//Do not check if file is not uploaded
+    	if(originalFilename==null || originalFilename.equals(""))
+    		return;
+    	
+    	Method method = null; 
+    	String methodFromFile = "";
+    	int methodIdFromFile = 0;
+    	
+        List<ImportedCondition> conditions = importedGermplasmCrosses.getImportedConditions();
+
+        for (ImportedCondition c : conditions) {
+            if(c.getCondition().equals(TemplateCrossingCondition.BREEDING_METHOD.getValue())){
+            	methodFromFile = c.getValue();
+            } else if(c.getCondition().equals(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue())){
+            	System.out.println("C value: "+c.getValue());
+            	try {
+            		methodIdFromFile = (Integer) Integer.valueOf(c.getValue());
+            	} catch(NumberFormatException e){
+    				showInvalidFileError("","Invalid Method ID.");            		
+            	}
+            }
+        }
+        
+        if(!methodFromFile.equals("") && methodIdFromFile!=0 && conditions.size()>0){
+	        //Check if BreedingMedthodID is valid
+	    	try {
+				method = germplasmDataManager.getMethodByID(methodIdFromFile);
+				if(method==null){
+					showInvalidFileError("","Invalid Method ID.");
+				}
+			} catch (MiddlewareQueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				showInvalidFileError("","Invalid Method ID.");
+			}
+	        //Check if BreedingMethod name is the same with method of methodID
+	        if(fileIsValid){
+	        	if(method!=null && !method.getMname().toUpperCase().equals(methodFromFile.toUpperCase())){
+	        		showInvalidFileError("","Method does not match given method ID.");
+	        	}
+	        }
+    	}
+    }
+    
     
     private void validateCrossingConditionValues() {
         // build HashMap of Conditions read from the template file
