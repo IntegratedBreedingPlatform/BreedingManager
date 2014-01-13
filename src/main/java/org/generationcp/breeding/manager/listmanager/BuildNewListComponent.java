@@ -293,7 +293,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		HorizontalLayout buttonRow = new HorizontalLayout();
 		buttonRow.setWidth("100%");
-		buttonRow.setHeight("150px");
+		buttonRow.setHeight("50px");
 		buttonRow.setSpacing(true);
 		
 		saveButton = new Button();
@@ -313,7 +313,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		buttonRow.addComponent(saveButton);
 		buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
 		
-		addComponent(buttonRow, "top:365px; left:0px;");
+		addComponent(buttonRow, "top:400px; left:0px;");
 		
 		setWidth("100%");
 		setHeight("550px");
