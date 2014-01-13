@@ -15,9 +15,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -76,7 +74,7 @@ public class ListManagerMain extends VerticalLayout implements
         tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
         tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
         tabSheet.setHeight("580px");
-
+        
         HorizontalLayout buildNewActionBar = new HorizontalLayout();
         buildNewActionBar.setWidth("100%");
         buildNewActionBar.setHeight("30px");
@@ -104,11 +102,12 @@ public class ListManagerMain extends VerticalLayout implements
 			buildNewListButton.setVisible(false);
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
-			TextField listNameText = buildNewListComponent.getListNameText();
-			if (listNameText != null){
-				listNameText.focus();
+			Button resetButton = buildNewListComponent.getResetButton();
+			if (resetButton != null) {
+				resetButton.focus();
 			}
 		}
+		
 	}
 	
 	private void setTitleContent(String guideMessage){
