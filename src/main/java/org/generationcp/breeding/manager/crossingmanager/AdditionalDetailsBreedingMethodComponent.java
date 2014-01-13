@@ -160,8 +160,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 			@Override
 		    public void valueChange(ValueChangeEvent event) {
 			if(crossingMethodComboBox.size() > 0){
-	        		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
 	        		try {
+		        		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
 	        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
 	        		    crossingMethodDescriptionTextArea.setReadOnly(false);
 	        		    crossingMethodDescriptionTextArea.setValue(methodDescription);
@@ -169,7 +169,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 	     
 	        		} catch (MiddlewareQueryException e) {
 	        		    e.printStackTrace();
+	        		} catch (ClassCastException e) {
+	        			//e.printStackTrace();
 	        		}
+	        		
 			}
 			 
 		    }
