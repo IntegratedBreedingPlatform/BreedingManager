@@ -1,22 +1,12 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.*;
-
-import com.vaadin.data.Item;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.event.dd.acceptcriteria.And;
-import com.vaadin.event.dd.acceptcriteria.SourceIs;
-import com.vaadin.ui.*;
-import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
-import com.vaadin.ui.AbstractSelect.AcceptItem;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Table.TableTransferable;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -30,6 +20,30 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.data.Item;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.And;
+import com.vaadin.event.dd.acceptcriteria.SourceIs;
+import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Table.TableTransferable;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
@@ -170,6 +184,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 	return new And(new SourceIs(femaleParents), AcceptItem.ALL);
                 }
         });
+        femaleParents.addActionHandler(new CrossingManagerActionHandler(this));
         
         optionGroupMakeCrosses = new OptionGroup();
         optionGroupMakeCrosses.setWidth(560,UNITS_PIXELS);
@@ -238,6 +253,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 	return new And(new SourceIs(maleParents), AcceptItem.ALL);
                 }
         });
+        maleParents.addActionHandler(new CrossingManagerActionHandler(this));
         
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
@@ -326,25 +342,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     /*
      * Action handler for Make Cross button
      */
-    @SuppressWarnings("unchecked")
     public void makeCrossButtonAction(){
         
-        //List<GermplasmListEntry> femaleList = new ArrayList<GermplasmListEntry>();
-        //femaleList.addAll((Collection<GermplasmListEntry>) femaleParents.getValue());
-        //Collections.sort(femaleList);
-    	
         List<GermplasmListEntry> femaleList = getCorrectSortedValue(femaleParents);
-        
-        System.out.println("Female Collection: "+femaleList);
-        
-        //List<GermplasmListEntry> maleList = new ArrayList<GermplasmListEntry>();
-        //maleList.addAll((Collection<GermplasmListEntry>) maleParents.getValue());
-        //Collections.sort(maleList);
-        
         List<GermplasmListEntry> maleList = getCorrectSortedValue(maleParents);
-        
-        System.out.println("Male Collection: "+maleList);
-        
         
         if (!femaleList.isEmpty() && !maleList.isEmpty()){
             CrossType optionId = (CrossType) optionGroupMakeCrosses.getValue();

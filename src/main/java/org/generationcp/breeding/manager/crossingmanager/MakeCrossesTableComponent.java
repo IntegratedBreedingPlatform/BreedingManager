@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
-import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -62,11 +62,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     private static final long serialVersionUID = 3702324761498666369L;
     private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
-    
-    private static final Action ACTION_SELECT_ALL = new Action("Select All");
-    private static final Action ACTION_DELETE = new Action("Delete selected crosses");
-    private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE };
-    
+     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -93,7 +89,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
         return true;
     }
     
-    @SuppressWarnings("serial")
     @Override
     public void afterPropertiesSet() throws Exception {
         lblCrossMade = new Label();
@@ -120,21 +115,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setColumnHeader(SOURCE, "SOURCE");
         
         tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
-        
-        tableCrossesMade.addActionHandler(new Action.Handler() {
-            public Action[] getActions(Object target, Object sender) {
-                    return ACTIONS_TABLE_CONTEXT_MENU;
-            }
-
-            public void handleAction(Action action, Object sender, Object target) {
-                if (ACTION_DELETE == action) {
-                    deleteCrossAction();
-                } else if (ACTION_SELECT_ALL == action) {
-                    tableCrossesMade.setValue(tableCrossesMade.getItemIds());
-                    tableCrossesMade.setPageLength(0);
-                }
-            }
-        });
+        tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
         
         addComponent(lblCrossMade);
         addComponent(tableCrossesMade);
@@ -261,7 +242,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     }
     
     // Action handler for Delete Selected Crosses context menu option
-    private void deleteCrossAction(){
+    public void deleteCrossAction(){
         final Collection<?> selectedIds = (Collection<?>) tableCrossesMade.getValue();
         if (!selectedIds.isEmpty()){
             for (Object itemId : selectedIds){
