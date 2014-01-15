@@ -494,6 +494,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	        		showInvalidFileError("","Method does not match given method ID.");
 	        	}
 	        }
+    	} else if(methodFromFile.equals("")){
+    		showInvalidFileError("","Method can't be blank.");
     	}
     }
     

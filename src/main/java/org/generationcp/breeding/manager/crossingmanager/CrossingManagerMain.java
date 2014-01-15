@@ -263,6 +263,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         crossingManagerTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         crossingManagerTitle.setContentMode(Label.CONTENT_XHTML);
         crossingManagerTitle.setValue(title);
+        crossingManagerTitle.setWidth("230px");
         titleLayout.addComponent(crossingManagerTitle);
         
         Label descLbl = new Label(guideMessage);
