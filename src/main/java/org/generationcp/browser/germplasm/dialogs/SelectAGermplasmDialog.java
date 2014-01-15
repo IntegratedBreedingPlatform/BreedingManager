@@ -222,8 +222,10 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        layoutForGermplasm.setWidth("640px");
-        layoutForGermplasm.setHeight("560px");
+        //layoutForGermplasm.setWidth("640px");
+        //layoutForGermplasm.setHeight("560px");
+        layoutForGermplasm.setWidth("98%");
+        layoutForGermplasm.setHeight("98%");
         
         Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
@@ -231,8 +233,10 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
         layoutForGermplasm.addComponent(germplasmInfo);
         
         germplasmWindow.setContent(layoutForGermplasm);
-        germplasmWindow.setWidth("645px");
-        germplasmWindow.setHeight("600px");
+        //germplasmWindow.setWidth("645px");
+        //germplasmWindow.setHeight("600px");
+        germplasmWindow.setWidth("90%");
+        germplasmWindow.setHeight("90%");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
         
