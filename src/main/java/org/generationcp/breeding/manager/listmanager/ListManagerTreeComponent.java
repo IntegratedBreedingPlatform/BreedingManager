@@ -111,6 +111,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		heading = new Label();
 		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
 		heading.setStyleName(Bootstrap.Typography.H4.styleName());
+		heading.setWidth("90px");
     			
         
 		if (this.germplasmListBrowserMainLayout != null){
