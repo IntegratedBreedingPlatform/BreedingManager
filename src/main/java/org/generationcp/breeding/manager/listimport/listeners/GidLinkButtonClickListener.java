@@ -90,12 +90,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmWindow.setContent(layoutForGermplasm);
 //        germplasmWindow.setWidth("645px");
 //        germplasmWindow.setHeight("600px");
-      germplasmWindow.setWidth("90%");
-      germplasmWindow.setHeight("90%");
+        germplasmWindow.setWidth("90%");
+        germplasmWindow.setHeight("90%");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
-        
-        //germplasmWindow.setSizeFull();
         
         germplasmWindow.setModal(true);
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
