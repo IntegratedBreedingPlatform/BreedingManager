@@ -76,8 +76,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        layoutForGermplasm.setWidth("620px");
-        layoutForGermplasm.setHeight("500px");
+//        layoutForGermplasm.setWidth("620px");
+//        layoutForGermplasm.setHeight("500px");
+        layoutForGermplasm.setWidth("100%");
+        layoutForGermplasm.setHeight("100%");
         
         Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
@@ -86,10 +88,14 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
 //        germplasmWindow.addComponent(layoutForGermplasm);
         germplasmWindow.setContent(layoutForGermplasm);
-        germplasmWindow.setWidth("645px");
-        germplasmWindow.setHeight("600px");
+//        germplasmWindow.setWidth("645px");
+//        germplasmWindow.setHeight("600px");
+      germplasmWindow.setWidth("90%");
+      germplasmWindow.setHeight("90%");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
+        
+        //germplasmWindow.setSizeFull();
         
         germplasmWindow.setModal(true);
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
