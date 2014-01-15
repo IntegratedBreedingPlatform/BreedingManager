@@ -259,8 +259,13 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         germplasmWindow.setContent(layoutForGermplasm);
         //germplasmWindow.setWidth("645px");
         //germplasmWindow.setHeight("600px");
-        germplasmWindow.setWidth("90%");
-        germplasmWindow.setHeight("90%");
+        //germplasmWindow.setWidth("90%");
+        //germplasmWindow.setHeight("90%");
+        
+        //Instead of setting by percentage, compute it
+        germplasmWindow.setWidth(Integer.valueOf((int) Math.round(parentWindow.getWidth()*.90))+"px");
+        germplasmWindow.setHeight(Integer.valueOf((int) Math.round(parentWindow.getHeight()*.90))+"px");
+        
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
         
