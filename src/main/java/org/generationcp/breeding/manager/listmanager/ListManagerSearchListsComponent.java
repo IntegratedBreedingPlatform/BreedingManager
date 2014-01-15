@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.listeners.EnterShortcutListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -18,15 +17,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
@@ -97,6 +90,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         searchLabel.setWidth("200px");
         
         searchField = new TextField();
+        searchField.setImmediate(true);
         
         /**
          * TODO: replace with image button
@@ -159,7 +153,6 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	public void searchButtonClickAction(){
 		String q = searchField.getValue().toString();
-		System.out.println("Search button clicked! Searching for '"+q+"'");
 		doSearch(q);
 	}
 	
@@ -201,6 +194,10 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	
 	public SearchResultsComponent getSearchResultsComponent(){
 		return searchResultsComponent;
+	}
+	
+	public TextField getSearchTextfield(){
+		return searchField;
 	}
 	
 }

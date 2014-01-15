@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.ListManagerTabChangeListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -16,6 +18,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -74,6 +77,7 @@ public class ListManagerMain extends VerticalLayout implements
         tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
         tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
         tabSheet.setHeight("580px");
+        tabSheet.addListener(new ListManagerTabChangeListener(this));
         
         HorizontalLayout buildNewActionBar = new HorizontalLayout();
         buildNewActionBar.setWidth("100%");
