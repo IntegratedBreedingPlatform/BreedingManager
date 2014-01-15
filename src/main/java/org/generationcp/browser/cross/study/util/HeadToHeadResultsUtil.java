@@ -182,12 +182,28 @@ public class HeadToHeadResultsUtil {
      */
     public static Double getMeanValue(GermplasmPair germplasmPair, int index, TraitForComparison traitForComparison, 
     		Map<String, ObservationList> observationMap,List<EnvironmentForComparison> environmentForComparisonList){
-
     	int numOfValidEnv = 0;
     	double summation = 0;
     	String gid1ForCompare = Integer.toString(germplasmPair.getGid1());
 		String gid2ForCompare = Integer.toString(germplasmPair.getGid2());
 		String traitId = Integer.toString(traitForComparison.getTraitInfo().getId());
+		
+		double totalEnvWeight = 0;
+		for(EnvironmentForComparison envForComparison : environmentForComparisonList){
+			String envId = envForComparison.getEnvironmentNumber().toString();
+			String keyToChecked1 = traitId + ":" + envId + ":" +gid1ForCompare;
+			String keyToChecked2 = traitId + ":" + envId + ":" +gid2ForCompare;
+			
+			ObservationList obs1 = observationMap.get(keyToChecked1);
+    		ObservationList obs2 = observationMap.get(keyToChecked2);
+    		
+    		// get only values for envt's where trait has been observed for both germplasms
+    		if(obs1 != null && obs2 != null){
+    			EnvironmentWeight envtWeight = (EnvironmentWeight) envForComparison.getWeightComboBox().getValue();	
+    			int weight = envtWeight.getWeight();
+    			totalEnvWeight += weight;
+    		}
+		}
 
 		for(EnvironmentForComparison envForComparison: environmentForComparisonList){			
 			String envId = envForComparison.getEnvironmentNumber().toString();
@@ -202,14 +218,13 @@ public class HeadToHeadResultsUtil {
 	    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
 	    			numOfValidEnv++;
 	    			
-	    			System.out.println("Env: "+envForComparison.getLocationName());
-	    			System.out.println("Weight: "+envForComparison.getWeight());
-	    			System.out.println("");
+	    			EnvironmentWeight envtWeight = (EnvironmentWeight) envForComparison.getWeightComboBox().getValue();	
+	    			int weight = envtWeight.getWeight();
 	    			
 	    			if (index == 1){
-	    				summation += obs1.getWeightedObservationAverage(envForComparison.getWeight());
+	    				summation += obs1.getWeightedObservationAverage(Double.valueOf(weight/totalEnvWeight));
 	    			} else if (index == 2){
-	    				summation += obs2.getWeightedObservationAverage(envForComparison.getWeight());
+	    				summation += obs2.getWeightedObservationAverage(Double.valueOf(weight/totalEnvWeight));
 	    			}
 	    			
 	    		}
@@ -219,9 +234,8 @@ public class HeadToHeadResultsUtil {
 		
 		double mean = 0;
 		if (numOfValidEnv > 0){
-			mean = summation / numOfValidEnv;
+			mean = summation;
 		}
-		
 		return mean;
     }
 
