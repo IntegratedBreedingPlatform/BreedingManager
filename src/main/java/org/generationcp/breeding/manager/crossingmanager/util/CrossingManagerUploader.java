@@ -466,8 +466,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         for (ImportedCondition c : conditions) {
             if(c.getCondition().equals(TemplateCrossingCondition.BREEDING_METHOD.getValue())){
             	methodFromFile = c.getValue();
-            } else if(c.getCondition().equals(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue())){
-            	System.out.println("C value: "+c.getValue());
+            } else if(c.getCondition().equals(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue()) && !"".equals(c.getValue())){
             	try {
             		methodIdFromFile = (Integer) Integer.valueOf(c.getValue());
             	} catch(NumberFormatException e){
@@ -494,8 +493,10 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 	        		showInvalidFileError("","Method does not match given method ID.");
 	        	}
 	        }
-    	} else if(methodFromFile.equals("")){
+    	} else if(methodFromFile.equals("") && methodIdFromFile!=0){
     		showInvalidFileError("","Method can't be blank.");
+    	} else if(!methodFromFile.equals("") && methodIdFromFile == 0) {
+    	    showInvalidFileError("","Method ID can't be blank.");
     	}
     }
     

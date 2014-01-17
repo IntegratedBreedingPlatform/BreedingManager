@@ -218,24 +218,28 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 
             ImportedGermplasmCrosses importedCrosses = this.container.getCrossesMade().getCrossingManagerUploader().getImportedGermplasmCrosses();
             String breedingMethod = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD.getValue());
-            String beedingMethodId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue());
-            int bmid = 0;
-            try {
-            	bmid = Integer.valueOf(beedingMethodId);
-				Method method = germplasmDataManager.getMethodByID(bmid);
-			} catch (MiddlewareQueryException e) {            	
-				// TODO Auto-generated catch block
-				e.printStackTrace();            	
-            } catch (ClassCastException e) {}
-            if(breedingMethod.length() > 0 && beedingMethodId.length() > 0){
-                crossingMethodComboBox.addItem(bmid);
-                crossingMethodComboBox.setItemCaption(bmid, breedingMethod);
-                mapMethods.put(breedingMethod, bmid);
-                crossingMethodComboBox.select(bmid);
-            }else{
-                crossingMethodComboBox.select("");
+            String breedingMethodId = importedCrosses.getImportedConditionValue(TemplateCrossingCondition.BREEDING_METHOD_ID.getValue());
+            
+            if (!"".equals(breedingMethodId)) {
+                int bmid = 0;
+                try {
+                    bmid = Integer.valueOf(breedingMethodId);
+                    Method method = germplasmDataManager.getMethodByID(bmid);
+                } catch (MiddlewareQueryException e) {              
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();                
+                } catch (ClassCastException e) {
+                    
+                }
+                if(breedingMethod.length() > 0 && breedingMethodId.length() > 0){
+                    crossingMethodComboBox.addItem(bmid);
+                    crossingMethodComboBox.setItemCaption(bmid, breedingMethod);
+                    mapMethods.put(breedingMethod, bmid);
+                    crossingMethodComboBox.select(bmid);
+                }else{
+                    crossingMethodComboBox.select("");
+                }
             }
-        
         }
     
         for (Method m : methods) {
