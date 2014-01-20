@@ -308,7 +308,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             
             //Use same breeding method for all crosses
             if (sameBreedingMethodForAllSelected()){
-            	System.out.println("Crossing Method Value: "+crossingMethodComboBox.getValue()); //dennis
                 Integer breedingMethodSelected = (Integer) crossingMethodComboBox.getValue();
                 for (Germplasm germplasm : container.getCrossesMade().getCrossesMap().keySet()){
                     germplasm.setMethodId(breedingMethodSelected);

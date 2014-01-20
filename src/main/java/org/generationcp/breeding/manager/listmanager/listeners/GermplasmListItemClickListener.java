@@ -40,7 +40,6 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 
         if (source instanceof ListManagerTreeComponent) {
         	String item = event.getItemId().toString();
-        	//System.out.println("item: " + item);
         	
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
 	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
