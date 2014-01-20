@@ -523,8 +523,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	buildChildMap(childItemId,true);
     	Integer rootItemId = rootNodeProjectId;
     	
-    	System.out.println("Root: "+rootItemId);
-    	System.out.println("Parent Child Map: "+parentChildItemIdMap);
+//    	System.out.println("Root: "+rootItemId);
+//    	System.out.println("Parent Child Map: "+parentChildItemIdMap);
     	
     	if(rootItemId!=null){
     		addStudyNode(rootItemId);

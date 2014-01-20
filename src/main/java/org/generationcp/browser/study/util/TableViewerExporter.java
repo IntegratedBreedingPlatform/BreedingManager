@@ -111,7 +111,7 @@ public class TableViewerExporter {
         		//System.out.println("ColumnHeader: "+columnHeaders.get(x));
     			//System.out.println(columnId.get(x)+": "+table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)));
     		}	
-        	System.out.println("");
+//        	System.out.println("");
         }
         
         

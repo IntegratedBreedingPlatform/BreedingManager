@@ -404,7 +404,7 @@ public class TableViewerCellSelectorUtil {
 	public XSSFColor getColor(String itemId, String propertyId){
 		for(int i=0;i<cellCoordinateColorAssigments.size();i++){
 			if(cellCoordinateColorAssigments.get(i).getCellCoordinate().getX().equals(propertyId) && cellCoordinateColorAssigments.get(i).getCellCoordinate().getY().equals(itemId.toString())){
-				System.out.println("R:"+cellCoordinateColorAssigments.get(i).getRedValue()+" G:"+cellCoordinateColorAssigments.get(i).getGreenValue()+" B:"+cellCoordinateColorAssigments.get(i).getBlueValue());
+//				System.out.println("R:"+cellCoordinateColorAssigments.get(i).getRedValue()+" G:"+cellCoordinateColorAssigments.get(i).getGreenValue()+" B:"+cellCoordinateColorAssigments.get(i).getBlueValue());
 				return new XSSFColor(new java.awt.Color(cellCoordinateColorAssigments.get(i).getRedValue(), cellCoordinateColorAssigments.get(i).getGreenValue(), cellCoordinateColorAssigments.get(i).getBlueValue()));
 			}
 		}

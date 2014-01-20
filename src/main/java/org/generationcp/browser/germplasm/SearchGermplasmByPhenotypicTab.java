@@ -494,7 +494,7 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         } else {
             LOG.error("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
-            System.out.println("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
+//            System.out.println("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
             throw new InternationalizableException(new Exception("Input error. No selected trait scale method."), 
                     Message.ERROR_INPUT, Message.ERROR_NO_SELECTED_TRAIT_SCALE_METHOD);
         }

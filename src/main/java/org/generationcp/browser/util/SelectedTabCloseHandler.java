@@ -12,6 +12,7 @@ public class SelectedTabCloseHandler implements TabSheet.CloseHandler{
     
     @Override
     public void onTabClose(TabSheet tabsheet, Component tabContent) {
+    	
         if(tabsheet.getComponentCount() > 1){
             String tabCaption=tabsheet.getTab(tabContent).getCaption();
             Tab tab = Util.getTabToFocus(tabsheet, tabCaption);

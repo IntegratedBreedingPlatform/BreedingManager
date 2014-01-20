@@ -87,7 +87,7 @@ public class ManagementNeighborsQuery implements Query{
      */
     @Override
     public List<Item> loadItems(int start, int numOfRows) {
-	System.out.println("loadItem");
+	
         List<Item> items = new ArrayList<Item>();
 
         List<Germplasm> germplasms = new ArrayList<Germplasm>();
