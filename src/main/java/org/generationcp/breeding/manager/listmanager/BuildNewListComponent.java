@@ -49,6 +49,7 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Alignment;
@@ -417,6 +418,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object droppedOverItemId = dropData.getItemIdOver();
 			    
+//                if(dropData!=null && dropData.getDropLocation()!=null && (dropData.getDropLocation().equals(VerticalDropLocation.MIDDLE) || dropData.getDropLocation().equals(VerticalDropLocation.BOTTOM))){
+//                	droppedOverItemId = dropData.getItemIdOver();
+//                } else if(dropData!=null && dropData.getDropLocation()!=null && dropData.getDropLocation().equals(VerticalDropLocation.TOP)){
+//                	droppedOverItemId = getItemIdBefore(germplasmsTable, (Integer) dropData.getItemIdOver());
+//                } else {
+//                	droppedOverItemId = getLastItemId(germplasmsTable);
+//                }
+                
                 //Handle drops from MATCHING GERMPLASMS TABLE
                 if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
                 	
@@ -424,11 +433,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 	
                 	//If table has value (item/s is/are highlighted in the source table, add that)
                 	if(selectedItemIds.size()>0){
-                		for(int i=0;i<selectedItemIds.size();i++){
+                		for(int lastAddedItemId=0, i=0;i<selectedItemIds.size();i++){
                 			if(i==0)
-                				addGermplasmToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
+                				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
                 			else 
-                				addGermplasmToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
+                				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), lastAddedItemId);
                 		}
                 	//Add dragged item itself
                 	} else {
@@ -529,7 +538,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         for (GermplasmListData data : listDatas) {
         
 			Item newItem;
-			if(droppedOnItemIdObject!=null)
+			if(droppedOnItemIdObject==null)
 				newItem = germplasmsTable.addItem(getNextListEntryId());
 			else
 				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -572,10 +581,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
         
         if(itemIds.size()>0){
+        	
         	for(Integer currentItemId : itemIds){
-        		if(droppedOnItemIdObject!=null)
+        		if(droppedOnItemIdObject==null)
         			newItem = germplasmsTable.addItem(getNextListEntryId());
-        		else
+        		else 
         			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
         		
         		Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
@@ -596,9 +606,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
             		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
         		
+            	
+            	
         	}
         } else {
-    		if(droppedOnItemIdObject!=null)
+    		if(droppedOnItemIdObject==null)
     			newItem = germplasmsTable.addItem(getNextListEntryId());
     		else
     			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -640,7 +652,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         if(itemIds.size()>0){
         	for(Integer currentItemId : itemIds){
-        		if(droppedOnItemIdObject!=null)
+        		if(droppedOnItemIdObject==null)
         			newItem = germplasmsTable.addItem(getNextListEntryId());
         		else
         			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -675,14 +687,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	 * @param gid
 	 * @param droppedOn
 	 */
-	public void addGermplasmToGermplasmTable(Integer gid, Object droppedOnItemIdObject){
+	public Integer addGermplasmToGermplasmTable(Integer gid, Object droppedOnItemIdObject){
 
 		try {
 			
 			Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
 			Item newItem;
-			if(droppedOnItemIdObject!=null)
+			if(droppedOnItemIdObject==null)
 				newItem = germplasmsTable.addItem(getNextListEntryId());
 			else
 				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -713,10 +725,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			
 			assignSerializedEntryNumber();
 			
+			return getNextListEntryId();
+			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
 
+		return null;
 	}
 	
 	/**
@@ -776,6 +791,60 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	
     	return trueOrderedSelectedItemIds;
     }
+
+	/**
+	 * Iterates through the whole table, gets last item ID
+	 */
+	@SuppressWarnings("unchecked")
+	private Integer getLastItemId(Table table){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+        	
+    	for(Integer itemId: itemIds){
+   			trueOrderedSelectedItemIds.add(itemId);
+    	}
+    	
+    	if(trueOrderedSelectedItemIds.size()>0)
+    		return trueOrderedSelectedItemIds.get(trueOrderedSelectedItemIds.size()-1);
+    	else
+    		return null;
+    }	
+	
+	/**
+	 * Iterates through the whole table, gets item before given item id, returns null if none
+	 */
+	@SuppressWarnings("unchecked")
+	private Integer getItemIdBefore(Table table, Integer targetItemId){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+        	
+    	for(Integer itemId: itemIds){
+   			trueOrderedSelectedItemIds.add(itemId);
+    	}
+    	
+    	if(trueOrderedSelectedItemIds.size()==0)
+    		return null;
+    	
+    	for(int i=0;i<trueOrderedSelectedItemIds.size();i++){
+    		if(trueOrderedSelectedItemIds.get(i).equals(targetItemId) && i==0){
+    			//It means, target is first item
+    			return null;
+    		} else if(trueOrderedSelectedItemIds.get(i).equals(targetItemId)){
+    			if(trueOrderedSelectedItemIds.get(i-1)!=null)
+    				return trueOrderedSelectedItemIds.get(i-1);
+    		}
+    	}
+    	return null;
+    }		
+	
 	
 	/**
 	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
@@ -789,9 +858,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
     	itemIds = getItemIds(table);
     
-    	//System.out.println("Selected Item IDs: "+selectedItemIds);
-    	//System.out.println("Item IDs: "+itemIds);
-    	
     	for(Integer itemId: itemIds){
     		if(selectedItemIds.contains(itemId)){
     			Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue()).getCaption().toString());
