@@ -102,9 +102,10 @@ public class CreatePedigreeGraph
 
         if(level==1){
             String leafNodeGIDRoot=germplasmPedigreeTree.getRoot().getGermplasm().getGid().toString();
-            String leafNodeLabelRoot=germplasmPedigreeTree.getRoot().getGermplasm().getPreferredName().getNval()+ "("+germplasmPedigreeTree.getRoot().getGermplasm().getGid().toString()+")";
+            String leafNodeLabelRoot= "GID: " + germplasmPedigreeTree.getRoot().getGermplasm().getGid().toString() + "\n" + 
+            		germplasmPedigreeTree.getRoot().getGermplasm().getPreferredName().getNval();
             gv.addln(leafNodeGIDRoot+" [shape=box];");
-            gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\"];");
+            gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\", fontname=\"Helvetica\", fontsize=12.0];");
             gv.addln(leafNodeGIDRoot+";");
         }else{
             addNode(germplasmPedigreeTree.getRoot(), 1);
@@ -115,9 +116,10 @@ public class CreatePedigreeGraph
 
         if(node.getLinkedNodes().size()==0){
             String leafNodeGIDRoot=node.getGermplasm().getGid().toString();
-            String leafNodeLabelRoot=node.getGermplasm().getPreferredName().getNval()+ "("+node.getGermplasm().getGid().toString()+")";
+            String leafNodeLabelRoot= "GID: " + node.getGermplasm().getGid().toString() + "\n" + 
+            		node.getGermplasm().getPreferredName().getNval();
             gv.addln(leafNodeGIDRoot+" [shape=box];");
-            gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\"];");
+            gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\", fontname=\"Helvetica\", fontsize=12.0];");
             gv.addln(leafNodeGIDRoot+";");        
         }
         
@@ -127,26 +129,29 @@ public class CreatePedigreeGraph
 
                 if(!parent.getGermplasm().getGid().toString().equals("0")){
                     String leafNodeGID=parent.getGermplasm().getGid().toString();
-                    String leafNodeLabel=parent.getGermplasm().getPreferredName().getNval()+ "("+parent.getGermplasm().getGid().toString()+")";
+                    String leafNodeLabel= "GID: " + parent.getGermplasm().getGid().toString() + "\n" +
+                    		parent.getGermplasm().getPreferredName().getNval();
 
                     gv.addln(leafNodeGID+" [shape=box];");
-                    gv.addln(leafNodeGID+" [label=\""+leafNodeLabel+"\"];");
+                    gv.addln(leafNodeGID+" [label=\""+leafNodeLabel+"\", fontname=\"Helvetica\", fontsize=12.0];");
 //                    gv.addln(leafNodeGID+" [URL=http://google.com];");
 
                     String parentNodeGID=node.getGermplasm().getGid().toString();
-                    String parentNodeLabel=node.getGermplasm().getPreferredName().getNval()+"("+node.getGermplasm().getGid().toString()+")";
+                    String parentNodeLabel= "GID: " + node.getGermplasm().getGid().toString() + "\n" + 
+                    		node.getGermplasm().getPreferredName().getNval();
 
                     gv.addln(parentNodeGID+" [shape=box];");
-                    gv.addln(parentNodeGID+" [label=\""+parentNodeLabel+"\"];");
+                    gv.addln(parentNodeGID+" [label=\""+parentNodeLabel+"\", fontname=\"Helvetica\", fontsize=12.0];");
                     
 
                     if(level==1){
                         
 //                        System.out.println("I'm at level 1");
                         String leafNodeGIDRoot=node.getGermplasm().getGid().toString();
-                        String leafNodeLabelRoot=node.getGermplasm().getPreferredName().getNval()+ "("+node.getGermplasm().getGid().toString()+")";
+                        String leafNodeLabelRoot= "GID: " + node.getGermplasm().getGid().toString() + "\n" +
+                        		node.getGermplasm().getPreferredName().getNval();
                         gv.addln(leafNodeGIDRoot+" [shape=box];");
-                        gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\"];");
+                        gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\", fontname=\"Helvetica\", fontsize=12.0];");
 //                        gv.addln(leafNodeGIDRoot+" [URL=http://google.com];");
                         gv.addln(leafNodeGID+"->"+ leafNodeGIDRoot +";");
                     }
