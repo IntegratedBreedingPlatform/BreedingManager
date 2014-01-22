@@ -16,6 +16,7 @@ import java.util.Iterator;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateConditionsComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectListButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -57,6 +59,7 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
     private HorizontalLayout buttonArea;
     
     private Table parentList;
+    private CheckBox tagAllBox;
     private CrossingManagerMakeCrossesComponent makeCrossesComponent;
     
     @Autowired
@@ -77,18 +80,18 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
         this.makeCrossesComponent = null;
     }
     
-    public SelectGermplasmListWindow(Table parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent,Label listnameParent) {
+    public SelectGermplasmListWindow(Table parentList, CrossingManagerMakeCrossesComponent makeCrossesComponent,Label listnameParent, CheckBox tagAllBox) {
         this.parentList = parentList;
         this.makeCrossesComponent = makeCrossesComponent;
         this.listnameParent=listnameParent;
+        this.tagAllBox = tagAllBox;
     }
     
     public SelectGermplasmListWindow(NurseryTemplateConditionsComponent nurseryTemplateConditionComponent,String germplasmListFor) {
-    // TODO Auto-generated constructor stub
-    this.nurseryTemplateCall=true;
-    this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
-    this.germplasmListFor=germplasmListFor;
-    this.parentList = new Table();
+	    this.nurseryTemplateCall=true;
+	    this.nurseryTemplateConditionComponent=nurseryTemplateConditionComponent;
+	    this.germplasmListFor=germplasmListFor;
+	    this.parentList = new Table();
         this.makeCrossesComponent = null;
     }
 
@@ -169,7 +172,10 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
             
             // add entries to the parent ListSelect
             GermplasmListEntry entry = new GermplasmListEntry(listDataId, gid, entryId, designation);
-            parentList.addItem(new Object[] {entry.getEntryId()+" -> "+entry.getDesignation()}, entry);
+            CheckBox tag = new CheckBox();
+            tag.addListener(new ParentsTableCheckboxListener(parentList, entry, tagAllBox));
+            tag.setImmediate(true);
+            parentList.addItem(new Object[] {tag, entry.getEntryId()+" -> "+entry.getDesignation()}, entry);
             
             //String itemCaption = entry.getEntryId()+" -> "+entry.getDesignation(); 
             //parentList.setItemCaption(entry, itemCaption);
