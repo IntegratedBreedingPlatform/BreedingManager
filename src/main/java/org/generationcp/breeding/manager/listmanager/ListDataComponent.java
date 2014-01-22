@@ -79,6 +79,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
@@ -93,7 +94,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource  {
+public class ListDataComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource  {
 
 	private static final long serialVersionUID = -2847082090222842504L;
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
@@ -113,6 +114,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private List<GermplasmListData> listDatas;
     private String designationOfListEntriesDeleted="";
     
+    private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
     private String MENU_SELECT_ALL="Select All"; 
     private String MENU_EXPORT_LIST="Export List"; 
     private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
@@ -182,6 +184,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private AddColumnContextMenu addColumnContextMenu;  
 	private String lastCellvalue;
 	private long listDataCount;
+	private CheckBox tagAllCheckBox;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -201,6 +204,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     @Override
     public void afterPropertiesSet() throws Exception{
     	listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+    	
+    	setHeight("500px");
     	
 		menu = new ContextMenu();
 
@@ -287,7 +292,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	 toolsMenuBar.setHeight("30px");
        	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:30px;");
    	 
-    	 addComponent(toolsMenuBar);
+    	 addComponent(toolsMenuBar, "top:0px; left:0px;");
     	 
     	 listDatas = new ArrayList<GermplasmListData>();
 
@@ -305,6 +310,53 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
          }
     }
 
+    private void syncItemCheckBoxes(){
+    	List<Integer> itemIds = getItemIds(listDataTable);
+    	for(Integer itemId : itemIds){
+    		CheckBox itemCheckBox = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
+    		itemCheckBox.setValue(false);
+    	}
+    	List<Integer> selectedItemIds = getSelectedItemIds(listDataTable);
+    	for(Integer itemId : selectedItemIds){
+    		CheckBox itemCheckBox = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
+    		itemCheckBox.setValue(true);
+    	}
+    }
+    
+	/**
+	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getSelectedItemIds(Table table){
+		List<Integer> itemIds = new ArrayList<Integer>();
+		List<Integer> selectedItemIds = new ArrayList<Integer>();
+		List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
+		
+    	selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+    	itemIds = getItemIds(table);
+        	
+    	for(Integer itemId: itemIds){
+    		if(selectedItemIds.contains(itemId)){
+    			trueOrderedSelectedItemIds.add(itemId);
+    		}
+    	}
+    	
+    	return trueOrderedSelectedItemIds;
+    }
+    
+	/**
+	 * Get item id's of a table, and return it as a list 
+	 * @param table
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getItemIds(Table table){
+		List<Integer> itemIds = new ArrayList<Integer>();
+    	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
+    	return itemIds;
+	}
+		
+	
 	private void initializeListDataTable(AbsoluteLayout toolsMenuBar)
 			throws MiddlewareQueryException {
 		// create the Vaadin Table to display the Germplasm List Data
@@ -318,6 +370,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		 listDataTable.setHeight("95%");
 		 listDataTable.setDragMode(TableDragMode.ROW);
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
+		 listDataTable.setColumnReorderingAllowed(false);
+		 
+		 listDataTable.addListener(new Table.ValueChangeListener() {
+			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+				 syncItemCheckBoxes();
+			 }
+		 });
+		 		 
 		 
 		 if(!fromUrl){
 		         listDataTable.addActionHandler(new Action.Handler() {
@@ -372,6 +432,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		         });
 		 }
 
+		 
+		 listDataTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
+		 
 		 //make GID as link only if the page wasn't directly accessed from the URL
 		 if (!fromUrl) {
 		     listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
@@ -387,6 +450,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		 listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
 //             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
        
+		 
+		 messageSource.setColumnHeader(listDataTable, CHECKBOX_COLUMN_ID, Message.TAG);
 		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
 		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
 		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
@@ -403,9 +468,26 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 		     }
 		 }
-		 setSpacing(false);
-		 addComponent(listDataTable);
-   
+
+		 tagAllCheckBox = new CheckBox();
+		 tagAllCheckBox.setImmediate(true);
+		 tagAllCheckBox.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(((Boolean) tagAllCheckBox.getValue()).equals(true)){
+					listDataTable.setValue(listDataTable.getItemIds());
+				} else {
+					listDataTable.setValue(null);
+				}
+			}
+			 
+		 });
+		 
+		 
+		 addComponent(listDataTable, "top:55px; left:0px;");
+		 addComponent(tagAllCheckBox, "top:59px; left: 28px;");
+		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
 		     addColumnButton = new Button();
 		     addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
@@ -697,16 +779,36 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             } else {
                 gidObject = data.getGid();
             }
+            
+            CheckBox itemCheckBox = new CheckBox();
+            itemCheckBox.setData(data.getId());
+            itemCheckBox.setImmediate(true);
+	   		itemCheckBox.addListener(new ClickListener() {
+	 			private static final long serialVersionUID = 1L;
+	 			@SuppressWarnings("unchecked")
+				@Override
+	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+	 					listDataTable.select(itemCheckBox.getData());
+	 				} else {
+	 					listDataTable.unselect(itemCheckBox.getData());
+	 				}
+	 			}
+	 			 
+	 		});
 
             listDataTable.addItem(new Object[] {
-                    gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
+                    itemCheckBox, gidObject,data.getGid(),data.getEntryId(), data.getEntryCode(), data.getSeedSource(),
                     data.getDesignation(), data.getGroupName() 
 //                    , data.getStatusString()
             }, data.getId());
         }
 
         listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
-        listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
+        listDataTable.setVisibleColumns(new String[] { 
+        		CHECKBOX_COLUMN_ID
+        		,ListDataTablePropertyID.GID.getName()
         		,ListDataTablePropertyID.ENTRY_ID.getName()
         		,ListDataTablePropertyID.ENTRY_CODE.getName()
         		,ListDataTablePropertyID.SEED_SOURCE.getName()

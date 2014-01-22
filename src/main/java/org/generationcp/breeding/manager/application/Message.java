@@ -326,6 +326,7 @@ public enum Message{
     ,YES
     ,NO
     ,ERROR
+    ,TAG
    
     
 }
