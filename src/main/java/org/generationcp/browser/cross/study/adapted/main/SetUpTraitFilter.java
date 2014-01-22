@@ -3,7 +3,6 @@ package org.generationcp.browser.cross.study.adapted.main;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.impl.NumFacetImpl;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
@@ -38,6 +37,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	public static final String NEXT_BUTTON_ID = "SetUpTraitFilter Next Button ID";
 	   
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitFilter.class);
 
 	private static final int NUM_OF_SECTIONS = 3;
@@ -111,7 +111,9 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
         }
         
         mainTabSheet.addListener(new SelectedTabChangeListener() {
-            @Override
+            private static final long serialVersionUID = -7294872922580572493L;
+
+			@Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected = mainTabSheet.getSelectedTab();
                 Tab tab = mainTabSheet.getTab(selected);

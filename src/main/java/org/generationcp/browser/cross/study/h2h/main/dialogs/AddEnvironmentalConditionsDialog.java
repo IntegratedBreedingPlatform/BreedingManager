@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
@@ -36,7 +34,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
@@ -44,6 +41,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
 
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("unused")
 	private final static Logger LOG = LoggerFactory.getLogger(AddEnvironmentalConditionsDialog.class);
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "AddEnvironmentalConditionsDialog Close Button ID";
@@ -63,10 +61,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     private CrossStudyDataManager crossStudyDataManager;
     
     private Component source;
-    private Window parentWindow;
     private List<Integer> environmentIds;
-    
-    private VerticalLayout mainLayout;
     
     private Button applyButton;
     private Button cancelButton;
@@ -75,14 +70,13 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
 
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
-    private Map<String, CheckBox> checkBoxMap = new HashMap();
+    private Map<String, CheckBox> checkBoxMap = new HashMap<String, CheckBox>();
     private List<String> conditionNames = new ArrayList<String>();
     private Set<TrialEnvironmentProperty> selectedProperties = new LinkedHashSet<TrialEnvironmentProperty>();    
     private CheckBox tagUnTagAll;
     
     public AddEnvironmentalConditionsDialog(Component source, Window parentWindow, List<Integer> environmentIds){
         this.source = source;
-        this.parentWindow = parentWindow;
         this.environmentIds = environmentIds;
     }
 
@@ -150,13 +144,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     		box.setValue(val);
     	}
         
-    	if(classname.equals("EnvironmentsAvailableComponent")){
-    		((EnvironmentsAvailableComponent)source).reopenAddEnvironmentConditionsWindow();
-        }
-        else if(classname.equals("SpecifyAndWeighEnvironments")){
-        	((SpecifyAndWeighEnvironments)source).reopenAddEnvironmentConditionsWindow();
-        }
-        else if(classname.equals("EnvironmentFilter")){
+    	if(classname.equals("EnvironmentFilter")){
         	((EnvironmentFilter)source).reopenAddEnvironmentConditionsWindow();
         }	
     }
@@ -244,11 +232,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
     }
     
     public void clickApplyButton(String classname){
-    	if(classname.equals("EnvironmentsAvailableComponent")){
-    		((EnvironmentsAvailableComponent)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
-    	} else if(classname.equals("SpecifyAndWeighEnvironments")){
-    		((SpecifyAndWeighEnvironments)source).addEnviromentalConditionColumns(this.conditionNames, this.selectedProperties);
-    	} else if(classname.equals("EnvironmentFilter")){
+    	if(classname.equals("EnvironmentFilter")){
     		((EnvironmentFilter)source).addEnviromentalConditionColumns(this.selectedProperties);
     	}
     	

@@ -9,7 +9,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,7 +24,8 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 	
     private static final long serialVersionUID = -3667517088395779496L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.adapted.main.WelcomeScreen.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.adapted.main.WelcomeScreen.class);
     
     public static final String NEXT_BUTTON_ID = "WelcomeScreen Next Button ID";
     
@@ -49,7 +49,6 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -92,7 +91,6 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 				proceedToNextScreen();
 			}
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

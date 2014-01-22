@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
@@ -16,12 +14,10 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
@@ -33,7 +29,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
@@ -41,7 +36,8 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
 
     private static final long serialVersionUID = -7651767452229107837L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(FilterLocationDialog.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(FilterLocationDialog.class);
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "FilterLocationDialog Close Button ID";
     public static final String APPLY_BUTTON_ID = "FilterLocationDialog Apply Button ID";
@@ -51,15 +47,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     private static final String TAG_COLUMN_ID = "FilterLocationDialog Tag Column Id";
     private static final String TAG_ALL = "FilterLocationDialog TAG_ALL Column Id";
     
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
     private Component source;
-    private Label germplasmComponent;
-    private Window parentWindow;
-    
-    private VerticalLayout mainLayout;
     
     private Button applyButton;
     private Button cancelButton;
@@ -70,22 +58,17 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     private Map<String, FilterByLocation> filterLocationCountryMap;
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
-    //private Map<String, Object[]> itemMap = new HashMap();
-    private List<FilterLocationDto> checkFilterLocationLevel1DtoList = new ArrayList();
-    private List<FilterLocationDto> checkFilterLocationLevel3DtoList = new ArrayList();
-    private Map<String, CheckBox> locationCountryCheckBoxMap  = new HashMap();
-    private Map<String, FilterLocationDto> locationCountryFilterDtoMap  = new HashMap();
-    private Map<String, List<String>> countryLocationMapping = new HashMap();
+    private List<FilterLocationDto> checkFilterLocationLevel1DtoList = new ArrayList<FilterLocationDto>();
+    private List<FilterLocationDto> checkFilterLocationLevel3DtoList = new ArrayList<FilterLocationDto>();
+    private Map<String, CheckBox> locationCountryCheckBoxMap  = new HashMap<String, CheckBox>();
+    private Map<String, FilterLocationDto> locationCountryFilterDtoMap  = new HashMap<String, FilterLocationDto>();
+    private Map<String, List<String>> countryLocationMapping = new HashMap<String, List<String>>();
     private CheckBox tagUnTagAll;
     
     
     public FilterLocationDialog(Component source, Window parentWindow, Map<String, FilterByLocation> filterLocationCountryMap){
         this.source = source;
-        this.parentWindow = parentWindow;
         this.filterLocationCountryMap = filterLocationCountryMap;
-       
-        
-        	
     }
 
     @Override
@@ -169,7 +152,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
 			Object countryObj = locationTreeTable.addItem(new Object[] {countryName, filterByLocation.getNumberOfEnvironmentForCountry(), box}, countryName);
 			locationCountryCheckBoxMap.put(countryName, box);
 			locationCountryFilterDtoMap.put(countryName, filterLocationDto);
-			List<String> keyList = new ArrayList();
+			List<String> keyList = new ArrayList<String>();
 			for(String locationNames : filterByLocation.getListOfLocationNames()){
 				CheckBox boxLocation = new CheckBox();
 				FilterLocationDto filterLocationDto1 = new FilterLocationDto(countryName, null, locationNames, null, 3);
@@ -229,9 +212,6 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     }
    
     public void clickCheckBox(boolean val, FilterLocationDto filterLocationDto){
-    	List tempList = new ArrayList();
-    	
-    	
     	
     	if(filterLocationDto.getLevel() == 1){
     		if(val){
@@ -258,7 +238,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     		//tempList = checkFilterLocationLevel3DtoList;
     		if(val){
     			
-    			Map<CheckBox, Boolean> prevStateMap = new HashMap();
+    			Map<CheckBox, Boolean> prevStateMap = new HashMap<CheckBox, Boolean>();
 				List<String> locationList = countryLocationMapping.get(filterLocationDto.getCountryName());
     			if(locationList != null){
 	    			for(String locKey : locationList){
@@ -314,13 +294,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         }
     	setupApplyButton();
     	
-    	if(className.equals("EnvironmentsAvailableComponent")){
-    		((EnvironmentsAvailableComponent)source).reopenFilterWindow();
-    	}
-    	else if(className.equals("SpecifyAndWeighEnvironments")){
-    		((SpecifyAndWeighEnvironments)source).reopenFilterWindow();
-    	}
-    	else if(className.equals("EnvironmentFilter")){
+    	if(className.equals("EnvironmentFilter")){
     		((EnvironmentFilter)source).reopenFilterWindow();
     	}
     	
@@ -328,8 +302,8 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     
     public void clickApplyButton(String classname){
     	
-        checkFilterLocationLevel1DtoList = new ArrayList();
-        checkFilterLocationLevel3DtoList = new ArrayList();
+        checkFilterLocationLevel1DtoList = new ArrayList<FilterLocationDto>();
+        checkFilterLocationLevel3DtoList = new ArrayList<FilterLocationDto>();
         for(String sKey : locationCountryCheckBoxMap.keySet()){
         	CheckBox temp  = locationCountryCheckBoxMap.get(sKey);
         	if((Boolean)temp.getValue()){
@@ -342,13 +316,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         	}
         }
         
-        if(classname.equals("EnvironmentsAvailableComponent")){
-        	((EnvironmentsAvailableComponent)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
-        }
-        else if(classname.equals("SpecifyAndWeighEnvironments")){
-        	((SpecifyAndWeighEnvironments)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
-        }
-        else if(classname.equals("EnvironmentFilter")){
+        if(classname.equals("EnvironmentFilter")){
         	((EnvironmentFilter)source).clickFilterByLocationApply(checkFilterLocationLevel1DtoList, checkFilterLocationLevel3DtoList);
         }
     }
@@ -373,7 +341,6 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     }
 }

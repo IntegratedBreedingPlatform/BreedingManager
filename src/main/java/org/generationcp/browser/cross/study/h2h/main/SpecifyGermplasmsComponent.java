@@ -23,7 +23,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -391,7 +390,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     }
     

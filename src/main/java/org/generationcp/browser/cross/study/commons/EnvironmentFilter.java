@@ -175,7 +175,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -801,22 +800,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
 	}
 	
-    @SuppressWarnings("rawtypes")
-	private String getNumberOfTagged(){
-    	Iterator iter = environmentsTable.getItemIds().iterator();
-    	int checked = 0;
-    	while(iter.hasNext()){
-    		String id = (String)iter.next();
-    		Item item = environmentsTable.getItem(id);
-    		CheckBox box = (CheckBox)item.getItemProperty(TAG_COLUMN_ID).getValue();
-    		if(((Boolean)box.getValue()).booleanValue() == true){
-    			checked++;
-    		}
-    	}
-    	return Integer.toString(checked);
-    }
-	
-	private boolean isValidEntry(TrialEnvironment trialEnv) {
+    private boolean isValidEntry(TrialEnvironment trialEnv) {
 		String countryName = trialEnv.getLocation().getCountryName();
     	String locationName = trialEnv.getLocation().getLocationName();
     	String studyName = trialEnv.getStudy().getName();
@@ -949,18 +933,6 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    	return Integer.valueOf(counter);
 	 }
 	 
-	private boolean isValidDoubleValue(String val){
-		if(val != null && !val.equalsIgnoreCase("")){
-			try{
-				Double.parseDouble(val);
-				return true;
-			}catch(NumberFormatException ee){
-				return false;
-			}
-		}
-		return false;
-	}
-	
 	public void nextButtonClickAction(){
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	final List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
@@ -976,7 +948,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
     	for (String sKey : environmentForComparison){
     		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
-    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
     		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
@@ -1204,10 +1175,12 @@ private static final long serialVersionUID = -3667517088395779496L;
 			this.className = className;
 		}
 
+		@SuppressWarnings("unused")
 		public Class<?> getMainClass() {
 			return mainClass;
 		}
 
+		@SuppressWarnings("unused")
 		public String getClassName() {
 			return className;
 		}

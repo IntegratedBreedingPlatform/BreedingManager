@@ -11,10 +11,8 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
-import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.listeners.CharacterTraitLimitsValueChangeListener;
 import org.generationcp.browser.cross.study.constants.CharacterTraitCondition;
-import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -114,6 +112,8 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 		traitsTable.setColumnWidth(DISTINCT_OBSERVED_VALUES_COLUMN_ID, 250);
 		
 		traitsTable.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			private static final long serialVersionUID = -3207714818504151649L;
+
 			public String generateDescription(Component source, Object itemId, Object propertyId) {
 				if(propertyId != null && propertyId == DISTINCT_OBSERVED_VALUES_COLUMN_ID) {
 			    	Table theTraitsTable = (Table) source;

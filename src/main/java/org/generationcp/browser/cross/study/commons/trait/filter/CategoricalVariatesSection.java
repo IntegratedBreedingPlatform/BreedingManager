@@ -11,10 +11,8 @@ import org.generationcp.browser.cross.study.adapted.dialogs.ViewTraitObservation
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmValueChangeListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
-import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.validators.CategoricalTraitLimitsValidator;
 import org.generationcp.browser.cross.study.constants.CategoricalVariatesCondition;
-import org.generationcp.browser.cross.study.constants.NumericTraitCriteria;
 import org.generationcp.browser.cross.study.constants.TraitWeight;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;

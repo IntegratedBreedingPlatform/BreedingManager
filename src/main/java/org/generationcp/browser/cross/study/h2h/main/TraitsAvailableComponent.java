@@ -46,7 +46,8 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 
     private static final long serialVersionUID = 991899235025710803L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent.class);
     
     public static final String BACK_BUTTON_ID = "TraitsAvailableComponent Back Button ID";
     public static final String NEXT_BUTTON_ID = "TraitsAvailableComponent Next Button ID";
@@ -333,7 +334,6 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
 				return;
 	        }
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -393,6 +393,6 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
+        
     }
 }

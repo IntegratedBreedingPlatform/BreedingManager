@@ -24,7 +24,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
-import org.generationcp.middleware.domain.h2h.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -46,7 +44,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 
     private static final long serialVersionUID = 2305982279660448571L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.ResultsComponent.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.h2h.main.ResultsComponent.class);
     
     private static final String MEAN_TEST_COLUMN_ID = "ResultsComponent Mean Test Column ID";
     private static final String MEAN_STD_COLUMN_ID = "ResultsComponent Mean STD Column ID";
@@ -287,7 +286,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
+        
     }
     
     public void exportButtonClickAction(){

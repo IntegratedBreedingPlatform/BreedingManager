@@ -77,7 +77,6 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     
     private QueryForAdaptedGermplasmMain mainScreen;
 	private SetUpTraitFilter nextScreen;
-	private DisplayResults resultsScreen;
 	
 	private Label headerLabel;
 	private Label headerValLabel;
@@ -100,11 +99,10 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     private FilterStudyDialog filterStudy;
     private AddEnvironmentalConditionsDialog addConditionsDialog;
     
-    private Map filterSetLevel1;
-    private Map filterSetLevel3;
-    private Map filterSetLevel4;
+    private Map<String, String> filterSetLevel1;
+    private Map<String, String> filterSetLevel3;
+    private Map<String, String> filterSetLevel4;
     
-    private static Integer NON_NUMERIC_VAL = -1;
     private boolean isFilterLocationClicked = false;
     private boolean isFilterStudyClicked = false;
     
@@ -129,12 +127,10 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
 			, DisplayResults resultScreen) {
 		 this.mainScreen = mainScreen;
 		 this.nextScreen = nextScreen;
-		 this.resultsScreen = resultScreen;
 	}
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -235,16 +231,16 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     }
 	
 	private void populateEnvironmentsTable() {
-		tableEntriesMap = new HashMap();
+		tableEntriesMap = new HashMap<String, Object[]>();
 		
-		environmentCheckBoxComparisonMap = new HashMap();
-    	environmentCheckBoxMap = new HashMap();
-    	environmentForComparison = new HashSet();
+		environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
+    	environmentCheckBoxMap = new HashMap<CheckBox, Item>();
+    	environmentForComparison = new HashSet<String>();
     	//numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
 		
-    	filterLocationCountryMap = new HashMap();
-		studyEnvironmentMap = new HashMap();
-		environmentIds = new HashSet();
+    	filterLocationCountryMap = new HashMap<String, FilterByLocation>();
+		studyEnvironmentMap = new HashMap<String, List<StudyReference>>();
+		environmentIds = new HashSet<Integer>();
 		
 		recreateTable(true,false);
 		
@@ -262,12 +258,12 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	this.environmentsTable.removeAllItems();
     	
     	if(recreateFilterLocationMap){
-	    	environmentCheckBoxComparisonMap = new HashMap();
-	    	environmentCheckBoxMap = new HashMap();	   
+	    	environmentCheckBoxComparisonMap = new HashMap<String, EnvironmentForComparison>();
+	    	environmentCheckBoxMap = new HashMap<CheckBox, Item>();	   
     	}
-    	environmentForComparison = new HashSet();
+    	environmentForComparison = new HashSet<String>();
     	
-    	Map<String, Item> trialEnvIdTableMap = new HashMap();
+    	Map<String, Item> trialEnvIdTableMap = new HashMap<String, Item>();
     	
     	try {
 			environments = crossStudyDataManager.getAllTrialEnvironments();
@@ -450,7 +446,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	String studyKey = study.getName() + FilterLocationDialog.DELIMITER + study.getDescription();
     	List<StudyReference> studyReferenceList = studyEnvironmentMap.get(studyKey);
     	if(studyReferenceList == null){
-    		studyReferenceList = new ArrayList();
+    		studyReferenceList = new ArrayList<StudyReference>();
     	}
     	studyReferenceList.add(study);
     	studyEnvironmentMap.put(studyKey, studyReferenceList);
@@ -460,7 +456,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     public void nextButtonClickAction(){
     	//System.out.println("next button on SpecifyAndWeighEnvironments clicked");
         //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
-    	List<EnvironmentForComparison> toBeCompared = new ArrayList();
+    	List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
     	    	
     	int total = 0;
     	//get the total of weights
@@ -474,7 +470,6 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	// compute the weight percentages
     	for (String sKey : environmentForComparison){
     		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
-    		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
     		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
@@ -511,8 +506,8 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     	//MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	
     	isFilterLocationClicked = true;
-    	filterSetLevel1 = new HashMap();
-    	filterSetLevel3 = new HashMap();
+    	filterSetLevel1 = new HashMap<String, String>();
+    	filterSetLevel3 = new HashMap<String, String>();
     	
     	    
     	for(FilterLocationDto dto : filterLocationDtoListLevel1){
@@ -540,7 +535,7 @@ public class SpecifyAndWeighEnvironments extends AbsoluteLayout implements Initi
     
     public void clickFilterByStudyApply(List<FilterLocationDto> filterLocationDtoListLevel4){
     	isFilterStudyClicked = true;
-    	filterSetLevel4 = new HashMap();
+    	filterSetLevel4 = new HashMap<String, String>();
     	for(FilterLocationDto dto : filterLocationDtoListLevel4){
     		String studyName = dto.getStudyName();
         	

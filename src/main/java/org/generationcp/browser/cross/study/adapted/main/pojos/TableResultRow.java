@@ -2,15 +2,11 @@ package org.generationcp.browser.cross.study.adapted.main.pojos;
 
 import java.util.Map;
 
-import org.generationcp.middleware.domain.h2h.TraitInfo;
-import org.generationcp.middleware.domain.h2h.TraitObservation;
-
 public class TableResultRow {
 	private Integer germplasmId;
 	private Map<NumericTraitFilter, TraitObservationScore> numericTOSMap;
 	private Map<CharacterTraitFilter, TraitObservationScore> characterTOSMap;
 	private Map<CategoricalTraitFilter, TraitObservationScore> categoricalTOSMap;
-	private Double combinedScore;
 	
 	public TableResultRow(Integer germplasmId,
 			Map<NumericTraitFilter, TraitObservationScore> numericTOSMap,

@@ -64,7 +64,9 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
         fourthTab.setEnabled(false);
         
         accordion.addListener(new SelectedTabChangeListener() {
-            @Override
+            private static final long serialVersionUID = -8540598103207115009L;
+
+			@Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected =accordion.getSelectedTab();
                 Tab tab = accordion.getTab(selected);
@@ -87,13 +89,11 @@ public class HeadToHeadComparisonMain extends VerticalLayout implements Initiali
 
     @Override
     public void updateLabels() {
-    // TODO Auto-generated method stub
     }
     
     private void setTitleContent(String guideMessage){
         titleLayout.removeAllComponents();
         
-        //String title =  "<h1>Breeder Queries:</h1> <h1>Simple Head-to-Head Comparison Query</h1> <h2>" + VERSION + "</h2>";
         String title =  "Main Head to Head Query <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
         mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());

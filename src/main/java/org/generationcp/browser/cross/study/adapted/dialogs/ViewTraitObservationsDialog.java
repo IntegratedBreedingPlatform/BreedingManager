@@ -24,9 +24,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -51,11 +49,7 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 	
-	private Component source;
-	private Window parentWindow;
-	
 	private Label popUpLabel;
-	private VerticalLayout mainLayout;
 	
 	private int traitId;
 	private List<Integer> environmentIds;
@@ -63,7 +57,6 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	private String variateType;
 	
 	private Table locationTable;
-	private Integer maxNoOfLocation;
 	List<TraitObservation> traitObservations;
 	List<Integer> gidList;
 	List<String> locationList;
@@ -72,8 +65,6 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	Map<Integer, String> gidLocMap;
 	
 	public ViewTraitObservationsDialog(Component source, Window parentWindow, String variateType, int traitId, String traitName, List<Integer> environmentIds){
-        this.source = source;
-        this.parentWindow = parentWindow;
         this.variateType = variateType;
         this.traitId = traitId;
         this.traitName = traitName;
@@ -82,8 +73,6 @@ public class ViewTraitObservationsDialog extends Window implements InitializingB
 	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

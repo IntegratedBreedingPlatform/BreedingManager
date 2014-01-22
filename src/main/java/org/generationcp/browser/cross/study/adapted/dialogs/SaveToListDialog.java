@@ -7,10 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
-import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -38,6 +36,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
@@ -46,15 +45,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class SaveToListDialog extends Window implements InitializingBean, InternationalizableComponent,
 		Property.ValueChangeListener, AbstractSelect.NewItemHandler {
 	
-    private static final Logger LOG = LoggerFactory.getLogger(SaveToListDialog.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(SaveToListDialog.class);
     private static final long serialVersionUID = 1L;
     public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
     public static final String CANCEL_BUTTON_ID = "Cancel Saving";
@@ -65,7 +62,6 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private Label labelType;
     private TextField txtName;
     
-	private Component source;
 	private Window parentWindow;
 	private Map<Integer, String> germplasmsMap;
     
@@ -82,15 +78,12 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private ComboBox comboBoxListName;
     private Select selectType;
     private List<GermplasmList> germplasmList;
-    private boolean lastAdded = false;
-    private boolean existingListSelected = false;
     private Map<String, Integer> mapExistingList;
     
     private QueryForAdaptedGermplasmMain mainScreen;
 	
 	public SaveToListDialog(QueryForAdaptedGermplasmMain mainScreen, Component source, Window parentWindow, Map<Integer,String> germplasmsMap){
 		this.mainScreen = mainScreen;
-        this.source = source;
         this.parentWindow = parentWindow;
         this.germplasmsMap = germplasmsMap;
     }
@@ -206,15 +199,11 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void addNewItem(String newItemCaption) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void valueChange(ValueChangeEvent event) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void saveButtonClickAction(){
@@ -360,8 +349,6 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
             }
 
             // Save Project Activity
-            GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication
-                    .get();
             GIDListString = GIDListString.substring(2); // remove ", ";
 
             User user = (User) workbenchDataManager
