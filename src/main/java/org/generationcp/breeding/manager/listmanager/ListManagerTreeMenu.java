@@ -26,6 +26,8 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerTreeMenu.class);
     private static final long serialVersionUID = -1409312205229461614L;
     
+    public static final int TOGGABLE_Y_COORDINATE = 30;
+    
     private static final String LIST_DETAILS = "List Details";
     private static final String LIST_DATA = "List Data";
     private static final String LIST_SEED_INVENTORY = "List Seed Inventory";
@@ -55,6 +57,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private ComponentTreeItem listDetails;
     private ComponentTreeItem listData;
     private ComponentTreeItem listSeedInventory;
+    
     
     public ListManagerTreeMenu(int germplasmListId,String listName,int germplasmListStatus,int userId, boolean fromUrl, ListManagerMain listManagerMain) {
         this.germplasmListId = germplasmListId;
@@ -112,16 +115,17 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
-        content.setMargin(true);
+//        content.setMargin(true);
         
-        listDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DETAILS)));
+        listDetails = content.addChild(listDetailComponent.createBasicDetailsHeader(
+        		messageSource.getMessage(Message.LIST_DETAILS)));
         listDetails.showChild();
         listDetails.addChild(listDetailComponent);
         listDetails.addListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< TOGGABLE_Y_COORDINATE){
 					listDetails.toggleChild();
 				}
 			}
@@ -133,7 +137,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< TOGGABLE_Y_COORDINATE){
 					listData.toggleChild();
 				}
 			}
@@ -145,7 +149,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< TOGGABLE_Y_COORDINATE){
 					listSeedInventory.toggleChild();
 				}
 			}
@@ -154,6 +158,8 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         
         this.addComponent(content);
     }
+	
+	
 
 	@Override
 	public void attach() {

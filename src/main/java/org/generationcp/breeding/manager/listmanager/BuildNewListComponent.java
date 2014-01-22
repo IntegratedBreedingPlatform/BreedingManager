@@ -538,10 +538,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         for (GermplasmListData data : listDatas) {
         
 			Item newItem;
-			if(droppedOnItemIdObject==null)
+			if(droppedOnItemIdObject==null){
 				newItem = germplasmsTable.addItem(getNextListEntryId());
-			else
-				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+        	} else {
+        		newItem = germplasmsTable.addItem(getNextListEntryId());
+				//newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+        	}
 
 			Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -694,10 +696,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
 			Item newItem;
-			if(droppedOnItemIdObject==null)
+			if(droppedOnItemIdObject==null){
 				newItem = germplasmsTable.addItem(getNextListEntryId());
-			else
-				newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+			} else {
+				newItem = germplasmsTable.addItem(getNextListEntryId());
+				//newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+			}
 			
 			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -717,7 +721,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
             String preferredName = preferredNames.get(gid); 
             
-            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+            if(newItem!=null && gidButton!=null)
+            	newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
 			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
 			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);

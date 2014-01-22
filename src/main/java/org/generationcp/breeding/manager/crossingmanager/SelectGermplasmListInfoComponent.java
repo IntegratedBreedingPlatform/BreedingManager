@@ -84,7 +84,7 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     protected void initializeComponents() {
         selectedListLabel = new Label(messageSource.getMessage(Message.SELECTED_LIST_LABEL));
         selectedListValue = new Label();
-        descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
+        descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
         descriptionValue = new Label();
         listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         listEntryValues = createEntryTable();

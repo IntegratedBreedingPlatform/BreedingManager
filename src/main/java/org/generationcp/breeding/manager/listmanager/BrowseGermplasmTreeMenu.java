@@ -92,7 +92,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
 					basicDetails.toggleChild();
 				}
 			}
@@ -106,7 +106,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
 					attributesDetails.toggleChild();
 				}
 			}
@@ -118,7 +118,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()<20){
+				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
 					pedigreeDetails.toggleChild();
 				}
 			}
