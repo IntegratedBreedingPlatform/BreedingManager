@@ -202,20 +202,20 @@
 
 .componenttree-children {
 	padding-left: 4px;
-	margin-left: 20px;
+	margin-left: 9px;
 }
 .componenttree-parent {
-	padding: 4px 0 4px 0px;
+	padding: 8px 0 4px 0px;
 }
 .componenttree-child {
-	padding: 4px 0 4px 19px;
-	margin-left: 20px;
+	padding: 5px 0 5px 15px;
+	margin-left: 9px;
 }
 
 /* Expand/collapse button: */
 .componenttree-expander {
 	float: left;
-	margin-left: 40px;
+	margin-left: 15px;
 	padding: 10px;
 }
 
