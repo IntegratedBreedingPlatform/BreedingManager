@@ -32,6 +32,7 @@ import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -159,6 +160,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty("Female Parents", String.class, null);
+        femaleParents.setColumnWidth("Female Parents", 150);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -3048433522366977000L;
@@ -212,6 +214,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 						tag.setValue(false);
 					}
 				}
+			}
+		});
+        
+        femaleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(propertyId != null && propertyId == "Female Parents") {
+			    	Table theTable = (Table) source;
+			    	Item item = theTable.getItem(itemId);
+			    	String name = (String) item.getItemProperty("Female Parents").getValue();
+			    	return name;
+			    }                                                                       
+			    return null;
 			}
 		});
         
@@ -282,6 +298,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty("Male Parents", String.class, null);
+        maleParents.setColumnWidth("Male Parents", 150);
         maleParents.setDragMode(TableDragMode.ROW);
         maleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -6464944116431652229L;
@@ -329,6 +346,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 						tag.setValue(false);
 					}
 				}
+			}
+		});
+        
+        maleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(propertyId != null && propertyId == "Male Parents") {
+			    	Table theTable = (Table) source;
+			    	Item item = theTable.getItem(itemId);
+			    	String name = (String) item.getItemProperty("Male Parents").getValue();
+			    	return name;
+			    }                                                                       
+			    return null;
 			}
 		});
         
