@@ -57,6 +57,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private ListManagerDetailsLayout displayDetailsLayout;
 	private ListManagerMain listManagerMain;
 	private AbsoluteLayout parentLayout;
+	private DropHandlerComponent dropHandler;
 	
 	private CheckBox matchingListsTagAllCheckBox;
 	private CheckBox matchingGermplasmsTagAllCheckBox;
@@ -94,7 +95,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
-		matchingListsTable.setHeight("140px");
+		matchingListsTable.setHeight("130px");
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
@@ -119,7 +120,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
-		matchingGermplasmsTable.setHeight("200px");
+		matchingGermplasmsTable.setHeight("130px");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
@@ -196,16 +197,20 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 			 
 		 });
 		
+		dropHandler = new DropHandlerComponent(listManagerMain, 350);
+
 		addComponent(matchingListsLabel, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTable, "top:40px; left:0px;");
 		addComponent(matchingListsTagAllCheckBox, "top:44px; left:28px;");
 		
+		addComponent(matchingGermplasmsLabel, "top:170px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:193px; left:0px;");
+		addComponent(matchingGermplasmsTable, "top:210px; left:0px;");
+		addComponent(matchingGermplasmsTagAllCheckBox, "top:214px; left:28px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:195px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:218px; left:0px;");
-		addComponent(matchingGermplasmsTable, "top:235px; left:0px;");
-		addComponent(matchingGermplasmsTagAllCheckBox, "top:239px; left:28px;");
+		addComponent(dropHandler, "top:360px; left:0px;");
+
 	}
 
 		
@@ -383,4 +388,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	}
 
 	
+    public DropHandlerComponent getDropHandlerComponent(){
+    	return dropHandler;
+    }
 }

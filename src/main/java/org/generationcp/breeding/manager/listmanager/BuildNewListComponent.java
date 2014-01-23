@@ -49,7 +49,6 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Alignment;
@@ -125,6 +124,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private SaveListButtonClickListener saveListButtonClickListener;
 	
 	private FillWith fillWith;
+	private boolean fromDropHandler;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -397,6 +397,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			matchingGermplasmsTable.setDragMode(TableDragMode.ROW); 
 			matchingListsTable.setDragMode(TableDragMode.ROW);
 			germplasmsTable.setDragMode(TableDragMode.ROW);
+			fromDropHandler = false;
 		}
 	}
 	
@@ -412,87 +413,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 				
 				Table sourceTable = (Table) transferable.getSourceComponent();
-				
-				setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
-			    
-			    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
-                Object droppedOverItemId = dropData.getItemIdOver();
-			    
-//                if(dropData!=null && dropData.getDropLocation()!=null && (dropData.getDropLocation().equals(VerticalDropLocation.MIDDLE) || dropData.getDropLocation().equals(VerticalDropLocation.BOTTOM))){
-//                	droppedOverItemId = dropData.getItemIdOver();
-//                } else if(dropData!=null && dropData.getDropLocation()!=null && dropData.getDropLocation().equals(VerticalDropLocation.TOP)){
-//                	droppedOverItemId = getItemIdBefore(germplasmsTable, (Integer) dropData.getItemIdOver());
-//                } else {
-//                	droppedOverItemId = getLastItemId(germplasmsTable);
-//                }
-                
-                //Handle drops from MATCHING GERMPLASMS TABLE
-                if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-                	
-                	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
-                	
-                	//If table has value (item/s is/are highlighted in the source table, add that)
-                	if(selectedItemIds.size()>0){
-                		for(int lastAddedItemId=0, i=0;i<selectedItemIds.size();i++){
-                			if(i==0)
-                				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
-                			else 
-                				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), lastAddedItemId);
-                		}
-                	//Add dragged item itself
-                	} else {
-                		addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
-                	}
-                	
-                //Handle drops from MATCHING LISTS TABLE
-                } else if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-                	
-                	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
-                	
-                	//If table has value (item/s is/are highlighted in the source table, add that)
-                	if(selectedItemIds.size()>0){
-                		for(int i=0;i<selectedItemIds.size();i++){
-                			if(i==0)
-                				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
-                			else
-                				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
-                		}
-                	//Add dragged item itself
-                	} else {
-                		addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
-            		}
-                	
-                //Handle drops from MATCHING GERMPLASMS TABLE
-                } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
-                    	
-                    	addGermplasmToGermplasmTable(transferable, droppedOverItemId);
-                    	
-                } else if(sourceTable.getData().equals(GERMPLASMS_TABLE_DATA)){
-                    //Check first if item is dropped on top of itself
-                    if(!transferable.getItemId().equals(droppedOverItemId)) {
-                        
-                        Item oldItem = germplasmsTable.getItem(transferable.getItemId());
-                        Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
-                        Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
-                        Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
-                        Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
-                        Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-//                        Object oldStatus = oldItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).getValue();
-                        germplasmsTable.removeItem(transferable.getItemId());
-                        
-                        Item newItem = germplasmsTable.addItemAfter(droppedOverItemId, transferable.getItemId());
-                        newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
-                        newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
-                        newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
-                        newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
-                        newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
-//                        newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(oldStatus);
-                        
-                        assignSerializedEntryNumber();
-                    }
-                }
-			    
-                updateAddedColumnValues();
+				AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+				setFromDropHandler(false);
+				handleDrop(sourceTable, transferable, dropData);				
 			}
 
 			@Override
@@ -500,6 +423,97 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				return AcceptAll.get();
 			}
 		});
+	}
+	
+	public void handleDrop(Table sourceTable, TableTransferable transferable, AbstractSelectTargetDetails dropData){
+		setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
+	    
+		Object droppedOverItemId = null;
+		if(!this.getFromDropHandler()){
+			droppedOverItemId = dropData.getItemIdOver();
+		}
+		
+//        if(dropData!=null && dropData.getDropLocation()!=null && (dropData.getDropLocation().equals(VerticalDropLocation.MIDDLE) || dropData.getDropLocation().equals(VerticalDropLocation.BOTTOM))){
+//        	droppedOverItemId = dropData.getItemIdOver();
+//        } else if(dropData!=null && dropData.getDropLocation()!=null && dropData.getDropLocation().equals(VerticalDropLocation.TOP)){
+//        	droppedOverItemId = getItemIdBefore(germplasmsTable, (Integer) dropData.getItemIdOver());
+//        } else {
+//        	droppedOverItemId = getLastItemId(germplasmsTable);
+//        }
+        
+        //Handle drops from MATCHING GERMPLASMS TABLE
+        if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
+        	
+        	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
+        	
+        	//If table has value (item/s is/are highlighted in the source table, add that)
+        	if(selectedItemIds.size()>0){
+        		for(int lastAddedItemId=0, i=0;i<selectedItemIds.size();i++){
+        			if(i==0)
+        				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
+        			else 
+        				lastAddedItemId = addGermplasmToGermplasmTable(selectedItemIds.get(i), lastAddedItemId);
+        		}
+        	//Add dragged item itself
+        	} else {
+        		addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+        	}
+        	
+        //Handle drops from MATCHING LISTS TABLE
+        } else if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
+        	List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
+        	
+        	//If table has value (item/s is/are highlighted in the source table, add that)
+        	if(selectedItemIds.size()>0){
+        		for(int i=0;i<selectedItemIds.size();i++){
+        			if(i==0)
+        				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
+        			else
+        				addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
+        		}
+        	//Add dragged item itself
+        	} else {
+        		addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
+    		}
+        	
+        //Handle drops from MATCHING GERMPLASMS TABLE
+        } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
+            	
+            	addGermplasmToGermplasmTable(transferable, droppedOverItemId);
+            	
+        } else if(sourceTable.getData().equals(GERMPLASMS_TABLE_DATA)){
+            //Check first if item is dropped on top of itself
+            if(!transferable.getItemId().equals(droppedOverItemId)) {
+                
+                Item oldItem = germplasmsTable.getItem(transferable.getItemId());
+                Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+                Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+                Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+                Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+//                Object oldStatus = oldItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).getValue();
+                germplasmsTable.removeItem(transferable.getItemId());
+                
+                Item newItem = germplasmsTable.addItemAfter(droppedOverItemId, transferable.getItemId());
+                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
+                newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
+                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
+                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
+                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
+//                newItem.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(oldStatus);
+                
+                assignSerializedEntryNumber();
+            }
+        }
+	    
+        updateAddedColumnValues();
+        updateDropListEntries();
+	}
+	
+	//update the dropHandlerListEntries
+	public void updateDropListEntries(){
+		((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
+		((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
 	}
 
     /**
@@ -538,7 +552,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         for (GermplasmListData data : listDatas) {
         
 			Item newItem;
-			if(droppedOnItemIdObject==null){
+			if(droppedOnItemIdObject==null || this.getFromDropHandler()){
 				newItem = germplasmsTable.addItem(getNextListEntryId());
         	} else {
         		newItem = germplasmsTable.addItem(getNextListEntryId());
@@ -585,7 +599,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         if(itemIds.size()>0){
         	
         	for(Integer currentItemId : itemIds){
-        		if(droppedOnItemIdObject==null)
+        		if(droppedOnItemIdObject==null || this.getFromDropHandler())
         			newItem = germplasmsTable.addItem(getNextListEntryId());
         		else 
         			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -612,7 +626,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	
         	}
         } else {
-    		if(droppedOnItemIdObject==null)
+    		if(droppedOnItemIdObject==null || this.getFromDropHandler())
     			newItem = germplasmsTable.addItem(getNextListEntryId());
     		else
     			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -654,7 +668,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         if(itemIds.size()>0){
         	for(Integer currentItemId : itemIds){
-        		if(droppedOnItemIdObject==null)
+        		if(droppedOnItemIdObject==null || this.getFromDropHandler())
         			newItem = germplasmsTable.addItem(getNextListEntryId());
         		else
         			newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
@@ -696,7 +710,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
 			Item newItem;
-			if(droppedOnItemIdObject==null){
+			if(droppedOnItemIdObject==null || this.getFromDropHandler()){
 				newItem = germplasmsTable.addItem(getNextListEntryId());
 			} else {
 				newItem = germplasmsTable.addItem(getNextListEntryId());
@@ -1120,6 +1134,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			germplasmsTable.removeItem(selectedItemId);
 		}
 		assignSerializedEntryNumber();
+		
+		this.updateDropListEntries(); //update the drop handler count
     }
 
     public void setupSaveButtonClickListener(){
@@ -1180,6 +1196,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
 	public Object getSource(){
 		return source;
+	}
+	
+	public void setFromDropHandler(boolean fromDropHandler){
+		this.fromDropHandler = fromDropHandler;
+	}
+	
+	public boolean getFromDropHandler(){
+		return this.fromDropHandler;
 	}
 	
 }
