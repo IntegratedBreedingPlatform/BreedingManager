@@ -127,8 +127,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         dataResultIndexContainer = new GermplasmIndexContainer(gQuery);
     }
     
-
-
     @Override
     public void afterPropertiesSet() throws Exception {
         // set as modal window, other components are disabled while window is open
@@ -162,7 +160,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
             if ("GID".equals(searchChoice)) {
                 try {
-                    int gid = Integer.parseInt(searchValue);
+                    Integer.parseInt(searchValue);
                 } catch (NumberFormatException e) {
                     withNoError = false;
                     if (getWindow() != null) {
@@ -227,8 +225,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        //layoutForGermplasm.setWidth("640px");
-        //layoutForGermplasm.setHeight("560px");
         layoutForGermplasm.setWidth("98%");
         layoutForGermplasm.setHeight("98%");
         
@@ -238,10 +234,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         layoutForGermplasm.addComponent(germplasmInfo);
         
         germplasmWindow.setContent(layoutForGermplasm);
-        //germplasmWindow.setWidth("645px");
-        //germplasmWindow.setHeight("600px");
-        //germplasmWindow.setWidth("90%");
-        //germplasmWindow.setHeight("90%");
         
         //Instead of setting by percentage, compute it
         germplasmWindow.setWidth(Integer.valueOf((int) Math.round(parentWindow.getWidth()*.90))+"px");

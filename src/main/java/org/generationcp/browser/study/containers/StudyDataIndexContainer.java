@@ -13,16 +13,11 @@
 package org.generationcp.browser.study.containers;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.domain.dms.Variable;
@@ -31,7 +26,9 @@ import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.search.StudyResultSet;
 import org.generationcp.middleware.domain.search.filter.BrowseStudyQueryFilter;
-
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Season;
+import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,7 +194,7 @@ public class StudyDataIndexContainer{
         // Create the container properties
         container.addContainerProperty(STUDY_ID, Integer.class, "");
         container.addContainerProperty(STUDY_NAME, String.class, "");
-        Map mapChecker = new HashMap();
+        Map<String, StudyReference> mapChecker = new HashMap<String, StudyReference>();
         try {
             BrowseStudyQueryFilter filter = new BrowseStudyQueryFilter();
             filter.setName(name);

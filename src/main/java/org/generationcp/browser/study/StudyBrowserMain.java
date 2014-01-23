@@ -16,7 +16,6 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.middleware.manager.Database;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -33,14 +32,10 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
     private final static String VERSION = "1.2.0";
     
-    //private VerticalLayout tabLocalInstance;
-    //private VerticalLayout tabCentralInstance;
     private VerticalLayout tabStudies;
     private VerticalLayout tabSearch;
     private TabSheet tabSheetStudyDatabaseInstance;
     
-    //private StudyTreeComponent centralStudyTree;
-    //private StudyTreeComponent localStudyTree;
     private StudyTreeComponent combinedStudyTree;
     
     @Autowired
@@ -69,23 +64,15 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSheetStudyDatabaseInstance.setWidth("100%");
         tabSheetStudyDatabaseInstance.setHeight("600px");
 
-        //tabLocalInstance = new VerticalLayout();
-        //tabCentralInstance = new VerticalLayout();
         tabStudies = new VerticalLayout();
         tabSearch = new VerticalLayout();
 
-        //tabSheetStudyDatabaseInstance.addTab(tabLocalInstance).setCaption(messageSource.getMessage(Message.DB_LOCAL_TEXT)); // "Local"
-        //tabSheetStudyDatabaseInstance.addTab(tabCentralInstance).setCaption(messageSource.getMessage(Message.DB_CENTRAL_TEXT)); // "Central"
         tabSheetStudyDatabaseInstance.addTab(tabStudies).setCaption(messageSource.getMessage(Message.STUDIES)); // "Combined Central and Local"
         tabSheetStudyDatabaseInstance.addTab(tabSearch).setCaption(messageSource.getMessage(Message.SEARCH_LABEL)); // "Search"
         tabSheetStudyDatabaseInstance.setSelectedTab(tabStudies);
 
-        //centralStudyTree = new StudyTreeComponent(mainLayout, Database.CENTRAL);
-        //localStudyTree = new StudyTreeComponent(mainLayout, Database.LOCAL);
         combinedStudyTree = new StudyTreeComponent(mainLayout);
 
-        //tabCentralInstance.addComponent(centralStudyTree);
-        //tabLocalInstance.addComponent(localStudyTree);
         tabStudies.addComponent(combinedStudyTree);
         tabSearch.addComponent(new StudySearchMainComponent(mainLayout));
 
@@ -103,8 +90,6 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
     @Override
     public void updateLabels() {
-        //messageSource.setCaption(tabLocalInstance, Message.DB_LOCAL_TEXT);
-        //messageSource.setCaption(tabCentralInstance, Message.DB_CENTRAL_TEXT);
         messageSource.setCaption(tabStudies, Message.STUDIES);
         messageSource.setCaption(tabSearch, Message.SEARCH_LABEL);
     }
@@ -113,25 +98,9 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     	tabSheetStudyDatabaseInstance.setSelectedTab(layout);
     }
     
-    //public VerticalLayout getTabLocalInstance(){
-    //	return tabLocalInstance;
-    //}
-    
-    //public VerticalLayout getTabCentralInstance(){
-    //	return tabCentralInstance;
-    //}
-    
     public VerticalLayout getTabStudies(){
     	return tabStudies;
     }
-    
-    //public StudyTreeComponent getCentralStudyTreeComponent(){
-    //	return centralStudyTree;
-    //}
-    
-    //public StudyTreeComponent getLocalStudyTreeComponent(){
-    //	return localStudyTree;
-    //}
     
     public StudyTreeComponent getCombinedStudyTreeComponent(){
     	return combinedStudyTree;

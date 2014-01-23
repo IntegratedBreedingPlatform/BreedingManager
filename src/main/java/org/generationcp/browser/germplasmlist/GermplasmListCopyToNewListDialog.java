@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.generationcp.browser.application.GermplasmStudyBrowserApplication;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -28,7 +27,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -107,10 +105,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
   
     public GermplasmListCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId) {
         this.dialogWindow = dialogWindow;
-    this.mainWindow = mainWindow;
-    this.listEntriesTable=listEntriesTable;
-    this.listName=listName;
-    this.ibdbUserId=ibdbUserId;
+	    this.mainWindow = mainWindow;
+	    this.listEntriesTable=listEntriesTable;
+	    this.listName=listName;
+	    this.ibdbUserId=ibdbUserId;
     }
 
     @Override
@@ -167,7 +165,6 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         addComponent(hButton, 1, 6);
     }
 
-
     private void populateSelectType(Select selectType) throws MiddlewareQueryException {
         List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
         
@@ -198,7 +195,6 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     }
     
     private void populateComboBoxListName() throws MiddlewareQueryException {
-        // TODO Auto-generated method stub
         germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
         mapExistingList = new HashMap<String, Integer>();
         comboBoxListName.addItem("");

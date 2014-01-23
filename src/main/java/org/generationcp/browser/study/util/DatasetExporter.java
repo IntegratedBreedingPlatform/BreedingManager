@@ -33,13 +33,11 @@ public class DatasetExporter {
     private static final int CONDITION_LIST_HEADER_ROW_INDEX = 7;
     
     private StudyDataManagerImpl studyDataManager;
-//    private Object traitDataManager;
     private Integer studyId;
     private Integer datasetId;
     
     public DatasetExporter(StudyDataManagerImpl studyDataManager, Object traitDataManager, Integer studyId, Integer representationId) {
         this.studyDataManager = studyDataManager;
-//        this.traitDataManager = traitDataManager;
         this.studyId = studyId;
         this.datasetId = representationId;
     }

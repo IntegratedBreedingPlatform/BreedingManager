@@ -1,8 +1,6 @@
 package org.generationcp.browser.cross.study.h2h.main.listeners;
 
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.TraitsAvailableComponent;
@@ -11,7 +9,6 @@ import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterLocationDialo
 import org.generationcp.browser.cross.study.h2h.main.dialogs.FilterStudyDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmEntryDialog;
 import org.generationcp.browser.cross.study.h2h.main.dialogs.SelectGermplasmListDialog;
-import org.generationcp.browser.germplasm.dialogs.SelectAGermplasmDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -28,30 +25,26 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     private static final Logger LOG = LoggerFactory.getLogger(HeadToHeadCrossStudyMainButtonClickListener.class);
 
     private Component source;
-    private String countryName;
-    private String provinceName;
     private Integer studyId;
     private Component parentOfSource; // EnvironmentsAvailableCompoent or SpecifyAndWeighEnvironment
     
     public HeadToHeadCrossStudyMainButtonClickListener(Component source){
         this.source = source;
     }
+    
     public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName){
         this.source = source;
-        this.countryName = countryName;
     }
     
     public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName, String provinceName){
         this.source = source;
-        this.countryName = countryName;
-        this.provinceName = provinceName;
     }
+    
     public HeadToHeadCrossStudyMainButtonClickListener(Component source, String countryName, String provinceName, Integer studyId){
         this.source = source;
-        this.countryName = countryName;
-        this.provinceName = provinceName;
         this.studyId = studyId;
     }
+    
     public HeadToHeadCrossStudyMainButtonClickListener(Component source, Component parentOfSource){
         this.source = source;
         this.parentOfSource = parentOfSource;
@@ -122,25 +115,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-        } else if (event.getButton().getData().equals(EnvironmentsAvailableComponent.BACK_BUTTON_ID)
-                && (source instanceof EnvironmentsAvailableComponent)){
-            try {
-                ((EnvironmentsAvailableComponent) source).backButtonClickAction();
-            } catch (InternationalizableException e){
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
-        } else if (event.getButton().getData().equals(EnvironmentsAvailableComponent.NEXT_BUTTON_ID)
-                && (source instanceof EnvironmentsAvailableComponent)){
-            try {
-                ((EnvironmentsAvailableComponent) source).nextButtonClickAction();
-            } catch (InternationalizableException e){
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
-        }  else if (event.getButton().getData().equals(ResultsComponent.EXPORT_BUTTON_ID)
+        } else if (event.getButton().getData().equals(ResultsComponent.EXPORT_BUTTON_ID)
                 && (source instanceof ResultsComponent)){
             try {
                 ((ResultsComponent) source).exportButtonClickAction();
@@ -173,37 +148,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
         } else if (source instanceof SelectGermplasmListDialog
                 && event.getButton().getData().equals(SelectGermplasmListDialog.ADD_BUTTON_ID)) {
             ((SelectGermplasmListDialog) source).populateParentList();
-        } else if (source instanceof EnvironmentsAvailableComponent
-                && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_LOCATION_BUTTON_ID)) {
-            ((EnvironmentsAvailableComponent) source).selectFilterByLocationClickAction();
-        } else if (source instanceof EnvironmentsAvailableComponent
-                && event.getButton().getData().equals(EnvironmentsAvailableComponent.FILTER_STUDY_BUTTON_ID)) {
-            ((EnvironmentsAvailableComponent) source).selectFilterByStudyClickAction();
-        } else if (source instanceof EnvironmentsAvailableComponent
-                && event.getButton().getData().equals(EnvironmentsAvailableComponent.ADD_ENVIRONMENT_BUTTON_ID)) {
-            ((EnvironmentsAvailableComponent) source).addEnvironmentalConditionsClickAction();
         } 
-        
-        //for Adapted Germplasm
-        else if (event.getButton().getData().equals(SpecifyAndWeighEnvironments.NEXT_BUTTON_ID)
-                && (source instanceof SpecifyAndWeighEnvironments)){
-            try {
-                ((SpecifyAndWeighEnvironments) source).nextButtonClickAction();
-            } catch (InternationalizableException e){
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
-		} else if (source instanceof SpecifyAndWeighEnvironments
-                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.FILTER_LOCATION_BUTTON_ID)) {
-            ((SpecifyAndWeighEnvironments) source).selectFilterByLocationClickAction();
-        } else if (source instanceof SpecifyAndWeighEnvironments
-                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.FILTER_STUDY_BUTTON_ID)) {
-            ((SpecifyAndWeighEnvironments) source).selectFilterByStudyClickAction();
-        } else if (source instanceof SpecifyAndWeighEnvironments
-                && event.getButton().getData().equals(SpecifyAndWeighEnvironments.ADD_ENVIRONMENT_BUTTON_ID)) {
-            ((SpecifyAndWeighEnvironments) source).addEnvironmentalConditionsClickAction();
-        }
         
         //Common in Adapted Germplasm and H2H
         else if (source instanceof FilterLocationDialog
@@ -232,13 +177,7 @@ public class HeadToHeadCrossStudyMainButtonClickListener implements Button.Click
     public String getParentClass(Component parentOfSource){
     	String parentClass = "";
     	
-    	if( parentOfSource instanceof SpecifyAndWeighEnvironments ){
-    		parentClass = "SpecifyAndWeighEnvironments";
-    	}
-    	else if( parentOfSource instanceof EnvironmentsAvailableComponent ){
-    		parentClass = "EnvironmentsAvailableComponent";
-    	}
-    	else if( parentOfSource instanceof EnvironmentFilter ){
+    	if( parentOfSource instanceof EnvironmentFilter ){
     		parentClass = "EnvironmentFilter";
     	}
     	

@@ -52,11 +52,11 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
 
     private static final long serialVersionUID = 1L;
 
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(GermplasmBrowserMain.class);
 
     private final static String VERSION = "1.2.0";
 
-    private final static String NAMES = "Names";
     private final static String GID = "gid";
 
     public static final String SEARCH_OPTION_GID = "GID";
@@ -140,8 +140,6 @@ public class GermplasmBrowserMain extends VerticalLayout implements Initializing
                     int gid = Integer.parseInt(searchValue);
                     displayGermplasmDetailTab(gid,searchValue);
                 } catch (NumberFormatException e) {
-                    //LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    //e.printStackTrace();
                     withNoError = false;
                     if (getWindow() != null) {
                         MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),

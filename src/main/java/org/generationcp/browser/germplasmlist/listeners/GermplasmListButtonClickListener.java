@@ -36,17 +36,14 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     private static final long serialVersionUID = 2185217915388685523L;
 
     private Component source;
-    private GermplasmList germplasmList = null;
-
+    
     public GermplasmListButtonClickListener(Component source) {
         this.source = source;
     }
     
     public GermplasmListButtonClickListener(Layout source, GermplasmList germplasmList) {
         this.source = source;
-        this.germplasmList = germplasmList;    
     }
-    
     
     @Override
     public void buttonClick(ClickEvent event) {

@@ -39,6 +39,7 @@ public class TableViewerCellSelectorUtil {
 	private ArrayList<CellCoordinateColorAssignment> cellCoordinateColorAssigments;
 	
 	private Object source;
+	
 	/**
 	* Utility used to allow a user to select cell/s
 	* by clicking, clicking + alt, clicking + shift
@@ -47,7 +48,6 @@ public class TableViewerCellSelectorUtil {
 	* 
 	* @param sourceTable
 	*/
-	
 	public TableViewerCellSelectorUtil(Object source, Table sourceTable){
 		this.source = source;
 		table = sourceTable;
@@ -114,16 +114,6 @@ public class TableViewerCellSelectorUtil {
 					}
 					contextWindowDisplayed = false;
 				}
-				
-				
-				//System.out.println("Clicked");
-				//System.out.println("Row: "+event.getItemId());
-				//System.out.println("Column: "+event.getPropertyId());
-				//System.out.println("Ctrl Pressed: "+event.isCtrlKey());
-				//System.out.println("Shift Pressed: "+event.isShiftKey());
-				//System.out.println("");
-				
-				//table.getItem(event.getItemId()).getItemProperty(event.getPropertyId()).addStyleName("highlighted");
 				
 				if(event.getButton()==ItemClickEvent.BUTTON_RIGHT){
 					if(highlightedCellCoordinates.size()==0){
@@ -215,22 +205,15 @@ public class TableViewerCellSelectorUtil {
 			}
 	    });
 	    
-	    
-	    
 	}
-	
-	
 	
 	/**
 	* Removes any highlighted cells
 	*/
-	
 	private void clearAllHighlightedCoordinates(){
 		highlightedCellCoordinates.clear();
 		updateTableCellColors();
 	}
-	
-	
 	
 	/**
 	* Add coordinates to "selected" cells when shift
@@ -238,7 +221,7 @@ public class TableViewerCellSelectorUtil {
 	* from the initially selected cell to the one 
 	* selected after
 	*/
-	
+	@SuppressWarnings("unchecked")
 	private void addCoordinatesSelectedByShift(){
 		List<Integer> itemIds = new ArrayList<Integer>();
 		itemIds.addAll((Collection<Integer>) table.getItemIds());
@@ -309,21 +292,17 @@ public class TableViewerCellSelectorUtil {
 							!isHighlighted
 							){
 						hasColorSet = true;
-						//System.out.println("Setting cell style to - "+cellCoordinateColorAssigments.get(i).getCssClassName());
 						return cellCoordinateColorAssigments.get(i).getCssClassName();
 					}
 				}
 				
 				if(hasColorSet == false){
 					if(currentColumn!=null && currentColumn.equals(propertyId) && currentRow!=null && currentRow.equals(itemId.toString())){
-						//System.out.println("Setting cell style to - currentlySelected");
 						return "currentlyselected";
 					} else {
 						if(isHighlighted){
-							//System.out.println("Setting cell style to - highlighted");
 							return "highlighted";
 						} else {
-							//System.out.println("Setting cell style to - [null]");
 							return null;
 						}
 					}
@@ -335,9 +314,6 @@ public class TableViewerCellSelectorUtil {
 		table.requestRepaint();
 	}
 
-	
-	
-	
 	/**
 	* Adds color to CSS and creates a color class
 	* It checks if color is already added before adding 
@@ -375,7 +351,6 @@ public class TableViewerCellSelectorUtil {
 		for(int i=0;i<highlightedCellCoordinates.size();i++){
 			Boolean inColorAssigmentsList = false;
 			for(int x=0;x<cellCoordinateColorAssigments.size();x++){
-				//if(cellCoordinateColorAssigments.get(x).getCellCoordinate().equals(highlightedCellCoordinates.get(i))){
 				if(cellCoordinateColorAssigments.get(x).getCellCoordinate().getX().equals(highlightedCellCoordinates.get(i).getX()) &&
 				   cellCoordinateColorAssigments.get(x).getCellCoordinate().getY().equals(highlightedCellCoordinates.get(i).getY()) 
 						){
@@ -404,7 +379,6 @@ public class TableViewerCellSelectorUtil {
 	public XSSFColor getColor(String itemId, String propertyId){
 		for(int i=0;i<cellCoordinateColorAssigments.size();i++){
 			if(cellCoordinateColorAssigments.get(i).getCellCoordinate().getX().equals(propertyId) && cellCoordinateColorAssigments.get(i).getCellCoordinate().getY().equals(itemId.toString())){
-//				System.out.println("R:"+cellCoordinateColorAssigments.get(i).getRedValue()+" G:"+cellCoordinateColorAssigments.get(i).getGreenValue()+" B:"+cellCoordinateColorAssigments.get(i).getBlueValue());
 				return new XSSFColor(new java.awt.Color(cellCoordinateColorAssigments.get(i).getRedValue(), cellCoordinateColorAssigments.get(i).getGreenValue(), cellCoordinateColorAssigments.get(i).getBlueValue()));
 			}
 		}

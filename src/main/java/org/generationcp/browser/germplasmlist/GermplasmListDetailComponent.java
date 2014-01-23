@@ -20,6 +20,7 @@ import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -33,12 +34,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView.Content;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.Notification;
 
@@ -76,12 +75,13 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    
     @Autowired
     private UserDataManager userDataManager;
     
-
     public GermplasmList germplasmList;
     public GermplasmListAccordionMenu germplasmListAccordionMenu;
     
@@ -153,7 +153,6 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
         Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
         Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
         
-        //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
         if(!usedForDetailsOnly){
             if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
@@ -203,14 +202,8 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
 
     @Override
     public void updateLabels() {
-        /*messageSource.setCaption(lblName, Message.name_label);
-        messageSource.setCaption(lblTitle, Message.title_label);
-        messageSource.setCaption(lblObjective, Message.objective_label);
-        messageSource.setCaption(lblType, Message.type_label);
-        messageSource.setCaption(lblStartDate, Message.start_date_label);
-        messageSource.setCaption(lblEndDate, Message.end_date_label);*/
+        
     }
-
 
     public void lockGermplasmList() {
         if(germplasmList.getStatus()<100){
@@ -270,8 +263,6 @@ public class GermplasmListDetailComponent extends GridLayout implements Initiali
             }
         }
     }    
-    
-    
     
     public void deleteGermplasmList() {
         ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Do you want to delete this germplasm list?", "Yes", "No", new ConfirmDialog.Listener() {

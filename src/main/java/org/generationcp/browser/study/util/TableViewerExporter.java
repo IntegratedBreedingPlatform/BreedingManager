@@ -38,8 +38,8 @@ public class TableViewerExporter {
         Sheet sheet1 = workbook.createSheet("Sheet 1");
         
         //Prepare data
-        ArrayList columnId = new ArrayList<String>();
-        ArrayList columnHeaders = new ArrayList<String>();
+        ArrayList<String> columnId = new ArrayList<String>();
+        ArrayList<String> columnHeaders = new ArrayList<String>();
         Object[] columnHeadersObjectArray = table.getVisibleColumns();
         Object[] columnHeadersStringArray = table.getColumnHeaders();
 		for(int x=0;x<columnHeadersObjectArray.length;x++){
@@ -63,7 +63,6 @@ public class TableViewerExporter {
     	    headerRow.getCell(x).setCellStyle(headerStyle);
 		}
 		
-		
 		//Traverse through table, and create rows/columns and populate with data
 		ArrayList<XSSFColor> cellColor = new ArrayList<XSSFColor>();
 		ArrayList<XSSFCellStyle> cellStyle = new ArrayList<XSSFCellStyle>();
@@ -76,7 +75,6 @@ public class TableViewerExporter {
         for(int y=0;y<tableItemIds.length;y++){
         	rows[y] = sheet1.createRow(y+1);
         	for(int x=0;x<columnHeaders.size();x++){
-        		//if(columnHeadersStringArray[x].toString().toUpperCase().equals("GID") || columnHeadersStringArray[x].toString().toUpperCase().equals("GERMPLASM ID") ) {
         		String stringValue = "";
         		if(table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue() instanceof Button){
         			stringValue = ((Button) table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)).getValue()).getCaption().toString();
@@ -107,13 +105,9 @@ public class TableViewerExporter {
         			rows[y].getCell(x).setCellStyle(cellStyle.get(cellStyle.size()-1));
         			
         		}
-        		//System.out.println("Color: "+tableViewerCellSelectorUtil.getColor(tableItemIds[y].toString(), columnId.get(x).toString()));
-        		//System.out.println("ColumnHeader: "+columnHeaders.get(x));
-    			//System.out.println(columnId.get(x)+": "+table.getItem(tableItemIds[y]).getItemProperty(columnId.get(x)));
-    		}	
-//        	System.out.println("");
+        	}	
+
         }
-        
         
         try {
             //write the excel file
@@ -126,7 +120,6 @@ public class TableViewerExporter {
         }
     }
     
-    
     public static boolean isInteger(String s) {
         try { 
             Integer.parseInt(s); 
@@ -136,6 +129,4 @@ public class TableViewerExporter {
         // only got here if we didn't return false
         return true;
     }
-    
-   
 }

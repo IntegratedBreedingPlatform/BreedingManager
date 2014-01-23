@@ -59,7 +59,6 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private Component source;
     private Label germplasmComponent;
     private Window parentWindow;
     
@@ -77,7 +76,6 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     private Integer selectedGid;
     
     public SelectAGermplasmDialog(Component source, Window parentWindow, Label germplasmComponent){
-        this.source = source;
         this.parentWindow = parentWindow;
         this.germplasmComponent = germplasmComponent;
         this.gQuery = new GermplasmQueries();
@@ -149,7 +147,7 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
         
             if ("GID".equals(searchChoice)) {
                 try {
-                    int gid = Integer.parseInt(searchValue);
+                    Integer.parseInt(searchValue);
                 } catch (NumberFormatException e) {
                     withNoError = false;
                     if (getWindow() != null) {
@@ -252,7 +250,6 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     }
 }

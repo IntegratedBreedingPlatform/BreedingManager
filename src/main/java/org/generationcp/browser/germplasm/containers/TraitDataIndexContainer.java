@@ -15,8 +15,8 @@ package org.generationcp.browser.germplasm.containers;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.generationcp.browser.germplasm.TraitQueries;
 import org.generationcp.commons.exceptions.InternationalizableException;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
@@ -54,13 +54,12 @@ public class TraitDataIndexContainer implements Serializable {
 
     // Criteria Value
     private static final Object CRITERIA_VALUES = "criteriaValue";
-    private TraitQueries queryTrait;
-
+    
     // Results GIDS
     private static final Object GID = "gid";
 
     public TraitDataIndexContainer() {
-        queryTrait = new TraitQueries();
+        
     }
 
     public IndexedContainer getAllTrait() throws InternationalizableException {
@@ -210,7 +209,4 @@ public class TraitDataIndexContainer implements Serializable {
         item.getItemProperty(GID).setValue(gid);
     }
     
-    //MockData Temporary
-    
-
 }

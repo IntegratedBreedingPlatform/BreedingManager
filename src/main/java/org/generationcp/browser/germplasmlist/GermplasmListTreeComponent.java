@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListButtonClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.GermplasmListTabChangeListener;
@@ -43,8 +42,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.CloseHandler;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -72,9 +69,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-
-    private GermplasmListBrowserMain germplasmListBrowserMain;
-
+    
     private boolean forGermplasmListWindow;
     
     public GermplasmListTreeComponent(HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
@@ -84,7 +79,6 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     }
 
     public GermplasmListTreeComponent(GermplasmListBrowserMain germplasmListBrowserMain, HorizontalLayout germplasmListBrowserMainLayout, Database database,boolean forGermplasmListWindow) {
-        this.germplasmListBrowserMain = germplasmListBrowserMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.database = database;
         this.forGermplasmListWindow=forGermplasmListWindow;

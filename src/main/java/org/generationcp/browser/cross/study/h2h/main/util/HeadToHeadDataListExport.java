@@ -1,9 +1,7 @@
 package org.generationcp.browser.cross.study.h2h.main.util;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,21 +18,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.browser.cross.study.h2h.main.ResultsComponent;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ResultsData;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.data.Item;
-import com.vaadin.ui.Table;
 
 @Configurable
 public class HeadToHeadDataListExport {   
@@ -82,8 +66,6 @@ public class HeadToHeadDataListExport {
         headingMergedStyle.setFont(headingMergedFont);
         styles.put(HEADING_MERGED_STYLE, headingMergedStyle);
         
-        
-        
         //set cell style for numeric values (left alignment)
         CellStyle numericStyle = wb.createCellStyle();
         numericStyle.setAlignment(CellStyle.ALIGN_RIGHT);
@@ -101,22 +83,15 @@ public class HeadToHeadDataListExport {
     public FileOutputStream exportHeadToHeadDataListExcel(String filename, List<ResultsData> resultDataList,
     		Set<TraitForComparison> traitsIterator, String[] columnIdData, Map<String, String> columnIdDataMsgMap) throws HeadToHeadDataListExportException{
     	
-    	
         HSSFWorkbook wb = new HSSFWorkbook();
         HashMap<String, CellStyle> sheetStyles = createStyles(wb);
         HSSFSheet sheet = wb.createSheet("Data List"); 
-               
         
         int cellIndex = 0;
         int startDataRowIndex = 0;
         
         HSSFRow headerColSpan = sheet.createRow(startDataRowIndex++);
-        
-        
-        
         HSSFRow header = sheet.createRow(startDataRowIndex++);
-        
-        
         
         Cell cell = header.createCell(cellIndex++);
         cell.setCellValue("Test Entry");
@@ -124,7 +99,6 @@ public class HeadToHeadDataListExport {
         cell = header.createCell(cellIndex++);
         cell.setCellValue("Standard Entry");
         cell.setCellStyle(sheetStyles.get(HEADING_STYLE));
-        
         
         for(TraitForComparison traitForCompare : traitsIterator){
         	if(traitForCompare.isDisplay()){
@@ -150,19 +124,10 @@ public class HeadToHeadDataListExport {
 	                       endCol-1  //last column  (0-based)
 	               ));
         	}
-            
         }        
        
-        //we iterate the table already
-        //Iterator entriesIter = tableEntries.getItemIds().iterator();
-        
-		//while(entriesIter.hasNext()){
         for(ResultsData resData : resultDataList){
 			//we iterate and permutate against the list
-			
-			//String id = (String)entriesIter.next();
-			
-			//Item item = tableEntries.getItem(id);
 			cellIndex = 0;
 			HSSFRow rowData = sheet.createRow(startDataRowIndex++);
 			String testEntryName = resData.getGid1Name(); //(String)item.getItemProperty(ResultsComponent.TEST_COLUMN_ID).getValue();
@@ -175,9 +140,6 @@ public class HeadToHeadDataListExport {
 				if(traitForCompare.isDisplay()){
 		        	for(String colId : columnIdData){
 		        		String traitColId = traitForCompare.getTraitInfo().getName() + colId;
-		        		
-		        		//String numVal = (String)item.getItemProperty(traitColId).getValue();
-		        		
 		        		String numVal = (String) resData.getTraitDataMap().get(traitColId);
 		        		if(numVal == null)
 		        			numVal = "0";

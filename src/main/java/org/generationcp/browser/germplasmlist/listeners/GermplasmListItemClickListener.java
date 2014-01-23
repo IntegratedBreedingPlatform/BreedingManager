@@ -12,7 +12,6 @@
 
 package org.generationcp.browser.germplasmlist.listeners;
 
-import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmListComponent;
 import org.generationcp.browser.germplasm.containers.ListsForGermplasmQuery;
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;

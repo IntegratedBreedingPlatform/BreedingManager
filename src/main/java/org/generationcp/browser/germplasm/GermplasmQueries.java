@@ -47,8 +47,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
     private GermplasmSearchResultModel germplasmResultByGID;
     private GermplasmDetailModel germplasmDetail;
-    private ArrayList<Integer> gids;
-
+    
     private static final long serialVersionUID = 1L;
     // private HibernateUtil hibernateUtil;
 
@@ -206,16 +205,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GENERATION_HISTORY);
         }
     }
-
-    private String getPreferredName(Germplasm g) {
-
-        Name names = g.getPreferredName();
-        if (names != null) {
-            return g.getPreferredName().getNval();
-        }
-        return "";
-    }
-
+    
     public ArrayList<GermplasmNamesAttributesModel> getNames(int gid) throws InternationalizableException {
         try {
             ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, null, null);
@@ -361,18 +351,7 @@ public class GermplasmQueries implements Serializable, InitializingBean{
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_DERIVATIVE_NEIGHBORHOOD);
         }
     }
-    /**
-        public List<GermplasmListData> getGermplasmListByGID(int gid) throws InternationalizableException {
-                int count = this.germplasmListManager.countGermplasmListDataByGID(gid);
-
-                try {
-                        return this.germplasmListManager.getGermplasmListDataByGID(gid, 0, count);
-                } catch (QueryException e) {
-                        throw new InternationalizableException(e, Message.error_database, Message.error_in_getting_germplasm_list_by_id);
-                }
-        }
-        **/
-
+    
     public List<LotReportRow> getReportOnLotsByEntityTypeAndEntityId(String type, Integer gid) throws InternationalizableException {
         List<LotReportRow> result = new ArrayList<LotReportRow>();
         try {
@@ -403,6 +382,4 @@ public class GermplasmQueries implements Serializable, InitializingBean{
     @Override
     public void afterPropertiesSet() throws Exception {
     }
-
-
 }

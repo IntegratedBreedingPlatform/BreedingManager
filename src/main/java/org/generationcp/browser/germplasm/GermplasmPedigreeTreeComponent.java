@@ -48,8 +48,6 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
     @SuppressWarnings("unused")
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmPedigreeTreeComponent.class);
     
-    private Integer rootGid;
-
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
@@ -97,7 +95,6 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
         this.includeDerivativeLines = includeDerivativeLines;
 
         this.setSizeFull();
-        rootGid = Integer.valueOf(gid);
         germplasmPedigreeTree = qQuery.generatePedigreeTree(Integer.valueOf(gid), 1, includeDerivativeLines); // throws QueryException
         addNode(germplasmPedigreeTree.getRoot(), 1);
         this.setImmediate(false);
@@ -213,15 +210,12 @@ public class GermplasmPedigreeTreeComponent extends Tree implements Initializing
 
     @Override
     public void attach() {
-
-        super.attach();
-
-        updateLabels();
+    	super.attach();
+    	updateLabels();
     }
 
     @Override
     public void updateLabels() {
 
     }
-
 }

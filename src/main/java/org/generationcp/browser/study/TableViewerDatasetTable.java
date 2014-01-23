@@ -12,8 +12,6 @@
 package org.generationcp.browser.study;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,9 +189,6 @@ public class TableViewerDatasetTable extends Table implements InitializingBean {
 	                    		// nothing to set
 	                    	}else{
 	                    		BigDecimal decimalValue = new BigDecimal(cellValue);
-//	                    		if (cellValue.contains(".")){
-//	                    			decimalValue = decimalValue.setScale(2, RoundingMode.CEILING);
-//	                    		}
 								item.getItemProperty(columnId).setValue(decimalValue);
 	                    	}
 	                    	

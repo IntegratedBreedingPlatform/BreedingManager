@@ -16,9 +16,8 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.domain.dms.Study;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,9 +51,6 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     private org.generationcp.middleware.manager.api.StudyDataManager studyDataManager;
     private int studyId;
 
-    @Autowired
-    private OntologyDataManager ontologyDataManager;
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -117,12 +113,6 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
 
     @Override
     public void updateLabels() {
-/*        messageSource.setCaption(lblName, Message.name_label);
-        messageSource.setCaption(lblTitle, Message.title_label);
-        messageSource.setCaption(lblObjective, Message.objective_label);
-        messageSource.setCaption(lblType, Message.type_label);
-        messageSource.setCaption(lblStartDate, Message.start_date_label);
-        messageSource.setCaption(lblEndDate, Message.end_date_label);*/
     }
     
     private String setStudyDetailValue(String value){

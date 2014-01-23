@@ -44,7 +44,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
     private static final String LIST_SEED_INVENTORY = "List Seed Inventory";
     
     private int germplasmListId;
-    private int germplasmListStatus;
     private String listName;
     private int userId;
     private GermplasmListDetailComponent germplasmListDetailComponent;
@@ -70,7 +69,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
-        this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
     }
 
@@ -79,7 +77,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
-        this.germplasmListStatus = 101;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
     }
@@ -89,10 +86,10 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
         this.germplasmListId = germplasmListId;
         this.fromUrl = fromUrl;
         this.listName=listName;
-        this.germplasmListStatus = germplasmListStatus;
         this.userId=userId;
         this.forGermplasmListWindow=forGermplasmListWindow;
-    }    
+    }   
+    
     public void refreshListData(){
     	try {
             germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
@@ -101,7 +98,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
             layoutListData.setMargin(true);
             layoutListData.setSpacing(true);
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -113,7 +109,6 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
             try {
             germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
                 
@@ -136,17 +131,14 @@ public class GermplasmListAccordionMenu extends Accordion implements Initializin
                 this.getGermplasmListTreeComponent().getTabSheetGermplasmList().removeTab(tabInfo);
     
                 try {
-            this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
-            } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            }
+                	this.getGermplasmListTreeComponent().createGermplasmListInfoTab(germplasmListId);
+                } catch (MiddlewareQueryException e) {
+                	e.printStackTrace();
+                }
                 tab = Util.getTabAlreadyExist(this.getGermplasmListTreeComponent().getTabSheetGermplasmList(), germplasmList.getName());
                 this.getGermplasmListTreeComponent().getTabSheetGermplasmList().setSelectedTab(tab.getComponent());
             }
         }
-        
-        
     }
     
     @Override

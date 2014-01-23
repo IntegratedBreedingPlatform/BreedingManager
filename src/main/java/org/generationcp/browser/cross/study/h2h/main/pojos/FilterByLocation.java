@@ -11,53 +11,45 @@ public class FilterByLocation {
 
 	String countryName;
 	String trialEnvId;
-	private List<String> provinceNameList  = new ArrayList();
-	private List<String> locationStudyNameList  = new ArrayList();
-	private Map<String, List<LocationStudyDto>> provinceLocationStudyMap = new HashMap();
-	private Map<String, List<String>> locationStudyMap = new HashMap();
-	private List<String> locationList = new ArrayList();
-	
-	
-	//private Map<String, LocationStudyDto> locationStudyUniqueMap = new HashMap();
+	private List<String> provinceNameList  = new ArrayList<String>();
+	private List<String> locationStudyNameList  = new ArrayList<String>();
+	private Map<String, List<LocationStudyDto>> provinceLocationStudyMap = new HashMap<String, List<LocationStudyDto>>();
+	private Map<String, List<String>> locationStudyMap = new HashMap<String, List<String>>();
+	private List<String> locationList = new ArrayList<String>();
 	
 	public FilterByLocation(String country, String trialEnvId){
 		this.countryName = country;
 		this.trialEnvId = trialEnvId;
 	}
 	
-	
-	
 	public String getTrialEnvId() {
 		return trialEnvId;
 	}
-
-
 
 	public void setTrialEnvId(String trialEnvId) {
 		this.trialEnvId = trialEnvId;
 	}
 
-
-
 	public String getCountryName() {
 		return countryName;
 	}
-
 
 	public void setCountryName(String countryName) {
 		this.countryName = countryName;
 	}	
 
-
 	public List<String> getProvinceNameList() {
 		return provinceNameList;
 	}
+
 	public void setProvinceNameList(List<String> provinceNameList) {
 		this.provinceNameList = provinceNameList;
 	}
+	
 	public List<String> getLocationStudyNameList() {
 		return locationStudyNameList;
 	}
+	
 	public void setLocationStudyNameList(List<String> locationStudyNameList) {
 		this.locationStudyNameList = locationStudyNameList;
 	}
@@ -66,10 +58,9 @@ public class FilterByLocation {
 		provinceNameList.add(provinceName);
 		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
 		if(locationStudyUniqueMap == null){
-			locationStudyUniqueMap = new ArrayList();
+			locationStudyUniqueMap = new ArrayList<LocationStudyDto>();
 		}
-		String key = locationName + ":" + studyName;		
-		LocationStudyDto dto = null;//locationStudyUniqueMap.get(key);
+		LocationStudyDto dto = null;
 		if(dto == null){
 			dto = new LocationStudyDto(locationName, studyName);			
 		}
@@ -78,17 +69,15 @@ public class FilterByLocation {
 		
 		List<String> studyList = locationStudyMap.get(locationName);
 		if(studyList == null){
-			studyList = new ArrayList();
+			studyList = new ArrayList<String>();
 		}
 		studyList.add(studyName);
 		locationStudyMap.put(locationName, studyList);
-		//locationList.add(dto);
 		
 		locationList.add(locationName);
 	}
 	
 	public Integer getNumberOfEnvironmentForCountry(){
-		//return provinceNameList.size();
 		return locationList.size();
 	}
 	
@@ -99,6 +88,7 @@ public class FilterByLocation {
 	public Set<String> getListOfProvinceNames(){
 		return provinceLocationStudyMap.keySet();
 	}
+	
 	public Integer getNumberOfEnvironmentForProvince(String provinceName){
 		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
 		return locationStudyUniqueMap.size();
@@ -111,12 +101,9 @@ public class FilterByLocation {
 		}
 		return 0;
 	}
+	
 	public Collection<LocationStudyDto> getLocationStudyForProvince(String provinceName){
 		List<LocationStudyDto> locationStudyUniqueMap = provinceLocationStudyMap.get(provinceName);
 		return locationStudyUniqueMap;
 	}
-	
-	
-		
-
 }

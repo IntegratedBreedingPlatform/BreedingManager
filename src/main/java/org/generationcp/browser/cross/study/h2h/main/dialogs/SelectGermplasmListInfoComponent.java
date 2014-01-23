@@ -17,7 +17,6 @@ import java.util.List;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -37,9 +36,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class SelectGermplasmListInfoComponent extends GridLayout implements InitializingBean, InternationalizableComponent {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 3594330437767497353L;
     
     private final static Logger LOG = LoggerFactory.getLogger(SelectGermplasmListInfoComponent.class);
@@ -78,8 +74,6 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
         assemble();
     }
     
-    
-    
     public Integer getGermplasmListId() {
 		return germplasmListId;
 	}
@@ -113,13 +107,6 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
             } catch (MiddlewareQueryException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
-                /*
-                if (getWindow() != null){
-                    MessageNotifier.showWarning(getWindow(), 
-                            messageSource.getMessage(Message.ERROR_DATABASE),
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_LAST_SELECTED_LIST));
-                }
-                */
             }
         }
     }
@@ -233,5 +220,4 @@ public class SelectGermplasmListInfoComponent extends GridLayout implements Init
     public String getListName() {
         return listName;
     }
-    
 }

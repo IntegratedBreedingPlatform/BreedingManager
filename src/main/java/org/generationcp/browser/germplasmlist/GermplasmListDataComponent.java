@@ -174,7 +174,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             listDataTable.setImmediate(true);
             
             listDataTable.addListener(new Table.HeaderClickListener() {
-            	public void headerClick(HeaderClickEvent event) {
+            	private static final long serialVersionUID = 7849688789931522372L;
+
+				public void headerClick(HeaderClickEvent event) {
             		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
             			String column = (String) event.getPropertyId(); 
                 		if(column.equals(ENTRY_CODE)){
@@ -190,7 +192,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             
             if(!fromUrl){
                     listDataTable.addActionHandler(new Action.Handler() {
-                        public Action[] getActions(Object target, Object sender) {
+                        private static final long serialVersionUID = -8353937000972996123L;
+
+						public Action[] getActions(Object target, Object sender) {
                         if (germplasmListId < 0 &&  germplasmListStatus < 100){
                         return ACTIONS_TABLE_CONTEXT_MENU;
                         }else{
@@ -248,7 +252,9 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                         buttonArea.setSpacing(true);
         
                         selectAllButton = new Button("Select All",new Button.ClickListener() {
-                                public void buttonClick(Button.ClickEvent event) {
+                            private static final long serialVersionUID = -7871786898318645632L;
+
+								public void buttonClick(Button.ClickEvent event) {
                                         listDataTable.setValue(listDataTable.getItemIds());
                                 }
                         });
@@ -324,7 +330,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             	item.getItemProperty(SEED_SOURCE).setValue(gModel.getGermplasmLocation());
             }
     	}
-		
 	}
 
 	private void populateTable() throws MiddlewareQueryException {
@@ -353,8 +358,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
         listDataTable.sort(new Object[]{"entryId"}, new boolean[]{true});
         listDataTable.setVisibleColumns(new String[] {GID,ENTRY_ID,ENTRY_CODE,SEED_SOURCE,DESIGNATION,GROUP_NAME,STATUS});
     }
-
-
 
     @Override
     public void attach() {
@@ -437,25 +440,26 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
             ConfirmDialog.show(this.getWindow(), "Export List", "Before exporting, the list should be locked first. Would you like to lock it?",
                 "Yes", "No", new ConfirmDialog.Listener() {
+            		private static final long serialVersionUID = 873403138831569476L;
 
-            public void onClose(ConfirmDialog dialog) {
-                if (dialog.isConfirmed()) {
-                try {
-                lockList();
-                germplasmListStatus=germplasmList.getStatus();
-                exportListAction();
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error with exporting list.", e);
-                e.printStackTrace();
-            }
-                
-                }else{
-
-                }
-            }
-            });
-    }
+					public void onClose(ConfirmDialog dialog) {
+		                if (dialog.isConfirmed()) {
+		                try {
+		                lockList();
+		                germplasmListStatus=germplasmList.getStatus();
+		                exportListAction();
+		            } catch (MiddlewareQueryException e) {
+		                LOG.error("Error with exporting list.", e);
+		                e.printStackTrace();
+		            }
+		                
+		                }else{
+		
+		                }
+		            }
+            	});
         }
+    }
 
     //called by GermplasmListButtonClickListener
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -483,7 +487,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
             MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME)
                         , "Error with exporting list."    
                         , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
-                    
         }
     }
     
@@ -581,17 +584,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 			LOG.error("Error with deleting list entries.", e);
 			e.printStackTrace();
 		}
-        
-//		gidsWithoutChildren=getGidsToDeletedWithOutChildren();
-//		try {
-//			if(gidsWithoutChildren.size() > 0){
-//				deleteGermplasmDialogBox(gidsWithoutChildren);
-//			}
-//		} catch (NumberFormatException e1) {
-//			e1.printStackTrace();
-//		} catch (MiddlewareQueryException e1) {
-//			e1.printStackTrace();
-//		}
 		
     }
 
@@ -607,8 +599,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     }
 
     private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
-        GermplasmStudyBrowserApplication app = GermplasmStudyBrowserApplication.get();
-
         User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
         ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
@@ -657,8 +647,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 e.printStackTrace();
             }
         }
-        
-    
     }
     
     public void lockList() throws MiddlewareQueryException{
@@ -721,7 +709,6 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
                 maxEntryId = entryId;
             }
         }
-        
         
         GermplasmListData listData = new GermplasmListData();
         listData.setList(list);
@@ -865,5 +852,4 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 	    	   			 
 	   	return gids;
    	}
-    
 }

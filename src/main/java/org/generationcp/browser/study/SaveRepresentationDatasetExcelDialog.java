@@ -16,16 +16,12 @@ import java.io.File;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
-import org.generationcp.browser.study.util.DatasetExporter;
-import org.generationcp.browser.study.util.DatasetExporterException;
 import org.generationcp.browser.study.util.DirectoryTreeBrowser;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-//import org.generationcp.middleware.manager.api.TraitDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -70,26 +66,14 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
     private Window mainWindow;
     private Window fileSystemWindow;
     
-    private Integer studyId;
-    private Integer representationId;
-    
     private Application mainApplication;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-
-    @Autowired
-    private StudyDataManager studyDataManager;
-    
-    @Autowired
-//    private TraitDataManager traitDataManager;
-    private Object traitDataManager;
     
     public SaveRepresentationDatasetExcelDialog(Window mainWindow, Window dialogWindow, Integer studyId, Integer representationId, Application application) {
         this.dialogWindow = dialogWindow;
         this.mainWindow = mainWindow;
-        this.studyId = studyId;
-        this.representationId = representationId;
         this.mainApplication = application;
     }
 
@@ -225,14 +209,6 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
             fileName += ".xls";
         }   
 
-        DatasetExporter datasetExporter;
-//        datasetExporter = new DatasetExporter(studyDataManager, traitDataManager, studyId, representationId);
-//        try {
-//            datasetExporter.exportToFieldBookExcel(uploadPath + fileName);
-//        } catch (DatasetExporterException e) {
-//            MessageNotifier.showError(mainWindow.getWindow(), e.getMessage(), "");
-//        }
-        
         closeDialog();
         MessageNotifier.showMessage(mainWindow.getWindow(), fileName,
                 messageSource.getMessage(Message.SAVE_FIELDBOOK_EXCEL_FILE_SUCCESSFUL_TEXT));

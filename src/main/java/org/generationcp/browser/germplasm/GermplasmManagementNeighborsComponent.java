@@ -17,7 +17,6 @@ import org.generationcp.browser.germplasm.containers.ManagementNeighborsQuery;
 import org.generationcp.browser.germplasm.containers.ManagementNeighborsQueryFactory;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

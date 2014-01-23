@@ -61,7 +61,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
     private Component pedigree_level_label;
     private CheckBox pedigreeDerivativeCheckbox;
     private Panel panelPedigree;
-    private static final String PEDIGREE_IMAGE_PATH = "../gcp-default/graph/";
     private String BSLASH = "\\";
     private String FSLASH = "/";
     private static final int DEFAULT_TREE_LEVEL=3;
@@ -114,17 +113,13 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         try {
             updatePedigreeGraphButtonClickAction();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void updateLabels() {
@@ -142,9 +137,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
             e.printStackTrace();
         }
         panelPedigree.requestRepaint();
-
-//        String graphName="Pedigree_"+String.valueOf(this.gid)+"_"+String.valueOf(txtLevel.getValue().toString()+"_"+cal.getTimeInMillis());
-        //String graphName="Pedigree";
         
         String basepath = getWindow().getApplication().getContext().getBaseDirectory().getAbsolutePath().replace(BSLASH, FSLASH)+"/WEB-INF/image/";
         UUID randomUUID = UUID.randomUUID();
@@ -182,8 +174,6 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
 
         panelPedigree.addComponent(em);
         panelPedigree.getContent().setSizeUndefined();
-        
-        
     }
 
 }

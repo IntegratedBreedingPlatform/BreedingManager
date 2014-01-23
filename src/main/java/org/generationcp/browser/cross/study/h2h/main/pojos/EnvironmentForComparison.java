@@ -1,14 +1,10 @@
 package org.generationcp.browser.cross.study.h2h.main.pojos;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.browser.cross.study.constants.EnvironmentWeight;
-import org.generationcp.middleware.domain.h2h.Observation;
-import org.generationcp.middleware.domain.h2h.TraitInfo;
 
 import com.vaadin.ui.ComboBox;
 
@@ -23,7 +19,7 @@ public class EnvironmentForComparison implements Serializable{
     private String studyName;
     private ComboBox weightComboBox;
     private Double weight;
-    private LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap();
+    private LinkedHashMap<TraitForComparison, List<ObservationList>> traitAndObservationMap = new LinkedHashMap<TraitForComparison, List<ObservationList>>();
     
     public EnvironmentForComparison(Integer environmentNumber, String locationName, String countryName, String studyName, ComboBox weightComboBox) {
         super();
@@ -32,7 +28,6 @@ public class EnvironmentForComparison implements Serializable{
         this.countryName = countryName;
         this.studyName = studyName;
         this.weightComboBox = weightComboBox;
-    //    this.traitAndNumberOfPairsComparableMap = traitAndNumberOfPairsComparableMap;
     }
 
 	public ComboBox getWeightComboBox() {
@@ -87,7 +82,6 @@ public class EnvironmentForComparison implements Serializable{
 	public Double getWeight() {
 		return this.weight;
 	}
-
 
 	public void setWeight(Double weight) {
 		this.weight = weight;

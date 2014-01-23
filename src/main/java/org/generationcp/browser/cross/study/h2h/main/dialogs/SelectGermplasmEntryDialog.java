@@ -7,7 +7,6 @@ import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchFormComponent;
 import org.generationcp.browser.germplasm.GermplasmSearchResultComponent;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
-import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmItemClickListener;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -36,7 +35,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -63,7 +61,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
     private SimpleResourceBundleMessageSource messageSource;
     
     private Component source;
-    private Label germplasmComponent;
     private Window parentWindow;
     
     private VerticalLayout mainLayout;
@@ -126,11 +123,9 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         
-        
         cancelButton = new Button("Close Screen");
         cancelButton.setData(CLOSE_SCREEN_BUTTON_ID);
         cancelButton.addListener(new CloseWindowAction());
-        
         
         String buttonlabel = "";
         if(isTestEntry)
@@ -146,8 +141,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         buttonLayout.addComponent(doneButton);
         buttonLayout.addComponent(cancelButton);
         
-        //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
-        //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
         mainLayout.addComponent(buttonLayout);
         mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
         
@@ -166,7 +159,7 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         
             if ("GID".equals(searchChoice)) {
                 try {
-                    int gid = Integer.parseInt(searchValue);
+                    Integer.parseInt(searchValue);
                 } catch (NumberFormatException e) {
                     withNoError = false;
                     if (getWindow() != null) {
@@ -195,18 +188,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
             }else{
             	((SpecifyGermplasmsComponent)source).addStandardGermplasm(selectedGermplasm);
             }
-            //this.germplasmComponent.setData(selectedGermplasm.getGid());
-            /*
-            if(selectedGermplasm.getPreferredName() != null){
-                String preferredName = selectedGermplasm.getPreferredName().getNval();
-                this.germplasmComponent.setValue("" + selectedGermplasm.getGid() + " - " + preferredName);
-            } else{
-                this.germplasmComponent.setValue(selectedGermplasm.getGid());
-                MessageNotifier.showWarning(getWindow(), "Warning!", "The germplasm you selected doesn't have a preferred name, "
-                    + "please select a different germplasm.", Notification.POSITION_CENTERED);
-            }
-            this.germplasmComponent.requestRepaint();
-            */
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with gid: " + this.selectedGid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with gid: " 
@@ -246,8 +227,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        //layoutForGermplasm.setWidth("640px");
-        //layoutForGermplasm.setHeight("560px");
         layoutForGermplasm.setWidth("98%");
         layoutForGermplasm.setHeight("98%");
         
@@ -257,10 +236,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         layoutForGermplasm.addComponent(germplasmInfo);
         
         germplasmWindow.setContent(layoutForGermplasm);
-        //germplasmWindow.setWidth("645px");
-        //germplasmWindow.setHeight("600px");
-        //germplasmWindow.setWidth("90%");
-        //germplasmWindow.setHeight("90%");
         
         //Instead of setting by percentage, compute it
         germplasmWindow.setWidth(Integer.valueOf((int) Math.round(parentWindow.getWidth()*.90))+"px");
@@ -276,7 +251,6 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     }
 }

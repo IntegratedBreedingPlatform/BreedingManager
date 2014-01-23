@@ -5,22 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.browser.cross.study.adapted.main.SpecifyAndWeighEnvironments;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.EnvironmentsAvailableComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainValueChangeListener;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
@@ -31,7 +27,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -40,7 +35,8 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
 
     private static final long serialVersionUID = -7651767452229107837L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(FilterLocationDialog.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(FilterLocationDialog.class);
     
     public static final String CLOSE_SCREEN_BUTTON_ID = "FilterStudyDialog Close Button ID";
     public static final String APPLY_BUTTON_ID = "FilterStudyDialog Apply Button ID";
@@ -51,15 +47,8 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private static final String NUMBER_OF_ENV_COLUMN_ID = "FilterStudyDialog Number of Environments Column Id";
     private static final String TAG_COLUMN_ID = "FilterStudyDialog Tag Column Id";
     
-    private static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW = "Query_For_Adapted_Germplasm";
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
     private Component source;
     private Window parentWindow;
-    
-    private VerticalLayout mainLayout;
     
     private Button applyButton;
     private Button cancelButton;
@@ -69,8 +58,8 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     private Map<String, List<StudyReference>> filterStudyMap;
     public static String DELIMITER = "^^^^^^";
     private Label popupLabel;
-    private Map<String, CheckBox> checkBoxMap = new HashMap();
-    private List<FilterLocationDto> checkFilterLocationLevel4DtoList = new ArrayList();    
+    private Map<String, CheckBox> checkBoxMap = new HashMap<String, CheckBox>();
+    private List<FilterLocationDto> checkFilterLocationLevel4DtoList = new ArrayList<FilterLocationDto>();    
     private CheckBox tagUnTagAll;
     boolean h2hCall=true;
     
@@ -170,13 +159,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     	}
     	setupApplyButton();		
     	
-        if(className.equals("EnvironmentsAvailableComponent")){
-        	((EnvironmentsAvailableComponent)source).reopenFilterStudyWindow();
-        }
-        else if(className.equals("SpecifyAndWeighEnvironments")){
-        	((SpecifyAndWeighEnvironments)source).reopenFilterStudyWindow();
-        }
-        else if(className.equals("EnvironmentFilter")){
+        if(className.equals("EnvironmentFilter")){
         	((EnvironmentFilter)source).reopenFilterStudyWindow();
         }
     }
@@ -258,7 +241,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     
     
     public void clickCheckBox(boolean val, FilterLocationDto filterLocationDto){
-    	List tempList = new ArrayList();
+    	List<FilterLocationDto> tempList = new ArrayList<FilterLocationDto>();
     	if(filterLocationDto.getLevel() == 4)
     		tempList = checkFilterLocationLevel4DtoList;
     	
@@ -271,11 +254,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     }
     
     public void clickApplyButton(String classname){
-    	if(classname.equals("EnvironmentsAvailableComponent")){
-    		((EnvironmentsAvailableComponent)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
-    	} else if(classname.equals("SpecifyAndWeighEnvironments")){
-    		((SpecifyAndWeighEnvironments)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
-    	} else if(classname.equals("EnvironmentFilter")){
+    	if(classname.equals("EnvironmentFilter")){
     		((EnvironmentFilter)source).clickFilterByStudyApply(checkFilterLocationLevel4DtoList);
     	} 
     }
@@ -296,7 +275,6 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     }
 }

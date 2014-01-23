@@ -23,8 +23,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.pojos.NumericRange;
-//import org.generationcp.middleware.pojos.TraitCombinationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,7 +79,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
     private Label step5Label;
     private Label finalStepLabel;
     private Label mainLabel;
-    private GidByPhenotypicQueries gidsByPhenotypic;
     private TraitDataIndexContainer dataIndexContainer;
     private Window parentWindow;
 
@@ -94,7 +91,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
     public SearchGermplasmByPhenotypicTab(GidByPhenotypicQueries gidsByPhenotypicParam, TraitDataIndexContainer dataIndexContainerParam,
             Window parentWindow) {
-        this.gidsByPhenotypic = gidsByPhenotypicParam;
         this.dataIndexContainer = dataIndexContainerParam;
         this.parentWindow = parentWindow;
     }

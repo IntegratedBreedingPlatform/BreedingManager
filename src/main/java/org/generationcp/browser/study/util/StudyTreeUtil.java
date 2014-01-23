@@ -20,7 +20,6 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -310,7 +309,6 @@ public class StudyTreeUtil implements Serializable {
 			@Override
 			public AcceptCriterion getAcceptCriterion() {
 				return AcceptAll.get();
-				//return SourceIsTarget.get();
 			}
 		});
     }

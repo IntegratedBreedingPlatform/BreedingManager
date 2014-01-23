@@ -25,7 +25,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -53,7 +52,8 @@ import com.vaadin.ui.Window.Notification;
 public class SaveGermplasmListDialog extends GridLayout implements InitializingBean, InternationalizableComponent,
         Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
-    private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(SaveGermplasmListDialog.class);
     private static final long serialVersionUID = 1L;
     public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
     public static final String CANCEL_BUTTON_ID = "Cancel Saving";
@@ -86,7 +86,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
         this.tabSheet = tabSheet;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void afterPropertiesSet() throws Exception {
         setRows(8);
@@ -144,7 +143,6 @@ public class SaveGermplasmListDialog extends GridLayout implements InitializingB
     }
 
     private void populateComboBoxListName() throws MiddlewareQueryException {
-        // TODO Auto-generated method stub
         germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
         mapExistingList = new HashMap<String, Integer>();
         comboBoxListName.addItem("");
