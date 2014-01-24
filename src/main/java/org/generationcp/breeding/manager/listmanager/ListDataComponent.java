@@ -395,12 +395,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
 		 listDataTable.setColumnReorderingAllowed(false);
 		 
-		 listDataTable.addListener(new Table.ValueChangeListener() {
-			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				 syncItemCheckBoxes();
-			 }
-		 });
-		 		 
+         listDataTable.addListener(new Table.ValueChangeListener() {
+             public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+                 syncItemCheckBoxes();
+             }
+         });
+                 
+         
 		 if(!fromUrl){
 		         listDataTable.addActionHandler(new Action.Handler() {
 		        	 private static final long serialVersionUID = -897257270314381555L;
@@ -969,6 +970,9 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
             
             listDataTable.requestRepaint();
+            //reset flag to indicate unsaved changes
+            listManagerTreeMenu.setChanged(false);
+            
             MessageNotifier.showMessage(window, 
                     messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
@@ -1413,15 +1417,15 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	listDataTable.setVisibleColumns(visibleColumns);
             	
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
-            		addColumnContextMenu.setPreferredIdColumnValues();
+            		addColumnContextMenu.setPreferredIdColumnValues(false);
             	}
             	
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
-            		addColumnContextMenu.setLocationColumnValues();
+            		addColumnContextMenu.setLocationColumnValues(false);
             	}
             	
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
-            		addColumnContextMenu.setPreferredNameColumnValues();
+            		addColumnContextMenu.setPreferredNameColumnValues(false);
             	}
             	
             	listDataTable.refreshRowCache();
