@@ -1382,7 +1382,9 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	
             	Object[] visibleColumns = listDataTable.getVisibleColumns();
             	
-            	listDataTable.setVisibleColumns(new String[] {ListDataTablePropertyID.GID.getName()
+            	listDataTable.setVisibleColumns(new String[] {
+            			CHECKBOX_COLUMN_ID,
+            			ListDataTablePropertyID.GID.getName()
             			,ListDataTablePropertyID.ENTRY_ID.getName()
             			,ListDataTablePropertyID.ENTRY_CODE.getName()
             			,ListDataTablePropertyID.SEED_SOURCE.getName()
@@ -1430,6 +1432,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             		addColumnContextMenu.setPreferredNameColumnValues(false);
             	}
             	
+            	saveChangesAction();
             	listDataTable.refreshRowCache();
             	listDataTable.setImmediate(true);
             	listDataTable.setEditable(true);
