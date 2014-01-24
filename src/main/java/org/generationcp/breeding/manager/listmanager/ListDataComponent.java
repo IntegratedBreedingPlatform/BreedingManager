@@ -880,7 +880,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         // render additional columns
     	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
     	newColumnsRenderer.render();
-        
+        resizeDataTable();
+    	
         makeTableEditable();
     }
     

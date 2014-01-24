@@ -38,9 +38,11 @@ public class ListDataPropertiesRenderer {
 		GermplasmListNewColumnsInfo columnsInfo = listManager.getAdditionalColumnsForList(listId);
 		for (Entry<String, List<ListDataColumnValues>> columnEntry: columnsInfo.getColumnValuesMap().entrySet()){
 			String column = columnEntry.getKey();
-			targetTable.addContainerProperty(column, String.class, null);
+			targetTable.addContainerProperty(column, String.class, "");
+			targetTable.setColumnWidth(column, 250);
 			setColumnValues(column, columnEntry.getValue());
 		}
+		
 	}
 	
 	public void setColumnValues(String column, List<ListDataColumnValues> columnValues){
