@@ -139,9 +139,15 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             
             
         } else {
-            //Tab tab = Util.getTabAlreadyExist(detailsTabSheet, tabName);
-            Tab tab = Util.getTabWithDescription(detailsTabSheet, germplasmList.getId().toString());
-            detailsTabSheet.setSelectedTab(tab.getComponent());
+            Tab tab;
+            if (germplasmList != null){
+            	tab = Util.getTabWithDescription(detailsTabSheet, germplasmList.getId().toString());
+            } else {
+            	tab = Util.getTabToFocus(detailsTabSheet, tabName);
+            }
+            if (tab != null){
+            	detailsTabSheet.setSelectedTab(tab.getComponent());
+            }
         }
 	}
 
