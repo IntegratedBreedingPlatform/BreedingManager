@@ -58,16 +58,17 @@ public class DropHandlerComponent extends Panel {
 		dropTable.addContainerProperty("List Entry", String.class,  null);
 		dropTable.setColumnWidth("List Entry", width);
 		dropTable.addItem(new Object[]{ "Drag entries here to add to your new list" }, new Integer(1));
+		dropTable.addStyleName("drop-handler");
 		
 		dropLayout.addComponent(dropTable,"top:15px;left:15px");
 		
-		dropLayout.addComponent(new Label("<style>.v-panel-content .v-absolutelayout div.v-table { border-radius: 0px; text-align: center } " +
-				".v-panel-content .v-absolutelayout div.v-table-cell-wrapper { background-color: #fff; height: 45px; width: " + getColumnWidth(width) + "; display: table-cell; vertical-align: middle; white-space: normal;} " +
-				".v-panel-content .v-absolutelayout div.v-table-body-wrapper { background-color: #fff; } " +
-				".v-panel-content .v-absolutelayout div table tr.v-table-row { background-color: #fff; } " +
-				".v-panel-content .v-absolutelayout div table tr.v-table-row-odd { background-color: #fff; } " +
-				".v-panel-content .v-absolutelayout div table .v-table-cell-content { word-wrap: break-word; height: 45px; } " +
-				".v-panel-content .v-absolutelayout div.v-table-body-noselection { height: 48px; } " +
+		dropLayout.addComponent(new Label("<style>.v-panel-content .v-absolutelayout div.drop-handler  { border-radius: 0px; text-align: center } " +
+				".v-panel-content .v-absolutelayout .drop-handler div.v-table-cell-wrapper { background-color: #fff; height: 45px; width: " + getColumnWidth(width) + "; display: table-cell; vertical-align: middle; white-space: normal;} " +
+				".v-panel-content .v-absolutelayout .drop-handler div.v-table-body-wrapper { background-color: #fff; } " +
+				".v-panel-content .v-absolutelayout  div.drop-handler tr.v-table-row { background-color: #fff; } " +
+				".v-panel-content .v-absolutelayout  div.drop-handler tr.v-table-row-odd { background-color: #fff; } " +
+				".v-panel-content .v-absolutelayout  div.drop-handler  table .v-table-cell-content { word-wrap: break-word; height: 45px; } " +
+				".v-panel-content .v-absolutelayout  div.drop-handler div.v-table-body-noselection { height: 48px; } " +
 				" </style>",Label.CONTENT_XHTML));
 		
 		noOfEntriesLbl = new Label(NO_OF_ENTRIES + " " + noOfEntries);
