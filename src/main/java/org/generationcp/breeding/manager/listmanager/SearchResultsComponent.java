@@ -163,6 +163,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
              		for(Integer gid : gids){
              			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
              		}
+             		
+             		listManagerMain.getBuildListComponent().updateDropListEntries();
              	}
 			}
 		});
