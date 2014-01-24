@@ -239,6 +239,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
    		germplasmListTree = createGermplasmListTree();
         germplasmListTree.addStyleName("listManagerTree");
         
+        if(selectListComponent != null){
+        	germplasmListTree.addStyleName("listManagerTree-long");
+        }
+        
         germplasmListTree.setItemStyleGenerator(new ItemStyleGenerator() {
         	private static final long serialVersionUID = -5690995097357568121L;
 

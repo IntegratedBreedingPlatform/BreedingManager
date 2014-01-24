@@ -157,6 +157,10 @@
     color: #33333;
 }
 
+.listManagerTree-long {
+	height: 320px;
+}
+
 .v-tree-node {
 	font-size: 12px;
 }
