@@ -40,6 +40,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private ListManagerMain listManagerMain;
     
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
+    private boolean hasChanged = false;
     
     private BreedingManagerApplication breedingManagerApplication;
     private ListManagerDetailsLayout detailsTabbedLayout;
@@ -175,6 +176,14 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	
 	public ListManagerDetailsLayout getDetailsLayout(){
 		return this.detailsTabbedLayout;
+	}
+	
+	public boolean hasChanged() {
+	    return hasChanged;
+	}
+	
+	public void setChanged(boolean hasChanged) {
+	    this.hasChanged = hasChanged;
 	}
 
 }

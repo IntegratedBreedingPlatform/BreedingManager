@@ -327,5 +327,7 @@ public enum Message{
     ,NO
     ,ERROR
    
-    
+    //Unsaved changes msg
+    ,WARNING
+    ,UNSAVED_CHANGES_LISTDATA
 }

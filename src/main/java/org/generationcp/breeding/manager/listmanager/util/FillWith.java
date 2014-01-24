@@ -241,11 +241,13 @@ public class FillWith implements InternationalizableComponent  {
        for(Integer itemId: itemIds){
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
+       //mark flag that changes have been made
+       listManagerTreeMenu.setChanged(true);
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(table, GIDPropertyId, propertyId, messageSource);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource);
         mainWindow.addWindow(attributeWindow);
     }
     
@@ -267,6 +269,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+		   //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -289,6 +293,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -312,6 +318,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -335,6 +343,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -358,6 +368,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -380,6 +392,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+		   listManagerTreeMenu.setChanged(true);
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }    	
@@ -405,6 +419,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+ 	        //mark flag that changes have been made
+ 		  listManagerTreeMenu.setChanged(true);
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -427,6 +443,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+ 	        //mark flag that changes have been made
+ 		  listManagerTreeMenu.setChanged(true);
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -452,6 +470,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+  	        //mark flag that changes have been made
+  		   listManagerTreeMenu.setChanged(true);
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
   	   }        	
@@ -474,6 +494,9 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(false);
 		   targetTable.setEditable(true);
 		}
+        
+        //mark flag that changes have been made
+        listManagerTreeMenu.setChanged(true);
 	}
     
     protected void fillWithPreferredID(Table table, String propertyId) {
@@ -493,6 +516,9 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(false);
 		   targetTable.setEditable(true);
         }
+        
+        //mark flag that changes have been made
+        listManagerTreeMenu.setChanged(true);
 	}
     
     
@@ -516,6 +542,8 @@ public class FillWith implements InternationalizableComponent  {
     		   targetTable.setEditable(false);
     		   targetTable.setEditable(true);
     		}
+        	//mark flag that changes have been made
+        	listManagerTreeMenu.setChanged(true);
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
         }
@@ -593,6 +621,8 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
+	        //mark flag that changes have been made
+	    	listManagerTreeMenu.setChanged(true);
     	}
     }
     

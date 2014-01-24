@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTabChangeListener;
-import org.generationcp.breeding.manager.util.SelectedTabCloseHandler;
+import org.generationcp.breeding.manager.util.ConfirmDialogSelectedTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -159,7 +159,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 
 	private void addListeners(VerticalLayout layout, Component component) {
 		detailsTabSheet.setSelectedTab(layout);
-		detailsTabSheet.setCloseHandler(new SelectedTabCloseHandler());
+		detailsTabSheet.setCloseHandler(new ConfirmDialogSelectedTabCloseHandler());
 		detailsTabSheet.addListener(new GermplasmListTabChangeListener(component));
 		detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
 

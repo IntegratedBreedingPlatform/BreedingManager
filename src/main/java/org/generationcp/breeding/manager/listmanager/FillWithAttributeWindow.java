@@ -48,6 +48,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private SimpleResourceBundleMessageSource messageSource;
     
     //private Window mainWindow;
+    private ListManagerTreeMenu listManagerTreeMenu;
     private Table targetTable;
     private String gidPropertyId;
     private String targetPropertyId;
@@ -59,7 +60,8 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, String targetPropertyId, SimpleResourceBundleMessageSource messageSource) {
+    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
@@ -146,6 +148,9 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
                 e.printStackTrace();
             }
         }
+        
+        //mark flag that changes have been made
+        listManagerTreeMenu.setChanged(true);
      }
     
     private List<Integer> getGidsFromTable(Table table){

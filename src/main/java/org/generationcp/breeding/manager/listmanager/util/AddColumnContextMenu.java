@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -24,7 +25,6 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
 
 @Configurable
@@ -34,6 +34,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
+    private ListManagerTreeMenu listManagerTreeMenu = null;
     private AbsoluteLayout absoluteLayoutSource;
     private String GIDPropertyId;
     private Button addColumnButton;
@@ -65,18 +66,38 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
 	/**
 	 * Add "Add column" context menu to a table
+	 * @param listManagerTreeMenu - tab content from list manager details section.
 	 * @param source - context menu will attach to this
 	 * @param addColumnButton - util will attach event listener to this
 	 * @param targetTable - table where data will be manipulated
 	 * @param gid - property of GID (button with GID as caption) on that table
 	 */
-    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, Button addColumnButton,Table targetTable, String gid){
+    public AddColumnContextMenu(ListManagerTreeMenu listManagerTreeMenu, AbsoluteLayout absoluteLayoutSource, 
+            Button addColumnButton, Table targetTable, String gid){
+        this.listManagerTreeMenu = listManagerTreeMenu;
     	this.GIDPropertyId = gid;
     	this.targetTable = targetTable;
     	this.addColumnButton = addColumnButton;
     	this.absoluteLayoutSource = absoluteLayoutSource;
     	
     	setupContextMenu();
+    }
+    
+    /**
+     * Add "Add column" context menu to a table
+     * @param source - context menu will attach to this
+     * @param addColumnButton - util will attach event listener to this
+     * @param targetTable - table where data will be manipulated
+     * @param gid - property of GID (button with GID as caption) on that table
+     */
+    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
+            Button addColumnButton, Table targetTable, String gid){
+        this.GIDPropertyId = gid;
+        this.targetTable = targetTable;
+        this.addColumnButton = addColumnButton;
+        this.absoluteLayoutSource = absoluteLayoutSource;
+        
+        setupContextMenu();
     }
     
 	/**
@@ -183,6 +204,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
     			
+    			//mark flag that changes have been made
+    			if (listManagerTreeMenu != null) {
+    			    listManagerTreeMenu.setChanged(true);
+    			}
     		} catch (MiddlewareQueryException e) {
     			e.printStackTrace();
     		}
@@ -215,6 +240,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
 				
+				//mark flag that changes have been made
+				if (listManagerTreeMenu != null) {
+				    listManagerTreeMenu.setChanged(true);
+				}
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}  
@@ -257,6 +286,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
 					
+				//mark flag that changes have been made
+				if (listManagerTreeMenu != null) {
+				    listManagerTreeMenu.setChanged(true);
+				}
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}    	
