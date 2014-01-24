@@ -265,8 +265,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsLayout.setWidth("350px");
 		matchingGermplasmsLayout.setHeight("100%");
 		
-		addComponent(matchingGermplasmsLabel, "top:0px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:23px; left:0px;");
 		matchingGermplasmsLayout.addComponent(matchingGermplasmsTable, "top:0px; left:0px;");
 		matchingGermplasmsLayout.addComponent(matchingGermplasmsTagAllCheckBox, "top:4px; left:32px;");
 		matchingGermplasmsPanel.setContent(matchingGermplasmsLayout);
