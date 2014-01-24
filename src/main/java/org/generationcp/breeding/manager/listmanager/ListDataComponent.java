@@ -64,7 +64,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -75,7 +74,6 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.MouseEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
@@ -896,7 +894,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	return totalWidth-2; //minor adjustment
     }
     
-    public void resizeDataTable(){
+    public final void resizeDataTable(){
 	 listDataTable.setWidth(getTotalWidth(listDataTable)+"px");
 	 listDataLayout.setWidth(getTotalWidth(listDataTable)+"px");
     }
