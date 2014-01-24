@@ -465,7 +465,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 if(germplasmListId < 0){
 		     if(germplasmListId<0 && germplasmListStatus<100){
 		         @SuppressWarnings("unused")
-				FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+				FillWith fillWith = new FillWith(listManagerTreeMenu, messageSource, 
+				        listDataTable, ListDataTablePropertyID.GID.getName());
 		     }
 		 }
 
@@ -495,7 +496,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		     addColumnButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
 			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:140px;");
 			 
-			 addColumnContextMenu = new AddColumnContextMenu(toolsMenuBar, addColumnButton, listDataTable, ListDataTablePropertyID.GID.getName());
+			 addColumnContextMenu = new AddColumnContextMenu(listManagerTreeMenu, toolsMenuBar, addColumnButton, 
+			         listDataTable, ListDataTablePropertyID.GID.getName());
 		 }
 	}
 
@@ -598,8 +600,17 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
 		                	Object column = entry.getKey();
 		                	Field f = entry.getValue();
+		                	Object fieldValue = f.getValue();
 		                	
-		        			if(column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
+		                	// mark list as changed if value for the cell was changed
+		                	if (column.equals(selectedColumn)) {
+		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
+		                	        source.setChanged(true);
+		                	    }
+		                	}
+		                	
+		                    // validate for designation
+		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
 		        				String designation = event.getSource().toString();
 		        				
 		        				String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
@@ -823,9 +834,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         
         makeTableEditable();
     }
-
-
+    
     public void saveChangesAction() throws InternationalizableException {
+        saveChangesAction(this.getWindow());
+    }
+
+
+    public void saveChangesAction(Window window) throws InternationalizableException {
         try {
         	long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
             listDatas = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
@@ -891,7 +906,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
             
             listDataTable.requestRepaint();
-            MessageNotifier.showMessage(this.getWindow(), 
+            MessageNotifier.showMessage(window, 
                     messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
                     ,3000, Notification.POSITION_CENTERED);
