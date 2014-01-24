@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
@@ -182,6 +183,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(PREFERRED_ID)){
     		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
     		targetTable.setColumnWidth(PREFERRED_ID, 250);
+    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
+    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
+    		}
     		setPreferredIdColumnValues();
     	}
     }
@@ -220,6 +224,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
     		targetTable.setColumnWidth(PREFERRED_NAME, 250);
     		setPreferredNameColumnValues();
+    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
+    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
+    		}
     	}
     }
     
@@ -257,6 +264,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, "");
     		targetTable.setColumnWidth(LOCATIONS, 500);
     		setLocationColumnValues();
+    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
+    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
+    		}
     	}
     }
     
