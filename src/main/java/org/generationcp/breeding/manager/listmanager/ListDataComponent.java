@@ -614,7 +614,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		        				String designation = event.getSource().toString();
 		        				
 		        				String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
-								int gid =  Integer.valueOf(items[1]);
+								int gid =  Integer.valueOf(items[2]);
 								
 								if(isDesignationValid(designation,gid)){
 									Double d = computeTextFieldWidth(f.getValue().toString());
