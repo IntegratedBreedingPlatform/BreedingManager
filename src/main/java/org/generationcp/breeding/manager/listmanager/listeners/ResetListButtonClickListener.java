@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,11 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 		
 		//Clear flag, this is used for saving logic (to save new list or update)
 		source.setCurrentlySavedGermplasmList(null);
+		
+		//Reset the dropHandler
+		Object listManager = source.getSource();
+		((ListManagerMain) listManager).getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
+		((ListManagerMain) listManager).getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
 	}
     
 }

@@ -148,7 +148,7 @@
 	border: 1px solid e3e3e3;
 	background: #e3e3e3;
 	width: 200px;
-	height: 320px;
+	height: 220px;
 	overflow: scroll;
 	border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -202,20 +202,20 @@
 
 .componenttree-children {
 	padding-left: 4px;
-	margin-left: 20px;
+	margin-left: 9px;
 }
 .componenttree-parent {
-	padding: 4px 0 4px 0px;
+	padding: 8px 0 4px 0px;
 }
 .componenttree-child {
-	padding: 4px 0 4px 19px;
-	margin-left: 20px;
+	padding: 5px 0 5px 15px;
+	margin-left: 9px;
 }
 
 /* Expand/collapse button: */
 .componenttree-expander {
 	float: left;
-	margin-left: 40px;
+	margin-left: 15px;
 	padding: 10px;
 }
 
@@ -303,7 +303,7 @@
 	overflow: scroll !important;
 }
 .v-panel-search-panel {
-	background-color: #EFEFEF;	
+	background-color: #e3e3e3;	
 	max-width: 98%;
 }
 
@@ -328,3 +328,20 @@
 	font-weight: bold;
 }
 
+.v-panel {
+	border-radius: 3px;	
+}
+
+.v-panel-content .v-absolutelayout {
+	background-color: #e3e3e3;
+}
+
+.wrap-word {
+	white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	white-space: pre-wrap;       /* css-3 */
+	word-wrap: break-word;       /* Internet Explorer 5.5+ */
+	word-break: break-all;
+	white-space: normal;
+}

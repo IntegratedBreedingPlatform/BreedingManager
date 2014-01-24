@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -24,12 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -51,13 +55,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     private Label lblStatus;
     private Label lblListOwner;
     private Label lblListNotes;
-    
-    private Label listName;
-    private Label listDescription;
-    private Label listCreationDate;
-    private Label listType;
+
     private Label listStatus;
-    private Label listOwner;
     private Label listNotes;
     
     private Button lockButton;
@@ -89,6 +88,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     
     private boolean usedForDetailsOnly;
     
+    private Integer workbenchUserId;
+    private Integer iBDBUserId;
+    
     private static final ThemeResource ICON_LOCK = new ThemeResource("images/lock.png");
     private static final ThemeResource ICON_UNLOCK = new ThemeResource("images/unlock.png");
     
@@ -114,122 +116,151 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	public void afterPropertiesSet() throws Exception {
 		
 		addStyleName("overflow_x_auto");
-		
-		setRows(5);
-        setColumns(8);
-        setColumnExpandRatio(1, 2);
-        setColumnExpandRatio(4, 2);
-        setColumnExpandRatio(7, 2);
+			
+		setRows(4);
+        setColumns(3);
+        setColumnExpandRatio(0, 2);
+        setColumnExpandRatio(2, 2);
+        setRowExpandRatio(2, 2);
+        setRowExpandRatio(3, 2);
         setSpacing(true);
-        setMargin(true);
         
         userDefinedFields = germplasmListManager.getGermplasmListTypes();
         
         // get GermplasmList Detail
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         
-        lblName = new Label( "<b>" + messageSource.getMessage(Message.NAME_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Name"
-        lblDescription = new Label("<b>" + messageSource.getMessage(Message.DESCRIPTION_LABEL) + "</b> ", Label.CONTENT_XHTML ); // "Description"
-        lblCreationDate = new Label("<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Creation Date"
-        lblType = new Label("<b>" + messageSource.getMessage(Message.TYPE_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Type"
-        lblStatus = new Label("<b>" + messageSource.getMessage(Message.STATUS_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "Status"
-        lblListOwner = new Label("<b>" + messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":</b> ", Label.CONTENT_XHTML); // "List Owner"
-        lblListNotes = new Label("<b>" + messageSource.getMessage(Message.NOTES) + ":</b> ", Label.CONTENT_XHTML); // "Notes"
+        lblName = createCaptionAndValueLbl(Message.NAME_LABEL, germplasmList.getName()); // "Name"
+        lblDescription = createCaptionAndValueLbl(Message.DESCRIPTION_LABEL, germplasmList.getDescription());  // "Description"
+        lblCreationDate = createCaptionAndValueLbl(Message.CREATION_DATE_LABEL, String.valueOf(germplasmList.getDate()));  // "Creation Date"
+        lblType = createCaptionAndValueLbl(Message.TYPE_LABEL, germplasmList.getType()); // "Type"
+        lblListOwner = createCaptionAndValueLbl(Message.LIST_OWNER_LABEL, getOwnerListName(germplasmList.getUserId()));  // "List Owner"
         
-        listName = new Label(germplasmList.getName());
-        listDescription = new Label(getDescription(germplasmList.getDescription()));
-        listDescription.setWidth("150px");
-        listDescription.setDescription(germplasmList.getDescription());
-        listCreationDate = new Label(String.valueOf(germplasmList.getDate()));
-        listType = new Label(getFullListTypeName(germplasmList.getType()));
-        listStatus = new Label(germplasmList.getStatusString());
-        listOwner= new Label(getOwnerListName(germplasmList.getUserId()));
         listNotes= new Label(getNotes(germplasmList.getNotes()),Label.CONTENT_TEXT);
         
-        addComponent(lblName, 0, 0);
-        addComponent(listName, 1, 0);
-        addComponent(lblDescription, 3, 0);
-        addComponent(listDescription, 4, 0);
-        addComponent(lblType, 6, 0);
-        addComponent(listType, 7, 0);
+        retrieveUserInfo();
+        layoutComponents();
+	}
+
+	private void layoutComponents() {
+		addComponent(lblName, 0, 0);
+        addComponent(lblDescription, 2, 0);
         
-        addComponent(lblCreationDate, 0, 1);
-        addComponent(listCreationDate, 1, 1);
-        addComponent(lblListOwner, 3, 1);
-        addComponent(listOwner, 4, 1);
-        addComponent(lblStatus, 6, 1);
+        addComponent(lblType, 0, 1);
+        renderNotesLabel();
+        addComponent(listNotes, 2, 2, 2, 3);
         
-        addComponent(lblListNotes, 0, 2);
-        addComponent(listNotes, 0, 3, 7, 3);
-        
-        Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+        addComponent(lblCreationDate, 0, 2);        
+        addComponent(lblListOwner, 0, 3);
+	}
+
+	private void retrieveUserInfo() throws MiddlewareQueryException {
+		Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
         workbenchDataManager.getWorkbenchRuntimeData();
-        Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-        Integer IBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
-        
-      //if(germplasmList.getUserId().equals(workbenchDataManager.getWorkbenchRuntimeData().getUserId()) && germplasmList.getId()<0){
-        if(!usedForDetailsOnly){
-            if(germplasmList.getUserId().equals(IBDBUserId) && germplasmList.getId()<0){
+        workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        iBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
+	}
+
+	private Label createCaptionAndValueLbl(Message caption,String value) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<b>"); //make the caption bold
+		sb.append(messageSource.getMessage(caption));
+		sb.append(":</b>");
+		sb.append("&nbsp;&nbsp;");
+		sb.append(value);
+		return new Label(sb.toString(), Label.CONTENT_XHTML);
+	}
+
+	/*
+	 * Display "Notes" label and Add / Edit Notes button 
+	 * (button only for unlocked local lists)
+	 */
+	private void renderNotesLabel() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth("400px");
+		
+		HorizontalLayout content = new HorizontalLayout();
+		content.setWidth("150px");
+		
+		lblListNotes = createCaptionAndValueLbl(Message.NOTES, "");  // "Notes"
+		lblListNotes.setWidth("50px");
+		content.addComponent(lblListNotes);
+
+		if(!usedForDetailsOnly){
+            if(germplasmList.getUserId().equals(iBDBUserId) && germplasmList.getId()<0 && 
+            		germplasmList.getStatus()==1) {
+                    
+                addEditViewButton = new Button();
+                addEditViewButton.addStyleName(Reindeer.BUTTON_LINK);
+                addEditViewButton.setWidth("100px");
+                addEditViewButton.setData(VIEW_NOTES_BUTTON_ID);
+                if(germplasmList.getNotes() == null){
+                	addEditViewButton.setCaption("Add Notes");
+                }
+                else{
+                	if(germplasmList.getNotes().trim().length() > 0){
+                		addEditViewButton.setCaption("View / Edit Notes");
+                	}
+                	else{
+                		addEditViewButton.setCaption("Add Notes");
+                	}
+                }
+                addEditViewButton.addListener(new Button.ClickListener(){
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						addEditListNotes(event.getButton().getCaption());
+					}
+                	
+                });
+                content.addComponent(addEditViewButton);
+            }
+        }
+		layout.addComponent(content);
+		addComponent(layout, 2, 1);
+	}
+	
+	/*
+	 * Render value for status as lock button / unlock button / label 
+	 * depending on list status
+	 */
+	private void renderStatusField(HorizontalLayout layout) {
+		lblStatus = new Label("<b>" + messageSource.getMessage(Message.STATUS_LABEL) + ":</b>&nbsp;&nbsp;", 
+				Label.CONTENT_XHTML); 
+		layout.addComponent(lblStatus);
+		if(!usedForDetailsOnly){
+			// local list
+            if(germplasmList.getUserId().equals(iBDBUserId) && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
                     unlockButton = new Button("Click to Open List");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.setIcon(ICON_LOCK);
-                    unlockButton.setWidth("200px");
+                    unlockButton.setWidth("140px");
                     unlockButton.setDescription(LOCK_TOOLTIP);
                     unlockButton.setStyleName(Reindeer.BUTTON_LINK);
                     unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                    addComponent(unlockButton, 7, 1);
+                    layout.addComponent(unlockButton);
+                    
                 } else if(germplasmList.getStatus()==1) {
                     lockButton = new Button("Click to Lock List");
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
-                    lockButton.setWidth("200px");
+                    lockButton.setWidth("140px");
                     lockButton.setDescription(LOCK_TOOLTIP);
                     lockButton.setStyleName(Reindeer.BUTTON_LINK);
                     lockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                    addComponent(lockButton, 7, 1);
-                    
-                    addEditViewButton = new Button();
-                    addEditViewButton.addStyleName(Reindeer.BUTTON_LINK);
-                    addEditViewButton.setWidth("100px");
-                    addEditViewButton.setData(VIEW_NOTES_BUTTON_ID);
-                    if(germplasmList.getNotes() == null){
-                    	addEditViewButton.setCaption("Add Notes");
-                    }
-                    else{
-                    	if(germplasmList.getNotes().trim().length() > 0){
-                    		addEditViewButton.setCaption("View / Edit Notes");
-                    	}
-                    	else{
-                    		addEditViewButton.setCaption("Add Notes");
-                    	}
-                    }
-                    addEditViewButton.addListener(new Button.ClickListener(){
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void buttonClick(ClickEvent event) {
-							addEditListNotes(event.getButton().getCaption());
-						}
-                    	
-                    });
-                    addComponent(addEditViewButton, 1, 2);
-                    
-                    deleteButton = new Button("Delete");
-                    deleteButton.setData(DELETE_BUTTON_ID);
-                    deleteButton.setWidth("80px");
-                    deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-                    deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-                   
-                    addComponent(deleteButton, 0, 4);
+                    layout.addComponent(lockButton);
                 }
-            }
-            else{
-            	addComponent(listStatus, 7, 1);
+                
+            // central lists    
+            } else{
+            	listStatus = new Label(germplasmList.getStatusString());
+            	listStatus.setWidth("100px");
+            	layout.addComponent(listStatus);
             }
         }
-        
 	}
 	
 	public String getFullListTypeName(String fcode){
@@ -263,9 +294,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     
     public String getDescription(String desc){
     	String processedDesc = desc;
-    	int endIndex = 25; // TODO Calculate the maximum no of character for 2 lines of text 
+    	int endIndex = 30; // TODO Calculate the maximum no of character for 2 lines of text 
     	
-    	if(desc != null && desc.length() > 25){
+    	if(desc != null && desc.length() > endIndex){
     		processedDesc = processedDesc.substring(0, endIndex) + "...";
     	}
     	
@@ -274,9 +305,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
     
     public String getNotes(String notes){
     	String processedNotes = notes;
-    	int endIndex = 150; // TODO Calculate the maximum no of character for 2 lines of text 
+    	int endIndex = 110; // TODO Calculate the maximum no of character for 2 lines of text 
     	
-    	if(notes != null && notes.length() > 150){
+    	if(notes != null && notes.length() > endIndex){
     		processedNotes = processedNotes.substring(0, endIndex) + "...";
     	}
     	
@@ -433,5 +464,34 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 		else{
 			this.addEditViewButton.setCaption("Add Notes");
 		}
+	}
+	
+	public Component createBasicDetailsHeader (String header) {
+		HorizontalLayout mainLayout = new HorizontalLayout();
+		mainLayout.setWidth("92%");
+		mainLayout.setHeight("30px");
+		
+        CssLayout layout = new CssLayout();
+        layout.setWidth("100px");
+        
+        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+        l1.setStyleName(Bootstrap.Typography.H4.styleName());
+        layout.addComponent(l1);
+        	
+		deleteButton = new Button("Delete");
+        deleteButton.setData(DELETE_BUTTON_ID);
+        deleteButton.setWidth("80px");
+        deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+       
+		HorizontalLayout buttonsLayout = new HorizontalLayout();
+		renderStatusField(buttonsLayout);
+		buttonsLayout.addComponent(deleteButton);
+				
+        mainLayout.addComponent(layout);
+        mainLayout.addComponent(buttonsLayout);
+        mainLayout.setComponentAlignment(buttonsLayout, Alignment.BOTTOM_RIGHT);
+
+        return mainLayout;
 	}
 }

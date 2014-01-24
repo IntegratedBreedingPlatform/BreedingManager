@@ -55,6 +55,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	private Tree germplasmListTree;
     private AbsoluteLayout germplasmListBrowserMainLayout;
 	private Button refreshButton;
+	private DropHandlerComponent dropHandler;
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -128,11 +129,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
 		refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		
+		dropHandler = new DropHandlerComponent(listManagerMain, 220);
+		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);
 		
 		addComponent(treeContainerLayout);
 		addComponent(refreshButton);
+		addComponent(dropHandler);
 		
 		createTree();
 		
@@ -575,6 +579,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public Tree getGermplasmListTree(){
     	return germplasmListTree;
+    }
+    
+    public DropHandlerComponent getDropHandlerComponent(){
+    	return dropHandler;
     }
 
     public void setSelectedListId(Object listId){

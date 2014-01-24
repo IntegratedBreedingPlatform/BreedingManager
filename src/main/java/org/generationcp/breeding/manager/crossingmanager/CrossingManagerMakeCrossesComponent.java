@@ -22,16 +22,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.And;
 import com.vaadin.event.dd.acceptcriteria.SourceIs;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
@@ -55,6 +60,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
 
+    private static final String TAG_COLUMN_ID = "Tag";
     
     private static final long serialVersionUID = 9097810121003895303L;
     
@@ -76,7 +82,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     //private ListSelect listSelectFemale;
     //private ListSelect listSelectMale;
     private Table femaleParents;
+    private CheckBox femaleParentsTagAll;
     private Table maleParents;
+    private CheckBox maleParentsTagAll;
     private GridLayout gridLayoutSelectingParents;
     private GridLayout gridLayoutSelectingParentOptions;
     private VerticalLayout layoutCrossOption;
@@ -142,7 +150,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         //listSelectFemale.setNullSelectionAllowed(true);
         //listSelectFemale.setMultiSelect(true);
         //listSelectFemale.setImmediate(true);
-
+        
         femaleParents = new Table();
         femaleParents.setHeight(180, UNITS_PIXELS);
         femaleParents.setWidth(240, UNITS_PIXELS);
@@ -150,10 +158,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         femaleParents.setSelectable(true);
         femaleParents.setMultiSelect(true);
         femaleParents.setImmediate(true);
+        femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty("Female Parents", String.class, null);
+        femaleParents.setColumnWidth("Female Parents", 150);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setDropHandler(new DropHandler() {
-                public void drop(DragAndDropEvent dropEvent) {
+            private static final long serialVersionUID = -3048433522366977000L;
+
+				public void drop(DragAndDropEvent dropEvent) {
                     TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                        
                     Table sourceTable = (Table) transferable.getSourceComponent();
@@ -185,6 +197,65 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
                 }
         });
         femaleParents.addActionHandler(new CrossingManagerActionHandler(this));
+        
+        femaleParents.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 4586965346236384519L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
+				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) femaleParents.getValue();
+				for(GermplasmListEntry entry : entries){
+					CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+					if(selectedEntries.contains(entry)){
+						tag.setValue(true);
+					} else{
+						tag.setValue(false);
+					}
+				}
+			}
+		});
+        
+        femaleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(propertyId != null && propertyId == "Female Parents") {
+			    	Table theTable = (Table) source;
+			    	Item item = theTable.getItem(itemId);
+			    	String name = (String) item.getItemProperty("Female Parents").getValue();
+			    	return name;
+			    }                                                                       
+			    return null;
+			}
+		});
+        
+        femaleParentsTagAll = new CheckBox();
+        femaleParentsTagAll.setImmediate(true);
+        femaleParentsTagAll.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 7882379695058054587L;
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public void buttonClick(ClickEvent event) {
+				boolean checkBoxValue = event.getButton().booleanValue();
+				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
+				if(checkBoxValue){
+					for(GermplasmListEntry entry : entries){
+						CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+						tag.setValue(true);
+					}
+					femaleParents.setValue(entries);
+				} else{
+					for(GermplasmListEntry entry : entries){
+						CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+						tag.setValue(false);
+					}
+					femaleParents.setValue(null);
+				}
+			}
+		});
         
         optionGroupMakeCrosses = new OptionGroup();
         optionGroupMakeCrosses.setWidth(560,UNITS_PIXELS);
@@ -225,10 +296,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         maleParents.setSelectable(true);
         maleParents.setMultiSelect(true);
         maleParents.setImmediate(true);
+        maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty("Male Parents", String.class, null);
+        maleParents.setColumnWidth("Male Parents", 150);
         maleParents.setDragMode(TableDragMode.ROW);
         maleParents.setDropHandler(new DropHandler() {
-                public void drop(DragAndDropEvent dropEvent) {
+            private static final long serialVersionUID = -6464944116431652229L;
+
+				public void drop(DragAndDropEvent dropEvent) {
                     TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                         
                     Table sourceTable = (Table) transferable.getSourceComponent();
@@ -255,6 +330,65 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         });
         maleParents.addActionHandler(new CrossingManagerActionHandler(this));
         
+        maleParents.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 4586965346236384519L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
+				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) maleParents.getValue();
+				for(GermplasmListEntry entry : entries){
+					CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+					if(selectedEntries.contains(entry)){
+						tag.setValue(true);
+					} else{
+						tag.setValue(false);
+					}
+				}
+			}
+		});
+        
+        maleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(propertyId != null && propertyId == "Male Parents") {
+			    	Table theTable = (Table) source;
+			    	Item item = theTable.getItem(itemId);
+			    	String name = (String) item.getItemProperty("Male Parents").getValue();
+			    	return name;
+			    }                                                                       
+			    return null;
+			}
+		});
+        
+        maleParentsTagAll = new CheckBox();
+        maleParentsTagAll.setImmediate(true);
+        maleParentsTagAll.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -6111529620495423779L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void buttonClick(ClickEvent event) {
+				boolean checkBoxValue = event.getButton().booleanValue();
+				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
+				if(checkBoxValue){
+					for(GermplasmListEntry entry : entries){
+						CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+						tag.setValue(true);
+					}
+					maleParents.setValue(entries);
+				} else{
+					for(GermplasmListEntry entry : entries){
+						CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+						tag.setValue(false);
+					}
+					maleParents.setValue(null);
+				}
+			}
+		});
+        
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
         backButton = new Button();
@@ -272,12 +406,22 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         gridLayoutSelectingParents.setSpacing(true);
         
         gridLayoutSelectingParents.addComponent(btnSelectListFemaleParent,0,0);
-        gridLayoutSelectingParents.addComponent(femaleParents,0,1);
+        AbsoluteLayout femaleParentsTableLayout = new AbsoluteLayout();
+        femaleParentsTableLayout.setWidth("260px");
+        femaleParentsTableLayout.setHeight("180px");
+        femaleParentsTableLayout.addComponent(femaleParents, "top:0px;left:20px");
+        femaleParentsTableLayout.addComponent(femaleParentsTagAll, "top:4px;left:55px");
+        gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListFemaleParent,  Alignment.MIDDLE_CENTER);
         gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
         
         gridLayoutSelectingParents.addComponent(btnSelectListMaleParent,1,0);
-        gridLayoutSelectingParents.addComponent(maleParents,1,1);
+        AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
+        maleParentsTableLayout.setWidth("260px");
+        maleParentsTableLayout.setHeight("180px");
+        maleParentsTableLayout.addComponent(maleParents, "top:0px;left:20px");
+        maleParentsTableLayout.addComponent(maleParentsTagAll, "top:4px;left:55px");
+        gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
         
@@ -375,13 +519,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     }
     
     public void selectFemaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(femaleParents, this,this.listnameFemaleParent);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(femaleParents, this,this.listnameFemaleParent, femaleParentsTagAll);
         selectListWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         this.getWindow().addWindow(selectListWindow);
     }
     
     public void selectMaleParentList() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(maleParents, this,this.listnameMaleParent);
+        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(maleParents, this,this.listnameMaleParent, maleParentsTagAll);
         selectListWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         this.getWindow().addWindow(selectListWindow);
     }
@@ -438,13 +582,22 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
      * @param table
      * @return List of selected germplasm list entries
      */
-    private List<GermplasmListEntry> getCorrectSortedValue(Table table){
+    @SuppressWarnings("unchecked")
+	private List<GermplasmListEntry> getCorrectSortedValue(Table table){
     	List<GermplasmListEntry> allItemIds = new ArrayList<GermplasmListEntry>();
     	List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
     	List<GermplasmListEntry> sortedSelectedValues = new ArrayList<GermplasmListEntry>();
-
+    	
     	allItemIds.addAll((Collection<GermplasmListEntry>) table.getItemIds());
     	selectedItemIds.addAll((Collection<GermplasmListEntry>) table.getValue());
+
+    	for(GermplasmListEntry entry : allItemIds){
+			CheckBox tag = (CheckBox) table.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
+			Boolean tagValue = (Boolean) tag.getValue();
+			if(tagValue.booleanValue()){
+				selectedItemIds.add(entry);
+			} 
+		}
     	
     	for(GermplasmListEntry itemId : allItemIds){
     		for(GermplasmListEntry selectedItemId : selectedItemIds){

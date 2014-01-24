@@ -104,12 +104,32 @@ public class ListManagerMain extends VerticalLayout implements
 	public void showBuildNewListComponent(){
 		if(buildNewListButton.isVisible()){
 			buildNewListButton.setVisible(false);
+			
+			//show the drop area in Browse List
+			this.browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent().enableDropHandler();
+			
+			//show the drop are in Search Germplasm List and Germplasm
+			this.searchListsComponent.getSearchResultsComponent().getDropHandlerComponent().enableDropHandler();
+			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
-			Button resetButton = buildNewListComponent.getResetButton();
-			if (resetButton != null) {
-				resetButton.focus();
+//			Button resetButton = buildNewListComponent.getResetButton();
+//			if (resetButton != null) {
+//				resetButton.focus();
+//			}
+			
+			DropHandlerComponent dropHandler = null; 
+			if( tabSheet.getSelectedTab() instanceof ListManagerBrowseListsComponent){
+				dropHandler = browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent();
 			}
+			else if( tabSheet.getSelectedTab() instanceof ListManagerSearchListsComponent){
+				dropHandler = searchListsComponent.getSearchResultsComponent().getDropHandlerComponent();
+			}
+			
+			if(dropHandler != null){
+				dropHandler.focus();
+			}
+			
 		}
 		
 	}
