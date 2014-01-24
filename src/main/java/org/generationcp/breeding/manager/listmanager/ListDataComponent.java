@@ -410,15 +410,17 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		         	}else if(ACTION_EDIT == action){
 		         		// Make the entire item editable
 		                HashMap<Object,Field> itemMap = fields.get(selectedItemId);
-		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-		        			Object column = entry.getKey();
-		        			if(column.equals(selectedColumn)){
-		        				Field f = entry.getValue();
-		        				Object fieldValue = f.getValue();
-								lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
-			                	f.setReadOnly(false);
-			                	f.focus();
-		        			}
+		                if(itemMap != null){
+			                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+			        			Object column = entry.getKey();
+			        			if(column.equals(selectedColumn)){
+			        				Field f = entry.getValue();
+			        				Object fieldValue = f.getValue();
+									lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
+				                	f.setReadOnly(false);
+				                	f.focus();
+			        			}
+			                }
 		                }
 		                
 		                listDataTable.select(selectedItemId);
