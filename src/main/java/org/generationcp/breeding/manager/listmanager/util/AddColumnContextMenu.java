@@ -182,11 +182,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(PREFERRED_ID)){
     		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
     		targetTable.setColumnWidth(PREFERRED_ID, 250);
-    		setPreferredIdColumnValues();
+    		setPreferredIdColumnValues(true);
     	}
     }
     
-    public void setPreferredIdColumnValues(){
+    public void setPreferredIdColumnValues(boolean fromAddColumn){
     	if(propertyExists(PREFERRED_ID)){
     		try {
     			List<Integer> itemIds = getItemIds(targetTable);
@@ -206,7 +206,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     			}
     			
     			//mark flag that changes have been made
-    			if (listManagerTreeMenu != null) {
+    			if (listManagerTreeMenu != null && fromAddColumn) {
     			    listManagerTreeMenu.setChanged(true);
     			}
     		} catch (MiddlewareQueryException e) {
@@ -219,11 +219,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(PREFERRED_NAME)){
     		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
     		targetTable.setColumnWidth(PREFERRED_NAME, 250);
-    		setPreferredNameColumnValues();
+    		setPreferredNameColumnValues(true);
     	}
     }
     
-    public void setPreferredNameColumnValues(){
+    public void setPreferredNameColumnValues(boolean fromAddColumn){
     	if(propertyExists(PREFERRED_NAME)){
 			try {
 				List<Integer> itemIds = getItemIds(targetTable);
@@ -243,7 +243,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     			}
 				
 				//mark flag that changes have been made
-				if (listManagerTreeMenu != null) {
+				if (listManagerTreeMenu != null && fromAddColumn) {
 				    listManagerTreeMenu.setChanged(true);
 				}
 			} catch (MiddlewareQueryException e) {
@@ -256,11 +256,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(LOCATIONS)){
     		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, "");
     		targetTable.setColumnWidth(LOCATIONS, 500);
-    		setLocationColumnValues();
+    		setLocationColumnValues(true);
     	}
     }
     
-    public void setLocationColumnValues(){
+    public void setLocationColumnValues(boolean fromAddColumn){
     	if(propertyExists(LOCATIONS)){
 			try {
 				List<Integer> itemIds = getItemIds(targetTable);
@@ -289,7 +289,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     			}
 					
 				//mark flag that changes have been made
-				if (listManagerTreeMenu != null) {
+				if (listManagerTreeMenu != null && fromAddColumn) {
 				    listManagerTreeMenu.setChanged(true);
 				}
 			} catch (MiddlewareQueryException e) {
@@ -350,11 +350,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 		for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
 			if(propertyExists(propertyId)){
 				if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
-					setPreferredIdColumnValues();
+					setPreferredIdColumnValues(false);
 				else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
-					setPreferredNameColumnValues();
+					setPreferredNameColumnValues(false);
 				else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
-					setLocationColumnValues();
+					setLocationColumnValues(false);
 			}
 		}
 	}

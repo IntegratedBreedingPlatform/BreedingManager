@@ -1149,11 +1149,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private void updateAddedColumnValues(){
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
-    		addColumnContextMenu.setLocationColumnValues();
+    		addColumnContextMenu.setLocationColumnValues(false);
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
-    		addColumnContextMenu.setPreferredIdColumnValues();
+    		addColumnContextMenu.setPreferredIdColumnValues(false);
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
-    		addColumnContextMenu.setPreferredNameColumnValues();
+    		addColumnContextMenu.setPreferredNameColumnValues(false);
     }
     
 
