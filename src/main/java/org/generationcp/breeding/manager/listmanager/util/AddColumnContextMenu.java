@@ -181,6 +181,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredIdColumn(){
     	if(!propertyExists(PREFERRED_ID)){
     		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
+    		targetTable.setColumnWidth(PREFERRED_ID, 250);
     		setPreferredIdColumnValues();
     	}
     }
@@ -217,6 +218,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredNameColumn(){
     	if(!propertyExists(PREFERRED_NAME)){
     		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
+    		targetTable.setColumnWidth(PREFERRED_NAME, 250);
     		setPreferredNameColumnValues();
     	}
     }

@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -73,6 +75,7 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.MouseEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
@@ -83,7 +86,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnResizeEvent;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
@@ -113,6 +118,9 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     private String listName;
     private List<GermplasmListData> listDatas;
     private String designationOfListEntriesDeleted="";
+    private Panel listDataPanel;
+	private AbsoluteLayout listDataLayout;
+    
     
     private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
     private String MENU_SELECT_ALL="Select All"; 
@@ -185,6 +193,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private String lastCellvalue;
 	private long listDataCount;
 	private CheckBox tagAllCheckBox;
+	private boolean tagAllWasJustClicked = false;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -321,6 +330,14 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     		CheckBox itemCheckBox = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
     		itemCheckBox.setValue(true);
     	}
+    	
+    	if(tagAllWasJustClicked || listDataTable.getValue().equals(listDataTable.getItemIds())){
+    		tagAllCheckBox.setValue(true);
+    	} else {
+    		tagAllCheckBox.setValue(false);
+    	}
+    	
+    	tagAllWasJustClicked = false;
     }
     
 	/**
@@ -360,14 +377,23 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private void initializeListDataTable(AbsoluteLayout toolsMenuBar)
 			throws MiddlewareQueryException {
 		// create the Vaadin Table to display the Germplasm List Data
+		
+		 listDataPanel = new Panel();
+		 listDataPanel.setWidth("95%");
+		 listDataPanel.setHeight("95%");
+		 
+		 listDataLayout = new AbsoluteLayout();
+		 listDataLayout.setWidth("800px");
+		 listDataLayout.setHeight("100%");
+		
 		 listDataTable = new Table("");
 		 listDataTable.setSelectable(true);
 		 listDataTable.setMultiSelect(true);
 		 listDataTable.setColumnCollapsingAllowed(true);
 		 listDataTable.setColumnReorderingAllowed(true);
 //             listDataTable.setPageLength(15); // number of rows to display in the Table
-		 listDataTable.setWidth("95%");
-		 listDataTable.setHeight("95%");
+		 //listDataTable.setWidth("800px");
+		 listDataTable.setHeight("100%");
 		 listDataTable.setDragMode(TableDragMode.ROW);
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
 		 listDataTable.setColumnReorderingAllowed(false);
@@ -378,7 +404,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			 }
 		 });
 		 		 
-		 
 		 if(!fromUrl){
 		         listDataTable.addActionHandler(new Action.Handler() {
 		        	 private static final long serialVersionUID = -897257270314381555L;
@@ -452,6 +477,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
 //             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
        
+		 listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 50);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 50);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 100);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 130);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 450);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 250);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.GROUP_NAME.getName(), 250);
 		 
 		 messageSource.setColumnHeader(listDataTable, CHECKBOX_COLUMN_ID, Message.TAG);
 		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
@@ -479,6 +511,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				if(((Boolean) tagAllCheckBox.getValue()).equals(true)){
+					tagAllWasJustClicked = true;
 					listDataTable.setValue(listDataTable.getItemIds());
 				} else {
 					listDataTable.setValue(null);
@@ -488,8 +521,23 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 });
 		 
 		 
-		 addComponent(listDataTable, "top:55px; left:0px;");
-		 addComponent(tagAllCheckBox, "top:59px; left: 28px;");
+		 listDataLayout.addComponent(listDataTable, "top:0px; left:0px;");
+		 listDataLayout.addComponent(tagAllCheckBox, "top:4px; left: 33px;");
+		 
+		 listDataPanel.setContent(listDataLayout);
+		 
+		 listDataTable.addListener(new Table.ColumnResizeListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void columnResize(ColumnResizeEvent event) {
+				resizeDataTable();
+			}
+		 });
+		 
+		 addComponent(listDataPanel, "top:55px; left:0px;");
+		 resizeDataTable();
+
+		 
 		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
 		     addColumnButton = new Button();
@@ -835,6 +883,21 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	newColumnsRenderer.render();
         
         makeTableEditable();
+    }
+    
+    private int getTotalWidth(Table table){
+    	int totalWidth = 0;
+    	List<Object> visibleColumnIds = new ArrayList<Object>();
+    	visibleColumnIds = Arrays.asList(table.getVisibleColumns());
+    	for(Object visibleColumnId : visibleColumnIds){
+    		totalWidth += table.getColumnWidth(visibleColumnId) + 16; //padding on cells, 8px on each side
+    	}
+    	return totalWidth-2; //minor adjustment
+    }
+    
+    public void resizeDataTable(){
+	 listDataTable.setWidth(getTotalWidth(listDataTable)+"px");
+	 listDataLayout.setWidth(getTotalWidth(listDataTable)+"px");
     }
     
     public void saveChangesAction() throws InternationalizableException {
@@ -1324,8 +1387,27 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 //            		,ListDataTablePropertyID.STATUS.getName()
             	});
             	
+            	
+                CheckBox itemCheckBox = new CheckBox();
+                itemCheckBox.setData(listData.getId());
+                itemCheckBox.setImmediate(true);
+    	   		itemCheckBox.addListener(new ClickListener() {
+    	 			private static final long serialVersionUID = 1L;
+    	 			@SuppressWarnings("unchecked")
+    				@Override
+    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+    	 					listDataTable.select(itemCheckBox.getData());
+    	 				} else {
+    	 					listDataTable.unselect(itemCheckBox.getData());
+    	 				}
+    	 			}
+    	 			 
+    	 		});
+    	   		
             	listDataTable.addItem(new Object[] {
-            			gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
+            			itemCheckBox, gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
             			listData.getDesignation(), listData.getGroupName()
 //                            , listData.getStatusString()
             	}, listDataId);
