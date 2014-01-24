@@ -128,15 +128,14 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         PopupView popup = new PopupView(" ? ",descLbl);
         popup.setStyleName("gcp-popup-view");
         
-        
         likeOrEqualCheckBox = new CheckBox();
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
         searchBar.addComponent(searchButton, "top:8px; left:280px;");
-        searchBar.addComponent(popup, "top:14px; left:310px;");
-        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
+        searchBar.addComponent(popup, "top:12px; left:330px;");
+        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 350px;");
         
         searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
