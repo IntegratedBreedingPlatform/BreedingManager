@@ -159,7 +159,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void addPreferredIdColumn(){
     	if(!propertyExists(PREFERRED_ID)){
-    		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, null);
+    		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
     		setPreferredIdColumnValues();
     	}
     }
@@ -191,7 +191,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void addPreferredNameColumn(){
     	if(!propertyExists(PREFERRED_NAME)){
-    		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, null);
+    		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
     		setPreferredNameColumnValues();
     	}
     }
@@ -223,7 +223,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void addLocationColumn(){
     	if(!propertyExists(LOCATIONS)){
-    		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, null);
+    		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, "");
     		targetTable.setColumnWidth(LOCATIONS, 500);
     		setLocationColumnValues();
     	}
