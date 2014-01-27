@@ -26,10 +26,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * 
@@ -39,9 +39,6 @@ import com.vaadin.ui.TabSheet.Tab;
 @Configurable
 public class NurseryTemplateMain extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 4701041621872315948L;
     
     private static final String VERSION = "1.1.1.0";
@@ -94,6 +91,8 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
         wizardTabTwo=accordion.addTab(specifyNurseryConditionsTab, messageSource.getMessage(Message.SPECIFY_NURSERY_CONDITIONS_LABEL)); //Specify Nursery Conditions
        
         accordion.addListener(new SelectedTabChangeListener() {
+            private static final long serialVersionUID = -6732199211824068072L;
+
             @Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected =accordion.getSelectedTab();
@@ -135,10 +134,8 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     @Override
     public void updateLabels() {
         // TODO Auto-generated method stub
-        
     }
 
-    
     public NurseryTemplateImportFileComponent getSelectNurseryTemplateScreen() {
         return selectNurseryTemplateTab;
     }
@@ -148,12 +145,12 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     public void disableNurseryTemplateConditionsComponent(){
-    wizardTabTwo.setEnabled(false);
+        wizardTabTwo.setEnabled(false);
     }
     
     public void enableNurseryTemplateConditionsComponent(){
         setTitleContent(STEP_2_GUIDE_MESSAGE);
-    wizardTabTwo.setEnabled(true);
+        wizardTabTwo.setEnabled(true);
     }
 
     public void setTitleContent(String guideMessage){

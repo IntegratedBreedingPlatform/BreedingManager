@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
@@ -192,7 +191,6 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         }
     }
 
-    @SuppressWarnings("serial")
     public void doneButtonClickAction() throws InternationalizableException{
     	
 		Boolean proceedWithSave = true;

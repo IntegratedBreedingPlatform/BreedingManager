@@ -80,9 +80,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     private CrossesMadeContainer container;
     
     private List<Method> methods;
-    private List<Integer> favoriteMethodIds;
-    private List<Method> favoriteMethods;
-    
     
     private enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
@@ -159,22 +156,20 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 
 			@Override
 		    public void valueChange(ValueChangeEvent event) {
-			if(crossingMethodComboBox.size() > 0){
-	        		try {
-		        		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
-	        		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
-	        		    crossingMethodDescriptionTextArea.setReadOnly(false);
-	        		    crossingMethodDescriptionTextArea.setValue(methodDescription);
-	        		    crossingMethodDescriptionTextArea.setReadOnly(true);
-	     
-	        		} catch (MiddlewareQueryException e) {
-	        		    e.printStackTrace();
-	        		} catch (ClassCastException e) {
-	        			//e.printStackTrace();
-	        		}
-	        		
-			}
-			 
+    			if(crossingMethodComboBox.size() > 0){
+            		try {
+                		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
+            		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
+            		    crossingMethodDescriptionTextArea.setReadOnly(false);
+            		    crossingMethodDescriptionTextArea.setValue(methodDescription);
+            		    crossingMethodDescriptionTextArea.setReadOnly(true);
+         
+            		} catch (MiddlewareQueryException e) {
+            		    e.printStackTrace();
+            		} catch (ClassCastException e) {
+            			//e.printStackTrace();
+            		}	
+    			}
 		    }
 		});
 
@@ -222,15 +217,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
             
             if (!"".equals(breedingMethodId)) {
                 int bmid = 0;
-                try {
-                    bmid = Integer.valueOf(breedingMethodId);
-                    Method method = germplasmDataManager.getMethodByID(bmid);
-                } catch (MiddlewareQueryException e) {              
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();                
-                } catch (ClassCastException e) {
-                    
-                }
+                bmid = Integer.valueOf(breedingMethodId);
+                
                 if(breedingMethod.length() > 0 && breedingMethodId.length() > 0){
                     crossingMethodComboBox.addItem(bmid);
                     crossingMethodComboBox.setItemCaption(bmid, breedingMethod);
