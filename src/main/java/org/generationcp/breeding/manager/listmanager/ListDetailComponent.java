@@ -257,7 +257,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
             // central lists    
             } else{
             	listStatus = new Label(germplasmList.getStatusString());
-            	listStatus.setWidth("100px");
+            	listStatus.setWidth("80px");
             	layout.addComponent(listStatus);
             }
         }
@@ -478,15 +478,18 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         l1.setStyleName(Bootstrap.Typography.H4.styleName());
         layout.addComponent(l1);
         	
-		deleteButton = new Button("Delete");
-        deleteButton.setData(DELETE_BUTTON_ID);
-        deleteButton.setWidth("80px");
-        deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-       
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		renderStatusField(buttonsLayout);
-		buttonsLayout.addComponent(deleteButton);
+        HorizontalLayout buttonsLayout = new HorizontalLayout();
+        renderStatusField(buttonsLayout);
+        
+        // delete button only for local lists
+        if (this.germplasmList.getId() < 0){
+        	deleteButton = new Button("Delete");
+        	deleteButton.setData(DELETE_BUTTON_ID);
+        	deleteButton.setWidth("80px");
+        	deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+        	buttonsLayout.addComponent(deleteButton);
+        }
 				
         mainLayout.addComponent(layout);
         mainLayout.addComponent(buttonsLayout);
