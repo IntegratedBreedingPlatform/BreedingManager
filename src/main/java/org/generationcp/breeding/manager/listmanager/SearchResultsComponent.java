@@ -140,7 +140,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setColumnWidth(CHECKBOX_COLUMN_ID, 40);
-		matchingGermplasmsTable.setColumnWidth("GID", 40);
+		matchingGermplasmsTable.setColumnWidth("GID", 70);
 		matchingGermplasmsTable.setColumnWidth("NAMES", 130);
 		matchingGermplasmsTable.setColumnWidth("PARENTAGE", 140);
 		matchingGermplasmsTable.setHeight("100%");
