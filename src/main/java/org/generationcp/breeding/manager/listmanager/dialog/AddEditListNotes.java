@@ -44,6 +44,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 	private String title;
 	private ListDetailComponent source;
 	private Integer germplasmListId;
+	private boolean isViewMode;
 	
 	public AddEditListNotes(ListDetailComponent source, GermplasmListManager germplasmListManager, Integer germplasmListId, String title){
 		this.source = source;
@@ -83,7 +84,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 	public void afterPropertiesSet() throws Exception {
 		setModal(true);
 		setWidth("620px");
-        setHeight("500px");
+        setHeight("470px");
         setResizable(false);
         setCaption(title);
         center();
@@ -91,6 +92,8 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
         AbsoluteLayout mainLayout = new AbsoluteLayout();
         mainLayout.setWidth("600px");
         mainLayout.setHeight("420px");
+        
+        this.isViewMode = messageSource.getMessage(Message.VIEW_NOTES).equals(this.title);
                 
         lblNotes = new Label("<b>Notes: </b>",Label.CONTENT_XHTML);
         lblNotes.setWidth("100px");
@@ -100,12 +103,25 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
         txtNotes.setWidth("560px");
         txtNotes.setHeight("320px");
         txtNotes.setValue(getNotesFromDB());
+        txtNotes.setReadOnly(isViewMode);
         mainLayout.addComponent(txtNotes,"top:30px;left:10px");
         
-        saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
-        saveButton.setWidth("80px");
-        saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        saveButton.addListener(new Button.ClickListener() {
+        // if view-mode, do not show buttons
+        if (!isViewMode){
+        	renderEditableMode(mainLayout);
+        	
+        }
+        
+        addComponent(mainLayout);
+	}
+
+	private void renderEditableMode(AbsoluteLayout mainLayout) {
+		setHeight("500px");
+
+		saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
+		saveButton.setWidth("80px");
+		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		saveButton.addListener(new Button.ClickListener() {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -113,15 +129,13 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 				
 			}
 		});
-        saveButton.addListener(new CloseWindowAction());
-        mainLayout.addComponent(saveButton,"top:360px; right:130px");
-        
-        cancelButton = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
-        cancelButton.setWidth("80px");
-        cancelButton.addListener(new CloseWindowAction());
-        mainLayout.addComponent(cancelButton,"top:360px; right:40px");
+		saveButton.addListener(new CloseWindowAction());
+		mainLayout.addComponent(saveButton,"top:360px; right:130px");
 		
-        addComponent(mainLayout);
+		cancelButton = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
+		cancelButton.setWidth("80px");
+		cancelButton.addListener(new CloseWindowAction());
+		mainLayout.addComponent(cancelButton,"top:360px; right:40px");
 	}
 	
 	public void saveListNotes(){
