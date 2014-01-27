@@ -477,7 +477,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 //             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
        
 		 listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 50);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 50);
+		 listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 70);
 		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 100);
 		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 130);
 		 listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 450);
