@@ -113,23 +113,10 @@ public class ListManagerMain extends VerticalLayout implements
 			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
-//			Button resetButton = buildNewListComponent.getResetButton();
-//			if (resetButton != null) {
-//				resetButton.focus();
-//			}
-			
-			DropHandlerComponent dropHandler = null; 
-			if( tabSheet.getSelectedTab() instanceof ListManagerBrowseListsComponent){
-				dropHandler = browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent();
+			Button resetButton = buildNewListComponent.getResetButton();
+			if (resetButton != null) {
+				resetButton.focus();
 			}
-			else if( tabSheet.getSelectedTab() instanceof ListManagerSearchListsComponent){
-				dropHandler = searchListsComponent.getSearchResultsComponent().getDropHandlerComponent();
-			}
-			
-			if(dropHandler != null){
-				dropHandler.focus();
-			}
-			
 		}
 		
 	}
