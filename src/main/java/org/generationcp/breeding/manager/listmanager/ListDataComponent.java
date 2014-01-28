@@ -184,8 +184,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private String lastCellvalue;
 	private long listDataCount;
 	
-	private Button topTagAllButton;
-	private Button bottomTagAllButton;
+	private Button tagAllButton;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -206,7 +205,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     public void afterPropertiesSet() throws Exception{
     	listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
     	
-    	setHeight("500px");
+    	setHeight("300px");
     	
 		menu = new ContextMenu();
 
@@ -305,7 +304,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
         	 totalListEntries.setWidth("150px");
-        	 toolsMenuBar.addComponent(totalListEntries,"top:12px");
+        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:85px;");
         	 initializeListDataTable(toolsMenuBar);    	 
              
          }
@@ -370,7 +369,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.setColumnReorderingAllowed(true);
 //             listDataTable.setPageLength(15); // number of rows to display in the Table
 		 listDataTable.setWidth("98%");
-		 listDataTable.setHeight("390px");
+		 listDataTable.setHeight("250px");
 		 listDataTable.setDragMode(TableDragMode.ROW);
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
 		 listDataTable.setColumnReorderingAllowed(false);
@@ -484,23 +483,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 }
 
 		 
-		 topTagAllButton = new Button();
-		 bottomTagAllButton = new Button();
+		 tagAllButton = new Button();
 		 
-		 topTagAllButton.setCaption(messageSource.getMessage(Message.TAG_ALL));
-		 bottomTagAllButton.setCaption(messageSource.getMessage(Message.TAG_ALL));
+		 tagAllButton.setCaption(messageSource.getMessage(Message.TAG_ALL));
 		 
-		 topTagAllButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		 bottomTagAllButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		 tagAllButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		 
-		 topTagAllButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				listDataTable.setValue(listDataTable.getItemIds());
-			}
-		 });
-		 bottomTagAllButton.addListener(new ClickListener(){
+		 tagAllButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -508,9 +497,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			}
 		 });
 		 
-		 addComponent(topTagAllButton, "top:35px; left:0px;");
-		 addComponent(listDataTable, "top:65px; left:0px;");
-		 addComponent(bottomTagAllButton, "top:460px; left:0px;");
+		 addComponent(tagAllButton, "top:0px; left:0px;");
+		 addComponent(listDataTable, "top:35px; left:0px;");
 		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
 		     addColumnButton = new Button();
