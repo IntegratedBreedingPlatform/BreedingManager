@@ -14,7 +14,6 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,9 +83,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnResizeEvent;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
@@ -115,9 +112,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     private String listName;
     private List<GermplasmListData> listDatas;
     private String designationOfListEntriesDeleted="";
-    private Panel listDataPanel;
-	private AbsoluteLayout listDataLayout;
-    
     
     private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
     private String MENU_SELECT_ALL="Select All"; 
@@ -189,8 +183,9 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private AddColumnContextMenu addColumnContextMenu;  
 	private String lastCellvalue;
 	private long listDataCount;
+	
 	private CheckBox tagAllCheckBox;
-	private boolean tagAllWasJustClicked = false;
+	private Boolean tagAllWasJustClicked = false;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -211,7 +206,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     public void afterPropertiesSet() throws Exception{
     	listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
     	
-    	setHeight("500px");
+    	setHeight("315px");
     	
 		menu = new ContextMenu();
 
@@ -310,7 +305,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
         	 totalListEntries.setWidth("150px");
-        	 toolsMenuBar.addComponent(totalListEntries,"top:12px");
+        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:0px;");
         	 initializeListDataTable(toolsMenuBar);    	 
              
          }
@@ -326,14 +321,18 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	for(Integer itemId : selectedItemIds){
     		CheckBox itemCheckBox = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
     		itemCheckBox.setValue(true);
+    		
     	}
-    	
+
     	if(tagAllWasJustClicked || listDataTable.getValue().equals(listDataTable.getItemIds())){
     		tagAllCheckBox.setValue(true);
     	} else {
-    		tagAllCheckBox.setValue(false);
-    	}
-    	
+			tagAllCheckBox.setValue(false);
+		}
+
+    	System.out.println("TagAllWasJustClicked: "+tagAllWasJustClicked);
+		System.out.println("Table equals: "+listDataTable.getValue().equals(listDataTable.getItemIds()));
+		
     	tagAllWasJustClicked = false;
     }
     
@@ -375,28 +374,21 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			throws MiddlewareQueryException {
 		// create the Vaadin Table to display the Germplasm List Data
 		
-		 listDataPanel = new Panel();
-		 listDataPanel.setWidth("95%");
-		 listDataPanel.setHeight("95%");
-		 
-		 listDataLayout = new AbsoluteLayout();
-		 listDataLayout.setWidth("800px");
-		 listDataLayout.setHeight("100%");
-		
 		 listDataTable = new Table("");
 		 listDataTable.setSelectable(true);
 		 listDataTable.setMultiSelect(true);
 		 listDataTable.setColumnCollapsingAllowed(true);
 		 listDataTable.setColumnReorderingAllowed(true);
 //             listDataTable.setPageLength(15); // number of rows to display in the Table
-		 //listDataTable.setWidth("800px");
-		 listDataTable.setHeight("100%");
+		 listDataTable.setWidth("98%");
+		 listDataTable.setHeight("250px");
 		 listDataTable.setDragMode(TableDragMode.ROW);
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
 		 listDataTable.setColumnReorderingAllowed(false);
 		 
          listDataTable.addListener(new Table.ValueChangeListener() {
-             public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+			private static final long serialVersionUID = 1L;
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
                  syncItemCheckBoxes();
              }
          });
@@ -476,13 +468,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.addContainerProperty(ListDataTablePropertyID.GROUP_NAME.getName(), String.class, null);
 //             listDataTable.addContainerProperty(ListDataTablePropertyID.STATUS.getName(), String.class, null);
        
-		 listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 50);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 70);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 100);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 130);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 450);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 250);
-		 listDataTable.setColumnWidth(ListDataTablePropertyID.GROUP_NAME.getName(), 250);
+//		 listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 30);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 70);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 100);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 130);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 450);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 250);
+//		 listDataTable.setColumnWidth(ListDataTablePropertyID.GROUP_NAME.getName(), 250);
 		 
 		 messageSource.setColumnHeader(listDataTable, CHECKBOX_COLUMN_ID, Message.TAG);
 		 messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
@@ -503,9 +495,11 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		     }
 		 }
 
+		 
 		 tagAllCheckBox = new CheckBox();
 		 tagAllCheckBox.setImmediate(true);
-		 tagAllCheckBox.addListener(new ClickListener() {
+		 tagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
+		 tagAllCheckBox.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -516,27 +510,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 					listDataTable.setValue(null);
 				}
 			}
-			 
 		 });
 		 
-		 
-		 listDataLayout.addComponent(listDataTable, "top:0px; left:0px;");
-		 listDataLayout.addComponent(tagAllCheckBox, "top:4px; left: 33px;");
-		 
-		 listDataPanel.setContent(listDataLayout);
-		 
-		 listDataTable.addListener(new Table.ColumnResizeListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void columnResize(ColumnResizeEvent event) {
-				resizeDataTable();
-			}
-		 });
-		 
-		 addComponent(listDataPanel, "top:55px; left:0px;");
-		 resizeDataTable();
-
-		 
+		 addComponent(tagAllCheckBox, "top:295px; left:3px;"); 
+		 addComponent(listDataTable, "top:35px; left:0px;");
 		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
 		     addColumnButton = new Button();
@@ -548,6 +525,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			 addColumnContextMenu = new AddColumnContextMenu(listManagerTreeMenu, toolsMenuBar, addColumnButton, 
 			         listDataTable, ListDataTablePropertyID.GID.getName());
 		 }
+		 
 	}
 
 	// This is needed for storing back-references
@@ -575,7 +553,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	
     	listDataTable.addListener(new ItemClickListener(){
 			private static final long serialVersionUID = 1L;
-
 			public void itemClick(ItemClickEvent event) {
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
@@ -880,24 +857,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         // render additional columns
     	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
     	newColumnsRenderer.render();
-        resizeDataTable();
-    	
         makeTableEditable();
-    }
-    
-    private int getTotalWidth(Table table){
-    	int totalWidth = 0;
-    	List<Object> visibleColumnIds = new ArrayList<Object>();
-    	visibleColumnIds = Arrays.asList(table.getVisibleColumns());
-    	for(Object visibleColumnId : visibleColumnIds){
-    		totalWidth += table.getColumnWidth(visibleColumnId) + 16; //padding on cells, 8px on each side
-    	}
-    	return totalWidth-2; //minor adjustment
-    }
-    
-    public final void resizeDataTable(){
-	 listDataTable.setWidth(getTotalWidth(listDataTable)+"px");
-	 listDataLayout.setWidth(getTotalWidth(listDataTable)+"px");
     }
     
     public void saveChangesAction() throws InternationalizableException {
