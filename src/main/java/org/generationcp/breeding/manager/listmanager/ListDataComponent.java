@@ -184,7 +184,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private String lastCellvalue;
 	private long listDataCount;
 	
-	private Button tagAllButton;
+	private CheckBox tagAllCheckBox;
+	private Boolean tagAllWasJustClicked = false;
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
@@ -304,7 +305,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
         	 totalListEntries.setWidth("150px");
-        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:85px;");
+        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:105px;");
         	 initializeListDataTable(toolsMenuBar);    	 
              
          }
@@ -320,8 +321,19 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	for(Integer itemId : selectedItemIds){
     		CheckBox itemCheckBox = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
     		itemCheckBox.setValue(true);
+    		
     	}
-    	
+
+    	if(tagAllWasJustClicked || listDataTable.getValue().equals(listDataTable.getItemIds())){
+    		tagAllCheckBox.setValue(true);
+    	} else {
+			tagAllCheckBox.setValue(false);
+		}
+
+    	System.out.println("TagAllWasJustClicked: "+tagAllWasJustClicked);
+		System.out.println("Table equals: "+listDataTable.getValue().equals(listDataTable.getItemIds()));
+		
+    	tagAllWasJustClicked = false;
     }
     
 	/**
@@ -375,7 +387,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.setColumnReorderingAllowed(false);
 		 
          listDataTable.addListener(new Table.ValueChangeListener() {
-             public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+			private static final long serialVersionUID = 1L;
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
                  syncItemCheckBoxes();
              }
          });
@@ -483,21 +496,23 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 }
 
 		 
-		 tagAllButton = new Button();
-		 
-		 tagAllButton.setCaption(messageSource.getMessage(Message.TAG_ALL));
-		 
-		 tagAllButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		 
-		 tagAllButton.addListener(new ClickListener(){
+		 tagAllCheckBox = new CheckBox();
+		 tagAllCheckBox.setImmediate(true);
+		 tagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
+		 tagAllCheckBox.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				listDataTable.setValue(listDataTable.getItemIds());
+				if(((Boolean) tagAllCheckBox.getValue()).equals(true)){
+					tagAllWasJustClicked = true;
+					listDataTable.setValue(listDataTable.getItemIds());
+				} else {
+					listDataTable.setValue(null);
+				}
 			}
 		 });
 		 
-		 addComponent(tagAllButton, "top:0px; left:0px;");
+		 addComponent(tagAllCheckBox, "top:4px; left:6px;");
 		 addComponent(listDataTable, "top:35px; left:0px;");
 		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
@@ -538,7 +553,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	
     	listDataTable.addListener(new ItemClickListener(){
 			private static final long serialVersionUID = 1L;
-
 			public void itemClick(ItemClickEvent event) {
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
