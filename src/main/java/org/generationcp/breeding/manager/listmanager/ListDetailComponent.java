@@ -186,37 +186,36 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 		lblListNotes.setWidth("50px");
 		content.addComponent(lblListNotes);
 
+		boolean isUnlocked = (1 == germplasmList.getStatus());
 		if(!usedForDetailsOnly){
-            if(germplasmList.getUserId().equals(iBDBUserId) && germplasmList.getId()<0 && 
-            		germplasmList.getStatus()==1) {
-                    
-                addEditViewButton = new Button();
-                addEditViewButton.addStyleName(Reindeer.BUTTON_LINK);
-                addEditViewButton.setWidth("100px");
-                addEditViewButton.setData(VIEW_NOTES_BUTTON_ID);
-                if(germplasmList.getNotes() == null){
-                	addEditViewButton.setCaption("Add Notes");
-                }
-                else{
-                	if(germplasmList.getNotes().trim().length() > 0){
-                		addEditViewButton.setCaption("View / Edit Notes");
-                	}
-                	else{
-                		addEditViewButton.setCaption("Add Notes");
-                	}
-                }
-                addEditViewButton.addListener(new Button.ClickListener(){
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void buttonClick(ClickEvent event) {
-						addEditListNotes(event.getButton().getCaption());
-					}
-                	
-                });
-                content.addComponent(addEditViewButton);
-            }
+			boolean hasNotes = germplasmList.getNotes() != null && germplasmList.getNotes().trim().length() > 0;
+			boolean isLocal = germplasmList.getId()<0;
+			if(hasNotes || isLocal) {
+            	addEditViewButton = new Button();
+            	addEditViewButton.addStyleName(Reindeer.BUTTON_LINK);
+            	addEditViewButton.setWidth("100px");
+            	addEditViewButton.setData(VIEW_NOTES_BUTTON_ID);
+            		
+            	boolean userIsListOwner = germplasmList.getUserId().equals(iBDBUserId);
+				if(!hasNotes && isUnlocked && isLocal && userIsListOwner){
+        			addEditViewButton.setCaption(messageSource.getMessage(Message.ADD_NOTES));
+        			
+        		} else if (hasNotes){
+					Message caption = (isUnlocked && isLocal && userIsListOwner) ? Message.EDIT_NOTES : Message.VIEW_NOTES;
+					addEditViewButton.setCaption(messageSource.getMessage(caption));
+				}
+    			addEditViewButton.addListener(new Button.ClickListener(){
+    				
+    				private static final long serialVersionUID = 1L;
+    				
+    				@Override
+    				public void buttonClick(ClickEvent event) {
+    					addEditListNotes(event.getButton().getCaption());
+    				}
+    				
+    			});
+    			content.addComponent(addEditViewButton);
+    		}
         }
 		layout.addComponent(content);
 		addComponent(layout, 2, 1);
@@ -257,7 +256,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
             // central lists    
             } else{
             	listStatus = new Label(germplasmList.getStatusString());
-            	listStatus.setWidth("100px");
+            	listStatus.setWidth("80px");
             	layout.addComponent(listStatus);
             }
         }
@@ -478,15 +477,18 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         l1.setStyleName(Bootstrap.Typography.H4.styleName());
         layout.addComponent(l1);
         	
-		deleteButton = new Button("Delete");
-        deleteButton.setData(DELETE_BUTTON_ID);
-        deleteButton.setWidth("80px");
-        deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
-       
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		renderStatusField(buttonsLayout);
-		buttonsLayout.addComponent(deleteButton);
+        HorizontalLayout buttonsLayout = new HorizontalLayout();
+        renderStatusField(buttonsLayout);
+        
+        // delete button only for local lists
+        if (this.germplasmList.getId() < 0){
+        	deleteButton = new Button("Delete");
+        	deleteButton.setData(DELETE_BUTTON_ID);
+        	deleteButton.setWidth("80px");
+        	deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        	deleteButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
+        	buttonsLayout.addComponent(deleteButton);
+        }
 				
         mainLayout.addComponent(layout);
         mainLayout.addComponent(buttonsLayout);

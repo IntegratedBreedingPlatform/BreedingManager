@@ -26,10 +26,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * 
@@ -133,10 +133,8 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     
     @Override
     public void updateLabels() {
-        
     }
 
-    
     public NurseryTemplateImportFileComponent getSelectNurseryTemplateScreen() {
         return selectNurseryTemplateTab;
     }
@@ -146,12 +144,12 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     }
     
     public void disableNurseryTemplateConditionsComponent(){
-    wizardTabTwo.setEnabled(false);
+        wizardTabTwo.setEnabled(false);
     }
     
     public void enableNurseryTemplateConditionsComponent(){
         setTitleContent(STEP_2_GUIDE_MESSAGE);
-    wizardTabTwo.setEnabled(true);
+        wizardTabTwo.setEnabled(true);
     }
 
     public void setTitleContent(String guideMessage){
