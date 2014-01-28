@@ -335,4 +335,5 @@ public enum Message{
     //Unsaved changes msg
     ,WARNING
     ,UNSAVED_CHANGES_LISTDATA
+    ,ERROR_UNABLE_TO_DELETE_LOCKED_LIST
 }

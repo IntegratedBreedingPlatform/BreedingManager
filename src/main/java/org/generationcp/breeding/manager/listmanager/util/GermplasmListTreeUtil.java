@@ -481,7 +481,7 @@ public class GermplasmListTreeUtil implements Serializable {
         source.getWindow().addWindow(w);    	
     }
 
-	public void deleteFolder(final Integer lastItemId) {
+	public void deleteFolderOrList(final Integer lastItemId) {
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -499,9 +499,9 @@ public class GermplasmListTreeUtil implements Serializable {
 			if (gpList == null) {
 				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
 			}
-
-			if (!gpList.isFolder()) {
-				throw new Error(NOT_FOLDER);
+			
+			if (gpList.getStatus()>100){
+				throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
 			}
 
 			try {

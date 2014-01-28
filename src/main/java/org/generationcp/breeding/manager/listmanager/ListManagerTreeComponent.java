@@ -183,7 +183,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolder(Integer.valueOf(selectedListId.toString()));
+				germplasmListTreeUtil.deleteFolderOrList(Integer.valueOf(selectedListId.toString()));
             }
         });
         
@@ -395,8 +395,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     				addFolderBtn.setEnabled(false);
     				renameFolderBtn.setEnabled(false);
     				deleteFolderBtn.setEnabled(false);
-    				//If any of the local folders is selected
-    			} else if(Integer.valueOf(itemId.toString())<=0 && isFolder(itemId)){
+    				//If any of the local folders/lists are selected
+    			} else if(Integer.valueOf(itemId.toString())<=0){
     				addFolderBtn.setEnabled(true);
     				renameFolderBtn.setEnabled(true);
     				deleteFolderBtn.setEnabled(true);
