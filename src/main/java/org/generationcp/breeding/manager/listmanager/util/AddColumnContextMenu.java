@@ -183,10 +183,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(PREFERRED_ID)){
     		targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
     		setPreferredIdColumnValues(true);
-    		targetTable.setColumnWidth(PREFERRED_ID, 250);
-    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
-    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
-    		}
     	}
     }
     
@@ -223,10 +219,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(PREFERRED_NAME)){
     		targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
     		setPreferredNameColumnValues(true);
-    		targetTable.setColumnWidth(PREFERRED_NAME, 800);
-    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
-    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
-    		}
     	}
     }
     
@@ -263,10 +255,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     	if(!propertyExists(LOCATIONS)){
     		targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, "");
     		setLocationColumnValues(true);
-    		targetTable.setColumnWidth(LOCATIONS, 500);
-    		if(absoluteLayoutSource!=null && absoluteLayoutSource.getParent() instanceof ListDataComponent){
-    			((ListDataComponent) absoluteLayoutSource.getParent()).resizeDataTable();
-    		}
     	}
     }
     

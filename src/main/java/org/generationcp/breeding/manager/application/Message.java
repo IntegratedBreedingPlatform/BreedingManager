@@ -330,6 +330,7 @@ public enum Message{
     ,NO
     ,ERROR
     ,TAG
+    ,TAG_ALL
    
     //Unsaved changes msg
     ,WARNING
