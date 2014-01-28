@@ -11,38 +11,27 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listimport;
 
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Window.Notification;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
-import java.io.File;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
@@ -58,12 +47,6 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
-    
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-    
-    @Autowired
-    private UserDataManager userDataManager;
     
     private Button makeImportButton;
     

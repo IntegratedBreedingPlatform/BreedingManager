@@ -32,7 +32,8 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
     
     private static final long serialVersionUID = -6656072296236475385L;
 
-    private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerMain.class);
     
     private static final String VERSION = "1.2.0";
     private static final String STEP_1_GUIDE_MESSAGE = "Crossing Manager facilitates " +

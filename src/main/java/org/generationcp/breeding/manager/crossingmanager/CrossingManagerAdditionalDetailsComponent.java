@@ -27,7 +27,8 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     public static final String BACK_BUTTON_ID = "back button";
     
     private static final long serialVersionUID = 9097810121003895303L;
-    private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerAdditionalDetailsComponent.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerAdditionalDetailsComponent.class);
     
     private CrossingManagerMain source;
     private Accordion accordion;

@@ -80,9 +80,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     private CrossesMadeContainer container;
     
     private List<Method> methods;
-    private List<Integer> favoriteMethodIds;
-    private List<Method> favoriteMethods;
-    
     
     private enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
@@ -226,7 +223,6 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
                     bmid = Integer.valueOf(breedingMethodId);
                     Method method = germplasmDataManager.getMethodByID(bmid);
                 } catch (MiddlewareQueryException e) {              
-                    // TODO Auto-generated catch block
                     e.printStackTrace();                
                 } catch (ClassCastException e) {
                     

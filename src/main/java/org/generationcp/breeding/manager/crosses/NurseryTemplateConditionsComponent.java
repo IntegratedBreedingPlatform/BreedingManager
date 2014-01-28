@@ -281,7 +281,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     try {
         locations=germplasmDataManager.getAllBreedingLocations();
     } catch (MiddlewareQueryException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
     comboBoxSiteName.addItem("");
@@ -347,7 +346,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     try {
         users=userDataManager.getAllUsers();
     } catch (MiddlewareQueryException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
     setComboBoxBreederDefaultValue();
@@ -356,7 +354,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         try {
         p = userDataManager.getPersonById(u.getPersonid());
         } catch (MiddlewareQueryException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         }
         String name= u.getName();
@@ -397,7 +394,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         breederId.setValue(String.valueOf(u.getUserid()));
         
     } catch (MiddlewareQueryException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
 
@@ -434,7 +430,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                 breederId.setValue("");
             }
             } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             }
             comboBoxBreedersName.setValue(name);
@@ -458,7 +453,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     try {
         method=germplasmDataManager.getMethodsByType("GEN");
     } catch (MiddlewareQueryException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
     for (Method m : method) {
@@ -521,7 +515,9 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     germplasmListTextFieldLayout.addComponent(txtField);
     germplasmListTextFieldLayout.addListener(new LayoutClickListener() {
 
-        public void layoutClick(LayoutClickEvent event) {
+        private static final long serialVersionUID = 7902189214533858869L;
+
+		public void layoutClick(LayoutClickEvent event) {
             if (event.getChildComponent() == txtField) {
                 SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
                 getWindow().addWindow(selectListWindow);
@@ -573,7 +569,6 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     }
     
     protected void createAndDownloadNurseryTemplateFile() {
-    // TODO Auto-generated method stub
     ImportedGermplasmCrosses nurseryTemplateData=source.getSelectNurseryTemplateScreen().getCrossingManagerUploader().getImportedGermplasmCrosses();
 
     String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";

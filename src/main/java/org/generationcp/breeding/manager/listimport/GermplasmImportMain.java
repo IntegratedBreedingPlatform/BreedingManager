@@ -1,9 +1,6 @@
 package org.generationcp.breeding.manager.listimport;
 
-import com.vaadin.ui.ComponentContainer;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.listimport.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
@@ -30,7 +28,8 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private static final long serialVersionUID = -6656072296236475385L;
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
     
     private final static String VERSION = "1.0.0";
     private static final String STEP_1_GUIDE_MESSAGE = "The Germplasm List Import tool facilitates the creation of a list and its list entries based on an import file.  " +
@@ -45,7 +44,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private SpecifyGermplasmDetailsComponent wizardScreenTwo;
     private SaveGermplasmListComponent wizardScreenThree;
     
-    private Label importToolTitle;
     private Accordion accordion;
     private ComponentContainer parent;
     
@@ -92,7 +90,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         wizardTabThree = accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.SAVE_GERMPLASM_LIST)); //Save Germplasm List
         
         accordion.addListener(new SelectedTabChangeListener() {
-            @Override
+            private static final long serialVersionUID = 738354322321641203L;
+
+			@Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected =accordion.getSelectedTab();
                 Tab tab = accordion.getTab(selected);
@@ -193,6 +193,4 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         
         titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
     }
-    
-    
 }
