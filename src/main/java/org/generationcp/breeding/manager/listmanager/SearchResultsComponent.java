@@ -26,13 +26,11 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.ColumnResizeEvent;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -44,14 +42,10 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private Label matchingListsLabel;
 	private Label matchingListsDescription;
 	private Table matchingListsTable;
-	private AbsoluteLayout matchingListsLayout;
-	private Panel matchingListsPanel;
 	
 	private Label matchingGermplasmsLabel;
 	private Label matchingGermplasmsDescription;
 	private Table matchingGermplasmsTable;
-	private AbsoluteLayout matchingGermplasmsLayout;
-	private Panel matchingGermplasmsPanel;
 	
 	private static final String CHECKBOX_COLUMN_ID = "Tag All Column";
 	
@@ -68,6 +62,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	
 	private CheckBox matchingListsTagAllCheckBox;
 	private CheckBox matchingGermplasmsTagAllCheckBox;
+	
 	private boolean matchingListsTagAllWasJustClicked = false;
 	private boolean matchingGermplasmsTagAllWasJustClicked = false;
 	
@@ -103,10 +98,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
-		matchingListsTable.setColumnWidth(CHECKBOX_COLUMN_ID, 40);
-		matchingListsTable.setColumnWidth("NAME", 155);
-		matchingListsTable.setColumnWidth("DESCRIPTION", 155);
-		matchingListsTable.setHeight("100%");
+		matchingListsTable.setWidth("350px");
+		matchingListsTable.setHeight("120px");
+		
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
@@ -115,15 +109,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
 				 syncItemCheckBoxes(matchingListsTable);
 			 }
-		 });
-		matchingListsTable.addListener(new Table.ColumnResizeListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void columnResize(ColumnResizeEvent event) {
-				System.out.println("fired matchingListsTable resize listener");
-				resizeMatchingListsTable();
-			}
-		});
+		 });		
 		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID, Message.TAG);
 		
 		matchingGermplasmsLabel = new Label();
@@ -139,11 +125,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
-		matchingGermplasmsTable.setColumnWidth(CHECKBOX_COLUMN_ID, 40);
-		matchingGermplasmsTable.setColumnWidth("GID", 70);
-		matchingGermplasmsTable.setColumnWidth("NAMES", 130);
-		matchingGermplasmsTable.setColumnWidth("PARENTAGE", 140);
-		matchingGermplasmsTable.setHeight("100%");
+		matchingGermplasmsTable.setWidth("350px");
+		matchingGermplasmsTable.setHeight("120px");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
@@ -192,16 +175,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
              	}
 			}
 		});
-		matchingGermplasmsTable.addListener(new Table.ColumnResizeListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void columnResize(ColumnResizeEvent event) {
-				System.out.println("fired matchinGermplasmsTable resize listener");
-				resizeMatchingGermplasmsTable();
-			}
-		});
 
 		matchingListsTagAllCheckBox = new CheckBox();
+		matchingListsTagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
 		matchingListsTagAllCheckBox.setImmediate(true);
 		matchingListsTagAllCheckBox.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -219,7 +195,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		 });
 
 		matchingGermplasmsTagAllCheckBox = new CheckBox();
+		matchingGermplasmsTagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
 		matchingGermplasmsTagAllCheckBox.setImmediate(true);
+		matchingGermplasmsTagAllCheckBox.setStyleName(Bootstrap.Buttons.INFO.styleName());
 		matchingGermplasmsTagAllCheckBox.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -237,47 +215,17 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		
 		dropHandler = new DropHandlerComponent(listManagerMain, 350);
 
-		
-		matchingListsPanel = new Panel();
-		matchingListsPanel.setWidth("350px");
-		matchingListsPanel.setHeight("130px");
-		
-		matchingListsLayout = new AbsoluteLayout();
-		matchingListsLayout.setWidth("350px");
-		matchingListsLayout.setHeight("100%");
-		
 		addComponent(matchingListsLabel, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
-		matchingListsLayout.addComponent(matchingListsTable, "top:0px; left:0px;");
-		matchingListsLayout.addComponent(matchingListsTagAllCheckBox, "top:4px; left:32px;");
-		matchingListsPanel.setContent(matchingListsLayout);
-		addComponent(matchingListsPanel, "top:40px; left:0px;");
-		//addComponent(matchingListsTable, "top:40px; left:0px;");
-		//addComponent(matchingListsTagAllCheckBox, "top:44px; left:28px;");
+		addComponent(matchingListsTable, "top:40px; left:0px;");
+		addComponent(matchingListsTagAllCheckBox, "top:165px; left:0px;");
 		
+		addComponent(matchingGermplasmsLabel, "top:190px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:213px; left:0px;");
+		addComponent(matchingGermplasmsTable, "top:230px; left:0px;");
+		addComponent(matchingGermplasmsTagAllCheckBox, "top:355px; left:0px;");
 		
-		
-		matchingGermplasmsPanel = new Panel();
-		matchingGermplasmsPanel.setWidth("350px");
-		matchingGermplasmsPanel.setHeight("130px");
-		
-		matchingGermplasmsLayout = new AbsoluteLayout();
-		matchingGermplasmsLayout.setWidth("350px");
-		matchingGermplasmsLayout.setHeight("100%");
-		
-		matchingGermplasmsLayout.addComponent(matchingGermplasmsTable, "top:0px; left:0px;");
-		matchingGermplasmsLayout.addComponent(matchingGermplasmsTagAllCheckBox, "top:4px; left:32px;");
-		matchingGermplasmsPanel.setContent(matchingGermplasmsLayout);
-		addComponent(matchingGermplasmsLabel, "top:170px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:193px; left:0px;");
-		addComponent(matchingGermplasmsPanel, "top:210px; left:0px;");
-		//addComponent(matchingGermplasmsTable, "top:210px; left:0px;");
-		//addComponent(matchingGermplasmsTagAllCheckBox, "top:214px; left:28px;");
-		
-		addComponent(dropHandler, "top:360px; left:0px;");
-
-		resizeMatchingGermplasmsTable();
-		resizeMatchingListsTable();
+		addComponent(dropHandler, "top:385px; left:0px;");
 	}
 
 		
@@ -484,16 +432,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     		totalWidth += table.getColumnWidth(visibleColumnId) + 20; //padding on cells, 8px on each side
     	}
     	return totalWidth;
-    }
-    
-    public void resizeMatchingGermplasmsTable(){
-    	matchingGermplasmsTable.setWidth(getTotalWidth(matchingGermplasmsTable)+"px");
-    	matchingGermplasmsLayout.setWidth(getTotalWidth(matchingGermplasmsTable)+"px");
-    }
-    
-    public void resizeMatchingListsTable(){
-    	matchingListsTable.setWidth(getTotalWidth(matchingListsTable)+"px");
-    	matchingListsLayout.setWidth(getTotalWidth(matchingListsTable)+"px");
     }
     
 }

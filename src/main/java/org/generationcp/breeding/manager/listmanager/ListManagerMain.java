@@ -10,15 +10,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -113,10 +112,12 @@ public class ListManagerMain extends VerticalLayout implements
 			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
-			Button resetButton = buildNewListComponent.getResetButton();
-			if (resetButton != null) {
-				resetButton.focus();
+			
+			TextField listNameText =  buildNewListComponent.getListNameText();
+			if(listNameText != null){
+				listNameText.focus();
 			}
+			
 		}
 		
 	}
