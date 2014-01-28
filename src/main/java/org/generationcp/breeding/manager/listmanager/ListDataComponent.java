@@ -206,7 +206,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     public void afterPropertiesSet() throws Exception{
     	listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
     	
-    	setHeight("300px");
+    	setHeight("315px");
     	
 		menu = new ContextMenu();
 
@@ -305,7 +305,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
         	 totalListEntries.setWidth("150px");
-        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:105px;");
+        	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:0px;");
         	 initializeListDataTable(toolsMenuBar);    	 
              
          }
@@ -512,7 +512,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			}
 		 });
 		 
-		 addComponent(tagAllCheckBox, "top:4px; left:6px;");
+		 addComponent(tagAllCheckBox, "top:295px; left:3px;"); 
 		 addComponent(listDataTable, "top:35px; left:0px;");
 		 
 		 if(germplasmListId<0 && germplasmListStatus<100){
