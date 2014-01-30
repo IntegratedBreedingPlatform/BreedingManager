@@ -314,6 +314,7 @@ public enum Message{
     ,NO_SEARCH_RESULTS
     ,TOTAL_LIST_ENTRIES
     ,EXACT_MATCHES_ONLY
+    ,INCLUDE_PARENTS
     
     //General error msg
     ,ERROR_REPORT_TO
