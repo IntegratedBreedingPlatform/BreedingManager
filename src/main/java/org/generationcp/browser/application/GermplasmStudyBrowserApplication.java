@@ -33,6 +33,7 @@ import org.generationcp.browser.study.StudyAccordionMenu;
 import org.generationcp.browser.study.StudyBrowserMain;
 import org.generationcp.browser.study.StudyDetailComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
+import org.generationcp.browser.util.awhere.AWhereFormComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -76,6 +77,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String HEAD_TO_HEAD_CROSS_STUDY_QUERY_WINDOW_NAME = "h2h-query";
     public static final String HEAD_TO_HEAD_COMPARISON_WINDOW_NAME = "Head_to_head_comparison";
     public static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME = "Query_For_Adapted_Germplasm";
+    public static final String AWHERE_WINDOW_NAME = "awheretool";
 
     private Window window;
 
@@ -360,6 +362,14 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                   queryForAdaptedGermplasmToolWindow.addComponent(new QueryForAdaptedGermplasmMain());
                   this.addWindow(queryForAdaptedGermplasmToolWindow);
                   return queryForAdaptedGermplasmToolWindow;
+              } else if(AWHERE_WINDOW_NAME.equals(name)){
+            	  Window awhereWindow = new Window("AWhere Test Tool");
+            	  awhereWindow.setName(AWHERE_WINDOW_NAME);
+            	  awhereWindow.addComponent(new AWhereFormComponent());
+            	  awhereWindow.setWidth("100%");
+            	  awhereWindow.setHeight("100%");
+            	  this.addWindow(awhereWindow);
+            	  return awhereWindow;
               }
 
         }
