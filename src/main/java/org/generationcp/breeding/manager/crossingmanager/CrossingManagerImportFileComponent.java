@@ -43,7 +43,8 @@ import com.vaadin.ui.Window.Notification;
 public class CrossingManagerImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
     
     private static final long serialVersionUID = 9097810121003895303L;
-    private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerImportFileComponent.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerImportFileComponent.class);
     
     private CrossingManagerMain source;
 
@@ -55,7 +56,6 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     private Upload uploadComponents;
     private Button nextButton;
     private Accordion accordion;
-    private Component previousScreen;
     private Component nextScreen;
     private Component nextNextScreen;
     

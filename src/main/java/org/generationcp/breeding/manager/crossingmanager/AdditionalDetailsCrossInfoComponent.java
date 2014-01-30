@@ -57,7 +57,8 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener{
 
     private static final long serialVersionUID = -1197900610042529900L;
-    private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
 
     private Label harvestDateLabel;
     private Label harvestLocationLabel;

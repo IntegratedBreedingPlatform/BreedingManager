@@ -24,7 +24,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmPedigreeTree;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
@@ -41,8 +40,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -55,9 +52,6 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8113004135173349534L;
     
     public final static String CANCEL_BUTTON_ID = "SelectGermplasmWindow Cancel Button";
@@ -67,8 +61,6 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     private Button cancelButton;
     private Button doneButton;
     private HorizontalLayout buttonArea;
-    
-    private ListSelect parentList;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -88,7 +80,6 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     private Label selectGermplasmLabel;
     
     public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent, String germplasmName2, int i, Germplasm germplasm2) {
-        this.parentList = new ListSelect();
         this.viaToolURL = false;
     }
      
@@ -159,7 +150,6 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 
             	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
-
                 
                 String crossExpansion = "";
                 if(germplasm!=null){
@@ -198,8 +188,8 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             });
             
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            //TODO add proper logging
+        	e.printStackTrace();
         }        
     }
 
@@ -242,7 +232,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             ((SpecifyGermplasmDetailsComponent) source).receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
             removeWindow(this);
         } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
+            // TODO Add proper logging
             e.printStackTrace();
         }        
     }

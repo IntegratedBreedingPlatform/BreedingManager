@@ -93,7 +93,7 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
         accordion.addListener(new SelectedTabChangeListener() {
             private static final long serialVersionUID = -6732199211824068072L;
 
-            @Override
+			@Override
             public void selectedTabChange(SelectedTabChangeEvent event) {
                 Component selected =accordion.getSelectedTab();
                 Tab tab = accordion.getTab(selected);
@@ -133,7 +133,6 @@ public class NurseryTemplateMain extends VerticalLayout implements InitializingB
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
     }
 
     public NurseryTemplateImportFileComponent getSelectNurseryTemplateScreen() {

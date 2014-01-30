@@ -20,11 +20,9 @@ import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,20 +70,19 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private Accordion accordion;
     private Component previousScreen;
 
-    private List<Germplasm> germplasmList;
-    private List<Name> nameList;
-
     private String DEFAULT_LIST_TYPE = "LST";
-    private Method breedingMethod; 
+    @SuppressWarnings("unused")
+	private Method breedingMethod; 
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
     @Autowired
     private GermplasmDataManager germplasmDataManager;
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
+    
     private String filename;
 
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
@@ -378,8 +375,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 				return false;
 			}
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Error with validating list name.", e);
 		}
     	return true;
     }

@@ -13,7 +13,6 @@ package org.generationcp.breeding.manager.crossingmanager.util;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -298,7 +297,6 @@ public class CrossingManagerExporter{
 			listDatas = this.germplasmListManager.getGermplasmListDataByListId(
 			        germplasmListId, 0, (int) listDataCount);
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
        

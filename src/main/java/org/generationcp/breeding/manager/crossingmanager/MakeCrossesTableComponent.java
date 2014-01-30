@@ -61,7 +61,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
     public static final String MALE_PARENT_COLUMN = "Male Parent Column" ;
     
     private static final long serialVersionUID = 3702324761498666369L;
-    private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
      
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;

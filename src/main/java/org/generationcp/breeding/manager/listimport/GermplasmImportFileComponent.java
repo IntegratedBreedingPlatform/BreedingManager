@@ -30,7 +30,8 @@ import com.vaadin.ui.Window.Notification;
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
     
     private static final long serialVersionUID = 9097810121003895303L;
-    private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
+    @SuppressWarnings("unused")
+	private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
     
     private GermplasmImportMain source;
 
@@ -58,7 +59,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        
         setHeight("300px");
         setWidth("800px");
         
@@ -82,7 +82,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         nextButton.setEnabled(false);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         addComponent(nextButton, "top:250px;left:700px");
-        
     }
 
     public void enableNextButton(){
@@ -105,6 +104,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         }
         return null;
     }
+    
     @Override
     public void attach() {
         super.attach();
@@ -161,7 +161,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupValue(3);
 	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupEnabled(false);
 	                    } else {
-	                    	//getGermplasmDetailsComponent().setPedigreeOptionGroupValue(1);
 	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupEnabled(true);
 	                    }
 	            }

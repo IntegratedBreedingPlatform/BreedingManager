@@ -78,8 +78,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     private Integer currentSheet;
     private Integer currentRow;
-    private Integer currentColumn;
-
+    
     private InputStream inp;
     private Workbook wb;
     private String originalFilename;
@@ -104,9 +103,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     // TODO: consider renaming class to "NurseryTemplateUploader" or something so that it's a generic uploader utility class
     public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager, GermplasmDataManager germplasmDataManager) {
-//        System.out.println("CROSSING MANAGER: " + (source instanceof CrossingManagerImportFileComponent));
-//        System.out.println("NURSERY TEMPLATE: " + (source instanceof NurseryTemplateImportFileComponent));
-        
         // take note of source type
         if (source instanceof CrossingManagerImportFileComponent) {
             this.uploadSourceType = TemplateUploadSource.CROSSING_MANAGER;
@@ -172,7 +168,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             
             originalFilename = filename;            
         } catch (final java.io.FileNotFoundException e) {
-//            System.out.println("FileNotFoundException on receiveUpload(): "+e.getMessage());
             return null;
         }
         return fos; // Return the output stream to write to
@@ -188,12 +183,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     
     @Override
     public void uploadSucceeded(SucceededEvent event) {
-//    	System.out.println("DEBUG | "+tempFileName);
-//        System.out.println("DEBUG | Upload succeeded!");
-
-        currentSheet = 0;
+    	currentSheet = 0;
         currentRow = 0;
-        currentColumn = 0;
         
         maleGermplasmList = null;
         maleListIdIsSpecified = false;
@@ -249,7 +240,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             // code block to CrossingManagerImportFileComponent.uploadComponents.FinishedListener
                 
             } catch (FileNotFoundException e) {
-//                System.out.println("File not found");
+            	LOG.error("Error reading file.", e);
             } catch (IOException e) {
                 showInvalidFileTypeError();
             } catch (ReadOnlyException e) {
@@ -297,15 +288,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             // <macky>: moved "crossingManagerSource.updateFilenameLabelValue(originalFilename);" 
             // to CrossingManagerImportFileComponent.uploadComponents.FinishedListener
 
-//            System.out.println("DEBUG | Original Filename:" + originalFilename);
-//            System.out.println("DEBUG | Study:" + study);
-//            System.out.println("DEBUG | Title:" + title);
-//            System.out.println("DEBUG | PMKey:" + pmKey);
-//            System.out.println("DEBUG | Objective:" + objective);
-//            System.out.println("DEBUG | Start Date:" + startDate.toString());
-//            System.out.println("DEBUG | End Date:" + endDate.toString());
-//            System.out.println("DEBUG | Study Type:" + studyType);
-
         } catch (ParseException e) {
             LOG.error("Error with reading nursery basic info.", e);
             e.printStackTrace();
@@ -318,8 +300,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         }
     }
     
-    @SuppressWarnings("unused")
-	private void readConditions(){
+    private void readConditions(){
         currentRow++; //Skip row from file info
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONDITION") 
@@ -331,8 +312,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
                 || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")) {
             showInvalidFileError("","Incorrect headers for conditions.");
-//            System.out.println("DEBUG | Invalid file on readConditions header");
-//            System.out.println(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase());
         }
 
         //If file is still valid (after checking headers), proceed
@@ -358,16 +337,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 else if (TemplateCrossingCondition.FEMALE_LIST_ID.getValue().equals(importedCondition.getCondition())){
                     femaleGermplasmList = retrieveGermplasmList(importedCondition, "female");
                 }
-                
-//                System.out.println("");
-//                System.out.println("DEBUG | Condition:"+getCellStringValue(currentSheet,currentRow,0));
-//                System.out.println("DEBUG | Description:"+getCellStringValue(currentSheet,currentRow,1));
-//                System.out.println("DEBUG | Property:"+getCellStringValue(currentSheet,currentRow,2));
-//                System.out.println("DEBUG | Scale:"+getCellStringValue(currentSheet,currentRow,3));
-//                System.out.println("DEBUG | Method:"+getCellStringValue(currentSheet,currentRow,4));
-//                System.out.println("DEBUG | Data Type:"+getCellStringValue(currentSheet,currentRow,5));
-//                System.out.println("DEBUG | Value:"+getCellStringValue(currentSheet,currentRow,6));
-//                System.out.println("DEBUG | Label:"+getCellStringValue(currentSheet,currentRow,7));
 
                 currentRow++;
             }
@@ -448,7 +417,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             
             validateMethodInput();
         }
-
     }
     
     private void validateMethodInput() {
@@ -483,7 +451,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 					showInvalidFileError("","Invalid Method ID.");
 				}
 			} catch (MiddlewareQueryException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				showInvalidFileError("","Invalid Method ID.");
 			}
@@ -575,7 +542,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("NESTED IN")
                 || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("LABEL")) {
             showInvalidFileError("", "Incorrect headers for factors.");
-//            System.out.println("DEBUG | Invalid file on readFactors header");
         }
         
         //If file is still valid (after checking headers), proceed
@@ -594,16 +560,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 
                 importedGermplasmCrosses.addImportedFactor(importedFactor);
 
-//                System.out.println("");
-//                System.out.println("DEBUG | Factor:"+getCellStringValue(currentSheet,currentRow,0));
-//                System.out.println("DEBUG | Description:"+getCellStringValue(currentSheet,currentRow,1));
-//                System.out.println("DEBUG | Property:"+getCellStringValue(currentSheet,currentRow,2));
-//                System.out.println("DEBUG | Scale:"+getCellStringValue(currentSheet,currentRow,3));
-//                System.out.println("DEBUG | Method:"+getCellStringValue(currentSheet,currentRow,4));
-//                System.out.println("DEBUG | Data Type:"+getCellStringValue(currentSheet,currentRow,5));
-//                System.out.println("DEBUG | Nested In:"+getCellStringValue(currentSheet,currentRow,6));
-//                System.out.println("DEBUG | Label:"+getCellStringValue(currentSheet,currentRow,7));
-//                
                 currentRow++;
             }
         }
@@ -651,7 +607,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")
                 || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("SAMPLE LEVEL")) {
             showInvalidFileError("", "Incorrect headers for constants.");
-//            System.out.println("DEBUG | Invalid file on readConstants header");
         }
         //If file is still valid (after checking headers), proceed
         if(fileIsValid){
@@ -667,16 +622,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                         ,getCellStringValue(currentSheet,currentRow,6,true)
                         ,getCellStringValue(currentSheet,currentRow,7,true));
                 importedGermplasmCrosses.addImportedConstant(importedConstant);
-
-//                System.out.println("");
-//                System.out.println("DEBUG | Constant:"+getCellStringValue(currentSheet,currentRow,0));
-//                System.out.println("DEBUG | Description:"+getCellStringValue(currentSheet,currentRow,1));
-//                System.out.println("DEBUG | Property:"+getCellStringValue(currentSheet,currentRow,2));
-//                System.out.println("DEBUG | Scale:"+getCellStringValue(currentSheet,currentRow,3));
-//                System.out.println("DEBUG | Method:"+getCellStringValue(currentSheet,currentRow,4));
-//                System.out.println("DEBUG | Data Type:"+getCellStringValue(currentSheet,currentRow,5));
-//                System.out.println("DEBUG | Value:"+getCellStringValue(currentSheet,currentRow,6));
-//                System.out.println("DEBUG | Sample Level:"+getCellStringValue(currentSheet,currentRow,7));
 
                 currentRow++;
             }
@@ -694,7 +639,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
                 || !getCellStringValue(currentSheet,currentRow,7,true).toUpperCase().equals("SAMPLE LEVEL")) {
             showInvalidFileError("", "Incorrect headers for variates.");
-//            System.out.println("DEBUG | Invalid file on readVariates header");
         }
         //If file is still valid (after checking headers), proceed
         if(fileIsValid){
@@ -710,15 +654,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                         ,getCellStringValue(currentSheet,currentRow,7,true));
                 importedGermplasmCrosses.addImportedVariate(importedVariate);
 
-//                System.out.println("");
-//                System.out.println("DEBUG | Variate:"+getCellStringValue(currentSheet,currentRow,0));
-//                System.out.println("DEBUG | Description:"+getCellStringValue(currentSheet,currentRow,1));
-//                System.out.println("DEBUG | Property:"+getCellStringValue(currentSheet,currentRow,2));
-//                System.out.println("DEBUG | Scale:"+getCellStringValue(currentSheet,currentRow,3));
-//                System.out.println("DEBUG | Method:"+getCellStringValue(currentSheet,currentRow,4));
-//                System.out.println("DEBUG | Data Type:"+getCellStringValue(currentSheet,currentRow,5));
-//                System.out.println("DEBUG | Sample Level:"+getCellStringValue(currentSheet,currentRow,7));
-
                 currentRow++;
             }
         }
@@ -728,7 +663,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private void readSheet2() throws CrossingManagerUploaderException{
         currentSheet = 1;
         currentRow = 0;
-        currentColumn = 0;
         
         ImportedGermplasmCross importedGermplasmCross;
         Boolean germplasmListDataAreValid = true;
@@ -739,34 +673,24 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             currentRow++;
             
             while(!rowIsEmpty()){
-//                System.out.println("");
                 importedGermplasmCross = new ImportedGermplasmCross();
                 for(int col=0;col<importedGermplasmCrosses.getImportedFactors().size();col++){
                     if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSS")){
                         importedGermplasmCross.setCross(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-//                        System.out.println("DEBUG | CROSS:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("FEMALE ENTRY ID")){
                         importedGermplasmCross.setFemaleEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-//                        System.out.println("DEBUG | FEMALE ENTRY ID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("MALE ENTRY ID")){
                         importedGermplasmCross.setMaleEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-//                        System.out.println("DEBUG | MALE ENTRY ID:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSSING DATE")){
                         try {
                             importedGermplasmCross.setCrossingDate(new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(currentSheet, currentRow, col, true)));
                         } catch (ParseException e) {
-//                            System.out.println("ERROR | Unable to parse date - " + getCellStringValue(currentSheet, currentRow, col));
                         }
-//                        System.out.println("DEBUG | CROSSING DATE:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("SEEDS HARVESTED")){
                         importedGermplasmCross.setSeedsHarvested(getCellStringValue(currentSheet, currentRow, col, true));
-//                        System.out.println("DEBUG | SEEDS HARVESTED:"+getCellStringValue(currentSheet, currentRow, col));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("NOTES")){
                         importedGermplasmCross.setNotes(getCellStringValue(currentSheet, currentRow, col, true));
-//                        System.out.println("DEBUG | NOTES:"+getCellStringValue(currentSheet, currentRow, col));
-                    } else {
-//                        System.out.println("DEBUG | Unhandled Column - "+importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase()+":"+getCellStringValue(currentSheet, currentRow, col));
-                    }
+                    }                 
                 }
                 importedGermplasmCrosses.addImportedGermplasmCross(importedGermplasmCross);
                 
@@ -848,7 +772,6 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
         if(followThisPosition){
             currentSheet = sheetNumber;
             currentRow = rowNumber;
-            currentColumn = columnNumber;
         }
 
         try {
