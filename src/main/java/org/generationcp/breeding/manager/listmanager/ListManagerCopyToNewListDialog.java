@@ -251,12 +251,19 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 				proceedWithSave = false;
 			}
 			
+			// if list name from copy source is equal to specified value in combo box
+			if (!"".equals(listNameValue) && listName.equals(listNameValue)) {
+			    getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+			    proceedWithSave = false; 
+			}
+			
 			if(localFolderNames.contains(listNameValue)){
 				getWindow().showNotification("There is already an existing germplasm list folder with that name","",Notification.TYPE_ERROR_MESSAGE);
 				proceedWithSave = false;
 			}
 		} catch (MiddlewareQueryException e) {
-			
+			LOG.error("Error in counting germplasm list by name.", e);
+			e.printStackTrace();
 		}
 		
 		if(proceedWithSave){
@@ -440,6 +447,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                     selectType.setEnabled(true);
                 }
             } catch (MiddlewareQueryException e) {
+                LOG.error("Error in retrieving germplasm list.", e);
+                e.printStackTrace();
                 MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
                         messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_ID));
             }
