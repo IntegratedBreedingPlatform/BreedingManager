@@ -137,7 +137,6 @@ public class AWhereFormComponent extends AbsoluteLayout  implements Initializing
 	
 	private void initializeAWhere() throws Exception {
 		aWhereUtil = new AWhereUtil();
-		aWhereUtil.authenticate();
 	}
 	
 	private void getDataAction() {
@@ -148,6 +147,7 @@ public class AWhereFormComponent extends AbsoluteLayout  implements Initializing
 		tenYearAverageTable.removeAllItems();
 		
 		try {
+			aWhereUtil.authenticate();
 			String jsonString = aWhereUtil.getSeason(Double.valueOf(latitude.getValue().toString()), 
 													 Double.valueOf(longitude.getValue().toString()), 
 													 (Date) plantingDate.getValue(), 
@@ -169,14 +169,14 @@ public class AWhereFormComponent extends AbsoluteLayout  implements Initializing
 			
 			Integer i = 0;
 			for(SeasonProfile s : seasonProfiles){
-				seasonProfileTable.addItem(new Object[] {s.getPeriodFrom(), s.getPeriodTo(), s.getAvg_MaxTemp(), s.getAvg_MinTemp(), s.getAvg_Rain(), s.getAvg_Solar(), s.getTotal_GDD(), s.getCount()}, i);
+				seasonProfileTable.addItem(new Object[] {s.getPeriodFrom(), s.getPeriodTo(), s.getAvg_MaxTemp(), s.getAvg_MinTemp(), s.getTotal_Rain(), s.getAvg_Solar(), s.getTotal_GDD(), s.getCount()}, i);
 				i++;
 			}
 			
 			List<TenYearAverage> tenYearAverages = seasonProfileResult.getTenYearAverage();
 			i = 0;
 			for(TenYearAverage t : tenYearAverages){
-				tenYearAverageTable.addItem(new Object[] {t.getPeriodFrom(), t.getPeriodTo(), t.getAvg_MaxTemp(), t.getAvg_MinTemp(), t.getAvg_Rain(), t.getAvg_Solar(), t.getTotal_GDD(), t.getCount()}, i);
+				tenYearAverageTable.addItem(new Object[] {t.getPeriodFrom(), t.getPeriodTo(), t.getAvg_MaxTemp(), t.getAvg_MinTemp(), t.getTotal_Rain(), t.getAvg_Solar(), t.getTotal_GDD(), t.getCount()}, i);
 				i++;
 			}
 			
