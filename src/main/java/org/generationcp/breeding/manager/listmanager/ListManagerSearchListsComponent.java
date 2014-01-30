@@ -36,7 +36,19 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = 5314653969843976836L;
 	public static final String SEARCH_BUTTON = "List Manager Search Button";
-	private static final String GUIDE = "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full) <br/><br/><b>Matching lists would contain</b> <br/>  - Lists with names containing the search query <br/>  - Lists containing germplasms given a GID <br/>  - Lists containing germplasms with names <br/> containing the search query <br/><br/><b>Matching germplasms would contain</b> <br/>  - Germplasms with matching GID's <br/>  - Germplasms with name containing search query <br/>  - Parents of the result germplasms <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked) or to only return results which match the query exactly (when checked).";
+	private static final String GUIDE = 
+	        "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full)" +
+	        " <br/><br/><b>Matching lists would contain</b> <br/>" +
+	        "  - Lists with names containing the search query <br/>" +
+	        "  - Lists containing germplasms given a GID <br/>" +
+	        "  - Lists containing germplasms with names <br/>" +
+	        " containing the search query" +
+	        " <br/><br/><b>Matching germplasms would contain</b> <br/>" +
+	        "  - Germplasms with matching GID's <br/>" +
+	        "  - Germplasms with name containing search query <br/>" +
+	        "  - Parents of the result germplasms (if selected)" +
+	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
+	        " or to only return results which match the query exactly (when checked).";
 	
 	private AbsoluteLayout searchBar;
 	private Label searchLabel;
@@ -45,6 +57,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	private ListManagerMain listManagerMain;
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
+    private CheckBox includeParentsCheckBox;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
@@ -54,9 +67,6 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
-	private AbsoluteLayout searchPanel;
-	
 	
 	public ListManagerSearchListsComponent(ListManagerMain listManagerMain){
 		this.listManagerMain = listManagerMain;
@@ -111,6 +121,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         p.addComponent(searchButton);
         */
         p.addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+            private static final long serialVersionUID = 288627665348761948L;
+
             @Override
             public void handleAction(Object sender, Object target) {
                 // The panel is the sender, loop trough content
@@ -131,11 +143,15 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         likeOrEqualCheckBox = new CheckBox();
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
+        includeParentsCheckBox = new CheckBox();
+        includeParentsCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PARENTS));
+        
         searchBar.addComponent(searchLabel, "top:13px; left:20px;");
         searchBar.addComponent(searchField, "top:10px; left:100px;");
         searchBar.addComponent(searchButton, "top:8px; left:280px;");
         searchBar.addComponent(popup, "top:12px; left:330px;");
         searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 350px;");
+        searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 500px;");
         
         searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
@@ -143,10 +159,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         //p.addComponent(searchBar);
         p.setLayout(searchBar);
         addComponent(p, "top:10px; left:20px;");
-        addComponent(searchResultsComponent, "top:50px; left:20px;");
-        
-        
-	    
+        addComponent(searchResultsComponent, "top:50px; left:20px;");	    
 
 	}
 
@@ -160,12 +173,13 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 			
 			List<GermplasmList> germplasmLists;
 			List<Germplasm> germplasms;
+			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
 			if((Boolean) likeOrEqualCheckBox.getValue() == true){
 				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
-				germplasms = doGermplasmSearch(q, Operation.EQUAL);
+				germplasms = doGermplasmSearch(q, Operation.EQUAL, includeParents);
 			} else {
 				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
-				germplasms = doGermplasmSearch(q, Operation.LIKE);
+				germplasms = doGermplasmSearch(q, Operation.LIKE, includeParents);
 			}
 			
 			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
@@ -187,8 +201,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		return germplasmListManager.searchForGermplasmList(q, o);
 	}
 	
-	private List<Germplasm> doGermplasmSearch(String q, Operation o) throws MiddlewareQueryException{
-		return germplasmDataManager.searchForGermplasm(q, o);
+	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{
+		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
 	}	
 	
 	public SearchResultsComponent getSearchResultsComponent(){
