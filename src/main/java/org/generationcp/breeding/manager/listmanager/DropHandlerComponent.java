@@ -102,6 +102,7 @@ public class DropHandlerComponent extends Panel {
 				
 				source.getBuildListComponent().setFromDropHandler(true);
 				source.getBuildListComponent().handleDrop(sourceTable, transferable, dropData);
+				source.getBuildListComponent().setHasChanges(true);
 			}
 
 			@Override
