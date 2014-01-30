@@ -107,7 +107,7 @@ public class ListManagerMain extends VerticalLayout implements
 			//show the drop area in Browse List
 			this.browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent().enableDropHandler();
 			
-			//show the drop are in Search Germplasm List and Germplasm
+			//show the drop area in Search Germplasm List and Germplasm
 			this.searchListsComponent.getSearchResultsComponent().getDropHandlerComponent().enableDropHandler();
 			
 			addComponent(buildNewListComponent);
@@ -119,7 +119,12 @@ public class ListManagerMain extends VerticalLayout implements
 			}
 			
 		}
-		
+		else{
+			TextField listNameText =  buildNewListComponent.getListNameText();
+			if(listNameText != null){
+				listNameText.focus();
+			}
+		}
 	}
 	
 	private void setTitleContent(String guideMessage){
@@ -173,5 +178,8 @@ public class ListManagerMain extends VerticalLayout implements
 		return browseListsComponent;
 	}
 	
+	public Label getBuildNewListTitle(){
+		return this.buildNewListTitle;
+	}
 	
 }

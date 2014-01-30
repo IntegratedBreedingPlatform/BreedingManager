@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +44,10 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ConversionException;
+import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -116,6 +121,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
 
+	public static final String USER_HOME = "user.home";
+
 	private GermplasmList currentlySavedGermplasmList;
 	private Window listManagerCopyToNewListDialog;
 	private int germplasmListId;
@@ -125,6 +132,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private FillWith fillWith;
 	private boolean fromDropHandler;
+	
+	private boolean hasChanges;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -141,6 +150,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public BuildNewListComponent(ListManagerMain source){
 		this.source = source;
 		this.currentlySavedGermplasmList = null;
+		this.hasChanges = false;
 	}
 	
 	@Override
@@ -163,7 +173,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         listNameText = new TextField();
         listNameText.setWidth("200px");
         listNameText.setMaxLength(50);
-        addComponent(listNameText, "top:35px;left:50px");
+        listNameText.addListener(new Property.ValueChangeListener(){
+        	
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				hasChanges = true;
+			}
+        	
+        });
+        addComponent(listNameText, "top:35px;left:50px");        
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
@@ -195,6 +215,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
         listTypeComboBox.setTextInputAllowed(false);
         listTypeComboBox.setImmediate(true);
+        listTypeComboBox.addListener(new Property.ValueChangeListener(){
+        	
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				hasChanges = true;
+			}
+        	
+        });
         addComponent(listTypeComboBox, "top:35px;left:302px");
 
         listDateLabel = new Label();
@@ -206,6 +236,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         listDateField.setDateFormat(DATE_FORMAT);
         listDateField.setResolution(DateField.RESOLUTION_DAY);
         listDateField.setValue(new Date());
+        listDateField.addListener(new Property.ValueChangeListener(){
+        	
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				hasChanges = true;
+			}
+        	
+        });
         addComponent(listDateField, "top:35px;left:557px");
         
         descriptionLabel = new Label();
@@ -215,6 +255,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         descriptionText = new TextField();
         descriptionText.setWidth("565px");
+        descriptionText.addListener(new Property.ValueChangeListener(){
+        	
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				hasChanges = true;
+			}
+        	
+        });
         addComponent(descriptionText, "top:70px;left:89px");
 		
         notesLabel = new Label();
@@ -227,6 +277,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         notesTextArea.setWidth("250px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
+        notesTextArea.addListener(new Property.ValueChangeListener(){
+        	
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				hasChanges = true;
+			}
+        	
+        });
         addComponent(notesTextArea, "top:35px; left: 725px;");
         notesTextArea.setVisible(true);
 
@@ -374,6 +434,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			}
         });
         
+        germplasmsTable.addListener(new Table.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+                 hasChanges = true;
+             }
+         });
         addComponent(germplasmsTable, "top:115px; left:0px;");
 	}
 		
@@ -923,7 +989,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public void exportListAction() throws InternationalizableException {
     	
         if(isCurrentListSave()){
-        	String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+        	String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
             
             germplasmListId = currentlySavedGermplasmList.getId();
             
@@ -1156,7 +1222,44 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		addColumnContextMenu.setPreferredNameColumnValues(false);
     }
     
-
+    public void viewEditList(int id){
+    	
+    	this.germplasmListId = id;
+    	Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
+    	buildNewListTitle.setValue("EDIT LIST");
+    	
+    	//load the field values
+    	try {
+			currentlySavedGermplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+			
+			//List Properties
+			this.listNameText.setValue(currentlySavedGermplasmList.getName());
+			this.descriptionText.setValue(currentlySavedGermplasmList.getName());
+			this.listTypeComboBox.setValue(currentlySavedGermplasmList.getType());
+			
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			try {
+				this.listDateField.setValue(simpleDateFormat.parse(currentlySavedGermplasmList.getDate().toString()));
+			} catch (ReadOnlyException e) {
+				e.printStackTrace();
+			} catch (ConversionException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
+			this.notesTextArea.setValue(currentlySavedGermplasmList.getNotes());
+			
+			//List Data Table
+			germplasmsTable.removeAllItems();
+			addGermplasmListDataToGermplasmTable(germplasmListId,null);
+			
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
     
     public void setupAddColumnContextMenu(){
     	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
@@ -1204,6 +1307,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	public boolean getFromDropHandler(){
 		return this.fromDropHandler;
+	}
+	
+	public void setHasChanges(boolean hasChanges){
+		this.hasChanges = hasChanges;
+	}
+	
+	public boolean getHasChanges(){
+		return hasChanges;
 	}
 	
 }

@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -121,6 +121,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     private String MENU_ADD_ENTRY="Add Entry"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
+    private String MENU_EDIT_LIST="Edit List";
     
     
     static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -167,6 +168,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
+	private ContextMenuItem menuEditList;
 	private AbsoluteLayout toolsMenuBar;
 	private Label noListDataLabel;
 	private Label totalListEntries;
@@ -189,6 +191,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
+	
+	private BuildNewListComponent buildNewListComponent;
 	
     public ListDataComponent(ListManagerTreeMenu source, int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu, ListManagerMain listManagerMain){
     	this.source = source;
@@ -218,6 +222,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
+		menuEditList = menu.addItem(MENU_EDIT_LIST);
 		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2343109406180457070L;
@@ -239,7 +244,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			    	  saveChangesAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
 			    	  deleteListButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
+			    	  editListButtonClickAction();
 			      }
+			      
 			   }
 			});
  
@@ -269,16 +277,19 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     			 if (germplasmListId < 0
     					 && !fromUrl) {
     				 if(germplasmListStatus>=100){
+    					 menuEditList.setVisible(false);
     					 menuDeleteEntries.setVisible(false);
     					 menuSaveChanges.setVisible(false);
     					 menuAddEntry.setVisible(false);
     				 }else{
+    					 menuEditList.setVisible(true);
     					 menuDeleteEntries.setVisible(true); 
     					 menuSaveChanges.setVisible(true);
     					 menuAddEntry.setVisible(true);
     				 }
 		 
     			 }else{
+    				 menuEditList.setVisible(false);
     				 menuDeleteEntries.setVisible(false);
 					 menuSaveChanges.setVisible(false);
 					 menuAddEntry.setVisible(false);
@@ -1498,6 +1509,44 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	     }
 	    	   			 
 	   	return gids;
+    }
+    
+    public void editListButtonClickAction(){
+    	
+    	listManagerMain.showBuildNewListComponent();
+    	buildNewListComponent = listManagerMain.getBuildListComponent();
+    	
+    	//Prompt when there is an unsave changes to build list/edit list
+    	boolean hasChanges = buildNewListComponent.getHasChanges();
+    	if(hasChanges == true){
+    		
+    		String message = "";
+        	if(listManagerMain.getBuildNewListTitle().getValue().equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
+        		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	else {
+        		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	
+    		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+					private static final long serialVersionUID = 1L;
+					
+					public void onClose(ConfirmDialog dialog) {
+						if (!dialog.isConfirmed()) {
+							buildNewListComponent.viewEditList(germplasmListId);
+							buildNewListComponent.setHasChanges(false); //reset
+						}
+						
+						buildNewListComponent.getListNameText().focus();
+					}
+				}
+			);
+    	}
+    	else{
+    		buildNewListComponent.viewEditList(germplasmListId);
+    		buildNewListComponent.setHasChanges(false); //reset
+    	}	
     }
     
     public Table getListDataTable(){
