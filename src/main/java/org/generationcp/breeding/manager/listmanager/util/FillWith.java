@@ -183,7 +183,7 @@ public class FillWith implements InternationalizableComponent  {
 		   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION))){
 		   				 displayExpansionLevelPopupWindow((String) fillWithMenu.getData());
-		   			 } else if(clickedItem.getName().equals("Fill with Sequence Number")){
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_SEQUENCE_NUMBER))){
 		   				 displaySequenceNumberPopupWindow((String) fillWithMenu.getData());
 		   			 }
 	   			}

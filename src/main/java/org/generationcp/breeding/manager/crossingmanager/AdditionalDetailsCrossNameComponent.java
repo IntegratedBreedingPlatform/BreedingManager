@@ -196,7 +196,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				
     				String prefix = null;
     				if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a prefix.", Notification.POSITION_CENTERED);
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
+    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
     					return;
     				} else{
     					prefix = prefixTextField.getValue().toString().trim();
@@ -214,18 +215,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				}
     				
     				if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a starting number.", Notification.POSITION_CENTERED);
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
+    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
     					return;
     				} else if(startNumberTextField.getValue().toString().length() > 10){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-								"Starting number has too many digits.", Notification.POSITION_CENTERED);
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
+    							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
     					return;
     				} else {
     					try{
     						Integer.parseInt(startNumberTextField.getValue().toString());
     					} catch(NumberFormatException ex){
-    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    								"Please enter a valid starting number.", Notification.POSITION_CENTERED);
+    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
+    								, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER), Notification.POSITION_CENTERED);
         					return;
     					}
     				}
@@ -257,11 +259,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	            
     	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
     	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			"The sequence will exceed the 255 characters limit for Seed Source column.", Notification.POSITION_CENTERED);
+    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE), Notification.POSITION_CENTERED);
     					return;
     	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
     	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			"The sequence will exceed the 47 characters limit for Entry Code column.", Notification.POSITION_CENTERED);
+    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE), Notification.POSITION_CENTERED);
     					return;
     	            }
     	            
