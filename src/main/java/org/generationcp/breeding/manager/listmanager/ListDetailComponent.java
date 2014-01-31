@@ -416,6 +416,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 	public void deleteGermplasmListConfirmed() {
         if(germplasmList.getStatus()<100){ 
             try {
+            	
+            	GermplasmList parentFolder = germplasmList.getParent();
+            	
                 germplasmListManager.deleteGermplasmList(germplasmList);
                 
                 User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
@@ -431,6 +434,10 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
                 //Close confirmation window
                 
+                //Set listId on listManagerTreeComponent so when createTree is invoked, it is expanded until the parent of the deleted list
+                if(parentFolder!=null)
+                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().setListId(parentFolder.getId());
+                
                 //Re-use refresh action on GermplasmListTreeComponent
                 if (listManagerTreeMenu != null && listManagerTreeMenu.getDetailsLayout()!= null && 
                 		listManagerTreeMenu.getDetailsLayout().getTreeComponent()!= null){
@@ -442,7 +449,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 				Tab tab = Util.getTabWithDescription(parentTabSheet, germplasmList.getId().toString());
                 parentTabSheet.removeTab(tab);
                 
-                
+                if(parentFolder!=null)
+                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(parentFolder.getId());
                 
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);

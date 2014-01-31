@@ -593,4 +593,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	this.selectedListId = listId;
     }
     
+    public void setListId(Integer listId){
+    	this.listId = listId;
+    }
+    
 }
