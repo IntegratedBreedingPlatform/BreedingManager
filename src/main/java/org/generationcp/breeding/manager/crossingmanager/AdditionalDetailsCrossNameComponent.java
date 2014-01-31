@@ -164,12 +164,12 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         generateButton.addListener(new CrossingManagerImportButtonClickListener(this));
         
         if(this.forFillWith){
-        	setHeight("270px");
-        	setWidth("4530px");
+        	setHeight("250px");
+        	setWidth("490px");
         	specifyStartNumberLabel = new Label();
         	
         	startNumberTextField = new TextField();
-        	startNumberTextField.setWidth("100px");
+        	startNumberTextField.setWidth("90px");
         	
         	addSpaceAfterSuffixCheckBox = new CheckBox();
         	addSpaceAfterSuffixCheckBox.setImmediate(true);
@@ -195,7 +195,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				boolean spaceBetweenSuffixAndCode = addSpaceAfterSuffixCheckBox.booleanValue();
     				
     				String prefix = null;
-    				if(prefixTextField.getValue() == null){
+    				if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a prefix.", Notification.POSITION_CENTERED);
     					return;
     				} else{
@@ -213,14 +213,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     					numOfZerosNeeded = ((Integer) leadingZerosSelect.getValue()).intValue();
     				}
     				
-    				if(startNumberTextField.getValue() != null){
+    				if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a starting number.", Notification.POSITION_CENTERED);
+    					return;
+    				} else if(startNumberTextField.getValue().toString().length() > 10){
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
+								"Starting number has too many digits.", Notification.POSITION_CENTERED);
     					return;
     				} else {
     					try{
     						Integer.parseInt(startNumberTextField.getValue().toString());
     					} catch(NumberFormatException ex){
-    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please enter a valid starting number.", Notification.POSITION_CENTERED);
+    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
+    								"Please enter a valid starting number.", Notification.POSITION_CENTERED);
         					return;
     					}
     				}
@@ -312,19 +317,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             addComponent(generatedNameLabel, "top:145px;left:265px");
 	        addComponent(generateButton, "top:155px;left:0px");
         } else{
-        	addComponent(specifyPrefixLabel, "top:25px;left:5px");
-            addComponent(prefixTextField, "top:6px;left:170px");
-            addComponent(sequenceNumCheckBox, "top:37px;left:5px");
-            addComponent(howManyDigitsLabel, "top:53px;left:294px");
-            addComponent(leadingZerosSelect, "top:35px;left:240px");
-            addComponent(addSpaceCheckBox, "top:65px;left:5px");
-            addComponent(specifySuffixLabel, "top:115px;left:5px");
-            addComponent(suffixTextField, "top:95px;left:170px");
-        	addComponent(addSpaceAfterSuffixCheckBox, "top:135px;left:5px");
-        	addComponent(specifyStartNumberLabel, "top:185px;left:5px");
-        	addComponent(startNumberTextField, "top:165px;left:170px");
-        	addComponent(okButton, "top:215px;left:205px");
-        	addComponent(cancelButton, "top:215px;left:255px");
+        	addComponent(specifyPrefixLabel, "top:25px;left:10px");
+            addComponent(prefixTextField, "top:6px;left:175px");
+            addComponent(addSpaceCheckBox, "top:37px;left:10px");
+            addComponent(specifyStartNumberLabel, "top:87px;left:10px");
+        	addComponent(startNumberTextField, "top:67px;left:175px");
+            addComponent(sequenceNumCheckBox, "top:100px;left:10px");
+            addComponent(leadingZerosSelect, "top:98px;left:245px");
+            addComponent(howManyDigitsLabel, "top:116px;left:299px");
+            addComponent(specifySuffixLabel, "top:150px;left:10px");
+            addComponent(suffixTextField, "top:130px;left:175px");
+        	addComponent(addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
+        	addComponent(okButton, "top:215px;left:200px");
+        	addComponent(cancelButton, "top:215px;left:250px");
         }
     }
     
@@ -456,7 +461,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             int numOfZerosNeeded = numOfZeros - numberString.length();
             if(numOfZerosNeeded > 0){
                 for (int i = 0; i < numOfZerosNeeded; i++){
-                sb.append("0");
+                	sb.append("0");
                 }
             }
         }

@@ -247,7 +247,9 @@ public class FillWith implements InternationalizableComponent  {
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
        //mark flag that changes have been made
-       listManagerTreeMenu.setChanged(true);
+       if(listManagerTreeMenu != null){
+    	   listManagerTreeMenu.setChanged(true);
+       }
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
@@ -275,7 +277,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 		   //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -299,7 +303,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -324,7 +330,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -349,7 +357,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -374,7 +384,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -398,7 +410,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   if(listManagerTreeMenu != null){
+	    	   listManagerTreeMenu.setChanged(true);
+	       }
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }    	
@@ -425,7 +439,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
  	        //mark flag that changes have been made
- 		  listManagerTreeMenu.setChanged(true);
+ 		  if(listManagerTreeMenu != null){
+ 	    	   listManagerTreeMenu.setChanged(true);
+ 	       }
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -449,7 +465,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
  	        //mark flag that changes have been made
- 		  listManagerTreeMenu.setChanged(true);
+ 		 if(listManagerTreeMenu != null){
+ 	    	   listManagerTreeMenu.setChanged(true);
+ 	       }
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -476,7 +494,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
   	        //mark flag that changes have been made
-  		   listManagerTreeMenu.setChanged(true);
+  		 if(listManagerTreeMenu != null){
+      	   listManagerTreeMenu.setChanged(true);
+         }
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
   	   }        	
@@ -501,7 +521,9 @@ public class FillWith implements InternationalizableComponent  {
 		}
         
         //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        if(listManagerTreeMenu != null){
+     	   listManagerTreeMenu.setChanged(true);
+        }
 	}
     
     protected void fillWithPreferredID(Table table, String propertyId) {
@@ -523,7 +545,9 @@ public class FillWith implements InternationalizableComponent  {
         }
         
         //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        if(listManagerTreeMenu != null){
+     	   listManagerTreeMenu.setChanged(true);
+        }
 	}
     
     
@@ -548,13 +572,15 @@ public class FillWith implements InternationalizableComponent  {
     		   targetTable.setEditable(true);
     		}
         	//mark flag that changes have been made
-        	listManagerTreeMenu.setChanged(true);
+        	if(listManagerTreeMenu != null){
+         	   listManagerTreeMenu.setChanged(true);
+            }
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
         }
 	}
     
-    public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZerosNeeded, 
+    public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZeros, 
     		boolean spaceBetweenPrefixAndCode, boolean spaceBetweenSuffixAndCode){
     	List<Integer> itemIds = getItemIds(targetTable);
     	int number = startNumber;
@@ -566,9 +592,11 @@ public class FillWith implements InternationalizableComponent  {
             	builder.append(" ");
             }
             
-            if(numOfZerosNeeded > 0){
+            if(numOfZeros > 0){
+            	String numberString = "" + number;
+            	int numOfZerosNeeded = numOfZeros - numberString.length();
                 for (int i = 0; i < numOfZerosNeeded; i++){
-                builder.append("0");
+                	builder.append("0");
                 }
             }
             builder.append(number);
@@ -585,7 +613,9 @@ public class FillWith implements InternationalizableComponent  {
             ++number;
         }
         
-        listManagerTreeMenu.setChanged(true);
+        if(listManagerTreeMenu != null){
+     	   listManagerTreeMenu.setChanged(true);
+        }
     }
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
@@ -661,7 +691,9 @@ public class FillWith implements InternationalizableComponent  {
 		   }
 		   
 	        //mark flag that changes have been made
-	    	listManagerTreeMenu.setChanged(true);
+	    	if(listManagerTreeMenu != null){
+	     	   listManagerTreeMenu.setChanged(true);
+	        }
     	}
     }
     
@@ -714,7 +746,6 @@ public class FillWith implements InternationalizableComponent  {
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 	

@@ -66,6 +66,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
+        this.listManagerTreeMenu = listManagerTreeMenu;
     }
     
     @Override
@@ -150,7 +151,9 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         }
         
         //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        if(listManagerTreeMenu != null){
+        	listManagerTreeMenu.setChanged(true);
+        }
      }
     
     private List<Integer> getGidsFromTable(Table table){
