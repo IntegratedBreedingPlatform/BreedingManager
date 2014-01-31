@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -31,6 +32,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
@@ -49,6 +52,8 @@ public class GermplasmListTreeUtil implements Serializable {
     public final static String NOT_FOLDER = "Selected item is not a folder.";
     public final static String NO_PARENT = "Selected item is a root item, please choose another item on the list.";
     public final static String HAS_CHILDREN = "Folder has child items.";
+
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     public static String MY_LIST = "";
 	
     @Autowired
@@ -249,7 +254,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setType("FOLDER");
 	                	newFolder.setStatus(1);
 	                	newFolder.setUserId(ibdbUserId);
-	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
+	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
 	                	
 	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null) {
 	                        newFolder.setParent(null);
@@ -321,6 +326,7 @@ public class GermplasmListTreeUtil implements Serializable {
                     	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
 					}
                     targetTree.select(newFolderId);
+                    source.updateButtons(newFolderId);
                 }
 
                 // close popup
@@ -481,7 +487,7 @@ public class GermplasmListTreeUtil implements Serializable {
         source.getWindow().addWindow(w);    	
     }
 
-	public void deleteFolderOrList(final Integer lastItemId) {
+	public void deleteFolderOrList(final Integer lastItemId, final TabSheet tabSheet) {
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -534,7 +540,12 @@ public class GermplasmListTreeUtil implements Serializable {
 							targetTree.select(MY_LIST);
 						} else {
 							targetTree.select(parent.getId());
+							targetTree.expandItem(parent.getId());
 						}
+						
+						Tab tab = Util.getTabWithDescription(tabSheet, finalGpList.getId().toString());
+						if(tab!=null)
+							tabSheet.removeTab(tab);
 					} catch (Error e) {
 						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
 					} catch (MiddlewareQueryException e) {

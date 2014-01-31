@@ -179,6 +179,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
+	public static final String USER_HOME = "user.home";
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
 
@@ -340,9 +341,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	} else {
 			tagAllCheckBox.setValue(false);
 		}
-
-    	System.out.println("TagAllWasJustClicked: "+tagAllWasJustClicked);
-		System.out.println("Table equals: "+listDataTable.getValue().equals(listDataTable.getItemIds()));
 		
     	tagAllWasJustClicked = false;
     }
@@ -960,7 +958,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
         
-            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
     
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
@@ -1018,7 +1016,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     //called by GermplasmListButtonClickListener
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             
                 GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
@@ -1390,17 +1388,20 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	
             	listDataTable.setVisibleColumns(visibleColumns);
             	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
-            		addColumnContextMenu.setPreferredIdColumnValues(false);
-            	}
-            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID))
+            		addColumnContextMenu.setPreferredIdColumnValues(false);            	
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS))
             		addColumnContextMenu.setLocationColumnValues(false);
-            	}
-            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME))
             		addColumnContextMenu.setPreferredNameColumnValues(false);
-            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
             	
             	saveChangesAction();
             	listDataTable.refreshRowCache();

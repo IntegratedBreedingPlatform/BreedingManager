@@ -269,8 +269,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              germplasmList.setDescription((String)descriptionText.getValue());
              germplasmList.setParent(null);
              germplasmList.setStatus(1);
-
-//             System.out.println("DoNotCreateGermplasmsWithId : "+doNotCreateGermplasmsWithId);
              
              //LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
 //             for(int i = 0 ; i < this.getNameList().size() ; i++){
@@ -282,13 +280,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 //                     List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
 //                     germplasmListToBeUsed.set(i, germplasmToBeUsed);
 //                     this.setGermplasmList(germplasmListToBeUsed);
-//                     
-//                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was part of the do not add list");
 //                 } else {
 //                     //Create map from data from previous screen
 //                     germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
-//                     
-//                     System.out.println("GID: "+this.getGermplasmList().get(i).getGid()+" was NOT part of the do not add list");
 //                 }
 //             }
              
@@ -306,8 +300,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                      //List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
                      //germplasmListToBeUsed.set(i, germplasmToBeUsed);
                      //this.setGermplasmList(germplasmListToBeUsed);
-                     
-//                     System.out.println("GID: "+germplasmNameObjects.get(i).getGermplasm().getGid()+" was part of the do not add list");
                  } else {
                      //Create map from data from previous screen
                      //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
@@ -320,8 +312,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                 		 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
                 	 
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
-                     
-//                     System.out.println("GID: "+germplasmNameObjects.get(i).getGermplasm().getGid()+" was NOT part of the do not add list");
                  }
              }             
              

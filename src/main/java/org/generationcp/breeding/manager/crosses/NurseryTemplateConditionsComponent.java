@@ -76,6 +76,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     public static final String VALUE_COLUMN = "Value Column";
     public static final String FEMALE_LIST="Female";
     public static final String MALE_LIST="Male";
+
+	public static final String USER_HOME = "user.home";
     
     
     private Table nurseryConditionsTable;
@@ -577,7 +579,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
     protected void createAndDownloadNurseryTemplateFile() {
         ImportedGermplasmCrosses nurseryTemplateData=source.getSelectNurseryTemplateScreen().getCrossingManagerUploader().getImportedGermplasmCrosses();
     
-        String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+        String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
         NurseryTemplateManagerExporter exporter = new NurseryTemplateManagerExporter(nurseryTemplateData,getNurseryConditionValue());
     
         try {

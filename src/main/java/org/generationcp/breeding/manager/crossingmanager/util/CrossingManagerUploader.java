@@ -68,6 +68,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private static final long serialVersionUID = -1740972379887956957L;
     
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerUploader.class);
+
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
     public File file;
     
@@ -280,8 +282,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             String title = getCellStringValue(0,1,1,true);
             String pmKey = getCellStringValue(0,2,1,true);
             String objective = getCellStringValue(0,3,1,true);
-            Date startDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,4,1,true));
-            Date endDate = new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(0,5,1,true));
+            Date startDate = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT).parse(getCellStringValue(0,4,1,true));
+            Date endDate = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT).parse(getCellStringValue(0,5,1,true));
             String studyType = getCellStringValue(0,6,1,true);
                         
             importedGermplasmCrosses = new ImportedGermplasmCrosses(originalFilename, study, title, pmKey, objective, startDate, endDate, studyType); 
@@ -683,7 +685,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                         importedGermplasmCross.setMaleEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("CROSSING DATE")){
                         try {
-                            importedGermplasmCross.setCrossingDate(new SimpleDateFormat("yyyyMMdd").parse(getCellStringValue(currentSheet, currentRow, col, true)));
+                            importedGermplasmCross.setCrossingDate(new SimpleDateFormat(DATE_AS_NUMBER_FORMAT).parse(getCellStringValue(currentSheet, currentRow, col, true)));
                         } catch (ParseException e) {
                         }
                     } else if(importedGermplasmCrosses.getImportedFactors().get(col).getFactor().toUpperCase().equals("SEEDS HARVESTED")){

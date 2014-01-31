@@ -37,7 +37,7 @@ public class CloseWindowAction implements ClickListener{
 	    	} else if(event.getButton().getData().equals(SelectGermplasmWindow.CANCEL_BUTTON_ID)) {
 	    	    ((SelectGermplasmWindow) source).cancelButtonClickAction();
 	    	} else {
-//	    		System.out.println("Unhandled buttonClick event on CloseWindowAction");
+	    		//	"Unhandled buttonClick event on CloseWindowAction"
 	    	}
     	}
     }

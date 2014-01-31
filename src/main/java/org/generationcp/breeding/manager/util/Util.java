@@ -34,7 +34,10 @@ import com.vaadin.ui.TabSheet.Tab;
 
 public class Util{
     
-    @Autowired
+    public static final String USER_HOME = "user.home";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+	
+	@Autowired
     private static SimpleResourceBundleMessageSource messageSource;
 
 
@@ -163,7 +166,7 @@ public class Util{
     public static File getDefaultBrowseDirectory(Application application) throws BreedingManagerException{
 
         // Initially gets the Desktop path of the user
-        String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";// + File.separator ;
+        String desktopPath = System.getProperty(USER_HOME) + File.separator + "Desktop";// + File.separator ;
         File file = new File(desktopPath);
         
         // If desktop path is inaccessible, get the applicaton's base directory
@@ -230,7 +233,7 @@ public class Util{
 
     public static Integer getCurrentDate(){
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateNowStr = formatter.format(now.getTime());
         Integer dateNowInt = Integer.valueOf(dateNowStr);
         return dateNowInt;
@@ -245,7 +248,7 @@ public class Util{
      * @return
      */
     public static Integer getIBPDate(Integer time){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateStr = formatter.format(time);
         Integer dateInt = Integer.valueOf(dateStr);
         return dateInt;
@@ -258,7 +261,7 @@ public class Util{
      * @return
      */
     public static Integer getIBPDate(long time){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateStr = formatter.format(time);
         Integer dateInt = Integer.valueOf(dateStr);
         return dateInt;

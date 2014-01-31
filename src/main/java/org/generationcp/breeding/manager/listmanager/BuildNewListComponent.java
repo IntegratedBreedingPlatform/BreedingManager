@@ -80,6 +80,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
+	public static final String USER_HOME = "user.home";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 
@@ -120,8 +122,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
-
-	public static final String USER_HOME = "user.home";
 
 	private GermplasmList currentlySavedGermplasmList;
 	private Window listManagerCopyToNewListDialog;
@@ -687,9 +687,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
             	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
             		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-        		
-            	
-            	
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
         	}
         } else {
     		if(droppedOnItemIdObject==null || this.getFromDropHandler())
@@ -713,7 +718,15 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
         		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
         	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
-        		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());        	
+        		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+        	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
         }
         
 		assignSerializedEntryNumber();
@@ -756,6 +769,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
             	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
             		newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
+            	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+                    newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
         		
         	}
         }
@@ -1019,7 +1040,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
     	if(isCurrentListSave()){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             
             germplasmListId = currentlySavedGermplasmList.getId();
             
@@ -1220,6 +1241,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     		addColumnContextMenu.setPreferredIdColumnValues(false);
     	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
     		addColumnContextMenu.setPreferredNameColumnValues(false);
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+            addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+            addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+            addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
+    	if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+            addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
     }
     
     public void viewEditList(int id){
@@ -1237,7 +1266,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			this.descriptionText.setValue(currentlySavedGermplasmList.getName());
 			this.listTypeComboBox.setValue(currentlySavedGermplasmList.getType());
 			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 			try {
 				this.listDateField.setValue(simpleDateFormat.parse(currentlySavedGermplasmList.getDate().toString()));
 			} catch (ReadOnlyException e) {
