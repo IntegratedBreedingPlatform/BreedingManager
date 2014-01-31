@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -73,6 +74,7 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePreferredName;
 	private ContextMenuItem menuFillWithCrossExpansion;
+	private ContextMenuItem menuFillWithSequenceNumber;
 	
 	private GermplasmDetailModel germplasmDetail;
     
@@ -140,7 +142,8 @@ public class FillWith implements InternationalizableComponent  {
 	   	 menuFillWithCrossMalePreferredName = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME));
 	   	 
 	   	 menuFillWithCrossExpansion = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION));
-	   	 
+	   	 menuFillWithSequenceNumber = fillWithMenu.addItem("Fill with Sequence Number");
+	   			 
 	   	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
 	   		private static final long serialVersionUID = -2384037190598803030L;
 	
@@ -180,7 +183,9 @@ public class FillWith implements InternationalizableComponent  {
 		   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION))){
 		   				 displayExpansionLevelPopupWindow((String) fillWithMenu.getData());
-		   			 } 
+		   			 } else if(clickedItem.getName().equals("Fill with Sequence Number")){
+		   				 displaySequenceNumberPopupWindow((String) fillWithMenu.getData());
+		   			 }
 	   			}
 	   	 });
 	   	 
@@ -549,6 +554,40 @@ public class FillWith implements InternationalizableComponent  {
         }
 	}
     
+    public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZerosNeeded, 
+    		boolean spaceBetweenPrefixAndCode, boolean spaceBetweenSuffixAndCode){
+    	List<Integer> itemIds = getItemIds(targetTable);
+    	int number = startNumber;
+        for (Integer itemId : itemIds) {
+            Item item = targetTable.getItem(itemId);
+            StringBuilder builder = new StringBuilder();
+            builder.append(prefix);
+            if(spaceBetweenPrefixAndCode){
+            	builder.append(" ");
+            }
+            
+            if(numOfZerosNeeded > 0){
+                for (int i = 0; i < numOfZerosNeeded; i++){
+                builder.append("0");
+                }
+            }
+            builder.append(number);
+            
+            if(suffix != null && spaceBetweenSuffixAndCode){
+            	builder.append(" ");
+            }
+            
+            if(suffix != null){
+            	builder.append(suffix);
+            }
+            
+            item.getItemProperty(propertyId).setValue(builder.toString());
+            ++number;
+        }
+        
+        listManagerTreeMenu.setChanged(true);
+    }
+    
     private void displayExpansionLevelPopupWindow(final String propertyId){
     	crossExpansionLevel = Integer.valueOf(1);
     	final Window specifyCrossExpansionLevelWindow = new Window("Specify Expansion Level");
@@ -626,6 +665,16 @@ public class FillWith implements InternationalizableComponent  {
     	}
     }
     
+    private void displaySequenceNumberPopupWindow(String propertyId){
+    	Window specifySequenceNumberWindow = new Window("Specify Sequence Number");
+    	specifySequenceNumberWindow.setHeight("300px");
+    	specifySequenceNumberWindow.setWidth("500px");
+    	specifySequenceNumberWindow.setModal(true);
+    	specifySequenceNumberWindow.setResizable(false);
+    	specifySequenceNumberWindow.setContent(new AdditionalDetailsCrossNameComponent(this, propertyId, specifySequenceNumberWindow));
+    	this.targetTable.getWindow().addWindow(specifySequenceNumberWindow);
+    }
+    
     public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
         try {
             germplasmDetail = new GermplasmDetailModel();
@@ -695,5 +744,10 @@ public class FillWith implements InternationalizableComponent  {
 		this.menuFillWithPrefID.setVisible(visibility);
 		this.menuFillWithPrefName.setVisible(visibility);
 		this.menuFillWithAttribute.setVisible(visibility);
+		this.menuFillWithSequenceNumber.setVisible(visibility);
+	}
+	
+	public int getNumberOfEntries(){
+		return targetTable.getItemIds().size();
 	}
 }

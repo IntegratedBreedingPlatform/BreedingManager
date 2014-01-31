@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -41,7 +43,6 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
@@ -75,14 +76,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     private Label howManyDigitsLabel; 
     private Label nextNameInSequenceLabel;
     private Label generatedNameLabel;
+    private Label specifyStartNumberLabel;
     
-    private OptionGroup crossNameOptionGroup;
     private TextField prefixTextField;
     private TextField suffixTextField;
+    private TextField startNumberTextField;
     private CheckBox sequenceNumCheckBox;
     private CheckBox addSpaceCheckBox;
+    private CheckBox addSpaceAfterSuffixCheckBox;
     private Select leadingZerosSelect;
     private Button generateButton;
+    private Button okButton;
+    private Button cancelButton;
     
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
     private AbstractComponent[] otherToggableComponents = new AbstractComponent[9];
@@ -91,7 +96,24 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     private Integer nextNumberInSequence;
     
     private CrossesMadeContainer container;
-        
+    
+    private FillWith fillWithSource;
+    private String propertyIdToFill;
+    private boolean forFillWith = false;
+    private Window parentWindow;
+    
+    public AdditionalDetailsCrossNameComponent(){
+    	super();
+    	this.forFillWith = false;
+    }
+    
+    public AdditionalDetailsCrossNameComponent(FillWith fillWithSource, String propertyIdToFill, Window parentWindow){
+    	super();
+    	this.forFillWith = true;
+    	this.fillWithSource = fillWithSource;
+    	this.propertyIdToFill = propertyIdToFill;
+    	this.parentWindow = parentWindow;
+    }
     
     @Override
     public void setCrossesMadeContainer(CrossesMadeContainer container) {
@@ -104,7 +126,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         setHeight("200px");
         setWidth("700px");
             
-        crossNameOptionGroup = new OptionGroup();
         sequenceNumCheckBox = new CheckBox();
         sequenceNumCheckBox.setImmediate(true);
         sequenceNumCheckBox.addListener(new Property.ValueChangeListener() {
@@ -116,13 +137,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
         addSpaceCheckBox = new CheckBox();
         addSpaceCheckBox.setImmediate(true);
-        addSpaceCheckBox.addListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                //dennis to do
-                //enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
-            }
-        });       
         
         specifyPrefixLabel = new Label();
         prefixTextField = new TextField();
@@ -148,6 +162,111 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         generateButton = new Button();
         generateButton.setData(GENERATE_BUTTON_ID);
         generateButton.addListener(new CrossingManagerImportButtonClickListener(this));
+        
+        if(this.forFillWith){
+        	setHeight("270px");
+        	setWidth("4530px");
+        	specifyStartNumberLabel = new Label();
+        	
+        	startNumberTextField = new TextField();
+        	startNumberTextField.setWidth("100px");
+        	
+        	addSpaceAfterSuffixCheckBox = new CheckBox();
+        	addSpaceAfterSuffixCheckBox.setImmediate(true);
+        	
+        	cancelButton = new Button();
+        	cancelButton.addListener(new Button.ClickListener() {
+    			private static final long serialVersionUID = -3519880320817778816L;
+
+    			@Override
+    			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    				Window parent = parentWindow.getParent();
+    				parent.removeWindow(parentWindow);
+    			}
+    		});
+
+        	okButton = new Button();
+        	okButton.addListener(new Button.ClickListener() {
+    			private static final long serialVersionUID = -3519880320817778816L;
+
+    			@Override
+    			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    				boolean spaceBetweenPrefixAndCode = addSpaceCheckBox.booleanValue();
+    				boolean spaceBetweenSuffixAndCode = addSpaceAfterSuffixCheckBox.booleanValue();
+    				
+    				String prefix = null;
+    				if(prefixTextField.getValue() == null){
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a prefix.", Notification.POSITION_CENTERED);
+    					return;
+    				} else{
+    					prefix = prefixTextField.getValue().toString().trim();
+    				}
+    				
+    				String suffix = null;
+    				if(suffixTextField.getValue() != null){
+    					suffix = suffixTextField.getValue().toString().trim();
+    				}
+    				
+    				int numOfZerosNeeded = 0;
+    				boolean isNumOfZerosNeeded = sequenceNumCheckBox.booleanValue();
+    				if(isNumOfZerosNeeded){
+    					numOfZerosNeeded = ((Integer) leadingZerosSelect.getValue()).intValue();
+    				}
+    				
+    				if(startNumberTextField.getValue() != null){
+    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please specify a starting number.", Notification.POSITION_CENTERED);
+    					return;
+    				} else {
+    					try{
+    						Integer.parseInt(startNumberTextField.getValue().toString());
+    					} catch(NumberFormatException ex){
+    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), "Please enter a valid starting number.", Notification.POSITION_CENTERED);
+        					return;
+    					}
+    				}
+    				int startNumber = Integer.parseInt(startNumberTextField.getValue().toString());
+    				
+    				int numberOfEntries = fillWithSource.getNumberOfEntries();
+    				StringBuilder builder = new StringBuilder();
+    	            builder.append(prefix);
+    	            if(spaceBetweenPrefixAndCode){
+    	            	builder.append(" ");
+    	            }
+    	            
+    	            if(numOfZerosNeeded > 0){
+    	                for (int i = 0; i < numOfZerosNeeded; i++){
+    	                builder.append("0");
+    	                }
+    	            }
+    	            int lastNumber = startNumber + numberOfEntries;
+    	            builder.append(lastNumber);
+    	           
+    	            
+    	            if(suffix != null && spaceBetweenSuffixAndCode){
+    	            	builder.append(" ");
+    	            }
+    	            
+    	            if(suffix != null){
+    	            	builder.append(suffix);
+    	            }
+    	            
+    	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
+    	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
+    	            			"The sequence will exceed the 255 characters limit for Seed Source column.", Notification.POSITION_CENTERED);
+    					return;
+    	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
+    	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
+    	            			"The sequence will exceed the 47 characters limit for Entry Code column.", Notification.POSITION_CENTERED);
+    					return;
+    	            }
+    	            
+    				fillWithSource.fillWithSequence(propertyIdToFill, prefix, suffix, startNumber, numOfZerosNeeded, spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode);
+    				Window parent = parentWindow.getParent();
+    				parent.removeWindow(parentWindow);
+    			}
+    		});
+
+        }
 
         layoutComponents();
         initializeToggableComponents();
@@ -167,23 +286,46 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE);
         messageSource.setCaption(addSpaceCheckBox, Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE);
         messageSource.setCaption(howManyDigitsLabel, Message.DIGITS);
-        messageSource.setCaption(nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
-        messageSource.setCaption(generateButton, Message.GENERATE);
-    }
-    private void layoutComponents() {
         
-        addComponent(crossNameOptionGroup, "top:0px;left:0px");
-        addComponent(specifyPrefixLabel, "top:25px;left:0px");
-        addComponent(prefixTextField, "top:6px;left:165px");
-        addComponent(sequenceNumCheckBox, "top:37px;left:0px");
-        addComponent(howManyDigitsLabel, "top:53px;left:289px");
-        addComponent(leadingZerosSelect, "top:35px;left:235px");
-        addComponent(addSpaceCheckBox, "top:65px;left:0px");
-        addComponent(specifySuffixLabel, "top:115px;left:0px");
-        addComponent(suffixTextField, "top:95px;left:165px");
-        addComponent(nextNameInSequenceLabel, "top:145px;left:0px");
-        addComponent(generatedNameLabel, "top:145px;left:265px");
-        addComponent(generateButton, "top:155px;left:0px");
+        if(!this.forFillWith){
+	        messageSource.setCaption(nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
+	        messageSource.setCaption(generateButton, Message.GENERATE);
+        } else{
+        	messageSource.setCaption(addSpaceAfterSuffixCheckBox, Message.ADD_SPACE_BETWEEN_SUFFIX_AND_CODE);
+        	messageSource.setCaption(cancelButton, Message.CANCEL);
+        	messageSource.setCaption(okButton, Message.OK);
+        	messageSource.setCaption(specifyStartNumberLabel, Message.SPECIFY_START_NUMBER);
+        }
+    }
+    
+    private void layoutComponents() {
+        if(!this.forFillWith){
+        	addComponent(specifyPrefixLabel, "top:25px;left:0px");
+            addComponent(prefixTextField, "top:6px;left:165px");
+            addComponent(sequenceNumCheckBox, "top:37px;left:0px");
+            addComponent(howManyDigitsLabel, "top:53px;left:289px");
+            addComponent(leadingZerosSelect, "top:35px;left:235px");
+            addComponent(addSpaceCheckBox, "top:65px;left:0px");
+            addComponent(specifySuffixLabel, "top:115px;left:0px");
+            addComponent(suffixTextField, "top:95px;left:165px");
+        	addComponent(nextNameInSequenceLabel, "top:145px;left:0px");
+            addComponent(generatedNameLabel, "top:145px;left:265px");
+	        addComponent(generateButton, "top:155px;left:0px");
+        } else{
+        	addComponent(specifyPrefixLabel, "top:25px;left:5px");
+            addComponent(prefixTextField, "top:6px;left:170px");
+            addComponent(sequenceNumCheckBox, "top:37px;left:5px");
+            addComponent(howManyDigitsLabel, "top:53px;left:294px");
+            addComponent(leadingZerosSelect, "top:35px;left:240px");
+            addComponent(addSpaceCheckBox, "top:65px;left:5px");
+            addComponent(specifySuffixLabel, "top:115px;left:5px");
+            addComponent(suffixTextField, "top:95px;left:170px");
+        	addComponent(addSpaceAfterSuffixCheckBox, "top:135px;left:5px");
+        	addComponent(specifyStartNumberLabel, "top:185px;left:5px");
+        	addComponent(startNumberTextField, "top:165px;left:170px");
+        	addComponent(okButton, "top:215px;left:205px");
+        	addComponent(cancelButton, "top:215px;left:255px");
+        }
     }
     
     private void initializeToggableComponents(){
