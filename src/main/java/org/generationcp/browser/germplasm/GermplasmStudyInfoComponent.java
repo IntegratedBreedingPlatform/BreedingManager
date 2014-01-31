@@ -44,6 +44,7 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     private static final String STUDY_ID = "Study ID";
     private static final String STUDY_NAME = "Study Name";
     private static final String DESCRIPTION = "Description";
+	public static final String STUDY_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/study-";
     
     private GermplasmIndexContainer dataIndexContainer;
     
@@ -106,7 +107,7 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
         
         ExternalResource studyBrowserLink = null;
         if (tool == null) {
-            studyBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/study-" + studyId);
+            studyBrowserLink = new ExternalResource(STUDY_BROWSER_LINK + studyId);
         } else {
             studyBrowserLink = new ExternalResource(tool.getPath().replace("study/", "study-") + studyId);
         }

@@ -315,8 +315,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		    private static final long serialVersionUID = -9165077040691158639L;
 
 			public void headerClick(HeaderClickEvent event) {
-		        //String column = (String) event.getPropertyId();
-		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
 		    	Object property = event.getPropertyId();
 		    	Object[] properties = new Object[]{property};
 		    	
@@ -336,8 +334,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			private static final long serialVersionUID = -6923284105485115775L;
 
 			public void headerClick(HeaderClickEvent event) {
-		        //String column = (String) event.getPropertyId();
-		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
 		    	Object property = event.getPropertyId();
 		    	Object[] properties = new Object[]{property};
 		    	
@@ -357,8 +353,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			private static final long serialVersionUID = 9161532217269536655L;
 
 			public void headerClick(HeaderClickEvent event) {
-		        //String column = (String) event.getPropertyId();
-		        //System.out.println("Clicked " + column + "with " + event.getButtonName());
 		    	Object property = event.getPropertyId();
 		    	Object[] properties = new Object[]{property};
 		    	
@@ -467,9 +461,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			endOfListIndex = this.tableRows.size();
 		}
 				
-        for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){
-        	//System.out.println(row.toString());
-        	
+        for(TableResultRow row : tableRows.subList(currentLineIndex, endOfListIndex)){        	
 			int gid = row.getGermplasmId();
 			String germplasmName = germplasmIdNameMap.get(gid);
 			
@@ -486,7 +478,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			itemObj[2] = (germplasmName == null)? "" : germplasmName;
 			
 			columnHeaders = getColumnProperties(resultTable.getContainerPropertyIds());
-			//System.out.println("TOTAL TRAIT COLUMNS NO: " + NoOfColumns);
 			
 			Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = row.getNumericTOSMap();
 			for(Map.Entry<NumericTraitFilter, TraitObservationScore> numericTOS : numericTOSMap.entrySet()){
@@ -500,7 +491,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				itemObj[index] = numericTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = numericTOS.getValue().getWtScore();
 				
-				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + numericTOS.getValue().getNoOfObservation() + "|" + numericTOS.getValue().getWtScore());
 			}
 			
 			Map<CharacterTraitFilter,TraitObservationScore> characterTOSMap = row.getCharacterTOSMap();
@@ -515,7 +505,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				itemObj[index] = characterTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = characterTOS.getValue().getWtScore();
 				
-				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + characterTOS.getValue().getNoOfObservation() + "|" + characterTOS.getValue().getWtScore());
 			}
 			
 			Map<CategoricalTraitFilter,TraitObservationScore> categoricalTOSMap = row.getCategoricalTOSMap();
@@ -530,7 +519,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				itemObj[index] = categoricalTOS.getValue().getNoOfObservation();
 				itemObj[index + 1] = categoricalTOS.getValue().getWtScore();
 				
-				//System.out.println(name + " : "+ traitId + " : CURRENT INDEX3: " + index + "|" + categoricalTOS.getValue().getNoOfObservation() + "|" + categoricalTOS.getValue().getWtScore());
 			}
 			
 			itemObj[NoOfColumns - 2] = row.getCombinedScore();
@@ -576,7 +564,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		for(int i = 0; i < headers.length; i++){
 			columnHeaders.add(headers[i].trim());
-			//System.out.println(columnHeaders.get(i));
 		}
 		
 		return columnHeaders;
@@ -588,7 +575,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		for(Object prop : properties){
 			columnHeaders.add(prop.toString());
-			//System.out.println(prop.toString());
 		}
 		
 		return columnHeaders;
@@ -661,9 +647,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
-							//System.out.println("Trait Name: " + trait.getTraitInfo().getName());
-							//System.out.println("ObservationKey: " + trait.getTraitInfo().getId()+"|"+germplasm.getKey()+"|"+env.getEnvironmentNumber());
-							
 							ComboBox weightComboBox = env.getWeightComboBox();
 							EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
 							envWt = Double.valueOf(weight.getWeight()) / totalEnvWeight;
@@ -681,10 +664,8 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 								}
 							}
 						
-							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
 							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation) );
 							
-							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
 						}
 					}
@@ -710,9 +691,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
-							//System.out.println("Trait Name: " + trait.getTraitInfo().getName());
-							//System.out.println("ObservationKey: " + trait.getTraitInfo().getId()+"|"+germplasm.getKey()+"|"+env.getEnvironmentNumber());
-							
 							ComboBox weightComboBox = env.getWeightComboBox();
 							EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
 							envWt = Double.valueOf(weight.getWeight()) / totalEnvWeight;
@@ -729,10 +707,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
-							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
+
 							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation) );
 							
-							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
 						}
 					}
@@ -757,9 +734,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
-							//System.out.println("Trait Name: " + trait.getTraitInfo().getName());
-							//System.out.println("ObservationKey: " + trait.getTraitInfo().getId()+"|"+germplasm.getKey()+"|"+env.getEnvironmentNumber());
-							
 							ComboBox weightComboBox = env.getWeightComboBox();
 							EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
 							envWt = Double.valueOf(weight.getWeight()) / totalEnvWeight;
@@ -776,10 +750,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
-							//System.out.println("scorePerEnv  = " + envWt + " * ( " + scorePerEnv +" / " + noOfObservation + " );");
+
 							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation));
 							
-							//System.out.println(scorePerTrait+"+=" + scorePerEnv + ";");
 							scorePerTrait += scorePerEnv;
 						}
 					}
@@ -842,12 +815,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			}
 		}
 		
-		/*System.out.println("# of observations: " + observations.size());
-		int countList = 0;
-		for(Map.Entry<ObservationKey, ObservationList> obs : observationsMap.entrySet()){
-			countList += obs.getValue().getObservationList().size();
-		}
-		System.out.println("# of observationsMap: " + countList);*/
 		return observationsMap;
 	}
 	
@@ -988,7 +955,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		toggleSaveButton();
 		
-		//System.out.println("No of SelectedGermplasms: " + selectedGermplasmMap.size());
 	}
 	
 	public void toggleSaveButton() {
@@ -1010,15 +976,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
     }
 
     private void addTagAllCheckBoxToCombinedScoreTagColTable(){
-    	
-    	//ComponentPosition tablePosition = getPosition(table);
-    	//System.out.println("Table position is at "+tablePosition.getLeftValue()+tablePosition.getLeftUnits()+" "+tablePosition.getTopValue()+tablePosition.getTopUnits());
-    	
+    	    	
     	tagAllCheckBoxOnCombinedScoreTagColTable = new CheckBox();
 	    tagAllCheckBoxOnCombinedScoreTagColTable.setImmediate(true);
-	      
-	    //(combinedScoreTagColTable, "top:20px;left:919px");
-		
+	    
     	addComponent(tagAllCheckBoxOnCombinedScoreTagColTable, "top:30px; left:"+(817+combinedScoreTagColTable.getWidth()-27)+"px;");
     	
     	tagAllCheckBoxOnCombinedScoreTagColTable.addListener(new ValueChangeListener(){

@@ -50,6 +50,7 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
     public static final String SEARCH_BUTTON_ID = "SelectGermplasmEntryDialog Search Button ID";
     public static final String CLOSE_SCREEN_BUTTON_ID = "SelectGermplasmEntryDialog Close Button ID";
     public static final String ADD_BUTTON_ID = "SelectGermplasmEntryDialog Add Button ID";
+	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -218,7 +219,7 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
         } else {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }

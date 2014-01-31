@@ -78,11 +78,6 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		super();
 		this.environmentIds = environmentIds;
 		this.parentWindow = parentWindow;
-		
-		/*for(int i=0;i<environmentIds.size();i++){
-			System.out.println("EVT ID: "+environmentIds.get(i).toString());
-		}
-		System.out.println("");*/
 	}
 
 	private void initializeComponents(){

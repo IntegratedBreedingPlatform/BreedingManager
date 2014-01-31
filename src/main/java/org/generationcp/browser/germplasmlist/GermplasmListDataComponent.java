@@ -116,6 +116,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     static final Action ACTION_DELETE = new Action("Delete selected entries");
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE,ACTION_VIEW_GERMPLASM_PREFERRED_NAME,ACTION_VIEW_GERMPLASM_PREFERRED_ID,ACTION_VIEW_GERMPLASM_LOCATION_NAME};
     static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL};
+	public static final String USER_HOME = "user.home";
 
     private Window germplasmListCopyToNewListDialog;
 
@@ -411,7 +412,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
 
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
         
-            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
     
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
@@ -464,7 +465,7 @@ public class GermplasmListDataComponent extends VerticalLayout implements Initia
     //called by GermplasmListButtonClickListener
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             
                 GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
