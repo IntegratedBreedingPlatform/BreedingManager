@@ -80,6 +80,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private static final long serialVersionUID = 5314653969843976836L;
 	
+	public static final String USER_HOME = "user.home";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 
@@ -120,8 +122,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
-
-	public static final String USER_HOME = "user.home";
 
 	private GermplasmList currentlySavedGermplasmList;
 	private Window listManagerCopyToNewListDialog;
@@ -1019,7 +1019,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
     	if(isCurrentListSave()){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             
             germplasmListId = currentlySavedGermplasmList.getId();
             
@@ -1237,7 +1237,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 			this.descriptionText.setValue(currentlySavedGermplasmList.getName());
 			this.listTypeComboBox.setValue(currentlySavedGermplasmList.getType());
 			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 			try {
 				this.listDateField.setValue(simpleDateFormat.parse(currentlySavedGermplasmList.getDate().toString()));
 			} catch (ReadOnlyException e) {

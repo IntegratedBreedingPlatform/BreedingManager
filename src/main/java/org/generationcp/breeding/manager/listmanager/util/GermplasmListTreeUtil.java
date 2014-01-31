@@ -49,6 +49,8 @@ public class GermplasmListTreeUtil implements Serializable {
     public final static String NOT_FOLDER = "Selected item is not a folder.";
     public final static String NO_PARENT = "Selected item is a root item, please choose another item on the list.";
     public final static String HAS_CHILDREN = "Folder has child items.";
+
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     public static String MY_LIST = "";
 	
     @Autowired
@@ -249,7 +251,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setType("FOLDER");
 	                	newFolder.setStatus(1);
 	                	newFolder.setUserId(ibdbUserId);
-	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat("yyyyMMdd")).format(Calendar.getInstance().getTime())));
+	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
 	                	
 	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null) {
 	                        newFolder.setParent(null);

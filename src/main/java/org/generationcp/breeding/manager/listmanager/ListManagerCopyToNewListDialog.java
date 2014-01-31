@@ -72,6 +72,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
 //    private static final String GID = "gid";
 //    private static final String ENTRY_ID = "entryId";
@@ -277,7 +278,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	            
 	            if(!existingListSelected){
 	                Date date = new Date();
-	                Format formatter = new SimpleDateFormat("yyyyMMdd");
+	                Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 	                Long currentDate = Long.valueOf(formatter.format(date));
 	                GermplasmList parent = null;
 	                int statusListName = 1;
