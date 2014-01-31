@@ -464,7 +464,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
     	while(iter.hasNext()){
     		TraitForComparison comparison = iter.next();
-    		//System.out.println(comparison.getTraitInfo().getName() + "  " + comparison.getDirection());
     		String id = Integer.toString(comparison.getTraitInfo().getId());
     		if(traitEnvMap.containsKey(id)){
     			Map<String, TrialEnvironment> tempMap = traitEnvMap.get(id);
@@ -511,8 +510,6 @@ private static final long serialVersionUID = -3667517088395779496L;
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
         
-        //System.out.println("parentWindow in EnvironmentFilter1:" + parentWindow);
-        //System.out.println("parentWindow in EnvironmentFilter1:" + getParent());
     }
 	
 	public void populateEnvironmentsTable() {
@@ -551,8 +548,6 @@ private static final long serialVersionUID = -3667517088395779496L;
         isFilterLocationClicked = false;
         isFilterStudyClicked = false;
         
-        //System.out.println("parentWindow in EnvironmentFilter2:" + parentWindow);
-        //System.out.println("parentWindow in EnvironmentFilter2:" + getParent());
 	}
 
 	private void recreateTable(boolean recreateFilterLocationMap, boolean isAppliedClick){
@@ -666,13 +661,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	    		 TrialEnvironment trialEnv = trialEnvMap.get(trialEnvIdString);
     	    		//we build the table
     	    		 String tableKey = trialEnvIdString + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getCountryName() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getProvinceName()  + FilterLocationDialog.DELIMITER  +trialEnv.getLocation().getLocationName() + FilterLocationDialog.DELIMITER + trialEnv.getStudy().getName();
-    	    		 /*
-    	    		 if(checkerMap.get(tableKey) != null)
-    	    			 System.out.println("Hello " + tableKey);
-    	    		 
-    	    		 if(checkerMap.get(tableKey) == null)
-    	    			 checkerMap.put(tableKey, tableKey);
-    	    		 */
+
     	    		 boolean isValidEntryAdd = true;
     	    		 if(isAppliedClick){
     	    			 isValidEntryAdd = isValidEntry(trialEnv);
@@ -903,7 +892,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    			
 	    		}
 	    	*/
-	    		//System.out.println((obs1 != null && obs2 != null));
+
 	    		if(obs1 != null && obs2 != null){    			
 			    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
 			    			counter++;
@@ -950,7 +939,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     		EnvironmentForComparison envt = environmentCheckBoxComparisonMap.get(sKey);
     		envt.computeWeight(total);
     		
-    		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	if (environmentForComparison.size() > 1000){

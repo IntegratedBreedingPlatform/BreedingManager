@@ -65,6 +65,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     public static final String BACK_BUTTON_ID = "ResultsComponent Back Button ID";
     public static final String EXPORT_BUTTON_ID = "ResultsComponent Export Button ID";
 
+	public static final String USER_HOME = "user.home";
+
     private Button exportButton;
     private Button backButton;
     
@@ -300,7 +302,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     				 messageSource.getMessage(Message.H2H_NUM_OF_TRAITS_EXCEEDED));
 
     	 } else {
-    		 String tempFileName = System.getProperty( "user.home" ) + "/HeadToHeadDataList.xls";
+    		 String tempFileName = System.getProperty( USER_HOME ) + "/HeadToHeadDataList.xls";
     		 HeadToHeadDataListExport listExporter = new HeadToHeadDataListExport();
     		 
     		 try {

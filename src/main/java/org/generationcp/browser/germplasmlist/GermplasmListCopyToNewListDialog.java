@@ -71,6 +71,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     private static final String ENTRY_CODE = "entryCode";
     private static final String DESIGNATION = "designation";
     private static final String GROUP_NAME = "groupName";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
     private Label labelListName;
     private Label labelDescription;
@@ -220,7 +221,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 	    } else {
 	    	if(!existingListSelected){
 	    		Date date = new Date();
-	            Format formatter = new SimpleDateFormat("yyyyMMdd");
+	            Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 	            Long currentDate = Long.valueOf(formatter.format(date));
 	            GermplasmList parent = null;
 	            int statusListName = 1;

@@ -42,6 +42,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
 
     private static final long serialVersionUID = 1L;
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmListComponent.class);
+	public static final String LIST_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-";
     
     private GermplasmListManager dataManager;
     private Integer gid;
@@ -72,7 +73,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         
         ExternalResource listBrowserLink = null;
         if (tool == null) {
-            listBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
+            listBrowserLink = new ExternalResource(LIST_BROWSER_LINK + listId);
         } else {
             listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
         }

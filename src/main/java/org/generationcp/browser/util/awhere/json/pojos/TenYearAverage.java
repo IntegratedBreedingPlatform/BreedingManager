@@ -11,20 +11,20 @@ public class TenYearAverage implements Serializable {
 	private double Avg_MinTemp;
 	private double Avg_MaxTemp;
 	private double Avg_Solar;
-	private double Avg_Rain;
+	private double Total_Rain;
 	private double Total_GDD;
 	private int Count;
 	
 	public TenYearAverage(String periodFrom, String periodTo,
 			double avg_MinTemp, double avg_MaxTemp, double avg_Solar,
-			double avg_Rain, double total_GDD, int count) {
+			double Total_Rain, double total_GDD, int count) {
 		super();
 		this.PeriodFrom = periodFrom;
 		this.PeriodTo = periodTo;
 		this.Avg_MinTemp = avg_MinTemp;
 		this.Avg_MaxTemp = avg_MaxTemp;
 		this.Avg_Solar = avg_Solar;
-		this.Avg_Rain = avg_Rain;
+		this.Total_Rain = Total_Rain;
 		this.Total_GDD = total_GDD;
 		this.Count = count;
 	}
@@ -69,12 +69,12 @@ public class TenYearAverage implements Serializable {
 		this.Avg_Solar = avg_Solar;
 	}
 
-	public double getAvg_Rain() {
-		return Avg_Rain;
+	public double getTotal_Rain() {
+		return Total_Rain;
 	}
 
-	public void setAvg_Rain(double avg_Rain) {
-		this.Avg_Rain = avg_Rain;
+	public void setTotal_Rain(double Total_Rain) {
+		this.Total_Rain = Total_Rain;
 	}
 
 	public double getTotal_GDD() {
@@ -97,8 +97,8 @@ public class TenYearAverage implements Serializable {
 	public String toString() {
 		return "TenYearAverage [periodFrom=" + PeriodFrom + ", periodTo="
 				+ PeriodTo + ", avg_MinTemp=" + Avg_MinTemp + ", avg_MaxTemp="
-				+ Avg_MaxTemp + ", avg_Solar=" + Avg_Solar + ", avg_Rain="
-				+ Avg_Rain + ", total_GDD=" + Total_GDD + ", count=" + Count
+				+ Avg_MaxTemp + ", avg_Solar=" + Avg_Solar + ", Total_Rain="
+				+ Total_Rain + ", total_GDD=" + Total_GDD + ", count=" + Count
 				+ "]";
 	}
 	

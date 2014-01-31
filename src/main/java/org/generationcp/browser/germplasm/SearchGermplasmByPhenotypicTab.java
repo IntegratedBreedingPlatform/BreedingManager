@@ -394,7 +394,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 //                    TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID), new Integer(
 //                            methodID), valueToUseInDouble);
 //                    LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
-//                    System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUseInDouble);
 //                    tcf.add(filter);
 //                } catch (NumberFormatException e) {
 //                    LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -408,7 +407,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 //                TraitCombinationFilter filter = new TraitCombinationFilter(new Integer(traitID), new Integer(scaleID),
 //                        new Integer(methodID), valueToUse);
 //                LOG.debug("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
-//                System.out.println("" + traitID + ":" + scaleID + ":" + methodID + ":" + valueToUse);
 //                tcf.add(filter);
 //            } else {
 //                // check if the value is a numeric range
@@ -490,7 +488,6 @@ public class SearchGermplasmByPhenotypicTab extends GridLayout implements Initia
 
         } else {
             LOG.error("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
-//            System.out.println("SearchGermplasmByPhenotypicTab: Error at addCriteriaButtonClickAction()");
             throw new InternationalizableException(new Exception("Input error. No selected trait scale method."), 
                     Message.ERROR_INPUT, Message.ERROR_NO_SELECTED_TRAIT_SCALE_METHOD);
         }

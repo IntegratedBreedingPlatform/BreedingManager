@@ -49,6 +49,8 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
     public static final String SEARCH_BUTTON_ID = "SelectAGermplasmDialog Search Button ID";
     public static final String CANCEL_BUTTON_ID = "SelectAGermplasmDialog Cancel Button ID";
     public static final String DONE_BUTTON_ID = "SelectAGermplasmDialog Done Button ID";
+
+	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -211,7 +213,7 @@ public class SelectAGermplasmDialog extends Window implements InitializingBean, 
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
         } else {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }

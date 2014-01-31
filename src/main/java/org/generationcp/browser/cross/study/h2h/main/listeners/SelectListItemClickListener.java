@@ -50,7 +50,7 @@ public class SelectListItemClickListener implements ItemClickEvent.ItemClickList
             }
         } else if (source instanceof GermplasmListTreeComponent) {
         	String item = event.getItemId().toString();
-        	//System.out.println("item: " + item);
+
         	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
         		int germplasmListId = Integer.valueOf(event.getItemId().toString());
                 if (event.getButton() == ClickEvent.BUTTON_LEFT) {

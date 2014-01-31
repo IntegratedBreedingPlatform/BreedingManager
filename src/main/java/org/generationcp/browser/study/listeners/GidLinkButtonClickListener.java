@@ -37,6 +37,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 
     private static final long serialVersionUID = -6751894969990825730L;
     private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
+	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     private String[] CHILD_WINDOWS = {TableViewerComponent.TABLE_VIEWER_WINDOW_NAME, 
     		ViewTraitObservationsDialog.LINE_BY_TRAIT_WINDOW_NAME};
     
@@ -71,7 +72,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
         } else {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }

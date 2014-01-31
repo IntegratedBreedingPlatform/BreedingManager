@@ -73,6 +73,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private static final String DEFAULT_METHOD_CODE = "UDM";
     private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
     private static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+
+	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -216,7 +218,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
         } else {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }
