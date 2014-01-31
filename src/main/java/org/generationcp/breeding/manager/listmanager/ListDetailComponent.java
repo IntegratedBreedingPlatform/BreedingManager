@@ -451,6 +451,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 
                 if(parentFolder!=null)
                 	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(parentFolder.getId());
+                else
+                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
                 
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
