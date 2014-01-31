@@ -12,9 +12,11 @@ These tools make use of our Middleware API to connect to public and program data
 
 Prerequisites
 ---------------
-Build and install Middleware and Commons using one of the following methods:
+Build and install IBPMiddleware and IBPCommons using one of the following methods:
   1.  Using the command line, go the IBPMiddleware/IBPCommons home directory, run the command: <pre>mvn clean install</pre>
   2.  From within Eclipse, right-click on the project, IBPCommons for instance, select Run As --> Maven build..., then input the target <pre>clean install</pre>
+  
+Note: Please see build instructions for the IBPMiddleware for more information.  
 
 To Build
 ----------
