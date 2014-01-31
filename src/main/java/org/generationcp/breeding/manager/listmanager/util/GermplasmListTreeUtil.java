@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -31,6 +32,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
@@ -323,6 +326,7 @@ public class GermplasmListTreeUtil implements Serializable {
                     	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
 					}
                     targetTree.select(newFolderId);
+                    source.updateButtons(newFolderId);
                 }
 
                 // close popup
@@ -483,7 +487,7 @@ public class GermplasmListTreeUtil implements Serializable {
         source.getWindow().addWindow(w);    	
     }
 
-	public void deleteFolderOrList(final Integer lastItemId) {
+	public void deleteFolderOrList(final Integer lastItemId, final TabSheet tabSheet) {
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -536,7 +540,12 @@ public class GermplasmListTreeUtil implements Serializable {
 							targetTree.select(MY_LIST);
 						} else {
 							targetTree.select(parent.getId());
+							targetTree.expandItem(parent.getId());
 						}
+						
+						Tab tab = Util.getTabWithDescription(tabSheet, finalGpList.getId().toString());
+						if(tab!=null)
+							tabSheet.removeTab(tab);
 					} catch (Error e) {
 						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
 					} catch (MiddlewareQueryException e) {
