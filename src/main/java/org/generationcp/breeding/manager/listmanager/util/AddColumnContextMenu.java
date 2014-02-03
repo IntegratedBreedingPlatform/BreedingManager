@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
@@ -88,6 +89,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static Class METHOD_GROUP_TYPE = String.class;
     public static String METHOD_GROUP = "METHOD GROUP";
     
+    private boolean fromBuildNewList;
+    private BuildNewListComponent buildNewListComponent;
+    
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID
         , PREFERRED_NAME
         , LOCATIONS
@@ -131,6 +135,29 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         this.absoluteLayoutSource = absoluteLayoutSource;
         
         setupContextMenu();
+    }
+    
+    /**
+     * Add "Add column" context menu to a table
+     * @param source - context menu will attach to this
+     * @param addColumnButton - util will attach event listener to this
+     * @param targetTable - table where data will be manipulated
+     * @param gid - property of GID (button with GID as caption) on that table
+     */
+    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
+            Button addColumnButton, Table targetTable, String gid, boolean fromBuildNewList){
+        this.GIDPropertyId = gid;
+        this.targetTable = targetTable;
+        this.addColumnButton = addColumnButton;
+        this.absoluteLayoutSource = absoluteLayoutSource;
+        this.fromBuildNewList = fromBuildNewList;
+        
+    	if(fromBuildNewList){
+    		buildNewListComponent = ((BuildNewListComponent) absoluteLayoutSource);
+    	}
+        
+        setupContextMenu();
+        
     }
     
 	/**
@@ -276,10 +303,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
     			
-    			//mark flag that changes have been made
-    			if (listManagerTreeMenu != null && fromAddColumn) {
-    			    listManagerTreeMenu.setChanged(true);
-    			}
+		       //mark flag that changes have been made in listDataTable
+		       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+		       
+		       //mark flag that changes have been made in buildNewListTable
+		       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+		       
     		} catch (MiddlewareQueryException e) {
     			e.printStackTrace();
     		}
@@ -312,10 +341,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
 				
-				//mark flag that changes have been made
-				if (listManagerTreeMenu != null && fromAddColumn) {
-				    listManagerTreeMenu.setChanged(true);
-				}
+		       //mark flag that changes have been made in listDataTable
+		       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+		       
+		       //mark flag that changes have been made in buildNewListTable
+		       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+		       
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}  
@@ -357,10 +388,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     				targetTable.setEditable(true);
     			}
 					
-				//mark flag that changes have been made
-				if (listManagerTreeMenu != null && fromAddColumn) {
-				    listManagerTreeMenu.setChanged(true);
-				}
+		       //mark flag that changes have been made in listDataTable
+		       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+		       
+		       //mark flag that changes have been made in buildNewListTable
+		       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+		       
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}    	
@@ -436,10 +469,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     targetTable.setEditable(true);
                 }
                     
-                //mark flag that changes have been made
-                if (listManagerTreeMenu != null && fromAddColumn) {
-                    listManagerTreeMenu.setChanged(true);
-                }
+                //mark flag that changes have been made in listDataTable
+                if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+                
+                //mark flag that changes have been made in buildNewListTable
+                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+                
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Method Info values.", e);
                 e.printStackTrace();

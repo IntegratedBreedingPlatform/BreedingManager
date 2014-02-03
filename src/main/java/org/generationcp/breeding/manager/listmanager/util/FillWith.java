@@ -139,7 +139,6 @@ public class FillWith implements InternationalizableComponent  {
     	
     	if(fromBuildNewList){
     		buildNewListComponent = ((BuildNewListComponent) absoluteLayout);
-    		System.out.println("hasChanges: " + buildNewListComponent.getHasChanges());
     	}
     	
     	setupContextMenu();

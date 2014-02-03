@@ -1301,7 +1301,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     }
     
     public void setupAddColumnContextMenu(){
-    	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName());
+    	addColumnContextMenu = new AddColumnContextMenu(this, addColumnButton, germplasmsTable, ListDataTablePropertyID.GID.getName(), true);
     }
     
     public AddColumnContextMenu getAddColumnContextMenu(){
