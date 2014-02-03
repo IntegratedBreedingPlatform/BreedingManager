@@ -197,56 +197,62 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	
 				@Override
 				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-					
+                    
 					//Check if columns already exist in the table
 					if(propertyExists(PREFERRED_ID)){
 						menuFillWithPreferredId.setEnabled(false);
 					} else {
 						menuFillWithPreferredId.setEnabled(true);
 					}
-					
+                    
 					if(propertyExists(PREFERRED_NAME)){
 						menuFillWithPreferredName.setEnabled(false);
 					} else {
 						menuFillWithPreferredName.setEnabled(true);
 					}
-					
+                    
 					if(propertyExists(LOCATIONS)){
 						menuFillWithLocations.setEnabled(false);
 					} else {
 						menuFillWithLocations.setEnabled(true);
 					}
-					
+                    
 					if(propertyExists(METHOD_NAME)){
                         menuFillWithMethodName.setEnabled(false);
                     } else {
                         menuFillWithMethodName.setEnabled(true);
                     }
-					
+                    
 					if(propertyExists(METHOD_ABBREV)){
                         menuFillWithMethodAbbrev.setEnabled(false);
                     } else {
                         menuFillWithMethodAbbrev.setEnabled(true);
                     }
-					
+                    
 					if(propertyExists(METHOD_NUMBER)){
                         menuFillWithMethodNumber.setEnabled(false);
                     } else {
                         menuFillWithMethodNumber.setEnabled(true);
                     }
-					
+                    
 					if(propertyExists(METHOD_GROUP)){
                         menuFillWithMethodGroup.setEnabled(false);
                     } else {
                         menuFillWithMethodGroup.setEnabled(true);
                     }
-					
-					//Display context menu
-					menu.show(event.getClientX(), event.getClientY());
-				}
-			 });
-    	 }
-	 
+                    
+                    if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
+                            && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
+                        menuFillWithMethodInfo.setEnabled(false);
+                    } else {
+                        menuFillWithMethodInfo.setEnabled(true);
+                    }
+                    
+                    //Display context menu
+                    menu.show(event.getClientX(), event.getClientY());
+                }
+            });
+        }
     }
     
     
