@@ -72,6 +72,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * @author Efficio
+ *
+ */
 @Configurable
 public class BuildNewListComponent extends AbsoluteLayout implements
         InitializingBean, InternationalizableComponent {
@@ -134,6 +138,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     private boolean fromDropHandler;
     
     private boolean hasChanges;
+    private boolean fromEditList = false;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -644,60 +649,20 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
             newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(data.getEntryCode());
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
-            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
-            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
-        }        
-        assignSerializedEntryNumber();
-    }
-    
-    /**
-     * Add germplasms from a gemrplasm list to the table
-     */
-    private void addGermplasmListDataToGermplasmTableFromEdit(Integer listId){
-        
-        int start = 0;
-        int listDataCount;
-        
-        List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
-        try {
-            listDataCount = (int) germplasmListManager.countGermplasmListDataByListId(listId);
-            listDatas = this.germplasmListManager.getGermplasmListDataByListId(listId, start, listDataCount);
-        } catch (MiddlewareQueryException e) {
-            LOG.error("Error in retrieving germplasm list data.", e);
-            e.printStackTrace();
-        } catch (Exception e) {
-            LOG.error("Error in retrieving germplasm list data.", e);
-            e.printStackTrace();
-        }
-        
-        for (GermplasmListData data : listDatas) {
-        
-            Item newItem = germplasmsTable.addItem(getNextListEntryId());
-
-            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
-            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-            
-            String crossExpansion = "";
-            try {
-                if(germplasmDataManager!=null)
-                    crossExpansion = germplasmDataManager.getCrossExpansion(data.getGid(), 1);
-            } catch(MiddlewareQueryException ex){
-                LOG.error("Error in retrieving cross expansion data for GID: " + data.getGid() + ".", ex);
-                crossExpansion = "-";
+            if(fromEditList){
+            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(data.getSeedSource());
             }
-
-            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(data.getEntryCode());
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(data.getSeedSource());
+            else{
+            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+            }
+            
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
         }        
         assignSerializedEntryNumber();
     }
-
     
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
@@ -1306,6 +1271,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     public void viewEditList(int id){
         
+    	this.fromEditList = true;
         this.germplasmListId = id;
         Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
         buildNewListTitle.setValue("EDIT LIST");
@@ -1342,7 +1308,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             //List Data Table
             germplasmsTable.removeAllItems();
-            addGermplasmListDataToGermplasmTableFromEdit(germplasmListId);
+            addGermplasmListDataToGermplasmTable(germplasmListId, null);
             updateDropListEntries();
             
         } catch (MiddlewareQueryException e) {
@@ -1411,5 +1377,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public boolean getHasChanges(){
         return hasChanges;
     }
-    
+
+	public boolean isFromEditList() {
+		return fromEditList;
+	}
+
+	public void setFromEditList(boolean fromEditList) {
+		this.fromEditList = fromEditList;
+	}
 }

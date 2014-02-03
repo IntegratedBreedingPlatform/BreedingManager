@@ -77,6 +77,7 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 		
 		//Reset the marker for changes in Build New List
 		source.setHasChanges(false);
+		source.setFromEditList(false);
 	}
     
 }
