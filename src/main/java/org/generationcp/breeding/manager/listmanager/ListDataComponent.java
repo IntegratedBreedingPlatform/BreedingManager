@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.jdt.internal.compiler.util.Util;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
@@ -83,6 +84,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
@@ -1534,17 +1537,30 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 					private static final long serialVersionUID = 1L;
 					
 					public void onClose(ConfirmDialog dialog) {
-						if (!dialog.isConfirmed()) {
-							buildNewListComponent.viewEditList(germplasmListId);
-							buildNewListComponent.setHasChanges(false); //reset
+						if (dialog.isConfirmed()) {
+							buildNewListComponent.getSaveButton().click(); // save the existing list	
 						}
 						
+						//close the currentTab
+						TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+						Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+						detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+						
+						buildNewListComponent.viewEditList(germplasmListId);
+						buildNewListComponent.setHasChanges(false); //reset
 						buildNewListComponent.getListNameText().focus();
+						
 					}
 				}
 			);
     	}
     	else{
+    		
+    		//close the currentTab
+			TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+			Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+			detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+			
     		buildNewListComponent.viewEditList(germplasmListId);
     		buildNewListComponent.setHasChanges(false); //reset
     	}	

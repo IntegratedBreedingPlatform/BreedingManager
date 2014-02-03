@@ -574,6 +574,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	    
         updateAddedColumnValues();
         updateDropListEntries();
+        
+        //marked changes in Germplasm table
+        setHasChanges(true);
 	}
 	
 	//update the dropHandlerListEntries
@@ -637,6 +640,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
 
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(data.getEntryCode());
 			newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
 			newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
 			newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
@@ -987,7 +991,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	}
 	
 	public void setupTableHeadersContextMenu(){
-		fillWith = new FillWith(this, messageSource, germplasmsTable, ListDataTablePropertyID.GID.getName());
+		fillWith = new FillWith(this, messageSource, germplasmsTable, ListDataTablePropertyID.GID.getName(), true);
 	}
 	
 	
@@ -1277,11 +1281,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				e.printStackTrace();
 			}
 			
-			this.notesTextArea.setValue(currentlySavedGermplasmList.getNotes());
+			String notes = currentlySavedGermplasmList.getNotes();
+			if(notes == null){
+				notes = "";
+			}
+			
+			this.notesTextArea.setValue(notes);
 			
 			//List Data Table
 			germplasmsTable.removeAllItems();
 			addGermplasmListDataToGermplasmTable(germplasmListId,null);
+			updateDropListEntries();
 			
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
@@ -1324,6 +1334,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	public Button getResetButton(){
 		return resetButton;
+	}
+	
+	public Button getSaveButton(){
+		return saveButton;
 	}
 
 	public Object getSource(){
