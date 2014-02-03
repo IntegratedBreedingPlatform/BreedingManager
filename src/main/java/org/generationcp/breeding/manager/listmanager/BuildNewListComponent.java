@@ -1282,7 +1282,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             //List Properties
             this.listNameText.setValue(currentlySavedGermplasmList.getName());
-            this.descriptionText.setValue(currentlySavedGermplasmList.getName());
+            this.descriptionText.setValue(currentlySavedGermplasmList.getDescription());
             this.listTypeComboBox.setValue(currentlySavedGermplasmList.getType());
             
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);

@@ -137,6 +137,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						currentlySavedList = listFromDB;
 						this.source.setCurrentlySavedGermplasmList(listFromDB);
 						source.setHasChanges(false);
+						
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 					}
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error in updating germplasm list: " + currentlySavedList.getId(), ex);
