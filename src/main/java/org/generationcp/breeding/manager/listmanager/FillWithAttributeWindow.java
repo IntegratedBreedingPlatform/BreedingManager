@@ -67,6 +67,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
+        this.listManagerTreeMenu = listManagerTreeMenu;
     }
     
     public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
@@ -158,13 +159,13 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
                 e.printStackTrace();
             }
         }
-        
+
         //mark flag that changes have been made in listDataTable
         if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
         
         //mark flag that changes have been made in buildNewListTable
         if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
-        
+
      }
     
     private List<Integer> getGidsFromTable(Table table){
