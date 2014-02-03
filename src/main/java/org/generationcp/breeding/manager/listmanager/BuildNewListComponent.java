@@ -651,6 +651,52 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         }        
         assignSerializedEntryNumber();
     }
+    
+    /**
+     * Add germplasms from a gemrplasm list to the table
+     */
+    private void addGermplasmListDataToGermplasmTableFromEdit(Integer listId){
+        
+        int start = 0;
+        int listDataCount;
+        
+        List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
+        try {
+            listDataCount = (int) germplasmListManager.countGermplasmListDataByListId(listId);
+            listDatas = this.germplasmListManager.getGermplasmListDataByListId(listId, start, listDataCount);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in retrieving germplasm list data.", e);
+            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Error in retrieving germplasm list data.", e);
+            e.printStackTrace();
+        }
+        
+        for (GermplasmListData data : listDatas) {
+        
+            Item newItem = germplasmsTable.addItem(getNextListEntryId());
+
+            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+            
+            String crossExpansion = "";
+            try {
+                if(germplasmDataManager!=null)
+                    crossExpansion = germplasmDataManager.getCrossExpansion(data.getGid(), 1);
+            } catch(MiddlewareQueryException ex){
+                LOG.error("Error in retrieving cross expansion data for GID: " + data.getGid() + ".", ex);
+                crossExpansion = "-";
+            }
+
+            newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(data.getEntryCode());
+            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(data.getSeedSource());
+            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
+            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+            
+        }        
+        assignSerializedEntryNumber();
+    }
 
     
     /**
@@ -1296,7 +1342,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             //List Data Table
             germplasmsTable.removeAllItems();
-            addGermplasmListDataToGermplasmTable(germplasmListId,null);
+            addGermplasmListDataToGermplasmTableFromEdit(germplasmListId);
             updateDropListEntries();
             
         } catch (MiddlewareQueryException e) {
