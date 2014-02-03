@@ -40,6 +40,7 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -58,7 +59,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -187,7 +187,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private static String TOOLS_TOOLTIP = "Tools";
 
 	private AddColumnContextMenu addColumnContextMenu;  
-	private String lastCellvalue;
+	private String lastCellvalue = "";
 	private long listDataCount;
 	
 	private CheckBox tagAllCheckBox;
