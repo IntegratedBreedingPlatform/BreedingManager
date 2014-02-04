@@ -11,14 +11,20 @@ These tools make use of our Middleware API to connect to public and program data
 
 Prerequisites
 ---------------
-Build and install Middleware and Commons using one of the following methods:
+Build and install IBPMiddleware and IBPCommons using one of the following methods:
   1.  Using the command line, go the IBPMiddleware/IBPCommons home directory, run the command: <pre>mvn clean install</pre>
   2.  From within Eclipse, right-click on the project, IBPCommons for instance, select Run As --> Maven build..., then input the target <pre>clean install</pre>
 
+Note: Please see build instructions for the IBPMiddleware for more information.
+
 To Build
 ----------
-To build the BreedingManager project using the command line, issue the following commands in the BreedingManager directory:
-  1.  To create a clean build and run the test code: mvn clean package
+ 1.  To create a clean build and run the test code: 
+   <pre>mvn clean package</pre>
+ 2. To build using a specific configuration, run the following:
+  <pre>mvn clean package-DenvConfig=release</pre>
+  In this example, it is expected that pipeline/config/release folder exists and the database configuration files (IBPDatasource.properties and workbench.properties) are properly set.
+
 
 To Run Tests
 --------------

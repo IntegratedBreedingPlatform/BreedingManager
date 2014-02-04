@@ -39,6 +39,7 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -57,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -83,6 +83,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
@@ -184,7 +186,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private static String TOOLS_TOOLTIP = "Tools";
 
 	private AddColumnContextMenu addColumnContextMenu;  
-	private String lastCellvalue;
+	private String lastCellvalue = "";
 	private long listDataCount;
 	
 	private CheckBox tagAllCheckBox;
@@ -1534,17 +1536,30 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 					private static final long serialVersionUID = 1L;
 					
 					public void onClose(ConfirmDialog dialog) {
-						if (!dialog.isConfirmed()) {
-							buildNewListComponent.viewEditList(germplasmListId);
-							buildNewListComponent.setHasChanges(false); //reset
+						if (dialog.isConfirmed()) {
+							buildNewListComponent.getSaveButton().click(); // save the existing list	
 						}
 						
+						//close the currentTab
+						TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+						Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+						detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+						
+						buildNewListComponent.viewEditList(germplasmListId);
+						buildNewListComponent.setHasChanges(false); //reset
 						buildNewListComponent.getListNameText().focus();
+						
 					}
 				}
 			);
     	}
     	else{
+    		
+    		//close the currentTab
+			TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+			Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+			detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+			
     		buildNewListComponent.viewEditList(germplasmListId);
     		buildNewListComponent.setHasChanges(false); //reset
     	}	

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -36,6 +38,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class FillWith implements InternationalizableComponent  {
@@ -73,10 +76,14 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePreferredName;
 	private ContextMenuItem menuFillWithCrossExpansion;
+	private ContextMenuItem menuFillWithSequenceNumber;
 	
 	private GermplasmDetailModel germplasmDetail;
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
+    
+    private boolean fromBuildNewList;
+    private BuildNewListComponent buildNewListComponent;
     
 	/**
 	 * Add Fill With context menu to a table
@@ -113,6 +120,30 @@ public class FillWith implements InternationalizableComponent  {
     	setupContextMenu();
     }
     
+	/**
+	 * Add Fill With context menu to a table
+	 * @param absoluteLayout - contextMenu will attach to this
+	 * @param targetTable - table where data will be manipulated
+	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
+	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
+	 * @param fromBuildNewList - specify if the creation is from BuildNewListComponent
+	 */
+    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
+    		String GIDPropertyId, boolean fromBuildNewList){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.absoluteLayout = absoluteLayout;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.fromBuildNewList = fromBuildNewList;
+    	
+    	if(fromBuildNewList){
+    		buildNewListComponent = ((BuildNewListComponent) absoluteLayout);
+    	}
+    	
+    	setupContextMenu();
+    }
+    
     
     private void setupContextMenu(){
     	
@@ -140,7 +171,8 @@ public class FillWith implements InternationalizableComponent  {
 	   	 menuFillWithCrossMalePreferredName = menuFillWithCrossMaleInformation.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_MALE_PREFERRED_NAME));
 	   	 
 	   	 menuFillWithCrossExpansion = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION));
-	   	 
+	   	 menuFillWithSequenceNumber = fillWithMenu.addItem("Fill with Sequence Number");
+	   			 
 	   	 fillWithMenu.addListener(new ContextMenu.ClickListener() {
 	   		private static final long serialVersionUID = -2384037190598803030L;
 	
@@ -180,7 +212,9 @@ public class FillWith implements InternationalizableComponent  {
 		   				 fillWithCrossMalePreferredName(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_CROSS_EXPANSION))){
 		   				 displayExpansionLevelPopupWindow((String) fillWithMenu.getData());
-		   			 } 
+		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_SEQUENCE_NUMBER))){
+		   				 displaySequenceNumberPopupWindow((String) fillWithMenu.getData());
+		   			 }
 	   			}
 	   	 });
 	   	 
@@ -241,13 +275,19 @@ public class FillWith implements InternationalizableComponent  {
        for(Integer itemId: itemIds){
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
-       //mark flag that changes have been made
-       listManagerTreeMenu.setChanged(true);
+       
+       //mark flag that changes have been made in listDataTable
+       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+       
+       //mark flag that changes have been made in buildNewListTable
+       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+       
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent);
+        attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);
     }
     
@@ -269,8 +309,12 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -293,8 +337,12 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -318,8 +366,12 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -343,8 +395,12 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -368,8 +424,12 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
@@ -391,9 +451,13 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(false);
 			   targetTable.setEditable(true);
 		   }
-		   
-	        //mark flag that changes have been made
-		   listManagerTreeMenu.setChanged(true);
+
+		   //mark flag that changes have been made in listDataTable
+	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	       
+	       //mark flag that changes have been made in buildNewListTable
+	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }    	
@@ -418,9 +482,13 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(false);
 			   targetTable.setEditable(true);
 		   }
-		   
- 	        //mark flag that changes have been made
- 		  listManagerTreeMenu.setChanged(true);
+
+ 		   //mark flag that changes have been made in listDataTable
+ 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+ 	       
+ 	       //mark flag that changes have been made in buildNewListTable
+ 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -442,9 +510,13 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(false);
 			   targetTable.setEditable(true);
 		   }
-		   
- 	        //mark flag that changes have been made
- 		  listManagerTreeMenu.setChanged(true);
+
+ 		   //mark flag that changes have been made in listDataTable
+ 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+ 	       
+ 	       //mark flag that changes have been made in buildNewListTable
+ 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+ 	       
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
@@ -469,9 +541,13 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(false);
 			   targetTable.setEditable(true);
 		   }
-		   
-  	        //mark flag that changes have been made
-  		   listManagerTreeMenu.setChanged(true);
+
+  		   //mark flag that changes have been made in listDataTable
+  	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+  	       
+  	       //mark flag that changes have been made in buildNewListTable
+  	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
   	   }        	
@@ -494,9 +570,13 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(false);
 		   targetTable.setEditable(true);
 		}
+
+        //mark flag that changes have been made in listDataTable
+        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
         
-        //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        //mark flag that changes have been made in buildNewListTable
+        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+
 	}
     
     protected void fillWithPreferredID(Table table, String propertyId) {
@@ -516,9 +596,13 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(false);
 		   targetTable.setEditable(true);
         }
+
+        //mark flag that changes have been made in listDataTable
+        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
         
-        //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        //mark flag that changes have been made in buildNewListTable
+        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+
 	}
     
     
@@ -542,12 +626,55 @@ public class FillWith implements InternationalizableComponent  {
     		   targetTable.setEditable(false);
     		   targetTable.setEditable(true);
     		}
-        	//mark flag that changes have been made
-        	listManagerTreeMenu.setChanged(true);
+	
+            //mark flag that changes have been made in listDataTable
+            if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+            
+            //mark flag that changes have been made in buildNewListTable
+            if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
         }
 	}
+    
+    public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZeros, 
+    		boolean spaceBetweenPrefixAndCode, boolean spaceBetweenSuffixAndCode){
+    	List<Integer> itemIds = getItemIds(targetTable);
+    	int number = startNumber;
+        for (Integer itemId : itemIds) {
+            Item item = targetTable.getItem(itemId);
+            StringBuilder builder = new StringBuilder();
+            builder.append(prefix);
+            if(spaceBetweenPrefixAndCode){
+            	builder.append(" ");
+            }
+            
+            if(numOfZeros > 0){
+            	String numberString = "" + number;
+            	int numOfZerosNeeded = numOfZeros - numberString.length();
+                for (int i = 0; i < numOfZerosNeeded; i++){
+                	builder.append("0");
+                }
+            }
+            builder.append(number);
+            
+            if(suffix != null && spaceBetweenSuffixAndCode){
+            	builder.append(" ");
+            }
+            
+            if(suffix != null){
+            	builder.append(suffix);
+            }
+            
+            item.getItemProperty(propertyId).setValue(builder.toString());
+            ++number;
+        }
+        
+        if(listManagerTreeMenu != null){
+     	   listManagerTreeMenu.setChanged(true);
+        }
+    }
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
     	crossExpansionLevel = Integer.valueOf(1);
@@ -620,10 +747,24 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(false);
 			   targetTable.setEditable(true);
 		   }
-		   
-	        //mark flag that changes have been made
-	    	listManagerTreeMenu.setChanged(true);
+
+	        //mark flag that changes have been made in listDataTable
+	        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+	        
+	        //mark flag that changes have been made in buildNewListTable
+	        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+
     	}
+    }
+    
+    private void displaySequenceNumberPopupWindow(String propertyId){
+    	Window specifySequenceNumberWindow = new Window("Specify Sequence Number");
+    	specifySequenceNumberWindow.setHeight("300px");
+    	specifySequenceNumberWindow.setWidth("500px");
+    	specifySequenceNumberWindow.setModal(true);
+    	specifySequenceNumberWindow.setResizable(false);
+    	specifySequenceNumberWindow.setContent(new AdditionalDetailsCrossNameComponent(this, propertyId, specifySequenceNumberWindow));
+    	this.targetTable.getWindow().addWindow(specifySequenceNumberWindow);
     }
     
     public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
@@ -665,7 +806,6 @@ public class FillWith implements InternationalizableComponent  {
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -695,5 +835,14 @@ public class FillWith implements InternationalizableComponent  {
 		this.menuFillWithPrefID.setVisible(visibility);
 		this.menuFillWithPrefName.setVisible(visibility);
 		this.menuFillWithAttribute.setVisible(visibility);
+		this.menuFillWithSequenceNumber.setVisible(visibility);
+	}
+	
+	public int getNumberOfEntries(){
+		return targetTable.getItemIds().size();
+	}
+	
+	public void setFromBuildNewList(boolean fromBuildNewList){
+		this.fromBuildNewList = fromBuildNewList;
 	}
 }

@@ -56,6 +56,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private ComboBox attributeBox;
     private Button okButton;
     private List<UserDefinedField> attributeList;
+    private BuildNewListComponent buildNewListComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -66,6 +67,16 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
+        this.listManagerTreeMenu = listManagerTreeMenu;
+    }
+    
+    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent) {
+        this.targetTable = targetTable;
+        this.gidPropertyId = gidPropertyId;
+        this.targetPropertyId = targetPropertyId;
+        this.messageSource = messageSource;
+        this.buildNewListComponent = buildNewListComponent;
     }
     
     @Override
@@ -102,7 +113,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     }
     
     private void initializeLayout() {
-        attributeBox.setWidth("310px");
+        attributeBox.setWidth("300px");
         
         attributeLayout = new HorizontalLayout();
         attributeLayout.setMargin(true);
@@ -148,9 +159,13 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
                 e.printStackTrace();
             }
         }
+
+        //mark flag that changes have been made in listDataTable
+        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
         
-        //mark flag that changes have been made
-        listManagerTreeMenu.setChanged(true);
+        //mark flag that changes have been made in buildNewListTable
+        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+
      }
     
     private List<Integer> getGidsFromTable(Table table){

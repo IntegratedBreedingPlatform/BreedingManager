@@ -83,6 +83,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					GermplasmList listSaved = this.dataManager.getGermplasmListById(listId);
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
+					
+					source.setHasChanges(false);
+					
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 				} else{
@@ -133,6 +136,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					} else{
 						currentlySavedList = listFromDB;
 						this.source.setCurrentlySavedGermplasmList(listFromDB);
+						source.setHasChanges(false);
+						
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 					}
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error in updating germplasm list: " + currentlySavedList.getId(), ex);
@@ -172,6 +179,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				updateListDataTableContent(currentlySavedList);
 			}
 		}
+		
+		
 		
 		try {
 			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable)); 
