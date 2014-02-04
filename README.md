@@ -23,8 +23,9 @@ Note: Please see build instructions for the IBPMiddleware for more information.
 To Build
 ----------
 To build the GermplasmStudyBrowser project using the command line, issue the following commands in the GermplasmStudyBrowser directory:
-  1.  To create a clean build and run the test code: mvn clean package -DenvConfig=<preferred configuration path>
-  For example:
+ 1.  To create a clean build and run the test code: 
+   <pre>mvn clean package</pre>
+ 2. To build using a specific configuration, run the following:
   <pre>mvn clean package-DenvConfig=release</pre>
   In this example, it is expected that pipeline/config/release folder exists and the database configuration files (IBPDatasource.properties and workbench.properties) are properly set.
 
