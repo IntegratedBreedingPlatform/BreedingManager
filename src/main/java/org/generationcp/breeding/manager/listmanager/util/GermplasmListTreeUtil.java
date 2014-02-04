@@ -252,7 +252,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolder.setName(name.getValue().toString());
 	                	newFolder.setDescription(name.getValue().toString());
 	                	newFolder.setType("FOLDER");
-	                	newFolder.setStatus(1);
+	                	newFolder.setStatus(0);
 	                	newFolder.setUserId(ibdbUserId);
 	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
 	                	
