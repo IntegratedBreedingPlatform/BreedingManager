@@ -7,6 +7,8 @@ The GermplasmStudyBrowser tools provide a user-friendly interface for browsing s
 The Study Browser allows user to browse and export details of existing program and public studies.
 The Head to Head Comparison tool compares performance of germplasm pairs for selected traits and environments.
 The Query for Adapted Germplasm helps find germplasms that are most suitable for specific environmental conditions.
+The Germplasm Browser allows for searching and browsing details of existing germplasms.
+The Germplasm List Browser allows for browsing, copying, exporting and editing entries of germplasm lists.
 
 These tools make use of our Middleware API to connect to public and program databases.
 
@@ -21,7 +23,10 @@ Note: Please see build instructions for the IBPMiddleware for more information.
 To Build
 ----------
 To build the GermplasmStudyBrowser project using the command line, issue the following commands in the GermplasmStudyBrowser directory:
-  1.  To create a clean build and run the test code: mvn clean package
+  1.  To create a clean build and run the test code: mvn clean package -DenvConfig=<preferred configuration path>
+  For example:
+  <pre>mvn clean package-DenvConfig=release</pre>
+  In this example, it is expected that pipeline/config/release folder exists and the database configuration files (IBPDatasource.properties and workbench.properties) are properly set.
 
 To Run Tests
 --------------
@@ -50,6 +55,8 @@ Below are the URLs to access the GermplasmStudyBrowser tools:
   1.  Study Browser - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/GermplasmStudyBrowser/main/study/
   2.  Head to Head Comparison http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/GermplasmStudyBrowser/main/Head_to_head_comparison/
   3.  Query for Adapted Germplasm - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/GermplasmStudyBrowser/main/Query_For_Adapted_Germplasm/
+  4.  Germplasm Browser - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/GermplasmStudyBrowser/main/germplasm/
+  5.  Germplasm List Browser - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/GermplasmStudyBrowser/main/germplasmlist/
 
 Other Helpful Resources
 -------------------------
