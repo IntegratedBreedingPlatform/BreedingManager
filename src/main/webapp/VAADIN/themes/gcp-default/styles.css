@@ -341,4 +341,19 @@
 	background-color: #e3e3e3;
 }
 
+.no-border {
+	border: 0 !important;
+}
+.no-border .v-panel-captionwrap,
+.no-border .v-panel-deco {
+	display:none;
+}
+.no-border .v-panel-content {
+	border: 0 !important;
+}
+
+
+.no-bg, .no-background {
+	background: none !important;
+}
 
