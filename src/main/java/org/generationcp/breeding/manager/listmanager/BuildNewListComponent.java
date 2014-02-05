@@ -63,6 +63,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
@@ -95,6 +96,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private Label componentDescription;
 
+    private AbsoluteLayout fieldsLayout;
+    private Panel fieldsPanel;
+    
     private Label listNameLabel;
     private Label descriptionLabel;
     private Label listTypeLabel;
@@ -164,16 +168,29 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     @Override
     public void afterPropertiesSet() throws Exception {
-                
+            	
         componentDescription = new Label();
         componentDescription.setValue(messageSource.getMessage(Message.BUILD_YOUR_LIST_BY_DRAGGING_LISTS_OR_GERMPLASM_RECORDS_INTO_THIS_NEW_LIST_WINDOW));
         componentDescription.setWidth("500px");
         addComponent(componentDescription,"top:0px;left:0px");
         
+        fieldsPanel = new Panel();
+        fieldsPanel.setWidth("100%");
+        fieldsPanel.setHeight("85px");
+        fieldsPanel.addStyleName("overflow_x_auto");
+        fieldsPanel.addStyleName("overflow_y_hidden");
+        fieldsPanel.addStyleName("no-background");
+        fieldsPanel.addStyleName("no-border");
+        
+        fieldsLayout = new AbsoluteLayout();
+        fieldsLayout.setWidth("980px");
+        fieldsLayout.setHeight("65px");
+        fieldsLayout.addStyleName("no-background");
+        
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
         listNameLabel.addStyleName("bold");
-        addComponent(listNameLabel, "top:55px;left:0px");
+        fieldsLayout.addComponent(listNameLabel, "top:20px;left:0px");
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
@@ -187,12 +204,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        addComponent(listNameText, "top:35px;left:50px");        
+        fieldsLayout.addComponent(listNameText, "top:0px;left:50px");        
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
         listTypeLabel.addStyleName("bold");
-        addComponent(listTypeLabel, "top:55px;left:260px");
+        fieldsLayout.addComponent(listTypeLabel, "top:20px;left:260px");
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("200px");
@@ -229,12 +246,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        addComponent(listTypeComboBox, "top:35px;left:302px");
+        fieldsLayout.addComponent(listTypeComboBox, "top:0px;left:302px");
 
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
         listDateLabel.addStyleName("bold");
-        addComponent(listDateLabel, "top:55px;left:515px");
+        fieldsLayout.addComponent(listDateLabel, "top:20px;left:515px");
       
         listDateField = new DateField();
         listDateField.setDateFormat(DATE_FORMAT);
@@ -250,12 +267,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        addComponent(listDateField, "top:35px;left:557px");
+        fieldsLayout.addComponent(listDateField, "top:0px;left:557px");
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
         descriptionLabel.addStyleName("bold");
-        addComponent(descriptionLabel, "top:90px;left:0px");
+        fieldsLayout.addComponent(descriptionLabel, "top:55px;left:0px");
         
         descriptionText = new TextField();
         descriptionText.setWidth("565px");
@@ -269,12 +286,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        addComponent(descriptionText, "top:70px;left:89px");
+        fieldsLayout.addComponent(descriptionText, "top:35px;left:89px");
         
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
-        addComponent(notesLabel, "top:55px; left: 675px;");
+        fieldsLayout.addComponent(notesLabel, "top:20px; left: 675px;");
         notesLabel.setVisible(true);
         
         notesTextArea = new TextArea();
@@ -291,9 +308,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        addComponent(notesTextArea, "top:35px; left: 725px;");
+        fieldsLayout.addComponent(notesTextArea, "top:0px; left: 725px;");
         notesTextArea.setVisible(true);
 
+        
+        fieldsPanel.setContent(fieldsLayout);
+        addComponent(fieldsPanel, "top:35px; left:0px;");
+        
         createGermplasmTable();
         
         menu = new ContextMenu();
@@ -380,7 +401,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         buttonRow.addComponent(saveButton);
         buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
         
-        addComponent(buttonRow, "top:400px; left:0px;");
+        addComponent(buttonRow, "top:410px; left:0px;");
         
         setWidth("100%");
         setHeight("550px");
@@ -447,7 +468,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                  hasChanges = true;
              }
         });
-        addComponent(germplasmsTable, "top:115px; left:0px;");
+        addComponent(germplasmsTable, "top:125px; left:0px;");
     }
         
     /**
