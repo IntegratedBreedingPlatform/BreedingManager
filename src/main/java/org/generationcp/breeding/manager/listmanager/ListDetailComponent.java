@@ -186,7 +186,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 		lblListNotes.setWidth("50px");
 		content.addComponent(lblListNotes);
 
-		boolean isUnlocked = (1 == germplasmList.getStatus());
+		boolean isUnlocked = isUnlockedList();
 		if(!usedForDetailsOnly){
 			boolean hasNotes = germplasmList.getNotes() != null && germplasmList.getNotes().trim().length() > 0;
 			boolean isLocal = germplasmList.getId()<0;
@@ -196,7 +196,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
             	addEditViewButton.setWidth("100px");
             	addEditViewButton.setData(VIEW_NOTES_BUTTON_ID);
             		
-            	boolean userIsListOwner = germplasmList.getUserId().equals(iBDBUserId);
+            	boolean userIsListOwner = userIsListOwner();
 				if(!hasNotes && isUnlocked && isLocal && userIsListOwner){
         			addEditViewButton.setCaption(messageSource.getMessage(Message.ADD_NOTES));
         			
@@ -220,6 +220,10 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 		layout.addComponent(content);
 		addComponent(layout, 2, 1);
 	}
+
+	private boolean userIsListOwner() {
+		return germplasmList.getUserId().equals(iBDBUserId);
+	}
 	
 	/*
 	 * Render value for status as lock button / unlock button / label 
@@ -231,7 +235,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 		layout.addComponent(lblStatus);
 		if(!usedForDetailsOnly){
 			// local list
-            if(germplasmList.getUserId().equals(iBDBUserId) && germplasmList.getId()<0){
+            if(userIsListOwner() && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
                     unlockButton = new Button("Click to Open List");
                     unlockButton.setData(UNLOCK_BUTTON_ID);
@@ -242,7 +246,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     unlockButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
                     layout.addComponent(unlockButton);
                     
-                } else if(germplasmList.getStatus()==1) {
+                } else if(isUnlockedList()) {
                     lockButton = new Button("Click to Lock List");
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
@@ -490,8 +494,8 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         renderStatusField(buttonsLayout);
         
-        // delete button only for local lists
-        if (this.germplasmList.getId() < 0){
+        // delete button only for local unlocked lists - only list owner can delete
+        if (this.germplasmList.getId() < 0 && isUnlockedList() && userIsListOwner()){
         	deleteButton = new Button("Delete");
         	deleteButton.setData(DELETE_BUTTON_ID);
         	deleteButton.setWidth("80px");
@@ -505,5 +509,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         mainLayout.setComponentAlignment(buttonsLayout, Alignment.BOTTOM_RIGHT);
 
         return mainLayout;
+	}
+
+	private boolean isUnlockedList() {
+		return germplasmList.getStatus() == 1;
 	}
 }
