@@ -697,16 +697,22 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         List<Integer> itemIds = getSelectedItemIds(sourceTable);
 
         Item newItem;
+        Integer newItemId;
 
         setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
         
         if(itemIds.size()>0){
             
             for(Integer currentItemId : itemIds){
-                if(droppedOnItemIdObject==null || this.getFromDropHandler())
+                if(droppedOnItemIdObject==null || this.getFromDropHandler()){
                     newItem = germplasmsTable.addItem(getNextListEntryId());
-                else 
-                    newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+                } else {
+                	newItemId = getNextListEntryId();
+                    newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, newItemId);
+                    droppedOnItemIdObject = newItemId;
+                    System.out.println("new item: "+droppedOnItemIdObject);
+                    System.out.println("gid: "+Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption()));
+                }
                 
                 Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
                 
