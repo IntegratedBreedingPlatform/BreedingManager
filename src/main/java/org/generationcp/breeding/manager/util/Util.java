@@ -22,20 +22,37 @@ import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Tool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
-public class Util{
+public class Util {
     
+	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
+	
     public static final String USER_HOME = "user.home";
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+	
+	public static final String LOCATION_MANAGER_TOOL_NAME = "locationmanager";
+	public static final String LOCATION_MANAGER_DEFAULT_URL = "http://localhost:18080/ibpworkbench/content/ProgramLocations?programId=";
+	
+	@Autowired
+	private static WorkbenchDataManager workbenchDataManager;
 	
 	@Autowired
     private static SimpleResourceBundleMessageSource messageSource;
@@ -338,6 +355,46 @@ public class Util{
         l1.setStyleName(Bootstrap.Typography.H4.styleName());
         l.addComponent(l1);
         return l;
+	}
+	
+	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window){
+		
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(LOCATION_MANAGER_TOOL_NAME);
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource listBrowserLink = null;
+        if (tool == null) {
+            listBrowserLink = new ExternalResource(Util.LOCATION_MANAGER_DEFAULT_URL + programId);
+        } else {
+            listBrowserLink = new ExternalResource(tool.getPath() + programId);
+        }
+        
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(false);
+        layout.setSpacing(false);
+        layout.setHeight("100%");
+        
+        Embedded listInfoPage = new Embedded("", listBrowserLink);
+        listInfoPage.setType(Embedded.TYPE_BROWSER);
+        listInfoPage.setSizeFull();
+
+        layout.addComponent(listInfoPage);
+        
+        Window popupWindow = new Window();
+        popupWindow.setWidth("85%");
+        popupWindow.setHeight("80%");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setContent(layout);
+        
+        window.addWindow(popupWindow);
+        
+        return popupWindow;
 	}
 
 }

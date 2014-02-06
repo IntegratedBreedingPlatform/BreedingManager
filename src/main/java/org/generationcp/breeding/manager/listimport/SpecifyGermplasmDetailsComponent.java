@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -44,13 +45,19 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -105,6 +112,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     private CheckBox showFavoriteLocationsCheckBox;
     private CheckBox showFavoriteMethodsCheckBox;
+    
+    private Button manageFavoriteLocationsLink;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -222,10 +231,37 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 			}
 			
 		});
-        addComponent(showFavoriteLocationsCheckBox, "top:73px;left:527px");
+        addComponent(showFavoriteLocationsCheckBox, "top:72px;left:527px");
+        
+        manageFavoriteLocationsLink = new Button();
+        manageFavoriteLocationsLink.setStyleName(BaseTheme.BUTTON_LINK);
+        manageFavoriteLocationsLink.setCaption(messageSource.getMessage(Message.MANAGE_LOCATIONS));
+        manageFavoriteLocationsLink.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+					Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), getWindow());
+					manageFavoriteLocationsWindow.addListener(new CloseListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void windowClose(CloseEvent e) {
+							populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
+						}
+					});
+				} catch (MiddlewareQueryException e){
+					
+				}
+
+			}
+        	
+        });
+        addComponent(manageFavoriteLocationsLink, "top:95px;left:547px");
         
         nameTypeLabel = new Label();
-        addComponent(nameTypeLabel, "top:120px;left:20px");
+        addComponent(nameTypeLabel, "top:140px;left:20px");
         
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
@@ -250,10 +286,10 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
         nameTypeComboBox.setImmediate(true);
 
-        addComponent(nameTypeComboBox, "top:100px;left:220px");
+        addComponent(nameTypeComboBox, "top:120px;left:220px");
         
         germplasmDetailsLabel = new Label();
-        addComponent(germplasmDetailsLabel, "top:150px;left:20px");
+        addComponent(germplasmDetailsLabel, "top:170px;left:20px");
         
         germplasmDetailsTable = new Table();
         germplasmDetailsTable.addContainerProperty(1, Integer.class, null);
@@ -265,7 +301,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         germplasmDetailsTable.setColumnHeaders(new String[]{"Entry ID", "Entry Code","GID","Designation", "Cross", "Source"});
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");
-        addComponent(germplasmDetailsTable, "top:160px;left:20px");
+        addComponent(germplasmDetailsTable, "top:175px;left:20px");
         
         pedigreeOptionComboBox = new ComboBox();
         pedigreeOptionComboBox.setRequired(true);
@@ -277,7 +313,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
         pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
         pedigreeOptionComboBox.setNullSelectionAllowed(true);
-        addComponent(pedigreeOptionComboBox, "top:390px;left:20px");
+        addComponent(pedigreeOptionComboBox, "top:410px;left:20px");
         
         GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
         
