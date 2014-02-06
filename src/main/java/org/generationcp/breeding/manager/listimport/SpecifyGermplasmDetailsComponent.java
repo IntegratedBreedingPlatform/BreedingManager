@@ -113,6 +113,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private CheckBox showFavoriteLocationsCheckBox;
     private CheckBox showFavoriteMethodsCheckBox;
     
+    private Button manageFavoriteMethodsLink;
     private Button manageFavoriteLocationsLink;
     
     @Autowired
@@ -198,6 +199,35 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 		});
         addComponent(showFavoriteMethodsCheckBox, "top:13px;left:547px");
         
+        manageFavoriteMethodsLink = new Button();
+        manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
+        manageFavoriteMethodsLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
+        manageFavoriteMethodsLink.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow());
+					manageFavoriteMethodsWindow.addListener(new CloseListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void windowClose(CloseEvent e) {
+							Object lastValue = breedingMethodComboBox.getValue();
+							populateMethods(((Boolean) showFavoriteMethodsCheckBox.getValue()).equals(true));
+							breedingMethodComboBox.setValue(lastValue);
+						}
+					});
+				} catch (MiddlewareQueryException e){
+					LOG.error("Error on manageFavoriteMethods click", e);
+				}
+
+			}
+        	
+        });
+        addComponent(manageFavoriteMethodsLink, "top:31px;left:566px");
+        
         germplasmDateLabel = new Label();
         addComponent(germplasmDateLabel, "top:60px;left:20px");
         
@@ -248,17 +278,19 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 						private static final long serialVersionUID = 1L;
 						@Override
 						public void windowClose(CloseEvent e) {
+							Object lastValue = locationComboBox.getValue();
 							populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
+							locationComboBox.setValue(lastValue);
 						}
 					});
 				} catch (MiddlewareQueryException e){
-					
+					LOG.error("Error on manageFavoriteLocations click", e);
 				}
 
 			}
         	
         });
-        addComponent(manageFavoriteLocationsLink, "top:95px;left:547px");
+        addComponent(manageFavoriteLocationsLink, "top:90px;left:547px");
         
         nameTypeLabel = new Label();
         addComponent(nameTypeLabel, "top:140px;left:20px");

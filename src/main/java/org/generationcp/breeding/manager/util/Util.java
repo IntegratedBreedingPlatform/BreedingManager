@@ -49,7 +49,10 @@ public class Util {
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
 	public static final String LOCATION_MANAGER_TOOL_NAME = "locationmanager";
-	public static final String LOCATION_MANAGER_DEFAULT_URL = "http://localhost:18080/ibpworkbench/content/ProgramLocations?programId=";
+	public static final String LOCATION_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramLocations?programId=";
+
+	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
+	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
 	
 	@Autowired
 	private static WorkbenchDataManager workbenchDataManager;
@@ -356,7 +359,14 @@ public class Util {
         l.addComponent(l1);
         return l;
 	}
-	
+
+	/**
+	 * Opens and attaches a modal window containing the location manager
+	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
+	 * @param programId - used to load the locations for the given programId
+	 * @param window - modal window will be attached to this window
+	 * @return
+	 */
 	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window){
 		
         Tool tool = null;
@@ -397,5 +407,52 @@ public class Util {
         return popupWindow;
 	}
 
+	/**
+	 * Opens and attaches a modal window containing the method manager
+	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
+	 * @param programId - used to load the locations for the given programId
+	 * @param window - modal window will be attached to this window
+	 * @return
+	 */
+	public static Window launchMethodManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window){
+		
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(METHOD_MANAGER_TOOL_NAME);
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource listBrowserLink = null;
+        if (tool == null) {
+            listBrowserLink = new ExternalResource(Util.METHOD_MANAGER_DEFAULT_URL + programId);
+        } else {
+            listBrowserLink = new ExternalResource(tool.getPath() + programId);
+        }
+        
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(false);
+        layout.setSpacing(false);
+        layout.setHeight("100%");
+        
+        Embedded listInfoPage = new Embedded("", listBrowserLink);
+        listInfoPage.setType(Embedded.TYPE_BROWSER);
+        listInfoPage.setSizeFull();
+
+        layout.addComponent(listInfoPage);
+        
+        Window popupWindow = new Window();
+        popupWindow.setWidth("85%");
+        popupWindow.setHeight("80%");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setContent(layout);
+        
+        window.addWindow(popupWindow);
+        
+        return popupWindow;
+	}
+	
 }
 
