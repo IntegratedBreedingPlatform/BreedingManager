@@ -248,6 +248,7 @@ public class DatasetExporter {
 		        }
 		        Integer columnIndexInteger = variates.indexOf(variateName);
 		        if(columnIndexInteger != null){
+		        	columnIndexInteger += factors.size();
 		            short columnIndex = columnIndexInteger.shortValue();
 		            if(columnIndex >= 0) {
 		                Cell cell = PoiUtil.createCell(cellStyleForObservationSheet, row, columnIndex, CellStyle.ALIGN_CENTER, CellStyle.ALIGN_CENTER);
