@@ -401,6 +401,7 @@ public class Util {
         popupWindow.setResizable(false);
         popupWindow.center();
         popupWindow.setContent(layout);
+        popupWindow.addStyleName("Reindeer.WINDOW_LIGHT");
         
         window.addWindow(popupWindow);
         
@@ -448,6 +449,7 @@ public class Util {
         popupWindow.setResizable(false);
         popupWindow.center();
         popupWindow.setContent(layout);
+        popupWindow.addStyleName("Reindeer.WINDOW_LIGHT");
         
         window.addWindow(popupWindow);
         
