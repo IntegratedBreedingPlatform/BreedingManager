@@ -40,6 +40,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 public class Util {
     
@@ -367,7 +368,7 @@ public class Util {
 	 * @param window - modal window will be attached to this window
 	 * @return
 	 */
-	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window){
+	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption){
 		
         Tool tool = null;
         try {
@@ -395,13 +396,14 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("85%");
+        popupWindow.setWidth("90%");
         popupWindow.setHeight("80%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
+        popupWindow.setCaption(caption);
         popupWindow.setContent(layout);
-        popupWindow.addStyleName("Reindeer.WINDOW_LIGHT");
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         
         window.addWindow(popupWindow);
         
@@ -415,7 +417,7 @@ public class Util {
 	 * @param window - modal window will be attached to this window
 	 * @return
 	 */
-	public static Window launchMethodManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window){
+	public static Window launchMethodManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption){
 		
         Tool tool = null;
         try {
@@ -443,13 +445,14 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("85%");
+        popupWindow.setWidth("90%");
         popupWindow.setHeight("80%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
+        popupWindow.setCaption(caption);
         popupWindow.setContent(layout);
-        popupWindow.addStyleName("Reindeer.WINDOW_LIGHT");
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         
         window.addWindow(popupWindow);
         

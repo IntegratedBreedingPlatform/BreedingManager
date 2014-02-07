@@ -209,7 +209,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 				try {
 					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow());
+					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow(), messageSource.getMessage(Message.MANAGE_METHODS));
 					manageFavoriteMethodsWindow.addListener(new CloseListener(){
 						private static final long serialVersionUID = 1L;
 						@Override
@@ -273,7 +273,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 				try {
 					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-					Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), getWindow());
+					Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), getWindow(), messageSource.getMessage(Message.MANAGE_LOCATIONS));
 					manageFavoriteLocationsWindow.addListener(new CloseListener(){
 						private static final long serialVersionUID = 1L;
 						@Override

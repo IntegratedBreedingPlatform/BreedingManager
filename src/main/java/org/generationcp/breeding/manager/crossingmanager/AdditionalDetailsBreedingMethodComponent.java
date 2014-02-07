@@ -208,7 +208,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 				try {
 					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow());
+					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow(), messageSource.getMessage(Message.MANAGE_METHODS));
 					manageFavoriteMethodsWindow.addListener(new CloseListener(){
 						private static final long serialVersionUID = 1L;
 						@Override
