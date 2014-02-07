@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -28,6 +29,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,12 +39,19 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * This class contains the absolute layout of UI elements in Breeding Method section
@@ -81,6 +90,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     private List<Method> methods;
     
+    private Button manageFavoriteMethodsLink;
+    
     private enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
@@ -92,7 +103,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     
     @Override
     public void afterPropertiesSet() throws Exception {  
-        setHeight("180px");
+        setHeight("220px");
         setWidth("700px");
         
         selectOptionLabel = new Label();
@@ -117,6 +128,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
                 selectCrossingMethodLabel.setEnabled(sameForAllCrossesOptionSelected);
                 methodDescriptionLabel.setEnabled(sameForAllCrossesOptionSelected);
                 favoriteMethodsCheckbox.setEnabled(sameForAllCrossesOptionSelected);
+                manageFavoriteMethodsLink.setVisible(sameForAllCrossesOptionSelected);
                 crossingMethodComboBox.setEnabled(sameForAllCrossesOptionSelected);
                 if(sameForAllCrossesOptionSelected){
 	                crossingMethodComboBox.focus();
@@ -128,7 +140,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
                 }
             }
 
-        });
+        });        
         
         
         selectCrossingMethodLabel = new Label();
@@ -139,8 +151,8 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         
         crossingMethodDescriptionTextArea=new TextArea();
         crossingMethodDescriptionTextArea.setWordwrap(true);
-        crossingMethodDescriptionTextArea.setWidth("400px");
-        crossingMethodDescriptionTextArea.setRows(2);
+        crossingMethodDescriptionTextArea.setWidth("284px");
+        crossingMethodDescriptionTextArea.setRows(3);
         crossingMethodDescriptionTextArea.addStyleName("mytextarea");
         crossingMethodDescriptionTextArea.setReadOnly(true);
                    
@@ -186,12 +198,44 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
 			
 		});
         
+        manageFavoriteMethodsLink = new Button();
+        manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
+        manageFavoriteMethodsLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
+        manageFavoriteMethodsLink.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow());
+					manageFavoriteMethodsWindow.addListener(new CloseListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void windowClose(CloseEvent e) {
+							Object lastValue = crossingMethodComboBox.getValue();
+							populateBreedingMethods(((Boolean) favoriteMethodsCheckbox.getValue()).equals(true));
+							crossingMethodComboBox.setValue(lastValue);
+						}
+					});
+				} catch (MiddlewareQueryException e){
+					LOG.error("Error on manageFavoriteMethods click", e);
+				}
+
+			}
+        	
+        });
+        if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.BASED_ON_PARENTAL_LINES)){
+        	manageFavoriteMethodsLink.setVisible(false);
+        }
+        
         //layout components
         addComponent(selectOptionLabel, "top:20px;left:0px");
         addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
         addComponent(selectCrossingMethodLabel, "top:100px;left:0px");
         addComponent(crossingMethodComboBox, "top:80px;left:155px");
         addComponent(favoriteMethodsCheckbox, "top:84px;left:435px");
+        addComponent(manageFavoriteMethodsLink, "top:103px;left:456px");
         addComponent(methodDescriptionLabel, "top:130px;left:0px");
         addComponent(crossingMethodDescriptionTextArea, "top:110px;left:150px");
         
