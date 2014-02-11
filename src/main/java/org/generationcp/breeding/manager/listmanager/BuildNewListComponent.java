@@ -1414,6 +1414,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             this.notesTextArea.setValue(notes);
             
+            updateSaveInDisplay(currentlySavedGermplasmList.getParentId());
+            
             //List Data Table
             germplasmsTable.removeAllItems();
             addGermplasmListDataToGermplasmTable(germplasmListId, null);
@@ -1497,7 +1499,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private String generateSaveInString(Integer listId, Boolean returnFull){
 		
 		String toReturn = "";
-		int shortenedLength = 45;
+		int shortenedLength = 42;
 		
 		Integer parentListId;
 		try {
@@ -1531,6 +1533,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		saveInValue.setCaption(generateSaveInString(saveInListId, false));
 		saveInValue.setDescription(generateSaveInString(saveInListId, true));
 	}
+	
+	private void updateSaveInDisplay(Integer listId){
+		saveInListId = listId;
+		updateSaveInDisplay();
+	}	
 	
 	public BuildNewListComponent getBuildNewListComponent(){
 		return this;
