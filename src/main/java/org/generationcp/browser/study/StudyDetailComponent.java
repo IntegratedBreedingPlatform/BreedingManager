@@ -117,10 +117,14 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
     
     private String setStudyDetailValue(String value){
 
-	if(value==null || value.equals("null")){
-	    return "";
-	}
-	return value;
+		if(value==null || value.equals("null")){
+		    return "";
+		}
+		return value;
+    }
+    
+    public void setStudyName(String name){
+    	studyName.setValue(name);
     }
 
 }

@@ -14,6 +14,7 @@ package org.generationcp.browser.study;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
@@ -449,10 +451,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	controlButtonsHeading = new Label();
 		controlButtonsHeading.setValue(messageSource.getMessage(Message.PROJECT_STUDIES));
 		controlButtonsHeading.setStyleName(Bootstrap.Typography.H4.styleName());
+		controlButtonsHeading.setWidth("177px");
 		
 		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription("Rename Folder");
+        renameFolderBtn.setDescription(messageSource.getMessage(Message.RENAME_ITEM));
         renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
         renameFolderBtn.setWidth("40px");
         renameFolderBtn.setEnabled(false);
@@ -460,7 +463,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				//TODO
+				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
+				String name = studyTree.getItemCaption(selectedStudyTreeNodeId);
+				studyTreeUtil.renameFolder(studyId, name);
             }
         });
         
@@ -493,14 +498,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         });
         
         controlButtonsLayout = new HorizontalLayout();
-        controlButtonsLayout.setWidth("304px");
-        //controlButtonsLayout.addComponent(controlButtonsHeading);
-        //controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",Label.CONTENT_XHTML));
-        //controlButtonsLayout.addComponent(renameFolderBtn);
+//        controlButtonsLayout.setWidth("304px");
+        controlButtonsLayout.addComponent(controlButtonsHeading);
+        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
+        controlButtonsLayout.addComponent(renameFolderBtn);
         controlButtonsLayout.addComponent(addFolderBtn);
-        //controlButtonsLayout.addComponent(deleteFolderBtn);
+        controlButtonsLayout.addComponent(deleteFolderBtn);
         
-        controlButtonsLayout.setComponentAlignment(addFolderBtn, Alignment.TOP_RIGHT);
+//        controlButtonsLayout.setComponentAlignment(addFolderBtn, Alignment.TOP_RIGHT);
 	}
     
     @Override
@@ -518,7 +523,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public static TabSheet getTabSheetStudy() {
         return tabSheetStudy;
     }
-
+    
     public void showChild(Integer childItemId){
     	buildChildMap(childItemId,true);
     	Integer rootItemId = rootNodeProjectId;
@@ -616,6 +621,30 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 				addFolderBtn.setEnabled(false);
 				renameFolderBtn.setEnabled(false);
 				deleteFolderBtn.setEnabled(false);
+    		}
+    	}
+    }
+    
+    /*
+     * Update the tab header and displayed study name with new name.
+     * This is called by rename function in study tree
+     */
+    public void renameStudyTab(String oldName, String newName){
+    	Tab studyTab = Util.getTabAlreadyExist(tabSheetStudy, oldName);
+    	if (studyTab != null){
+    		studyTab.setCaption(newName);
+    	}
+    	Component component = studyTab.getComponent();
+    	
+    	if (component instanceof VerticalLayout){
+    		VerticalLayout layout = (VerticalLayout) component;
+    		Iterator<Component> componentIterator = layout.getComponentIterator();
+    		while (componentIterator.hasNext()){
+    			Component child = componentIterator.next();
+    			if (child instanceof StudyAccordionMenu){
+    				StudyAccordionMenu accordion = (StudyAccordionMenu) child;
+    				accordion.updateStudyName(newName);
+    			}
     		}
     	}
     }
