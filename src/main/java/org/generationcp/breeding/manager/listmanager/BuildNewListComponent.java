@@ -653,6 +653,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             // assign new itemId for new entries, else use listDataId as itemId
             if (!fromEditList) {
+            	
+            	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+            	
                 if(droppedOnItemIdObject==null || this.getFromDropHandler()){
                     newItem = germplasmsTable.addItem(getNextListEntryId());
                 } else {
@@ -722,15 +725,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         }
             
         for(Integer currentItemId : itemIds){
+        	
+        	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+        	
             if(droppedOnItemIdObject==null || this.getFromDropHandler()){
                 newItem = germplasmsTable.addItem(getNextListEntryId());
-                } else {
-                    newItemId = getNextListEntryId();
-                    newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, newItemId);
-                    droppedOnItemIdObject = newItemId;
-                    System.out.println("new item: "+droppedOnItemIdObject);
-                    System.out.println("gid: "+Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption()));
-                }
+            } else {
+                newItemId = getNextListEntryId();
+                newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, newItemId);
+                droppedOnItemIdObject = newItemId;
+            }
             
             Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
             
@@ -777,6 +781,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         if(itemIds.size()>0){
             for(Integer currentItemId : itemIds){
+            	
+            	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+            	
                 if(droppedOnItemIdObject==null || this.getFromDropHandler())
                     newItem = germplasmsTable.addItem(getNextListEntryId());
                 else
