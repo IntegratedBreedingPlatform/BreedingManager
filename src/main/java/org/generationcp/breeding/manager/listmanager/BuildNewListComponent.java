@@ -1535,4 +1535,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public BuildNewListComponent getBuildNewListComponent(){
 		return this;
 	}
+	
+	public Integer getSaveInListId(){
+		return saveInListId;
+	}
 }
+
