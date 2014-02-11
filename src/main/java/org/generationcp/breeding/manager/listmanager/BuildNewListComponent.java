@@ -623,7 +623,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 addColumnContextMenu.addColumn(addablePropertyId);
             }
         }
-        //dennis
     }
     
     
