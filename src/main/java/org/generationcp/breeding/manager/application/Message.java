@@ -185,6 +185,10 @@ public enum Message{
     ,LIST_DATA
     ,LIST_SEED_INVENTORY
     ,CLOSE_ALL_TABS
+    ,SAVE_IN
+    ,CHANGE_LOCATION
+    ,SELECT_LOCATION
+    ,LIST_LOCATION
     
     //List Manager Screen: List Details
     ,NAME_LABEL

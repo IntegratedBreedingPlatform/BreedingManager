@@ -73,6 +73,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * @author Efficio
@@ -99,6 +100,13 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     private AbsoluteLayout fieldsLayout;
     private Panel fieldsPanel;
+    
+    private Label saveInLabel;
+    private Label saveInValue;
+    private Integer saveInListId;
+    private Button changeLocationButton;
+    private Window selectFolderWindow;
+    private ListManagerTreeFoldersComponent listManagerTreeFoldersComponent;
     
     private Label listNameLabel;
     private Label descriptionLabel;
@@ -177,21 +185,102 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         fieldsPanel = new Panel();
         fieldsPanel.setWidth("100%");
-        fieldsPanel.setHeight("85px");
+        fieldsPanel.setHeight("115px");
         fieldsPanel.addStyleName("overflow_x_auto");
         fieldsPanel.addStyleName("overflow_y_hidden");
         fieldsPanel.addStyleName("no-background");
         fieldsPanel.addStyleName("no-border");
         
         fieldsLayout = new AbsoluteLayout();
-        fieldsLayout.setWidth("980px");
-        fieldsLayout.setHeight("65px");
+        fieldsLayout.setWidth("930px");
+        fieldsLayout.setHeight("95px");
         fieldsLayout.addStyleName("no-background");
+        
+        saveInLabel = new Label();
+        saveInLabel.setCaption(messageSource.getMessage(Message.SAVE_IN)+":*");
+        saveInLabel.addStyleName("bold");
+        fieldsLayout.addComponent(saveInLabel, "top:20px; left:0px;");
+
+        saveInValue = new Label();
+        saveInValue.setCaption(generateSaveInString(null,false));
+        saveInValue.setDescription(generateSaveInString(null,true));
+        saveInValue.addStyleName("not-bold");
+        fieldsLayout.addComponent(saveInValue, "top:20px; left:65px;");
+        
+        changeLocationButton = new Button();
+        changeLocationButton.setCaption(messageSource.getMessage(Message.CHANGE_LOCATION));
+        changeLocationButton.addStyleName(Reindeer.BUTTON_LINK);
+        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:330px;");
+        changeLocationButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(source instanceof ListManagerMain){
+					
+					AbsoluteLayout selectFolderWindowLayout = new AbsoluteLayout();
+					listManagerTreeFoldersComponent = new ListManagerTreeFoldersComponent((ListManagerMain) source, getBuildNewListComponent(), false, saveInListId);
+					
+					selectFolderWindowLayout.addComponent(listManagerTreeFoldersComponent, "top:10px; left:10px;");
+					
+					selectFolderWindow = new Window();
+					selectFolderWindow.setCaption(messageSource.getMessage(Message.LIST_LOCATION));
+					selectFolderWindow.setModal(true);
+					selectFolderWindow.center();
+					selectFolderWindow.setHeight("385px");
+					selectFolderWindow.setWidth("240px");
+					selectFolderWindow.setContent(selectFolderWindowLayout);
+					selectFolderWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+					selectFolderWindow.setResizable(false);
+					
+					Button cancelButton = new Button();
+					cancelButton.setCaption(messageSource.getMessage(Message.CANCEL));
+					cancelButton.setWidth("80px");
+					selectFolderWindowLayout.addComponent(cancelButton, "top:293px; left: 15px;");
+					cancelButton.addListener(new ClickListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+							if(source instanceof ListManagerMain){
+								((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+								((ListManagerMain) source).getWindow().removeWindow(selectFolderWindow);
+							}
+						}
+						
+					});
+					
+					Button selectLocationButton = new Button();
+					selectLocationButton.setCaption(messageSource.getMessage(Message.SELECT_LOCATION));
+					selectLocationButton.setWidth("120px");
+					selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+					selectFolderWindowLayout.addComponent(selectLocationButton, "top:293px; left: 103px;");
+					selectLocationButton.addListener(new ClickListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+							if(source instanceof ListManagerMain){
+								try {
+									saveInListId = Integer.valueOf(listManagerTreeFoldersComponent.getSelectedListId().toString());
+								} catch(NumberFormatException e) {
+									saveInListId = null;
+								}
+								updateSaveInDisplay();
+								((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+								((ListManagerMain) source).getWindow().removeWindow(selectFolderWindow);
+							}
+						}
+						
+					});
+					
+					((ListManagerMain) source).getWindow().addWindow(selectFolderWindow);
+				}
+			}
+        	
+        });
         
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
         listNameLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listNameLabel, "top:20px;left:0px");
+        fieldsLayout.addComponent(listNameLabel, "top:50px;left:0px");
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
@@ -205,12 +294,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(listNameText, "top:0px;left:50px");        
+        fieldsLayout.addComponent(listNameText, "top:30px;left:50px");        
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
         listTypeLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listTypeLabel, "top:20px;left:260px");
+        fieldsLayout.addComponent(listTypeLabel, "top:50px;left:260px");
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("200px");
@@ -247,12 +336,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(listTypeComboBox, "top:0px;left:302px");
+        fieldsLayout.addComponent(listTypeComboBox, "top:30px;left:302px");
 
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
         listDateLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listDateLabel, "top:20px;left:515px");
+        fieldsLayout.addComponent(listDateLabel, "top:50px;left:515px");
       
         listDateField = new DateField();
         listDateField.setDateFormat(DATE_FORMAT);
@@ -268,12 +357,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(listDateField, "top:0px;left:557px");
+        fieldsLayout.addComponent(listDateField, "top:30px;left:557px");
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
         descriptionLabel.addStyleName("bold");
-        fieldsLayout.addComponent(descriptionLabel, "top:55px;left:0px");
+        fieldsLayout.addComponent(descriptionLabel, "top:85px;left:0px");
         
         descriptionText = new TextField();
         descriptionText.setWidth("565px");
@@ -287,16 +376,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(descriptionText, "top:35px;left:89px");
+        fieldsLayout.addComponent(descriptionText, "top:65px;left:89px");
         
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
-        fieldsLayout.addComponent(notesLabel, "top:20px; left: 675px;");
+        fieldsLayout.addComponent(notesLabel, "top:50px; left: 675px;");
         notesLabel.setVisible(true);
         
         notesTextArea = new TextArea();
-        notesTextArea.setWidth("250px");
+        notesTextArea.setWidth("200px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
         notesTextArea.addListener(new Property.ValueChangeListener(){
@@ -309,7 +398,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(notesTextArea, "top:0px; left: 725px;");
+        fieldsLayout.addComponent(notesTextArea, "top:30px; left: 725px;");
         notesTextArea.setVisible(true);
 
         
@@ -402,7 +491,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         buttonRow.addComponent(saveButton);
         buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
         
-        addComponent(buttonRow, "top:410px; left:0px;");
+        addComponent(buttonRow, "top:445px; left:0px;");
         
         setWidth("100%");
         setHeight("550px");
@@ -469,7 +558,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                  hasChanges = true;
              }
         });
-        addComponent(germplasmsTable, "top:125px; left:0px;");
+        addComponent(germplasmsTable, "top:160px; left:0px;");
     }
         
     /**
@@ -1403,5 +1492,47 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
 	public void setFromEditList(boolean fromEditList) {
 		this.fromEditList = fromEditList;
+	}
+	
+	private String generateSaveInString(Integer listId, Boolean returnFull){
+		
+		String toReturn = "";
+		int shortenedLength = 45;
+		
+		Integer parentListId;
+		try {
+			if(listId!=null && listId!=0){
+				toReturn = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+			}
+			GermplasmList parentList = germplasmListManager.getGermplasmListById(listId);
+			if(parentList!=null){
+				parentListId = parentList.getParentId();
+				while(parentListId!=null && parentListId!=0){
+					System.out.println("Parent List ID: "+parentListId);
+					GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
+						toReturn = " > "+parentFolder.getName()+toReturn;
+					parentListId = parentFolder.getParentId();
+				}
+			}
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		toReturn = "Program Lists" + toReturn;
+		
+		if(!returnFull && toReturn.length()>shortenedLength){
+			toReturn = toReturn.substring(0, shortenedLength).trim()+"..";
+		}
+		return toReturn;
+	}
+	
+	private void updateSaveInDisplay(){
+		saveInValue.setCaption(generateSaveInString(saveInListId, false));
+		saveInValue.setDescription(generateSaveInString(saveInListId, true));
+	}
+	
+	public BuildNewListComponent getBuildNewListComponent(){
+		return this;
 	}
 }

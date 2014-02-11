@@ -144,6 +144,15 @@
 	font-weight: bold;
 }
 
+
+.not-bold,
+.not-bold *,
+.v-caption-not-bold,
+.v-caption-not-bold *  {
+	font-weight: normal !important;
+}
+
+
 .listManagerTree {
 	padding: 10px;
 	border: 1px solid e3e3e3;
