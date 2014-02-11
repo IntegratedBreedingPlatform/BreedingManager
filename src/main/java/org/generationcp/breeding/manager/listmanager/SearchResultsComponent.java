@@ -428,7 +428,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	List<Object> visibleColumnIds = new ArrayList<Object>();
     	visibleColumnIds = Arrays.asList(table.getVisibleColumns());
     	for(Object visibleColumnId : visibleColumnIds){
-    		System.out.println(table.getColumnWidth(visibleColumnId));
     		totalWidth += table.getColumnWidth(visibleColumnId) + 20; //padding on cells, 8px on each side
     	}
     	return totalWidth;

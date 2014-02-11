@@ -39,6 +39,7 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -57,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -83,6 +83,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
@@ -121,6 +123,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     private String MENU_ADD_ENTRY="Add Entry"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
+    private String MENU_EDIT_LIST="Edit List";
     
     
     static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -167,6 +170,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
+	private ContextMenuItem menuEditList;
 	private AbsoluteLayout toolsMenuBar;
 	private Label noListDataLabel;
 	private Label totalListEntries;
@@ -177,11 +181,12 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
+	public static final String USER_HOME = "user.home";
 	public static String TOOLS_BUTTON_ID = "Tools";
 	private static String TOOLS_TOOLTIP = "Tools";
 
 	private AddColumnContextMenu addColumnContextMenu;  
-	private String lastCellvalue;
+	private String lastCellvalue = "";
 	private long listDataCount;
 	
 	private CheckBox tagAllCheckBox;
@@ -189,6 +194,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	  
 	Object selectedColumn = "";
 	Object selectedItemId;
+	
+	private BuildNewListComponent buildNewListComponent;
 	
     public ListDataComponent(ListManagerTreeMenu source, int germplasmListId,String listName,int germplasListUserId, boolean fromUrl,boolean forGermplasmListWindow, Integer germplasmListStatus,ListManagerTreeMenu listManagerTreeMenu, ListManagerMain listManagerMain){
     	this.source = source;
@@ -218,6 +225,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
+		menuEditList = menu.addItem(MENU_EDIT_LIST);
 		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2343109406180457070L;
@@ -239,7 +247,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			    	  saveChangesAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
 			    	  deleteListButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
+			    	  editListButtonClickAction();
 			      }
+			      
 			   }
 			});
  
@@ -269,16 +280,19 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     			 if (germplasmListId < 0
     					 && !fromUrl) {
     				 if(germplasmListStatus>=100){
+    					 menuEditList.setVisible(false);
     					 menuDeleteEntries.setVisible(false);
     					 menuSaveChanges.setVisible(false);
     					 menuAddEntry.setVisible(false);
     				 }else{
+    					 menuEditList.setVisible(true);
     					 menuDeleteEntries.setVisible(true); 
     					 menuSaveChanges.setVisible(true);
     					 menuAddEntry.setVisible(true);
     				 }
 		 
     			 }else{
+    				 menuEditList.setVisible(false);
     				 menuDeleteEntries.setVisible(false);
 					 menuSaveChanges.setVisible(false);
 					 menuAddEntry.setVisible(false);
@@ -329,9 +343,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	} else {
 			tagAllCheckBox.setValue(false);
 		}
-
-    	System.out.println("TagAllWasJustClicked: "+tagAllWasJustClicked);
-		System.out.println("Table equals: "+listDataTable.getValue().equals(listDataTable.getItemIds()));
 		
     	tagAllWasJustClicked = false;
     }
@@ -949,7 +960,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
         
-            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
     
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
@@ -1007,7 +1018,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     //called by GermplasmListButtonClickListener
     public void exportListForGenotypingOrderAction() throws InternationalizableException {
         if(germplasmListId>0 || (germplasmListId<0 && germplasmListStatus>=100)){
-            String tempFileName = System.getProperty( "user.home" ) + "/tempListForGenotyping.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             
                 GermplasmListExporter listExporter = new GermplasmListExporter(germplasmListId);
     
@@ -1379,17 +1390,20 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	
             	listDataTable.setVisibleColumns(visibleColumns);
             	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
-            		addColumnContextMenu.setPreferredIdColumnValues(false);
-            	}
-            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID))
+            		addColumnContextMenu.setPreferredIdColumnValues(false);            	
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS))
             		addColumnContextMenu.setLocationColumnValues(false);
-            	}
-            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME))
             		addColumnContextMenu.setPreferredNameColumnValues(false);
-            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP))
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
             	
             	saveChangesAction();
             	listDataTable.refreshRowCache();
@@ -1498,6 +1512,57 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	     }
 	    	   			 
 	   	return gids;
+    }
+    
+    public void editListButtonClickAction(){
+    	
+    	listManagerMain.showBuildNewListComponent();
+    	buildNewListComponent = listManagerMain.getBuildListComponent();
+    	
+    	//Prompt when there is an unsave changes to build list/edit list
+    	boolean hasChanges = buildNewListComponent.getHasChanges();
+    	if(hasChanges == true){
+    		
+    		String message = "";
+        	if(listManagerMain.getBuildNewListTitle().getValue().equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
+        		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	else {
+        		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	
+    		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+					private static final long serialVersionUID = 1L;
+					
+					public void onClose(ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							buildNewListComponent.getSaveButton().click(); // save the existing list	
+						}
+						
+						//close the currentTab
+						TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+						Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+						detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+						
+						buildNewListComponent.viewEditList(germplasmListId);
+						buildNewListComponent.setHasChanges(false); //reset
+						buildNewListComponent.getListNameText().focus();
+						
+					}
+				}
+			);
+    	}
+    	else{
+    		
+    		//close the currentTab
+			TabSheet detailsTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
+			Tab currentTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+			detailsTabSheet.removeTab(detailsTabSheet.getTab(detailsTabSheet.getTabPosition(currentTab)));
+			
+    		buildNewListComponent.viewEditList(germplasmListId);
+    		buildNewListComponent.setHasChanges(false); //reset
+    	}	
     }
     
     public Table getListDataTable(){

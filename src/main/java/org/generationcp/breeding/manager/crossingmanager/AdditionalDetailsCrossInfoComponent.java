@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -31,6 +32,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,10 +42,17 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * This class contains the absolute layout of UI elements in Cross Info section
@@ -66,6 +75,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     private DateField harvestDtDateField;
     private ComboBox harvestLocComboBox;
     private Map<String, Integer> mapLocation;
+    private Button manageFavoriteLocationsLink; 
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -123,13 +133,40 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
 			
 		});
         
-                
+        manageFavoriteLocationsLink = new Button(messageSource.getMessage(Message.MANAGE_LOCATIONS));
+        manageFavoriteLocationsLink.setStyleName(Reindeer.BUTTON_LINK);
+        manageFavoriteLocationsLink.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+					Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), getWindow(), messageSource.getMessage(Message.MANAGE_LOCATIONS));
+					manageFavoriteLocationsWindow.addListener(new CloseListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void windowClose(CloseEvent e) {
+							Object lastValue = harvestLocComboBox.getValue();
+							populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
+							harvestLocComboBox.setValue(lastValue);
+						}
+					});
+				} catch (MiddlewareQueryException e){
+					LOG.error("Error on manageFavoriteLocations click", e);
+				}
+
+			}
+        	
+        });
+        
         // layout components
         addComponent(harvestDateLabel, "top:30px;left:0px");
         addComponent(harvestDtDateField, "top:10px;left:120px");
         addComponent(harvestLocationLabel, "top:60px;left:0px");
         addComponent(harvestLocComboBox, "top:40px;left:120px");
         addComponent(showFavoriteLocationsCheckBox, "top:44px;left:410px");
+        addComponent(manageFavoriteLocationsLink,"top:64px;left:430px;");
 
         locations = germplasmDataManager.getAllBreedingLocations();
         populateHarvestLocation();

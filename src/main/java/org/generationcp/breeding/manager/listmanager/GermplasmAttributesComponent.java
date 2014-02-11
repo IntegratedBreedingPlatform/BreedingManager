@@ -62,7 +62,7 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
 	        setSelectable(true);
 	        setMultiSelect(false);
 	        setHeight("100%");
-	        setWidth("600px");
+	        setWidth("92%");
 	        setPageLength(5);
 	        setImmediate(true); // react at once when something is
 	        setColumnReorderingAllowed(true);

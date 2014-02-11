@@ -114,7 +114,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		boolean tabExists = false;
 		//workaround since Browse Lists and Search Lists have different tab name formats
 		if (germplasmList != null){
-			tabExists = Util.isTabDescriptionExist(detailsTabSheet, germplasmList.getId().toString());
+			tabExists = Util.isTabDescriptionExist(detailsTabSheet, "List id: "+germplasmList.getId().toString());
 		} else { 
 			tabExists = Util.isTabExist(detailsTabSheet, tabName);
 		}
@@ -126,7 +126,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             
             Tab tab = detailsTabSheet.addTab(layout, tabName, null);
             if (germplasmList != null){
-            	tab.setDescription(germplasmList.getId().toString());
+            	tab.setDescription("List id: "+germplasmList.getId().toString());
             }
             tab.setClosable(true);
             
@@ -141,7 +141,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
         } else {
             Tab tab;
             if (germplasmList != null){
-            	tab = Util.getTabWithDescription(detailsTabSheet, germplasmList.getId().toString());
+            	tab = Util.getTabWithDescription(detailsTabSheet,"List id: "+germplasmList.getId().toString());
             } else {
             	tab = Util.getTabToFocus(detailsTabSheet, tabName);
             }

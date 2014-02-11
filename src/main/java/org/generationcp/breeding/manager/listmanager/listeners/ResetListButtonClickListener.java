@@ -71,6 +71,13 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 		Object listManager = source.getSource();
 		((ListManagerMain) listManager).getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
 		((ListManagerMain) listManager).getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
+		
+		//Rename the Build New List Header
+		((ListManagerMain) listManager).getBuildNewListTitle().setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+		
+		//Reset the marker for changes in Build New List
+		source.setHasChanges(false);
+		source.setFromEditList(false);
 	}
     
 }

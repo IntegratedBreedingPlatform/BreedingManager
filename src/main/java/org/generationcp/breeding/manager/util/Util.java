@@ -22,19 +22,43 @@ import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Tool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
-public class Util{
+public class Util {
     
-    @Autowired
+	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
+	
+    public static final String USER_HOME = "user.home";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+	
+	public static final String LOCATION_MANAGER_TOOL_NAME = "locationmanager";
+	public static final String LOCATION_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramLocations?programId=";
+
+	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
+	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
+	
+	@Autowired
+	private static WorkbenchDataManager workbenchDataManager;
+	
+	@Autowired
     private static SimpleResourceBundleMessageSource messageSource;
 
 
@@ -163,7 +187,7 @@ public class Util{
     public static File getDefaultBrowseDirectory(Application application) throws BreedingManagerException{
 
         // Initially gets the Desktop path of the user
-        String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";// + File.separator ;
+        String desktopPath = System.getProperty(USER_HOME) + File.separator + "Desktop";// + File.separator ;
         File file = new File(desktopPath);
         
         // If desktop path is inaccessible, get the applicaton's base directory
@@ -230,7 +254,7 @@ public class Util{
 
     public static Integer getCurrentDate(){
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateNowStr = formatter.format(now.getTime());
         Integer dateNowInt = Integer.valueOf(dateNowStr);
         return dateNowInt;
@@ -245,7 +269,7 @@ public class Util{
      * @return
      */
     public static Integer getIBPDate(Integer time){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateStr = formatter.format(time);
         Integer dateInt = Integer.valueOf(dateStr);
         return dateInt;
@@ -258,7 +282,7 @@ public class Util{
      * @return
      */
     public static Integer getIBPDate(long time){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
         String dateStr = formatter.format(time);
         Integer dateInt = Integer.valueOf(dateStr);
         return dateInt;
@@ -337,5 +361,103 @@ public class Util{
         return l;
 	}
 
+	/**
+	 * Opens and attaches a modal window containing the location manager
+	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
+	 * @param programId - used to load the locations for the given programId
+	 * @param window - modal window will be attached to this window
+	 * @return
+	 */
+	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption){
+		
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(LOCATION_MANAGER_TOOL_NAME);
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource listBrowserLink = null;
+        if (tool == null) {
+            listBrowserLink = new ExternalResource(Util.LOCATION_MANAGER_DEFAULT_URL + programId);
+        } else {
+            listBrowserLink = new ExternalResource(tool.getPath() + programId);
+        }
+        
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(false);
+        layout.setSpacing(false);
+        layout.setHeight("100%");
+        
+        Embedded listInfoPage = new Embedded("", listBrowserLink);
+        listInfoPage.setType(Embedded.TYPE_BROWSER);
+        listInfoPage.setSizeFull();
+
+        layout.addComponent(listInfoPage);
+        
+        Window popupWindow = new Window();
+        popupWindow.setWidth("90%");
+        popupWindow.setHeight("80%");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setCaption(caption);
+        popupWindow.setContent(layout);
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        
+        window.addWindow(popupWindow);
+        
+        return popupWindow;
+	}
+
+	/**
+	 * Opens and attaches a modal window containing the method manager
+	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
+	 * @param programId - used to load the locations for the given programId
+	 * @param window - modal window will be attached to this window
+	 * @return
+	 */
+	public static Window launchMethodManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption){
+		
+        Tool tool = null;
+        try {
+            tool = workbenchDataManager.getToolWithName(METHOD_MANAGER_TOOL_NAME);
+        } catch (MiddlewareQueryException qe) {
+            LOG.error("QueryException", qe);
+        }
+        
+        ExternalResource listBrowserLink = null;
+        if (tool == null) {
+            listBrowserLink = new ExternalResource(Util.METHOD_MANAGER_DEFAULT_URL + programId);
+        } else {
+            listBrowserLink = new ExternalResource(tool.getPath() + programId);
+        }
+        
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(false);
+        layout.setSpacing(false);
+        layout.setHeight("100%");
+        
+        Embedded listInfoPage = new Embedded("", listBrowserLink);
+        listInfoPage.setType(Embedded.TYPE_BROWSER);
+        listInfoPage.setSizeFull();
+
+        layout.addComponent(listInfoPage);
+        
+        Window popupWindow = new Window();
+        popupWindow.setWidth("90%");
+        popupWindow.setHeight("80%");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setCaption(caption);
+        popupWindow.setContent(layout);
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        
+        window.addWindow(popupWindow);
+        
+        return popupWindow;
+	}
+	
 }
 

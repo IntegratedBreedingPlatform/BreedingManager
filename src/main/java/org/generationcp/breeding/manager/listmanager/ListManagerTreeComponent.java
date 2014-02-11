@@ -175,7 +175,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
         deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='right: 2px'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
-        deleteFolderBtn.setDescription("Delete Selected Folder");
+        deleteFolderBtn.setDescription("Delete Selected List/Folder");
         deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
         deleteFolderBtn.setWidth("40px");
         deleteFolderBtn.setEnabled(false);
@@ -183,7 +183,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(Integer.valueOf(selectedListId.toString()));
+				germplasmListTreeUtil.deleteFolderOrList(Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
             }
         });
         
@@ -591,6 +591,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     public void setSelectedListId(Object listId){
     	this.selectedListId = listId;
+    }
+    
+    public void setListId(Integer listId){
+    	this.listId = listId;
     }
     
 }

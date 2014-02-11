@@ -41,6 +41,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     private static final long serialVersionUID = -8889276342164300525L;
     
     public static final String NEW_IMPORT_BUTTON_ID = "Make New Import Button ID";
+	public static final String LIST_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-";
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -73,7 +74,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         
         ExternalResource listBrowserLink = null;
         if (tool == null) {
-            listBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
+            listBrowserLink = new ExternalResource(LIST_BROWSER_LINK + listId);
         } else {
             listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
         }

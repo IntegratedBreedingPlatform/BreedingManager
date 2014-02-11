@@ -56,6 +56,8 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     
     public static final String EXPORT_BUTTON_ID = "Export Button ID";
     public static final String MAKE_CROSSES_BUTTON_ID = "Make New Crosses Button ID";
+	public static final String USER_HOME = "user.home";
+	public static final String LIST_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-";
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -95,7 +97,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         
         ExternalResource listBrowserLink = null;
         if (tool == null) {
-            listBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-" + listId);
+            listBrowserLink = new ExternalResource(LIST_BROWSER_LINK + listId);
         } else {
             listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
         }
@@ -163,7 +165,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         CrossesMade crossesMade = this.crossingManager.getCrossesMade();
 
         if(crossesMade != null){
-            String tempFileName = System.getProperty( "user.home" ) + "/temp.xls";
+            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
             
             GermplasmList crossesList = null;
             try {
