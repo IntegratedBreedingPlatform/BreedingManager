@@ -37,6 +37,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 
     private static final long serialVersionUID = -6751894969990825730L;
     private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
+	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     private String[] CHILD_WINDOWS = {TableViewerComponent.TABLE_VIEWER_WINDOW_NAME, 
     		ViewTraitObservationsDialog.LINE_BY_TRAIT_WINDOW_NAME};
     
@@ -53,7 +54,6 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
     	Window mainWindow;
     	Window eventWindow = event.getComponent().getWindow();
-    	eventWindow.addStyleName(Reindeer.WINDOW_LIGHT);
     	if (ArrayUtils.contains(CHILD_WINDOWS, eventWindow.getName())) {
     		mainWindow = eventWindow.getParent();
     	} else {
@@ -65,13 +65,11 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
-            /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
-                    "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource("http://localhost:18080/GermplasmStudyBrowser/main/germplasm-" + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
         } else {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }
@@ -80,8 +78,6 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        //layoutForGermplasm.setWidth("620px");
-        //layoutForGermplasm.setHeight("500px");
         layoutForGermplasm.setWidth("98%");
         layoutForGermplasm.setHeight("98%");
         
@@ -90,12 +86,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmInfo.setSizeFull();
         layoutForGermplasm.addComponent(germplasmInfo);
         
-//        germplasmWindow.addComponent(layoutForGermplasm);
         germplasmWindow.setContent(layoutForGermplasm);
-        //germplasmWindow.setWidth("645px");
-        //germplasmWindow.setHeight("600px");
-        //germplasmWindow.setWidth("90%");
-        //germplasmWindow.setHeight("90%");
         
         //Instead of setting by percentage, compute it
         germplasmWindow.setWidth(Integer.valueOf((int) Math.round(mainWindow.getWidth()*.90))+"px");

@@ -123,5 +123,9 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
         messageSource.setCaption(layoutVariate, Message.variates_text);
         messageSource.setCaption(layoutEffect, Message.datasets_text);*/
     }
+    
+    public void updateStudyName(String name){
+    	this.studyDetailComponent.setStudyName(name);
+    }
 
 }

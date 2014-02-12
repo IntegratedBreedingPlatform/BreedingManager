@@ -1,14 +1,20 @@
 package org.generationcp.browser.study.util;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +40,14 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class StudyTreeUtil implements Serializable {
 	private static final long serialVersionUID = -4427723835290060592L;
-	
+	private static final int STUDY_NAME_LIMITS = 255;
 	private final static Logger LOG = LoggerFactory.getLogger(StudyTreeUtil.class);
+	
+	private static final String NO_SELECTION = "Please select a folder item";
+    public final static String NOT_FOLDER = "Selected item is not a folder.";
+    public final static String NO_PARENT = "Selected item is a root item, please choose another item on the tree";
+    public final static String HAS_CHILDREN = "Folder has child items.";
+
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -94,28 +106,10 @@ public class StudyTreeUtil implements Serializable {
                 String newFolderName = name.getValue().toString();
                 int parentFolderId = 1;	//1 by default because root study folder has id = 1
                 
-                if(newFolderName.replace(" ","").equals("")){
-                	MessageNotifier.showError(source.getWindow(),
-                            messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_BLANK_STUDY_FOLDER_NAME),
-                            Notification.POSITION_CENTERED);
-                	return;
-                } else if(newFolderName.length() > 255){
-                	MessageNotifier.showError(source.getWindow(),
-                            messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_LONG_STUDY_FOLDER_NAME),
-                            Notification.POSITION_CENTERED);
-                	return;
-                }
-
                 try{
-                	if(studyDataManager.checkIfProjectNameIsExisting(newFolderName)){
-                		MessageNotifier.showError(source.getWindow(),
-                                messageSource.getMessage(Message.INVALID_INPUT), 
-                                messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
-                                Notification.POSITION_CENTERED);
+                	if (!isValidNameInput(name.getValue().toString())){
                     	return;
-                	}
+                    }
                 	
                 	if(parentItemId != null && parentItemId instanceof Integer){
                 		if(source.isFolder((Integer) parentItemId)){
@@ -165,6 +159,8 @@ public class StudyTreeUtil implements Serializable {
                 // close popup
                 source.getWindow().removeWindow(event.getComponent().getWindow());
             }
+
+
         });
 
         Button cancel = new Button("Cancel");
@@ -188,6 +184,32 @@ public class StudyTreeUtil implements Serializable {
         // show window
         source.getWindow().addWindow(w);    	
     }
+	
+	private boolean isValidNameInput(String newFolderName) throws MiddlewareQueryException {
+		if(newFolderName.replace(" ","").equals("")){
+        	MessageNotifier.showError(source.getWindow(),
+                    messageSource.getMessage(Message.INVALID_INPUT), 
+                    messageSource.getMessage(Message.INVALID_BLANK_STUDY_FOLDER_NAME),
+                    Notification.POSITION_CENTERED);
+        	return false;
+        	
+        } else if(newFolderName.length() > STUDY_NAME_LIMITS){
+        	MessageNotifier.showError(source.getWindow(),
+                    messageSource.getMessage(Message.INVALID_INPUT), 
+                    messageSource.getMessage(Message.INVALID_LONG_STUDY_FOLDER_NAME),
+                    Notification.POSITION_CENTERED);
+        	return false;
+        	
+        } else if(studyDataManager.checkIfProjectNameIsExisting(newFolderName)){
+    		MessageNotifier.showError(source.getWindow(),
+                    messageSource.getMessage(Message.INVALID_INPUT), 
+                    messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
+                    Notification.POSITION_CENTERED);
+        	return false;
+    	}
+		
+		return true;
+	}
 	
 	private void setParent(Object sourceItemId, Object targetItemId, boolean isStudy){
 
@@ -311,5 +333,194 @@ public class StudyTreeUtil implements Serializable {
 				return AcceptAll.get();
 			}
 		});
+    }
+	
+	public void renameFolder(final Integer studyId, final String name){
+
+		final Window w = new Window();
+		
+        w.setCaption(messageSource.getMessage(Message.RENAME_ITEM));
+        w.setWidth("300px");
+        w.setHeight("150px");
+        w.setModal(true);
+        w.setResizable(false);
+        w.setStyleName(Reindeer.WINDOW_LIGHT);
+
+        VerticalLayout container = new VerticalLayout();
+        container.setSpacing(true);
+        container.setMargin(true);
+
+        HorizontalLayout formContainer = new HorizontalLayout();
+        formContainer.setSpacing(true);
+
+        Label l = new Label(messageSource.getMessage(Message.NAME_LABEL));
+
+        final TextField nameField = new TextField();
+        nameField.setMaxLength(50);
+        nameField.setValue(name);
+        nameField.setWidth("210px");
+
+        formContainer.addComponent(l);
+        formContainer.addComponent(nameField);
+
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        btnContainer.setSpacing(true);
+        btnContainer.setWidth("100%");
+
+        Label spacer = new Label("");
+        btnContainer.addComponent(spacer);
+        btnContainer.setExpandRatio(spacer, 1.0F);
+
+        Button ok = new Button("Ok");
+        ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        ok.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                
+                try {
+                	String newName = nameField.getValue().toString().trim();
+                	if (!name.equals(newName)){
+                		if (!isValidNameInput(newName)){
+                			return;
+                		}
+                		
+                		studyDataManager.renameSubFolder(newName, studyId);
+                		
+                		targetTree.setItemCaption(studyId, newName);
+                		targetTree.select(studyId);
+                		
+                		//if node is study - rename tab name to new name
+                		if (!source.isFolder(studyId)){
+                			source.renameStudyTab(name, newName);
+                		}
+                	}
+                	
+                } catch (MiddlewareQueryException e) {
+                	MessageNotifier.showWarning(source.getWindow(),
+                            messageSource.getMessage(Message.ERROR_DATABASE), 
+                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+                } catch (Error e) {
+                	MessageNotifier.showError(source.getWindow(), 
+                            messageSource.getMessage(Message.ERROR_INTERNAL), 
+                            messageSource.getMessage(Message.ERROR_REPORT_TO));
+        			e.printStackTrace();
+                    return;
+                }
+
+                source.getWindow().removeWindow(event.getComponent().getWindow());
+            }
+        });
+
+        Button cancel = new Button("Cancel");
+        cancel.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+            	source.getWindow().removeWindow(w);
+            }
+        });
+
+        btnContainer.addComponent(ok);
+        btnContainer.addComponent(cancel);
+
+        container.addComponent(formContainer);
+        container.addComponent(btnContainer);
+
+        w.setContent(container);
+
+        // show window
+        source.getWindow().addWindow(w);    	
+    }
+	
+	/**
+	 * Checks if given id is:
+	 * 1. existing in the database
+	 * 2. is a folder
+	 * 3. does not has have children items
+	 * 
+	 * If any of the checking failed, throws exception
+	 * 
+	 * @param id
+	 * @throws GermplasmStudyBrowserException
+	 */
+    public void validateForDeleteNurseryList(Integer id) throws GermplasmStudyBrowserException {
+        LOG.info("id = " + id);
+        if (id == null) {
+            throw new Error(NO_SELECTION);
+        }
+        DmsProject project = null;
+
+        try {
+            project = studyDataManager.getProject(id);
+
+        } catch (MiddlewareQueryException e) {
+            throw new GermplasmStudyBrowserException(messageSource.getMessage(Message.ERROR_DATABASE));
+        }
+
+        if (project == null) {
+            throw new GermplasmStudyBrowserException(messageSource.getMessage(Message.ERROR_DATABASE));
+        }
+
+        if (!source.isFolder(id)) {
+            throw new GermplasmStudyBrowserException(NOT_FOLDER);
+        }
+
+        if (source.hasChildStudy(id)) {
+            throw new GermplasmStudyBrowserException(HAS_CHILDREN);
+        }
+
+    }
+    
+    /**
+     * Performs validations on folder to be deleted.
+     * If folder can be deleted, deletes it from database and adjusts tree view
+     * 
+     * @param studyId
+     */
+    public void deleteFolder(final Integer studyId){
+    	try {
+			validateForDeleteNurseryList(studyId);
+		} catch (GermplasmStudyBrowserException e) {
+			LOG.error(e.getMessage());
+			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_TEXT), e.getMessage());
+			return;
+		}
+    		
+    	
+    	String item = targetTree.getItemCaption(targetTree.getValue());
+		ConfirmDialog.show(source.getWindow(),
+				messageSource.getMessage(Message.DELETE_PARAM, item),
+				messageSource.getMessage(Message.DELETE_PARAM_CONFIRM, item),	
+				messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+	             public void onClose(ConfirmDialog dialog) {
+	                 if (dialog.isConfirmed()) {
+	                     try {
+	                    	 
+	                         DmsProject parent = studyDataManager.getParentFolder(studyId);
+	                         studyDataManager.deleteEmptyFolder(studyId);
+	                         
+	                         targetTree.removeItem(targetTree.getValue());
+	                         if (parent != null){
+	                        	 Integer parentId = parent.getProjectId();
+	                        	 if (parentId == 1){
+	                        		 targetTree.select(StudyTreeComponent.LOCAL);
+	                        	 } else {
+	                        		 targetTree.select(parentId);
+	                        		 targetTree.expandItem(parentId);
+	                        	 }
+	                         }
+	                         targetTree.setImmediate(true);
+	                         source.updateButtons(targetTree.getValue());
+	
+	                     } catch (MiddlewareQueryException e) {
+	                         MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR_DATABASE), 
+	                        		 messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
+	                     }
+	                 }
+	             }
+         });
     }
 }

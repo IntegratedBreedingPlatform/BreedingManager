@@ -50,6 +50,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
 
     private static final long    serialVersionUID = 1L;
 
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+
     @Autowired
     private GermplasmListManager germplasmListManager;
     
@@ -87,7 +89,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean{
             // SaveGermplasmListAction saveGermplasmAction = new
             // SaveGermplasmListAction();
             Date date = new Date();
-            Format formatter = new SimpleDateFormat("yyyyMMdd");
+            Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
             Long currentDate = Long.valueOf(formatter.format(date));
             Integer userId = getCurrentUserLocalId();
             GermplasmList parent = null;

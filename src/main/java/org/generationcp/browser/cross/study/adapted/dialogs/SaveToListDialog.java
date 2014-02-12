@@ -55,6 +55,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private static final long serialVersionUID = 1L;
     public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
     public static final String CANCEL_BUTTON_ID = "Cancel Saving";
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
     private Label labelListName;
     private Label labelDescription;
@@ -259,7 +260,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
             // SaveGermplasmListAction saveGermplasmAction = new
             // SaveGermplasmListAction();
             Date date = new Date();
-            Format formatter = new SimpleDateFormat("yyyyMMdd");
+            Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
             Long currentDate = Long.valueOf(formatter.format(date));
             Integer userId = getCurrentUserLocalId();
             GermplasmList parent = null;

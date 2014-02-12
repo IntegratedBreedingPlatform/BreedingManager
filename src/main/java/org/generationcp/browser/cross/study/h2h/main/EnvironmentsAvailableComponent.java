@@ -322,7 +322,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     	
     	while(iter.hasNext()){
     		TraitForComparison comparison = iter.next();
-    		//System.out.println(comparison.getTraitInfo().getName() + "  " + comparison.getDirection());
+
     		String id = Integer.toString(comparison.getTraitInfo().getId());
     		if(traitEnvMap.containsKey(id)){
     			Map<String, TrialEnvironment> tempMap = traitEnvMap.get(id);
@@ -393,13 +393,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
 	    		 TrialEnvironment trialEnv = trialEnvMap.get(trialEnvIdString);
 	    		//we build the table
 	    		 String tableKey = trialEnvIdString + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getCountryName() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getProvinceName()  + FilterLocationDialog.DELIMITER  +trialEnv.getLocation().getLocationName() + FilterLocationDialog.DELIMITER + trialEnv.getStudy().getName();
-	    		 /*
-	    		 if(checkerMap.get(tableKey) != null)
-	    			 System.out.println("Hello " + tableKey);
-	    		 
-	    		 if(checkerMap.get(tableKey) == null)
-	    			 checkerMap.put(tableKey, tableKey);
-	    		 */
+
 	    		 boolean isValidEntryAdd = true;
 	    		 if(isAppliedClick){
 	    			 isValidEntryAdd = isValidEntry(trialEnv);
@@ -720,7 +714,7 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     			
     		}
     	*/
-    		//System.out.println((obs1 != null && obs2 != null));
+
     		if(obs1 != null && obs2 != null){    			
 		    		if(obs1.isValidObservationList() && obs2.isValidObservationList()){
 		    			counter++;
@@ -833,7 +827,6 @@ public class EnvironmentsAvailableComponent extends AbsoluteLayout implements In
     		EnvironmentWeight envtWeight = (EnvironmentWeight) envt.getWeightComboBox().getValue();
     		envt.computeWeight(total);
     		
-    		//System.out.println("ENVT: " + envt.getLocationName() + ", weight = " + envt.getWeight());
     		toBeCompared.add(envt);
     	}
     	

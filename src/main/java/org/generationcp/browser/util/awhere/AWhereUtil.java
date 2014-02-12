@@ -31,6 +31,9 @@ public class AWhereUtil {
 	
 	private String aWhereCookie;
 	
+	private Integer lastResponseCode;
+	private String lastResponseMessage;
+	
 	public AWhereUtil() {
 		BaseURL = "https://data.awhere.com/api/weather";
 		loginURL = BaseURL + "/Login/Index";
@@ -40,8 +43,15 @@ public class AWhereUtil {
 		password = "9ZBKreXb";
     }
     
+
+	public Boolean authenticate(String username, String password) throws Exception {
+		this.username = username;
+		this.password = password;
+		return this.authenticate();
+	}
+	
 	@SuppressWarnings("deprecation")
-	public void authenticate() throws Exception {
+	public Boolean authenticate() throws Exception {
 		loginQueryString = "uid="+URLEncoder.encode(username)+"&pwd="+URLEncoder.encode(password)+"&ReturnUrl=";
 		
         SSLContext ctx = SSLContext.getInstance("TLS");
@@ -68,6 +78,14 @@ public class AWhereUtil {
         
         connection.disconnect();
 
+        lastResponseCode = connection.getResponseCode();
+        lastResponseMessage = connection.getResponseMessage();
+        
+        if(lastResponseCode!=200 && lastResponseCode!=302){
+        	return false;
+        }
+        
+        return true;
     }
 
     
@@ -100,6 +118,9 @@ public class AWhereUtil {
         
         connection.disconnect();
         
+        lastResponseCode = connection.getResponseCode();
+        lastResponseMessage = connection.getResponseMessage();
+        
         return sb.toString();
         
     }
@@ -114,4 +135,12 @@ public class AWhereUtil {
         }
     }
     
+    
+    public int getLastResponseCode(){
+    	return lastResponseCode;
+    }
+    
+    public String getLastResponseMessage(){
+    	return lastResponseMessage;
+    }
 }

@@ -75,12 +75,7 @@ public class CreatePedigreeGraph
         createDiGraphNode();
         gv.addln(gv.end_graph());
 
-//        System.out.println(gv.toString());
-
-
-        //        System.out.println(gv.getDotSource());
-
-        //        String type = "gif";
+        //      String type = "gif";
         //      String type = "dot";
         //      String type = "fig";    // open with xfig
         //      String type = "pdf";
@@ -144,8 +139,6 @@ public class CreatePedigreeGraph
                     gv.addln(parentNodeGID+" [label=\""+parentNodeLabel+"\", fontname=\"Helvetica\", fontsize=12.0];");
                     
                     if(level==1){
-                        
-//                        System.out.println("I'm at level 1");
                         String leafNodeGIDRoot=node.getGermplasm().getGid().toString();
                         String leafNodeLabelRoot= node.getGermplasm().getPreferredName().getNval() + "\n" +
                         		"GID: " + node.getGermplasm().getGid().toString();
@@ -166,7 +159,6 @@ public class CreatePedigreeGraph
                 }
                 addNode(parent, level + 1);
             }catch(Exception e){
-//                System.out.println("Error Graph");
                 addNode(parent, level + 1);
             }
         }

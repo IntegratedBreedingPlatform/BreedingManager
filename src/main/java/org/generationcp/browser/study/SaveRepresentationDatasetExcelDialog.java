@@ -49,6 +49,8 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
     public static final String SAVE_EXCEL_BUTTON_ID = "Save to File";
     public static final String CANCEL_EXCEL_BUTTON_ID = "Cancel";
     public static final String BROWSE_FOLDER_BUTTON_ID = "Browse";
+
+	public static final String USER_HOME = "user.home";
     
     private Label labelFileName;
     private TextField txtFileName;
@@ -84,7 +86,7 @@ public class SaveRepresentationDatasetExcelDialog extends GridLayout
         setSpacing(true);
         setMargin(true);
         
-        uploadPath = System.getProperty("user.home") + File.separator + "Desktop" ;
+        uploadPath = System.getProperty( USER_HOME ) + File.separator + "Desktop" ;
         
         labelFileName = new Label();
         labelFileName.setDescription(messageSource.getMessage(Message.INPUT_FILE_NAME_TEXT));
