@@ -1529,12 +1529,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		return toReturn;
 	}
 	
-	private void updateSaveInDisplay(){
+	public void updateSaveInDisplay(){
 		saveInValue.setCaption(generateSaveInString(saveInListId, false));
 		saveInValue.setDescription(generateSaveInString(saveInListId, true));
 	}
 	
-	private void updateSaveInDisplay(Integer listId){
+	public void updateSaveInDisplay(Integer listId){
 		saveInListId = listId;
 		updateSaveInDisplay();
 	}	
