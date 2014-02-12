@@ -359,4 +359,9 @@ public enum Message {
      ,MOVE_ROOT_FOLDERS_NOT_ALLOWED
      
      ,RENAME_ITEM
+     ,DELETE_PARAM
+     ,DELETE_PARAM_CONFIRM
+     ,INVALID_OPERATION
+     ,YES
+     ,NO
 }

@@ -384,7 +384,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
     }
 
-    private boolean hasChildStudy(int studyId) {
+    public boolean hasChildStudy(int studyId) {
 
         List<Reference> studyChildren = new ArrayList<Reference>();
 
@@ -493,19 +493,18 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 			private static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				//TODO
+				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
+				studyTreeUtil.deleteFolder(studyId);
             }
         });
         
         controlButtonsLayout = new HorizontalLayout();
-//        controlButtonsLayout.setWidth("304px");
         controlButtonsLayout.addComponent(controlButtonsHeading);
         controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
         controlButtonsLayout.addComponent(renameFolderBtn);
         controlButtonsLayout.addComponent(addFolderBtn);
         controlButtonsLayout.addComponent(deleteFolderBtn);
         
-//        controlButtonsLayout.setComponentAlignment(addFolderBtn, Alignment.TOP_RIGHT);
 	}
     
     @Override

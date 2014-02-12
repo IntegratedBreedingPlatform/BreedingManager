@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -40,6 +42,12 @@ public class StudyTreeUtil implements Serializable {
 	private static final long serialVersionUID = -4427723835290060592L;
 	private static final int STUDY_NAME_LIMITS = 255;
 	private final static Logger LOG = LoggerFactory.getLogger(StudyTreeUtil.class);
+	
+	private static final String NO_SELECTION = "Please select a folder item";
+    public final static String NOT_FOLDER = "Selected item is not a folder.";
+    public final static String NO_PARENT = "Selected item is a root item, please choose another item on the tree";
+    public final static String HAS_CHILDREN = "Folder has child items.";
+
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -421,5 +429,98 @@ public class StudyTreeUtil implements Serializable {
 
         // show window
         source.getWindow().addWindow(w);    	
+    }
+	
+	/**
+	 * Checks if given id is:
+	 * 1. existing in the database
+	 * 2. is a folder
+	 * 3. does not has have children items
+	 * 
+	 * If any of the checking failed, throws exception
+	 * 
+	 * @param id
+	 * @throws GermplasmStudyBrowserException
+	 */
+    public void validateForDeleteNurseryList(Integer id) throws GermplasmStudyBrowserException {
+        LOG.info("id = " + id);
+        if (id == null) {
+            throw new Error(NO_SELECTION);
+        }
+        DmsProject project = null;
+
+        try {
+            project = studyDataManager.getProject(id);
+
+        } catch (MiddlewareQueryException e) {
+            throw new GermplasmStudyBrowserException(messageSource.getMessage(Message.ERROR_DATABASE));
+        }
+
+        if (project == null) {
+            throw new GermplasmStudyBrowserException(messageSource.getMessage(Message.ERROR_DATABASE));
+        }
+
+        if (!source.isFolder(id)) {
+            throw new GermplasmStudyBrowserException(NOT_FOLDER);
+        }
+
+        if (source.hasChildStudy(id)) {
+            throw new GermplasmStudyBrowserException(HAS_CHILDREN);
+        }
+
+    }
+    
+    /**
+     * Performs validations on folder to be deleted.
+     * If folder can be deleted, deletes it from database and adjusts tree view
+     * 
+     * @param studyId
+     */
+    public void deleteFolder(final Integer studyId){
+    	try {
+			validateForDeleteNurseryList(studyId);
+		} catch (GermplasmStudyBrowserException e) {
+			LOG.error(e.getMessage());
+			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_TEXT), e.getMessage());
+			return;
+		}
+    		
+    	
+    	String item = targetTree.getItemCaption(targetTree.getValue());
+		ConfirmDialog.show(source.getWindow(),
+				messageSource.getMessage(Message.DELETE_PARAM, item),
+				messageSource.getMessage(Message.DELETE_PARAM_CONFIRM, item),	
+				messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+	             public void onClose(ConfirmDialog dialog) {
+	                 if (dialog.isConfirmed()) {
+	                     try {
+	                    	 
+	                         DmsProject parent = studyDataManager.getParentFolder(studyId);
+	                         studyDataManager.deleteEmptyFolder(studyId);
+	                         
+	                         targetTree.removeItem(targetTree.getValue());
+	                         if (parent != null){
+	                        	 Integer parentId = parent.getProjectId();
+	                        	 if (parentId == 1){
+	                        		 targetTree.select(StudyTreeComponent.LOCAL);
+	                        	 } else {
+	                        		 targetTree.select(parentId);
+	                        		 targetTree.expandItem(parentId);
+	                        	 }
+	                         }
+	                         targetTree.setImmediate(true);
+	                         source.updateButtons(targetTree.getValue());
+	
+	                     } catch (MiddlewareQueryException e) {
+	                         MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR_DATABASE), 
+	                        		 messageSource.getMessage(Message.ERROR_IN_GETTING_STUDIES_BY_PARENT_FOLDER_ID));
+	                     }
+	                 }
+	             }
+         });
     }
 }
