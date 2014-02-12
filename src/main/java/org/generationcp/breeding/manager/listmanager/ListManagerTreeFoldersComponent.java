@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -114,6 +115,33 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 	public void attach() {
 		//Override so ListManagerTreeComponent's attach() won't open a tab
 	}
+	
+	@Override
+    public void addGermplasmListNode(int parentGermplasmListId) throws InternationalizableException{
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+
+        try {
+            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm lists by parent id.", e);
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+            germplasmListChildren = new ArrayList<GermplasmList>();
+        }
+
+        for (GermplasmList listChild : germplasmListChildren) {
+        	if(listChild.getType().equalsIgnoreCase("FOLDER")){
+	            germplasmListTree.addItem(listChild.getId());
+	            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+	            // allow children if list has sub-lists
+	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	}
+        }
+        germplasmListTree.select(parentGermplasmListId);
+    }	
+	
 	
 	private void applyListManagerTreeFolderComponentCustomizations(){
 	    if(listId==null || listId==0){
