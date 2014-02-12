@@ -34,6 +34,7 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 			boolean forGermplasmListWindow, Integer listId) {
 		super(listManagerMain, germplasmListBrowserMainLayout, forGermplasmListWindow,
 				listId);
+		selectedListId = listId;
 	}
 	
 	public ListManagerTreeFoldersComponent(ListManagerMain listManagerMain,
@@ -142,6 +143,31 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
         germplasmListTree.select(parentGermplasmListId);
     }	
 	
+	@Override
+    public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+
+        try {
+            germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm lists by parent id.", e);
+            MessageNotifier.showWarning(getWindow(), 
+                    messageSource.getMessage(Message.ERROR_DATABASE), 
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+            germplasmListChildren = new ArrayList<GermplasmList>();
+        }
+
+        for (GermplasmList listChild : germplasmListChildren) {
+        	if(listChild.getType().equalsIgnoreCase("FOLDER")){
+	            germplasmListTree.addItem(listChild.getId());
+	            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+	            // allow children if list has sub-lists
+	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	}
+        }
+        germplasmListTree.select(parentGermplasmListId);
+    }
 	
 	private void applyListManagerTreeFolderComponentCustomizations(){
 	    if(listId==null || listId==0){
