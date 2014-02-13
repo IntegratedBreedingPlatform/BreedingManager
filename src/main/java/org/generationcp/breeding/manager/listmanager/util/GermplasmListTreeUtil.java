@@ -488,7 +488,7 @@ public class GermplasmListTreeUtil implements Serializable {
         source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(w);    	
     }
 
-	public void deleteFolderOrList(final Integer lastItemId, final TabSheet tabSheet) {
+	public void deleteFolderOrList(final ListManagerTreeComponent listManagerTreeComponent, final Integer lastItemId, final TabSheet tabSheet) {
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -539,9 +539,11 @@ public class GermplasmListTreeUtil implements Serializable {
 						targetTree.select(null);
 						if (parent == null) {
 							targetTree.select(MY_LIST);
+							listManagerTreeComponent.setSelectedListId(MY_LIST);
 						} else {
 							targetTree.select(parent.getId());
 							targetTree.expandItem(parent.getId());
+							listManagerTreeComponent.setSelectedListId(parent.getId());
 						}
 						
 						Tab tab = Util.getTabWithDescription(tabSheet, finalGpList.getId().toString());
