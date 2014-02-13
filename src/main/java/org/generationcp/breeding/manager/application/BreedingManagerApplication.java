@@ -157,9 +157,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
             } else if (name.equals(LIST_MANAGER_SIDEBYSIDE)){
                 Window listManagerSideBySideWindow = new Window("List Manager (Side-by-side)");
                 listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
-                listManagerSideBySideWindow.setSizeUndefined();
+                listManagerSideBySideWindow.setSizeFull();
                 listManagerSideBySideWindow.addComponent(new ListManagerSidebysideMain());
-                this.addWindow(listManagerSideBySideWindow);
+                this.setMainWindow(listManagerSideBySideWindow);
+                this.getMainWindow().getContent().setHeight("100%");
                 return listManagerSideBySideWindow;
             }
         }
