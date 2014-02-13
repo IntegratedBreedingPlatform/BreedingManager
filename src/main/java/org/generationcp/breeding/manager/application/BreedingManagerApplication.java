@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerSidebysideMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -38,6 +39,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
     public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
+    public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
     
     private Window window;
     
@@ -152,6 +154,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                     this.addWindow(emptyGermplasmListDetailsWindow);
                     return emptyGermplasmListDetailsWindow;
             	}
+            } else if (name.equals(LIST_MANAGER_SIDEBYSIDE)){
+                Window listManagerSideBySideWindow = new Window("List Manager (Side-by-side)");
+                listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
+                listManagerSideBySideWindow.setSizeUndefined();
+                listManagerSideBySideWindow.addComponent(new ListManagerSidebysideMain());
+                this.addWindow(listManagerSideBySideWindow);
+                return listManagerSideBySideWindow;
             }
         }
         
