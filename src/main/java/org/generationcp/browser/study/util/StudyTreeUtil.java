@@ -154,6 +154,7 @@ public class StudyTreeUtil implements Serializable {
                     	targetTree.expandItem(StudyTreeComponent.LOCAL);
 					}
                     targetTree.select(newFolderId);
+                    source.updateButtons(newFolderId);
                 }
 
                 // close popup
