@@ -4,9 +4,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
@@ -17,53 +19,57 @@ import com.vaadin.ui.Button.ClickListener;
 public class ListManagerSidebysideMain extends VerticalLayout implements InitializingBean{
 
     private static final long serialVersionUID = 5976245899964745758L;
-	private VerticalSplitPanel vsp;
-	private HorizontalSplitPanel hsp;
+    
+    private Button toggleButton;
+	private HorizontalSplitPanel splitPanel;
 
+	private static Float EXPANDED_SPLIT_POSITION = Float.valueOf("50");
+	private static Float COLLAPSED_SPLIT_POSITION = Float.valueOf("96");
+	
     @Override
     public void afterPropertiesSet() throws Exception {
 
-		Label a = new Label("A");
-		Label b = new Label("B");
-		Label c = new Label("C");
+    	setSizeFull();
+    	
+    	setMargin(false);
+        setSpacing(false);
+    	
+		Label content = new Label("Content");
 
-		Button A = new Button();
-		A.addListener(new ClickListener(){
+		toggleButton = new Button();
+		toggleButton.addListener(new ClickListener(){
 			public void buttonClick(ClickEvent event) {
-				expandTop();
+				if(splitPanel.getSplitPosition() == EXPANDED_SPLIT_POSITION){
+					collapse();
+				} else {
+					expand();
+				}
 			}
 		});
-		Button B = new Button();
-		B.addListener(new ClickListener(){
-			public void buttonClick(ClickEvent event) {
-				expandBottom();
-			}
-		});
 		
-		System.out.println(this.getHeight());
+		splitPanel = new HorizontalSplitPanel();
+		splitPanel.setSizeFull();
+		splitPanel.setMargin(false);
 		
-		hsp = new HorizontalSplitPanel();
-		hsp.setHeight("700px");
-		hsp.setSplitPosition(28);
+		collapse();
 		
-		vsp = new VerticalSplitPanel();
-		vsp.setHeight("700px");
-		expandTop();
-
-		vsp.setFirstComponent(A);
-		vsp.setSecondComponent(B);
+		//Attach browse/search lists tabsheet here
+		splitPanel.setFirstComponent(content);
 		
-		hsp.setFirstComponent(vsp);
-		hsp.setSecondComponent(c);
+		//Attach build new list here
+		splitPanel.setSecondComponent(toggleButton);
         
-        this.addComponent(hsp);
+		addComponent(splitPanel);
+
     }
     
-    private void expandTop(){
-    	vsp.setSplitPosition(vsp.getHeight()-33, Sizeable.UNITS_PIXELS);
+    private void expand(){
+    	splitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION);
+    	toggleButton.setCaption(">>");
     }
 
-    private void expandBottom(){
-    	vsp.setSplitPosition(33, Sizeable.UNITS_PIXELS);
+    private void collapse(){
+    	splitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION);
+    	toggleButton.setCaption("<<");
     }
 }
