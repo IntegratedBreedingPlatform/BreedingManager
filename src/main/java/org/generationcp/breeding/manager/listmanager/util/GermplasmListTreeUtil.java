@@ -545,7 +545,6 @@ public class GermplasmListTreeUtil implements Serializable {
 							targetTree.expandItem(parent.getId());
 							listManagerTreeComponent.setSelectedListId(parent.getId());
 						}
-						
 						Tab tab = Util.getTabWithDescription(tabSheet, finalGpList.getId().toString());
 						if(tab!=null)
 							tabSheet.removeTab(tab);

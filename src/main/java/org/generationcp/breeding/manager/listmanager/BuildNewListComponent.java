@@ -1499,7 +1499,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	private String generateSaveInString(Integer listId, Boolean returnFull){
 		
 		String toReturn = "";
-		int shortenedLength = 42;
+		int shortenedLength = 30;
 		
 		Integer parentListId;
 		Integer previousParentListId=null;
