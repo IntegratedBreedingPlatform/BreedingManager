@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -75,7 +76,11 @@ public class ListManagerSidebysideMain extends VerticalLayout implements
 		splitPanel.setFirstComponent(tabSheet);
 		
 		//Attach build new list here
-		splitPanel.setSecondComponent(toggleButton);
+		HorizontalLayout buildListLayout = new HorizontalLayout();
+		buildListLayout.setSpacing(true);
+		buildListLayout.addComponent(toggleButton);
+		buildListLayout.addComponent(new BuildNewListComponentSidebyside());
+		splitPanel.setSecondComponent(buildListLayout);
         
 		addComponent(splitPanel);
 
