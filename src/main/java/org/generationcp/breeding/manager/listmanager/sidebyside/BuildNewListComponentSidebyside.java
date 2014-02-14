@@ -50,16 +50,18 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
     private TextField listNameText;
     private Label listTypeLabel;
     private ComboBox listTypeComboBox;
-    private Label listDateLabel;
-    private DateField listDateField;
     
     private HorizontalLayout detailsSubLayout2;
+    private Label listDateLabel;
+    private DateField listDateField;
+    private Label notesLabel;
+    private TextArea notesTextArea;
+    
+    private HorizontalLayout detailsSubLayout3;
     private Label descriptionLabel;
     private TextField descriptionText;
     
     private HorizontalLayout detailsLayout;
-    private Label notesLabel;
-    private TextArea notesTextArea;
     
     private Table germplasmsTable;
     
@@ -89,7 +91,6 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
         
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
-//        listNameLabel.addStyleName("bold");
         detailsSubLayout1.addComponent(listNameLabel);
         
         listNameText = new TextField();
@@ -99,7 +100,6 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
-//        listTypeLabel.addStyleName("bold");
         detailsSubLayout1.addComponent(listTypeLabel);
         
         listTypeComboBox = new ComboBox();
@@ -107,36 +107,38 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
         listTypeComboBox.setNullSelectionAllowed(false);
         detailsSubLayout1.addComponent(listTypeComboBox);
         
+        
+        detailsSubLayout2 = new HorizontalLayout();
+        
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
-//        listDateLabel.addStyleName("bold");
-        detailsSubLayout1.addComponent(listDateLabel);
+        detailsSubLayout2.addComponent(listDateLabel);
       
         listDateField = new DateField();
         listDateField.setDateFormat("yyyy-MM-dd");
         listDateField.setResolution(DateField.RESOLUTION_DAY);
         listDateField.setValue(new Date());
-        detailsSubLayout1.addComponent(listDateField);
-        
-        detailsSubLayout2 = new HorizontalLayout();
-        
-        descriptionLabel = new Label();
-        descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
-//        descriptionLabel.addStyleName("bold");
-        detailsSubLayout2.addComponent(descriptionLabel);
-        
-        descriptionText = new TextField();
-        descriptionText.setWidth("565px");
-        detailsSubLayout2.addComponent(descriptionText);
+        detailsSubLayout2.addComponent(listDateField);
         
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
-//        notesLabel.addStyleName("bold");
+        detailsSubLayout2.addComponent(notesLabel);
         
         notesTextArea = new TextArea();
-        notesTextArea.setWidth("200px");
+        notesTextArea.setWidth("300px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
+        detailsSubLayout2.addComponent(notesTextArea);
+        
+        detailsSubLayout3 = new HorizontalLayout();
+        
+        descriptionLabel = new Label();
+        descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
+        detailsSubLayout3.addComponent(descriptionLabel);
+        
+        descriptionText = new TextField();
+        descriptionText.setWidth("420px");
+        detailsSubLayout3.addComponent(descriptionText);
         
         createGermplasmTable();
     }
@@ -148,17 +150,17 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
         
         detailsSubLayout1.setSpacing(true);        
         detailsSubLayout2.setSpacing(true);
+        detailsSubLayout3.setSpacing(true);
         
         VerticalLayout detailsVertical = new VerticalLayout();
         detailsVertical.setSpacing(true);
         detailsVertical.addComponent(detailsSubLayout1);
         detailsVertical.addComponent(detailsSubLayout2);
+        detailsVertical.addComponent(detailsSubLayout3);
         
         detailsLayout = new HorizontalLayout();
         detailsLayout.setSpacing(true);
         detailsLayout.addComponent(detailsVertical);
-        detailsLayout.addComponent(notesLabel);
-        detailsLayout.addComponent(notesTextArea);
         
         this.addComponent(detailsLayout);
         this.addComponent(germplasmsTable);

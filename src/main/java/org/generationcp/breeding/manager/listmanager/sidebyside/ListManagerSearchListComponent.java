@@ -1,6 +1,8 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.DropHandlerComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -17,10 +19,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
@@ -67,6 +71,13 @@ public class ListManagerSearchListComponent extends AbsoluteLayout implements
 	
 	private boolean matchingListsTagAllWasJustClicked = false;
 	private boolean matchingGermplasmsTagAllWasJustClicked = false;
+	
+	private Label projectLists;
+	private Panel browseListPanel;
+	private TabSheet tabSheetList;
+	private ListManagerTreeMenu list1;
+	private ListManagerTreeMenu list2;
+	private DropHandlerComponent dropHandler;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -227,6 +238,24 @@ public class ListManagerSearchListComponent extends AbsoluteLayout implements
 		addComponent(tablesLayout, "top:55px; left:20px");
 
 //		addComponent(dropHandler, "top:385px; left:0px;");
+		
+		tabSheetList = new TabSheet();
+		tabSheetList.setWidth("95%");
+		tabSheetList.setHeight("300px");
+		
+		VerticalLayout layout = new VerticalLayout();
+		list1 = new ListManagerTreeMenu(1426,"IIRON-1986",1,1,false,null);
+		layout.addComponent(list1);
+		Tab tab1 = tabSheetList.addTab(layout, "IIRON-1986");
+		tab1.setClosable(true);
+    	
+		VerticalLayout layout2 = new VerticalLayout();
+		list2 = new ListManagerTreeMenu(1427,"IIRON-1987",1,1,false,null);
+		layout2.addComponent(list2);
+		Tab tab2 = tabSheetList.addTab(layout2, "IIRON-1987");
+		tab2.setClosable(true);
+		
+		addComponent(tabSheetList,"top:250px; left:20px");
 	}
 
 	private void initializeSearchBar() {
