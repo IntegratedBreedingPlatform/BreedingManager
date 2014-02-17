@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -562,6 +563,25 @@ public class GermplasmListTreeUtil implements Serializable {
 	
     public boolean hasChildren(Integer id) throws MiddlewareQueryException {
         return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
+    }
+    
+    public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
+    	if(list == null){
+    		return;
+    	} else{
+    		Integer parentId = list.getParentId();
+    		
+    		if(parentId != null && parentId != 0){
+	    		GermplasmList parent = germplasmListManager.getGermplasmListById(list.getParentId());
+	    		
+	    		if(parent != null){
+	    			parents.push(parent);
+	    			traverseParentsOfList(germplasmListManager, parent, parents);
+	    		}
+    		}
+    		
+    		return;
+    	}
     }
     
 }
