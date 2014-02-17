@@ -1498,6 +1498,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private String generateSaveInString(Integer listId, Boolean returnFull){
 		
+		String finalPart = "";
 		String toReturn = "";
 		int shortenedLength = 30;
 		
@@ -1506,14 +1507,17 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		try {
 			if(listId!=null && listId!=0){
-				toReturn = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				finalPart = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				toReturn = finalPart;
 			}
 			GermplasmList parentList = germplasmListManager.getGermplasmListById(listId);
 			if(parentList!=null){
 				parentListId = parentList.getParentId();
-				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId){
+				GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+				
+				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId && parentFolder!=null){
 					System.out.println("Parent List ID: "+parentListId);
-					GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+					parentFolder = germplasmListManager.getGermplasmListById(parentListId);
 					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
 						toReturn = " > "+parentFolder.getName()+toReturn;
 					previousParentListId = parentListId;
@@ -1527,8 +1531,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		toReturn = "Program Lists" + toReturn;
 		
 		if(!returnFull && toReturn.length()>shortenedLength){
-			toReturn = toReturn.substring(0, shortenedLength).trim()+"..";
+			toReturn = toReturn.substring(0, shortenedLength - finalPart.length()).trim()+".."+finalPart;
 		}
+		
 		return toReturn;
 	}
 	
