@@ -145,7 +145,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	protected void initializeButtonPanel() {
 		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription("Rename Folder");
+        renameFolderBtn.setDescription("Rename Item");
         renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
         renameFolderBtn.setWidth("40px");
         renameFolderBtn.setEnabled(false);
