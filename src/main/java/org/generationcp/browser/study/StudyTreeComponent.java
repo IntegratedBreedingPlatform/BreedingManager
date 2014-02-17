@@ -82,8 +82,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     private Button refreshButton;
     
-    private Database database;
-    
     private Integer rootNodeProjectId;
     private Map<Integer, Integer> parentChildItemIdMap;
     private Object selectedStudyTreeNodeId;
@@ -96,11 +94,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         tabSheetStudy = new TabSheet();
     }
     
-    public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout, Database database) {
-        this.studyBrowserMainLayout = studyBrowserMainLayout;
-        this.database = database;
-    }
-
     public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout) {
         this.studyBrowserMainLayout = studyBrowserMainLayout;
     }
@@ -110,79 +103,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         treeContainer.removeComponent(studyTree);
         studyTree.removeAllItems();
         
-        if(database!=null){
-        	studyTree = createStudyTree(Database.LOCAL);
-        } else { 
-        	studyTree = createCombinedStudyTree();
-        }
-        
+    	studyTree = createCombinedStudyTree();
         studyTreeUtil = new StudyTreeUtil(studyTree, this);
         
         treeContainer.addComponent(studyTree);
     }
 
-    private Tree createStudyTree(Database database) {
-        List<FolderReference> rootFolders = new ArrayList<FolderReference>();
-
-        try {
-            rootFolders = this.studyDataManager.getRootFolders(database);
-        } catch (MiddlewareQueryException e) {
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
-            e.printStackTrace();
-            if (getWindow() != null){
-                MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.ERROR_DATABASE),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_STUDIES));
-            }
-            rootFolders = new ArrayList<FolderReference>();
-        }
-
-        final Tree studyTree = new Tree();
-        studyTree.setDragMode(TreeDragMode.NODE);
-        
-        for (FolderReference ps : rootFolders) {
-            studyTree.addItem(ps.getId());
-            studyTree.setItemCaption(ps.getId(), ps.getName());
-        }
-                
-        studyTree.addListener(new StudyTreeExpandListener(this));
-        studyTree.addListener(new StudyItemClickListener(this));
-
-        studyTree.setItemStyleGenerator(new ItemStyleGenerator() {
-        	private static final long serialVersionUID = -5690995097357568121L;
-
-			@Override
-            public String getStyle(Object itemId) {
-				Study currentStudy = null;
-				try {
-					currentStudy = studyDataManager.getStudy(Integer.valueOf(itemId.toString()));
-				} catch (NumberFormatException e) {
-					currentStudy = null;
-				} catch (MiddlewareQueryException e) {
-					LOG.error("Error with getting study by id: " + itemId, e);
-					currentStudy = null;
-		        } catch (Exception e) {
-		        	//e.printStackTrace();
-				} 
-				
-            	//if(itemId.equals(LOCAL) || itemId.equals(CENTRAL)){
-            	//	return "listManagerTreeRootNode"; 
-				
-				if(currentStudy!=null && isFolder(currentStudy.getId())){
-					return "listManagerTreeRegularParentNode";
-				} else if(currentStudy!=null && isFolder(currentStudy.getId())){
-            		return "listManagerTreeRegularParentNode";
-            	} else {
-            		return "listManagerTreeRegularChildNode";
-            	}
-            }
-        });
-
-        studyTree.addStyleName("studyBrowserTree");
-        studyTree.setImmediate(true);
-        
-        return studyTree;
-    }
 
     private Tree createCombinedStudyTree() {
     	
@@ -206,24 +132,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
 			@Override
             public String getStyle(Object itemId) {
-				Study currentStudy = null;
-				try {
-					currentStudy = studyDataManager.getStudy(Integer.valueOf(itemId.toString()));
-				} catch (NumberFormatException e) {
-					currentStudy = null;
-				} catch (MiddlewareQueryException e) {
-					LOG.error("Error with getting study by id: " + itemId, e);
-					currentStudy = null;
-		        } catch (Exception e) {
-		        	//e.printStackTrace();
-				} 
 				
 				if(itemId.toString().equals(LOCAL) || itemId.toString().equals(CENTRAL)){
 					return "listManagerTreeRegularParentNode";
-				} else if(currentStudy!=null && isFolder(currentStudy.getId())){
+				} else if(itemId!=null && itemId instanceof Integer && isFolder((Integer)itemId)){
 					return "listManagerTreeRegularParentNode";
-				//} else if(currentStudy!=null && isFolderType(currentStudy.getType())){
-            	//	return "listManagerTreeRegularParentNode";
             	} else {
             		return "listManagerTreeRegularChildNode";
             	}
@@ -278,14 +191,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         	expandOrCollapseStudyTreeNode(itemId);
         	int studyId = Integer.valueOf(itemId.toString());
         	
-        	if(database==null){
-        		if(studyId>0){
-        			studyTree.expandItem(CENTRAL);
-        		} else {
-        			studyTree.expandItem(LOCAL);
-        		}
-        	}
-        	
             if (!hasChildStudy(studyId) && !isFolder(studyId)){
                 createStudyInfoTab(studyId);
             }
@@ -301,7 +206,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     public Boolean studyExists(int studyId) throws InternationalizableException {
         try {
-            Study study = this.studyDataManager.getStudy(Integer.valueOf(studyId));
+            DmsProject study = this.studyDataManager.getProject(studyId);
             if(study==null) {
             	return false;
         	} else {
@@ -373,7 +278,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {
-            Study studyDetails = this.studyDataManager.getStudy(Integer.valueOf(studyId));
+            DmsProject studyDetails = this.studyDataManager.getProject(studyId);
             if(studyDetails != null){
                 return studyDetails.getName();
             } else {
@@ -411,13 +316,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         
         tabSheetStudy = new TabSheet();
         
-        if (database != null){
-        	studyTree = createStudyTree(database);
-        } else {
-        	studyTree = createCombinedStudyTree();
-        	initializeButtonPanel();
-        	addComponent(controlButtonsLayout);
-        }
+    	studyTree = createCombinedStudyTree();
+    	initializeButtonPanel();
+    	addComponent(controlButtonsLayout);
 
         // add tooltip
         studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
@@ -438,10 +339,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         refreshButton.setData(REFRESH_BUTTON_ID);
         refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
-        if (database == Database.LOCAL || database == null) {
-            refreshButton.addListener(new StudyButtonClickListener(this));
-            addComponent(refreshButton);
-        }
+        refreshButton.addListener(new StudyButtonClickListener(this));
+        addComponent(refreshButton);
 
         studyTreeUtil = new StudyTreeUtil(studyTree, this);
     }
