@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -447,8 +449,11 @@ public class GermplasmListTreeUtil implements Serializable {
 	                    targetTree.setItemCaption(listId, name.getValue().toString());
 	                    
 						Tab tab = Util.getTabWithDescription(tabSheet, "List id: "+listId.toString());
-						if(tab!=null)
+						if(tab!=null){
 							tab.setCaption(name.getValue().toString());
+							ListDetailComponent listDetailComponent = ((ListManagerTreeMenu)((VerticalLayout) tab.getComponent()).getComponent(0)).getListDetailComponent();
+							listDetailComponent.setLblName(name.getValue().toString());
+						}
 	                    
 	                    targetTree.select(listId);
                 	} else {
