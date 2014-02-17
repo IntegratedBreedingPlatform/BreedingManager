@@ -305,7 +305,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	 toolsMenuBar = new AbsoluteLayout();
     	 toolsMenuBar.setWidth("100%");
     	 toolsMenuBar.setHeight("30px");
-       	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:30px;");
+       	 toolsMenuBar.addComponent(toolsButton, "top:0px; right:42px;");
    	 
     	 addComponent(toolsMenuBar, "top:0px; left:0px;");
     	 
@@ -391,7 +391,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		 listDataTable.setColumnCollapsingAllowed(true);
 		 listDataTable.setColumnReorderingAllowed(true);
 //             listDataTable.setPageLength(15); // number of rows to display in the Table
-		 listDataTable.setWidth("98%");
+		 listDataTable.setWidth("94%");
 		 listDataTable.setHeight("250px");
 		 listDataTable.setDragMode(TableDragMode.ROW);
 		 listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
