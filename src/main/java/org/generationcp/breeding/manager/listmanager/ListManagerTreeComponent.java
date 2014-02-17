@@ -175,7 +175,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolder(Integer.valueOf(selectedListId.toString()));
+				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
             }
         });
         

@@ -31,7 +31,6 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -357,7 +356,7 @@ public class GermplasmListTreeUtil implements Serializable {
     }    
 
     
-    public void renameFolder(final Integer listId){
+    public void renameFolderOrList(final Integer listId, final TabSheet tabSheet){
 
     	GermplasmList germplasmList = null;
         try {
@@ -446,6 +445,11 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	germplasmListManager.updateGermplasmList(germplasmList);
 	                	
 	                    targetTree.setItemCaption(listId, name.getValue().toString());
+	                    
+						Tab tab = Util.getTabWithDescription(tabSheet, "List id: "+listId.toString());
+						if(tab!=null)
+							tab.setCaption(name.getValue().toString());
+	                    
 	                    targetTree.select(listId);
                 	} else {
             			MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
