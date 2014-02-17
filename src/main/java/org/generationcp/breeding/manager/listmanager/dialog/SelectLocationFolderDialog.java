@@ -65,10 +65,13 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Integer folderId = (Integer) germplasmListTree.getTree().getValue();
+				Integer folderId = (Integer) germplasmListTree.getSelectedListId();
 				try{
 					GermplasmList folder = germplasmListManager.getGermplasmListById(folderId);
 					source.setSelectedFolder(folder);
+					
+					Window window = event.getButton().getWindow();
+			        window.getParent().removeWindow(window);
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error with retrieving list with id: " + folderId, ex);
 				}

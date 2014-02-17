@@ -394,6 +394,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
     	}
         
+        if(forSelectingFolderToSaveIn){
+        	germplasmListTree.setNullSelectionAllowed(false);
+        }
+        
         return germplasmListTree;
     }
     
@@ -466,9 +470,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	        	}
         		
         		germplasmListTree.select(germplasmListId);
+        		germplasmListTree.setValue(germplasmListId);
         	}
-					
-	                
+			        
         } catch (NumberFormatException e) {
         	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
@@ -546,6 +550,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         	}
         }
         germplasmListTree.select(parentGermplasmListId);
+        germplasmListTree.setValue(parentGermplasmListId);
     }
     
     public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
