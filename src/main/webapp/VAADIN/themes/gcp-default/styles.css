@@ -211,3 +211,8 @@
 .v-absolutelayout {
 	background: #f6f6f6 !important;
 }
+
+/* Tabsheet formatting GCP-7370 */
+.v-tabsheet-content{position:absolute}
+.v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
+.v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
