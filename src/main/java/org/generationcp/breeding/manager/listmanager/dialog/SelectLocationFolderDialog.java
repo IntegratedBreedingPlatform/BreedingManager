@@ -33,14 +33,17 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	private Button cancelButton;
 	private Button selectLocationButton;
 	
+	private Integer folderId;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
-	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source){
+	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId){
 		this.source = source;
+		this.folderId = folderId;
 	}
 	
 	@Override
@@ -78,7 +81,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 			}
 		});
 		
-		germplasmListTree = new ListManagerTreeComponent(true); 
+		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
 	}
 	
 	private void initializeLayout(){

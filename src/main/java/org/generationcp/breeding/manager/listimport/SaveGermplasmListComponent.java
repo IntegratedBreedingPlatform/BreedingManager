@@ -437,7 +437,13 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 	}
 	
 	private void displaySelectFolderDialog(){
-		SelectLocationFolderDialog selectFolderDialog = new SelectLocationFolderDialog(this);
+		GermplasmList selectedFolder = (GermplasmList) folderToSaveListTo.getData();
+		SelectLocationFolderDialog selectFolderDialog = null;
+		if(selectedFolder != null){
+			selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId());
+		} else{
+			selectFolderDialog = new SelectLocationFolderDialog(this, null);
+		}
 		this.getWindow().addWindow(selectFolderDialog);
 	}
 }
