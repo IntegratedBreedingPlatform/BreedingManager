@@ -44,12 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
@@ -119,6 +117,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
         
         studyTreeUtil = new StudyTreeUtil(studyTree, this);
+        
         treeContainer.addComponent(studyTree);
     }
 
@@ -179,6 +178,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
 
+        studyTree.addStyleName("studyBrowserTree");
         studyTree.setImmediate(true);
         
         return studyTree;
@@ -230,6 +230,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
 
+        studyTree.addStyleName("studyBrowserTree");
         studyTree.setImmediate(true);
         
         return studyTree;
@@ -428,8 +429,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
                 return messageSource.getMessage(Message.STUDY_DETAILS_LABEL); // "Click to view study details"
             }
         });
-        
-        studyTree.addStyleName("studyBrowserTree");
         
         treeContainer = new VerticalLayout();
         treeContainer.addComponent(studyTree);
