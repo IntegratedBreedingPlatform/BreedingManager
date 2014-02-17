@@ -451,7 +451,7 @@ public class GermplasmListTreeUtil implements Serializable {
 						Tab tab = Util.getTabWithDescription(tabSheet, "List id: "+listId.toString());
 						if(tab!=null){
 							tab.setCaption(name.getValue().toString());
-							ListDetailComponent listDetailComponent = ((ListManagerTreeMenu)((VerticalLayout) tab.getComponent()).getComponent(0)).getListDetailComponent();
+							ListDetailComponent listDetailComponent = ((ListManagerTreeMenu)((VerticalLayout) tab.getComponent()).getComponent(0)).getListManagerListDetailComponent();
 							listDetailComponent.setLblName(name.getValue().toString());
 						}
 	                    
