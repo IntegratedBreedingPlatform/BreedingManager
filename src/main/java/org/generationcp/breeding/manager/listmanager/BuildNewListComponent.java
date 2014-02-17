@@ -103,6 +103,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private Label saveInLabel;
     private Label saveInValue;
+    private Label saveInValueDummyContainer;
     private Integer saveInListId;
     private Button changeLocationButton;
     private Window selectFolderWindow;
@@ -201,16 +202,24 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         saveInLabel.addStyleName("bold");
         fieldsLayout.addComponent(saveInLabel, "top:20px; left:0px;");
 
+        saveInValueDummyContainer = new Label();
+        saveInValueDummyContainer.setHeight("22px");
+        saveInValueDummyContainer.setWidth("355px");
+        saveInValueDummyContainer.addStyleName("v-textfield");
+        
         saveInValue = new Label();
         saveInValue.setCaption(generateSaveInString(null,false));
         saveInValue.setDescription(generateSaveInString(null,true));
         saveInValue.addStyleName("not-bold");
-        fieldsLayout.addComponent(saveInValue, "top:20px; left:65px;");
+        saveInValue.setWidth("350px");
+        
+        fieldsLayout.addComponent(saveInValueDummyContainer, "top:0px; left:65px;");
+        fieldsLayout.addComponent(saveInValue, "top:20px; left:70px;");
         
         changeLocationButton = new Button();
         changeLocationButton.setCaption(messageSource.getMessage(Message.CHANGE_LOCATION));
         changeLocationButton.addStyleName(Reindeer.BUTTON_LINK);
-        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:330px;");
+        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:430px;");
         changeLocationButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -1500,7 +1509,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		
 		String finalPart = "";
 		String toReturn = "";
-		int shortenedLength = 30;
+		int shortenedLength = 50;
 		
 		Integer parentListId;
 		Integer previousParentListId=null;
