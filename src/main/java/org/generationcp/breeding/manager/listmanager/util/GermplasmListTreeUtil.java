@@ -78,14 +78,14 @@ public class GermplasmListTreeUtil implements Serializable {
     public void setParent(Object sourceItemId, Object targetItemId){
 
     	if(sourceItemId.equals(ListManagerTreeComponent.LOCAL) || sourceItemId.equals(ListManagerTreeComponent.CENTRAL)){
-    		MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+    		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_ROOT_FOLDERS));
     		return;
     	}
     	
     	if(targetItemId!=null && targetItemId.equals(ListManagerTreeComponent.CENTRAL)){
-    		MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+    		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
     		return;
@@ -100,14 +100,14 @@ public class GermplasmListTreeUtil implements Serializable {
     		targetId = Integer.valueOf(targetItemId.toString());
     	
 		if(sourceId!=null && sourceId>0){
-			MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+			MessageNotifier.showWarning(source.getWindow(), 
 					messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
 					messageSource.getMessage(Message.UNABLE_TO_MOVE_PUBLIC_LISTS));
 			return;
 		}    	
 	
     	if(targetId!=null && targetId>0){
-    		MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+    		MessageNotifier.showWarning(source.getWindow(),
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
     		return;
@@ -125,7 +125,7 @@ public class GermplasmListTreeUtil implements Serializable {
             germplasmListManager.updateGermplasmList(sourceGermplasmList);
             
 		} catch (MiddlewareQueryException e) {
-			MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+			MessageNotifier.showError(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_INTERNAL), 
                     messageSource.getMessage(Message.ERROR_REPORT_TO));
 			e.printStackTrace();
@@ -233,7 +233,7 @@ public class GermplasmListTreeUtil implements Serializable {
                 Integer newFolderId = null;
                 
                 if(name.getValue().toString().replace(" ","").equals("")){
-                	MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+                	MessageNotifier.showWarning(source.getWindow(),
                             messageSource.getMessage(Message.INVALID_INPUT), 
                             messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
                 	return;
@@ -271,19 +271,19 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	newFolderId = germplasmListManager.addGermplasmList(newFolder);
 	                	
 	            	} else {
-	        			MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+	        			MessageNotifier.showWarning(source.getWindow(),
 	                            messageSource.getMessage(Message.INVALID_INPUT), 
 	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
 	            	}
                 	
                 	
                 } catch (MiddlewareQueryException e){
-                	MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+                	MessageNotifier.showError(source.getWindow(), 
                             messageSource.getMessage(Message.ERROR_INTERNAL), 
                             messageSource.getMessage(Message.ERROR_REPORT_TO));
         			e.printStackTrace();
                 } catch (Error e) {
-                	MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+                	MessageNotifier.showError(source.getWindow(), 
                             messageSource.getMessage(Message.ERROR_INTERNAL), 
                             messageSource.getMessage(Message.ERROR_REPORT_TO));
         			e.printStackTrace();
@@ -333,15 +333,17 @@ public class GermplasmListTreeUtil implements Serializable {
                 }
 
                 // close popup
-                source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).removeWindow(event.getComponent().getWindow());
+                source.getWindow().removeWindow(event.getComponent().getWindow());
             }
         });
 
         Button cancel = new Button("Cancel");
         cancel.addListener(new Button.ClickListener() {
-            @Override
+            private static final long serialVersionUID = -971341450278698928L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).removeWindow(w);
+            	source.getWindow().removeWindow(w);
             }
         });
 
@@ -354,7 +356,7 @@ public class GermplasmListTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(w);    	
+        source.getWindow().addWindow(w);    	
     }    
 
     
@@ -423,7 +425,7 @@ public class GermplasmListTreeUtil implements Serializable {
                 Integer newItem = null;
                 
                 if(name.getValue().toString().replace(" ","").equals("")){
-                	MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+                	MessageNotifier.showWarning(source.getWindow(),
                             messageSource.getMessage(Message.INVALID_INPUT), 
                             messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
                 	return;
@@ -457,24 +459,24 @@ public class GermplasmListTreeUtil implements Serializable {
 	                    
 	                    targetTree.select(listId);
                 	} else {
-            			MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+            			MessageNotifier.showWarning(source.getWindow(),
                                 messageSource.getMessage(Message.INVALID_INPUT), 
                                 messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
                 	}
                 	
                 } catch (MiddlewareQueryException e) {
-                	MessageNotifier.showWarning(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+                	MessageNotifier.showWarning(source.getWindow(),
                             messageSource.getMessage(Message.ERROR_DATABASE), 
                             messageSource.getMessage(Message.ERROR_REPORT_TO));
                 } catch (Error e) {
-                	MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), 
+                	MessageNotifier.showError(source.getWindow(), 
                             messageSource.getMessage(Message.ERROR_INTERNAL), 
                             messageSource.getMessage(Message.ERROR_REPORT_TO));
         			e.printStackTrace();
                     return;
                 }
 
-                source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).removeWindow(event.getComponent().getWindow());
+                source.getWindow().removeWindow(event.getComponent().getWindow());
             }
         });
 
@@ -482,7 +484,7 @@ public class GermplasmListTreeUtil implements Serializable {
         cancel.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).removeWindow(w);
+            	source.getWindow().removeWindow(w);
             }
         });
 
@@ -495,7 +497,7 @@ public class GermplasmListTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME).addWindow(w);    	
+        source.getWindow().addWindow(w);    	
     }
 
 	public void deleteFolderOrList(final ListManagerTreeComponent listManagerTreeComponent, final Integer lastItemId, final TabSheet tabSheet) {
@@ -530,12 +532,12 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 		} catch (Error e) {
-			MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),messageSource.getMessage(Message.ERROR),e.getMessage());
+			MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR),e.getMessage());
 			return;
 		}
 
 		final GermplasmList finalGpList = gpList;
-		ConfirmDialog.show(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME),
+		ConfirmDialog.show(source.getWindow(),
 				messageSource.getMessage(Message.DELETE_LIST_FOLDER,targetTree.getItemCaption(lastItemId)),
 				messageSource.getMessage(Message.DELETE_LIST_FOLDER_CONFIRM,targetTree.getItemCaption(lastItemId)),
 				messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
@@ -559,7 +561,7 @@ public class GermplasmListTreeUtil implements Serializable {
 						if(tab!=null)
 							tabSheet.removeTab(tab);
 					} catch (Error e) {
-						MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), e.getMessage(), "");
+						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
 					} catch (MiddlewareQueryException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

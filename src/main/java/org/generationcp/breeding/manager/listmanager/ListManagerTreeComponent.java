@@ -638,4 +638,5 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     		return super.getWindow();
     	}
     }
+
 }
