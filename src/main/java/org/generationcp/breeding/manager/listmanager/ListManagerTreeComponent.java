@@ -386,7 +386,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	    				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
 	    				germplasmListTree.expandItem(parent.getId());
 	    			}
-	    			
+	    			germplasmListTree.setNullSelectionAllowed(false);
 	    			germplasmListTree.select(listId);
 	    		}
 	        }
@@ -469,6 +469,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	        		expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
 	        	}
         		
+        		germplasmListTree.setNullSelectionAllowed(false);
         		germplasmListTree.select(germplasmListId);
         		germplasmListTree.setValue(germplasmListId);
         	}
@@ -549,6 +550,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
         	}
         }
+        germplasmListTree.setNullSelectionAllowed(false);
         germplasmListTree.select(parentGermplasmListId);
         germplasmListTree.setValue(parentGermplasmListId);
     }
@@ -573,6 +575,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             // allow children if list has sub-lists
             germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
         }
+        germplasmListTree.setNullSelectionAllowed(false);
         germplasmListTree.select(parentGermplasmListId);
     }
     
@@ -596,6 +599,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	} else{
     		this.germplasmListTree.collapseItem(nodeId);
     	}
+    	germplasmListTree.setNullSelectionAllowed(false);
     	germplasmListTree.setValue(nodeId);
     	germplasmListTree.select(nodeId);
     }
@@ -610,6 +614,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
     public void setSelectedListId(Object listId){
     	this.selectedListId = listId;
+    	germplasmListTree.setNullSelectionAllowed(false);
     	germplasmListTree.select(listId);
     	germplasmListTree.setValue(listId);
     }

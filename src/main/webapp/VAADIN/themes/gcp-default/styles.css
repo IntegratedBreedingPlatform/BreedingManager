@@ -197,7 +197,8 @@
 	
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
@@ -209,7 +210,8 @@
 
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/document-icon.png);
 	background-repeat: no-repeat;
 }
