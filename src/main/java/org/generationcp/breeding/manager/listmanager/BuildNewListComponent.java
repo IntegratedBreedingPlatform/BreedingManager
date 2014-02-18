@@ -1388,6 +1388,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     public void viewEditList(int listId){
         
+    	ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
+    	resetListButtonClick.resetListBuilder();
+    	
     	this.fromEditList = true;
         this.germplasmListId = listId;
         Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
