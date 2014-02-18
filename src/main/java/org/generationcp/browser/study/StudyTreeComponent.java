@@ -21,6 +21,7 @@ import java.util.Map;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
+import org.generationcp.browser.study.listeners.StudyTreeCollapseListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
 import org.generationcp.browser.study.util.StudyTreeUtil;
 import org.generationcp.browser.util.SelectedTabCloseHandler;
@@ -126,6 +127,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
                 
         studyTree.addListener(new StudyTreeExpandListener(this));
         studyTree.addListener(new StudyItemClickListener(this));
+        studyTree.addListener(new StudyTreeCollapseListener(this));
 
         studyTree.setItemStyleGenerator(new ItemStyleGenerator() {
         	private static final long serialVersionUID = -5690995097357568121L;
@@ -443,7 +445,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     			studyTree.expandItem(currentItemId);
     		}
     	}
-    	
+    	studyTree.setNullSelectionAllowed(false);
     	studyTree.select(childItemId);
     	
     }
@@ -544,5 +546,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     			}
     		}
     	}
+    }
+    
+    
+    public Tree getStudyTree(){
+    	return studyTree;
     }
 }
