@@ -106,14 +106,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	this.forSelectingFolderToSaveIn = false;
     }
     
-    public ListManagerTreeComponent(boolean forSelectingFolderToSaveIn){
+    public ListManagerTreeComponent(boolean forSelectingFolderToSaveIn, Integer folderId){
     	super();
     	this.forSelectingFolderToSaveIn = forSelectingFolderToSaveIn;
     	this.selectListComponent = null;
     	this.listManagerMain = null;
         this.germplasmListBrowserMainLayout = null;
         this.forGermplasmListWindow = false;
-        this.listId = null;
+        this.listId = folderId;
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	@Override
 	public void attach() {
 		super.attach();
-		if(listId != null){
+		if(listId != null && !forSelectingFolderToSaveIn){
 			try{
 				displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
 			} catch(MiddlewareQueryException ex){
@@ -333,7 +333,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         
         Tree germplasmListTree = new Tree();
-        if (listManagerMain != null){
+        if (listManagerMain != null || this.forSelectingFolderToSaveIn){
         	germplasmListTree.setDragMode(TreeDragMode.NODE);
         }
 
@@ -638,4 +638,5 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     		return super.getWindow();
     	}
     }
+
 }
