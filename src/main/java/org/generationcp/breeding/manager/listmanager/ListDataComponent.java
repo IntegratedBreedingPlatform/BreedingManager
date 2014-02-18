@@ -539,7 +539,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		     addColumnButton.setCaption(messageSource.getMessage(Message.ADD_COLUMN));
 		     addColumnButton.setIcon(ICON_PLUS);
 		     addColumnButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:140px;");
+			 toolsMenuBar.addComponent(addColumnButton, "top:0px; right:152px;");
 			 
 			 addColumnContextMenu = new AddColumnContextMenu(listManagerTreeMenu, toolsMenuBar, addColumnButton, 
 			         listDataTable, ListDataTablePropertyID.GID.getName());
