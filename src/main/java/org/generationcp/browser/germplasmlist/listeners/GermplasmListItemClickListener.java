@@ -15,6 +15,7 @@ package org.generationcp.browser.germplasmlist.listeners;
 import org.generationcp.browser.germplasm.GermplasmListComponent;
 import org.generationcp.browser.germplasm.containers.ListsForGermplasmQuery;
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;
+import org.generationcp.browser.germplasmlist.ListManagerTreeComponent;
 import org.generationcp.browser.germplasmlist.dialogs.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -50,9 +51,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             }
-        }
-        
-        if (source instanceof GermplasmListComponent) {
+        } else if (source instanceof GermplasmListComponent) {
             int listId = Integer.valueOf(event.getItem().getItemProperty(ListsForGermplasmQuery.GERMPLASMLIST_ID).getValue().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
@@ -63,9 +62,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());  
                 }
             }
-        }
-        
-        if (source instanceof AddEntryDialog) {
+        } else if (source instanceof AddEntryDialog) {
             if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
                 try {
                     ((AddEntryDialog) source).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
@@ -82,6 +79,26 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                     e.printStackTrace();
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
+            }
+        } else if (source instanceof ListManagerTreeComponent) {
+        	String item = event.getItemId().toString();
+        	
+            if (event.getButton() == ClickEvent.BUTTON_LEFT) {
+	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
+	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
+	            
+	                    try {
+	                        ((ListManagerTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
+	                    } catch (InternationalizableException e) {
+	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                        e.printStackTrace();
+	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	                    }
+	        	} else{
+	        		((ListManagerTreeComponent) source).expandOrCollapseListTreeNode(item);
+	        	}
+	        	((ListManagerTreeComponent) source).setSelectedListId(event.getItemId());
+            	((ListManagerTreeComponent) source).updateButtons(event.getItemId());
             }
         }
     }

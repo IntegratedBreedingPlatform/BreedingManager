@@ -13,6 +13,7 @@
 package org.generationcp.browser.germplasmlist.listeners;
 
 import org.generationcp.browser.germplasmlist.GermplasmListTreeComponent;
+import org.generationcp.browser.germplasmlist.ListManagerTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -38,6 +39,14 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
         if (source instanceof GermplasmListTreeComponent) {
             try {
                 ((GermplasmListTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+            } catch (InternationalizableException e) {
+                LOG.error(e.toString() + "\n" + e.getStackTrace());
+                e.printStackTrace();
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        } else if (source instanceof ListManagerTreeComponent && (!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL"))) {
+            try {
+           		((ListManagerTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
             } catch (InternationalizableException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();

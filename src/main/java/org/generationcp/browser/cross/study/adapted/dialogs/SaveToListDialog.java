@@ -2,14 +2,19 @@ package org.generationcp.browser.cross.study.adapted.dialogs;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
+import org.generationcp.browser.germplasmlist.dialogs.SelectLocationFolderDialog;
+import org.generationcp.browser.germplasmlist.dialogs.SelectLocationFolderDialogSource;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
+import org.generationcp.browser.germplasmlist.util.GermplasmListTreeUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -34,29 +39,31 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SaveToListDialog extends Window implements InitializingBean, InternationalizableComponent,
-		Property.ValueChangeListener, AbstractSelect.NewItemHandler {
+		Property.ValueChangeListener, AbstractSelect.NewItemHandler, SelectLocationFolderDialogSource {
 	
-    @SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(SaveToListDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveToListDialog.class);
     private static final long serialVersionUID = 1L;
     public static final Object SAVE_BUTTON_ID = "Save Germplasm List";
     public static final String CANCEL_BUTTON_ID = "Cancel Saving";
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
+	private Label saveInFolderLabel;
+    private Label folderToSaveListTo;
     private Label labelListName;
     private Label labelDescription;
     private TextField txtDescription;
@@ -76,6 +83,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private SimpleResourceBundleMessageSource messageSource;
     private Button btnSave;
     private Button btnCancel;
+    private Button changeLocationFolderButton;
     private ComboBox comboBoxListName;
     private Select selectType;
     private List<GermplasmList> germplasmList;
@@ -101,22 +109,25 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
         //set as modal window, other components are disabled while window is open
         setModal(true);
         // define window size, set as not resizable
-        setWidth("700px");
-        setHeight("350px");
+        setWidth("560px");
+        setHeight("293px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.SAVE_GERMPLASM_LIST_WINDOW_LABEL));
+        addStyleName(Reindeer.WINDOW_LIGHT);
         // center window within the browser
         center();
         
-        GridLayout mainLayout = new GridLayout();
-        mainLayout.setRows(8);
-        mainLayout.setColumns(3);
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
+        AbsoluteLayout mainLayout = new AbsoluteLayout();
+        mainLayout.setWidth("550px");
+        mainLayout.setHeight("240px");
+        mainLayout.addStyleName("white-bg");
         
         labelListName = new Label(messageSource.getMessage(Message.LIST_NAME_LABEL));
+        labelListName.setWidth("100px");
         labelDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
+        labelDescription.setWidth("100px");
         labelType = new Label(messageSource.getMessage(Message.TYPE_LABEL));
+        labelType.setWidth("100px");
 
         comboBoxListName = new ComboBox();
         populateComboBoxListName();
@@ -161,15 +172,37 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
         btnCancel.addListener(new CloseWindowAction());
         hButton.addComponent(btnCancel);
 
-        mainLayout.addComponent(labelListName, 1, 1);
-        mainLayout.addComponent(comboBoxListName, 2, 1);
-        mainLayout.addComponent(labelDescription, 1, 2);
-        mainLayout.addComponent(txtDescription, 2, 2);
-        mainLayout.addComponent(labelType, 1, 3);
-        mainLayout.addComponent(selectType, 2, 3);
-        mainLayout.addComponent(hButton, 1, 6);
+        saveInFolderLabel = new Label(messageSource.getMessage(Message.SAVE_IN_WITH_COLON));
+        saveInFolderLabel.setWidth("100px");
         
-        addComponent(mainLayout);			
+        folderToSaveListTo = new Label("Program Lists");
+        folderToSaveListTo.setData(null);
+        folderToSaveListTo.addStyleName("not-bold");
+        folderToSaveListTo.setWidth("300px");
+        
+        changeLocationFolderButton = new Button(messageSource.getMessage(Message.CHANGE_LOCATION));
+        changeLocationFolderButton.addStyleName(Reindeer.BUTTON_LINK);
+        changeLocationFolderButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 415799611820196717L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				displaySelectFolderDialog();
+			}
+		});
+        
+        mainLayout.addComponent(saveInFolderLabel, "top:30px;left:20px");
+        mainLayout.addComponent(folderToSaveListTo, "top:30px;left:110px");
+        mainLayout.addComponent(changeLocationFolderButton, "top:28px;left:415px");
+        mainLayout.addComponent(labelListName, "top:60px;left:20px");
+        mainLayout.addComponent(comboBoxListName, "top:58px;left:110px");
+        mainLayout.addComponent(labelDescription, "top:90px;left:20px");
+        mainLayout.addComponent(txtDescription, "top:88px;left:110px");
+        mainLayout.addComponent(labelType, "top:120px;left:20px");
+        mainLayout.addComponent(selectType, "top:118px;left:110px");
+        mainLayout.addComponent(hButton, "top:170px;left:150px");
+        
+        setContent(mainLayout);			
 	}
 	
     private void populateComboBoxListName() throws MiddlewareQueryException {
@@ -263,7 +296,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
             Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
             Long currentDate = Long.valueOf(formatter.format(date));
             Integer userId = getCurrentUserLocalId();
-            GermplasmList parent = null;
+            GermplasmList parent = (GermplasmList) folderToSaveListTo.getData();
             int statusListName = 1;
             String GIDListString = "";
 
@@ -400,5 +433,48 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
             return 1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
         }
     }
+    
+    @Override
+	public void setSelectedFolder(GermplasmList folder) {
+		try{
+			Deque<GermplasmList> parentFolders = new ArrayDeque<GermplasmList>();
+	        GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, folder, parentFolders);
+	        
+	        StringBuilder locationFolderString = new StringBuilder();
+	        locationFolderString.append("Program Lists");
+	        
+	        while(!parentFolders.isEmpty())
+	        {
+	        	locationFolderString.append(" > ");
+	        	GermplasmList parentFolder = parentFolders.pop();
+	        	locationFolderString.append(parentFolder.getName());
+	        }
+	        
+	        locationFolderString.append(" > ");
+	        locationFolderString.append(folder.getName());
+	        
+	        if(locationFolderString.length() > 47){
+	        	int lengthOfFolderName = folder.getName().length();
+	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (47 - lengthOfFolderName - 3)) + "..." + folder.getName());
+	        } else{
+	        	this.folderToSaveListTo.setValue(locationFolderString.toString());
+	        }
+	        
+	        this.folderToSaveListTo.setDescription(locationFolderString.toString());
+	        this.folderToSaveListTo.setData(folder);
+	    } catch(MiddlewareQueryException ex){
+			LOG.error("Error with traversing parents of list: " + folder.getId(), ex);
+		}
+	}
 
+    private void displaySelectFolderDialog(){
+		GermplasmList selectedFolder = (GermplasmList) folderToSaveListTo.getData();
+		SelectLocationFolderDialog selectFolderDialog = null;
+		if(selectedFolder != null){
+			selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId());
+		} else{
+			selectFolderDialog = new SelectLocationFolderDialog(this, null);
+		}
+		this.getWindow().getParent().addWindow(selectFolderDialog);
+	}
 }
