@@ -192,4 +192,8 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	    this.hasChanged = hasChanged;
 	}
 
+	public ListDetailComponent getListDetailComponent(){
+		return listDetailComponent;
+	}
+	
 }
