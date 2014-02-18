@@ -8,6 +8,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -78,6 +79,7 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
+        germplasmListTree.addListener(new GermplasmListTreeCollapseListener(this));
         
         try{
         	if(listId != null){

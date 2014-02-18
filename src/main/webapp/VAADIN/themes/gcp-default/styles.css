@@ -181,7 +181,8 @@
 	
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
