@@ -46,6 +46,7 @@ public class StudyTreeExpandListener implements Tree.ExpandListener{
             }
             ((StudyTreeComponent) source).getStudyTree().select(event.getItemId());
             ((StudyTreeComponent) source).getStudyTree().setValue(event.getItemId());
+            ((StudyTreeComponent) source).updateButtons(event.getItemId());
         }
     }
 

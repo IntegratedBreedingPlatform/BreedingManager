@@ -35,6 +35,7 @@ public class StudyTreeCollapseListener implements Tree.CollapseListener{
         if (source instanceof StudyTreeComponent) {
             ((StudyTreeComponent) source).getStudyTree().select(event.getItemId());
             ((StudyTreeComponent) source).getStudyTree().setValue(event.getItemId());
+            ((StudyTreeComponent) source).updateButtons(event.getItemId());
         }
     }
 
