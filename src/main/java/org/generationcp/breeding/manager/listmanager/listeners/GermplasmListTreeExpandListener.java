@@ -47,6 +47,7 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
         	}
         	((ListManagerTreeComponent) source).getGermplasmListTree().select(event.getItemId());
        		((ListManagerTreeComponent) source).getGermplasmListTree().setValue(event.getItemId());
+       		((ListManagerTreeComponent) source).updateButtons(event.getItemId());
         }
     }
     

@@ -35,6 +35,7 @@ public class GermplasmListTreeCollapseListener implements Tree.CollapseListener{
         if (source instanceof ListManagerTreeComponent) {
     		((ListManagerTreeComponent) source).getGermplasmListTree().select(event.getItemId());
        		((ListManagerTreeComponent) source).getGermplasmListTree().setValue(event.getItemId());
+       		((ListManagerTreeComponent) source).updateButtons(event.getItemId());
         }		
 	}
     
