@@ -335,10 +335,14 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 	        	locationFolderString.append(parentFolder.getName());
 	        }
 	        
-	        locationFolderString.append(" > ");
-	        locationFolderString.append(folder.getName());
+	        if(folder != null){
+	        	locationFolderString.append(" > ");
+	        	locationFolderString.append(folder.getName());
+	        }
 	        
-	        if(locationFolderString.length() > 47){
+	        if(folder != null && folder.getName().length() >= 44){
+	        	this.folderToSaveListTo.setValue(folder.getName().substring(0, 47));
+	        } else if(locationFolderString.length() > 47){
 	        	int lengthOfFolderName = folder.getName().length();
 	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (47 - lengthOfFolderName - 3)) + "..." + folder.getName());
 	        } else{

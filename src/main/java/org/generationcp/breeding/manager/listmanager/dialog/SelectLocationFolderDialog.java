@@ -68,11 +68,18 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Integer folderId = (Integer) germplasmListTree.getSelectedListId();
+				Integer folderId = null;
+				if(germplasmListTree.getSelectedListId() instanceof Integer){
+					folderId = (Integer) germplasmListTree.getSelectedListId();
+				}
 				try{
-					GermplasmList folder = germplasmListManager.getGermplasmListById(folderId);
-					source.setSelectedFolder(folder);
-					
+					if(folderId != null){
+						GermplasmList folder = germplasmListManager.getGermplasmListById(folderId);
+						source.setSelectedFolder(folder);
+					} else{
+						source.setSelectedFolder(null);
+					}
+						
 					Window window = event.getButton().getWindow();
 			        window.getParent().removeWindow(window);
 				} catch(MiddlewareQueryException ex){
