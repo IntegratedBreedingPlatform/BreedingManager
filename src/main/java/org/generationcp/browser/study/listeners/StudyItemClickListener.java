@@ -54,6 +54,9 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
                     e.printStackTrace();
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription()); // TESTED 
                 }
+                ((StudyTreeComponent) source).getStudyTree().setNullSelectionAllowed(false);
+                ((StudyTreeComponent) source).getStudyTree().select(event.getItemId());
+                ((StudyTreeComponent) source).getStudyTree().setValue(event.getItemId());
             }
         }
         

@@ -105,6 +105,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         studyTree.removeAllItems();
         
     	studyTree = createCombinedStudyTree();
+    	studyTree.setNullSelectionAllowed(false);
         studyTreeUtil = new StudyTreeUtil(studyTree, this);
         
         treeContainer.addComponent(studyTree);
