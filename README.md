@@ -7,6 +7,7 @@ The Breeding Manager tools provide a user-friendly interface for breeding activi
 germplasm list management and making germplasm crosses. The List Manager allows the building, editing and browsing of germplasm lists.
 The Crossing Manager allows the creation of germplasm crosses either manually or by uploading a file. 
 The Germplasm Import tool allows creation of germplasm lists by importing existing or creating new germplasms.
+The Nursery Template Wizard allows creation of templates for making crosses.
 These tools make use of our Middleware API to connect to public and program databases.
 
 Prerequisites
@@ -53,7 +54,8 @@ Below are the URLs to access the BreedingManager tools:
   1.  List Manager - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/BreedingManager/main/list-manager/
   2.  Crossing Manager - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/BreedingManager/main/crosses/
   3.  Germplasm Import - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/BreedingManager/main/germplasm-import/
-
+  4.  Nursery Template Wizard - http://&lt;tomcatHost&gt;:&lt;tomcatPort&gt;/BreedingManager/main/nursery-template/
+  
 Other Helpful Resources
 -------------------------
 To setup remote debugging:
