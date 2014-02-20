@@ -125,6 +125,7 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     	
     	mainTabs = new TabSheet();    
     	mainTabs.setWidth("957px");   
+    	mainTabs.setHeight("475px");
         addComponent(mainTabs, "top:20px;left:20px");
         
     	this.finalEnvironmentForComparisonList = environmentForComparisonList; 
