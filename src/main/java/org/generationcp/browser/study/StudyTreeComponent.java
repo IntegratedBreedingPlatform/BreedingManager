@@ -486,7 +486,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
     
     public void updateButtons(Object itemId){
-    	
+    	setSelectedStudyTreeNodeId(itemId);
     	try {
     		//If any of the central lists/folders is selected
 			if(Integer.valueOf(itemId.toString())>0){

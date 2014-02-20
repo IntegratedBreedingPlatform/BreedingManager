@@ -44,14 +44,19 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-        } else if (source instanceof ListManagerTreeComponent && (!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL"))) {
-            try {
-           		((ListManagerTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
-            } catch (InternationalizableException e) {
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
+        } else if (source instanceof ListManagerTreeComponent){
+        	if(!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL")) {
+	            try {
+	           		((ListManagerTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+	            } catch (InternationalizableException e) {
+	                LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                e.printStackTrace();
+	                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	            }
+        	}
+        	((ListManagerTreeComponent) source).getGermplasmListTree().select(event.getItemId());
+       		((ListManagerTreeComponent) source).getGermplasmListTree().setValue(event.getItemId());
+       		((ListManagerTreeComponent) source).updateButtons(event.getItemId());
         }
     }
 

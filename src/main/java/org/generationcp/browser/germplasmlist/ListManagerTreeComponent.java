@@ -354,6 +354,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     }
     
     public void updateButtons(Object itemId){
+    	setSelectedListId(itemId);
     	if (forSelectingFolderToSaveIn){
     		try {
     			//If any of the central lists/folders is selected
