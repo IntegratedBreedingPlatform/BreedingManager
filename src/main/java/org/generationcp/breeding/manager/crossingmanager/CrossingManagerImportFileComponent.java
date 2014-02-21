@@ -148,7 +148,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        addComponent(nextButton, "top:300px;left:700px");
+        addComponent(nextButton, "top:300px;left:600px");
         
         filenameLabel = new Label();
         filenameLabel.setEnabled(false);

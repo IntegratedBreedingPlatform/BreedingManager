@@ -38,6 +38,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,7 +52,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
+public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
         implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
     
     public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
@@ -76,7 +77,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private Button btnSelectListFemaleParent;
     private Label lblMaleParent;
     private Button btnSelectListMaleParent;
-    private OptionGroup optionGroupMakeCrosses;
+    private Label crossingMethodLabel;
+    private ComboBox crossingMethodComboBox;
     private CheckBox chkBoxMakeReciprocalCrosses;
     private Button btnMakeCross;
     //private ListSelect listSelectFemale;
@@ -134,6 +136,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
     @Override
     public void afterPropertiesSet() throws Exception {
+    	
+    	setHeight("420px");
         this.setMargin(true, true, true, true);
 
         lblFemaleParent= new Label(); 
@@ -257,16 +261,18 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 			}
 		});
         
-        optionGroupMakeCrosses = new OptionGroup();
-        optionGroupMakeCrosses.setWidth(560,UNITS_PIXELS);
-        optionGroupMakeCrosses.addStyleName("wrapOptionGroupText");
-        optionGroupMakeCrosses.addItem(CrossType.MULTIPLY);
-        optionGroupMakeCrosses.setItemCaption(CrossType.MULTIPLY, 
-                messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
-        optionGroupMakeCrosses.addItem(CrossType.TOP_TO_BOTTOM);
-        optionGroupMakeCrosses.setItemCaption(CrossType.TOP_TO_BOTTOM, 
-                messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
-        optionGroupMakeCrosses.select(CrossType.MULTIPLY); //first option selected by default
+        crossingMethodLabel = new Label(messageSource.getMessage(Message.CROSSING_METHOD));
+        crossingMethodLabel.addStyleName("bold");
+        
+        crossingMethodComboBox = new ComboBox();
+        crossingMethodComboBox.setNewItemsAllowed(false);
+        crossingMethodComboBox.setNullSelectionAllowed(false);
+        crossingMethodComboBox.setWidth("500px");
+        crossingMethodComboBox.addItem(CrossType.MULTIPLY);
+        crossingMethodComboBox.setItemCaption(CrossType.MULTIPLY, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
+        crossingMethodComboBox.addItem(CrossType.TOP_TO_BOTTOM);
+        crossingMethodComboBox.setItemCaption(CrossType.TOP_TO_BOTTOM, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
+        crossingMethodComboBox.select(CrossType.MULTIPLY);
         
         chkBoxMakeReciprocalCrosses = new CheckBox();
     
@@ -287,7 +293,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         //listSelectMale.setNullSelectionAllowed(true);
         //listSelectMale.setMultiSelect(true);
         //listSelectMale.setImmediate(true);
-        
         
         maleParents = new Table();
         maleParents.setHeight(180, UNITS_PIXELS);
@@ -425,35 +430,35 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParents.setWidth(600, UNITS_PIXELS);
+        gridLayoutSelectingParents.setWidth(550, UNITS_PIXELS);
         
         gridLayoutSelectingParentOptions = new GridLayout(1,1);
         gridLayoutSelectingParentOptions.setSpacing(true);
+        gridLayoutSelectingParentOptions.setMargin(true, false, false, true);
         
         layoutCrossOption = new VerticalLayout();
         layoutCrossOption.setSpacing(true);
-        layoutCrossOption.addComponent(optionGroupMakeCrosses);
+        //layoutCrossOption.addComponent(optionGroupMakeCrosses); dennis
+        layoutCrossOption.addComponent(crossingMethodLabel);
+        layoutCrossOption.addComponent(crossingMethodComboBox);
         layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
         layoutCrossOption.addComponent(btnMakeCross);
         layoutCrossOption.setComponentAlignment(btnMakeCross,Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParentOptions.setWidth(560, UNITS_PIXELS);
+        gridLayoutSelectingParentOptions.setWidth(500, UNITS_PIXELS);
         gridLayoutSelectingParentOptions.setMargin(true, false, false, false);
         
         gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
-        addComponent(gridLayoutSelectingParents);
-        addComponent(gridLayoutSelectingParentOptions);
-        
-        setComponentAlignment(gridLayoutSelectingParents, Alignment.TOP_CENTER);
-        setComponentAlignment(gridLayoutSelectingParentOptions, Alignment.TOP_CENTER);
+        addComponent(gridLayoutSelectingParents, "top:15px; left:15px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:230px; left:35px;");
         
         crossesTableComponent = new MakeCrossesTableComponent();
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
-        addComponent(crossesTableComponent);
-        setComponentAlignment(crossesTableComponent, Alignment.TOP_CENTER);
+        
+        addComponent(crossesTableComponent, "top:15px; left:590px;");
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -461,8 +466,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         layoutButtonArea.addComponent(backButton);
         layoutButtonArea.addComponent(nextButton);
         
-        addComponent(layoutButtonArea);
-        setComponentAlignment(layoutButtonArea, Alignment.BOTTOM_CENTER);
+        addComponent(layoutButtonArea, "top:360px; left:500px;");
     }
 
     @Override
@@ -492,7 +496,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         List<GermplasmListEntry> maleList = getCorrectSortedValue(maleParents);
         
         if (!femaleList.isEmpty() && !maleList.isEmpty()){
-            CrossType optionId = (CrossType) optionGroupMakeCrosses.getValue();
+            CrossType optionId = (CrossType) crossingMethodComboBox.getValue();
             
             // Female - Male Multiplication
             if (CrossType.MULTIPLY.equals(optionId)){
