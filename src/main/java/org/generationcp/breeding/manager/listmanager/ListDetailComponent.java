@@ -161,7 +161,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         iBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
 	}
 
-	private Label createCaptionAndValueLbl(Message caption,String value) {
+	public Label createCaptionAndValueLbl(Message caption,String value) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<b>"); //make the caption bold
 		sb.append(messageSource.getMessage(caption));
@@ -257,10 +257,16 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     layout.addComponent(lockButton);
                 }
                 
-            // central lists    
+            // central lists  or if not list owner  
             } else{
-            	listStatus = new Label(germplasmList.getStatusString());
-            	listStatus.setWidth("80px");
+            	String statusString = germplasmList.getStatusString();
+				listStatus = new Label(statusString);
+				
+				//compute length of label
+				int baseWidth = 25;
+				int finalWidth = baseWidth + (5 * statusString.length());
+            	listStatus.setWidth(finalWidth + "px");
+ 
             	layout.addComponent(listStatus);
             }
         }
@@ -513,5 +519,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 
 	private boolean isUnlockedList() {
 		return germplasmList.getStatus() == 1;
+	}
+	
+	public void setLblName(String name){
+		lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
 	}
 }

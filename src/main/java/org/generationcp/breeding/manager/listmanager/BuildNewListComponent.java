@@ -103,6 +103,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private Label saveInLabel;
     private Label saveInValue;
+    private Label saveInValueDummyContainer;
     private Integer saveInListId;
     private Button changeLocationButton;
     private Window selectFolderWindow;
@@ -201,16 +202,24 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         saveInLabel.addStyleName("bold");
         fieldsLayout.addComponent(saveInLabel, "top:20px; left:0px;");
 
+        saveInValueDummyContainer = new Label();
+        saveInValueDummyContainer.setHeight("22px");
+        saveInValueDummyContainer.setWidth("355px");
+        saveInValueDummyContainer.addStyleName("v-textfield");
+        
         saveInValue = new Label();
         saveInValue.setCaption(generateSaveInString(null,false));
         saveInValue.setDescription(generateSaveInString(null,true));
         saveInValue.addStyleName("not-bold");
-        fieldsLayout.addComponent(saveInValue, "top:20px; left:65px;");
+        saveInValue.setWidth("350px");
+        
+        fieldsLayout.addComponent(saveInValueDummyContainer, "top:0px; left:65px;");
+        fieldsLayout.addComponent(saveInValue, "top:20px; left:70px;");
         
         changeLocationButton = new Button();
         changeLocationButton.setCaption(messageSource.getMessage(Message.CHANGE_LOCATION));
         changeLocationButton.addStyleName(Reindeer.BUTTON_LINK);
-        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:330px;");
+        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:430px;");
         changeLocationButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -1379,6 +1388,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     public void viewEditList(int listId){
         
+    	ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
+    	resetListButtonClick.resetListBuilder();
+    	
     	this.fromEditList = true;
         this.germplasmListId = listId;
         Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
@@ -1498,22 +1510,26 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private String generateSaveInString(Integer listId, Boolean returnFull){
 		
+		String finalPart = "";
 		String toReturn = "";
-		int shortenedLength = 30;
+		int shortenedLength = 50;
 		
 		Integer parentListId;
 		Integer previousParentListId=null;
 		
 		try {
 			if(listId!=null && listId!=0){
-				toReturn = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				finalPart = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				toReturn = finalPart;
 			}
 			GermplasmList parentList = germplasmListManager.getGermplasmListById(listId);
 			if(parentList!=null){
 				parentListId = parentList.getParentId();
-				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId){
+				GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+				
+				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId && parentFolder!=null){
 					System.out.println("Parent List ID: "+parentListId);
-					GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+					parentFolder = germplasmListManager.getGermplasmListById(parentListId);
 					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
 						toReturn = " > "+parentFolder.getName()+toReturn;
 					previousParentListId = parentListId;
@@ -1527,8 +1543,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		toReturn = "Program Lists" + toReturn;
 		
 		if(!returnFull && toReturn.length()>shortenedLength){
-			toReturn = toReturn.substring(0, shortenedLength).trim()+"..";
+			toReturn = toReturn.substring(0, shortenedLength - finalPart.length()).trim()+".."+finalPart;
 		}
+		
 		return toReturn;
 	}
 	

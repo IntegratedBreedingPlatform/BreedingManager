@@ -8,7 +8,9 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -16,7 +18,6 @@ import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 
@@ -78,6 +79,7 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
+        germplasmListTree.addListener(new GermplasmListTreeCollapseListener(this));
         
         try{
         	if(listId != null){
@@ -85,7 +87,7 @@ public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 	    		
 	    		if(list != null){
 	    			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
-	    			traverseParentsOfList(list, parents);
+	    			GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, list, parents);
 	    			
 	    			if(listId < 0){
 	                	germplasmListTree.expandItem(LOCAL);
