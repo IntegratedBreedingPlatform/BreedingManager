@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -38,6 +39,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
     public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
+    public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
     
     private Window window;
     
@@ -152,7 +154,14 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                     this.addWindow(emptyGermplasmListDetailsWindow);
                     return emptyGermplasmListDetailsWindow;
             	}
-            }
+            }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
+                manageCrossingSettings.setName(MANAGE_SETTINGS_CROSSING_MANAGER);
+                manageCrossingSettings.setSizeUndefined();
+                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain());
+                this.addWindow(manageCrossingSettings);
+                return manageCrossingSettings;
+            } 
         }
         
         return super.getWindow(name);

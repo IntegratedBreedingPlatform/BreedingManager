@@ -242,6 +242,10 @@
 	
 }
 
+.gray-border{
+	border:1px solid #e0e0e0;
+}
+
 .search-button {
 	padding: 0 !important;
 	margin: 0 !important;
@@ -373,3 +377,7 @@
 .v-tabsheet-content{position:absolute}
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
 .v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
+
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}R
