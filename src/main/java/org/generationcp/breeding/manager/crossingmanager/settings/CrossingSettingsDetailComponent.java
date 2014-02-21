@@ -92,12 +92,14 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 
 	@Override
 	public void layoutComponents() {
-		addStyleName(AppConstants.CssStyles.GRAY_BORDER);
+		setWidth("850px");
+		setHeight("580px");
+		addStyleName(AppConstants.CssStyles.GRAY_ROUNDED_BORDER);
 		
-		addComponent(mandatoryLabel, "top:10px; left:10px");
+		addComponent(mandatoryLabel, "top:7px; left:10px");
 		addComponent(methodComponent, "top:30px; left:10px");
-		addComponent(nameComponent, "top:250px; left:10px");
-		addComponent(additionalDetailsComponent, "top:380px; left:10px");
+		addComponent(nameComponent, "top:200px; left:10px");
+		addComponent(additionalDetailsComponent, "top:330px; left:10px");
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("200px");
@@ -109,7 +111,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		layout.addComponent(buttonBar);
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:570px; left:0px");
+		addComponent(layout, "top:510px; left:0px");
 	}
 
 	

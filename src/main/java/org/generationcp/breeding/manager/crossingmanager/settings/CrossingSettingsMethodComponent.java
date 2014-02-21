@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -89,8 +91,8 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 	@Override
 	public void instantiateComponents() {
 		
-		crossingMethodLabel = new Label("<b>" +messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase() 
-				+ "</b>", Label.CONTENT_XHTML);
+		crossingMethodLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
+		crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		methodDescriptionLabel = new Label("<i>" +messageSource.getMessage(Message.METHOD_DESCRIPTION_LABEL) 
 				+ "</i>", Label.CONTENT_XHTML);
 		
@@ -103,6 +105,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         crossingMethodDescriptionTextArea.setWidth("570px");
         crossingMethodDescriptionTextArea.setRows(3);
         crossingMethodDescriptionTextArea.addStyleName("mytextarea");
+        crossingMethodDescriptionTextArea.addStyleName(AppConstants.CssStyles.ITALIC);
         crossingMethodDescriptionTextArea.setReadOnly(true);
                    
         crossingMethodComboBox = new ComboBox();
@@ -235,14 +238,14 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		addComponent(crossingMethodLabel, "top:10px; left:0px");
-        addComponent(crossingMethodOptionGroup, "top:35px;left:0px");
-        addComponent(crossingMethodComboBox, "top:60px;left:300px");
-        addComponent(favoriteMethodsCheckbox, "top:60px;left:620px");
-        addComponent(manageFavoriteMethodsLink, "top:78px;left:640px");
+		addComponent(crossingMethodLabel, "top:5px; left:0px");
+        addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
+        addComponent(crossingMethodComboBox, "top:58px;left:300px");
+        addComponent(favoriteMethodsCheckbox, "top:58px;left:620px");
+        addComponent(manageFavoriteMethodsLink, "top:76px;left:640px");
         
-        addComponent(methodDescriptionLabel, "top:85px;left:15px");
-        addComponent(crossingMethodDescriptionTextArea, "top:100px;left:15px");
+        addComponent(methodDescriptionLabel, "top:80px;left:15px");
+        addComponent(crossingMethodDescriptionTextArea, "top:95px;left:15px");
 
 	}
 	
