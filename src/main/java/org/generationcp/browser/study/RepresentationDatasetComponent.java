@@ -30,7 +30,7 @@ import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,7 +76,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private Button openTableViewerButton;
     private StringBuffer reportTitle;
     
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     
     private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
 
@@ -84,7 +84,7 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     private SimpleResourceBundleMessageSource messageSource;
 	private boolean h2hCall;
     
-    public RepresentationDatasetComponent(StudyDataManagerImpl studyDataManager,
+    public RepresentationDatasetComponent(StudyDataManager studyDataManager,
             Integer datasetId, String datasetTitle, Integer studyId, boolean fromUrl,boolean h2hCall) {
         this.reportName = datasetTitle;
         this.studyIdHolder = studyId;

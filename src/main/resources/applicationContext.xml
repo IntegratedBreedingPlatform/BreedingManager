@@ -44,19 +44,6 @@
     </bean>
 
     <!-- The data source configuration -->
-    <bean id="localDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${local.driver}"/>
-        <property name="url" value="${local.url}"/>
-        <property name="username" value="${local.username}"/>
-        <property name="password" value="${local.password}"/>
-    </bean>
-    
-    <bean id="centralDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${central.driver}"/>
-        <property name="url" value="${central.url}"/>
-        <property name="username" value="${central.username}"/>
-        <property name="password" value="${central.password}"/>
-    </bean>
     
     <bean id="workbenchDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${workbench.driver}"/>
@@ -65,33 +52,9 @@
         <property name="password" value="${workbench.password}"/>
     </bean>
     
-    <bean id="localSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-        <property name="dataSource" ref="localDataSource"/>
-        <property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml"/>
-    </bean>
-    
-    <bean id="centralSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-        <property name="dataSource" ref="centralDataSource"/>
-        <property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml"/>
-    </bean>
-    
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="workbenchDataSource"/>
         <property name="configLocation" value="classpath:ibpworkbench_hib.cfg.xml"/>
-    </bean>
-    
-    <bean id="localHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
-        <property name="sessionFactory" ref="localSessionFactory"/>
-        
-        <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
-        <aop:scoped-proxy proxy-target-class="false"/>
-    </bean>
-    
-    <bean id="centralHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
-        <property name="sessionFactory" ref="centralSessionFactory"/>
-        
-        <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
-        <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
     <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
@@ -101,64 +64,76 @@
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
-    <bean id="genotypicDataManager" class="org.generationcp.middleware.manager.GenotypicDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
-    <bean id="germplasmDataManager" class="org.generationcp.middleware.manager.GermplasmDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
-    <bean id="pedigreeDataManager" class="org.generationcp.middleware.manager.PedigreeDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-        <property name="germplasmDataManager" ref="germplasmDataManager"/>
-    </bean>
-          
-    <bean id="germplasmListManager" class="org.generationcp.middleware.manager.GermplasmListManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-        
-    <bean id="inventoryDataManager" class="org.generationcp.middleware.manager.InventoryDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
-    <bean id="studyDataManager" class="org.generationcp.middleware.manager.StudyDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
-    
-    <bean id="ontologyDataManager" class="org.generationcp.middleware.manager.OntologyDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
-    <!--  
-    <bean id="traitDataManager" class="org.generationcp.middleware.manager.TraitDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    -->
-    
-    <bean id="userDataManager" class="org.generationcp.middleware.manager.UserDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
-    </bean>
-    
     <bean id="workbenchDataManager"
         class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl">
         <constructor-arg ref="workbenchHibernateSessionProvider" />
     </bean>
     
-    <bean id="crossStudyDataManager"
-        class="org.generationcp.middleware.manager.CrossStudyDataManagerImpl">
-        <property name="sessionProviderForLocal" ref="localHibernateSessionProvider"/>
-        <property name="sessionProviderForCentral" ref="centralHibernateSessionProvider"/>
+    <bean id="managerFactoryProvider" 
+    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
+    	<constructor-arg ref="workbenchDataManager" />
+    	<property name="maxCachedLocalSessionFactories" value="1" />
+    </bean>
+    
+    <bean id="managerFactory" name="managerFactory"
+    	factory-bean="managerFactoryProvider"
+    	factory-method="createInstance"
+    	scope="session" destroy-method="close">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="genotypicDataManager" factory-bean="managerFactory"
+    	factory-method="getGenotypicDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="germplasmDataManager" factory-bean="managerFactory"
+    	factory-method="getGermplasmDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="pedigreeDataManager" factory-bean="managerFactory"
+    	factory-method="getPedigreeDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+          
+    <bean id="germplasmListManager" factory-bean="managerFactory"
+    	factory-method="getGermplasmListManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+        
+    <bean id="inventoryDataManager" factory-bean="managerFactory"
+    	factory-method="getInventoryDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="studyDataManager" factory-bean="managerFactory"
+    	factory-method="getNewStudyDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="ontologyDataManager" factory-bean="managerFactory"
+    	factory-method="getNewOntologyDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="userDataManager" factory-bean="managerFactory"
+    	factory-method="getUserDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="crossStudyDataManager" factory-bean="managerFactory"
+    	factory-method="getCrossStudyDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
     </bean>
     
     <!--

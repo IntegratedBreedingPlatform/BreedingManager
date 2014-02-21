@@ -35,12 +35,15 @@ import org.generationcp.browser.study.StudyDetailComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.browser.util.awhere.AWhereFormComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -87,6 +90,12 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private VerticalLayout rootLayoutForGermplasmListBrowser;
     
     @Autowired
+    private DynamicManagerFactoryProvider managerFactoryProvider;
+    
+    @Autowired
+    private WorkbenchDataManagerImpl workbenchDataManager;
+    
+    @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     private UpdateComponentLabelsAction messageSourceListener;
@@ -94,7 +103,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private ApplicationContext applicationContext;
     
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     
     private GermplasmListBrowserMain germplasmListBrowserMain;
     
@@ -443,6 +452,23 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestStart(request, response);
         
+        Boolean lastOpenedProjectChanged = true;
+    	try {
+			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+    	
+    	if (lastOpenedProjectChanged){	
+    		 try{
+    	        	managerFactoryProvider.close();
+    	        }catch(Exception e){
+    		        e.printStackTrace();	
+    	        }
+			close();
+			request.getSession().invalidate();
+		}
+        
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
@@ -453,6 +479,12 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
+        
+        try{
+        	managerFactoryProvider.close();
+        }catch(Exception e){
+	        e.printStackTrace();	
+        }
         
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         

@@ -36,7 +36,7 @@ import org.generationcp.middleware.domain.dms.Reference;
 import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public static final String CENTRAL = "CENTRAL";
     
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     
     private VerticalLayout treeContainer;
     private Tree studyTree;
