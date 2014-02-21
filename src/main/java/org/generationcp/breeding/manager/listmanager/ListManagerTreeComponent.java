@@ -390,6 +390,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	    			}
 	    			germplasmListTree.setNullSelectionAllowed(false);
 	    			germplasmListTree.select(listId);
+	    			germplasmListTree.setValue(listId);
+	    			setSelectedListId(listId);
 	    		}
 	        }
         } catch(MiddlewareQueryException ex){
