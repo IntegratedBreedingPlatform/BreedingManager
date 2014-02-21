@@ -318,6 +318,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
      	 // "No Germplasm List Data retrieved."
          if (listDataCount == 0) {
             noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+            noListDataLabel.setWidth("250px");
 			addComponent(noListDataLabel); 
          } else {
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
@@ -1065,7 +1066,22 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         Collection<?> selectedIdsToDelete = (Collection<?>)listDataTable.getValue();
         
         if(selectedIdsToDelete.size() > 0){
-        	removeRowsInListDataTable(selectedIdsToDelete);
+        	if(listDataTable.size() == selectedIdsToDelete.size()){
+        		ConfirmDialog.show(this.getWindow(), "Delete All Entries in List Data", "Are you sure you want to delete all list data entries for this list?",
+	        			"Yes", "No", new ConfirmDialog.Listener() {
+	        		private static final long serialVersionUID = 1L;
+	        		public void onClose(ConfirmDialog dialog) {
+	        			if (dialog.isConfirmed()) {
+	        				removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
+	        			}
+	        		}
+	        		
+	        	});
+        	}
+        	else{
+        		removeRowsInListDataTable(selectedIdsToDelete);
+        	}
+        	
         }else{
             MessageNotifier.showError(this.getWindow(), "Error with deleteting entries." 
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
