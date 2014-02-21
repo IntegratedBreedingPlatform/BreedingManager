@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -110,6 +111,7 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	private void initializeSaveSettingsSection() {
 		saveSettingsSectionTitle = new Label("<b>" +messageSource.getMessage(Message.SAVE_SETTINGS).toUpperCase() 
 				+ "</b>", Label.CONTENT_XHTML);
+		saveSettingsSectionTitle.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		saveSettingsLabel = new Label();
 		settingsNameTextfield = new TextField();
@@ -121,6 +123,7 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	private void initializeAdditionalDetailsSection() {
 		additionalDetailsSectionTitle = new Label("<b>" +messageSource.getMessage(Message.ADDITIONAL_DETAILS).toUpperCase() 
 				+ "</b>", Label.CONTENT_XHTML);
+		additionalDetailsSectionTitle.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		harvestDateLabel = new Label();
         
@@ -205,17 +208,17 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		addComponent(harvestLocationLabel, "top:26px;left:0px");
 		addComponent(harvestLocComboBox, "top:26px;left:145px");
 		addComponent(showFavoriteLocationsCheckBox, "top:26px;left:410px");
-		addComponent(manageFavoriteLocationsLink,"top:26px;left:620px;");
+		addComponent(manageFavoriteLocationsLink,"top:44px;left:430px;");
 
 		addComponent(harvestDateLabel, "top:60px;left:0px");
         addComponent(harvestDtDateField, "top:60px;left:145px");
 		
 		
         // Save Settings section
-		addComponent(saveSettingsSectionTitle, "top:110px;left:0px");
-		addComponent(saveSettingsLabel, "top:136px; left:0px;");
-		addComponent(settingsNameTextfield, "top:136px; left:145px;");
-		addComponent(setAsDefaultSettingCheckbox, "top:136px; left:410px;");
+		addComponent(saveSettingsSectionTitle, "top:105px;left:0px");
+		addComponent(saveSettingsLabel, "top:130px; left:0px;");
+		addComponent(settingsNameTextfield, "top:130px; left:145px;");
+		addComponent(setAsDefaultSettingCheckbox, "top:130px; left:410px;");
         
 	}
 

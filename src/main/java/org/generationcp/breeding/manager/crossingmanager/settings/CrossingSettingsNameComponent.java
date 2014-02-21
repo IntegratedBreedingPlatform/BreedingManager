@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
     private Label crossNameLabel;
     private Label specifyPrefixLabel;
     private Label specifySuffixLabel;
-    private Label howManyDigitsLabel; 
+    private Label digitsLabel; 
     private Label addSpaceLabel;
    
     private TextField prefixTextField;
@@ -71,7 +72,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		specifyPrefixLabel.setValue(messageSource.getMessage(Message.SPECIFY_PREFIX) + ": *");
 		specifySuffixLabel.setValue(messageSource.getMessage(Message.SPECIFY_SUFFIX) + ":");
 		addSpaceLabel.setValue(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE) + "?");
-		howManyDigitsLabel.setValue(messageSource.getMessage(Message.DIGITS));
+		digitsLabel.setValue(messageSource.getMessage(Message.DIGITS));
 		
         messageSource.setCaption(sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE);
 	}
@@ -80,7 +81,8 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	@Override
 	public void instantiateComponents() {  
 		crossNameLabel = new Label("<b>" +messageSource.getMessage(Message.CROSS_NAME).toUpperCase() 
-				+ "</b>", Label.CONTENT_XHTML);
+				+ "S</b>", Label.CONTENT_XHTML);
+		crossNameLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
         sequenceNumCheckBox = new CheckBox();
         sequenceNumCheckBox.setImmediate(true);
@@ -98,9 +100,9 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         
         specifyPrefixLabel = new Label();
         prefixTextField = new TextField();
-        prefixTextField.setWidth("200px");
+        prefixTextField.setWidth("120px");
         
-        howManyDigitsLabel = new Label();
+        digitsLabel = new Label();
         leadingZerosSelect = new Select();
 
         leadingZerosSelect.setNullSelectionAllowed(false);
@@ -109,19 +111,20 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         
         specifySuffixLabel = new Label();
         suffixTextField = new TextField();
-        suffixTextField.setWidth("200px");
+        suffixTextField.setWidth("120px");
         
 	}
 
 	@Override
 	public void initializeValues() {
-        digitsToggableComponents[0] = howManyDigitsLabel;
+        digitsToggableComponents[0] = digitsLabel;
         digitsToggableComponents[1] = leadingZerosSelect;
         enableSpecifyLeadingZerosComponents(false);
         
         for (int i = 1; i <= MAX_LEADING_ZEROS; i++){
             leadingZerosSelect.addItem(Integer.valueOf(i));
         }
+        leadingZerosSelect.select(1);
 
         // Add space option group 
         String yes = messageSource.getMessage(Message.YES);
@@ -144,11 +147,12 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 
 		addComponent(specifyPrefixLabel, "top:26px;left:0px");
         addComponent(prefixTextField, "top:26px;left:145px");
-        addComponent(addSpaceLabel, "top:26px;left:385px");
-        addComponent(addSpaceOptionGroup, "top:26px;left:615px");
+        addComponent(addSpaceLabel, "top:26px;left:380px");
+        addComponent(addSpaceOptionGroup, "top:26px;left:610px");
         
         addComponent(sequenceNumCheckBox, "top:57px;left:140px");
         addComponent(leadingZerosSelect, "top:55px;left:380px");
+        addComponent(digitsLabel, "top:58px;left:435px");
         
         addComponent(specifySuffixLabel, "top:83px;left:0px");
         addComponent(suffixTextField, "top:83px;left:145px");

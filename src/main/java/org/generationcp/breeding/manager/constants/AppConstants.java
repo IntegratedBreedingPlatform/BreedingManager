@@ -17,8 +17,10 @@ public final class AppConstants {
 		}
 		
 		public static final String GRAY_PANEL_WITH_BORDER = "list-manager-search-bar";
-		public static final String GRAY_BORDER = "gray-border";
+		public static final String GRAY_ROUNDED_BORDER = "gray-rounded-border";
 		public static final String HORIZONTAL_GROUP = "horizontalgroup";
+		public static final String ITALIC = "italic";
+		
 	}
 
 }
