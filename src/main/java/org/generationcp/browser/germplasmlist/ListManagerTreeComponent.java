@@ -340,6 +340,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	    			}
 	    			
 	    			germplasmListTree.select(listId);
+	    			germplasmListTree.setValue(listId);
+	    			setSelectedListId(listId);
 	    		}
 	        }
         } catch(MiddlewareQueryException ex){
@@ -512,11 +514,13 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
 
         for (GermplasmList listChild : germplasmListChildren) {
-            germplasmListTree.addItem(listChild.getId());
-            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
-            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
-            // allow children if list has sub-lists
-            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	if(!forSelectingFolderToSaveIn || isFolder(listChild.getId())){
+	            germplasmListTree.addItem(listChild.getId());
+	            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+	            // allow children if list has sub-lists
+	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	}
         }
         germplasmListTree.select(parentGermplasmListId);
     }
