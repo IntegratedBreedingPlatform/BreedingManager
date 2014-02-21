@@ -12,6 +12,8 @@
 
 package org.generationcp.breeding.manager.listimport.listeners;
 
+import org.generationcp.commons.tomcat.util.TomcatUtil;
+import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Tool;
@@ -40,6 +42,9 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
+    @Autowired
+    private TomcatUtil tomcatUtil;
+    
     private String gid;
     private Boolean viaToolURL;
 
@@ -57,7 +62,9 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     	else
     		mainWindow = event.getComponent().getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
         
-        Tool tool = null;
+    	launchWebTool();
+    	
+    	Tool tool = null;
         try {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
@@ -100,6 +107,56 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         
         mainWindow.addWindow(germplasmWindow);
+    }
+    
+    
+    private void launchWebTool(){
+    	
+		try {
+			Tool germplasmBrowserTool;
+			germplasmBrowserTool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.name());
+			
+			String url = germplasmBrowserTool.getPath();
+	    	
+	        WebAppStatusInfo statusInfo = null;
+	        String contextPath = null;
+	        String localWarPath = null;
+	        try {
+	        	
+	            statusInfo = tomcatUtil.getWebAppStatus();
+	            contextPath = TomcatUtil.getContextPathFromUrl(url);
+	            localWarPath = TomcatUtil.getLocalWarPathFromUrl(url);
+	            
+	        }
+	        catch (Exception e1) {
+	          e1.printStackTrace();
+	        }
+	    	        
+	    	      
+	        try {
+	            boolean deployed = statusInfo.isDeployed(contextPath);
+	            boolean running = statusInfo.isRunning(contextPath);
+	            
+	            if (!running) {
+	                if (!deployed) {
+	                    // deploy the webapp
+	                    tomcatUtil.deployLocalWar(contextPath, localWarPath);
+	                } else {
+	                    // start the webapp
+	                    tomcatUtil.startWebApp(contextPath);
+	                }
+	            }
+	        }
+	        catch (Exception e) {
+	           e.printStackTrace();
+	        }
+			
+		} catch (MiddlewareQueryException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+    	
+    	        
     }
 
 }

@@ -9,10 +9,13 @@ import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -47,6 +50,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private DynamicManagerFactoryProvider managerFactoryProvider;
+    
+    @Autowired
+    private WorkbenchDataManagerImpl workbenchDataManager;
     
     private UpdateComponentLabelsAction messageSourceListener;
 
@@ -215,6 +224,23 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestStart(request, response);
         
+        	Boolean lastOpenedProjectChanged = true;
+        	try {
+				lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+        	
+        	if (lastOpenedProjectChanged){	
+        		 try{
+        	        	managerFactoryProvider.close();
+        	        }catch(Exception e){
+        		        e.printStackTrace();	
+        	        }
+				close();
+				request.getSession().invalidate();
+			}
+        
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
@@ -225,6 +251,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
+        
+        try{
+        	managerFactoryProvider.close();
+        }catch(Exception e){
+	        e.printStackTrace();	
+        }
         
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         
