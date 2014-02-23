@@ -89,7 +89,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         addComponent(titleLayout);
         
         accordion = new Accordion();
-        accordion.setWidth("800px");
+        accordion.setWidth("1170px");
         
         wizardScreenOne = new CrossingManagerImportFileComponent(this, accordion);
         wizardScreenTwo = new CrossingManagerMakeCrossesComponent(this, accordion);

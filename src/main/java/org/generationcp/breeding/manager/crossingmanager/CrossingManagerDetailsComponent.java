@@ -175,8 +175,8 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         addComponent(germplasmListDate, "top:145px; left:340px;");
         
         addComponent(warnOnClickDone, "top:270px; left: 130px;");
-        addComponent(backButton, "top:195px; left: 340px;");
-        addComponent(doneButton, "top:195px; left: 410px;");
+        addComponent(backButton, "top:195px; left: 500px;");
+        addComponent(doneButton, "top:195px; left: 570px;");
         
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
