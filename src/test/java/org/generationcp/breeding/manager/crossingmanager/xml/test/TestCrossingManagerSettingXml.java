@@ -30,14 +30,11 @@ public class TestCrossingManagerSettingXml {
         StringWriter writer = new StringWriter();
         marshaller.marshal(crossingManagerSetting, writer);
         
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossingManagerSetting name=\"sample\"><additionalDetailsSetting " +
+        String xmlToRead = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossingManagerSetting name=\"sample\"><additionalDetailsSetting " +
         		"harvestLocationId=\"1000\" harvestDate=\"1970-01-12T21:46:40+08:00\"/><breedingMethodSetting useAMethodForAllCrosses=\"true\" methodId=\"104\" " +
         		"basedOnStatusOfParentalLines=\"false\"/><crossNameSetting prefix=\"IR\" numOfDigits=\"5\" addSpaceBetweenPrefixAndCode=\"true\"/></crossingManagerSetting>";
-        
-        Assert.assertEquals(expectedXml, writer.toString());
-        
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(expectedXml));
+        CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlToRead));
         Assert.assertEquals(crossingManagerSetting, parsedSetting);
 	}
 
