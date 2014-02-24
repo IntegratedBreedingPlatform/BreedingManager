@@ -450,30 +450,35 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
     @Override
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
-        super.doOnRequestStart(request, response);
+       
         
-        Boolean lastOpenedProjectChanged = true;
-    	try {
-			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-    	
-    	if (lastOpenedProjectChanged){	
-    		 try{
-    	        	managerFactoryProvider.close();
-    	        }catch(Exception e){
-    		        e.printStackTrace();	
-    	        }
-			close();
-			request.getSession().invalidate();
-		}
-        
-        LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
+        System.out.println("GermplasmStudyBrowser Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+        	
+        	  Boolean lastOpenedProjectChanged = true;
+          	try {
+      			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+      		} catch (MiddlewareQueryException e) {
+      			e.printStackTrace();
+      		}
+          	
+          	if (lastOpenedProjectChanged){	
+          		 try{
+          	        	managerFactoryProvider.close();
+          	        }catch(Exception e){
+          		        e.printStackTrace();	
+          	        }
+      			close();
+      			request.getSession().invalidate();
+      		
+      		}
+        	
+        	
+            //HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
+        
+        super.doOnRequestStart(request, response);
     }
     
     @Override
@@ -489,7 +494,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+            //HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
         }
     }
     
