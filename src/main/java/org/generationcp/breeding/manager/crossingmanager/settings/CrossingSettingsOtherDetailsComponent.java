@@ -38,6 +38,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -259,4 +260,30 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
         }
     }
 
+	public TextField getSettingsNameTextfield() {
+		return settingsNameTextfield;
+	}
+
+	public CheckBox getSetAsDefaultSettingCheckbox() {
+		return setAsDefaultSettingCheckbox;
+	}
+
+	public DateField getHarvestDtDateField() {
+		return harvestDtDateField;
+	}
+
+	public ComboBox getHarvestLocComboBox() {
+		return harvestLocComboBox;
+	}
+    
+	public boolean validateInputFields(){
+		String settingsName = (String) settingsNameTextfield.getValue();
+		if(settingsName == null || settingsName.trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please specify a name for the setting."
+					, Notification.POSITION_CENTERED);
+			settingsNameTextfield.focus();
+			return false;
+		}
+		return true;
+	}
 }

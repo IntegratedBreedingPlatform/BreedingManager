@@ -178,4 +178,34 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         }
     }
 
+	public TextField getPrefixTextField() {
+		return prefixTextField;
+	}
+
+	public TextField getSuffixTextField() {
+		return suffixTextField;
+	}
+
+	public OptionGroup getAddSpaceOptionGroup() {
+		return addSpaceOptionGroup;
+	}
+
+	public Select getLeadingZerosSelect() {
+		return leadingZerosSelect;
+	}
+
+	public CheckBox getSequenceNumCheckBox() {
+		return sequenceNumCheckBox;
+	}
+	
+	public boolean validateInputFields(){
+		String prefix = (String) prefixTextField.getValue();
+		if(prefix == null || prefix.trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
+					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
+			prefixTextField.focus();
+			return false;
+		}
+		return true;
+	}
 }

@@ -37,6 +37,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -56,7 +57,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
     @Autowired
     private WorkbenchDataManager workbenchDataManager; 
 	
-    private enum CrossingMethodOption{
+    public enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
     
@@ -296,6 +297,23 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         manageFavoriteMethodsLink.setVisible(sameForAllCrosses);
 	}
 
+	public OptionGroup getCrossingMethodOptionGroup() {
+		return crossingMethodOptionGroup;
+	}
 
-
+	public ComboBox getCrossingMethodComboBox() {
+		return crossingMethodComboBox;
+	}
+    
+	public boolean validateInputFields(){
+		if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
+			if(crossingMethodComboBox.getValue() == null){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "No breeding method specified. Please select a breeding method."
+						, Notification.POSITION_CENTERED);
+				crossingMethodComboBox.focus();
+				return false;
+			}
+		}
+		return true;
+	}
 }
