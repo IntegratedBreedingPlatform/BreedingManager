@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -150,71 +152,131 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	}
 
 	private void doSaveAction(){
-		boolean allInputsAreValid = true;
-		allInputsAreValid = methodComponent.validateInputFields();
-		allInputsAreValid = nameComponent.validateInputFields();
-		allInputsAreValid = additionalDetailsComponent.validateInputFields();
+		if(!methodComponent.validateInputFields()){
+			return;
+		}
 		
-		if(allInputsAreValid){
-			Project project = null;
-			Tool crossingManagerTool = null;
-			try{
-				Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-				project = workbenchDataManager.getLastOpenedProject(wbUserId);
-				crossingManagerTool = workbenchDataManager.getToolWithName(CROSSING_MANAGER_TOOL_NAME);
-			} catch(MiddlewareQueryException ex){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
-				LOG.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
+		if(!nameComponent.validateInputFields()){
+			return;
+		}
+		
+		if(!additionalDetailsComponent.validateInputFields()){
+			return;
+		}
+		
+		Project project = null;
+		Tool crossingManagerTool = null;
+		try{
+			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+			project = workbenchDataManager.getLastOpenedProject(wbUserId);
+			crossingManagerTool = workbenchDataManager.getToolWithName(CROSSING_MANAGER_TOOL_NAME);
+		} catch(MiddlewareQueryException ex){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
+			LOG.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
+			return;
+		}
+		
+		CrossingManagerSetting currentlyDefinedSettingsInUi = getCurrentlyDefinedSetting();
+		
+		if(currentSetting == null){
+			TemplateSetting templateSetting = new TemplateSetting();
+			String settingName = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
+			templateSetting.setName(settingName.trim());
+			
+			if(!doesSettingNameExist(settingName, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
+				templateSetting.setIsDefault(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
+				templateSetting.setProjectId(Integer.valueOf(project.getProjectId().intValue()));
+				templateSetting.setTool(crossingManagerTool);
+				templateSetting.setTemplateSettingId(null);
+				
+				try{
+					String configuration = getXmlStringForSetting(currentlyDefinedSettingsInUi);
+					templateSetting.setConfiguration(configuration);
+				} catch(JAXBException ex){
+					MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting."
+							, Notification.POSITION_CENTERED);
+					LOG.error("Error with writing XML String.", ex);
+					return;
+				}
+				
+				try{
+					Integer templateSettingId = workbenchDataManager.addTemplateSetting(templateSetting);
+					List<TemplateSetting> results = workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
+					if(!results.isEmpty()){
+						currentSetting = results.get(0);
+					} else{
+						templateSetting.setTemplateSettingId(templateSettingId);
+						currentSetting = templateSetting;
+					}
+					
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Settings have been saved."
+							, 3000, Notification.POSITION_CENTERED);
+					return;
+				} catch(MiddlewareQueryException ex){
+					LOG.error("Error with saving template setting.", ex);
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+							, "Error with saving template setting.", Notification.POSITION_CENTERED);
+				}
+			} else{
 				return;
 			}
+		} else{
+			boolean thereIsAChange = false;
+			String currentSettingNameInUi = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
+			currentSettingNameInUi = currentSettingNameInUi.toString();
 			
-			CrossingManagerSetting currentlyDefinedSettingsInUi = getCurrentlyDefinedSetting();
+			if(!currentSetting.getName().equals(currentSettingNameInUi)){
+				if(!doesSettingNameExist(currentSettingNameInUi, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
+					currentSetting.setName(currentSettingNameInUi);
+					thereIsAChange = true;
+				} else{
+					return;
+				}
+			}
 			
-			if(currentSetting == null){
-				TemplateSetting templateSetting = new TemplateSetting();
-				String settingName = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
-				templateSetting.setName(settingName.trim());
-				
-				if(!doesSettingNameExist(settingName, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
-					templateSetting.setIsDefault(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
-					templateSetting.setProjectId(Integer.valueOf(project.getProjectId().intValue()));
-					templateSetting.setTool(crossingManagerTool);
-					templateSetting.setTemplateSettingId(null);
-					
+			try{
+				CrossingManagerSetting savedSetting = readXmlStringForSetting(currentSetting.getConfiguration());
+				if(!currentlyDefinedSettingsInUi.equals(savedSetting)){
 					try{
 						String configuration = getXmlStringForSetting(currentlyDefinedSettingsInUi);
-						templateSetting.setConfiguration(configuration);
+						currentSetting.setConfiguration(configuration);
+						thereIsAChange = true;
 					} catch(JAXBException ex){
 						MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting."
 								, Notification.POSITION_CENTERED);
 						LOG.error("Error with writing XML String.", ex);
 						return;
 					}
-					
-					try{
-						Integer templateSettingId = workbenchDataManager.addTemplateSetting(templateSetting);
-						List<TemplateSetting> results = workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
-						if(!results.isEmpty()){
-							currentSetting = results.get(0);
-						} else{
-							templateSetting.setTemplateSettingId(templateSettingId);
-							currentSetting = templateSetting;
-						}
-						
-						MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Settings have been saved."
-								, Notification.POSITION_CENTERED);
-						return;
-					} catch(MiddlewareQueryException ex){
-						LOG.error("Error with saving template setting.", ex);
-						MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-								, "Error with saving template setting.", Notification.POSITION_CENTERED);
-					}
-				} else{
+				}
+			} catch(JAXBException ex){
+				LOG.error("Error with parsing crossing manager XML string.", ex);
+				MessageNotifier.showError(getWindow(), "XML Parsing Error", "Error with parsing XML string for Crossing Manager setting."
+						, Notification.POSITION_CENTERED);
+				return;
+			}
+			
+			if(!currentSetting.isDefault().equals(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue())){
+				currentSetting.setIsDefault(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
+				thereIsAChange = true;
+			}
+			
+			if(thereIsAChange){
+				try{
+					workbenchDataManager.updateTemplateSetting(currentSetting);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
+							, 3000,Notification.POSITION_CENTERED);
+				} catch(MiddlewareQueryException ex){
+					LOG.error("Error with updating template setting record.", ex);
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."
+							, Notification.POSITION_CENTERED);
 					return;
 				}
+			} else{
+				return;
 			}
-		}
+		}	
+		
 	}
 	
 	private boolean doesSettingNameExist(String name, Integer projectId, Tool tool){
@@ -294,5 +356,12 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
         marshaller.marshal(setting, writer);
         return writer.toString();
     }
+	
+	private CrossingManagerSetting readXmlStringForSetting(String xmlString) throws JAXBException{
+		JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
+		Unmarshaller unmarshaller = context.createUnmarshaller();
+        CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlString));
+        return parsedSetting;
+	}
 }
 

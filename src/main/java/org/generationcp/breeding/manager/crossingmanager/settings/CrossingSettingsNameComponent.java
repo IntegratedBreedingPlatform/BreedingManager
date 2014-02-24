@@ -203,7 +203,6 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		if(prefix == null || prefix.trim().length() == 0){
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
 					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
-			prefixTextField.focus();
 			return false;
 		}
 		return true;

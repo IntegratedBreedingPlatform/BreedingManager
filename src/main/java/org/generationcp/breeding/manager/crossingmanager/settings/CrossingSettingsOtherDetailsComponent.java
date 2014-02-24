@@ -281,7 +281,6 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		if(settingsName == null || settingsName.trim().length() == 0){
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please specify a name for the setting."
 					, Notification.POSITION_CENTERED);
-			settingsNameTextfield.focus();
 			return false;
 		}
 		return true;

@@ -310,7 +310,6 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			if(crossingMethodComboBox.getValue() == null){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "No breeding method specified. Please select a breeding method."
 						, Notification.POSITION_CENTERED);
-				crossingMethodComboBox.focus();
 				return false;
 			}
 		}
