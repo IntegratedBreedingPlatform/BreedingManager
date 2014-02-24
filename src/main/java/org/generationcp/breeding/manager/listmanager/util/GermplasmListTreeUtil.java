@@ -378,7 +378,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	}
     	
         
-        w.setWidth("300px");
+        w.setWidth("320px");
         w.setHeight("150px");
         w.setModal(true);
         w.setResizable(false);
