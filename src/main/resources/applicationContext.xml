@@ -73,6 +73,14 @@
     	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedLocalSessionFactories" value="1" />
+    	<property name="localPort" value="${workbench.port}" />
+    	<property name="localHost" value="${workbench.host}" />
+    	<property name="localUsername" value="${workbench.username}"/>
+        <property name="localPassword" value="${workbench.password}"/>
+    	<property name="centralPort" value="${workbench.port}" />
+    	<property name="centralHost" value="${workbench.host}" />
+    	<property name="centralUsername" value="${workbench.username}"/>
+        <property name="centralPassword" value="${workbench.password}"/>
     </bean>
     
     <bean id="managerFactory" name="managerFactory"
