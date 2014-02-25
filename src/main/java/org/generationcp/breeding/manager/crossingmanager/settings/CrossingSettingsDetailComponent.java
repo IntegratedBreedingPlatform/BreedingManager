@@ -334,12 +334,10 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		
 		Integer methodId = (Integer) methodComponent.getCrossingMethodComboBox().getValue();
 		boolean isBasedOnStatusOfParentalLines = true;
-		boolean useAMethodForAllCrosses = false;
 		if(methodComponent.getCrossingMethodOptionGroup().getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
 			isBasedOnStatusOfParentalLines = false;
-			useAMethodForAllCrosses = true;
 		}
-		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines, useAMethodForAllCrosses);
+		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
 		toreturn.setBreedingMethodSetting(breedingMethodSetting);
 		
 		String settingName = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
