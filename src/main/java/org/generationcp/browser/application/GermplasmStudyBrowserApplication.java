@@ -452,11 +452,11 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
        
         
-        System.out.println("GermplasmStudyBrowser Request started " + request.getRequestURI() + "?" + request.getQueryString());
+        LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
         	
-        	  Boolean lastOpenedProjectChanged = true;
+        /**	  Boolean lastOpenedProjectChanged = true;
           	try {
       			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
       		} catch (MiddlewareQueryException e) {
@@ -472,10 +472,10 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
       			close();
       			request.getSession().invalidate();
       		
-      		}
+      		}**/
         	
         	
-            //HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
+            HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
         
         super.doOnRequestStart(request, response);
@@ -494,7 +494,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
-            //HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
         }
     }
     
