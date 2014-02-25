@@ -424,11 +424,11 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 	        	locationFolderString.append(folder.getName());
 	        }
 	        
-	        if(folder != null && folder.getName().length() >= 44){
+	        if(folder != null && folder.getName().length() >= 40){
 	        	this.folderToSaveListTo.setValue(folder.getName().substring(0, 47));
 	        } else if(locationFolderString.length() > 47){
 	        	int lengthOfFolderName = folder.getName().length();
-	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (47 - lengthOfFolderName - 3)) + "..." + folder.getName());
+	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (47 - lengthOfFolderName - 6)) + "... > " + folder.getName());
 	        } else{
 	        	this.folderToSaveListTo.setValue(locationFolderString.toString());
 	        }
