@@ -132,7 +132,8 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         addSpaceOptionGroup.addItem(yes);
         addSpaceOptionGroup.setItemCaption(yes, yes);
         addSpaceOptionGroup.addItem(no);
-        addSpaceOptionGroup.setItemCaption(no, no);        
+        addSpaceOptionGroup.setItemCaption(no, no);
+        addSpaceOptionGroup.select(no); // "No" selected by default
 	}
 
 	@Override
