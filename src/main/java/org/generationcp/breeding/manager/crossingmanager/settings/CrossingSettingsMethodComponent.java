@@ -94,8 +94,10 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 		
 		crossingMethodLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
 		crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		
 		methodDescriptionLabel = new Label("<i>" +messageSource.getMessage(Message.METHOD_DESCRIPTION_LABEL) 
 				+ "</i>", Label.CONTENT_XHTML);
+		methodDescriptionLabel.setWidth("200px");
 		
 		crossingMethodOptionGroup = new OptionGroup();
         crossingMethodOptionGroup.setImmediate(true);
