@@ -482,11 +482,11 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 	        	locationFolderString.append(folder.getName());
 	        }
 	        
-	        if(folder != null && folder.getName().length() >= 39){
+	        if(folder != null && folder.getName().length() >= 36){
 	        	this.folderToSaveListTo.setValue(folder.getName().substring(0, 47));
 	        } else if(locationFolderString.length() > 43){
 	        	int lengthOfFolderName = folder.getName().length();
-	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (43 - lengthOfFolderName - 3)) + "..." + folder.getName());
+	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (43 - lengthOfFolderName - 6)) + "... > " + folder.getName());
 	        } else{
 	        	this.folderToSaveListTo.setValue(locationFolderString.toString());
 	        }
