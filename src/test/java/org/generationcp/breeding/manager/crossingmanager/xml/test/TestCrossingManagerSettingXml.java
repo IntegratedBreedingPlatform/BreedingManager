@@ -20,8 +20,8 @@ public class TestCrossingManagerSettingXml {
 
 	@Test
 	public void test() throws Exception {
-		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(Integer.valueOf(104), false, true);
-		CrossNameSetting crossNameSetting = new CrossNameSetting("IR", null, true, Integer.valueOf(5));
+		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(Integer.valueOf(104), false);
+		CrossNameSetting crossNameSetting = new CrossNameSetting("IR", "M", true, Integer.valueOf(5));
 		AdditionalDetailsSetting additionalDetailsSetting = new AdditionalDetailsSetting(Integer.valueOf(1000), new Date(1000000000));
 		CrossingManagerSetting crossingManagerSetting = new CrossingManagerSetting("sample", breedingMethodSetting, crossNameSetting, additionalDetailsSetting);
 		
@@ -31,8 +31,8 @@ public class TestCrossingManagerSettingXml {
         marshaller.marshal(crossingManagerSetting, writer);
         
         String xmlToRead = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossingManagerSetting name=\"sample\"><additionalDetailsSetting " +
-        		"harvestLocationId=\"1000\" harvestDate=\"1970-01-12T21:46:40+08:00\"/><breedingMethodSetting useAMethodForAllCrosses=\"true\" methodId=\"104\" " +
-        		"basedOnStatusOfParentalLines=\"false\"/><crossNameSetting prefix=\"IR\" numOfDigits=\"5\" addSpaceBetweenPrefixAndCode=\"true\"/></crossingManagerSetting>";
+        		"harvestLocationId=\"1000\" harvestDate=\"1970-01-12T21:46:40+08:00\"/><breedingMethodSetting methodId=\"104\" " +
+        		"basedOnStatusOfParentalLines=\"false\"/><crossNameSetting prefix=\"IR\" suffix=\"M\" numOfDigits=\"5\" addSpaceBetweenPrefixAndCode=\"true\"/></crossingManagerSetting>";
         Unmarshaller unmarshaller = context.createUnmarshaller();
         CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlToRead));
         Assert.assertEquals(crossingManagerSetting, parsedSetting);
