@@ -53,8 +53,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SaveToListDialog extends Window implements InitializingBean, InternationalizableComponent,
-		Property.ValueChangeListener, AbstractSelect.NewItemHandler, SelectLocationFolderDialogSource {
+public class SaveToListDialog extends Window implements InitializingBean, InternationalizableComponent
+		,SelectLocationFolderDialogSource {
 	
     private static final Logger LOG = LoggerFactory.getLogger(SaveToListDialog.class);
     private static final long serialVersionUID = 1L;
@@ -132,10 +132,47 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
         comboBoxListName = new ComboBox();
         populateComboBoxListName();
         comboBoxListName.setNewItemsAllowed(true);
-        //comboBoxListName.setNewItemHandler(this);
         comboBoxListName.setNullSelectionAllowed(false);
-        //comboBoxListName.addListener(this);
         comboBoxListName.setImmediate(true);
+        comboBoxListName.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 2852245342851718316L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				String listName = (String) comboBoxListName.getValue();
+				Integer listId = mapExistingList.get(listName);
+				
+				if(listId != null){
+					try{
+						GermplasmList list = germplasmListManager.getGermplasmListById(listId);
+						txtDescription.setValue(list.getDescription());
+						txtDescription.setEnabled(false);
+						selectType.setValue(list.getType());
+						selectType.setEnabled(false);
+						setSelectedFolder(list.getParent());
+						changeLocationFolderButton.setVisible(false);
+					} catch(MiddlewareQueryException ex){
+						LOG.error("Error with retrieving list with id: " + listId, ex);
+					}
+				}
+			}
+		});
+        
+        comboBoxListName.setNewItemHandler(new AbstractSelect.NewItemHandler() {
+			private static final long serialVersionUID = 2934507069390997826L;
+
+			@Override
+			public void addNewItem(String newItemCaption) {
+				txtDescription.setValue("");
+				txtDescription.setEnabled(true);
+				selectType.setValue("LST");
+				selectType.setEnabled(true);
+				setSelectedFolder(null);
+				changeLocationFolderButton.setVisible(true);
+				comboBoxListName.addItem(newItemCaption);
+				comboBoxListName.setValue(newItemCaption);
+			}
+		});
 
         txtDescription = new TextField();
         txtDescription.setWidth("400px");
@@ -230,16 +267,6 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
         }
     }
 
-
-	@Override
-	public void addNewItem(String newItemCaption) {
-	}
-
-
-	@Override
-	public void valueChange(ValueChangeEvent event) {
-	}
-	
 	public void saveButtonClickAction(){
 		String listName = comboBoxListName.getValue().toString();
 		String listNameId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));	
