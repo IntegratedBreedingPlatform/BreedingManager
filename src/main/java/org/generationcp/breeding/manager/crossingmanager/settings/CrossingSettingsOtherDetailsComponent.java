@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -284,5 +285,24 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 			return false;
 		}
 		return true;
+	}
+
+	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
+		harvestLocComboBox.select(additionalDetailsSetting.getHarvestLocationId());
+		harvestDtDateField.setValue(additionalDetailsSetting.getHarvestDate());
+		settingsNameTextfield.setValue(name);
+		if(isDefault){
+			setAsDefaultSettingCheckbox.setValue(true);
+		}
+		else{
+			setAsDefaultSettingCheckbox.setValue(false);
+		}
+	}
+
+	public void setFieldsDefaultValue() {
+		harvestLocComboBox.select(null);
+		harvestDtDateField.setValue(null);
+		settingsNameTextfield.setValue("");
+		setAsDefaultSettingCheckbox.setValue(false);
 	}
 }

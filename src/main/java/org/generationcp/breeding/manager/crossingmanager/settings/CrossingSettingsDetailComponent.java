@@ -56,6 +56,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     @Autowired
     WorkbenchDataManager workbenchDataManager;
     
+    public ManageCrossingSettingsMain manageCrossingSettingsMain;
+    
     public enum Actions {
     	SAVE, CANCEL
     }
@@ -70,6 +72,10 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	private TemplateSetting currentSetting;
 	
+	public CrossingSettingsDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
+		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
+	}
+
 	@Override
 	public void attach() {
 		super.attach();
@@ -123,6 +129,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			@Override
 			public void buttonClick(ClickEvent event) {
 				doSaveAction();
+				manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(currentSetting);
 			}
 		});
 	}
@@ -149,6 +156,30 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
 		addComponent(layout, "top:510px; left:0px");
+	}
+	
+	public void doResetAction(){
+		setManageCrossingSettingsFields();
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been reset."
+				, 3000,Notification.POSITION_CENTERED);
+	}
+	
+	public void setManageCrossingSettingsFields(){
+		if(currentSetting != null){
+			CrossingManagerSetting templateSetting;
+			try {
+				templateSetting = readXmlStringForSetting(currentSetting.getConfiguration());
+				
+				//set now all the fields in crossing settings
+				methodComponent.setFields(templateSetting.getBreedingMethodSetting());
+				nameComponent.setFields(templateSetting.getCrossNameSetting());
+				additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(), currentSetting.isDefault());
+				
+			} catch (JAXBException e) {
+				LOG.error("Error with retrieving template setting.",e);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void doSaveAction(){
@@ -360,6 +391,20 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		Unmarshaller unmarshaller = context.createUnmarshaller();
         CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlString));
         return parsedSetting;
+	}
+
+	public TemplateSetting getCurrentSetting() {
+		return currentSetting;
+	}
+
+	public void setCurrentSetting(TemplateSetting currentSetting) {
+		this.currentSetting = currentSetting;
+	}
+
+	public void setDefaultManageCrossingSettingsFields() {
+		methodComponent.setFieldsDefaultValue();
+		nameComponent.setFieldsDefaultValue();
+		additionalDetailsComponent.setFieldsDefaultValue();
 	}
 }
 

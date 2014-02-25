@@ -6,6 +6,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -158,21 +159,8 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 
 			@Override
             public void valueChange(ValueChangeEvent event) {
-                boolean sameForAllCrossesOptionSelected = isSameMethodForAll();
-                
-                toggleSameMethodForAllFields(sameForAllCrossesOptionSelected);
-                
-                if(sameForAllCrossesOptionSelected){
-	                crossingMethodComboBox.focus();
-	                populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
-					
-                }else{
-	                crossingMethodComboBox.removeAllItems();
-	                resetMethodTextArea();
-                }
+                toggleCrossingMethodOptionGroup();
             }
-
-			
 
         });  
 		
@@ -183,20 +171,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			@Override
 		    public void valueChange(ValueChangeEvent event) {
     			if(crossingMethodComboBox.size() > 0){
-            		try {
-                		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
-            		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
-            		    crossingMethodDescriptionTextArea.setReadOnly(false);
-            		    crossingMethodDescriptionTextArea.setValue(methodDescription);
-            		    crossingMethodDescriptionTextArea.setReadOnly(true);
-         
-            		} catch (MiddlewareQueryException e) {
-            		    e.printStackTrace();
-            		    LOG.error("Error getting method.");
-            		} catch (ClassCastException e) {
-            			e.printStackTrace();
-            			LOG.error("Error getting method");
-            		}	
+            		showMethodDescription((Integer) event.getProperty().getValue());
     			}
 		    }
 		});
@@ -237,6 +212,38 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         	
         });
 
+	}
+	
+	public void toggleCrossingMethodOptionGroup(){
+		boolean sameForAllCrossesOptionSelected = isSameMethodForAll();
+        
+        toggleSameMethodForAllFields(sameForAllCrossesOptionSelected);
+        
+        if(sameForAllCrossesOptionSelected){
+            crossingMethodComboBox.focus();
+            populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
+			
+        }else{
+            crossingMethodComboBox.removeAllItems();
+            resetMethodTextArea();
+        }
+	}
+	
+	public void showMethodDescription(Integer methodId){
+		try {
+    		Integer breedingMethodSelected = methodId;
+		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
+		    crossingMethodDescriptionTextArea.setReadOnly(false);
+		    crossingMethodDescriptionTextArea.setValue(methodDescription);
+		    crossingMethodDescriptionTextArea.setReadOnly(true);
+
+		} catch (MiddlewareQueryException e) {
+		    e.printStackTrace();
+		    LOG.error("Error getting method.");
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			LOG.error("Error getting method");
+		}	
 	}
 
 	@Override
@@ -316,5 +323,22 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			}
 		}
 		return true;
+	}
+
+	public void setFields(BreedingMethodSetting breedingMethodSetting) {
+		if(breedingMethodSetting.isBasedOnStatusOfParentalLines()){
+			crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
+		}
+		else{
+			crossingMethodOptionGroup.select(CrossingMethodOption.SAME_FOR_ALL_CROSSES);
+			Integer methodId = breedingMethodSetting.getMethodId();
+			crossingMethodComboBox.select(methodId);
+			showMethodDescription(methodId);
+		}
+	}
+
+	public void setFieldsDefaultValue() {
+		crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
+		toggleCrossingMethodOptionGroup();
 	}
 }

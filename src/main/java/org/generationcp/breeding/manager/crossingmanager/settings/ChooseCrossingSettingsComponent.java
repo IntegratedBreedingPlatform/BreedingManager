@@ -1,24 +1,37 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.TemplateSetting;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ReadOnlyStatusChangeEvent;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+	
+	public ManageCrossingSettingsMain manageCrossingSettingsMain;
 	
 	public enum Actions {
 		COPY_SETTING, ADD_SETTING, RESET_SETTING, DELETE_SETTING
@@ -41,6 +54,13 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
+	@Autowired
+    WorkbenchDataManager workbenchDataManager;
+	
+	public ChooseCrossingSettingsComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
+		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
+	}
+
 	@Override
 	public void updateLabels() {
 	}
@@ -72,6 +92,8 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 		
 		settingsComboBox = new ComboBox();
 		settingsComboBox.setWidth("170px");
+		settingsComboBox.setImmediate(true);
+		settingsComboBox.setNullSelectionAllowed(true);
 		
 		copySettingButton = new Button(messageSource.getMessage(Message.MAKE_A_COPY));
 		copySettingButton.setData(Actions.COPY_SETTING);
@@ -103,18 +125,59 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void initializeValues() {
-		//TODO replace with real settings from DB
-		settingsComboBox.addItem(1);
-		settingsComboBox.setItemCaption(1, "Cross Type 1");
-		settingsComboBox.addItem(2);
-		settingsComboBox.setItemCaption(2, "Cross Type 2");
-		
+		setSettingsComboBox(null);
+	}
+	
+	public void setSettingsComboBox(TemplateSetting currentSetting){
+		TemplateSetting templateSettingFilter = new TemplateSetting();
+		settingsComboBox.removeAllItems();
+		try {
+			List<TemplateSetting> templateSettings = workbenchDataManager.getTemplateSettings(templateSettingFilter);
+			
+			for(TemplateSetting ts : templateSettings){
+				settingsComboBox.addItem(ts);
+				settingsComboBox.setItemCaption(ts, ts.getName());
+			}
+			
+			if(currentSetting != null){
+				 settingsComboBox.select(currentSetting);
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
+		
+		settingsComboBox.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if(settingsComboBox.getValue() != null){
+					manageCrossingSettingsMain.getDetailComponent().setCurrentSetting(getSelectedTemplateSetting());
+					manageCrossingSettingsMain.getDetailComponent().setManageCrossingSettingsFields();
+				}
+				else{
+					manageCrossingSettingsMain.getDetailComponent().setDefaultManageCrossingSettingsFields();
+				}
+			}
+		});
+		
+		resetSettingButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -432280582291837428L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				manageCrossingSettingsMain.getDetailComponent().doResetAction();
+			}
+		});
 	}
 	
+	public TemplateSetting getSelectedTemplateSetting(){
+		return (TemplateSetting) settingsComboBox.getValue();
+	}
 
 }

@@ -42,8 +42,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		manageCrossingSettingsLabel = new Label(messageSource.getMessage(Message.MANAGE_SAVED_CROSSING_SETTINGS));
 		manageCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H1.styleName());
 		
-		chooseSettingsComponent = new ChooseCrossingSettingsComponent();
-		detailComponent = new CrossingSettingsDetailComponent();
+		chooseSettingsComponent = new ChooseCrossingSettingsComponent(this);
+		detailComponent = new CrossingSettingsDetailComponent(this);
 	}
 
 	@Override
@@ -63,5 +63,15 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		addComponent(chooseSettingsComponent, "top:45px");
 		addComponent(detailComponent, "top:100px;");
 	}
+
+	public ChooseCrossingSettingsComponent getChooseSettingsComponent() {
+		return chooseSettingsComponent;
+	}
+
+	public CrossingSettingsDetailComponent getDetailComponent() {
+		return detailComponent;
+	}
+	
+	
 
 }
