@@ -135,8 +135,10 @@ public class GermplasmListTreeUtil implements Serializable {
         	targetTree.setParent(sourceItemId, targetItemId);
         	targetTree.expandItem(targetItemId);
 		}
+        
+        source.setSelectedListId(sourceItemId);
         targetTree.select(sourceItemId);
-    	
+        targetTree.setValue(sourceItemId);
     }
 
     public void setupTreeDragAndDropHandler(){
