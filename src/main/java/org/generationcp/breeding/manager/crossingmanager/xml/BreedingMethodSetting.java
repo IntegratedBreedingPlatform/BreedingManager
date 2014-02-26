@@ -12,19 +12,16 @@ public class BreedingMethodSetting implements Serializable {
 
 	private Integer methodId;
 	private boolean isBasedOnStatusOfParentalLines;
-	private boolean useAMethodForAllCrosses;
 	
 	public BreedingMethodSetting(){
 		
 	}
 	
 	public BreedingMethodSetting(Integer methodId,
-			boolean isBasedOnStatusOfParentalLines,
-			boolean useAMethodForAllCrosses) {
+			boolean isBasedOnStatusOfParentalLines) {
 		super();
 		this.methodId = methodId;
 		this.isBasedOnStatusOfParentalLines = isBasedOnStatusOfParentalLines;
-		this.useAMethodForAllCrosses = useAMethodForAllCrosses;
 	}
 
 	@XmlAttribute
@@ -46,15 +43,6 @@ public class BreedingMethodSetting implements Serializable {
 		this.isBasedOnStatusOfParentalLines = isBasedOnStatusOfParentalLines;
 	}
 
-	@XmlAttribute
-	public boolean isUseAMethodForAllCrosses() {
-		return useAMethodForAllCrosses;
-	}
-
-	public void setUseAMethodForAllCrosses(boolean useAMethodForAllCrosses) {
-		this.useAMethodForAllCrosses = useAMethodForAllCrosses;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -71,7 +59,6 @@ public class BreedingMethodSetting implements Serializable {
         return new EqualsBuilder()
         		.append(methodId, rhs.methodId)
         		.append(isBasedOnStatusOfParentalLines, rhs.isBasedOnStatusOfParentalLines)
-        		.append(useAMethodForAllCrosses, rhs.useAMethodForAllCrosses)
         		.isEquals();
     }
 
@@ -79,8 +66,7 @@ public class BreedingMethodSetting implements Serializable {
 	public String toString() {
 		return "BreedingMethodSetting [methodId=" + methodId
 				+ ", isBasedOnStatusOfParentalLines="
-				+ isBasedOnStatusOfParentalLines + ", useAMethodForAllCrosses="
-				+ useAMethodForAllCrosses + "]";
+				+ isBasedOnStatusOfParentalLines + "]";
 	}
 	
 }

@@ -43,7 +43,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
@@ -156,7 +155,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         //listSelectFemale.setImmediate(true);
         
         femaleParents = new Table();
-        femaleParents.setHeight(180, UNITS_PIXELS);
+        femaleParents.setHeight(160, UNITS_PIXELS);
         femaleParents.setWidth(240, UNITS_PIXELS);
         femaleParents.setNullSelectionAllowed(true);
         femaleParents.setSelectable(true);
@@ -164,7 +163,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty("Female Parents", String.class, null);
-        femaleParents.setColumnWidth("Female Parents", 150);
+        femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
+        //femaleParents.setColumnWidth("Female Parents", 160);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -3048433522366977000L;
@@ -210,6 +210,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			public void valueChange(ValueChangeEvent event) {
 				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
 				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) femaleParents.getValue();
+				if(selectedEntries.size() == entries.size()){
+					femaleParentsTagAll.setValue(true);
+				}
 				for(GermplasmListEntry entry : entries){
 					CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
 					if(selectedEntries.contains(entry)){
@@ -236,6 +239,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		});
         
         femaleParentsTagAll = new CheckBox();
+        femaleParentsTagAll.setCaption(messageSource.getMessage(Message.SELECT_ALL));
         femaleParentsTagAll.setImmediate(true);
         femaleParentsTagAll.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 7882379695058054587L;
@@ -295,7 +299,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         //listSelectMale.setImmediate(true);
         
         maleParents = new Table();
-        maleParents.setHeight(180, UNITS_PIXELS);
+        maleParents.setHeight(160, UNITS_PIXELS);
         maleParents.setWidth(240, UNITS_PIXELS);
         maleParents.setNullSelectionAllowed(true);
         maleParents.setSelectable(true);
@@ -303,7 +307,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty("Male Parents", String.class, null);
-        maleParents.setColumnWidth("Male Parents", 150);
+        maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
+        //maleParents.setColumnWidth("Male Parents", 160);
         maleParents.setDragMode(TableDragMode.ROW);
         maleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -6464944116431652229L;
@@ -343,6 +348,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			public void valueChange(ValueChangeEvent event) {
 				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
 				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) maleParents.getValue();
+				
+				if(selectedEntries.size() == entries.size()){
+					maleParentsTagAll.setValue(true);
+				}
+				
 				for(GermplasmListEntry entry : entries){
 					CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
 					if(selectedEntries.contains(entry)){
@@ -369,6 +379,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		});
         
         maleParentsTagAll = new CheckBox();
+        maleParentsTagAll.setCaption(messageSource.getMessage(Message.SELECT_ALL));
         maleParentsTagAll.setImmediate(true);
         maleParentsTagAll.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -6111529620495423779L;
@@ -415,7 +426,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         femaleParentsTableLayout.setWidth("260px");
         femaleParentsTableLayout.setHeight("180px");
         femaleParentsTableLayout.addComponent(femaleParents, "top:0px;left:20px");
-        femaleParentsTableLayout.addComponent(femaleParentsTagAll, "top:4px;left:55px");
+        femaleParentsTableLayout.addComponent(femaleParentsTagAll, "top:164px;left:27px");
         gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListFemaleParent,  Alignment.MIDDLE_CENTER);
         gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
@@ -425,7 +436,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         maleParentsTableLayout.setWidth("260px");
         maleParentsTableLayout.setHeight("180px");
         maleParentsTableLayout.addComponent(maleParents, "top:0px;left:20px");
-        maleParentsTableLayout.addComponent(maleParentsTagAll, "top:4px;left:55px");
+        maleParentsTableLayout.addComponent(maleParentsTagAll, "top:164px;left:27px");
         gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,1);
         gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
