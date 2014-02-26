@@ -449,7 +449,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         layoutCrossOption = new VerticalLayout();
         layoutCrossOption.setSpacing(true);
-        //layoutCrossOption.addComponent(optionGroupMakeCrosses); dennis
         layoutCrossOption.addComponent(crossingMethodLabel);
         layoutCrossOption.addComponent(crossingMethodComboBox);
         layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
@@ -530,6 +529,10 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                 }
             }
             this.nextButton.setEnabled(true);
+        } else {
+            MessageNotifier.showError(getWindow(), "Error with selecting parents."
+                    ,messageSource.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED)
+                    , Notification.POSITION_CENTERED);
         }
     }
     
