@@ -1598,4 +1598,12 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	return addColumnContextMenu;
     }
     
+    public String getListName() {
+        return listName;
+    }
+    
+    public List<GermplasmListData> getListDatas() {
+        return listDatas;
+    }
+    
 }
