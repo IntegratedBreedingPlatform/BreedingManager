@@ -233,6 +233,12 @@
    			<version>3.1.0</version>
 		</dependency>
 		
+		<dependency>
+    	<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2</version>
+		    </dependency>
+		
 	</dependencies>
 
 	<build>
@@ -288,7 +294,7 @@
 									<copy todir="src/main/resources" overwrite="true">
 										<fileset dir="pipeline/config/${envConfig}" id="fromDir">
 											<include name="workbench.properties" />
-											<include name="IBPDatasource.properties" />
+											<!-- <include name="IBPDatasource.properties" />  -->
 										</fileset>
 									</copy>
 								</tasks>
