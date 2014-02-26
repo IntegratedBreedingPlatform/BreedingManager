@@ -134,6 +134,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         window.setSizeUndefined();
 
         TabSheet tabSheet = new TabSheet();
+        tabSheet.setHeight("1000px");
         // add listener triggered by selecting tabs, this listener will create
         // the content for the tabs dynamically as needed
         tabSheet.addListener(new GermplasmSelectedTabChangeListener(this));

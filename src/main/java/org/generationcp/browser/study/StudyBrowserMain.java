@@ -62,7 +62,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         
         tabSheetStudyDatabaseInstance = new TabSheet();
         tabSheetStudyDatabaseInstance.setWidth("100%");
-        tabSheetStudyDatabaseInstance.setHeight("600px");
+        tabSheetStudyDatabaseInstance.setHeight("800px");
 
         tabStudies = new VerticalLayout();
         tabSearch = new VerticalLayout();
