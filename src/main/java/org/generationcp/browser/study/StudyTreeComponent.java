@@ -428,6 +428,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	buildChildMap(childItemId,true);
     	Integer rootItemId = rootNodeProjectId;
     	    	
+    	if(childItemId>0){
+    		studyTree.expandItem(CENTRAL);
+    	} else {
+    		studyTree.expandItem(LOCAL);
+    	}
+    	
     	if(rootItemId!=null){
     		addStudyNode(rootItemId);
     		studyTree.expandItem(rootItemId);
@@ -446,6 +452,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     			studyTree.expandItem(currentItemId);
     		}
     	}
+    	studyTree.select(childItemId);
     	studyTree.setNullSelectionAllowed(false);
     	studyTree.select(childItemId);
     	
