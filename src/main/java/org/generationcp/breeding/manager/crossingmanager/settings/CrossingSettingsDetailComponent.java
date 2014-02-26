@@ -49,6 +49,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsDetailComponent.class);
 	private static String CROSSING_MANAGER_TOOL_NAME = "crossing_manager";
+	private static final int SETTING_NAME_MAX_LENGTH = 64;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -174,6 +175,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 				methodComponent.setFields(templateSetting.getBreedingMethodSetting());
 				nameComponent.setFields(templateSetting.getCrossNameSetting());
 				additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(), currentSetting.isDefault());
+				//set name text field
+				additionalDetailsComponent.getSettingsNameTextfield().setValue(currentSetting.getName());
 				
 			} catch (JAXBException e) {
 				LOG.error("Error with retrieving template setting.",e);
@@ -213,7 +216,9 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		if(currentSetting == null){
 			TemplateSetting templateSetting = new TemplateSetting();
 			String settingName = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
-			templateSetting.setName(settingName.trim());
+			settingName = settingName.trim().substring(0,
+                    Math.min(settingName.length(), SETTING_NAME_MAX_LENGTH));
+			templateSetting.setName(settingName);
 			
 			if(!doesSettingNameExist(settingName, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
 				templateSetting.setIsDefault(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
@@ -256,6 +261,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			boolean thereIsAChange = false;
 			String currentSettingNameInUi = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
 			currentSettingNameInUi = currentSettingNameInUi.toString();
+			currentSettingNameInUi = currentSettingNameInUi.trim().substring(0,
+			        Math.min(currentSettingNameInUi.length(), SETTING_NAME_MAX_LENGTH));
 			
 			if(!currentSetting.getName().equals(currentSettingNameInUi)){
 				if(!doesSettingNameExist(currentSettingNameInUi, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
@@ -346,8 +353,12 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		if(suffix != null){
 			suffix = suffix.trim();
 		}
+		if (suffix.length() == 0) {
+		    suffix = null; //set as null so attribute will not be marshalled
+		}
 		boolean addSpaceBetweenPrefixAndCode = true;
-		if(nameComponent.getAddSpaceOptionGroup().getValue().equals(messageSource.getMessage(Message.NO))){
+		if(CrossingSettingsNameComponent.AddSpaceBetPrefixAndCodeOption.NO.equals(
+		        nameComponent.getAddSpaceOptionGroup().getValue())){
 			addSpaceBetweenPrefixAndCode = false;
 		}
 		Integer numOfDigits = null;

@@ -161,6 +161,7 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 					manageCrossingSettingsMain.getDetailComponent().setManageCrossingSettingsFields();
 				}
 				else{
+				    manageCrossingSettingsMain.getDetailComponent().setCurrentSetting(null);
 					manageCrossingSettingsMain.getDetailComponent().setDefaultManageCrossingSettingsFields();
 				}
 			}

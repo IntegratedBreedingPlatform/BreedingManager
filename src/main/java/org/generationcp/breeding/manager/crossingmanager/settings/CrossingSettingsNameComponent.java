@@ -224,7 +224,8 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 			addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO);
 		}
 		
-		if(crossNameSetting.getNumOfDigits() > 0){
+		if(crossNameSetting.getNumOfDigits() != null
+		        && crossNameSetting.getNumOfDigits() > 0){
 			sequenceNumCheckBox.setValue(true);
 			leadingZerosSelect.select(crossNameSetting.getNumOfDigits());
 		}
@@ -233,7 +234,11 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		}
 		enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
 		
-		suffixTextField.setValue(crossNameSetting.getSuffix());
+		String suffix = crossNameSetting.getSuffix();
+		if (suffix == null) {
+		    suffix = "";
+		}
+		suffixTextField.setValue(suffix);
 	}
 
 	public void setFieldsDefaultValue() {
