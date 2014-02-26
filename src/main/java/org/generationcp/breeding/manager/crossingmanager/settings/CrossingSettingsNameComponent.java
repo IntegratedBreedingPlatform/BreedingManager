@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -52,6 +53,10 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
     private Select leadingZerosSelect;
     
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
+    
+    public enum AddSpaceBetPrefixAndCodeOption{
+        YES, NO
+    };
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -129,10 +134,11 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         // Add space option group 
         String yes = messageSource.getMessage(Message.YES);
         String no = messageSource.getMessage(Message.NO);
-        addSpaceOptionGroup.addItem(yes);
-        addSpaceOptionGroup.setItemCaption(yes, yes);
-        addSpaceOptionGroup.addItem(no);
-        addSpaceOptionGroup.setItemCaption(no, no);        
+        addSpaceOptionGroup.addItem(AddSpaceBetPrefixAndCodeOption.YES);
+        addSpaceOptionGroup.setItemCaption(AddSpaceBetPrefixAndCodeOption.YES, yes);
+        addSpaceOptionGroup.addItem(AddSpaceBetPrefixAndCodeOption.NO);
+        addSpaceOptionGroup.setItemCaption(AddSpaceBetPrefixAndCodeOption.NO, no);
+        addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO); // "No" selected by default
 	}
 
 	@Override
@@ -178,4 +184,64 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         }
     }
 
+	public TextField getPrefixTextField() {
+		return prefixTextField;
+	}
+
+	public TextField getSuffixTextField() {
+		return suffixTextField;
+	}
+
+	public OptionGroup getAddSpaceOptionGroup() {
+		return addSpaceOptionGroup;
+	}
+
+	public Select getLeadingZerosSelect() {
+		return leadingZerosSelect;
+	}
+
+	public CheckBox getSequenceNumCheckBox() {
+		return sequenceNumCheckBox;
+	}
+	
+	public boolean validateInputFields(){
+		String prefix = (String) prefixTextField.getValue();
+		if(prefix == null || prefix.trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
+					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
+			return false;
+		}
+		return true;
+	}
+
+	public void setFields(CrossNameSetting crossNameSetting) {
+		prefixTextField.setValue(crossNameSetting.getPrefix());
+		
+		if(crossNameSetting.isAddSpaceBetweenPrefixAndCode()){
+			addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.YES);
+		}
+		else{
+			addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO);
+		}
+		
+		if(crossNameSetting.getNumOfDigits() > 0){
+			sequenceNumCheckBox.setValue(true);
+			leadingZerosSelect.select(crossNameSetting.getNumOfDigits());
+		}
+		else{
+			sequenceNumCheckBox.setValue(false);
+		}
+		enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
+		
+		suffixTextField.setValue(crossNameSetting.getSuffix());
+	}
+
+	public void setFieldsDefaultValue() {
+		prefixTextField.setValue("");
+		addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO);
+		sequenceNumCheckBox.setValue(false);
+		leadingZerosSelect.select(null);
+		enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
+		suffixTextField.setValue("");
+	}
 }

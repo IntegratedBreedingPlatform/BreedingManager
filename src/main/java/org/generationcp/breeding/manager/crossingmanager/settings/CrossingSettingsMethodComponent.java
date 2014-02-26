@@ -6,6 +6,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -37,6 +38,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -56,7 +58,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
     @Autowired
     private WorkbenchDataManager workbenchDataManager; 
 	
-    private enum CrossingMethodOption{
+    public enum CrossingMethodOption{
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
     
@@ -93,8 +95,10 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 		
 		crossingMethodLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
 		crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		
 		methodDescriptionLabel = new Label("<i>" +messageSource.getMessage(Message.METHOD_DESCRIPTION_LABEL) 
 				+ "</i>", Label.CONTENT_XHTML);
+		methodDescriptionLabel.setWidth("200px");
 		
 		crossingMethodOptionGroup = new OptionGroup();
         crossingMethodOptionGroup.setImmediate(true);
@@ -155,21 +159,8 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 
 			@Override
             public void valueChange(ValueChangeEvent event) {
-                boolean sameForAllCrossesOptionSelected = isSameMethodForAll();
-                
-                toggleSameMethodForAllFields(sameForAllCrossesOptionSelected);
-                
-                if(sameForAllCrossesOptionSelected){
-	                crossingMethodComboBox.focus();
-	                populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
-					
-                }else{
-	                crossingMethodComboBox.removeAllItems();
-	                resetMethodTextArea();
-                }
+                toggleCrossingMethodOptionGroup();
             }
-
-			
 
         });  
 		
@@ -180,20 +171,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			@Override
 		    public void valueChange(ValueChangeEvent event) {
     			if(crossingMethodComboBox.size() > 0){
-            		try {
-                		Integer breedingMethodSelected = (Integer) event.getProperty().getValue();
-            		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
-            		    crossingMethodDescriptionTextArea.setReadOnly(false);
-            		    crossingMethodDescriptionTextArea.setValue(methodDescription);
-            		    crossingMethodDescriptionTextArea.setReadOnly(true);
-         
-            		} catch (MiddlewareQueryException e) {
-            		    e.printStackTrace();
-            		    LOG.error("Error getting method.");
-            		} catch (ClassCastException e) {
-            			e.printStackTrace();
-            			LOG.error("Error getting method");
-            		}	
+            		showMethodDescription((Integer) event.getProperty().getValue());
     			}
 		    }
 		});
@@ -234,6 +212,38 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         	
         });
 
+	}
+	
+	public void toggleCrossingMethodOptionGroup(){
+		boolean sameForAllCrossesOptionSelected = isSameMethodForAll();
+        
+        toggleSameMethodForAllFields(sameForAllCrossesOptionSelected);
+        
+        if(sameForAllCrossesOptionSelected){
+            crossingMethodComboBox.focus();
+            populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
+			
+        }else{
+            crossingMethodComboBox.removeAllItems();
+            resetMethodTextArea();
+        }
+	}
+	
+	public void showMethodDescription(Integer methodId){
+		try {
+    		Integer breedingMethodSelected = methodId;
+		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
+		    crossingMethodDescriptionTextArea.setReadOnly(false);
+		    crossingMethodDescriptionTextArea.setValue(methodDescription);
+		    crossingMethodDescriptionTextArea.setReadOnly(true);
+
+		} catch (MiddlewareQueryException e) {
+		    e.printStackTrace();
+		    LOG.error("Error getting method.");
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			LOG.error("Error getting method");
+		}	
 	}
 
 	@Override
@@ -296,6 +306,39 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         manageFavoriteMethodsLink.setVisible(sameForAllCrosses);
 	}
 
+	public OptionGroup getCrossingMethodOptionGroup() {
+		return crossingMethodOptionGroup;
+	}
 
+	public ComboBox getCrossingMethodComboBox() {
+		return crossingMethodComboBox;
+	}
+    
+	public boolean validateInputFields(){
+		if(crossingMethodOptionGroup.getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
+			if(crossingMethodComboBox.getValue() == null){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "No breeding method specified. Please select a breeding method."
+						, Notification.POSITION_CENTERED);
+				return false;
+			}
+		}
+		return true;
+	}
 
+	public void setFields(BreedingMethodSetting breedingMethodSetting) {
+		if(breedingMethodSetting.isBasedOnStatusOfParentalLines()){
+			crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
+		}
+		else{
+			crossingMethodOptionGroup.select(CrossingMethodOption.SAME_FOR_ALL_CROSSES);
+			Integer methodId = breedingMethodSetting.getMethodId();
+			crossingMethodComboBox.select(methodId);
+			showMethodDescription(methodId);
+		}
+	}
+
+	public void setFieldsDefaultValue() {
+		crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
+		toggleCrossingMethodOptionGroup();
+	}
 }

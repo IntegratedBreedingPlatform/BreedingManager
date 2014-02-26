@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -38,6 +39,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -259,4 +261,48 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
         }
     }
 
+	public TextField getSettingsNameTextfield() {
+		return settingsNameTextfield;
+	}
+
+	public CheckBox getSetAsDefaultSettingCheckbox() {
+		return setAsDefaultSettingCheckbox;
+	}
+
+	public DateField getHarvestDtDateField() {
+		return harvestDtDateField;
+	}
+
+	public ComboBox getHarvestLocComboBox() {
+		return harvestLocComboBox;
+	}
+    
+	public boolean validateInputFields(){
+		String settingsName = (String) settingsNameTextfield.getValue();
+		if(settingsName == null || settingsName.trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please specify a name for the setting."
+					, Notification.POSITION_CENTERED);
+			return false;
+		}
+		return true;
+	}
+
+	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
+		harvestLocComboBox.select(additionalDetailsSetting.getHarvestLocationId());
+		harvestDtDateField.setValue(additionalDetailsSetting.getHarvestDate());
+		settingsNameTextfield.setValue(name);
+		if(isDefault){
+			setAsDefaultSettingCheckbox.setValue(true);
+		}
+		else{
+			setAsDefaultSettingCheckbox.setValue(false);
+		}
+	}
+
+	public void setFieldsDefaultValue() {
+		harvestLocComboBox.select(null);
+		harvestDtDateField.setValue(null);
+		settingsNameTextfield.setValue("");
+		setAsDefaultSettingCheckbox.setValue(false);
+	}
 }
