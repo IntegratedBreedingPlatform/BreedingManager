@@ -210,6 +210,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			public void valueChange(ValueChangeEvent event) {
 				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
 				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) femaleParents.getValue();
+				if(selectedEntries.size() == entries.size()){
+					femaleParentsTagAll.setValue(true);
+				}
 				for(GermplasmListEntry entry : entries){
 					CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
 					if(selectedEntries.contains(entry)){
@@ -345,6 +348,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			public void valueChange(ValueChangeEvent event) {
 				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
 				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) maleParents.getValue();
+				
+				if(selectedEntries.size() == entries.size()){
+					maleParentsTagAll.setValue(true);
+				}
+				
 				for(GermplasmListEntry entry : entries){
 					CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
 					if(selectedEntries.contains(entry)){
