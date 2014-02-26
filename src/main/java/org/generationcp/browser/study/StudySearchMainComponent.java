@@ -26,7 +26,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.domain.dms.Reference;
 import org.generationcp.middleware.domain.dms.Study;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     private SimpleResourceBundleMessageSource messageSource;
 
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
 
     public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout) throws InternationalizableException {
         this.studyBrowserMainLayout = studyBrowserMainLayout;

@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.generationcp.browser.study.listeners.GidLinkButtonClickListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.domain.dms.Experiment;
 import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
@@ -47,7 +47,7 @@ public class RepresentationDataSetQuery implements Query{
 
     private final static Logger LOG = LoggerFactory.getLogger(RepresentationDataSetQuery.class);
 
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     private Integer datasetId;
     private List<String> columnIds;
     private boolean fromUrl;    //this is true if this component is created by accessing the Study Details page directly from the URL
@@ -61,7 +61,7 @@ public class RepresentationDataSetQuery implements Query{
      * @param datasetId
      * @param columnIds
      */
-    public RepresentationDataSetQuery( StudyDataManagerImpl studyDataManager, Integer datasetId, 
+    public RepresentationDataSetQuery( StudyDataManager studyDataManager, Integer datasetId, 
             List<String> columnIds, boolean fromUrl) {
         super();
         this.studyDataManager = studyDataManager;

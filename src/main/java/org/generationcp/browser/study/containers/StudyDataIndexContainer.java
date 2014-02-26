@@ -28,7 +28,7 @@ import org.generationcp.middleware.domain.search.StudyResultSet;
 import org.generationcp.middleware.domain.search.filter.BrowseStudyQueryFilter;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +54,11 @@ public class StudyDataIndexContainer{
     public static final String STUDY_ID = "ID";
     public static final String STUDY_NAME = "NAME";
 
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     private int studyId;
     
 
-    public StudyDataIndexContainer(StudyDataManagerImpl studyDataManager, int studyId) {
+    public StudyDataIndexContainer(StudyDataManager studyDataManager, int studyId) {
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
     }
