@@ -3,6 +3,8 @@
 	<name>GermplasmStudyBrowser</name>
 	<comment></comment>
 	<projects>
+		<project>IBPCommons</project>
+		<project>IBPMiddleware</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
