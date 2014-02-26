@@ -75,9 +75,9 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid + "?restartApplication");
         } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
+            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication");
         }
         
         Window germplasmWindow = new Window("Germplasm Information - " + gid);
@@ -148,12 +148,12 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	            }
 	        }
 	        catch (Exception e) {
-	           e.printStackTrace();
+	           //e.printStackTrace();
 	        }
 			
 		} catch (MiddlewareQueryException e2) {
 			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			//e2.printStackTrace();
 		}
     	
     	        
