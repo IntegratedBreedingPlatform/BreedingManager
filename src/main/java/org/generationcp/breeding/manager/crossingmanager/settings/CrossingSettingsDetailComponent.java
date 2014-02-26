@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSett
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -181,6 +182,30 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			}
 		}
 	}
+	
+	public void doDeleteAction() {
+		String message = "Are you sure you want to delete '" + currentSetting.getName().toString()  + "'?";
+		ConfirmDialog.show(getWindow(), "Delete Crossing Manage Setting",  message,
+				"Yes", "No", new ConfirmDialog.Listener() {	
+				private static final long serialVersionUID = 1L;	
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						try {
+							workbenchDataManager.deleteTemplateSetting(currentSetting);
+							manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(null);
+							setDefaultManageCrossingSettingsFields();
+							
+							MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted."
+									, 3000,Notification.POSITION_CENTERED);
+						} catch (MiddlewareQueryException e) {
+							LOG.error("Error with deleting the manage crossing template setting", e);
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		);
+	} // end of doDeleteAction
 
 	private void doSaveAction(){
 		if(!methodComponent.validateInputFields()){
@@ -406,5 +431,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		nameComponent.setFieldsDefaultValue();
 		additionalDetailsComponent.setFieldsDefaultValue();
 	}
+
 }
 

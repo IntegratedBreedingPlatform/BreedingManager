@@ -174,6 +174,15 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 				manageCrossingSettingsMain.getDetailComponent().doResetAction();
 			}
 		});
+		
+		deleteSettingButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -432280582291837428L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				manageCrossingSettingsMain.getDetailComponent().doDeleteAction();
+			}
+		});
 	}
 	
 	public TemplateSetting getSelectedTemplateSetting(){
