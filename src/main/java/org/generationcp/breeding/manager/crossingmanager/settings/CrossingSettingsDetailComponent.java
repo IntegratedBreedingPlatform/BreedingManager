@@ -161,10 +161,33 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	}
 	
 	public void doResetAction(){
-		setManageCrossingSettingsFields();
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been reset."
-				, 3000,Notification.POSITION_CENTERED);
-	}
+		
+		String message;
+		if(currentSetting != null){
+			message = "Are you sure you want to reset the current setting for '" + currentSetting.getName().toString()  + "'?";
+		}
+		else{
+			message = "Are you sure you want to reset the current setting ?";
+		}
+		
+		ConfirmDialog.show(getWindow(), "Reset Crossing Manage Setting",  message,
+				"Yes", "No", new ConfirmDialog.Listener() {	
+				private static final long serialVersionUID = 1L;	
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						if(currentSetting != null){
+							setManageCrossingSettingsFields();
+						}
+						else{
+							setDefaultManageCrossingSettingsFields();
+						}
+						MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been reset."
+								, 3000,Notification.POSITION_CENTERED);
+					}
+				}
+			}
+		);
+	}// end of doResetAction
 	
 	public void setManageCrossingSettingsFields(){
 		if(currentSetting != null){

@@ -94,6 +94,7 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 		settingsComboBox.setWidth("170px");
 		settingsComboBox.setImmediate(true);
 		settingsComboBox.setNullSelectionAllowed(true);
+		settingsComboBox.setTextInputAllowed(false);
 		
 		copySettingButton = new Button(messageSource.getMessage(Message.MAKE_A_COPY));
 		copySettingButton.setData(Actions.COPY_SETTING);
