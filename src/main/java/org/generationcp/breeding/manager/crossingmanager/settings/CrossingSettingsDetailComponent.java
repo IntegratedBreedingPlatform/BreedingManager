@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -210,27 +211,33 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	}
 	
 	public void doDeleteAction() {
-		String message = "Are you sure you want to delete '" + currentSetting.getName().toString()  + "'?";
-		ConfirmDialog.show(getWindow(), "Delete Crossing Manage Setting",  message,
-				"Yes", "No", new ConfirmDialog.Listener() {	
-				private static final long serialVersionUID = 1L;	
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						try {
-							workbenchDataManager.deleteTemplateSetting(currentSetting);
-							manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(null);
-							setDefaultManageCrossingSettingsFields();
-							
-							MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted."
-									, 3000,Notification.POSITION_CENTERED);
-						} catch (MiddlewareQueryException e) {
-							LOG.error("Error with deleting the manage crossing template setting", e);
-							e.printStackTrace();
+		if(currentSetting != null){
+			String message = "Are you sure you want to delete '" + currentSetting.getName().toString()  + "'?";
+			ConfirmDialog.show(getWindow(), "Delete Crossing Manage Setting",  message,
+					"Yes", "No", new ConfirmDialog.Listener() {	
+					private static final long serialVersionUID = 1L;	
+					public void onClose(ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							try {
+								workbenchDataManager.deleteTemplateSetting(currentSetting);
+								manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(null);
+								setDefaultManageCrossingSettingsFields();
+								
+								MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted."
+										, 3000,Notification.POSITION_CENTERED);
+							} catch (MiddlewareQueryException e) {
+								LOG.error("Error with deleting the manage crossing template setting", e);
+								e.printStackTrace();
+							}
 						}
 					}
 				}
-			}
-		);
+			);
+		}
+		else{
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), "There is no selected crossing manager setting to delete.");
+		}
+		
 	} // end of doDeleteAction
 
 	private void doSaveAction(){
