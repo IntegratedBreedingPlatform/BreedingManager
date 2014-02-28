@@ -917,7 +917,22 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                
+                //set seed source to "[Germplasm List Name]: [Entry ID]"
+                if (sourceTable.getParent() instanceof ListDataComponent) {
+                    ListDataComponent tableParent = (ListDataComponent) sourceTable.getParent();
+                    String seedSource = tableParent.getListName() + ": ";
+                    List<GermplasmListData> listDatas = tableParent.getListDatas();
+                    for (GermplasmListData listData : listDatas) {
+                        if (currentItemId == listData.getId()) {
+                            seedSource = seedSource + listData.getEntryId();
+                            break;
+                        }
+                    }
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+                } else {
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                }
                 newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());

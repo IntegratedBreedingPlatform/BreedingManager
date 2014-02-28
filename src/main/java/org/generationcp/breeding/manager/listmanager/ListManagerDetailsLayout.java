@@ -156,7 +156,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		
 		if (germplasmList != null){
 			return new ListManagerTreeMenu(this, id,
-					tabName,germplasmList.getStatus(), germplasmList.getUserId(), 
+					germplasmList.getName(), germplasmList.getStatus(), germplasmList.getUserId(), 
 					false, forGermplasmListWindow, listManagerMain);
 		} else {
 			return new BrowseGermplasmTreeMenu(this.listManagerMain, id);
