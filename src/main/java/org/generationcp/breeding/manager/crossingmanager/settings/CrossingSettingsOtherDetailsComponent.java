@@ -288,6 +288,9 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	}
 
 	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
+		showFavoriteLocationsCheckBox.setValue(false);
+		populateHarvestLocation();
+		
 		harvestLocComboBox.select(additionalDetailsSetting.getHarvestLocationId());
 		harvestDtDateField.setValue(additionalDetailsSetting.getHarvestDate());
 		settingsNameTextfield.setValue(name);
@@ -304,5 +307,7 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		harvestDtDateField.setValue(null);
 		settingsNameTextfield.setValue("");
 		setAsDefaultSettingCheckbox.setValue(false);
+		showFavoriteLocationsCheckBox.setValue(false);
+		populateHarvestLocation();
 	}
 }

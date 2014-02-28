@@ -226,6 +226,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
         }else{
             crossingMethodComboBox.removeAllItems();
             resetMethodTextArea();
+            favoriteMethodsCheckbox.setValue(false);
         }
 	}
 	
