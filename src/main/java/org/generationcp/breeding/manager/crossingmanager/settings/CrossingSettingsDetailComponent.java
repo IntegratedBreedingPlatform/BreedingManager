@@ -159,8 +159,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("200px");
-		buttonBar.addComponent(saveButton);
 		buttonBar.addComponent(cancelButton);
+		buttonBar.addComponent(saveButton);
 		
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth("100%");
