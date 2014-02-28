@@ -280,7 +280,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		if(currentSetting == null){
 			TemplateSetting templateSetting = new TemplateSetting();
 			String settingName = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
-			settingName = settingName.trim().substring(0,
+			settingName = settingName.trim();
+			settingName = settingName.substring(0,
                     Math.min(settingName.length(), SETTING_NAME_MAX_LENGTH));
 			templateSetting.setName(settingName);
 			
@@ -325,7 +326,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			boolean thereIsAChange = false;
 			String currentSettingNameInUi = (String) additionalDetailsComponent.getSettingsNameTextfield().getValue();
 			currentSettingNameInUi = currentSettingNameInUi.toString();
-			currentSettingNameInUi = currentSettingNameInUi.trim().substring(0,
+			currentSettingNameInUi = currentSettingNameInUi.trim();
+			currentSettingNameInUi = currentSettingNameInUi.substring(0,
 			        Math.min(currentSettingNameInUi.length(), SETTING_NAME_MAX_LENGTH));
 			
 			if(!currentSetting.getName().equals(currentSettingNameInUi)){
@@ -363,18 +365,14 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 				thereIsAChange = true;
 			}
 			
-			if(thereIsAChange){
-				try{
-					workbenchDataManager.updateTemplateSetting(currentSetting);
-					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
-							, 3000,Notification.POSITION_CENTERED);
-				} catch(MiddlewareQueryException ex){
-					LOG.error("Error with updating template setting record.", ex);
-					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."
-							, Notification.POSITION_CENTERED);
-					return;
-				}
-			} else{
+			try{
+				workbenchDataManager.updateTemplateSetting(currentSetting);
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
+						, 3000,Notification.POSITION_CENTERED);
+			} catch(MiddlewareQueryException ex){
+				LOG.error("Error with updating template setting record.", ex);
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."
+						, Notification.POSITION_CENTERED);
 				return;
 			}
 		}	
