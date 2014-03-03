@@ -220,7 +220,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	setHeight("315px");
     	
 		menu = new ContextMenu();
-
+		menu.setWidth("255px");
+		
 		// Generate main level items
 		menu.addItem(MENU_SELECT_ALL);
 		menuExportList = menu.addItem(MENU_EXPORT_LIST);
@@ -544,6 +545,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			 
 			 addColumnContextMenu = new AddColumnContextMenu(listManagerTreeMenu, toolsMenuBar, addColumnButton, 
 			         listDataTable, ListDataTablePropertyID.GID.getName());
+			 
 		 }
 		 
 	}
