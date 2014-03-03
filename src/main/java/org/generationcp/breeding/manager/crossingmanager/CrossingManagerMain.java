@@ -89,7 +89,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         addComponent(titleLayout);
         
         accordion = new Accordion();
-        accordion.setWidth("800px");
+        accordion.setWidth("1170px");
         
         wizardScreenOne = new CrossingManagerImportFileComponent(this, accordion);
         wizardScreenTwo = new CrossingManagerMakeCrossesComponent(this, accordion);
@@ -104,7 +104,7 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         
         wizardScreenThree.setNextScreen(wizardScreenFour);
         
-        wizardTabOne = accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.SELECT_NURSERY_TEMPLATE)); //Select Nursery Template
+        wizardTabOne = accordion.addTab(wizardScreenOne, messageSource.getMessage(Message.CHOOSE_HOW_CROSSES_WILL_BE_SPECIFIED)); //Select Nursery Template
         wizardTabTwo = accordion.addTab(wizardScreenTwo, messageSource.getMessage(Message.MAKE_CROSSES)); //Make crosses
         wizardTabThree = accordion.addTab(wizardScreenThree, messageSource.getMessage(Message.ENTER_ADDITIONAL_DETAILS_OF_GERMPLASM_RECORDS_FOR_CROSSES)); //Enter additional details of germplasm records for crosses
         wizardTabFour = accordion.addTab(wizardScreenFour, messageSource.getMessage(Message.ENTER_DETAILS_FOR_LIST_OF_CROSS)); //Enter details for list of cross

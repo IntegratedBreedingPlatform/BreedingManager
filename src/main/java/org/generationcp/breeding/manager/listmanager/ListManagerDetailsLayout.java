@@ -33,6 +33,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean {
 	
 	public static final String CLOSE_ALL_TABS_ID = "ListManagerTreeComponent Close All Tabs ID";
+	public static final String TAB_DESCRIPTION_PREFIX = "List id: ";
 
 	private static final long serialVersionUID = 8092751288890434894L;
 	@Autowired
@@ -114,7 +115,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		boolean tabExists = false;
 		//workaround since Browse Lists and Search Lists have different tab name formats
 		if (germplasmList != null){
-			tabExists = Util.isTabDescriptionExist(detailsTabSheet, "List id: "+germplasmList.getId().toString());
+			tabExists = Util.isTabDescriptionExist(detailsTabSheet, TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
 		} else { 
 			tabExists = Util.isTabExist(detailsTabSheet, tabName);
 		}
@@ -126,7 +127,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             
             Tab tab = detailsTabSheet.addTab(layout, tabName, null);
             if (germplasmList != null){
-            	tab.setDescription("List id: "+germplasmList.getId().toString());
+            	tab.setDescription(TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
             }
             tab.setClosable(true);
             
@@ -141,7 +142,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
         } else {
             Tab tab;
             if (germplasmList != null){
-            	tab = Util.getTabWithDescription(detailsTabSheet,"List id: "+germplasmList.getId().toString());
+            	tab = Util.getTabWithDescription(detailsTabSheet, TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
             } else {
             	tab = Util.getTabToFocus(detailsTabSheet, tabName);
             }
@@ -155,7 +156,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		
 		if (germplasmList != null){
 			return new ListManagerTreeMenu(this, id,
-					tabName,germplasmList.getStatus(), germplasmList.getUserId(), 
+					germplasmList.getName(), germplasmList.getStatus(), germplasmList.getUserId(), 
 					false, forGermplasmListWindow, listManagerMain);
 		} else {
 			return new BrowseGermplasmTreeMenu(this.listManagerMain, id);

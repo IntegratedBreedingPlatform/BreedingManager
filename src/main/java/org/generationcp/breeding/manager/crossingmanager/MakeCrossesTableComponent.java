@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -97,7 +99,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
         tableCrossesMade = new Table();
         tableCrossesMade.setWidth("100%");
-        tableCrossesMade.setHeight("400px");
+        tableCrossesMade.setHeight("320px");
         tableCrossesMade.setImmediate(true);
         tableCrossesMade.setSelectable(true);    
         tableCrossesMade.setMultiSelect(true);
@@ -118,9 +120,18 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN});
         tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
         
-        addComponent(lblCrossMade);
+        HorizontalLayout labelContainer = new HorizontalLayout();
+        labelContainer.setWidth("100%");
+        
+        labelContainer.addComponent(lblCrossMade);
+        labelContainer.addComponent(crossesMadeCountContainer);
+        
+        labelContainer.setComponentAlignment(lblCrossMade, Alignment.MIDDLE_LEFT);
+        labelContainer.setComponentAlignment(crossesMadeCountContainer, Alignment.MIDDLE_RIGHT);
+        
+        addComponent(labelContainer);
         addComponent(tableCrossesMade);
-        addComponent(crossesMadeCountContainer);
+        
     }
     
     @Override

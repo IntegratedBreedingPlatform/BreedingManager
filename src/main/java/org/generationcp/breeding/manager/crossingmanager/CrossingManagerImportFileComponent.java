@@ -148,7 +148,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(new CrossingManagerImportButtonClickListener(this));
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        addComponent(nextButton, "top:300px;left:700px");
+        addComponent(nextButton, "top:300px;left:600px");
         
         filenameLabel = new Label();
         filenameLabel.setEnabled(false);
@@ -159,7 +159,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         addComponent(crossesOptionGroupLabel, "top:206px;left:80px;");
         
         crossesOptionGroup = new OptionGroup();
-        crossesOptionGroup.addItem(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
+        crossesOptionGroup.addItem(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_CROSSING_TEMPLATE_FILE));
         crossesOptionGroup.addItem(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
         crossesOptionGroup.setEnabled(false);
         addComponent(crossesOptionGroup, "top:225px;left:80px;");
@@ -240,7 +240,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(selectFileLabel, Message.SELECT_NURSERY_TEMPLATE_FILE);
+        messageSource.setCaption(selectFileLabel, Message.SELECT_CROSSING_TEMPLATE_FILE);
         messageSource.setCaption(nextButton, Message.NEXT);
         messageSource.setCaption(crossesOptionGroupLabel,Message.SELECT_AN_OPTION_FOR_SPECIFYING_CROSSES);
         messageSource.setCaption(filenameLabel, Message.UPLOADED_FILE);
@@ -276,7 +276,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         } else if(crossesOptionGroup.getValue()==null) {
             MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.", Notification.POSITION_CENTERED);
         } else {
-            if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE))){
+            if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_CROSSING_TEMPLATE_FILE))){
                 if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
                     MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet."
                             , Notification.POSITION_CENTERED);
@@ -377,7 +377,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         crossesOptionGroup.setValue(messageSource.getMessage(Message.I_WANT_TO_MANUALLY_MAKE_CROSSES));
     }
     public void selectAlreadyDefinedCrossesInNurseryTemplateFile(){
-        crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_NURSERY_TEMPLATE_FILE));
+        crossesOptionGroup.setValue(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_CROSSING_TEMPLATE_FILE));
     }
 
     public CrossingManagerUploader getCrossingManagerUploader() {

@@ -6,14 +6,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerSidebysideMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -40,6 +44,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
     public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
     public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
+    public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
     
     private Window window;
     
@@ -49,6 +54,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private DynamicManagerFactoryProvider managerFactoryProvider;
+    
+    @Autowired
+    private WorkbenchDataManagerImpl workbenchDataManager;
     
     private UpdateComponentLabelsAction messageSourceListener;
 
@@ -162,7 +173,14 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 this.setMainWindow(listManagerSideBySideWindow);
                 this.getMainWindow().getContent().setHeight("100%");
                 return listManagerSideBySideWindow;
-            }
+            }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
+                manageCrossingSettings.setName(MANAGE_SETTINGS_CROSSING_MANAGER);
+                manageCrossingSettings.setSizeUndefined();
+                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain());
+                this.addWindow(manageCrossingSettings);
+                return manageCrossingSettings;
+            } 
         }
         
         return super.getWindow(name);
@@ -225,6 +243,23 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestStart(request, response);
         
+        	Boolean lastOpenedProjectChanged = true;
+        	try {
+				lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+        	
+        	if (lastOpenedProjectChanged){	
+        		 try{
+        	        	managerFactoryProvider.close();
+        	        }catch(Exception e){
+        		        e.printStackTrace();	
+        	        }
+				close();
+				request.getSession().invalidate();
+			}
+        
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
@@ -235,6 +270,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
+        
+        try{
+        	managerFactoryProvider.close();
+        }catch(Exception e){
+	        e.printStackTrace();	
+        }
         
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         

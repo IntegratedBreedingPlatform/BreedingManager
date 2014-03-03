@@ -259,16 +259,17 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         Boolean gidColumnIsPresent = false;
     
         //Check if columns ENTRY and DESIG is present
-        if(importedGermplasmList.getImportedFactors()!=null)
-        for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-        	String columnName = getCellStringValue(currentSheet, currentRow, col, true); 
-            if(columnName.equals(entryFactor)){
-                entryColumnIsPresent = true;
-            } else if(desigFactor != null && columnName.equals(desigFactor)){
-                desigColumnIsPresent = true;
-            } else if(gidFactor != null && columnName.equals(gidFactor)){
-                gidColumnIsPresent = true;
-            }  
+        if(importedGermplasmList.getImportedFactors()!=null){
+	        for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
+	        	String columnName = getCellStringValue(currentSheet, currentRow, col, true); 
+	            if(columnName.equals(entryFactor)){
+	                entryColumnIsPresent = true;
+	            } else if(desigFactor != null && columnName.equals(desigFactor)){
+	                desigColumnIsPresent = true;
+	            } else if(gidFactor != null && columnName.equals(gidFactor)){
+	                gidColumnIsPresent = true;
+	            }  
+	        }
         }
         
         if(entryColumnIsPresent==false){

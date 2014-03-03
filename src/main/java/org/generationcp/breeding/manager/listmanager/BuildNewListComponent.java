@@ -91,6 +91,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
+    public static final String SEED_SOURCE_DEFAULT = "";
 
     private Object source;
     
@@ -103,6 +104,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private Label saveInLabel;
     private Label saveInValue;
+    private Label saveInValueDummyContainer;
     private Integer saveInListId;
     private Button changeLocationButton;
     private Window selectFolderWindow;
@@ -201,16 +203,24 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         saveInLabel.addStyleName("bold");
         fieldsLayout.addComponent(saveInLabel, "top:20px; left:0px;");
 
+        saveInValueDummyContainer = new Label();
+        saveInValueDummyContainer.setHeight("22px");
+        saveInValueDummyContainer.setWidth("355px");
+        saveInValueDummyContainer.addStyleName("v-textfield");
+        
         saveInValue = new Label();
         saveInValue.setCaption(generateSaveInString(null,false));
         saveInValue.setDescription(generateSaveInString(null,true));
         saveInValue.addStyleName("not-bold");
-        fieldsLayout.addComponent(saveInValue, "top:20px; left:65px;");
+        saveInValue.setWidth("350px");
+        
+        fieldsLayout.addComponent(saveInValueDummyContainer, "top:0px; left:65px;");
+        fieldsLayout.addComponent(saveInValue, "top:20px; left:70px;");
         
         changeLocationButton = new Button();
         changeLocationButton.setCaption(messageSource.getMessage(Message.CHANGE_LOCATION));
         changeLocationButton.addStyleName(Reindeer.BUTTON_LINK);
-        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:330px;");
+        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:430px;");
         changeLocationButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -627,7 +637,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         //Handle drops from MATCHING GERMPLASMS TABLE
         if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-            
             List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
             
             //If table has value (item/s is/are highlighted in the source table, add that)
@@ -720,13 +729,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
      */
     private void addGermplasmListDataToGermplasmTable(Integer listId, Object droppedOnItemIdObject){
         
-        int start = 0;
-        int listDataCount;
-        
+        GermplasmList list = new GermplasmList();
         List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
         try {
-            listDataCount = (int) germplasmListManager.countGermplasmListDataByListId(listId);
-            listDatas = this.germplasmListManager.getGermplasmListDataByListId(listId, start, listDataCount);
+            list = germplasmListManager.getGermplasmListById(listId);
+            listDatas = list.getListData();
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in retrieving germplasm list data.", e);
             e.printStackTrace();
@@ -773,7 +780,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(data.getSeedSource());
             }
             else{
-            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+                if (list != null) {
+                    String seedSource = list.getName() + ": " + data.getEntryId();
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+                } else {
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                }
             }
             
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
@@ -794,6 +806,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Handle drops from List Data table
+     * 
      * @param transferable
      * @param droppedOn
      */
@@ -811,7 +827,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         if(itemIds.size() == 0){
             itemIds.add(itemId);
         }
-            
+        
         for(Integer currentItemId : itemIds){
         	
         	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
@@ -825,12 +841,26 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
             Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
-            
             Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+            
+            //set seed source to "[Germplasm List Name]: [Entry ID]"
+            if (sourceTable.getParent() instanceof ListDataComponent) {
+                ListDataComponent tableParent = (ListDataComponent) sourceTable.getParent();
+                String seedSource = tableParent.getListName() + ": ";
+                List<GermplasmListData> listDatas = tableParent.getListDatas();
+                for (GermplasmListData listData : listDatas) {
+                    if (currentItemId == listData.getId()) {
+                        seedSource = seedSource + listData.getEntryId();
+                        break;
+                    }
+                }
+                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+            } else {
+                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+            }
+            
             newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
@@ -857,6 +887,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Copy to New List tools context menu
+     * 
      * @param transferable
      * @param droppedOn
      */
@@ -883,7 +917,22 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+                
+                //set seed source to "[Germplasm List Name]: [Entry ID]"
+                if (sourceTable.getParent() instanceof ListDataComponent) {
+                    ListDataComponent tableParent = (ListDataComponent) sourceTable.getParent();
+                    String seedSource = tableParent.getListName() + ": ";
+                    List<GermplasmListData> listDatas = tableParent.getListDatas();
+                    for (GermplasmListData listData : listDatas) {
+                        if (currentItemId == listData.getId()) {
+                            seedSource = seedSource + listData.getEntryId();
+                            break;
+                        }
+                    }
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+                } else {
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                }
                 newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
@@ -912,6 +961,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Drop handler from Matching Germplasms table
+     * - Save to List button in Germplasm Details
+     * - Copy to New List context menu from Matching Germplasms table
+     * 
      * @param gid
      * @param droppedOn
      */
@@ -949,7 +1004,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             if(newItem!=null && gidButton!=null)
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("Germplasm Search");
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
@@ -1379,6 +1434,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     public void viewEditList(int listId){
         
+    	ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
+    	resetListButtonClick.resetListBuilder();
+    	
     	this.fromEditList = true;
         this.germplasmListId = listId;
         Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
@@ -1498,22 +1556,26 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	
 	private String generateSaveInString(Integer listId, Boolean returnFull){
 		
+		String finalPart = "";
 		String toReturn = "";
-		int shortenedLength = 30;
+		int shortenedLength = 50;
 		
 		Integer parentListId;
 		Integer previousParentListId=null;
 		
 		try {
 			if(listId!=null && listId!=0){
-				toReturn = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				finalPart = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				toReturn = finalPart;
 			}
 			GermplasmList parentList = germplasmListManager.getGermplasmListById(listId);
 			if(parentList!=null){
 				parentListId = parentList.getParentId();
-				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId){
+				GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+				
+				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId && parentFolder!=null){
 					System.out.println("Parent List ID: "+parentListId);
-					GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+					parentFolder = germplasmListManager.getGermplasmListById(parentListId);
 					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
 						toReturn = " > "+parentFolder.getName()+toReturn;
 					previousParentListId = parentListId;
@@ -1527,8 +1589,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 		toReturn = "Program Lists" + toReturn;
 		
 		if(!returnFull && toReturn.length()>shortenedLength){
-			toReturn = toReturn.substring(0, shortenedLength).trim()+"..";
+			toReturn = toReturn.substring(0, shortenedLength - finalPart.length()).trim()+".."+finalPart;
 		}
+		
 		return toReturn;
 	}
 	
