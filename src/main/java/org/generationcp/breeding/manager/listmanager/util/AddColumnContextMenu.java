@@ -53,6 +53,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithMethodAbbrev;
     private ContextMenuItem menuFillWithMethodNumber;
     private ContextMenuItem menuFillWithMethodGroup;
+    private ContextMenuItem menuFillWithCrossFemaleInfo;
+    private ContextMenuItem menuFillWithCrossFemaleGID;
+    private ContextMenuItem menuFillWithCrossFemalePrefName;
     private ContextMenuItem menuFillWithCrossMaleInfo;
     private ContextMenuItem menuFillWithCrossMaleGID;
     private ContextMenuItem menuFillWithCrossMalePrefName;
@@ -66,6 +69,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
     public static String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
     public static String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
+    public static String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
+    public static String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
+    public static String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
     public static String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
     public static String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
     public static String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
@@ -103,6 +109,14 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String METHOD_GROUP = "METHOD GROUP";
     
     @SuppressWarnings("rawtypes")
+    public static Class CROSS_FEMALE_GID_TYPE = String.class;
+    public static String CROSS_FEMALE_GID = "CROSS-FEMALE GID";
+    
+    @SuppressWarnings("rawtypes")
+    public static Class CROSS_FEMALE_PREF_NAME_TYPE = String.class;
+    public static String CROSS_FEMALE_PREF_NAME = "CROSS-FEMALE PREFERRED NAME";
+    
+    @SuppressWarnings("rawtypes")
     public static Class CROSS_MALE_GID_TYPE = String.class;
     public static String CROSS_MALE_GID = "CROSS-MALE GID";
     
@@ -121,6 +135,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         , METHOD_ABBREV
         , METHOD_NUMBER
         , METHOD_GROUP
+        , CROSS_FEMALE_GID
+        , CROSS_FEMALE_PREF_NAME 
         , CROSS_MALE_GID
         , CROSS_MALE_PREF_NAME}; 
     
@@ -205,6 +221,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithGermplasmDate = menu.addItem(FILL_WITH_GERMPLASM_DATE);
         menuFillWithLocations = menu.addItem(FILL_WITH_LOCATION);
         menuFillWithMethodInfo = menu.addItem(FILL_WITH_METHOD_INFO);
+        menuFillWithCrossFemaleInfo = menu.addItem(FILL_WITH_CROSS_FEMALE_INFO);
         menuFillWithCrossMaleInfo = menu.addItem(FILL_WITH_CROSS_MALE_INFO);
         
         //breeding method sub-options
@@ -212,6 +229,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithMethodAbbrev = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_ABBREV);
         menuFillWithMethodNumber = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_NUMBER);
         menuFillWithMethodGroup = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_GROUP);
+        
+        //cross female sub-options
+        menuFillWithCrossFemaleGID = menuFillWithCrossFemaleInfo.addItem(FILL_WITH_CROSS_FEMALE_GID);
+        menuFillWithCrossFemalePrefName = menuFillWithCrossFemaleInfo.addItem(FILL_WITH_CROSS_FEMALE_PREF_NAME);
         
         //cross-male info sub-options
         menuFillWithCrossMaleGID = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_GID);
@@ -240,6 +261,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     addMethodNumberColumn();
                 }else if(clickedItem.getName().equals(FILL_WITH_METHOD_GROUP)){
                     addMethodGroupColumn();
+                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_GID)){
+                    addCrossFemaleGidColumn();
+                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
+                    addCrossFemalePrefNameColumn();
                 }
             }
             
@@ -311,6 +336,24 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                         menuFillWithMethodInfo.setEnabled(false);
                     } else {
                         menuFillWithMethodInfo.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_FEMALE_GID)){
+                        menuFillWithCrossFemaleGID.setEnabled(false);
+                    } else {
+                        menuFillWithCrossFemaleGID.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_FEMALE_PREF_NAME)){
+                        menuFillWithCrossFemalePrefName.setEnabled(false);
+                    } else {
+                        menuFillWithCrossFemalePrefName.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
+                        menuFillWithCrossFemaleInfo.setEnabled(false);
+                    } else {
+                        menuFillWithCrossFemaleInfo.setEnabled(true);
                     }
                     
                     //Display context menu
@@ -403,6 +446,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addGermplasmDateColumn(){
         if(!propertyExists(GERMPLASM_DATE)){
             targetTable.addContainerProperty(GERMPLASM_DATE, GERMPLASM_DATE_TYPE, "");
+            //TODO: can create separate method for adding container property and the actual setting of column values,
+            //      so that the middleware call below can be called only once without having the gids become null
             setGermplasmDateColumnValues(true);
         }
     }
@@ -590,6 +635,63 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         }
     }
     
+    private void addCrossFemaleGidColumn(){
+        if(!propertyExists(CROSS_FEMALE_GID)){
+            targetTable.addContainerProperty(CROSS_FEMALE_GID, CROSS_FEMALE_GID_TYPE, "");
+            setCrossFemaleInfoColumnValues(true, CROSS_FEMALE_GID);
+        }
+    }
+    
+    private void addCrossFemalePrefNameColumn(){
+        if(!propertyExists(CROSS_FEMALE_PREF_NAME)){
+            targetTable.addContainerProperty(CROSS_FEMALE_PREF_NAME, CROSS_FEMALE_PREF_NAME_TYPE, "");
+            setCrossFemaleInfoColumnValues(true, CROSS_FEMALE_PREF_NAME);
+        }
+    }
+    
+    public void setCrossFemaleInfoColumnValues(boolean fromAddColumn, String columnName){
+        if(propertyExists(columnName)){
+            try {
+                List<Integer> itemIds = getItemIds(targetTable);
+                
+                for(Integer itemId: itemIds){
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    
+                    Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+                    Germplasm femaleParent = null;
+                    // get female only if germplasm is created via generative process
+                    if (germplasm.getGnpgs() > 0) {
+                        femaleParent = germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
+                    }
+                    
+                    if(femaleParent == null) {
+                        targetTable.getItem(itemId).getItemProperty(columnName).setValue("-");
+                    } else {
+                        String value = "-";
+                        if (columnName.equals(CROSS_FEMALE_GID)) {
+                            value = femaleParent.getGid().toString();
+                        } else if (columnName.equals(CROSS_FEMALE_PREF_NAME)) {
+                            Name prefName = germplasmDataManager.getPreferredNameByGID(femaleParent.getGid());
+                            if (prefName != null) {
+                                value = prefName.getNval();
+                            }
+                        }
+                        targetTable.getItem(itemId).getItemProperty(columnName).setValue(value);
+                    }
+                }
+
+                //To trigger TableFieldFactory (fix for truncated data)
+                doFixForTruncatedDataInEditableTable();
+                
+                markHasChangesFlags(fromAddColumn);
+                
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error in filling with Cross Female Info values.", e);
+                e.printStackTrace();
+            }       
+        }
+    }
+    
     public Boolean propertyExists(String propertyId){
         List<String> propertyIds = getTablePropertyIds(targetTable);
         return propertyIds.contains(propertyId);
@@ -657,6 +759,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
                 else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP))
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
+                else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
+                    setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
+                else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                    setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
             }
         }
     }
@@ -709,6 +815,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             addMethodNumberColumn();
         else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP))
             addMethodGroupColumn();
+        else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
+            addCrossFemaleGidColumn();
+        else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+            addCrossFemalePrefNameColumn();
     }
     
 }

@@ -363,6 +363,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_NUMBER, AddColumnContextMenu.METHOD_NUMBER_TYPE, "");
                     else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP))
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_GROUP, AddColumnContextMenu.METHOD_GROUP_TYPE, "");
+                    else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_GID, AddColumnContextMenu.CROSS_FEMALE_GID_TYPE, "");
+                    else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME_TYPE, "");
                     // copy value to new table
                     Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
                     newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());

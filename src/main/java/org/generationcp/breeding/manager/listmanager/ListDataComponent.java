@@ -1452,6 +1452,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP))
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID))
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
             	
             	saveChangesAction();
             	listDataTable.refreshRowCache();
