@@ -298,6 +298,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         }
     }
     
+    private void doFixForTruncatedDataInEditableTable(){
+    	if(targetTable.isEditable()){
+            targetTable.setEditable(false);
+            targetTable.setEditable(true);
+        }
+    }
     
     private void addPreferredIdColumn(){
         if(!propertyExists(PREFERRED_ID)){
@@ -320,10 +326,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                
                 //To trigger TableFieldFactory (fix for truncated data)
-                if(targetTable.isEditable()){
-                    targetTable.setEditable(false);
-                    targetTable.setEditable(true);
-                }
+                doFixForTruncatedDataInEditableTable();
                 
                //mark flag that changes have been made in listDataTable
                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
@@ -358,10 +361,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
 
                 //To trigger TableFieldFactory (fix for truncated data)
-                if(targetTable.isEditable()){
-                    targetTable.setEditable(false);
-                    targetTable.setEditable(true);
-                }
+                doFixForTruncatedDataInEditableTable();
                 
                //mark flag that changes have been made in listDataTable
                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
@@ -402,10 +402,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                 
                 //To trigger TableFieldFactory (fix for truncated data)
-                if(targetTable.isEditable()){
-                    targetTable.setEditable(false);
-                    targetTable.setEditable(true);
-                }
+                doFixForTruncatedDataInEditableTable();
                 
                 //mark flag that changes have been made in listDataTable
                 if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
@@ -450,10 +447,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
 
                 //To trigger TableFieldFactory (fix for truncated data)
-                if(targetTable.isEditable()){
-                    targetTable.setEditable(false);
-                    targetTable.setEditable(true);
-                }
+                doFixForTruncatedDataInEditableTable();
                     
                //mark flag that changes have been made in listDataTable
                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
@@ -532,10 +526,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
 
                 //To trigger TableFieldFactory (fix for truncated data)
-                if(targetTable.isEditable()){
-                    targetTable.setEditable(false);
-                    targetTable.setEditable(true);
-                }
+                doFixForTruncatedDataInEditableTable();
                     
                 //mark flag that changes have been made in listDataTable
                 if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
