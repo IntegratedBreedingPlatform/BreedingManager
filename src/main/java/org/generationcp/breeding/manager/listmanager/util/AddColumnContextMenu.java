@@ -45,6 +45,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenu menu;
     private ContextMenuItem menuFillWithPreferredId;
     private ContextMenuItem menuFillWithPreferredName;
+    private ContextMenuItem menuFillWithGermplasmDate;
     private ContextMenuItem menuFillWithLocations;
     private ContextMenuItem menuFillWithMethodInfo;
     private ContextMenuItem menuFillWithMethodName;
@@ -54,6 +55,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     public static String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
     public static String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
+    public static String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
     public static String FILL_WITH_LOCATION = "Fill with Location";
     public static String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
     public static String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
@@ -68,6 +70,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @SuppressWarnings("rawtypes")
     public static Class PREFERRED_NAME_TYPE = String.class;
     public static String PREFERRED_NAME = "PREFERRED NAME";
+    
+    @SuppressWarnings("rawtypes")
+    public static Class GERMPLASM_DATE_TYPE = String.class;
+    public static String GERMPLASM_DATE = "GERMPLASM DATE";
     
     @SuppressWarnings("rawtypes")
     public static Class LOCATIONS_TYPE = String.class;
@@ -94,6 +100,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID
         , PREFERRED_NAME
+        , GERMPLASM_DATE
         , LOCATIONS
         , METHOD_NAME
         , METHOD_ABBREV
@@ -178,6 +185,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menu = new ContextMenu();
         menuFillWithPreferredId = menu.addItem(FILL_WITH_PREFERRED_ID);
         menuFillWithPreferredName = menu.addItem(FILL_WITH_PREFERRED_NAME);
+        menuFillWithGermplasmDate = menu.addItem(FILL_WITH_GERMPLASM_DATE);
         menuFillWithLocations = menu.addItem(FILL_WITH_LOCATION);
         menuFillWithMethodInfo = menu.addItem(FILL_WITH_METHOD_INFO);
         
@@ -198,6 +206,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                       addPreferredIdColumn();
                 }else if(clickedItem.getName().equals(FILL_WITH_PREFERRED_NAME)){
                     addPreferredNameColumn();
+                }else if(clickedItem.getName().equals(FILL_WITH_GERMPLASM_DATE)){
+                    addGermplasmDateColumn();
                 }else if(clickedItem.getName().equals(FILL_WITH_LOCATION)){
                     addLocationColumn();
                 }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NAME)){
@@ -236,6 +246,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                         menuFillWithPreferredName.setEnabled(false);
                     } else {
                         menuFillWithPreferredName.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(GERMPLASM_DATE)){
+                        menuFillWithGermplasmDate.setEnabled(false);
+                    } else {
+                        menuFillWithGermplasmDate.setEnabled(true);
                     }
                     
                     if(propertyExists(LOCATIONS)){
@@ -310,7 +326,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                 
                //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
                
                //mark flag that changes have been made in buildNewListTable
                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
@@ -348,7 +364,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                 
                //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
                
                //mark flag that changes have been made in buildNewListTable
                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
@@ -356,6 +372,51 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             } catch (MiddlewareQueryException e) {
                 e.printStackTrace();
             }  
+        }
+    }
+    
+    private void addGermplasmDateColumn(){
+        if(!propertyExists(GERMPLASM_DATE)){
+            targetTable.addContainerProperty(GERMPLASM_DATE, GERMPLASM_DATE_TYPE, "");
+            setGermplasmDateColumnValues(true);
+        }
+    }
+    
+    public void setGermplasmDateColumnValues(boolean fromAddColumn){
+        if(propertyExists(GERMPLASM_DATE)){
+            try {
+                List<Integer> itemIds = getItemIds(targetTable);
+                
+                for(Integer itemId: itemIds){
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    
+                    List<Integer> gids = new ArrayList<Integer>();
+                    gids.add(gid);
+                    
+                    Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
+                    
+                    if(germplasmGidDateMap.get(gid)==null)
+                        targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue("");
+                    else
+                        targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue(germplasmGidDateMap.get(gid));
+                }
+                
+                //To trigger TableFieldFactory (fix for truncated data)
+                if(targetTable.isEditable()){
+                    targetTable.setEditable(false);
+                    targetTable.setEditable(true);
+                }
+                
+                //mark flag that changes have been made in listDataTable
+                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
+                
+                //mark flag that changes have been made in buildNewListTable
+                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+               
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error in filling with Germplasm Date values.", e);
+                e.printStackTrace();
+            }        
         }
     }
     
@@ -395,12 +456,13 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                     
                //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
                
                //mark flag that changes have been made in buildNewListTable
                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
                
             } catch (MiddlewareQueryException e) {
+                LOG.error("Error in filling with Location values.", e);
                 e.printStackTrace();
             }        
         }
@@ -476,7 +538,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
                     
                 //mark flag that changes have been made in listDataTable
-                if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
+                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
                 
                 //mark flag that changes have been made in buildNewListTable
                 if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
@@ -543,6 +605,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     setPreferredIdColumnValues(false);
                 else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
                     setPreferredNameColumnValues(false);
+                else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE))
+                    setGermplasmDateColumnValues(false);
                 else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
                     setLocationColumnValues(false);
                 else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME))
@@ -593,6 +657,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             addPreferredIdColumn();
         else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
             addPreferredNameColumn();
+        else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE))
+            addGermplasmDateColumn();
         else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
             addLocationColumn();
         else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME))

@@ -351,6 +351,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
                         newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_ID, AddColumnContextMenu.PREFERRED_ID_TYPE, "");
                     else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
                         newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_NAME, AddColumnContextMenu.PREFERRED_NAME_TYPE, "");
+                    else if(addablePropertyId.equals(AddColumnContextMenu.GERMPLASM_DATE))
+                        newTable.addContainerProperty(AddColumnContextMenu.GERMPLASM_DATE, AddColumnContextMenu.GERMPLASM_DATE_TYPE, "");
                     else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS))
                         newTable.addContainerProperty(AddColumnContextMenu.LOCATIONS, AddColumnContextMenu.LOCATIONS_TYPE, "");
                     else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME))

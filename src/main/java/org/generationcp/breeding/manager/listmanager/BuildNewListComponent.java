@@ -872,6 +872,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
             if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
                 newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+                newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
             if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
                 newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
             if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
@@ -944,6 +946,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+                    newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
@@ -1423,6 +1427,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             addColumnContextMenu.setPreferredIdColumnValues(false);
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
             addColumnContextMenu.setPreferredNameColumnValues(false);
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+            addColumnContextMenu.setGermplasmDateColumnValues(false);
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))

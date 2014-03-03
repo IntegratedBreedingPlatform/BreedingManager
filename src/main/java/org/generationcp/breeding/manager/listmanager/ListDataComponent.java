@@ -1442,6 +1442,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             		addColumnContextMenu.setLocationColumnValues(false);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME))
             		addColumnContextMenu.setPreferredNameColumnValues(false);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.GERMPLASM_DATE))
+                    addColumnContextMenu.setGermplasmDateColumnValues(false);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME))
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV))
