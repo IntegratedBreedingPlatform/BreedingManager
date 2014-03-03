@@ -72,7 +72,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
-	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+    public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
 //    private static final String GID = "gid";
 //    private static final String ENTRY_ID = "entryId";
@@ -128,11 +128,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     
     public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, boolean fromBuildNewList) {
         this.dialogWindow = dialogWindow;
-    this.mainWindow = mainWindow;
-    this.listEntriesTable=listEntriesTable;
-    this.listName=listName;
-    this.ibdbUserId=ibdbUserId;
-    this.fromBuildNewList = fromBuildNewList;
+        this.mainWindow = mainWindow;
+        this.listEntriesTable=listEntriesTable;
+        this.listName=listName;
+        this.ibdbUserId=ibdbUserId;
+        this.fromBuildNewList = fromBuildNewList;
     }
 
     @Override
@@ -226,13 +226,13 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         comboBoxListName.addItem("");
         for (GermplasmList gList : germplasmList) {
             if(!gList.getName().equals(listName)){
-            	if(!gList.getType().equals(FOLDER_TYPE)){
-            		comboBoxListName.addItem(gList.getName());
-            		mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-            	} else{
-            		localFolderNames.add(gList.getName());
-            	}
-	        }
+                if(!gList.getType().equals(FOLDER_TYPE)){
+                    comboBoxListName.addItem(gList.getName());
+                    mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+                } else{
+                    localFolderNames.add(gList.getName());
+                }
+            }
         }
         comboBoxListName.select("");
     }
@@ -242,97 +242,94 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         listNameValue = comboBoxListName.getValue().toString();
         String description=txtDescription.getValue().toString();
         
-		Boolean proceedWithSave = true;
-		
-		try {
-//			Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.LOCAL);
-			Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
-			if(matchingNamesCountOnCentral>0){
-				getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
-				proceedWithSave = false;
-			}
-			
-			// if list name from copy source is equal to specified value in combo box
-			if (!"".equals(listNameValue) && listName.equals(listNameValue)) {
-			    getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
-			    proceedWithSave = false; 
-			}
-			
-			if(localFolderNames.contains(listNameValue)){
-				getWindow().showNotification("There is already an existing germplasm list folder with that name","",Notification.TYPE_ERROR_MESSAGE);
-				proceedWithSave = false;
-			}
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error in counting germplasm list by name.", e);
-			e.printStackTrace();
-		}
-		
-		if(proceedWithSave){
+        Boolean proceedWithSave = true;
         
-	        if (listNameValue.trim().length() == 0) {
-	            MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving", Notification.POSITION_CENTERED);
-	        } else if (listNameValue.trim().length() > 50) {
-	            MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters", Notification.POSITION_CENTERED);
-	            comboBoxListName.setValue("");
-	        } else {
-	            
-	            if(!existingListSelected){
-	                Date date = new Date();
-	                Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-	                Long currentDate = Long.valueOf(formatter.format(date));
-	                GermplasmList parent = null;
-	                int statusListName = 1;
-	                GermplasmList listNameData = new GermplasmList(null, listNameValue, currentDate, selectType.getValue().toString(), ibdbUserId, description, parent, statusListName);
-	
-	                try {
-	                    newListid = germplasmListManager.addGermplasmList(listNameData);
-	                    try{
-			                GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
-			                addGermplasmListData(germList,1);
-			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-			                listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid, true);
-	                    } catch (MiddlewareQueryException e){
-			                germplasmListManager.deleteGermplasmListByListId(newListid);
-			                LOG.error("Error with copying list entries", e);
-			                MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-			                    , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-			                    , Notification.POSITION_CENTERED);
-		                }
-	                    this.mainWindow.removeWindow(dialogWindow);
-	
-		            } catch (MiddlewareQueryException e) {
-		                LOG.error("Error with copying list entries", e);
-		                e.printStackTrace();
-		                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-		                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
-		                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
-		                    , Notification.POSITION_CENTERED);
-		            }
-	            }else{
-	            
-	        try {
-	                    String listId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
-	                    GermplasmList  germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
-	                    int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
-	                    addGermplasmListData(germList,countOfExistingList+1);
-	                    this.mainWindow.removeWindow(dialogWindow);
-	                    
-	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-	                    listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId), true);
-	        } catch (MiddlewareQueryException e) {
-	            LOG.error("Error with copying list entries", e);
-	                e.printStackTrace();
-	                MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-	                    , messageSource.getMessage(Message.UNSUCCESSFUL) 
-	                    , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED)
-	                    , Notification.POSITION_CENTERED);
-	        }
-	            
-	
-	            }
-	        }
-	        
-		}
+        try {
+//            Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.LOCAL);
+            Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
+            if(matchingNamesCountOnCentral>0){
+                getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+                proceedWithSave = false;
+            }
+            
+            // if list name from copy source is equal to specified value in combo box
+            if (!"".equals(listNameValue) && listName.equals(listNameValue)) {
+                getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+                proceedWithSave = false; 
+            }
+            
+            if(localFolderNames.contains(listNameValue)){
+                getWindow().showNotification("There is already an existing germplasm list folder with that name","",Notification.TYPE_ERROR_MESSAGE);
+                proceedWithSave = false;
+            }
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in counting germplasm list by name.", e);
+            e.printStackTrace();
+        }
+        
+        if(proceedWithSave){
+        
+            if (listNameValue.trim().length() == 0) {
+                MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving", Notification.POSITION_CENTERED);
+            } else if (listNameValue.trim().length() > 50) {
+                MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters", Notification.POSITION_CENTERED);
+                comboBoxListName.setValue("");
+            } else {
+                
+                if(!existingListSelected){
+                    Date date = new Date();
+                    Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+                    Long currentDate = Long.valueOf(formatter.format(date));
+                    GermplasmList parent = null;
+                    int statusListName = 1;
+                    GermplasmList listNameData = new GermplasmList(null, listNameValue, currentDate, selectType.getValue().toString(), ibdbUserId, description, parent, statusListName);
+    
+                    try {
+                        newListid = germplasmListManager.addGermplasmList(listNameData);
+                        try{
+                            GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
+                            addGermplasmListData(germList,1);
+                            listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
+                            listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid, true);
+                        } catch (MiddlewareQueryException e){
+                            germplasmListManager.deleteGermplasmListByListId(newListid);
+                            LOG.error("Error with copying list entries", e);
+                            MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
+                                , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                                , Notification.POSITION_CENTERED);
+                        }
+                        this.mainWindow.removeWindow(dialogWindow);
+    
+                    } catch (MiddlewareQueryException e) {
+                        LOG.error("Error with copying list entries", e);
+                        e.printStackTrace();
+                        MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                            , messageSource.getMessage(Message.UNSUCCESSFUL) 
+                            , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
+                            , Notification.POSITION_CENTERED);
+                    }
+                } else {
+                
+                    try {
+                        String listId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
+                        GermplasmList  germList = germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
+                        int countOfExistingList=(int) germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
+                        addGermplasmListData(germList,countOfExistingList+1);
+                        this.mainWindow.removeWindow(dialogWindow);
+                        
+                        listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
+                        listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId), true);
+                    } catch (MiddlewareQueryException e) {
+                        LOG.error("Error with copying list entries", e);
+                            e.printStackTrace();
+                            MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                                , messageSource.getMessage(Message.UNSUCCESSFUL) 
+                                , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED)
+                                , Notification.POSITION_CENTERED);
+                    }
+                }
+            }
+        }
     }
 
     private void addGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
@@ -341,9 +338,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         designationOfListEntriesCopied="";
         Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
         for (final Object itemId : selectedIds) {
-        	
-        	if(fromBuildNewList){
-        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+            
+            if(fromBuildNewList){
+                Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
                 Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
                 Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
                 Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
@@ -361,11 +358,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
                     designation, groupName, status, localRecordId);
                 germplasmListManager.addGermplasmListData(germplasmListData);
-        	}
-        	else{
-        		Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
-        		Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-        		Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+            }else{
+                Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
+                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
                 Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
                 Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName());
 
@@ -381,7 +377,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
                     designation, groupName, status, localRecordId);
                 germplasmListManager.addGermplasmListData(germplasmListData);
-        	}
+            }
             
             entryid++;
         }
@@ -418,15 +414,14 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     @Override
     public void addNewItem(String newItemCaption) {
-     if (!comboBoxListName.containsId(newItemCaption)) {
-                if (comboBoxListName.containsId("")) {
-                    comboBoxListName.removeItem("");
-                }
-                lastAdded = true;
-                comboBoxListName.addItem(newItemCaption);
-                comboBoxListName.setValue(newItemCaption);
+        if (!comboBoxListName.containsId(newItemCaption)) {
+            if (comboBoxListName.containsId("")) {
+                comboBoxListName.removeItem("");
             }
-
+            lastAdded = true;
+            comboBoxListName.addItem(newItemCaption);
+            comboBoxListName.setValue(newItemCaption);
+        }
     }
 
     @Override
