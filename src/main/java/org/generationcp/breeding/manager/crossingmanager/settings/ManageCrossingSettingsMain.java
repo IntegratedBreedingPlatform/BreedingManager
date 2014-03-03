@@ -22,7 +22,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     private SimpleResourceBundleMessageSource messageSource;
 	
 	private Label manageCrossingSettingsLabel;
-	private ChooseCrossingSettingsComponent chooseSettingsComponent;
+	private ManageCrossingSettingChooseBarComponent chooseSettingsComponent;
 	private CrossingSettingsDetailComponent detailComponent;
 
 	@Override
@@ -42,7 +42,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		manageCrossingSettingsLabel = new Label(messageSource.getMessage(Message.MANAGE_SAVED_CROSSING_SETTINGS));
 		manageCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H1.styleName());
 		
-		chooseSettingsComponent = new ChooseCrossingSettingsComponent(this);
+		chooseSettingsComponent = new ManageCrossingSettingChooseBarComponent(this);
 		detailComponent = new CrossingSettingsDetailComponent(this);
 	}
 
@@ -64,7 +64,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		addComponent(detailComponent, "top:100px;");
 	}
 
-	public ChooseCrossingSettingsComponent getChooseSettingsComponent() {
+	public ManageCrossingSettingChooseBarComponent getChooseSettingsComponent() {
 		return chooseSettingsComponent;
 	}
 
