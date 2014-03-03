@@ -418,6 +418,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         createGermplasmTable();
         
         menu = new ContextMenu();
+        menu.setWidth("255px");
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
