@@ -13,6 +13,7 @@ import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
@@ -52,6 +53,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithMethodAbbrev;
     private ContextMenuItem menuFillWithMethodNumber;
     private ContextMenuItem menuFillWithMethodGroup;
+    private ContextMenuItem menuFillWithCrossMaleInfo;
+    private ContextMenuItem menuFillWithCrossMaleGID;
+    private ContextMenuItem menuFillWithCrossMalePrefName;
     
     public static String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
     public static String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
@@ -62,6 +66,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
     public static String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
     public static String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
+    public static String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
+    public static String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
+    public static String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
     
     @SuppressWarnings("rawtypes")
     public static Class PREFERRED_ID_TYPE = String.class;
@@ -95,6 +102,14 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static Class METHOD_GROUP_TYPE = String.class;
     public static String METHOD_GROUP = "METHOD GROUP";
     
+    @SuppressWarnings("rawtypes")
+    public static Class CROSS_MALE_GID_TYPE = String.class;
+    public static String CROSS_MALE_GID = "CROSS-MALE GID";
+    
+    @SuppressWarnings("rawtypes")
+    public static Class CROSS_MALE_PREF_NAME_TYPE = String.class;
+    public static String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
+    
     private boolean fromBuildNewList;
     private BuildNewListComponent buildNewListComponent;
     
@@ -105,7 +120,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         , METHOD_NAME
         , METHOD_ABBREV
         , METHOD_NUMBER
-        , METHOD_GROUP}; 
+        , METHOD_GROUP
+        , CROSS_MALE_GID
+        , CROSS_MALE_PREF_NAME}; 
     
     
     /**
@@ -188,12 +205,17 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithGermplasmDate = menu.addItem(FILL_WITH_GERMPLASM_DATE);
         menuFillWithLocations = menu.addItem(FILL_WITH_LOCATION);
         menuFillWithMethodInfo = menu.addItem(FILL_WITH_METHOD_INFO);
+        menuFillWithCrossMaleInfo = menu.addItem(FILL_WITH_CROSS_MALE_INFO);
         
         //breeding method sub-options
         menuFillWithMethodName = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_NAME);
         menuFillWithMethodAbbrev = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_ABBREV);
         menuFillWithMethodNumber = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_NUMBER);
         menuFillWithMethodGroup = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_GROUP);
+        
+        //cross-male info sub-options
+        menuFillWithCrossMaleGID = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_GID);
+        menuFillWithCrossMalePrefName = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_PREF_NAME);
         
         menu.addListener(new ContextMenu.ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -305,6 +327,18 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         }
     }
     
+    private void markHasChangesFlags(boolean fromAddColumn){
+    	//mark flag that changes have been made in listDataTable
+        if(listManagerTreeMenu != null && fromAddColumn){ 
+        	listManagerTreeMenu.setChanged(true); 
+        }
+        
+        //mark flag that changes have been made in buildNewListTable
+        if(buildNewListComponent != null){ 
+        	buildNewListComponent.setHasChanges(true); 
+        }
+    }
+    
     private void addPreferredIdColumn(){
         if(!propertyExists(PREFERRED_ID)){
             targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
@@ -328,14 +362,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 //To trigger TableFieldFactory (fix for truncated data)
                 doFixForTruncatedDataInEditableTable();
                 
-               //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
-               
-               //mark flag that changes have been made in buildNewListTable
-               if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
-               
+                markHasChangesFlags(fromAddColumn);
             } catch (MiddlewareQueryException e) {
-                e.printStackTrace();
+            	LOG.error("Error in filling with preferred id values.", e);
             }
         }
     }
@@ -363,14 +392,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 //To trigger TableFieldFactory (fix for truncated data)
                 doFixForTruncatedDataInEditableTable();
                 
-               //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
-               
-               //mark flag that changes have been made in buildNewListTable
-               if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
+                markHasChangesFlags(fromAddColumn);    
                
             } catch (MiddlewareQueryException e) {
-                e.printStackTrace();
+            	LOG.error("Error in filling with preferred name values.", e);
             }  
         }
     }
@@ -393,6 +418,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
                     
+                    //TODO can make better use of the middleware method by just calling it once and not have it inside a loop
                     Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
                     
                     if(germplasmGidDateMap.get(gid)==null)
@@ -404,15 +430,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 //To trigger TableFieldFactory (fix for truncated data)
                 doFixForTruncatedDataInEditableTable();
                 
-                //mark flag that changes have been made in listDataTable
-                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
-                
-                //mark flag that changes have been made in buildNewListTable
-                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+                markHasChangesFlags(fromAddColumn);
                
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Germplasm Date values.", e);
-                e.printStackTrace();
             }        
         }
     }
@@ -449,15 +470,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 //To trigger TableFieldFactory (fix for truncated data)
                 doFixForTruncatedDataInEditableTable();
                     
-               //mark flag that changes have been made in listDataTable
-               if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
-               
-               //mark flag that changes have been made in buildNewListTable
-               if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
+                markHasChangesFlags(fromAddColumn);    
                
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Location values.", e);
-                e.printStackTrace();
             }        
         }
     }
@@ -528,16 +544,49 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 //To trigger TableFieldFactory (fix for truncated data)
                 doFixForTruncatedDataInEditableTable();
                     
-                //mark flag that changes have been made in listDataTable
-                if(listManagerTreeMenu != null && fromAddColumn){ listManagerTreeMenu.setChanged(true); }
-                
-                //mark flag that changes have been made in buildNewListTable
-                if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }    
+                markHasChangesFlags(fromAddColumn);    
                 
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Method Info values.", e);
-                e.printStackTrace();
             }       
+        }
+    }
+    
+    private void addCrossMaleGIDColumn(){
+        if(!propertyExists(CROSS_MALE_GID)){
+            targetTable.addContainerProperty(CROSS_MALE_GID, CROSS_MALE_GID_TYPE, null);
+            setCrossMaleGIDColumnValues(true);
+        }
+    }
+    
+    public void setCrossMaleGIDColumnValues(boolean fromAddColumn){
+        if(propertyExists(CROSS_MALE_GID)){
+            try {
+                List<Integer> itemIds = getItemIds(targetTable);
+                
+                for(Integer itemId: itemIds){
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    
+                    Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+                    
+                    if(germplasm != null){
+	                    if(germplasm.getGnpgs() >= 2)
+	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue(germplasm.getGpid2().toString());
+	                    else
+	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+                    } else{
+                    	targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+                    }
+                }
+                
+                //To trigger TableFieldFactory (fix for truncated data)
+                doFixForTruncatedDataInEditableTable();
+                
+                markHasChangesFlags(fromAddColumn);
+               
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error in filling with Cross-Male GID values.", e);
+            }        
         }
     }
     
