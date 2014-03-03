@@ -866,26 +866,40 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
             
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
                 newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
                 newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
                 newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
                 newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
                 newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
                 newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
                 newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
                 newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
             if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
                 newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).getValue());
             if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
                 newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).getValue());
+            }
         }
         
         assignSerializedEntryNumber();
@@ -944,27 +958,37 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
                 
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+                //TODO these if statements are repeated somewhere else in this class, let us think about putting them in a method which can be called in the places where this is needed
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
                     newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
                     newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
                     newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).getValue());
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
                     newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).getValue());
-                
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).getValue());
+                }
             }
         }
         assignSerializedEntryNumber();
@@ -1429,26 +1453,36 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     }
     
     private void updateAddedColumnValues(){
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
             addColumnContextMenu.setLocationColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
             addColumnContextMenu.setPreferredIdColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
             addColumnContextMenu.setPreferredNameColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
             addColumnContextMenu.setGermplasmDateColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
             addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
             addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+            addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+        }
     }
     
     public void viewEditList(int listId){

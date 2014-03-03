@@ -1436,26 +1436,36 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	
             	listDataTable.setVisibleColumns(visibleColumns);
             	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID))
-            		addColumnContextMenu.setPreferredIdColumnValues(false);            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS))
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
+            		addColumnContextMenu.setPreferredIdColumnValues(false);            
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
             		addColumnContextMenu.setLocationColumnValues(false);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
             		addColumnContextMenu.setPreferredNameColumnValues(false);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.GERMPLASM_DATE))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.GERMPLASM_DATE)){
                     addColumnContextMenu.setGermplasmDateColumnValues(false);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID))
                     addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
                     addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                    addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+            	}
             	
             	saveChangesAction();
             	listDataTable.refreshRowCache();

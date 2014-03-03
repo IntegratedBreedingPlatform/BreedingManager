@@ -599,7 +599,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void addCrossMaleGIDColumn(){
         if(!propertyExists(CROSS_MALE_GID)){
-            targetTable.addContainerProperty(CROSS_MALE_GID, CROSS_MALE_GID_TYPE, null);
+            targetTable.addContainerProperty(CROSS_MALE_GID, CROSS_MALE_GID_TYPE, "-");
             setCrossMaleGIDColumnValues(true);
         }
     }
@@ -615,10 +615,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
                     if(germplasm != null){
-	                    if(germplasm.getGnpgs() >= 2)
+	                    if(germplasm.getGnpgs() >= 2) {
 	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue(germplasm.getGpid2().toString());
-	                    else
+	                    }
+	                    else {
 	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+	                    }
                     } else{
                     	targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
                     }
@@ -692,6 +694,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         }
     }
     
+                LOG.error("Error in filling with Cross-Male Preferred Name values.", e);
+            }        
+        }
+    }
+    
     public Boolean propertyExists(String propertyId){
         List<String> propertyIds = getTablePropertyIds(targetTable);
         return propertyIds.contains(propertyId);
@@ -733,7 +740,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
         
     } 
     
@@ -743,26 +749,27 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public void populateAddedColumns(){
         for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
             if(propertyExists(propertyId)){
-                if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
+                if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
                     setPreferredIdColumnValues(false);
-                else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
+                } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
                     setPreferredNameColumnValues(false);
-                else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE))
+                } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
                     setGermplasmDateColumnValues(false);
-                else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
+                } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)){
                     setLocationColumnValues(false);
-                else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME))
+                } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)){
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-                else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV))
+                } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-                else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER))
+                } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-                else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP))
+                } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
                 else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
                     setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
                 else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
                     setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+                }
             }
         }
     }
@@ -799,26 +806,27 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * This can be used to add columns given a property ID (should be one of the addable ID's)
      */
     public void addColumn(String propertyId){
-        if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID))
+        if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
             addPreferredIdColumn();
-        else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
+        } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
             addPreferredNameColumn();
-        else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE))
+        } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
             addGermplasmDateColumn();
-        else if(propertyId.equals(AddColumnContextMenu.LOCATIONS))
+        } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)){
             addLocationColumn();
-        else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME))
+        } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)){
             addMethodNameColumn();
-        else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV))
+        } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
             addMethodAbbrevColumn();
-        else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER))
+        } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
             addMethodNumberColumn();
-        else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP))
+        } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
             addMethodGroupColumn();
         else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
             addCrossFemaleGidColumn();
         else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
             addCrossFemalePrefNameColumn();
+        }
     }
     
 }
