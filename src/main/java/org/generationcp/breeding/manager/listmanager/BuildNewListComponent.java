@@ -982,10 +982,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 }
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID)){
                     newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).getValue());
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).getValue());
+                }
                 if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).getValue());
                 }
@@ -1476,10 +1482,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         }
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID)){
             addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
             addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+            addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+        }
         if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
             addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
         }

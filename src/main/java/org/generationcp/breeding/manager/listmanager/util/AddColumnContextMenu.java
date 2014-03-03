@@ -265,6 +265,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     addCrossFemaleGidColumn();
                 }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
                     addCrossFemalePrefNameColumn();
+                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_GID)){
+                	addCrossMaleGIDColumn();
+                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_PREF_NAME)){
+                	addCrossMalePrefNameColumn();
                 }
             }
             
@@ -354,6 +358,24 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                         menuFillWithCrossFemaleInfo.setEnabled(false);
                     } else {
                         menuFillWithCrossFemaleInfo.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_MALE_GID)){
+                    	menuFillWithCrossMaleGID.setEnabled(false);
+                    } else {
+                    	menuFillWithCrossMaleGID.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_MALE_PREF_NAME)){
+                    	menuFillWithCrossMalePrefName.setEnabled(false);
+                    } else {
+                    	menuFillWithCrossMalePrefName.setEnabled(true);
+                    }
+                    
+                    if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
+                    	menuFillWithCrossMaleInfo.setEnabled(false);
+                    } else {
+                    	menuFillWithCrossMaleInfo.setEnabled(true);
                     }
                     
                     //Display context menu
@@ -637,6 +659,68 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         }
     }
     
+    private void addCrossMalePrefNameColumn(){
+        if(!propertyExists(CROSS_MALE_PREF_NAME)){
+            targetTable.addContainerProperty(CROSS_MALE_PREF_NAME, CROSS_MALE_PREF_NAME_TYPE, "-");
+            setCrossMalePrefNameColumnValues(true);
+        }
+    }
+    
+    public void setCrossMalePrefNameColumnValues(boolean fromAddColumn){
+        if(propertyExists(CROSS_MALE_PREF_NAME)){
+            try {
+                List<Integer> itemIds = getItemIds(targetTable);
+                Map<Integer, List<Integer>> gidToItemIdMap = new HashMap<Integer, List<Integer>>();
+                List<Integer> gidsToUseForQuery = new ArrayList<Integer>();
+                
+                for(Integer itemId: itemIds){
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    
+                    Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+                    
+                    if(germplasm != null){
+	                    if(germplasm.getGnpgs() >= 2) {
+	                        gidsToUseForQuery.add(germplasm.getGpid2());
+	                        List<Integer> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
+	                        if(itemIdsInMap == null){
+	                        	itemIdsInMap = new ArrayList<Integer>();
+	                        	itemIdsInMap.add(itemId);
+	                        	gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
+	                        } else{
+	                        	itemIdsInMap.add(itemId);
+	                        }
+	                    }
+	                    else {
+	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue("-");
+	                    }
+                    } else{
+                    	targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue("-");
+                    }
+                }
+                
+                if(!gidsToUseForQuery.isEmpty()){
+                	Map<Integer, String> gidToNameMap = germplasmDataManager.getPreferredNamesByGids(gidsToUseForQuery);
+                	
+                	for(Integer gid : gidToNameMap.keySet()){
+                		String prefName = gidToNameMap.get(gid);
+                		List<Integer> itemIdsInMap = gidToItemIdMap.get(gid);
+                		for(Integer itemId : itemIdsInMap){
+                			targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue(prefName);
+                		}
+                	}
+                }
+                
+                //To trigger TableFieldFactory (fix for truncated data)
+                doFixForTruncatedDataInEditableTable();
+                
+                markHasChangesFlags(fromAddColumn);
+               
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error in filling with Cross-Male Preferred Name values.", e);
+            }        
+        }
+    }
+    
     private void addCrossFemaleGidColumn(){
         if(!propertyExists(CROSS_FEMALE_GID)){
             targetTable.addContainerProperty(CROSS_FEMALE_GID, CROSS_FEMALE_GID_TYPE, "");
@@ -691,11 +775,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 LOG.error("Error in filling with Cross Female Info values.", e);
                 e.printStackTrace();
             }       
-        }
-    }
-    
-                LOG.error("Error in filling with Cross-Male Preferred Name values.", e);
-            }        
         }
     }
     
@@ -765,11 +844,16 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
                 } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
                     setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
-                else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
+                } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
                     setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
-                else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
                     setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+                } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+                	setCrossMaleGIDColumnValues(false);
+                } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                	setCrossMalePrefNameColumnValues(false);
                 }
+
             }
         }
     }
@@ -822,11 +906,16 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             addMethodNumberColumn();
         } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
             addMethodGroupColumn();
-        else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID))
+        } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
             addCrossFemaleGidColumn();
-        else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+        } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
             addCrossFemalePrefNameColumn();
+        } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+        	addCrossMaleGIDColumn();
+        } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+        	addCrossMalePrefNameColumn();
         }
+
     }
     
 }

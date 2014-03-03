@@ -1459,10 +1459,16 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	}
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID)){
                     addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
                     addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_GID)){
+                    addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+            	}
             	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
                     addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
             	}
