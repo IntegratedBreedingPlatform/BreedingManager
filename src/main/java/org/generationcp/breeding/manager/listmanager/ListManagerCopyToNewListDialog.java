@@ -350,7 +350,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 Button pGidButton = (Button) pGid.getValue();
                 int gid=Integer.valueOf(pGidButton.getCaption().toString());
                 String entryCode=String.valueOf((pEntryCode.getValue().toString()));
-                String seedSource=listName+"-"+entryCode;
+                String seedSource=listName+": "+entryIdOfList;
                 String designation=String.valueOf((pDesignation.getValue().toString()));
                 designationOfListEntriesCopied+=designation+",";
                 String groupName=String.valueOf((pGroupName.getValue().toString()));
@@ -369,7 +369,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 int gid=Integer.valueOf(pGidButton.getCaption().toString());
                 String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
                 String entryCode=String.valueOf((pEntryCode.getValue().toString()));
-                String seedSource=listName+"-"+entryCode;
+                String seedSource=listName+": "+entryIdOfList;
                 String designation=String.valueOf((pDesignation.getValue().toString()));
                 designationOfListEntriesCopied+=designation+",";
                 String groupName=String.valueOf((pGroupName.getValue().toString()));
