@@ -359,7 +359,7 @@
 	border-radius: 3px;	
 }
 
-.v-panel-content .v-absolutelayout {
+.v-panel-content-dropHandlerPanel .v-absolutelayout  {
 	background-color: #e3e3e3;
 }
 
@@ -386,4 +386,34 @@
 
 .v-select-optiongroup-horizontalgroup .v-select-option {
     display: inline-block;
-}R
+}
+
+.v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
+	width: 0px;
+	background-image: none;
+}
+
+.v-absolutelayout-leftPane  {
+	background-color: #f6f6f6;
+}
+
+/* TabStyled Header */
+.v-button-tabStyleButton {
+	border-color: #f6f6f6;
+}
+
+.v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
+.tabHeaderStyle div div .v-button:hover,
+.tabHeaderStyle div div .v-button:hover .v-button-wrap,
+.tabHeaderStyle div div .v-button:focus,
+.tabHeaderStyle div div .v-button:focus .v-button-wrap, .tabHeaderStyle div div .v-button:hover .v-button-wrap,
+.tabHeaderStyle div div .v-button:active, .tabHeaderStyle div div .v-pressed.v-button,
+.tabHeaderStyle div div .v-button:active .v-button-wrap, .tabHeaderStyle div div .v-pressed.v-button .v-button-wrap
+{
+	border-color: #f6f6f6;
+	background: #f6f6f6;
+}
+
+.tabStyleButton .v-button-caption{
+	color: #333;
+}
