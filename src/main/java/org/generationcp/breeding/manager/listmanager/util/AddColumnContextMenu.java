@@ -746,7 +746,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     Germplasm femaleParent = null;
                     // get female only if germplasm is created via generative process
-                    if (germplasm.getGnpgs() > 0) {
+                    if (germplasm.getGnpgs() >= 2) {
                         femaleParent = germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
                     }
                     
