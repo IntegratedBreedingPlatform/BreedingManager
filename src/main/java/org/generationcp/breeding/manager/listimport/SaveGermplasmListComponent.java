@@ -282,6 +282,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
           && BreedingManagerUtil.validateRequiredField(getWindow(), listDateField,
               messageSource, (String) listDateLabel.getCaption());
       }
+    private void notifyExternalApplication(Integer listId){
+    	 this.getWindow().executeJavaScript("window.parent.closeImportFrame("+listId+");"); 
+    }
      //Save records into DB and redirects to GermplasmListBrowser to view created list
     private void saveRecords() {
         SaveGermplasmListAction saveAction = new SaveGermplasmListAction();
@@ -352,9 +355,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
-
+            notifyExternalApplication(listId);
             this.source.viewGermplasmListCreated(listId);
-
+            
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
             e.printStackTrace();
