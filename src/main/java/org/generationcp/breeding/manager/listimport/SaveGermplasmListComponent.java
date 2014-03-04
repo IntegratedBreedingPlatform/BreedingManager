@@ -96,7 +96,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private String filename;
 
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
-    private Boolean viaPopup;
+    private boolean viaPopup;
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;

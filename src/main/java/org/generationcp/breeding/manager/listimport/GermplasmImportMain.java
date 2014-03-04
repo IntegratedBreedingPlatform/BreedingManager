@@ -57,7 +57,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private Label crossingManagerTitle;
     
 	private Boolean viaToolURL;
-	private Boolean viaPopup; 
+	private boolean viaPopup; 
 	
     public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL){
         this.parent = parent;
