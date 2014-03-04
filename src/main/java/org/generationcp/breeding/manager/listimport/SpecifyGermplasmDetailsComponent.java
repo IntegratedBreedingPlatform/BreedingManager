@@ -21,6 +21,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -682,9 +683,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             		List<Name> names = germplasmDataManager.getNamesByGID(importedGermplasm.getGid(), 0, null);
                             		boolean thereIsMatchingName = false;
                             		for(Name name : names){
-                            			if(name.getNval().equals(importedGermplasm.getDesig())){
+                            			String nameInDb = name.getNval().toLowerCase();
+                            			String nameInImportFile = importedGermplasm.getDesig().toLowerCase();
+                            			String standardizedNameInImportFile = GermplasmDataManagerUtil.standardizeName(nameInImportFile).toLowerCase();
+                            			String nameInImportFileWithSpacesRemoved = GermplasmDataManagerUtil.removeSpaces(nameInImportFile).toLowerCase();
+                            			
+                            			if(nameInDb.equals(nameInImportFile)
+                            					|| nameInDb.equals(standardizedNameInImportFile)
+                            					|| nameInDb.equals(nameInImportFileWithSpacesRemoved)){
                             				thereIsMatchingName = true;
-                            			}
+                            			} 
                             		}
                             		
                             		if(thereIsMatchingName){
