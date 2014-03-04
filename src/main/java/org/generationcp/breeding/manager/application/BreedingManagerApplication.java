@@ -38,6 +38,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private static final long serialVersionUID = 1L;
     
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
+    public static final String GERMPLASM_IMPORT_WINDOW_NAME_POPUP = "germplasm-import-popup";
     public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
@@ -123,6 +124,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
                 germplasmImportWindow.setSizeUndefined();
                 germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false));
+                this.addWindow(germplasmImportWindow);
+                return germplasmImportWindow;
+            } else if(name.equals(GERMPLASM_IMPORT_WINDOW_NAME_POPUP)){
+                Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+                germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
+                germplasmImportWindow.setSizeUndefined();
+                germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false, true));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
             } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
