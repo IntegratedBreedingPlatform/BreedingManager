@@ -136,7 +136,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     @Override
     public void afterPropertiesSet() throws Exception {
     	
-    	setHeight("420px");
+    	setHeight("840px");
         this.setMargin(true, true, true, true);
 
         lblFemaleParent= new Label(); 
@@ -461,14 +461,14 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
-        addComponent(gridLayoutSelectingParents, "top:15px; left:15px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:230px; left:35px;");
+        addComponent(gridLayoutSelectingParents, "top:435px; left:15px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:650px; left:35px;");
         
         crossesTableComponent = new MakeCrossesTableComponent();
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        addComponent(crossesTableComponent, "top:15px; left:590px;");
+        addComponent(crossesTableComponent, "top:435px; left:590px;");
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -476,7 +476,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         layoutButtonArea.addComponent(backButton);
         layoutButtonArea.addComponent(nextButton);
         
-        addComponent(layoutButtonArea, "top:360px; left:500px;");
+        addComponent(layoutButtonArea, "top:780px; left:500px;");
     }
 
     @Override
