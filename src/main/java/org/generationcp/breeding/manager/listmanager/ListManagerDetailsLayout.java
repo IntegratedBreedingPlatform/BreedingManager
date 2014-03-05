@@ -33,7 +33,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean {
 	
 	public static final String CLOSE_ALL_TABS_ID = "ListManagerTreeComponent Close All Tabs ID";
-	public static final String TAB_DESCRIPTION_PREFIX = "List id: ";
+	public static final String TAB_DESCRIPTION_PREFIX = "List ID: ";
 
 	private static final long serialVersionUID = 8092751288890434894L;
 	@Autowired
@@ -115,7 +115,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
 		boolean tabExists = false;
 		//workaround since Browse Lists and Search Lists have different tab name formats
 		if (germplasmList != null){
-			tabExists = Util.isTabDescriptionExist(detailsTabSheet, TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
+			tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
 		} else { 
 			tabExists = Util.isTabExist(detailsTabSheet, tabName);
 		}
@@ -127,11 +127,9 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
             
             Tab tab = detailsTabSheet.addTab(layout, tabName, null);
             if (germplasmList != null){
-            	tab.setDescription(TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
+            	tab.setDescription(generateTabDescription(germplasmList.getId()));
             }
             tab.setClosable(true);
-            
-            //parentLayout.addComponent(new Label("<style> .v-shadow, .v-tooltip { display:none !important; } </style>", Label.CONTENT_XHTML));
             
             if(detailsTabSheet.getComponentCount() <= 1){
             	initializeLayout();
@@ -142,7 +140,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
         } else {
             Tab tab;
             if (germplasmList != null){
-            	tab = Util.getTabWithDescription(detailsTabSheet, TAB_DESCRIPTION_PREFIX + germplasmList.getId().toString());
+            	tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
             } else {
             	tab = Util.getTabToFocus(detailsTabSheet, tabName);
             }
@@ -239,13 +237,38 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
         return this.germplasmListManager.getGermplasmListById(germplasmListId);
     }
     
-    public TabSheet getTabSheet(){
-    	return this.detailsTabSheet;
-    }
-    
     public ListManagerTreeComponent getTreeComponent(){
     	return this.treeComponent;
     }
+    
+    private String generateTabDescription(Integer listId){
+    	return TAB_DESCRIPTION_PREFIX + listId;
+    }
+    
+    public TabSheet getTabSheet(){
+    	return detailsTabSheet;
+    }
+    
+    public void removeListTab(Integer listId){
+    	String tabDescription = generateTabDescription(listId);
+    	Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
+        if (tab != null){
+        	detailsTabSheet.removeTab(tab);
+        }
+    }
+    
+    public void renameListTab(Integer listId, String newName){
+    	String tabDescription = generateTabDescription(listId);
+    	Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
+        if (tab != null){
+        	tab.setCaption(newName);
+        	VerticalLayout verticalLayout = (VerticalLayout) tab.getComponent();
+			ListDetailComponent listDetailComponent = ((ListManagerTreeMenu)verticalLayout.getComponent(0)).getListManagerListDetailComponent();
+			listDetailComponent.setLblName(newName);
+        }
+    }
+    
+    
     
 
 }

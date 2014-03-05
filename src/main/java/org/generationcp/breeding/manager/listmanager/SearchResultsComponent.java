@@ -433,4 +433,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	return totalWidth;
     }
     
+    public ListManagerDetailsLayout getListManagerDetailsLayout(){
+    	return this.displayDetailsLayout;
+    }
+    
 }

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -176,7 +177,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
+				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), listManagerMain);
             }
         });
         
@@ -205,7 +206,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
+				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain);
             }
         });
         
@@ -596,7 +597,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return true;
     }
     
-    public ListManagerDetailsLayout getViewDetailsTabbedLayout(){
+    public ListManagerDetailsLayout getListManagerDetailsLayout(){
     	return this.displayDetailsLayout;
     }
     
@@ -649,6 +650,23 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	} else {
     		return super.getWindow();
     	}
+    }
+    
+    public void removeListFromTree(GermplasmList germplasmList){
+    	Integer listId = germplasmList.getId();
+		Item item = germplasmListTree.getItem(listId);
+    	if (item != null){
+    		germplasmListTree.removeItem(listId);
+    	}
+    	GermplasmList parent = germplasmList.getParent();
+		if (parent == null) {
+			germplasmListTree.select(LOCAL);
+			setSelectedListId(LOCAL);
+		} else {
+			germplasmListTree.select(parent.getId());
+			germplasmListTree.expandItem(parent.getId());
+			setSelectedListId(parent.getId());
+		}
     }
 
 }
