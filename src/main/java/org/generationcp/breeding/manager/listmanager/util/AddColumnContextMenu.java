@@ -679,7 +679,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
                     if(germplasm != null){
-	                    if(germplasm.getGnpgs() >= 2) {
+	                    if(germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
 	                        gidsToUseForQuery.add(germplasm.getGpid2());
 	                        List<Integer> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
 	                        if(itemIdsInMap == null){
