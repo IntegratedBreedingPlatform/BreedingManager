@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.util.StudyBrowserTabCloseHandler;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeCollapseListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
 import org.generationcp.browser.study.util.StudyTreeUtil;
-import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -33,7 +33,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.FolderReference;
 import org.generationcp.middleware.domain.dms.Reference;
-import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
@@ -72,8 +71,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     private VerticalLayout treeContainer;
     private Tree studyTree;
-    private static TabSheet tabSheetStudy;
-    private HorizontalLayout studyBrowserMainLayout;
+    private TabSheet tabSheetStudy;
+    
+    private StudyBrowserMain studyBrowserMain;
+    private StudyBrowserMainLayout studyBrowserMainLayout;
+    private VerticalLayout  studyDetailsLayout;
     
     private Label controlButtonsHeading;
     private HorizontalLayout controlButtonsLayout;
@@ -91,12 +93,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    static{
-        tabSheetStudy = new TabSheet();
-    }
-    
-    public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout) {
-        this.studyBrowserMainLayout = studyBrowserMainLayout;
+    public StudyTreeComponent(StudyBrowserMain studyBrowserMain) {
+        this.studyBrowserMain = studyBrowserMain;
+        this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
+        this.studyDetailsLayout = studyBrowserMainLayout.getStudyDetailsLayout();
     }
     
     // Called by StudyButtonClickListener
@@ -268,11 +268,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
-            studyBrowserMainLayout.addComponent(tabSheetStudy);
-            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
+            studyDetailsLayout.addComponent(tabSheetStudy);
+            studyBrowserMainLayout.showDetailsLayout();
             tabSheetStudy.setSelectedTab(layout);
-            tabSheetStudy.setCloseHandler(new SelectedTabCloseHandler());
-            
+            tabSheetStudy.setCloseHandler(new StudyBrowserTabCloseHandler(studyBrowserMainLayout));
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
             tabSheetStudy.setSelectedTab(tab.getComponent());
@@ -420,7 +419,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     
-    public static TabSheet getTabSheetStudy() {
+    public TabSheet getTabSheetStudy() {
         return tabSheetStudy;
     }
     
