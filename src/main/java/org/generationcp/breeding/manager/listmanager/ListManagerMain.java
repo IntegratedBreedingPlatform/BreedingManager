@@ -182,4 +182,22 @@ public class ListManagerMain extends VerticalLayout implements
 		return this.buildNewListTitle;
 	}
 	
+	public void removeDeletedListFromUI(Integer listId){
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().removeListTab(listId);
+		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
+		
+		this.getBrowseListsComponent().getListManagerTreeComponent().removeListFromTree(listId);
+		
+		//TODO remove from Matching Lists table and Build/Edit List screen
+	}
+	
+	public void updateUIForRenamedList(Integer listId, String newName){
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		
+		//TODO update Matching Lists table and Build/Edit List screen
+	}
+	
 }

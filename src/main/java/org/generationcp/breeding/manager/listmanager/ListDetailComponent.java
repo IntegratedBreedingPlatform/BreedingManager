@@ -6,6 +6,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEditListNotes;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -427,23 +428,16 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         if(germplasmList.getStatus()<100){ 
             try {
             	
-            	GermplasmList parentFolder = germplasmList.getParent();
-            	
-                germplasmListManager.deleteGermplasmList(germplasmList);
-                
-                User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-                ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-                        workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-                        "Deleted a germplasm list.", 
-                        "Deleted germplasm list with id = "+germplasmList.getId()+" and name = "+germplasmList.getName()+".",
-                        user,
-                        new Date());
-                workbenchDataManager.addProjectActivity(projAct);
+            	ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, 
+            			germplasmList, workbenchDataManager, getWindow(), messageSource, "list");
+               
                 lockButton.setEnabled(false);
                 deleteButton.setEnabled(false);
-                getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
-                //Close confirmation window
+
+                //Close tab
+                listManagerTreeMenu.getListManagerMain().removeDeletedListFromUI(germplasmList.getId());           
                 
+                GermplasmList parentFolder = germplasmList.getParent();
                 //Set listId on listManagerTreeComponent so when createTree is invoked, it is expanded until the parent of the deleted list
                 if(parentFolder!=null)
                 	listManagerTreeMenu.getDetailsLayout().getTreeComponent().setListId(parentFolder.getId());
@@ -453,11 +447,6 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 		listManagerTreeMenu.getDetailsLayout().getTreeComponent()!= null){
                 	listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
                 }
-                
-                //Close tab
-                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
-				Tab tab = Util.getTabWithDescription(parentTabSheet, germplasmList.getId().toString());
-                parentTabSheet.removeTab(tab);
                 
                 if(parentFolder!=null)
                 	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(parentFolder.getId());

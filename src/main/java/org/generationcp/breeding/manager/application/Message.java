@@ -342,6 +342,7 @@ public enum Message{
     ,ERROR
     ,TAG
     ,TAG_ALL
+    ,SUCCESSFULLY_DELETED_ITEM
    
     //Unsaved changes msg
     ,WARNING
