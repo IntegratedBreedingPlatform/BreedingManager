@@ -434,24 +434,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                 lockButton.setEnabled(false);
                 deleteButton.setEnabled(false);
 
-                //Close tab
-                listManagerTreeMenu.getListManagerMain().removeDeletedListFromUI(germplasmList.getId());           
-                
-                GermplasmList parentFolder = germplasmList.getParent();
-                //Set listId on listManagerTreeComponent so when createTree is invoked, it is expanded until the parent of the deleted list
-                if(parentFolder!=null)
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().setListId(parentFolder.getId());
-                
-                //Re-use refresh action on GermplasmListTreeComponent
-                if (listManagerTreeMenu != null && listManagerTreeMenu.getDetailsLayout()!= null && 
-                		listManagerTreeMenu.getDetailsLayout().getTreeComponent()!= null){
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
-                }
-                
-                if(parentFolder!=null)
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(parentFolder.getId());
-                else
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
+                listManagerTreeMenu.getListManagerMain().updateUIForDeletedList(germplasmList);           
                 
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);

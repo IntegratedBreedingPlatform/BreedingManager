@@ -7,11 +7,8 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -35,8 +32,6 @@ import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
@@ -57,7 +52,6 @@ public class GermplasmListTreeUtil implements Serializable {
     public final static String HAS_CHILDREN = "Folder has child items.";
 
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
-    public static String MY_LIST = "";
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -543,21 +537,9 @@ public class GermplasmListTreeUtil implements Serializable {
 			public void onClose(ConfirmDialog dialog) {
 				if (dialog.isConfirmed()) {
 					try {
-						GermplasmList parent = germplasmListManager.getGermplasmListById(finalGpList.getId()).getParent();
 						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
 								workbenchDataManager, source.getWindow(), messageSource, "item");
-						targetTree.removeItem(lastItemId);
-						targetTree.select(null);
-						if (parent == null) {
-							targetTree.select(MY_LIST);
-							listManagerTreeComponent.setSelectedListId(MY_LIST);
-						} else {
-							targetTree.select(parent.getId());
-							targetTree.expandItem(parent.getId());
-							listManagerTreeComponent.setSelectedListId(parent.getId());
-						}
-						
-						listManagerMain.removeDeletedListFromUI(finalGpList.getId());
+						listManagerMain.updateUIForDeletedList(finalGpList);					
 						
 					} catch (Error e) {
 						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");

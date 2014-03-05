@@ -652,11 +652,21 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	}
     }
     
-    public void removeListFromTree(Integer listId){
-    	Item item = germplasmListTree.getItem(listId);
+    public void removeListFromTree(GermplasmList germplasmList){
+    	Integer listId = germplasmList.getId();
+		Item item = germplasmListTree.getItem(listId);
     	if (item != null){
     		germplasmListTree.removeItem(listId);
     	}
+    	GermplasmList parent = germplasmList.getParent();
+		if (parent == null) {
+			germplasmListTree.select(LOCAL);
+			setSelectedListId(LOCAL);
+		} else {
+			germplasmListTree.select(parent.getId());
+			germplasmListTree.expandItem(parent.getId());
+			setSelectedListId(parent.getId());
+		}
     }
 
 }
