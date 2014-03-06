@@ -20,9 +20,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -80,6 +82,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         tabSheetStudyDatabaseInstance.setSelectedTab(tabStudies);
         
         Button closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+        closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
         closeAllTabsButton.addListener(new ClickListener() {
             
             private static final long serialVersionUID = 3037464142423787558L;
@@ -90,6 +93,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
             }
         });
         mainLayout.getStudyDetailsLayout().addComponent(closeAllTabsButton);
+        mainLayout.getStudyDetailsLayout().setComponentAlignment(closeAllTabsButton, Alignment.MIDDLE_RIGHT);
         mainLayout.hideDetailsLayout();
         this.addComponent(mainLayout);
     }
