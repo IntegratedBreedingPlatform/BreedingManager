@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -18,6 +19,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalSplitPanel;
 
 @Configurable
 public class ListManagerSidebysideMain extends AbsoluteLayout implements
@@ -32,26 +34,33 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
-    HorizontalLayout headerLayout;
-    private Panel containerPanel;
+    //For Main Tab 
+    private HorizontalLayout tabHeaderLayout;
     private Button showBrowseListsButton;
     private Button showSearchListsButton;
-    private Button toggleLeftButton;
-    private Button toggleRightButton;
-    private HorizontalSplitPanel splitPanel;
-	
-    AbsoluteLayout browserSearchLayout;
-    HorizontalLayout buildListLayout;
+    private Panel containerPanel;
     
-    private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("96");
-	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("4");
-	
-	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf("50");
-	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf("96");
-
+    private HorizontalSplitPanel hSplitPanel;
+    private VerticalSplitPanel vSplitPanel;
+    
+    //Layouts on every pane
+    private HorizontalLayout searchBarLayout;
+    private AbsoluteLayout browserSearchLayout;
+    private HorizontalLayout buildListLayout;
+    
+    //Components on every pane
+    private ListManagerSearchListBarComponent searchListsBarComponent;
     private ListManagerBrowseListComponent browseListsComponent;
     private ListManagerSearchListComponent searchListsComponent;
-        
+    
+    
+    private Button toggleBuildNewListButton;
+	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50); //actual width in pixel 650 
+	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
+	
+	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
+	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
+	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -63,6 +72,7 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 		addListeners();
 		layoutComponents();
 		
+		collapseTop();
 		collapseRight();
     }
 
@@ -78,47 +88,10 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 		
 		//title
 		titleLayout = new AbsoluteLayout();
+		
         setTitleContent("");
-        
-        //header
-        showBrowseListsButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
-        showSearchListsButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
-
-        showBrowseListsButton.addStyleName("tabStyleButton");
-        showSearchListsButton.addStyleName("tabStyleButton");
-        
-        headerLayout = new HorizontalLayout();
-        headerLayout.addStyleName("tabHeaderStyle");
-        headerLayout.setSpacing(true);
-        headerLayout.addComponent(showBrowseListsButton);
-        headerLayout.addComponent(showSearchListsButton);
-        
-        splitPanel = new HorizontalSplitPanel();
-		splitPanel.setSizeFull();
-		splitPanel.setMargin(false);
-        
-		//content
-        containerPanel = new Panel();
-        containerPanel.setLayout(splitPanel);
-        toggleLeftButton = new Button();
-		toggleRightButton = new Button();
-		
-        browseListsComponent = new ListManagerBrowseListComponent();
-        searchListsComponent = new ListManagerSearchListComponent();
-        
-        browserSearchLayout = new AbsoluteLayout();
-        browserSearchLayout.addStyleName("leftPane");
-        browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
-        browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
-        browserSearchLayout.addComponent(toggleLeftButton,"top:0px;right:0px");
-        splitPanel.setFirstComponent(browserSearchLayout);
-		
-		buildListLayout = new HorizontalLayout();
-		buildListLayout.setSpacing(true);
-		buildListLayout.addComponent(toggleRightButton);
-		buildListLayout.addComponent(new BuildNewListComponentSidebyside());
-		splitPanel.setSecondComponent(buildListLayout);
-		
+        setTabHeader();
+        setContent();		
 	}
 
 	private void setTitleContent(String string) {
@@ -142,16 +115,80 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
         titleLayout.addComponent(mainTitle,"top:0px;left:0px");
         titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
 	}
+	
+	private void setTabHeader(){
+        showBrowseListsButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
+        showSearchListsButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        showBrowseListsButton.addStyleName("tabStyleButton");
+        showSearchListsButton.addStyleName("tabStyleButton");
+        showBrowseListsButton.setImmediate(true);
+        showSearchListsButton.setImmediate(true);
+        
+        tabHeaderLayout = new HorizontalLayout();
+        tabHeaderLayout.addStyleName("tabHeaderStyle");
+        tabHeaderLayout.setSpacing(true);
+        tabHeaderLayout.addComponent(showBrowseListsButton);
+        tabHeaderLayout.addComponent(showSearchListsButton);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void setContent(){
+		
+		vSplitPanel = new VerticalSplitPanel();
+		vSplitPanel.setWidth("100%");
+		vSplitPanel.setHeight("600px");
+		vSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
+		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
+		vSplitPanel.setImmediate(true);
+		
+		containerPanel = new Panel();
+        containerPanel.setLayout(vSplitPanel);
+		
+		hSplitPanel = new HorizontalSplitPanel();
+		hSplitPanel.setSizeFull();
+		hSplitPanel.setMargin(false);
+		hSplitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+		hSplitPanel.setMinSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+		hSplitPanel.setImmediate(true);
+		
+		// Top Pane
+		searchListsBarComponent = new ListManagerSearchListBarComponent();
+		searchBarLayout = new HorizontalLayout();
+		searchBarLayout.setSizeFull();
+		searchBarLayout.setMargin(true);
+		searchBarLayout.addComponent(searchListsBarComponent);
+		
+        
+		//Left Pane
+        browseListsComponent = new ListManagerBrowseListComponent();
+        searchListsComponent = new ListManagerSearchListComponent();
+        browserSearchLayout = new AbsoluteLayout();
+        browserSearchLayout.addStyleName("leftPane");
+        browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
+        browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
+        
+        //Right Pane
+        toggleBuildNewListButton = new Button();
+        toggleBuildNewListButton.setDescription("Toggle Build New List Pane");
+        
+		buildListLayout = new HorizontalLayout();
+		buildListLayout.setSpacing(true);
+		buildListLayout.addComponent(toggleBuildNewListButton);
+		buildListLayout.addComponent(new BuildNewListComponentSidebyside());
+		
+		hSplitPanel.setFirstComponent(browserSearchLayout);
+		hSplitPanel.setSecondComponent(buildListLayout);
+		
+		vSplitPanel.setFirstComponent(searchListsBarComponent);
+		vSplitPanel.setSecondComponent(hSplitPanel);
+	}
 
 	@Override
 	public void initializeValues() {
 		browserSearchLayout.setWidth("100%");
         browserSearchLayout.setHeight("600px");
-		
         searchListsComponent.setVisible(false);
-        
-		toggleLeftButton.setCaption("<<");
-		toggleRightButton.setCaption(">>");
+		toggleBuildNewListButton.setCaption(">>");
 	}
 
 	@Override
@@ -163,6 +200,7 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 			@Override
 			public void buttonClick(ClickEvent event) {
 				showBrowseListPane();
+				collapseTop();
 			}
 
 		});
@@ -172,28 +210,16 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				expandTop();
 				showSearchListPane();
 			}
 		});
 		
-		
-		toggleLeftButton.addListener(new ClickListener(){
+		toggleBuildNewListButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 
 			public void buttonClick(ClickEvent event) {
-				if(splitPanel.getSplitPosition() == EXPANDED_SPLIT_POSITION_LEFT){
-					collapseLeft();
-				} else {
-					expandLeft();
-				}
-			}
-		});
-		
-		toggleRightButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			public void buttonClick(ClickEvent event) {
-				if(splitPanel.getSplitPosition() == EXPANDED_SPLIT_POSITION_RIGHT || splitPanel.getSplitPosition() == COLLAPSED_SPLIT_POSITION_LEFT){
+				if(hSplitPanel.getSplitPosition() == hSplitPanel.getMinSplitPosition()){
 					collapseRight();
 				} else {
 					expandRight();
@@ -223,31 +249,25 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		addComponent(titleLayout,"top:10px; left:10px");
-		addComponent(headerLayout,"top:50px;left:10px;");
+		addComponent(tabHeaderLayout,"top:50px;left:10px;");
 		addComponent(containerPanel,"top:75px;left:10px;");
 	}
-
-    private void expandLeft(){
-    	splitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT);
-    	toggleLeftButton.setCaption("<<");
-    	toggleRightButton.setCaption("<<");
-    }
-
-    private void collapseLeft(){
-    	splitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT);
-    	toggleLeftButton.setCaption(">>");
-    	toggleRightButton.setCaption(">>");
-    }
 	
     private void expandRight(){
-    	splitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT);
-    	toggleLeftButton.setCaption(">>");
-    	toggleRightButton.setCaption(">>");
+    	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+    	toggleBuildNewListButton.setCaption(">>");
     }
 
     private void collapseRight(){
-    	splitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT);
-    	toggleLeftButton.setCaption("<<");
-    	toggleRightButton.setCaption("<<");
+    	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+    	toggleBuildNewListButton.setCaption("<<");
+    }
+    
+    private void collapseTop(){
+    	vSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
+    }
+    
+    private void expandTop(){
+    	vSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
     }
 }

@@ -87,6 +87,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		displayDetailsLayout = new ListManagerDetailsLayout(this.listManagerMain, this.parentLayout, true);
 		
 		matchingListsLabel = new Label();
+		matchingListsLabel.setWidth("250px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
 		matchingListsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
 		
