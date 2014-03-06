@@ -638,7 +638,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     
                     if(germplasm != null){
 	                    if(germplasm.getGnpgs() >= 2) {
-	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue(germplasm.getGpid2().toString());
+	                    	if(germplasm.getGpid2() != null && germplasm.getGpid2() != 0){
+	                    		targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue(germplasm.getGpid2().toString());
+	                    	} else{
+	                    		targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+	                    	}
 	                    }
 	                    else {
 	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
