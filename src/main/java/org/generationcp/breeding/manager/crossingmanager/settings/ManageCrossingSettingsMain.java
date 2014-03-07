@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -59,9 +60,9 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("800px");
+		tabSheet.setHeight("900px");
 		tabSheet.addTab(new CrossingSettingsDetailComponent(this), wizardStepNames[0]);
-		tabSheet.addTab(new VerticalLayout(), wizardStepNames[1]);
+		tabSheet.addTab(new CrossingManagerMakeCrossesComponent(this), wizardStepNames[1]);
 		tabSheet.addTab(new VerticalLayout(), wizardStepNames[2]);
 	}
 
@@ -82,8 +83,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setWidth("1000px");
-		setHeight("850px");
+		setWidth("90%");
+		setHeight("1000px");
 		
 		addComponent(toolTitle);
 		addComponent(wizardDisplay, "top:40px");
@@ -105,7 +106,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	}
 
 	private void showNextWizardStep(int step) {
-		Tab tab = Util.getTabToFocus(tabSheet, wizardStepNames[step]);
+		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
 		tabSheet.setSelectedTab(tab.getComponent());
 	}
 

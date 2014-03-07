@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -71,8 +72,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private CrossingManagerMain source;
-    private Accordion accordion;
+//    private CrossingManagerMain source;
+//    private Accordion accordion;
+    private ManageCrossingSettingsMain source;
     private Component nextScreen;
     private Component previousScreen;
     
@@ -114,22 +116,26 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private TabSheet listDetailsTabSheet;
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
-        this.source = source;
-        this.accordion = accordion;
+//        this.source = source;
+//        this.accordion = accordion;
         lastOpenedListId = null;
     }
     
-    public CrossingManagerMain getSource() {
-        return source;
+    public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
+    	this.source = manageCrossingSettingsMain;
     }
     
-    public void setNextScreen(Component nextScreen){
-        this.nextScreen = nextScreen;
-    }
-    
-    public void setPreviousScreen(Component backScreen){
-        this.previousScreen = backScreen;
-    }
+//    public CrossingManagerMain getSource() {
+//        return source;
+//    }
+//    
+//    public void setNextScreen(Component nextScreen){
+//        this.nextScreen = nextScreen;
+//    }
+//    
+//    public void setPreviousScreen(Component backScreen){
+//        this.previousScreen = backScreen;
+//    }
     
     @Override
     public CrossesMade getCrossesMade() {
@@ -594,7 +600,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
      
     public void nextButtonClickAction(){
-        nextScreen = source.getWizardScreenThree();
+//        nextScreen = source.getWizardScreenThree();
         
         if(this.nextScreen != null){
             assert this.nextScreen instanceof CrossesMadeContainer;
@@ -605,12 +611,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             listener.updateCrossesMadeContainer();
             ((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
         
-            source.getWizardScreenThree().setPreviousScreen(this);
-            source.enableWizardTabs();
-            this.accordion.setSelectedTab(this.nextScreen);
-            source.enableOnlyWizardTabThree();
-            source.enableWizardTabOne();
-            source.enableWizardTabTwo();
+//            source.getWizardScreenThree().setPreviousScreen(this);
+//            source.enableWizardTabs();
+//            this.accordion.setSelectedTab(this.nextScreen);
+//            source.enableOnlyWizardTabThree();
+//            source.enableWizardTabOne();
+//            source.enableWizardTabTwo();
         } else {
             this.nextButton.setEnabled(false);
         }
@@ -619,8 +625,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     public void backButtonClickAction(){
         if(this.previousScreen != null){
-            source.enableWizardTabs();
-            this.accordion.setSelectedTab(this.previousScreen);
+//            source.enableWizardTabs();
+//            this.accordion.setSelectedTab(this.previousScreen);
             //if(previousScreen instanceof CrossingManagerImportFileComponent)
             //    source.enableOnlyWizardTabOne();
         } else {
