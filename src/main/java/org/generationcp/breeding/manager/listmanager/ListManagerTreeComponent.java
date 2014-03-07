@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
@@ -87,6 +88,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     private boolean forSelectingFolderToSaveIn;
     
+    private CrossingManagerMakeCrossesComponent makeCrossesComponent;
+    
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
     	this.listManagerMain = listManagerMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
@@ -117,6 +120,17 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.forGermplasmListWindow = false;
         this.listId = folderId;
     }
+    
+    public ListManagerTreeComponent(CrossingManagerMakeCrossesComponent makeCrossesComponent){
+    	super();
+    	this.makeCrossesComponent = makeCrossesComponent;
+    	this.forSelectingFolderToSaveIn = false;
+    	this.selectListComponent = null;
+    	this.listManagerMain = null;
+        this.germplasmListBrowserMainLayout = null;
+        this.forGermplasmListWindow = false;
+        this.listId = null;
+    }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
@@ -124,10 +138,15 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		
     	displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
     	
-		heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.setStyleName(Bootstrap.Typography.H4.styleName());
-		heading.setWidth("90px");
+    	heading = new Label();
+    	heading.setWidth("90px");
+    	if(makeCrossesComponent == null){
+			heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
+			heading.setStyleName(Bootstrap.Typography.H4.styleName());
+		} else{
+			heading.setValue("Available Lists");
+			heading.setStyleName(Bootstrap.Typography.H6.styleName());
+    	}
     	
 		if (this.germplasmListBrowserMainLayout != null){
 			displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
@@ -135,14 +154,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			addComponent(controlButtonsLayout);
 		}
 		
-		if(forSelectingFolderToSaveIn){
+		if(forSelectingFolderToSaveIn || makeCrossesComponent != null){
 			initializeButtonPanel();
 			addComponent(controlButtonsLayout);
 		}
     	
 		germplasmListTree = new Tree();
 		
-		if(!forSelectingFolderToSaveIn){
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
 			refreshButton = new Button();
 			refreshButton.setData(REFRESH_BUTTON_ID);
 			refreshButton.addListener(new GermplasmListButtonClickListener(this));
@@ -156,7 +175,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		treeContainerLayout.addComponent(germplasmListTree);
 		
 		addComponent(treeContainerLayout);
-		if(!forSelectingFolderToSaveIn){
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
 			addComponent(refreshButton);
 		}
 		addComponent(dropHandler);
@@ -408,7 +427,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public void updateButtons(Object itemId){
     	setSelectedListId(itemId);
-    	if (listManagerMain != null || forSelectingFolderToSaveIn){
+    	if (listManagerMain != null || forSelectingFolderToSaveIn || makeCrossesComponent != null){
     		try {
     			//If any of the central lists/folders is selected
     			if(Integer.valueOf(itemId.toString())>0){
@@ -468,6 +487,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         			//open details in Select List pop-up
         			} else if (this.selectListComponent != null){
         				this.selectListComponent.getListInfoComponent().displayListInfo(germplasmList);
+        			} else if(this.makeCrossesComponent != null){
+        				this.makeCrossesComponent.createListDetailsTab(germplasmList.getId(), germplasmList.getName());
         			}
         			
         		//toggle folder

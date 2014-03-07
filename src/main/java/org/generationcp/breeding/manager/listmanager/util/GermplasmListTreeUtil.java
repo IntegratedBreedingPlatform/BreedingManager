@@ -449,7 +449,9 @@ public class GermplasmListTreeUtil implements Serializable {
 	                    targetTree.select(listId);
 	                    
 	                    //rename tabs
-	                    listManagerMain.updateUIForRenamedList(listId, newName);
+	                    if(listManagerMain != null){
+	                    	listManagerMain.updateUIForRenamedList(listId, newName);
+	                    }
                 	} else {
             			MessageNotifier.showWarning(source.getWindow(),
                                 messageSource.getMessage(Message.INVALID_INPUT), 
@@ -539,7 +541,10 @@ public class GermplasmListTreeUtil implements Serializable {
 					try {
 						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
 								workbenchDataManager, source.getWindow(), messageSource, "item");
-						listManagerMain.updateUIForDeletedList(finalGpList);					
+						listManagerTreeComponent.removeListFromTree(finalGpList);
+						if(listManagerMain != null){
+							listManagerMain.updateUIForDeletedList(finalGpList);
+						}
 						
 					} catch (Error e) {
 						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");

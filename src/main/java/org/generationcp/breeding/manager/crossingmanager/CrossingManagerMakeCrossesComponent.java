@@ -8,9 +8,11 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -43,6 +45,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
@@ -104,6 +108,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         MULTIPLY, TOP_TO_BOTTOM
     };
         
+    private ListManagerTreeComponent listTree;
+    private Label selectParentsLabel;
+    private Label instructionForSelectParents;
+    private TabSheet listDetailsTabSheet;
+    
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
         this.source = source;
         this.accordion = accordion;
@@ -136,9 +145,27 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     @Override
     public void afterPropertiesSet() throws Exception {
     	
-    	setHeight("420px");
+    	setHeight("840px");
         this.setMargin(true, true, true, true);
 
+        listTree = new ListManagerTreeComponent(this);
+        addComponent(listTree, "top:15px; left:15px;");
+        
+        selectParentsLabel = new Label("Select Parents");
+        selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        addComponent(selectParentsLabel, "top:15px; left:250px;");
+        
+        instructionForSelectParents = new Label("<p>To begin making crosses, open one or more lists from the left, then select entries and drag them into</p>"
+        		+ "<p>the male and female parent lists below.</p>");
+        instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
+        addComponent(instructionForSelectParents, "top:40px; left:250px;");
+        
+        listDetailsTabSheet = new TabSheet();
+        listDetailsTabSheet.setWidth("800px");
+        listDetailsTabSheet.setHeight("360px");
+        listDetailsTabSheet.setVisible(false);
+        addComponent(listDetailsTabSheet, "top:40px; left:250px;");
+        
         lblFemaleParent= new Label(); 
         listnameFemaleParent= new Label();
         listnameMaleParent=new Label();
@@ -177,22 +204,28 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                         
                     AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                     Object targetItemId = dropData.getItemIdOver();
+                    
+                    Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
 
                     //Check first if item is dropped on top of itself
                     if(!transferable.getItemId().equals(targetItemId)){
                 		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Female Parents").getValue();
+                		GermplasmListEntry femaleItemId = (GermplasmListEntry) transferable.getItemId();
+                		CheckBox tag = (CheckBox) sourceTable.getItem(femaleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+						
                 		sourceTable.removeItem(transferable.getItemId());
-                		Item item;
-                    	//switch (dropData.getDropLocation()){
-                        //	case BOTTOM :
-                        		item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
-                        //	break;
-                        //	case MIDDLE: 
-                        //	case TOP :
-                        //		item = targetTable.addItemAt(indexOfId(targetItemId), transferable.getItemId());
-                        //	break;
-                    	//}
+                		
+						Item item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
                     	item.getItemProperty("Female Parents").setValue(femaleParentValue);
+                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+                      	
+                      	if(selectedEntries.contains(femaleItemId)){
+                      		tag.setValue(true);
+							tag.addListener(new ParentsTableCheckboxListener(targetTable, femaleItemId, femaleParentsTagAll));
+				            tag.setImmediate(true);
+				            targetTable.select(transferable.getItemId());
+						} 	
+                      	
                     }
                 }
 
@@ -318,6 +351,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                         
                     Table sourceTable = (Table) transferable.getSourceComponent();
                     Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+                    
+                    Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
                         
                     AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                     Object targetItemId = dropData.getItemIdOver();
@@ -326,11 +361,20 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                     if(!transferable.getItemId().equals(targetItemId)){
                         String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Male Parents").getValue();
                         GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
-                        
+                        CheckBox tag = (CheckBox) sourceTable.getItem(maleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+                        	
                         sourceTable.removeItem(transferable.getItemId());
                         
-                        Item item = targetTable.addItemAfter(targetItemId, maleItemId);
+						Item item = targetTable.addItemAfter(targetItemId, maleItemId);
                       	item.getItemProperty("Male Parents").setValue(maleParentValue);
+                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+                      	
+                      	if(selectedEntries.contains(maleItemId)){
+							tag.setValue(true);
+							tag.addListener(new ParentsTableCheckboxListener(targetTable, maleItemId, maleParentsTagAll));
+				            tag.setImmediate(true);
+				            targetTable.select(transferable.getItemId());
+						}
                 	}
                 }
 
@@ -461,14 +505,14 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
-        addComponent(gridLayoutSelectingParents, "top:15px; left:15px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:230px; left:35px;");
+        addComponent(gridLayoutSelectingParents, "top:435px; left:15px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:650px; left:35px;");
         
         crossesTableComponent = new MakeCrossesTableComponent();
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        addComponent(crossesTableComponent, "top:15px; left:590px;");
+        addComponent(crossesTableComponent, "top:435px; left:590px;");
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -476,7 +520,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         layoutButtonArea.addComponent(backButton);
         layoutButtonArea.addComponent(nextButton);
         
-        addComponent(layoutButtonArea, "top:360px; left:500px;");
+        addComponent(layoutButtonArea, "top:780px; left:500px;");
     }
 
     @Override
@@ -683,5 +727,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         this.femaleParents.removeAllItems();
         this.maleParents.removeAllItems();
         this.crossesTableComponent.clearCrossesTable();
+    }
+    
+    public void createListDetailsTab(Integer listId, String listName){
+    	instructionForSelectParents.setVisible(false);
+    	listDetailsTabSheet.setVisible(true);
+    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(this, listId), listName);
+    	listDetailsTabSheet.setSelectedTab(newTab);
     }
 }
