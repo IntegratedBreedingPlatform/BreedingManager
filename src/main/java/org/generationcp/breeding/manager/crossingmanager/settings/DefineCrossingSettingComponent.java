@@ -8,10 +8,11 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.TemplateSetting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -28,7 +29,8 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 8015092540102625727L;
-
+	private static final Logger LOG = LoggerFactory.getLogger(DefineCrossingSettingComponent.class);
+	
 	public enum UsePreviousSettingOption {
 		YES, NO
 	}
@@ -165,8 +167,9 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 			}
 			
 		} catch (MiddlewareQueryException e) {
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), "Error getting crossing templates!");
-			e.printStackTrace();
+			//commenting out code for showing error notification because at this point this component is not yet attached to a window and so getWindow() returns null
+			//MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), "Error getting crossing templates!");
+			LOG.error("Error with retrieving Workbench template settings for Crossing Manager tool.", e);
 		}
 	}
 	
