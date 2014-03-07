@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -43,6 +44,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
@@ -104,6 +107,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         MULTIPLY, TOP_TO_BOTTOM
     };
     
+    private ListManagerTreeComponent listTree;
+    private Label selectParentsLabel;
+    private Label instructionForSelectParents;
+    private TabSheet listDetailsTabSheet;
+    
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
         this.source = source;
         this.accordion = accordion;
@@ -139,6 +147,24 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     	setHeight("840px");
         this.setMargin(true, true, true, true);
 
+        listTree = new ListManagerTreeComponent(this);
+        addComponent(listTree, "top:15px; left:15px;");
+        
+        selectParentsLabel = new Label("Select Parents");
+        selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        addComponent(selectParentsLabel, "top:15px; left:250px;");
+        
+        instructionForSelectParents = new Label("<p>To begin making crosses, open one or more lists from the left, then select entries and drag them into</p>"
+        		+ "<p>the male and female parent lists below.</p>");
+        instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
+        addComponent(instructionForSelectParents, "top:40px; left:250px;");
+        
+        listDetailsTabSheet = new TabSheet();
+        listDetailsTabSheet.setWidth("800px");
+        listDetailsTabSheet.setHeight("360px");
+        listDetailsTabSheet.setVisible(false);
+        addComponent(listDetailsTabSheet, "top:40px; left:250px;");
+        
         lblFemaleParent= new Label(); 
         listnameFemaleParent= new Label();
         listnameMaleParent=new Label();
@@ -683,5 +709,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         this.femaleParents.removeAllItems();
         this.maleParents.removeAllItems();
         this.crossesTableComponent.clearCrossesTable();
+    }
+    
+    public void createListDetailsTab(Integer listId, String listName){
+    	instructionForSelectParents.setVisible(false);
+    	listDetailsTabSheet.setVisible(true);
+    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(this, listId), listName);
+    	listDetailsTabSheet.setSelectedTab(newTab);
     }
 }
