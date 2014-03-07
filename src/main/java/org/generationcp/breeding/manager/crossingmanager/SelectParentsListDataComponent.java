@@ -42,6 +42,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	private Label listEntriesLabel;
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
+	private Button viewListHeaderButton;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -107,6 +108,9 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		
 		selectAllCheckBox = new CheckBox(messageSource.getMessage(Message.SELECT_ALL));
 		selectAllCheckBox.setImmediate(true);
+		
+		viewListHeaderButton = new Button("View List Header");
+		viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 	}
 
 	@Override
@@ -180,8 +184,9 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		setWidth("700px");
 		setHeight("330px");
 		addComponent(listEntriesLabel, "top:10px; left:10px;");
-		addComponent(listDataTable, "top:35px; left:10px;");
-		addComponent(selectAllCheckBox, "top:300px; left:10px;");
+		addComponent(viewListHeaderButton, "top:10px; right:80px;");
+		addComponent(listDataTable, "top:40px; left:10px;");
+		addComponent(selectAllCheckBox, "top:305px; left:10px;");
 	}
 	
 	public Table getListDataTable(){

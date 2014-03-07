@@ -13,7 +13,9 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -53,6 +55,7 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -114,6 +117,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private Label selectParentsLabel;
     private Label instructionForSelectParents;
     private TabSheet listDetailsTabSheet;
+    private Button closeAllTabsButton;
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
 //        this.source = source;
@@ -161,16 +165,32 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
         addComponent(selectParentsLabel, "top:15px; left:250px;");
         
-        instructionForSelectParents = new Label("<p>To begin making crosses, open one or more lists from the left, then select entries and drag them into</p>"
-        		+ "<p>the male and female parent lists below.</p>");
+        instructionForSelectParents = new Label("To begin making crosses, open one or more lists from the left, then select entries and drag them into</br>"
+        		+ "the male and female parent lists below.");
         instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
-        addComponent(instructionForSelectParents, "top:40px; left:250px;");
+        addComponent(instructionForSelectParents, "top:50px; left:250px;");
         
         listDetailsTabSheet = new TabSheet();
         listDetailsTabSheet.setWidth("800px");
-        listDetailsTabSheet.setHeight("360px");
+        listDetailsTabSheet.setHeight("380px");
         listDetailsTabSheet.setVisible(false);
         addComponent(listDetailsTabSheet, "top:40px; left:250px;");
+        
+        closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+        closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+        closeAllTabsButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -2946008623293356900L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Util.closeAllTab(listDetailsTabSheet);
+				listDetailsTabSheet.setVisible(false);
+				instructionForSelectParents.setVisible(true);
+				closeAllTabsButton.setVisible(false);
+			}
+		});
+        closeAllTabsButton.setVisible(false);
+        addComponent(closeAllTabsButton, "top:30px; right:115px;");
         
         lblFemaleParent= new Label(); 
         listnameFemaleParent= new Label();
@@ -738,7 +758,27 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     public void createListDetailsTab(Integer listId, String listName){
     	instructionForSelectParents.setVisible(false);
     	listDetailsTabSheet.setVisible(true);
-    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(this, listId), listName);
-    	listDetailsTabSheet.setSelectedTab(newTab);
+    	if(Util.isTabExist(listDetailsTabSheet, listName)){
+    		Tab tabToFocus = null;
+    		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+    			Tab tab = listDetailsTabSheet.getTab(ctr);
+    			if(tab != null && tab.getCaption().equals(listName)){
+    				tabToFocus = tab;
+    			}
+    		}
+    		if (tabToFocus != null){
+            	listDetailsTabSheet.setSelectedTab(tabToFocus);
+            }
+	    } else{
+	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(this, listId), listName);
+	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
+	    	listDetailsTabSheet.setSelectedTab(newTab);
+    	}
+    	
+    	if(listDetailsTabSheet.getComponentCount() >= 2){
+    		closeAllTabsButton.setVisible(true);
+    	} else{
+    		closeAllTabsButton.setVisible(false);
+    	}
     }
 }

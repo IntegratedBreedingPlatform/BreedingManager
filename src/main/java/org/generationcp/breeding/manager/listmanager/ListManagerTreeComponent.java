@@ -354,7 +354,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         
         Tree germplasmListTree = new Tree();
-        if (listManagerMain != null || this.forSelectingFolderToSaveIn){
+        if (listManagerMain != null || this.forSelectingFolderToSaveIn || makeCrossesComponent != null){
         	germplasmListTree.setDragMode(TreeDragMode.NODE);
         }
 

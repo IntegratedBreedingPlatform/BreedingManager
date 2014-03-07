@@ -241,7 +241,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     	return this.treeComponent;
     }
     
-    private String generateTabDescription(Integer listId){
+    public static String generateTabDescription(Integer listId){
     	return TAB_DESCRIPTION_PREFIX + listId;
     }
     
