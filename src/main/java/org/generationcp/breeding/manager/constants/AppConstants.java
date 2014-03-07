@@ -20,6 +20,7 @@ public final class AppConstants {
 		public static final String GRAY_ROUNDED_BORDER = "gray-rounded-border";
 		public static final String HORIZONTAL_GROUP = "horizontalgroup";
 		public static final String ITALIC = "italic";
+		public static final String POPUP_VIEW = "gcp-popup-view";
 		
 	}
 

@@ -133,13 +133,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false, true));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
-            } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
-                Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
-                crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
-                crossingManagerWindow.setSizeUndefined();
-                crossingManagerWindow.addComponent(new CrossingManagerMain(crossingManagerWindow));
-                this.addWindow(crossingManagerWindow);
-                return crossingManagerWindow;
+//            } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
+//                Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
+//                crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
+//                crossingManagerWindow.setSizeUndefined();
+//                crossingManagerWindow.addComponent(new CrossingManagerMain(crossingManagerWindow));
+//                this.addWindow(crossingManagerWindow);
+//                return crossingManagerWindow;
             } else if(name.equals(NURSERY_TEMPLATE_WINDOW_NAME)){
                 Window nurseryTemplateWindow = new Window(messageSource.getMessage(Message.NURSERY_TEMPLATE_TAB_LABEL));
                 nurseryTemplateWindow.setName(NURSERY_TEMPLATE_WINDOW_NAME);
@@ -171,9 +171,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                     this.addWindow(emptyGermplasmListDetailsWindow);
                     return emptyGermplasmListDetailsWindow;
             	}
-            }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
-                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
-                manageCrossingSettings.setName(MANAGE_SETTINGS_CROSSING_MANAGER);
+            }  else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
+                manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);
                 manageCrossingSettings.setSizeUndefined();
                 manageCrossingSettings.addComponent(new ManageCrossingSettingsMain());
                 this.addWindow(manageCrossingSettings);

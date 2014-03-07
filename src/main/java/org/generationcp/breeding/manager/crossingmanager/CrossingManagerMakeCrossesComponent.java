@@ -103,7 +103,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private enum CrossType { 
         MULTIPLY, TOP_TO_BOTTOM
     };
-    
+        
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
         this.source = source;
         this.accordion = accordion;

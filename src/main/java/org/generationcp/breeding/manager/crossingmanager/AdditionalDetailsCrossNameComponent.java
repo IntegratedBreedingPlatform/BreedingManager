@@ -366,7 +366,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         }
     }
     
-    // Action handler for Generation button
+    // Action handler for generating cross names
     public void generateNextNameButtonAction(){
         if (validateCrossNameFields()) {
             String suffix = ((String) suffixTextField.getValue()).trim();

@@ -34,7 +34,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -63,13 +63,15 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
     };
     
     private Label crossingMethodLabel;
-    private Label methodDescriptionLabel;
-    private TextArea crossingMethodDescriptionTextArea;
+    private Label chooseMethodLabel;
     
     private OptionGroup crossingMethodOptionGroup;
     private ComboBox crossingMethodComboBox;
     private CheckBox favoriteMethodsCheckbox;
     private Button manageFavoriteMethodsLink;
+    
+    private PopupView methodPopupView;
+    private Label methodDescriptionLabel;
     
     private HashMap<String, Integer> mapMethods;
     private List<Method> methods;
@@ -96,26 +98,22 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 		crossingMethodLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
 		crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
-		methodDescriptionLabel = new Label("<i>" +messageSource.getMessage(Message.METHOD_DESCRIPTION_LABEL) 
-				+ "</i>", Label.CONTENT_XHTML);
-		methodDescriptionLabel.setWidth("200px");
-		
+		chooseMethodLabel = new Label();
+		chooseMethodLabel.setValue(messageSource.getMessage(Message.CHOOSE_BREEDING_METHOD_TO_APPLY_TO_NEW_CROSSES));
+			
 		crossingMethodOptionGroup = new OptionGroup();
         crossingMethodOptionGroup.setImmediate(true);
         crossingMethodOptionGroup.setHeight("50px");
         
-        crossingMethodDescriptionTextArea=new TextArea();
-        crossingMethodDescriptionTextArea.setWordwrap(true);
-        crossingMethodDescriptionTextArea.setWidth("570px");
-        crossingMethodDescriptionTextArea.setRows(3);
-        crossingMethodDescriptionTextArea.addStyleName("mytextarea");
-        crossingMethodDescriptionTextArea.addStyleName(AppConstants.CssStyles.ITALIC);
-        crossingMethodDescriptionTextArea.setReadOnly(true);
-                   
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setWidth("280px");
         crossingMethodComboBox.setImmediate(true);
         crossingMethodComboBox.setNullSelectionAllowed(false);
+
+        methodDescriptionLabel = new Label();
+        methodDescriptionLabel.setWidth("500px");
+        methodPopupView = new PopupView("?", methodDescriptionLabel);
+        methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 
         favoriteMethodsCheckbox = new CheckBox(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
         favoriteMethodsCheckbox.setImmediate(true);
@@ -180,7 +178,6 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				resetMethodTextArea();
 				populateBreedingMethods(((Boolean) event.getProperty().getValue()));
 			}
 			
@@ -225,18 +222,15 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			
         }else{
             crossingMethodComboBox.removeAllItems();
-            resetMethodTextArea();
             favoriteMethodsCheckbox.setValue(false);
         }
 	}
 	
 	public void showMethodDescription(Integer methodId){
 		try {
-    		Integer breedingMethodSelected = methodId;
-		    String methodDescription=germplasmDataManager.getMethodByID(breedingMethodSelected).getMdesc();
-		    crossingMethodDescriptionTextArea.setReadOnly(false);
-		    crossingMethodDescriptionTextArea.setValue(methodDescription);
-		    crossingMethodDescriptionTextArea.setReadOnly(true);
+		    String methodDescription=germplasmDataManager.getMethodByID(methodId).getMdesc();
+		    methodDescriptionLabel.setValue(methodDescription);
+		    crossingMethodComboBox.setDescription(methodDescription);
 
 		} catch (MiddlewareQueryException e) {
 		    e.printStackTrace();
@@ -250,20 +244,12 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		addComponent(crossingMethodLabel, "top:5px; left:0px");
-        addComponent(crossingMethodOptionGroup, "top:30px;left:0px");
-        addComponent(crossingMethodComboBox, "top:58px;left:300px");
-        addComponent(favoriteMethodsCheckbox, "top:58px;left:620px");
-        addComponent(manageFavoriteMethodsLink, "top:76px;left:640px");
-        
-        addComponent(methodDescriptionLabel, "top:80px;left:15px");
-        addComponent(crossingMethodDescriptionTextArea, "top:95px;left:15px");
-
-	}
-	
-	private void resetMethodTextArea() {
-		crossingMethodDescriptionTextArea.setReadOnly(false);
-		crossingMethodDescriptionTextArea.setValue("");
-		crossingMethodDescriptionTextArea.setReadOnly(true);
+		addComponent(chooseMethodLabel, "top:30px; left:0px");
+        addComponent(crossingMethodOptionGroup, "top:57px;left:0px");
+        addComponent(crossingMethodComboBox, "top:83px;left:280px");
+        addComponent(methodPopupView, "top:83px; left:570px"); 
+        addComponent(favoriteMethodsCheckbox, "top:83px;left:610px");
+        addComponent(manageFavoriteMethodsLink, "top:106px;left:620px");
 	}
 	
     private void populateBreedingMethods(boolean showOnlyFavorites) {
@@ -301,6 +287,10 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
     }
     
     private void toggleSameMethodForAllFields(boolean sameForAllCrosses) {
+    	Object methodValue = crossingMethodComboBox.getValue();
+    	methodPopupView.setEnabled(sameForAllCrosses);
+    	methodDescriptionLabel.setValue(methodValue);
+    	
         methodDescriptionLabel.setEnabled(sameForAllCrosses);
         favoriteMethodsCheckbox.setEnabled(sameForAllCrosses);
         crossingMethodComboBox.setEnabled(sameForAllCrosses);
