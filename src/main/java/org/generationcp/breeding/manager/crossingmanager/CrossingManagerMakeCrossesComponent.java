@@ -770,7 +770,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             	listDetailsTabSheet.setSelectedTab(tabToFocus);
             }
 	    } else{
-	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(this, listId), listName);
+	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId), listName);
 	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
 	    	listDetailsTabSheet.setSelectedTab(newTab);
     	}

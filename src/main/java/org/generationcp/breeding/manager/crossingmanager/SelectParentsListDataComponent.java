@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -36,7 +39,6 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	private static final long serialVersionUID = 7907737258051595316L;
 	private static final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
 	
-	private CrossingManagerMakeCrossesComponent parentComponent;
 	private Integer germplasmListId;
 	
 	private Label listEntriesLabel;
@@ -50,9 +52,8 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	@Autowired
     private GermplasmListManager germplasmListManager;
 	
-	public SelectParentsListDataComponent(CrossingManagerMakeCrossesComponent parentComponent, Integer germplasmListId){
+	public SelectParentsListDataComponent(Integer germplasmListId){
 		super();
-		this.parentComponent = parentComponent;
 		this.germplasmListId = germplasmListId;
 	}
 	
@@ -80,6 +81,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		listDataTable.setColumnCollapsingAllowed(true);
 		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setPageLength(9);
+		listDataTable.setImmediate(true);
 		
 		listDataTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
@@ -156,6 +158,31 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 
 	@Override
 	public void addListeners() {
+		listDataTable.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 3013620721902728079L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Collection<Integer> entries = (Collection<Integer>) listDataTable.getItemIds();
+				Collection<Integer> selectedEntries = (Collection<Integer>) listDataTable.getValue();
+				if(selectedEntries.size() == entries.size()){
+					selectAllCheckBox.setValue(true);
+				} else{
+					selectAllCheckBox.setValue(false);
+				}
+				
+				for(Integer entry : entries){
+					CheckBox tag = (CheckBox) listDataTable.getItem(entry).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
+					if(selectedEntries.contains(entry)){
+						tag.setValue(true);
+					} else{
+						tag.setValue(false);
+					}
+				}
+			}
+		});
+		
 		selectAllCheckBox.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 5802358625446499994L;
 
