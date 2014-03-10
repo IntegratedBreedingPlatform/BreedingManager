@@ -115,10 +115,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	this.parentWindow = parentWindow;
     }
     
-    @Override
-    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-        this.container = container;
-    }
+//    @Override
+//    public void setCrossesMadeContainer(CrossesMadeContainer container) {
+//        this.container = container;
+//    }
     
     @SuppressWarnings("serial")
     @Override
@@ -473,7 +473,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
     
     @Override
-    public boolean updateCrossesMadeContainer() {
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
         
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossesMap()!= null && validateCrossNameFields() 

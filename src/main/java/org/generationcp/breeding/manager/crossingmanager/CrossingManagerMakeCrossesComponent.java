@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
@@ -60,7 +61,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
     
     public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
     public static final String SELECT_MALE_PARENT_BUTTON_ID = "Male Parent Button";
@@ -75,11 +76,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-//    private CrossingManagerMain source;
-//    private Accordion accordion;
     private ManageCrossingSettingsMain source;
-    private Component nextScreen;
-//    private Component previousScreen;
     
     private Label lblFemaleParent;
     private Button btnSelectListFemaleParent;
@@ -89,8 +86,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private ComboBox crossingMethodComboBox;
     private CheckBox chkBoxMakeReciprocalCrosses;
     private Button btnMakeCross;
-    //private ListSelect listSelectFemale;
-    //private ListSelect listSelectMale;
     private Table femaleParents;
     private CheckBox femaleParentsTagAll;
     private Table maleParents;
@@ -128,29 +123,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
     	this.source = manageCrossingSettingsMain;
     }
-    
-//    public CrossingManagerMain getSource() {
-//        return source;
-//    }
-//    
-//    public void setNextScreen(Component nextScreen){
-//        this.nextScreen = nextScreen;
-//    }
-//    
-//    public void setPreviousScreen(Component backScreen){
-//        this.previousScreen = backScreen;
-//    }
-    
-    @Override
-    public CrossesMade getCrossesMade() {
-        return this.crossesMade;
-    }
-
-    @Override
-    public void setCrossesMade(CrossesMade crossesMade) {
-        this.crossesMade = crossesMade;
-        
-    }
+       
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -199,13 +172,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         btnSelectListFemaleParent= new Button();
         btnSelectListFemaleParent.setData(SELECT_FEMALE_PARENT_BUTTON_ID);
         btnSelectListFemaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
-        
-        //listSelectFemale = new ListSelect();
-        //listSelectFemale.setRows(10);
-        //listSelectFemale.setWidth(240, UNITS_PIXELS);
-        //listSelectFemale.setNullSelectionAllowed(true);
-        //listSelectFemale.setMultiSelect(true);
-        //listSelectFemale.setImmediate(true);
         
         femaleParents = new Table();
         femaleParents.setHeight(160, UNITS_PIXELS);
@@ -349,14 +315,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         btnSelectListMaleParent= new Button();
         btnSelectListMaleParent.setData(SELECT_MALE_PARENT_BUTTON_ID);
         btnSelectListMaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
-        
-        //listSelectMale = new ListSelect();
-        //listSelectMale.setRows(10);
-        //listSelectMale.setWidth(240, UNITS_PIXELS);
-        //listSelectMale.setNullSelectionAllowed(true);
-        //listSelectMale.setMultiSelect(true);
-        //listSelectMale.setImmediate(true);
-        
+                
         maleParents = new Table();
         maleParents.setHeight(160, UNITS_PIXELS);
         maleParents.setWidth(240, UNITS_PIXELS);
@@ -620,38 +579,13 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
      
     public void nextButtonClickAction(){
-//        nextScreen = source.getWizardScreenThree();
-        
-        if(this.nextScreen != null){
-            assert this.nextScreen instanceof CrossesMadeContainer;
-            assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
-            
-            CrossesMadeContainerUpdateListener listener = ((CrossesMadeContainerUpdateListener) crossesTableComponent);
-            listener.setCrossesMadeContainer(this);
-            listener.updateCrossesMadeContainer();
-            ((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
-        
-//            source.getWizardScreenThree().setPreviousScreen(this);
-//            source.enableWizardTabs();
-//            this.accordion.setSelectedTab(this.nextScreen);
-//            source.enableOnlyWizardTabThree();
-//            source.enableWizardTabOne();
-//            source.enableWizardTabTwo();
-        } else {
-            this.nextButton.setEnabled(false);
-        }
+    	if (this.source != null){
+    		this.source.nextStep();
+    	}
     }
     
     
     public void backButtonClickAction(){
-//        if(this.previousScreen != null){
-//            source.enableWizardTabs();
-//            this.accordion.setSelectedTab(this.previousScreen);
-            //if(previousScreen instanceof CrossingManagerImportFileComponent)
-            //    source.enableOnlyWizardTabOne();
-//        } else {
-//            this.backButton.setEnabled(false);
-//        }
     	if (this.source != null){
     		this.source.backStep();
     	}
@@ -784,4 +718,16 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     		closeAllTabsButton.setVisible(false);
     	}
     }
+
+	@Override
+	public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
+		boolean updatedFromTable = crossesTableComponent.updateCrossesMadeContainer(container);
+		
+		if (updatedFromTable){
+			ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction(source.getDetailComponent().getCurrentlyDefinedSetting());
+			return applySetting.updateCrossesMadeContainer(container);
+		}
+		
+		return false;
+	}
 }

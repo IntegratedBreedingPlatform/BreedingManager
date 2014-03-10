@@ -419,24 +419,23 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	 * Make sure to validate the input fields first before calling this method.
 	 * @return
 	 */
-	private CrossingManagerSetting getCurrentlyDefinedSetting(){
+	public CrossingManagerSetting getCurrentlyDefinedSetting(){
 		CrossingManagerSetting toreturn = new CrossingManagerSetting();
 		
-		String prefix = (String) nameComponent.getPrefixTextField().getValue();
-		String suffix = (String) nameComponent.getSuffixTextField().getValue();
-		if(suffix != null){
-			suffix = suffix.trim();
-		}
-		if (suffix.length() == 0) {
-		    suffix = null; //set as null so attribute will not be marshalled
-		}
-		boolean addSpaceBetweenPrefixAndCode = nameComponent.doAddSpaceBetPrefixAndCode();
-		Integer numOfDigits = null;
-		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
-			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
-		}
-		CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix
-				, addSpaceBetweenPrefixAndCode, numOfDigits);
+//		String prefix = (String) nameComponent.getPrefixTextField().getValue();
+//		String suffix = (String) nameComponent.getSuffixTextField().getValue();
+//		if(suffix != null){
+//			suffix = suffix.trim();
+//		}
+//		if (suffix.length() == 0) {
+//		    suffix = null; //set as null so attribute will not be marshalled
+//		}
+//		boolean addSpaceBetweenPrefixAndCode = nameComponent.doAddSpaceBetPrefixAndCode();
+//		Integer numOfDigits = null;
+//		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
+//			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
+//		}
+		CrossNameSetting crossNameSettingPojo = nameComponent.getCrossNameSettingObject();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 		
 		Integer locId = (Integer) additionalDetailsComponent.getHarvestLocComboBox().getValue();

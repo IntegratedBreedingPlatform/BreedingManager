@@ -5,13 +5,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,9 +41,6 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-    
 	private Label specifyNamingConventionLabel;
     private Label crossNameLabel;
     private Label specifyPrefixLabel;
@@ -247,26 +244,6 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         }
     }
 
-	public TextField getPrefixTextField() {
-		return prefixTextField;
-	}
-
-	public TextField getSuffixTextField() {
-		return suffixTextField;
-	}
-
-	public OptionGroup getAddSpaceOptionGroup() {
-		return addSpaceOptionGroup;
-	}
-
-	public Select getLeadingZerosSelect() {
-		return leadingZerosSelect;
-	}
-
-	public CheckBox getSequenceNumCheckBox() {
-		return sequenceNumCheckBox;
-	}
-	
 	public boolean validateInputFields(){
 		String prefix = (String) prefixTextField.getValue();
 		if(prefix == null || prefix.trim().length() == 0){
@@ -346,20 +323,9 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	// #####
 	private void generateNextNameAction(){
         if (validateCrossNameFields()) {
-            String suffix = ((String) suffixTextField.getValue()).trim();
-            
             try {
-                String lastPrefixUsed = buildPrefixString();
-                
-                Integer nextNumberInSequence = 1;
-                if (doSpecifyNameStartNumber()){
-                	nextNumberInSequence = Integer.parseInt(startNumberTextField.getValue().toString());
-                } else {
-                	String nextSequenceNumberString = this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.trim());
-                	nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
-                }
-                
-                generatedNextNameLabel.setValue(buildNextNameInSequence(lastPrefixUsed, suffix, nextNumberInSequence));
+        		GenerateCrossNameAction generateAction = new GenerateCrossNameAction();
+                generatedNextNameLabel.setValue(generateAction.getNextNameInSequence(getCrossNameSettingObject()));
                 
             } catch (MiddlewareQueryException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
@@ -370,45 +336,11 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         }
     }
 	
-	private String buildPrefixString(){
-        if(doAddSpaceBetPrefixAndCode()){
-            return ((String) prefixTextField.getValue()).trim()+" ";
-        }
-        return ((String) prefixTextField.getValue()).trim();
-    }
-
-    private String buildNextNameInSequence(String prefix, String suffix,
-            Integer number) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(prefix);
-        sb.append(getNumberWithLeadingZeroesAsString(number));
-        if (!StringUtils.isEmpty(suffix)){
-            sb.append(" ");
-            sb.append(suffix);
-        }
-        return sb.toString();
-    }
-    
-    private String getNumberWithLeadingZeroesAsString(Integer number){
-        StringBuilder sb = new StringBuilder();
-        String numberString = number.toString();
-        if (sequenceNumCheckBox.booleanValue()){
-            Integer numOfZeros = (Integer) leadingZerosSelect.getValue();
-            int numOfZerosNeeded = numOfZeros - numberString.length();
-            if(numOfZerosNeeded > 0){
-                for (int i = 0; i < numOfZerosNeeded; i++){
-                	sb.append("0");
-                }
-            }
-        }
-        sb.append(number);
-        return sb.toString();
-    }
-	// #####
     
     public boolean doAddSpaceBetPrefixAndCode() {
 		return AddSpaceBetPrefixAndCodeOption.YES.equals(addSpaceOptionGroup.getValue());
 	}
+    
     
 	public void setFieldsDefaultValue() {
 		prefixTextField.setValue("");
@@ -427,5 +359,29 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	
 	private boolean doSpecifyNameStartNumber(){
 		return (Boolean)specifyStartNumberCheckbox.getValue();
+	}
+	
+	public CrossNameSetting getCrossNameSettingObject(){
+		String prefix = (String) prefixTextField.getValue();
+		String suffix = (String) suffixTextField.getValue();
+		if(suffix != null){
+			suffix = suffix.trim();
+		}
+		if (suffix.length() == 0) {
+		    suffix = null; //set as null so attribute will not be marshalled
+		}
+		boolean addSpaceBetweenPrefixAndCode = doAddSpaceBetPrefixAndCode();
+		Integer numOfDigits = null;
+		if(sequenceNumCheckBox.booleanValue()){
+			numOfDigits = (Integer) leadingZerosSelect.getValue();
+		}
+		CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix
+				, addSpaceBetweenPrefixAndCode, numOfDigits);
+		String startNumber = (String) startNumberTextField.getValue();
+		if (doSpecifyNameStartNumber() && !startNumber.isEmpty() && NumberUtils.isDigits(startNumber)){
+			crossNameSettingPojo.setStartNumber(Integer.parseInt(startNumber));
+		}
+		
+		return crossNameSettingPojo;
 	}
 }

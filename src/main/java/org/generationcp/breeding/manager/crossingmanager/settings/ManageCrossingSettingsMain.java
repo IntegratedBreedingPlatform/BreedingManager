@@ -2,7 +2,12 @@ package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
+import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
+import org.generationcp.breeding.manager.crossingmanager.EmbeddedGermplasmListDetailComponent;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -13,14 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class ManageCrossingSettingsMain extends AbsoluteLayout implements
-		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+		InitializingBean, InternationalizableComponent, BreedingManagerLayout, CrossesMadeContainer {
 	
 	private static final long serialVersionUID = 1L;
 	private static final int NUMBER_OF_STEPS = 3;
@@ -30,12 +36,18 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	
 	private Label toolTitle;
 	private BreedingManagerWizardDisplay wizardDisplay;
+	
 	private CrossingSettingsDetailComponent detailComponent;
 	private TabSheet tabSheet;
 	
-	
+	private CrossesMade crossesMade = new CrossesMade();
+	private ComponentContainer parent;
 	
 	private String[] wizardStepNames = new String[NUMBER_OF_STEPS];
+	
+	public ManageCrossingSettingsMain(ComponentContainer parent) {
+		this.parent = parent;
+	}
 	
 	@Override
 	public void updateLabels() {
@@ -61,9 +73,12 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
 		tabSheet.setHeight("900px");
-		tabSheet.addTab(new CrossingSettingsDetailComponent(this), wizardStepNames[0]);
+		
+		this.detailComponent = new CrossingSettingsDetailComponent(this);
+		
+		tabSheet.addTab(detailComponent, wizardStepNames[0]);
 		tabSheet.addTab(new CrossingManagerMakeCrossesComponent(this), wizardStepNames[1]);
-		tabSheet.addTab(new VerticalLayout(), wizardStepNames[2]);
+		tabSheet.addTab(new CrossingManagerDetailsComponent(this), wizardStepNames[2]);
 	}
 
 	private void instantiateWizardDisplay() {
@@ -97,6 +112,13 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	}
 	
 	public void nextStep(){
+		Component selectedStep = tabSheet.getSelectedTab();
+		// abstract getting updates to crosses made from each wizard step
+		if (selectedStep instanceof CrossesMadeContainerUpdateListener){
+			CrossesMadeContainerUpdateListener listener = 
+				(CrossesMadeContainerUpdateListener) selectedStep;
+			listener.updateCrossesMadeContainer(this);
+		}
 		int step = wizardDisplay.nextStep();
 		showNextWizardStep(step);
 	}
@@ -108,7 +130,33 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 
 	private void showNextWizardStep(int step) {
 		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
-		tabSheet.setSelectedTab(tab.getComponent());
+		if (tab != null){
+			tabSheet.setSelectedTab(tab.getComponent());
+		}
 	}
+
+	@Override
+	public CrossesMade getCrossesMade() {
+		return this.crossesMade;
+	}
+	
+	@Override
+	public void setCrossesMade(CrossesMade crossesMade) {
+		this.crossesMade = crossesMade;
+	}
+	
+    public void viewGermplasmListCreated(Integer listId){
+        EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
+            new EmbeddedGermplasmListDetailComponent(this, listId);
+        
+        this.removeComponent(this.wizardDisplay);
+        this.removeComponent(this.tabSheet);
+        
+        this.addComponent(germplasmListBrowser, "top:40px");
+    }
+    
+    public void reset(){
+        this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
+    }
 
 }

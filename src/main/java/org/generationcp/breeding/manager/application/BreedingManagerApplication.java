@@ -175,7 +175,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
                 manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);
                 manageCrossingSettings.setSizeUndefined();
-                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain());
+                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain(manageCrossingSettings));
                 this.addWindow(manageCrossingSettings);
                 return manageCrossingSettings;
             } 
