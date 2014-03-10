@@ -20,9 +20,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class DefineCrossingSettingComponent extends AbsoluteLayout implements BreedingManagerLayout,
@@ -49,6 +52,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 	
 	private OptionGroup usePreviousSettingOptionGroup;
 	private ComboBox settingsComboBox;
+	private Button deleteSettingButton;
 	
 	public DefineCrossingSettingComponent(CrossingSettingsDetailComponent settingsParentComponent){
 		this.settingsParentComponent = settingsParentComponent;
@@ -88,10 +92,15 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		usePreviousSettingOptionGroup.addStyleName(AppConstants.CssStyles.HORIZONTAL_GROUP);
 		
 		settingsComboBox = new ComboBox();
-		settingsComboBox.setWidth("250px");
+		settingsComboBox.setWidth("260px");
 		settingsComboBox.setImmediate(true);
 		settingsComboBox.setNullSelectionAllowed(true);
 		settingsComboBox.setTextInputAllowed(false);
+		
+		deleteSettingButton = new Button();
+		deleteSettingButton.setIcon(AppConstants.Icons.TRASH_ICON_GRAY_BG);
+		deleteSettingButton.setData(CrossingSettingsDetailComponent.Actions.DELETE);
+		deleteSettingButton.setStyleName(Reindeer.BUTTON_LINK);
 	}
 
 	@Override
@@ -102,9 +111,9 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		usePreviousSettingOptionGroup.setItemCaption(UsePreviousSettingOption.YES, messageSource.getMessage(Message.YES));
 		usePreviousSettingOptionGroup.select(UsePreviousSettingOption.NO);
 		
-		settingsComboBox.setEnabled(false);
 		settingsComboBox.setInputPrompt(messageSource.getMessage(Message.CHOOSE_SAVED_SETTINGS));
 		setSettingsComboBox(null);
+		toggleSettingsFields(false);
 	}
 
 	@Override
@@ -117,7 +126,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 			public void valueChange(ValueChangeEvent event) {
 				boolean doUsePreviousSetting = UsePreviousSettingOption.YES.equals(
 						usePreviousSettingOptionGroup.getValue());
-				settingsComboBox.setEnabled(doUsePreviousSetting);
+				toggleSettingsFields(doUsePreviousSetting);
 				if (!doUsePreviousSetting){
 					revertScreenToDefaultValues();
 				}
@@ -139,6 +148,15 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 			}
 
 		});
+		
+		deleteSettingButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -432280582291837428L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				settingsParentComponent.doDeleteAction();
+			}
+		});
 	}
 
 	@Override
@@ -149,6 +167,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		addComponent(usePreviouslySavedSettingLabel, "top:60px; left:0px");
 		addComponent(usePreviousSettingOptionGroup, "top:60px; left:190px");
 		addComponent(settingsComboBox, "top:60px; left:300px");
+		addComponent(deleteSettingButton, "top:60px; left:570px");
 	}
 	
 	public void setSettingsComboBox(TemplateSetting currentSetting){
@@ -181,6 +200,11 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 	private void revertScreenToDefaultValues() {
 		settingsParentComponent.setCurrentSetting(null);
 		settingsParentComponent.setDefaultManageCrossingSettingsFields();
+	}
+	
+	private void toggleSettingsFields(boolean enabled){
+		settingsComboBox.setEnabled(enabled);
+		deleteSettingButton.setEnabled(enabled);
 	}
 
 }

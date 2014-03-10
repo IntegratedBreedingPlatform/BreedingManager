@@ -59,7 +59,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     public ManageCrossingSettingsMain manageCrossingSettingsMain;
     
     public enum Actions {
-    	SAVE, CANCEL
+    	SAVE, CANCEL, DELETE
     }
 	
 	private SpecifyCrossesComponent specifyCrossesComponent;
@@ -377,6 +377,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			try{
 				if (thereIsAChange){
 					workbenchDataManager.updateTemplateSetting(currentSetting);
+					//must reload settings combobox to solve out of sync when going back to this screen
+					defineSettingComponent.setSettingsComboBox(currentSetting);
 					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
 							, 3000,Notification.POSITION_CENTERED);
 				}
