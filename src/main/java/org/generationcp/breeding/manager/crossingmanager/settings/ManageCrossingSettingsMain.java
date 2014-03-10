@@ -71,6 +71,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		wizardStepNames[1] = messageSource.getMessage(Message.CREATE_CROSSES);
 		wizardStepNames[2] = messageSource.getMessage(Message.SAVE_CROSS_LIST);
 		wizardDisplay = new BreedingManagerWizardDisplay(wizardStepNames);
+		wizardDisplay.setWidth("90%");
 	}
 
 	@Override

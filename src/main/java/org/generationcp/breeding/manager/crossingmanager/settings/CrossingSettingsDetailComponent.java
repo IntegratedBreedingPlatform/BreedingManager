@@ -313,6 +313,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 					List<TemplateSetting> results = workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
 					if(!results.isEmpty()){
 						currentSetting = results.get(0);
+						defineSettingComponent.setSettingsComboBox(currentSetting);
+						
 					} else{
 						templateSetting.setTemplateSettingId(templateSettingId);
 						currentSetting = templateSetting;
@@ -373,9 +375,11 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			}
 			
 			try{
-				workbenchDataManager.updateTemplateSetting(currentSetting);
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
-						, 3000,Notification.POSITION_CENTERED);
+				if (thereIsAChange){
+					workbenchDataManager.updateTemplateSetting(currentSetting);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
+							, 3000,Notification.POSITION_CENTERED);
+				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with updating template setting record.", ex);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."

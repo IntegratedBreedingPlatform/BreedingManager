@@ -163,7 +163,8 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 			}
 			
 			if(currentSetting != null){
-				 settingsComboBox.select(currentSetting);
+				usePreviousSettingOptionGroup.select(UsePreviousSettingOption.YES);
+				settingsComboBox.select(currentSetting);
 			}
 			
 		} catch (MiddlewareQueryException e) {

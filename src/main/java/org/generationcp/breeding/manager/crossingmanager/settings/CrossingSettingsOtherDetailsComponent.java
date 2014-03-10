@@ -356,6 +356,6 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	}
 	
 	public boolean doSaveSetting(){
-		return SaveSettingOption.YES.equals(saveSettingsOptionGroup);
+		return SaveSettingOption.YES.equals(saveSettingsOptionGroup.getValue());
 	}
 }

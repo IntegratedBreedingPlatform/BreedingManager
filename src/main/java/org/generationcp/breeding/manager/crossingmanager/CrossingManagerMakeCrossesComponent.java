@@ -79,7 +79,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 //    private Accordion accordion;
     private ManageCrossingSettingsMain source;
     private Component nextScreen;
-    private Component previousScreen;
+//    private Component previousScreen;
     
     private Label lblFemaleParent;
     private Button btnSelectListFemaleParent;
@@ -644,14 +644,17 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     
     public void backButtonClickAction(){
-        if(this.previousScreen != null){
+//        if(this.previousScreen != null){
 //            source.enableWizardTabs();
 //            this.accordion.setSelectedTab(this.previousScreen);
             //if(previousScreen instanceof CrossingManagerImportFileComponent)
             //    source.enableOnlyWizardTabOne();
-        } else {
-            this.backButton.setEnabled(false);
-        }
+//        } else {
+//            this.backButton.setEnabled(false);
+//        }
+    	if (this.source != null){
+    		this.source.backStep();
+    	}
     }
     
     public Integer getLastOpenedListId() {

@@ -50,7 +50,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 	}
 	
 	public int backStep(){
-		if (currentIndex > 1){
+		if (currentIndex >= 1){
 			currentIndex--;
 			updateSelectedStep();
 		} else {
@@ -77,7 +77,6 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 	@Override
 	public void instantiateComponents() {
 		setHeight("40px");
-		setWidth("900px");
 		
 		initializeLabelLayouts();
 		updateSelectedStep();

@@ -27,7 +27,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -224,19 +223,19 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	}
 	
 	public boolean validateCrossNameFields(){
-        Window window = getWindow();
         String prefix = ((String) prefixTextField.getValue()).trim();
         
-        if (StringUtils.isEmpty(prefix)){
-            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
-            		messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), Notification.POSITION_CENTERED);
-            return false;
-        }
-        
-        // do not show error if no number field shown
-        if (!validateStartNumberField(false)){
+        if (!StringUtils.isEmpty(prefix)){
+        	// do not show error if no number field shown
+            if (!validateStartNumberField(false)){
+            	return false;
+            }
+            
+        } else {
+        	generatedNextNameLabel.setValue("");
         	return false;
         }
+        
         
         return true;
     }
@@ -291,20 +290,25 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	 */
 	private boolean validateStartNumberField(boolean isRequired) {
 		String startNumberString = startNumberTextField.getValue().toString();
+		
 		if (doSpecifyNameStartNumber()){
-			if (StringUtils.isEmpty(startNumberString) && isRequired){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
-				return false;
-			}
-			if(startNumberString.length() > 10){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT) 
-						, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
-				return false;
-			} 
-			if (!NumberUtils.isDigits(startNumberString)){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT) 
-						, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER), Notification.POSITION_CENTERED);
+			if (!StringUtils.isEmpty(startNumberString)){
+				if(startNumberString.length() > 10){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT) 
+							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
+					return false;
+				} 
+				if (!NumberUtils.isDigits(startNumberString)){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT) 
+							, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER), Notification.POSITION_CENTERED);
+					return false;
+				}
+				
+			} else {
+				if (isRequired){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
+							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
+				}
 				return false;
 			}
 		}
@@ -414,6 +418,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		leadingZerosSelect.select(null);
 		enableSpecifyLeadingZerosComponents(sequenceNumCheckBox.booleanValue());
 		suffixTextField.setValue("");
+		generatedNextNameLabel.setValue("");
 		
 		specifyStartNumberCheckbox.setValidationVisible(false);
 		startNumberTextField.setValue("");
