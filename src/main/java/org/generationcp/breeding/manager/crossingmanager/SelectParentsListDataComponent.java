@@ -29,6 +29,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -38,6 +39,8 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	private static final Logger LOG = LoggerFactory.getLogger(SelectParentsListDataComponent.class);
 	private static final long serialVersionUID = 7907737258051595316L;
 	private static final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
+	
+	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
 	
 	private Integer germplasmListId;
 	
@@ -76,12 +79,14 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		listDataTable = new Table();
+		listDataTable.setData(LIST_DATA_TABLE_ID);
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
 		listDataTable.setColumnCollapsingAllowed(true);
 		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setPageLength(9);
 		listDataTable.setImmediate(true);
+		listDataTable.setDragMode(TableDragMode.MULTIROW);
 		
 		listDataTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
