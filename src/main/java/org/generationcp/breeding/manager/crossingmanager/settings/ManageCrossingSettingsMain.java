@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSaveCrossListComponent;
 import org.generationcp.breeding.manager.crossingmanager.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
@@ -78,7 +79,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		
 		tabSheet.addTab(detailComponent, wizardStepNames[0]);
 		tabSheet.addTab(new CrossingManagerMakeCrossesComponent(this), wizardStepNames[1]);
-		tabSheet.addTab(new CrossingManagerDetailsComponent(this), wizardStepNames[2]);
+		tabSheet.addTab(new CrossingManagerSaveCrossListComponent(this), wizardStepNames[2]);
 	}
 
 	private void instantiateWizardDisplay() {
