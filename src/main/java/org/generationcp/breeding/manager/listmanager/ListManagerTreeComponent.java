@@ -689,5 +689,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			setSelectedListId(parent.getId());
 		}
     }
+    
+    //SETTERS and GETTERS
+	public Label getHeading() {
+		return heading;
+	}
+
+	public void setHeading(Label heading) {
+		this.heading = heading;
+	}
 
 }

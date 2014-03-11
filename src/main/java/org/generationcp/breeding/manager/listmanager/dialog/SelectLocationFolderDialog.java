@@ -15,9 +15,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -35,15 +39,29 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	
 	private Integer folderId;
 	
+	private Label listNameLabel;
+	private TextField listNameTxtField;
+	
+	private String windowLabel;
+	private String selectBtnCaption;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 	
+	private Boolean fromMakeCrosses;
+	
 	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId){
 		this.source = source;
 		this.folderId = folderId;
+	}
+	
+	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId, Boolean fromMakeCrosses){
+		this.source = source;
+		this.folderId = folderId;
+		this.fromMakeCrosses = fromMakeCrosses;
 	}
 	
 	@Override
@@ -53,7 +71,20 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	}
 	
 	private void initializeComponents(){
-		setCaption("Select Location Folder");
+		
+		if(fromMakeCrosses){
+			this.windowLabel = messageSource.getMessage(Message.SAVE_LIST_AS);
+			this.selectBtnCaption = messageSource.getMessage(Message.SELECT);
+			
+			listNameLabel = new Label(messageSource.getMessage(Message.LIST_NAME) + ":*");
+			listNameTxtField = new TextField();
+		}
+		else{
+			this.windowLabel = messageSource.getMessage(Message.SELECT_LOCATION_FOLDER);
+			this.selectBtnCaption = messageSource.getMessage(Message.SELECT_LOCATION);
+		}
+		
+		setCaption(windowLabel);
 		addStyleName(Reindeer.WINDOW_LIGHT);
 		setResizable(false);
 		setModal(true);
@@ -61,7 +92,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
 		cancelButton.addListener(new CloseWindowAction());
 		
-		selectLocationButton = new Button("Select Location");
+		selectLocationButton = new Button(selectBtnCaption);
 		selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		selectLocationButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -4029658156820141206L;
@@ -79,6 +110,10 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 					} else{
 						source.setSelectedFolder(null);
 					}
+					
+					if(fromMakeCrosses){
+						source.setListName(getListNameTxtField().getValue().toString());
+					}
 						
 					Window window = event.getButton().getWindow();
 			        window.getParent().removeWindow(window);
@@ -89,16 +124,41 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		});
 		
 		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
+		
+		
 	}
 	
 	private void initializeLayout(){
-		setHeight("380px");
-		setWidth("250px");
-		AbsoluteLayout mainLayout = new AbsoluteLayout();
+		if(fromMakeCrosses){
+			setHeight("480px");
+			setWidth("280px");
+		}
+		else{
+			setHeight("380px");
+			setWidth("250px");
+		}
 		
-		mainLayout.addComponent(germplasmListTree, "top:5px;left:15px");
-		mainLayout.addComponent(cancelButton, "top:287px;left:25px");
-		mainLayout.addComponent(selectLocationButton, "top:287px;left:100px");
+		HorizontalLayout listNameLayout = new HorizontalLayout();
+		listNameLayout.addComponent(listNameLabel);
+		listNameLayout.addComponent(listNameTxtField);
+		
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setSpacing(true);
+		buttonBar.setMargin(true);
+		buttonBar.addComponent(cancelButton);
+		buttonBar.addComponent(selectLocationButton);
+		
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setWidth("100%");
+		buttonLayout.addComponent(buttonBar);
+		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+
+		VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.setMargin(true);
+		mainLayout.setSpacing(true);
+		mainLayout.addComponent(germplasmListTree);
+		if(fromMakeCrosses){ mainLayout.addComponent(listNameLayout); }
+		mainLayout.addComponent(buttonLayout);
 		
 		setContent(mainLayout);
 	}
@@ -107,5 +167,15 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	public void updateLabels() {
 		// TODO Auto-generated method stub
 	}
+
+	public TextField getListNameTxtField() {
+		return listNameTxtField;
+	}
+
+	public void setListNameTxtField(String value) {
+		this.listNameTxtField.setValue(value);
+	}
+	
+	
 	
 }

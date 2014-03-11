@@ -194,6 +194,7 @@ public enum Message{
     ,SAVE_IN
     ,CHANGE_LOCATION
     ,SELECT_LOCATION
+    ,SELECT_LOCATION_FOLDER
     ,LIST_LOCATION
     
     //List Manager Screen: List Details
@@ -410,10 +411,14 @@ public enum Message{
     ,SAVE_CROSS_LIST_AS
     ,SAVE_FEMALE_PARENT_AS
     ,SAVE_MALE_PARENT_AS
+    ,LIST_NAME
     ,LIST_TYPE
     ,LIST_DATE
     ,CHOOSE_LOCATION
     ,CHANGE
+    ,SAVE_LIST_AS
+    ,SELECT
+    
     
     
 }

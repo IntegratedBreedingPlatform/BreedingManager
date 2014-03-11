@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
@@ -353,4 +352,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		}
 		this.getWindow().addWindow(selectFolderDialog);
 	}
+
+	@Override
+	public void setListName(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

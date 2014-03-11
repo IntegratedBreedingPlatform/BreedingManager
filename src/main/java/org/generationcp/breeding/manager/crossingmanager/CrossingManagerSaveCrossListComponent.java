@@ -136,7 +136,8 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		addComponent(specifyMaleParentListComponent);
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("200px");
+		buttonBar.setSpacing(true);
+		buttonBar.setMargin(true);
 		buttonBar.addComponent(backButton);
 		buttonBar.addComponent(saveButton);
 		
