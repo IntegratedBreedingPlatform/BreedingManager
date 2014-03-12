@@ -75,7 +75,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     private StudyBrowserMain studyBrowserMain;
     private StudyBrowserMainLayout studyBrowserMainLayout;
-    private VerticalLayout  studyDetailsLayout;
     
     private Label controlButtonsHeading;
     private HorizontalLayout controlButtonsLayout;
@@ -96,7 +95,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public StudyTreeComponent(StudyBrowserMain studyBrowserMain) {
         this.studyBrowserMain = studyBrowserMain;
         this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
-        this.studyDetailsLayout = studyBrowserMainLayout.getStudyDetailsLayout();
     }
     
     // Called by StudyButtonClickListener
@@ -268,7 +266,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
-            studyDetailsLayout.addComponent(tabSheetStudy);
+            studyBrowserMainLayout.addStudyInfoTabSheet(tabSheetStudy);
             studyBrowserMainLayout.showDetailsLayout();
             tabSheetStudy.setSelectedTab(layout);
             tabSheetStudy.setCloseHandler(new StudyBrowserTabCloseHandler(studyBrowserMainLayout));

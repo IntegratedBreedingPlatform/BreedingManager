@@ -63,7 +63,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     
     private StudyBrowserMain studyBrowserMain;
     private StudyBrowserMainLayout studyBrowserMainLayout;
-    private VerticalLayout studyDetailsLayout;
 
     private StudyDataIndexContainer studyDataIndexContainer;
     
@@ -76,7 +75,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     public StudySearchMainComponent(StudyBrowserMain studyBrowserMain) {
         this.studyBrowserMain = studyBrowserMain;
         this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
-        this.studyDetailsLayout = studyBrowserMainLayout.getStudyDetailsLayout();
     }
 
     @Override
@@ -99,8 +97,8 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
         addComponent(mainLayout);
         
-        studyDetailsLayout.addComponent(this);
-        studyDetailsLayout.setExpandRatio(this, 1.0f);  
+        /*studyDetailsLayout.addComponent(this);
+        studyDetailsLayout.setExpandRatio(this, 1.0f);  */
 
     }
 
@@ -200,7 +198,7 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
-            studyDetailsLayout.addComponent(tabSheetStudy);
+            studyBrowserMainLayout.addStudyInfoTabSheet(tabSheetStudy);
             studyBrowserMainLayout.showDetailsLayout();
             tabSheetStudy.setSelectedTab(layout);
             tabSheetStudy.setCloseHandler(new StudyBrowserTabCloseHandler(studyBrowserMainLayout));
