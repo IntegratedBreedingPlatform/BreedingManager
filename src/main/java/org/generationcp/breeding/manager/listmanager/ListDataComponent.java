@@ -659,9 +659,14 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		                	
 		                    // validate for designation
 		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
-		        				String designation = event.getSource().toString();
+		        			    Object source = event.getSource();
+                                String designation = source.toString();
+                                
+                                // retrieve item id at event source 
+                                ItemPropertyId itemProp = (ItemPropertyId) ((TextField) source).getData();
+                                Object sourceItemId = itemProp.getItemId();
 		        				
-		        				String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
+		        				String[] items = listDataTable.getItem(sourceItemId).toString().split(" ");
 								int gid =  Integer.valueOf(items[2]);
 								
 								if(isDesignationValid(designation,gid)){
