@@ -62,7 +62,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     	SAVE, CANCEL, DELETE
     }
 	
-	private SpecifyCrossesComponent specifyCrossesComponent;
 	private DefineCrossingSettingComponent defineSettingComponent;
 	
 	private CrossingSettingsMethodComponent methodComponent;
@@ -100,7 +99,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	@Override
 	public void instantiateComponents() {
-		specifyCrossesComponent = new SpecifyCrossesComponent();
 		defineSettingComponent = new DefineCrossingSettingComponent(this);
 		
 		methodComponent = new CrossingSettingsMethodComponent();
@@ -148,13 +146,12 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("850px");
-		setHeight("760px");
+		setHeight("650px");
 		
-		addComponent(specifyCrossesComponent, "top:7px; left: 10px");
-		addComponent(defineSettingComponent, "top:110px; left: 10px");
-		addComponent(methodComponent, "top:210px; left:10px");
-		addComponent(nameComponent, "top:340px; left:10px");
-		addComponent(additionalDetailsComponent, "top:500px; left:10px");
+		addComponent(defineSettingComponent, "top:7px; left: 10px");
+		addComponent(methodComponent, "top:100px; left:10px");
+		addComponent(nameComponent, "top:220px; left:10px");
+		addComponent(additionalDetailsComponent, "top:390px; left:10px");
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setWidth("200px");
@@ -166,7 +163,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		layout.addComponent(buttonBar);
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:710px; left:0px");
+		addComponent(layout, "top:600px; left:0px");
 	}
 	
 	public void doResetAction(){
