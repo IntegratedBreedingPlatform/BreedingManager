@@ -345,8 +345,8 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		
 		String section = headerLabel.getValue().toString();
 		
-		if(folderToSaveListToLabel.getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and location of the list."
+		if((folderToSaveListToLabel.getValue().toString().trim().length() == 0) || (listNameLabel.getValue().toString().trim().length() == 0)){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and/or location of the list."
 					, Notification.POSITION_CENTERED);
 			
 			saveListNameButton.focus();
