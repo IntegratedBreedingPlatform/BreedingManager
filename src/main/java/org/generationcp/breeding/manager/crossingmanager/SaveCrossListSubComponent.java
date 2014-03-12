@@ -88,7 +88,8 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		headerLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		saveAsLabel = new Label();
-		saveAsLabel.setCaption(markAsMandatoryField(saveAsCaption));
+		saveAsLabel.setValue(markAsMandatoryField(saveAsCaption));
+		saveAsLabel.addStyleName("bold");
 		
 		descriptionLabel = new Label();
 		descriptionLabel.setCaption(markAsMandatoryField(messageSource.getMessage(Message.DESCRIPTION_LABEL)));
@@ -101,7 +102,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		
 		saveAsLayout = new HorizontalLayout();
 		saveAsLayout.setSpacing(true);
-		saveAsLayout.setMargin(true);
+		
 		folderToSaveListToLabel = new Label();
 		folderToSaveListToLabel.setData(null);
 		folderToSaveListToLabel.addStyleName("not-bold");
@@ -116,6 +117,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		saveListNameButton.setCaption(messageSource.getMessage(Message.CHOOSE_LOCATION));
 		saveListNameButton.setStyleName(Reindeer.BUTTON_LINK);
 		
+		saveAsLayout.addComponent(saveAsLabel);
 		saveAsLayout.addComponent(folderToSaveListToLabel);
 		saveAsLayout.addComponent(listNameLabel);
 		saveAsLayout.addComponent(saveListNameButton);
@@ -182,8 +184,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		
 		addComponent(headerLabel,"top:0px;left:0px");
 		
-		addComponent(saveAsLabel,"top:58px;left:0px");
-		addComponent(saveAsLayout,"top:23px;left:200px");
+		addComponent(saveAsLayout,"top:48px;left:0px");
 		
 		addComponent(descriptionLabel,"top:98px;left:0px");
 		addComponent(descriptionTextArea,"top:80px;left:120px");
