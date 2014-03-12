@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 
@@ -30,7 +31,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -127,7 +127,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		listTypeComboBox = new ComboBox();
 		
 		listDtDateField = new DateField();
-		
+		listDtDateField.setDateFormat(CrossingManagerMain.DATE_FORMAT);
 	}
 	
 	public String markAsMandatoryField(String label){
@@ -144,6 +144,8 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 			LOG.error("Error in retrieving List Type", e);
 			e.printStackTrace();
 		}
+		
+		listDtDateField.setValue(new Date());
 	}
 	
 	private void populateListType(ComboBox selectType) throws MiddlewareQueryException {
@@ -260,7 +262,61 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 	public void setListName(String listName) {
 		this.listNameLabel.setValue(listName);
 	}
-	
-	
 
+	public Label getFolderToSaveListToLabel() {
+		return folderToSaveListToLabel;
+	}
+
+	public void setFolderToSaveListToLabel(Label folderToSaveListToLabel) {
+		this.folderToSaveListToLabel = folderToSaveListToLabel;
+	}
+
+	public Label getListNameLabel() {
+		return listNameLabel;
+	}
+
+	public void setListNameLabel(Label listNameLabel) {
+		this.listNameLabel = listNameLabel;
+	}
+
+	public TextArea getDescriptionTextArea() {
+		return descriptionTextArea;
+	}
+
+	public void setDescriptionTextArea(TextArea descriptionTextArea) {
+		this.descriptionTextArea = descriptionTextArea;
+	}
+
+	public ComboBox getListTypeComboBox() {
+		return listTypeComboBox;
+	}
+
+	public void setListTypeComboBox(ComboBox listTypeComboBox) {
+		this.listTypeComboBox = listTypeComboBox;
+	}
+
+	public DateField getListDtDateField() {
+		return listDtDateField;
+	}
+
+	public void setListDtDateField(DateField listDtDateField) {
+		this.listDtDateField = listDtDateField;
+	}
+
+	public Label getHeaderLabel() {
+		return headerLabel;
+	}
+
+	public void setHeaderLabel(Label headerLabel) {
+		this.headerLabel = headerLabel;
+	}
+
+	public Button getSaveListNameButton() {
+		return saveListNameButton;
+	}
+
+	public void setSaveListNameButton(Button saveListNameButton) {
+		this.saveListNameButton = saveListNameButton;
+	}
+	
 }

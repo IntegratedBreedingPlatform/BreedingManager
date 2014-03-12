@@ -418,7 +418,5 @@ public enum Message{
     ,CHANGE
     ,SAVE_LIST_AS
     ,SELECT
-    
-    
-    
+    ,FINISH
 }

@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -15,6 +16,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -94,7 +96,7 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		saveButton = new Button();
 		saveButton.setWidth("80px");
 		saveButton.setData(Actions.SAVE);
-		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
+		saveButton.setCaption(messageSource.getMessage(Message.FINISH));
         saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         backButton = new Button();
@@ -118,6 +120,17 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 			@Override
 			public void buttonClick(ClickEvent event) {
 				source.backStep();
+			}
+			
+		});
+		
+		saveButton.addListener(new ClickListener(){
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if(!validateAllFields(specifyCrossListComponent) || !validateAllFields(specifyFemaleParentListComponent) || !validateAllFields(specifyMaleParentListComponent)){
+					//proceed to save
+				}
 			}
 			
 		});
@@ -147,6 +160,42 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
 		addComponent(layout);
+	}
+	
+	public boolean validateAllFields(SaveCrossListSubComponent subComponent){
+		
+		String section = subComponent.getHeaderLabel().getValue().toString();
+		
+		if(subComponent.getFolderToSaveListToLabel().getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and location of the list."
+					, Notification.POSITION_CENTERED);
+			
+			subComponent.getSaveListNameButton().focus();
+			return false;
+		}
+		
+		if(subComponent.getDescriptionTextArea().getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the description of the list."
+					, Notification.POSITION_CENTERED);
+			subComponent.getDescriptionTextArea().focus();
+			return false;
+		}
+		
+		if(subComponent.getListTypeComboBox().getValue() == null){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the type of the list."
+					, Notification.POSITION_CENTERED);
+			subComponent.getListTypeComboBox().focus();
+			return false;
+		}
+		
+		if(subComponent.getListDtDateField().getValue() == null || subComponent.getListDtDateField().getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Germplasm List Date must be specified in the YYYY-MM-DD format."
+					, Notification.POSITION_CENTERED);
+			subComponent.getListDtDateField().focus();
+			return false;
+		}
+		
+		return true;
 	}
 
 }
