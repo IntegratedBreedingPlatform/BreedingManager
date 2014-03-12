@@ -7,6 +7,10 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -16,16 +20,17 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingManagerSaveCrossListComponent extends VerticalLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
+	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerSaveCrossListComponent.class);
 	private ManageCrossingSettingsMain source;
 	
 	@Autowired
@@ -35,8 +40,8 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 	private Label headerLabel;
 	private Label subHeaderLabel;
 	private SaveCrossListSubComponent specifyCrossListComponent;
-	private SaveCrossListSubComponent specifyFemaleParentListComponent;
-	private SaveCrossListSubComponent specifyMaleParentListComponent;
+//	private SaveCrossListSubComponent specifyFemaleParentListComponent;
+//	private SaveCrossListSubComponent specifyMaleParentListComponent;
 	private Button backButton;
 	private Button saveButton;
 	
@@ -85,13 +90,13 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 				messageSource.getMessage(Message.SPECIFY_CROSS_LIST_DETAILS),
 				messageSource.getMessage(Message.SAVE_CROSS_LIST_AS));
 		
-		specifyFemaleParentListComponent = new SaveCrossListSubComponent(
-				messageSource.getMessage(Message.SPECIFY_FEMALE_PARENT_LIST_DETAILS),
-				messageSource.getMessage(Message.SAVE_FEMALE_PARENT_AS));
-		
-		specifyMaleParentListComponent = new SaveCrossListSubComponent(
-				messageSource.getMessage(Message.SPECIFY_MALE_PARENT_LIST_DETAILS),
-				messageSource.getMessage(Message.SAVE_MALE_PARENT_AS));
+//		specifyFemaleParentListComponent = new SaveCrossListSubComponent(
+//				messageSource.getMessage(Message.SPECIFY_FEMALE_PARENT_LIST_DETAILS),
+//				messageSource.getMessage(Message.SAVE_FEMALE_PARENT_AS));
+//		
+//		specifyMaleParentListComponent = new SaveCrossListSubComponent(
+//				messageSource.getMessage(Message.SPECIFY_MALE_PARENT_LIST_DETAILS),
+//				messageSource.getMessage(Message.SAVE_MALE_PARENT_AS));
 		
 		saveButton = new Button();
 		saveButton.setWidth("80px");
@@ -108,8 +113,6 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -125,11 +128,12 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		});
 		
 		saveButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 993268331611479850L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(validateAllFields(specifyCrossListComponent) && validateAllFields(specifyFemaleParentListComponent) && validateAllFields(specifyMaleParentListComponent)){
-					//proceed to save
+				if(specifyCrossListComponent.validateAllFields()){
+					doSaveAction();
 				}
 			}
 			
@@ -141,12 +145,12 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 	public void layoutComponents() {
 		
 		setWidth("850px");
-		setHeight("700px");
+		setHeight("400px");
 		
 		addComponent(headerLayout);
 		addComponent(specifyCrossListComponent);
-		addComponent(specifyFemaleParentListComponent);
-		addComponent(specifyMaleParentListComponent);
+//		addComponent(specifyFemaleParentListComponent);
+//		addComponent(specifyMaleParentListComponent);
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
@@ -162,40 +166,33 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		addComponent(layout);
 	}
 	
-	public boolean validateAllFields(SaveCrossListSubComponent subComponent){
-		
-		String section = subComponent.getHeaderLabel().getValue().toString();
-		
-		if(subComponent.getFolderToSaveListToLabel().getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and location of the list."
-					, Notification.POSITION_CENTERED);
-			
-			subComponent.getSaveListNameButton().focus();
-			return false;
-		}
-		
-		if(subComponent.getDescriptionTextArea().getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the description of the list."
-					, Notification.POSITION_CENTERED);
-			subComponent.getDescriptionTextArea().focus();
-			return false;
-		}
-		
-		if(subComponent.getListTypeComboBox().getValue() == null){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the type of the list."
-					, Notification.POSITION_CENTERED);
-			subComponent.getListTypeComboBox().focus();
-			return false;
-		}
-		
-		if(subComponent.getListDtDateField().getValue() == null || subComponent.getListDtDateField().getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Germplasm List Date must be specified in the YYYY-MM-DD format."
-					, Notification.POSITION_CENTERED);
-			subComponent.getListDtDateField().focus();
-			return false;
-		}
-		
-		return true;
+	private void doSaveAction(){
+		updateCrossesMadeContainer();
+        saveRecords();
 	}
+	
+	 //Save records into DB and redirects to GermplasmListBrowser to view created list
+    private void saveRecords() {
+        SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
+        try {
+            Integer listId = saveAction.saveRecords(source.getCrossesMade());
+            MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
+            this.source.viewGermplasmListCreated(listId);
+            
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage() + " " + e.getStackTrace());
+            e.printStackTrace();
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
+        }
+        
+    }
+    
+    //save GermplasmList info to CrossesMadeContainer
+    private void updateCrossesMadeContainer(){
+        GermplasmList list = specifyCrossListComponent.getGermplasmList();
+        source.getCrossesMade().setGermplasmList(list);
+    }
 }

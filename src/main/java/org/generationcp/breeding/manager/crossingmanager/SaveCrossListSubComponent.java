@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Deque;
@@ -13,6 +14,7 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -27,6 +29,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -271,52 +274,106 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		this.folderToSaveListToLabel = folderToSaveListToLabel;
 	}
 
-	public Label getListNameLabel() {
-		return listNameLabel;
+//	public Label getListNameLabel() {
+//		return listNameLabel;
+//	}
+//
+//	public void setListNameLabel(Label listNameLabel) {
+//		this.listNameLabel = listNameLabel;
+//	}
+//
+//	public TextArea getDescriptionTextArea() {
+//		return descriptionTextArea;
+//	}
+//
+//	public void setDescriptionTextArea(TextArea descriptionTextArea) {
+//		this.descriptionTextArea = descriptionTextArea;
+//	}
+//
+//	public ComboBox getListTypeComboBox() {
+//		return listTypeComboBox;
+//	}
+//
+//	public void setListTypeComboBox(ComboBox listTypeComboBox) {
+//		this.listTypeComboBox = listTypeComboBox;
+//	}
+//
+//	public DateField getListDtDateField() {
+//		return listDtDateField;
+//	}
+//
+//	public void setListDtDateField(DateField listDtDateField) {
+//		this.listDtDateField = listDtDateField;
+//	}
+//
+//	public Label getHeaderLabel() {
+//		return headerLabel;
+//	}
+//
+//	public void setHeaderLabel(Label headerLabel) {
+//		this.headerLabel = headerLabel;
+//	}
+//
+//	public Button getSaveListNameButton() {
+//		return saveListNameButton;
+//	}
+//
+//	public void setSaveListNameButton(Button saveListNameButton) {
+//		this.saveListNameButton = saveListNameButton;
+//	}
+	
+	public GermplasmList getGermplasmList(){
+		String listName = listDateLabel.getValue().toString();
+        String listDescription = descriptionTextArea.getValue().toString();
+        SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+        Date date = (Date) listDtDateField.getValue();
+        
+        GermplasmList list = new GermplasmList();
+        
+        list.setName(listName);
+        list.setDescription(listDescription);
+        list.setDate(Long.parseLong(formatter.format(date)));
+        list.setType(listTypeComboBox.getValue().toString()); // value = fCOde
+        list.setUserId(0);
+        list.setParent((GermplasmList) getFolderToSaveListToLabel().getData());
+        
+        return list;
 	}
-
-	public void setListNameLabel(Label listNameLabel) {
-		this.listNameLabel = listNameLabel;
-	}
-
-	public TextArea getDescriptionTextArea() {
-		return descriptionTextArea;
-	}
-
-	public void setDescriptionTextArea(TextArea descriptionTextArea) {
-		this.descriptionTextArea = descriptionTextArea;
-	}
-
-	public ComboBox getListTypeComboBox() {
-		return listTypeComboBox;
-	}
-
-	public void setListTypeComboBox(ComboBox listTypeComboBox) {
-		this.listTypeComboBox = listTypeComboBox;
-	}
-
-	public DateField getListDtDateField() {
-		return listDtDateField;
-	}
-
-	public void setListDtDateField(DateField listDtDateField) {
-		this.listDtDateField = listDtDateField;
-	}
-
-	public Label getHeaderLabel() {
-		return headerLabel;
-	}
-
-	public void setHeaderLabel(Label headerLabel) {
-		this.headerLabel = headerLabel;
-	}
-
-	public Button getSaveListNameButton() {
-		return saveListNameButton;
-	}
-
-	public void setSaveListNameButton(Button saveListNameButton) {
-		this.saveListNameButton = saveListNameButton;
+	
+	public boolean validateAllFields(){
+		
+		String section = headerLabel.getValue().toString();
+		
+		if(folderToSaveListToLabel.getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and location of the list."
+					, Notification.POSITION_CENTERED);
+			
+			saveListNameButton.focus();
+			return false;
+		}
+		
+		if(descriptionTextArea.getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the description of the list."
+					, Notification.POSITION_CENTERED);
+			descriptionTextArea.focus();
+			return false;
+		}
+		
+		if(listTypeComboBox.getValue() == null){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the type of the list."
+					, Notification.POSITION_CENTERED);
+			listTypeComboBox.focus();
+			return false;
+		}
+		
+		if(listDtDateField.getValue() == null || listDtDateField.getValue().toString().trim().length() == 0){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Germplasm List Date must be specified in the YYYY-MM-DD format."
+					, Notification.POSITION_CENTERED);
+			listDtDateField.focus();
+			return false;
+		}
+		
+		return true;
 	}
 	
 }
