@@ -128,7 +128,7 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(!validateAllFields(specifyCrossListComponent) || !validateAllFields(specifyFemaleParentListComponent) || !validateAllFields(specifyMaleParentListComponent)){
+				if(validateAllFields(specifyCrossListComponent) && validateAllFields(specifyFemaleParentListComponent) && validateAllFields(specifyMaleParentListComponent)){
 					//proceed to save
 				}
 			}
