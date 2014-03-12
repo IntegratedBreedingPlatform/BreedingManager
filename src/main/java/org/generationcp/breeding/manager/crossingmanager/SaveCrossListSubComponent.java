@@ -324,7 +324,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 //	}
 	
 	public GermplasmList getGermplasmList(){
-		String listName = listDateLabel.getValue().toString();
+		String listName = listNameLabel.getValue().toString();
         String listDescription = descriptionTextArea.getValue().toString();
         SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
         Date date = (Date) listDtDateField.getValue();
