@@ -37,6 +37,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
 	private static final Integer MAX_LEADING_ZEROS = 10;
+	private static final Integer MAX_PREFIX_SUFFIX_LENGTH = 20;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -90,7 +91,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateLabels() {
-		crossNameLabel.setValue(messageSource.getMessage(Message.CROSS_NAME).toUpperCase() + "S");
+		crossNameLabel.setValue(messageSource.getMessage(Message.NAMING).toUpperCase());
 		specifyNamingConventionLabel.setValue(messageSource.getMessage(Message.SPECIFY_NAMING_CONVENTION_FOR_CROSSES));
 		specifyPrefixLabel.setValue(messageSource.getMessage(Message.CROSS_NAME_PREFIX) + ": *");
 		specifySuffixLabel.setValue(messageSource.getMessage(Message.SUFFIX_OPTIONAL) + ":");
@@ -120,6 +121,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         prefixTextField = new TextField();
         prefixTextField.setImmediate(true);
         prefixTextField.setWidth("120px");
+        prefixTextField.setMaxLength(MAX_PREFIX_SUFFIX_LENGTH);
         
         digitsLabel = new Label();
         
@@ -133,6 +135,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         suffixTextField = new TextField();
         suffixTextField.setImmediate(true);
         suffixTextField.setWidth("120px");
+        suffixTextField.setMaxLength(MAX_PREFIX_SUFFIX_LENGTH);
         
         nextNameInSequenceLabel = new Label("<b>" +messageSource.getMessage(Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE) 
 				+ ": </b>", Label.CONTENT_XHTML);
@@ -202,21 +205,22 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		addComponent(crossNameLabel, "top:0px; left:0px");
 		addComponent(specifyNamingConventionLabel, "top:26px; left:0px");
 			
-		addComponent(specifyPrefixLabel, "top:56px;left:0px");
-        addComponent(prefixTextField, "top:56px;left:145px");
-        addComponent(sequenceNumCheckBox, "top:56px;left:300px");
-        addComponent(leadingZerosSelect, "top:56px;left:540px");
-        addComponent(digitsLabel, "top:56px;left:595px");
+		addComponent(specifyPrefixLabel, "top:71px;left:0px");
+        addComponent(prefixTextField, "top:71px;left:145px");
+        addComponent(sequenceNumCheckBox, "top:75px;left:300px");
+        addComponent(leadingZerosSelect, "top:75px;left:540px");
+        addComponent(digitsLabel, "top:75px;left:595px");
         
-        addComponent(specifySuffixLabel, "top:87px;left:0px");
-        addComponent(suffixTextField, "top:87px;left:145px");
-        addComponent(addSpaceLabel, "top:87px;left:305px");
-        addComponent(addSpaceOptionGroup, "top:85px;left:530px");
+        addComponent(specifySuffixLabel, "top:102px;left:0px");
+        addComponent(suffixTextField, "top:102px;left:145px");
+        addComponent(addSpaceLabel, "top:105px;left:305px");
+        addComponent(addSpaceOptionGroup, "top:105px;left:530px");
         
-        addComponent(nextNameInSequenceLabel, "top:115px;left:0px");
-        addComponent(generatedNextNameLabel, "top:115px;left:270px");
-        addComponent(specifyStartNumberCheckbox, "top:113px;left:410px");
-        addComponent(startNumberTextField, "top:113px;left:710px");
+        addComponent(nextNameInSequenceLabel, "top:135px;left:0px");
+        addComponent(generatedNextNameLabel, "top:135px;left:270px");
+        
+        addComponent(specifyStartNumberCheckbox, "top:162px;left:0px");
+        addComponent(startNumberTextField, "top:162px;left:305px");
 	}
 	
 	public boolean validateCrossNameFields(){

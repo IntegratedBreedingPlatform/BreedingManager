@@ -87,6 +87,8 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 				+ "</i>", Label.CONTENT_XHTML);
 		
 		usePreviouslySavedSettingLabel = new Label();
+		usePreviouslySavedSettingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		
 		usePreviousSettingOptionGroup = new OptionGroup();
 		usePreviousSettingOptionGroup.setImmediate(true);
 		usePreviousSettingOptionGroup.addStyleName(AppConstants.CssStyles.HORIZONTAL_GROUP);
@@ -165,7 +167,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		addComponent(mandatoryFieldLabel, "top:30px; left:0px");
 		
 		addComponent(usePreviouslySavedSettingLabel, "top:60px; left:0px");
-		addComponent(usePreviousSettingOptionGroup, "top:60px; left:190px");
+		addComponent(usePreviousSettingOptionGroup, "top:60px; left:205px");
 		addComponent(settingsComboBox, "top:60px; left:300px");
 		addComponent(deleteSettingButton, "top:60px; left:570px");
 	}

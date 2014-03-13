@@ -132,7 +132,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         HorizontalLayout buttonArea = new HorizontalLayout();
         buttonArea.setMargin(true);
         buttonArea.setSpacing(true);
-        buttonArea.addComponent(exportButton);
+//        buttonArea.addComponent(exportButton);
         buttonArea.addComponent(makeCrossesButton);
         
         addComponent(layoutForList);
@@ -161,7 +161,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-//                        crossingManager.reset();
+                        source.reset();
                     }
                 }
             }

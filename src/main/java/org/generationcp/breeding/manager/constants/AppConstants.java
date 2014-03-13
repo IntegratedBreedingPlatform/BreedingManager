@@ -18,6 +18,7 @@ public final class AppConstants {
 		public static final String GRAY_ROUNDED_BORDER = "gray-rounded-border";
 		public static final String HORIZONTAL_GROUP = "horizontalgroup";
 		public static final String ITALIC = "italic";
+		public static final String BOLD = "bold";
 		public static final String POPUP_VIEW = "gcp-popup-view";
 		
 	}
@@ -26,6 +27,7 @@ public final class AppConstants {
 		
 		public static final ThemeResource TRASH_ICON = new ThemeResource("images/trash-icon-blue.png");
 		public static final ThemeResource TRASH_ICON_GRAY_BG = new ThemeResource("images/bluetrash-icon-graybg.png");
+		public static final String POPUP_VIEW_ICON = "?";
 		
 	}
 
