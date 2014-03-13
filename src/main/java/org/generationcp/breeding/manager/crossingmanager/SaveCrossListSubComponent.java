@@ -11,6 +11,10 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.breeding.manager.validator.DateValidator;
+import org.generationcp.breeding.manager.validator.ListDescriptionValidator;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
+import org.generationcp.breeding.manager.validator.ListTypeValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -25,16 +29,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -56,6 +62,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 	private HorizontalLayout saveAsLayout;
 	private Label folderToSaveListToLabel;
 	private Label listNameLabel;
+	private TextField listNameTextField;
 	private Button saveListNameButton;
 	
 	private TextArea descriptionTextArea;
@@ -115,6 +122,10 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		listNameLabel.addStyleName("bold");
 		listNameLabel.setVisible(false);
 		
+		listNameTextField = new TextField();
+		listNameTextField.setVisible(false);
+		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel,listNameTextField));
+		
 		saveListNameButton = new Button();
 		saveListNameButton.setWidth("100px");
 		saveListNameButton.setCaption(messageSource.getMessage(Message.CHOOSE_LOCATION));
@@ -128,11 +139,14 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		descriptionTextArea = new TextArea();
 		descriptionTextArea.setWidth("260px");
 		descriptionTextArea.setHeight("50px");
+		descriptionTextArea.addValidator(new ListDescriptionValidator(descriptionTextArea));
 		
 		listTypeComboBox = new ComboBox();
+		listTypeComboBox.addValidator(new ListTypeValidator(listTypeComboBox));
 		
 		listDtDateField = new DateField();
 		listDtDateField.setDateFormat(CrossingManagerMain.DATE_FORMAT);
+		listDtDateField.addValidator(new DateValidator(listDtDateField));
 	}
 	
 	public String markAsMandatoryField(String label){
@@ -265,6 +279,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 
 	public void setListName(String listName) {
 		this.listNameLabel.setValue(listName);
+		this.listNameTextField.setValue(listName);
 	}
 
 	public Label getFolderToSaveListToLabel() {
@@ -274,54 +289,6 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 	public void setFolderToSaveListToLabel(Label folderToSaveListToLabel) {
 		this.folderToSaveListToLabel = folderToSaveListToLabel;
 	}
-
-//	public Label getListNameLabel() {
-//		return listNameLabel;
-//	}
-//
-//	public void setListNameLabel(Label listNameLabel) {
-//		this.listNameLabel = listNameLabel;
-//	}
-//
-//	public TextArea getDescriptionTextArea() {
-//		return descriptionTextArea;
-//	}
-//
-//	public void setDescriptionTextArea(TextArea descriptionTextArea) {
-//		this.descriptionTextArea = descriptionTextArea;
-//	}
-//
-//	public ComboBox getListTypeComboBox() {
-//		return listTypeComboBox;
-//	}
-//
-//	public void setListTypeComboBox(ComboBox listTypeComboBox) {
-//		this.listTypeComboBox = listTypeComboBox;
-//	}
-//
-//	public DateField getListDtDateField() {
-//		return listDtDateField;
-//	}
-//
-//	public void setListDtDateField(DateField listDtDateField) {
-//		this.listDtDateField = listDtDateField;
-//	}
-//
-//	public Label getHeaderLabel() {
-//		return headerLabel;
-//	}
-//
-//	public void setHeaderLabel(Label headerLabel) {
-//		this.headerLabel = headerLabel;
-//	}
-//
-//	public Button getSaveListNameButton() {
-//		return saveListNameButton;
-//	}
-//
-//	public void setSaveListNameButton(Button saveListNameButton) {
-//		this.saveListNameButton = saveListNameButton;
-//	}
 	
 	public GermplasmList getGermplasmList(){
 		String listName = listNameLabel.getValue().toString();
@@ -345,36 +312,21 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		
 		String section = headerLabel.getValue().toString();
 		
-		if((folderToSaveListToLabel.getValue().toString().trim().length() == 0) || (listNameLabel.getValue().toString().trim().length() == 0)){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the name and/or location of the list."
-					, Notification.POSITION_CENTERED);
+		try {
 			
-			saveListNameButton.focus();
+			listNameTextField.validate();
+			descriptionTextArea.validate();
+			listTypeComboBox.validate();
+			listDtDateField.validate();
+			
+			return false;
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showWarning(getWindow(), 
+					this.messageSource.getMessage(Message.INVALID_INPUT), 
+					section + ": " + e.getMessage(), Notification.POSITION_CENTERED);
 			return false;
 		}
-		
-		if(descriptionTextArea.getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the description of the list."
-					, Notification.POSITION_CENTERED);
-			descriptionTextArea.focus();
-			return false;
-		}
-		
-		if(listTypeComboBox.getValue() == null){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Please specify the type of the list."
-					, Notification.POSITION_CENTERED);
-			listTypeComboBox.focus();
-			return false;
-		}
-		
-		if(listDtDateField.getValue() == null || listDtDateField.getValue().toString().trim().length() == 0){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), section + ": Germplasm List Date must be specified in the YYYY-MM-DD format."
-					, Notification.POSITION_CENTERED);
-			listDtDateField.focus();
-			return false;
-		}
-		
-		return true;
 	}
 	
 }
