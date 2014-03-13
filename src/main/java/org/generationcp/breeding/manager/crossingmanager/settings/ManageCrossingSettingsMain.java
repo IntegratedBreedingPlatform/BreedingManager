@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
@@ -21,6 +22,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 
@@ -35,6 +37,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     private SimpleResourceBundleMessageSource messageSource;
 	
 	private Label toolTitle;
+	private Label makeCrossesLabel;
+	private PopupView toolPopupView;
 	private BreedingManagerWizardDisplay wizardDisplay;
 	
 	private CrossingSettingsDetailComponent detailComponent;
@@ -63,8 +67,17 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 
 	@Override
 	public void instantiateComponents() {
-		toolTitle = new Label(messageSource.getMessage(Message.MAKE_CROSSES));
+		toolTitle = new Label(messageSource.getMessage(Message.MANAGE_CROSSES));
 		toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		
+		makeCrossesLabel = new Label(messageSource.getMessage(Message.MAKE_CROSSES));
+		makeCrossesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+		
+		Label popupLabel = new Label(messageSource.getMessage(Message.CROSSING_MANAGER_TOOL_DESCRIPTION));
+		popupLabel.setWidth("600px");
+		toolPopupView = new PopupView(AppConstants.Icons.POPUP_VIEW_ICON, 
+				popupLabel);
+		toolPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 		
 		instantiateWizardDisplay();
 		
@@ -86,7 +99,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		wizardStepNames[1] = messageSource.getMessage(Message.CREATE_CROSSES);
 		wizardStepNames[2] = messageSource.getMessage(Message.SAVE_CROSS_LIST);
 		wizardDisplay = new BreedingManagerWizardDisplay(wizardStepNames);
-		wizardDisplay.setWidth("90%");
+		wizardDisplay.setWidth("70%");
 	}
 
 	@Override
@@ -103,7 +116,9 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		setHeight("1000px");
 		
 		addComponent(toolTitle);
-		addComponent(wizardDisplay, "top:40px");
+		addComponent(toolPopupView, "top:15px; left:240px");
+		addComponent(makeCrossesLabel, "top:40px;");
+		addComponent(wizardDisplay, "top:40px;left:250px");
 		addComponent(tabSheet, "top:80px;");
 	}
 

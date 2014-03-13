@@ -136,7 +136,7 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
                 messageSource.getMessage(Message.SET_METHOD_BASED_ON_STATUS_OF_PARENTAL_LINES));
         crossingMethodOptionGroup.addItem(CrossingMethodOption.SAME_FOR_ALL_CROSSES);
         crossingMethodOptionGroup.setItemCaption(CrossingMethodOption.SAME_FOR_ALL_CROSSES, 
-                messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES));
+                messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
         crossingMethodOptionGroup.select(CrossingMethodOption.BASED_ON_PARENTAL_LINES);
         
         // retrieve crossing methods

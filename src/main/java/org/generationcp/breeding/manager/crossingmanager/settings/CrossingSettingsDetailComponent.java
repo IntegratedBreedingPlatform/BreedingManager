@@ -146,15 +146,16 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("850px");
-		setHeight("650px");
+		setHeight("800px");
 		
 		addComponent(defineSettingComponent, "top:7px; left: 10px");
 		addComponent(methodComponent, "top:100px; left:10px");
 		addComponent(nameComponent, "top:220px; left:10px");
-		addComponent(additionalDetailsComponent, "top:390px; left:10px");
+		addComponent(additionalDetailsComponent, "top:435Wpx; left:10px");
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("200px");
+		buttonBar.setSpacing(true);
+		buttonBar.setMargin(true);
 		buttonBar.addComponent(cancelButton);
 		buttonBar.addComponent(nextButton);
 		
@@ -163,8 +164,10 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		layout.addComponent(buttonBar);
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:600px; left:0px");
+		addComponent(layout, "top:650px");
+		
 	}
+	
 	
 	public void doResetAction(){
 		
