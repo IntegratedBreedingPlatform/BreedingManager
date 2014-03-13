@@ -164,6 +164,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
         EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
             new EmbeddedGermplasmListDetailComponent(this, listId);
         
+        this.removeComponent(this.makeCrossesLabel);
         this.removeComponent(this.wizardDisplay);
         this.removeComponent(this.tabSheet);
         

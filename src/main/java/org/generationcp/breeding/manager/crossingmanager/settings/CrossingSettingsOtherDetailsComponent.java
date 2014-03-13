@@ -7,8 +7,8 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
+import org.generationcp.breeding.manager.customfields.BreedingManagerDateField;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -143,9 +144,8 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		
 		harvestDateLabel = new Label();
         
-        harvestDtDateField = new DateField();
-        harvestDtDateField.setResolution(DateField.RESOLUTION_DAY);
-        harvestDtDateField.setDateFormat(CrossingManagerMain.DATE_FORMAT);
+        harvestDtDateField = new BreedingManagerDateField(
+        		messageSource.getMessage(Message.HARVEST_DATE));
         harvestDtDateField.setWidth("240px");
         
         harvestLocationLabel = new Label();
@@ -309,6 +309,16 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	}
     
 	public boolean validateInputFields(){
+		
+		try {
+			harvestDtDateField.validate();
+		} catch (InvalidValueException e) {
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage()
+					, Notification.POSITION_CENTERED);
+			return false;
+		}
+		
+		
 		String settingsName = (String) settingsNameTextfield.getValue();
 		
 		// validations only when setting will be saved

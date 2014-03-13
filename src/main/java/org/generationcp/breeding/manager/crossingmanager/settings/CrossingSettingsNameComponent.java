@@ -37,7 +37,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
 	private static final Integer MAX_LEADING_ZEROS = 10;
-	private static final Integer MAX_PREFIX_SUFFIX_LENGTH = 20;
+	private static final Integer MAX_PREFIX_SUFFIX_LENGTH = 12;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
