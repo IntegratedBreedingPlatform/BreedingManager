@@ -1,11 +1,14 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -26,7 +31,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectLocationFolderDialog extends Window implements InitializingBean, InternationalizableComponent{
+public class SelectLocationFolderDialog extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout{
 	private static final long serialVersionUID = -5502264917037916149L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SelectLocationFolderDialog.class);
@@ -66,18 +71,39 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		initializeComponents();
-		initializeLayout();
+		instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
 	}
 	
-	private void initializeComponents(){
-		
+	@Override
+	public void updateLabels() {
+		// TODO Auto-generated method stub
+	}
+
+	public TextField getListNameTxtField() {
+		return listNameTxtField;
+	}
+
+	public void setListNameTxtField(String value) {
+		this.listNameTxtField.setValue(value);
+	}
+
+	@Override
+	public void instantiateComponents() {
 		if(fromMakeCrosses){
 			this.windowLabel = messageSource.getMessage(Message.SAVE_LIST_AS);
 			this.selectBtnCaption = messageSource.getMessage(Message.SELECT);
 			
 			listNameLabel = new Label(messageSource.getMessage(Message.LIST_NAME) + ":*");
 			listNameTxtField = new TextField();
+			listNameTxtField.setImmediate(true);
+			listNameTxtField.setRequired(true);
+			listNameTxtField.setRequiredError("Please specify the name of the list.");
+			listNameTxtField.addValidator(new StringLengthValidator(
+	                "List Description must not exceed 255 characters.", 1, 100, false));
+			listNameTxtField.addValidator(new ListNameValidator());
 		}
 		else{
 			this.windowLabel = messageSource.getMessage(Message.SELECT_LOCATION_FOLDER);
@@ -90,45 +116,62 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		setModal(true);
 		
 		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-		cancelButton.addListener(new CloseWindowAction());
 		
 		selectLocationButton = new Button(selectBtnCaption);
 		selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+				
+		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
+				
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
+		cancelButton.addListener(new CloseWindowAction());
+		
 		selectLocationButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -4029658156820141206L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Integer folderId = null;
-				if(germplasmListTree.getSelectedListId() instanceof Integer){
-					folderId = (Integer) germplasmListTree.getSelectedListId();
-				}
-				try{
-					if(folderId != null){
-						GermplasmList folder = germplasmListManager.getGermplasmListById(folderId);
-						source.setSelectedFolder(folder);
-					} else{
-						source.setSelectedFolder(null);
+				
+				if(validateListName()){
+
+					Integer folderId = null;
+					if(germplasmListTree.getSelectedListId() instanceof Integer){
+						folderId = (Integer) germplasmListTree.getSelectedListId();
 					}
-					
-					if(fromMakeCrosses){
-						source.setListName(getListNameTxtField().getValue().toString());
-					}
+					try{
+						if(folderId != null){
+							GermplasmList folder = germplasmListManager.getGermplasmListById(folderId);
+							source.setSelectedFolder(folder);
+						} else{
+							source.setSelectedFolder(null);
+						}
 						
-					Window window = event.getButton().getWindow();
-			        window.getParent().removeWindow(window);
-				} catch(MiddlewareQueryException ex){
-					LOG.error("Error with retrieving list with id: " + folderId, ex);
+						if(fromMakeCrosses){
+							source.setListName(getListNameTxtField().getValue().toString());
+						}
+							
+						Window window = event.getButton().getWindow();
+				        window.getParent().removeWindow(window);
+					} catch(MiddlewareQueryException ex){
+						LOG.error("Error with retrieving list with id: " + folderId, ex);
+					}
+
 				}
 			}
 		});
-		
-		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
-		
-		
+
 	}
-	
-	private void initializeLayout(){
+
+	@Override
+	public void layoutComponents() {
 		if(fromMakeCrosses){
 			setHeight("480px");
 			setWidth("280px");
@@ -163,19 +206,18 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		setContent(mainLayout);
 	}
 	
-	@Override
-	public void updateLabels() {
-		// TODO Auto-generated method stub
+	public boolean validateListName(){
+		try {
+			
+			listNameTxtField.validate();
+			return true;
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showError(getWindow(), 
+					this.messageSource.getMessage(Message.INVALID_INPUT), 
+					e.getMessage(), Notification.POSITION_CENTERED);
+			return false;
+		}
 	}
-
-	public TextField getListNameTxtField() {
-		return listNameTxtField;
-	}
-
-	public void setListNameTxtField(String value) {
-		this.listNameTxtField.setValue(value);
-	}
-	
-	
 	
 }

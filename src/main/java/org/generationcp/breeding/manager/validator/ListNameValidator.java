@@ -28,7 +28,6 @@ public class ListNameValidator implements Validator {
 	private static final String DEFAULT_ERROR = "Please specify the name and/or location of the list";
 	private static final String SAME_PARENT_FOLDER_LIST_NAME_ERROR = "List Name and its Parent Folder must not have the same name";
 	
-	private Field listName;
 	private String errorDetails;
 	private Label parentFolder;
 	
@@ -38,43 +37,39 @@ public class ListNameValidator implements Validator {
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListNameValidator(Field listName){
-		this.listName = listName;
+	public ListNameValidator(){
 	}
 	
-	public ListNameValidator(Label parentFolder, Field listName){
-		this.listName = listName;
+	public ListNameValidator(Label parentFolder){
 		this.parentFolder = parentFolder;
+		this.errorDetails = DEFAULT_ERROR;
 	}
 	
 	@Override
 	public void validate(Object value) throws InvalidValueException {
 		
 		if (!isValid(value)){
+			
 			throw new InvalidValueException(this.errorDetails);
 		}
 	}
 
 	@Override
 	public boolean isValid(Object value) {
-		if(listName.getValue() == null || listName.getValue().toString().trim().length() == 0){
-			this.errorDetails = DEFAULT_ERROR;
-			return false;
-		}
-		
 		if(parentFolder != null){
+			
 	    	if(parentFolder.getValue().toString().trim().length() == 0){
 				this.errorDetails = DEFAULT_ERROR;
 				return false;
 			}
-
-			if(parentFolder.getValue().toString().endsWith(listName.getValue().toString() + " >")){	
+	    	
+			if(parentFolder.getValue().toString().trim().endsWith(value.toString() + " >")){	
 				this.errorDetails = SAME_PARENT_FOLDER_LIST_NAME_ERROR;
 				return false;
 			}
 		}
 
-		if(validateListName(listName.getValue().toString())){
+		if(!validateListName(value.toString())){
 			return false;
 		}
 		

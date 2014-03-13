@@ -386,4 +386,11 @@
 
 .v-select-optiongroup-horizontalgroup .v-select-option {
     display: inline-block;
-}R
+}
+
+/* Hides Required Field indicator */
+.v-required-field-indicator {
+	padding-left: 1px;
+	margin-top: 16px;
+	color: white;
+}

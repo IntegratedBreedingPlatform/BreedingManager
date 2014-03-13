@@ -8,13 +8,11 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.BreedingManagerDateField;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
-import org.generationcp.breeding.manager.validator.DateValidator;
-import org.generationcp.breeding.manager.validator.ListDescriptionValidator;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
-import org.generationcp.breeding.manager.validator.ListTypeValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -30,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.NullValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -124,7 +124,13 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		
 		listNameTextField = new TextField();
 		listNameTextField.setVisible(false);
-		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel,listNameTextField));
+		listNameTextField.setImmediate(true);
+		listNameTextField.setRequired(true);
+		listNameTextField.setRequiredError("Please specify the name of the list.");
+		listNameTextField.addValidator(new StringLengthValidator(
+                "List Description must not exceed 255 characters.", 1, 100, false));
+		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
+		
 		
 		saveListNameButton = new Button();
 		saveListNameButton.setWidth("100px");
@@ -139,14 +145,21 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		descriptionTextArea = new TextArea();
 		descriptionTextArea.setWidth("260px");
 		descriptionTextArea.setHeight("50px");
-		descriptionTextArea.addValidator(new ListDescriptionValidator(descriptionTextArea));
+		descriptionTextArea.setImmediate(true);
+		descriptionTextArea.setRequired(true);
+		descriptionTextArea.setRequiredError("Please specify the description of the list.");
+		descriptionTextArea.addValidator(new StringLengthValidator(
+                "List Description must not exceed 255 characters.", 1, 255, false));
 		
 		listTypeComboBox = new ComboBox();
-		listTypeComboBox.addValidator(new ListTypeValidator(listTypeComboBox));
+		listTypeComboBox.setImmediate(true);
+		listTypeComboBox.setRequired(true);
+		listTypeComboBox.setRequiredError("Please specify the type of the list.");
 		
-		listDtDateField = new DateField();
-		listDtDateField.setDateFormat(CrossingManagerMain.DATE_FORMAT);
-		listDtDateField.addValidator(new DateValidator(listDtDateField));
+		listDtDateField = new BreedingManagerDateField(messageSource.getMessage(Message.LIST_DATE));
+		listDtDateField.setImmediate(true);
+		listDtDateField.setRequired(true);
+		listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
 	}
 	
 	public String markAsMandatoryField(String label){
@@ -318,11 +331,11 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 			descriptionTextArea.validate();
 			listTypeComboBox.validate();
 			listDtDateField.validate();
-			
-			return false;
+
+			return true;
 			
 		} catch (InvalidValueException e) {
-			MessageNotifier.showWarning(getWindow(), 
+			MessageNotifier.showError(getWindow(), 
 					this.messageSource.getMessage(Message.INVALID_INPUT), 
 					section + ": " + e.getMessage(), Notification.POSITION_CENTERED);
 			return false;

@@ -89,6 +89,7 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
 		specifyCrossListComponent = new SaveCrossListSubComponent(
 				messageSource.getMessage(Message.SPECIFY_CROSS_LIST_DETAILS),
 				messageSource.getMessage(Message.SAVE_CROSS_LIST_AS));
+		specifyCrossListComponent.setImmediate(true);
 		
 //		specifyFemaleParentListComponent = new SaveCrossListSubComponent(
 //				messageSource.getMessage(Message.SPECIFY_FEMALE_PARENT_LIST_DETAILS),
