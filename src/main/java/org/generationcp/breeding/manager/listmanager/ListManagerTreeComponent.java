@@ -225,7 +225,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain);
+				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         

@@ -708,6 +708,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	    } else{
 	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId), listName);
 	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
+	    	newTab.setClosable(true);
 	    	listDetailsTabSheet.setSelectedTab(newTab);
     	}
     	
@@ -763,5 +764,14 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             
             targetTable.requestRepaint();
         }
+	}
+	
+	public void updateUIForDeletedList(String listName){
+		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+			Tab tab = listDetailsTabSheet.getTab(ctr);
+			if(tab != null && tab.getCaption().equals(listName)){
+				listDetailsTabSheet.removeTab(tab);
+			}
+		}
 	}
 }

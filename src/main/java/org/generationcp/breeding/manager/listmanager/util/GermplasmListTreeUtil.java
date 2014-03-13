@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -494,7 +495,8 @@ public class GermplasmListTreeUtil implements Serializable {
         source.getWindow().addWindow(w);    	
     }
 
-	public void deleteFolderOrList(final ListManagerTreeComponent listManagerTreeComponent, final Integer lastItemId, final ListManagerMain listManagerMain) {
+	public void deleteFolderOrList(final ListManagerTreeComponent listManagerTreeComponent, final Integer lastItemId, final ListManagerMain listManagerMain
+			, final CrossingManagerMakeCrossesComponent makeCrossesComponent) {
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -544,6 +546,8 @@ public class GermplasmListTreeUtil implements Serializable {
 						listManagerTreeComponent.removeListFromTree(finalGpList);
 						if(listManagerMain != null){
 							listManagerMain.updateUIForDeletedList(finalGpList);
+						} else if(makeCrossesComponent != null){
+							makeCrossesComponent.updateUIForDeletedList(finalGpList.getName());
 						}
 						
 					} catch (Error e) {
