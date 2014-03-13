@@ -42,6 +42,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
@@ -799,18 +800,20 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     			designations.add(germplasm.getNval());
     		}
     		
-    		if(!designations.contains(designation)){
-    			return false;
+    		for (String nameInDb : designations) {
+    		    if (GermplasmDataManagerUtil.compareGermplasmNames(designation, nameInDb)){
+    		        return true;
+    		    }
     		}
     		
     	}catch(Exception e){
     		e.printStackTrace();
 			LOG.error("Database error!", e);
-			MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting numeric trait info given environment ids."
+			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
 					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	}
     	
-    	return true; 
+    	return false; 
     }
 
 
