@@ -773,6 +773,18 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			Tab tab = listDetailsTabSheet.getTab(ctr);
 			if(tab != null && tab.getCaption().equals(listName)){
 				listDetailsTabSheet.removeTab(tab);
+				return;
+			}
+		}
+	}
+	
+	public void updateUIForRenamedList(Integer listId, String newName){
+		String description = ListManagerDetailsLayout.generateTabDescription(listId);
+		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+			Tab tab = listDetailsTabSheet.getTab(ctr);
+			if(tab != null && tab.getDescription().equals(description)){
+				tab.setCaption(newName);
+				return;
 			}
 		}
 	}

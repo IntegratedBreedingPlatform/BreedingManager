@@ -357,7 +357,7 @@ public class GermplasmListTreeUtil implements Serializable {
     }    
 
     
-    public void renameFolderOrList(final Integer listId, final ListManagerMain listManagerMain){
+    public void renameFolderOrList(final Integer listId, final ListManagerMain listManagerMain, final CrossingManagerMakeCrossesComponent makeCrossesComponent){
 
     	GermplasmList germplasmList = null;
         try {
@@ -452,6 +452,8 @@ public class GermplasmListTreeUtil implements Serializable {
 	                    //rename tabs
 	                    if(listManagerMain != null){
 	                    	listManagerMain.updateUIForRenamedList(listId, newName);
+	                    } else if(makeCrossesComponent != null){
+	                    	makeCrossesComponent.updateUIForRenamedList(listId, newName);
 	                    }
                 	} else {
             			MessageNotifier.showWarning(source.getWindow(),
