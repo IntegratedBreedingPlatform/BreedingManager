@@ -737,31 +737,35 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	private void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
 		List<Integer> selectedListEntries = new ArrayList<Integer>();
     	selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
+    	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
+    	entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
     	
-    	for(Integer itemId : selectedListEntries){
-    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
-    		Button designationButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
-    		String designation = designationButton.getCaption();
-    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
-    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption())); 
-    		
-    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation);
-    		Item item = targetTable.addItem(entryObject);
-    		if(item != null){
-	    		if(targetTable.equals(femaleParents)){
-	    			item.getItemProperty("Female Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
-	    		} else{
-	    			item.getItemProperty("Male Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
-	    		}
+    	for(Integer itemId : entryIdsInSourceTable){
+    		if(selectedListEntries.contains(itemId)){
+	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+	    		Button designationButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
+	    		String designation = designationButton.getCaption();
+	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption())); 
 	    		
-	    		CheckBox tag = new CheckBox();
-	    		if(targetTable.equals(femaleParents)){
-	    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
-	    		} else{
-	    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation);
+	    		Item item = targetTable.addItem(entryObject);
+	    		if(item != null){
+		    		if(targetTable.equals(femaleParents)){
+		    			item.getItemProperty("Female Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
+		    		} else{
+		    			item.getItemProperty("Male Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
+		    		}
+		    		
+		    		CheckBox tag = new CheckBox();
+		    		if(targetTable.equals(femaleParents)){
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+		    		} else{
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+		    		}
+		            tag.setImmediate(true);
+		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 	    		}
-	            tag.setImmediate(true);
-	            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
     		}
             
             targetTable.requestRepaint();
