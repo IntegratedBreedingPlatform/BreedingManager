@@ -443,10 +443,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
+        backButton.setWidth("80px");
         backButton.addListener(listener);
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.setWidth("80px");
         nextButton.addListener(listener);
         nextButton.setEnabled(false);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
