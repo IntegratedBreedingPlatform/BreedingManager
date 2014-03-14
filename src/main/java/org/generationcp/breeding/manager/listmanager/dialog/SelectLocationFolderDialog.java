@@ -141,7 +141,6 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 			public void buttonClick(ClickEvent event) {
 				
 				if(validateListName()){
-
 					Integer folderId = null;
 					if(germplasmListTree.getSelectedListId() instanceof Integer){
 						folderId = (Integer) germplasmListTree.getSelectedListId();
@@ -165,6 +164,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 					}
 
 				}
+				
 			}
 		});
 
@@ -207,17 +207,21 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	}
 	
 	public boolean validateListName(){
-		try {
-			
-			listNameTxtField.validate();
-			return true;
-			
-		} catch (InvalidValueException e) {
-			MessageNotifier.showError(getWindow(), 
-					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					e.getMessage(), Notification.POSITION_CENTERED);
-			return false;
+		if(listNameTxtField != null){
+			try {
+				
+				listNameTxtField.validate();
+				return true;
+				
+			} catch (InvalidValueException e) {
+				MessageNotifier.showError(getWindow(), 
+						this.messageSource.getMessage(Message.INVALID_INPUT), 
+						e.getMessage(), Notification.POSITION_CENTERED);
+				return false;
+			}
 		}
+		
+		return true;
 	}
 	
 }
