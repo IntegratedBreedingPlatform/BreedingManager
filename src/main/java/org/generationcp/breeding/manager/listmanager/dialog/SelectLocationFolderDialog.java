@@ -2,9 +2,9 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -19,13 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -44,8 +41,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	
 	private Integer folderId;
 	
-	private Label listNameLabel;
-	private TextField listNameTxtField;
+	private ListNameField listNameField;
 	
 	private String windowLabel;
 	private String selectBtnCaption;
@@ -81,13 +77,13 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	public void updateLabels() {
 		// TODO Auto-generated method stub
 	}
-
-	public TextField getListNameTxtField() {
-		return listNameTxtField;
+	
+	public ListNameField getListNameField() {
+		return listNameField;
 	}
 
-	public void setListNameTxtField(String value) {
-		this.listNameTxtField.setValue(value);
+	public void setListNameField(String listName) {
+		this.listNameField.setValue(listName);
 	}
 
 	@Override
@@ -96,14 +92,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 			this.windowLabel = messageSource.getMessage(Message.SAVE_LIST_AS);
 			this.selectBtnCaption = messageSource.getMessage(Message.SELECT);
 			
-			listNameLabel = new Label(messageSource.getMessage(Message.LIST_NAME) + ":*");
-			listNameTxtField = new TextField();
-			listNameTxtField.setImmediate(true);
-			listNameTxtField.setRequired(true);
-			listNameTxtField.setRequiredError("Please specify the name of the list.");
-			listNameTxtField.addValidator(new StringLengthValidator(
-	                "List Description must not exceed 255 characters.", 1, 100, false));
-			listNameTxtField.addValidator(new ListNameValidator());
+			listNameField = new ListNameField(messageSource.getMessage(Message.LIST_NAME),true);
 		}
 		else{
 			this.windowLabel = messageSource.getMessage(Message.SELECT_LOCATION_FOLDER);
@@ -154,7 +143,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 						}
 						
 						if(fromMakeCrosses){
-							source.setListName(getListNameTxtField().getValue().toString());
+							source.setListName(getListNameField().getValue().toString());
 						}
 							
 						Window window = event.getButton().getWindow();
@@ -181,10 +170,6 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 			setWidth("250px");
 		}
 		
-		HorizontalLayout listNameLayout = new HorizontalLayout();
-		listNameLayout.addComponent(listNameLabel);
-		listNameLayout.addComponent(listNameTxtField);
-		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
@@ -200,17 +185,17 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
 		mainLayout.addComponent(germplasmListTree);
-		if(fromMakeCrosses){ mainLayout.addComponent(listNameLayout); }
+		if(fromMakeCrosses){ mainLayout.addComponent(listNameField); }
 		mainLayout.addComponent(buttonLayout);
 		
 		setContent(mainLayout);
 	}
 	
 	public boolean validateListName(){
-		if(listNameTxtField != null){
+		if(listNameField != null){
 			try {
 				
-				listNameTxtField.validate();
+				listNameField.validate();
 				return true;
 				
 			} catch (InvalidValueException e) {

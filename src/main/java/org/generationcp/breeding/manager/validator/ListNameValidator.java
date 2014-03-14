@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 
 @Configurable

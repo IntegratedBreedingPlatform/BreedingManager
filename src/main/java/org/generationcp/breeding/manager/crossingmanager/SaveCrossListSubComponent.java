@@ -4,11 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Deque;
-import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customfields.BreedingManagerDateField;
+import org.generationcp.breeding.manager.customfields.ListDateField;
+import org.generationcp.breeding.manager.customfields.ListDescriptionField;
+import org.generationcp.breeding.manager.customfields.ListTypeField;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -20,7 +21,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,17 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.NullValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
@@ -54,20 +50,18 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 	private String saveAsCaption;
 	
 	private Label headerLabel;
-	private Label saveAsLabel;
-	private Label descriptionLabel;
-	private Label listTypeLabel;
-	private Label listDateLabel;
 	
 	private HorizontalLayout saveAsLayout;
+	private Label saveAsLabel;
+	private Label markAsMandatory;
 	private Label folderToSaveListToLabel;
 	private Label listNameLabel;
 	private TextField listNameTextField;
 	private Button saveListNameButton;
 	
-	private TextArea descriptionTextArea;
-	private ComboBox listTypeComboBox;
-	private DateField listDtDateField;
+	private ListDescriptionField listDescriptionField; 
+	private ListTypeField listTypeField;
+	private ListDateField listDateField;
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
@@ -97,21 +91,16 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		headerLabel.setValue(headerCaption);
 		headerLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
-		saveAsLabel = new Label();
-		saveAsLabel.setValue(markAsMandatoryField(saveAsCaption));
-		saveAsLabel.addStyleName("bold");
-		
-		descriptionLabel = new Label();
-		descriptionLabel.setCaption(markAsMandatoryField(messageSource.getMessage(Message.DESCRIPTION_LABEL)));
-		
-		listTypeLabel = new Label();
-		listTypeLabel.setCaption(markAsMandatoryField(messageSource.getMessage(Message.LIST_TYPE)));
-		
-		listDateLabel = new Label();
-		listDateLabel.setCaption(messageSource.getMessage(Message.LIST_DATE) + ":");
-		
 		saveAsLayout = new HorizontalLayout();
 		saveAsLayout.setSpacing(true);
+		
+		saveAsLabel = new Label();
+		saveAsLabel.setValue(saveAsCaption);
+		saveAsLabel.addStyleName("bold");
+		
+		markAsMandatory = new Label("* ");
+		markAsMandatory.setWidth("5px");
+		markAsMandatory.addStyleName("marked_mandatory");
 		
 		folderToSaveListToLabel = new Label();
 		folderToSaveListToLabel.setData(null);
@@ -131,68 +120,27 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
                 "List Description must not exceed 255 characters.", 1, 100, false));
 		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
 		
-		
 		saveListNameButton = new Button();
 		saveListNameButton.setWidth("100px");
 		saveListNameButton.setCaption(messageSource.getMessage(Message.CHOOSE_LOCATION));
 		saveListNameButton.setStyleName(Reindeer.BUTTON_LINK);
 		
 		saveAsLayout.addComponent(saveAsLabel);
+		saveAsLayout.addComponent(markAsMandatory);
 		saveAsLayout.addComponent(folderToSaveListToLabel);
 		saveAsLayout.addComponent(listNameLabel);
 		saveAsLayout.addComponent(saveListNameButton);
 		
-		descriptionTextArea = new TextArea();
-		descriptionTextArea.setWidth("260px");
-		descriptionTextArea.setHeight("50px");
-		descriptionTextArea.setImmediate(true);
-		descriptionTextArea.setRequired(true);
-		descriptionTextArea.setRequiredError("Please specify the description of the list.");
-		descriptionTextArea.addValidator(new StringLengthValidator(
-                "List Description must not exceed 255 characters.", 1, 255, false));
+		listDescriptionField = new ListDescriptionField(messageSource.getMessage(Message.DESCRIPTION_LABEL),true);
+		listTypeField = new ListTypeField(messageSource.getMessage(Message.LIST_TYPE), true);
+		listDateField = new ListDateField(messageSource.getMessage(Message.LIST_DATE), true);
 		
-		listTypeComboBox = new ComboBox();
-		listTypeComboBox.setImmediate(true);
-		listTypeComboBox.setRequired(true);
-		listTypeComboBox.setRequiredError("Please specify the type of the list.");
-		
-		listDtDateField = new BreedingManagerDateField(messageSource.getMessage(Message.LIST_DATE));
-		listDtDateField.setImmediate(true);
-		listDtDateField.setRequired(true);
-		listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
 	}
 	
-	public String markAsMandatoryField(String label){
-		return label + ": *";
-	}
-
 	@Override
 	public void initializeValues() {
-
-		try {
-			// initialize List Type ComboBox
-			populateListType(listTypeComboBox);
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error in retrieving List Type", e);
-			e.printStackTrace();
-		}
 		
-		listDtDateField.setValue(new Date());
 	}
-	
-	private void populateListType(ComboBox selectType) throws MiddlewareQueryException {
-        List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-        
-        for (UserDefinedField listType : listTypes) {
-            String typeCode = listType.getFcode();
-            selectType.addItem(typeCode);
-            selectType.setItemCaption(typeCode, listType.getFname());
-            //set "F1 Nursery List" as the default value
-            if ("F1".equals(typeCode)) {
-                selectType.setValue(typeCode);
-            }
-        }
-    }
 
 	@Override
 	public void addListeners() {
@@ -213,24 +161,17 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		setWidth("800px");
 		
 		addComponent(headerLabel,"top:0px;left:0px");
-		
 		addComponent(saveAsLayout,"top:48px;left:0px");
-		
-		addComponent(descriptionLabel,"top:98px;left:0px");
-		addComponent(descriptionTextArea,"top:80px;left:120px");
-		
-		addComponent(listTypeLabel,"top:98px;left:400px");
-		addComponent(listTypeComboBox,"top:80px;left:480px");
-		
-		addComponent(listDateLabel,"top:128px;left:400px");
-		addComponent(listDtDateField,"top:110px;left:480px");
+		addComponent(listDescriptionField,"top:78px;left:0px");
+		addComponent(listTypeField,"top:78px;left:400px");
+		addComponent(listDateField,"top:120px;left:400px");
 	}
 	
 	private void displaySelectFolderDialog(){
 		GermplasmList selectedFolder = (GermplasmList) folderToSaveListToLabel.getData();
 		
 		if(saveListNameButton.getCaption().equals(messageSource.getMessage(Message.CHANGE))){
-			selectFolderDialog.setListNameTxtField(listNameLabel.getValue().toString());
+			selectFolderDialog.setListNameField(listNameLabel.getValue().toString());
 		}
 		else{
 			if(selectedFolder != null){
@@ -305,16 +246,16 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 	
 	public GermplasmList getGermplasmList(){
 		String listName = listNameLabel.getValue().toString();
-        String listDescription = descriptionTextArea.getValue().toString();
+        String listDescription = listDescriptionField.getValue().toString();
         SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-        Date date = (Date) listDtDateField.getValue();
+        Date date = (Date) listDateField.getValue();
         
         GermplasmList list = new GermplasmList();
         
         list.setName(listName);
         list.setDescription(listDescription);
         list.setDate(Long.parseLong(formatter.format(date)));
-        list.setType(listTypeComboBox.getValue().toString()); // value = fCOde
+        list.setType(listTypeField.getValue().toString()); // value = fCOde
         list.setUserId(0);
         list.setParent((GermplasmList) getFolderToSaveListToLabel().getData());
         
@@ -328,9 +269,9 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		try {
 			
 			listNameTextField.validate();
-			descriptionTextArea.validate();
-			listTypeComboBox.validate();
-			listDtDateField.validate();
+			listDescriptionField.validate();
+			listTypeField.validate();
+			listDateField.validate();
 
 			return true;
 			
