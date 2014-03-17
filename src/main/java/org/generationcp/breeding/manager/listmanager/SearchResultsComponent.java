@@ -58,7 +58,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private ListManagerDetailsLayout displayDetailsLayout;
 	private ListManagerMain listManagerMain;
 	private AbsoluteLayout parentLayout;
-	private DropHandlerComponent dropHandler;
 	
 	private CheckBox matchingListsTagAllCheckBox;
 	private CheckBox matchingGermplasmsTagAllCheckBox;
@@ -170,8 +169,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
              		for(Integer gid : gids){
              			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
              		}
-             		
-             		listManagerMain.getBuildListComponent().updateDropListEntries();
              	}
 			}
 		});
@@ -213,8 +210,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 			 
 		 });
 		
-		dropHandler = new DropHandlerComponent(listManagerMain, 350);
-
 		addComponent(matchingListsLabel, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTable, "top:40px; left:0px;");
@@ -224,8 +219,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		addComponent(matchingGermplasmsDescription, "top:213px; left:0px;");
 		addComponent(matchingGermplasmsTable, "top:230px; left:0px;");
 		addComponent(matchingGermplasmsTagAllCheckBox, "top:355px; left:0px;");
-		
-		addComponent(dropHandler, "top:385px; left:0px;");
 	}
 
 		
@@ -419,10 +412,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	}
 
 	
-    public DropHandlerComponent getDropHandlerComponent(){
-    	return dropHandler;
-    }
-    
     private int getTotalWidth(Table table){
     	int totalWidth = 0;
     	List<Object> visibleColumnIds = new ArrayList<Object>();

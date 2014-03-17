@@ -699,17 +699,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         }
         
         updateAddedColumnValues();
-        updateDropListEntries();
         
         //marked changes in Germplasm table
         setHasChanges(true);
     }
     
-    //update the dropHandlerListEntries
-    public void updateDropListEntries(){
-        ((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
-        ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
-    }
 
     /**
      * Should be called just before data is inserted into the destination table, this will copy
@@ -1445,8 +1439,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             germplasmsTable.removeItem(selectedItemId);
         }
         assignSerializedEntryNumber();
-        
-        this.updateDropListEntries(); //update the drop handler count
     }
 
     public void setupSaveButtonClickListener(){
@@ -1542,8 +1534,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             //List Data Table
             germplasmsTable.removeAllItems();
             addGermplasmListDataToGermplasmTable(germplasmListId, null);
-            updateDropListEntries();
-            
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in loading field values.", e);
             e.printStackTrace();

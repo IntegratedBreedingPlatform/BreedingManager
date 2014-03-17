@@ -465,7 +465,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		         		listManagerMain.showBuildNewListComponent();
 		         		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
 	         			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(listDataTable, null);
-	         			listManagerMain.getBuildListComponent().updateDropListEntries();
 		         	}
 		         	
 		         }

@@ -59,7 +59,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	protected Tree germplasmListTree;
     protected AbsoluteLayout germplasmListBrowserMainLayout;
 	protected Button refreshButton;
-	protected DropHandlerComponent dropHandler;
 	
     @Autowired
     protected GermplasmListManager germplasmListManager;
@@ -169,8 +168,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		}
 		
-		dropHandler = new DropHandlerComponent(listManagerMain, 220);
-		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);
 		
@@ -178,7 +175,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
 			addComponent(refreshButton);
 		}
-		addComponent(dropHandler);
 		
 		createTree();
 		
@@ -640,10 +636,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	return germplasmListTree;
     }
     
-    public DropHandlerComponent getDropHandlerComponent(){
-    	return dropHandler;
-    }
-
     public void setSelectedListId(Object listId){
     	this.selectedListId = listId;
     	germplasmListTree.setNullSelectionAllowed(false);

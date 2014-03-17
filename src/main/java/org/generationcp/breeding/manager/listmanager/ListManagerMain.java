@@ -105,12 +105,6 @@ public class ListManagerMain extends VerticalLayout implements
 		if(buildNewListButton.isVisible()){
 			buildNewListButton.setVisible(false);
 			
-			//show the drop area in Browse List
-			this.browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent().enableDropHandler();
-			
-			//show the drop area in Search Germplasm List and Germplasm
-			this.searchListsComponent.getSearchResultsComponent().getDropHandlerComponent().enableDropHandler();
-			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
 			
