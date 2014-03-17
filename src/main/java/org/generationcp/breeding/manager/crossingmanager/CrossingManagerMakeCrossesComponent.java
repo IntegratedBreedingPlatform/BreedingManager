@@ -130,8 +130,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     @Override
     public void afterPropertiesSet() throws Exception {
-    	
-    	setHeight("840px");
+    	setWidth("1200px");
+    	setHeight("1050px");
         this.setMargin(true, true, true, true);
 
         listTree = new ListManagerTreeComponent(this);
@@ -176,7 +176,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         femaleParents = femaleTableWithSelectAll.getTable();
         femaleParentsTagAll = femaleTableWithSelectAll.getCheckBox();
         
-        femaleParents.setHeight(180, UNITS_PIXELS);
+        femaleParents.setHeight(290, UNITS_PIXELS);
         femaleParents.setWidth(240, UNITS_PIXELS);
         femaleParents.setNullSelectionAllowed(true);
         femaleParents.setSelectable(true);
@@ -277,7 +277,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         maleParents = maleTableWIthSelectAll.getTable();
         maleParentsTagAll = maleTableWIthSelectAll.getCheckBox();
         
-        maleParents.setHeight(180, UNITS_PIXELS);
+        maleParents.setHeight(290, UNITS_PIXELS);
         maleParents.setWidth(240, UNITS_PIXELS);
         maleParents.setNullSelectionAllowed(true);
         maleParents.setSelectable(true);
@@ -371,14 +371,14 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         AbsoluteLayout femaleParentsTableLayout = new AbsoluteLayout();
         femaleParentsTableLayout.setWidth("260px");
-        femaleParentsTableLayout.setHeight("210px");
+        femaleParentsTableLayout.setHeight("330px");
         femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:0px;left:20px");
         gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,0);
         gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
         
         AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
         maleParentsTableLayout.setWidth("260px");
-        maleParentsTableLayout.setHeight("210px");
+        maleParentsTableLayout.setHeight("330px");
         maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:0px;left:20px");
         gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,0);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
@@ -404,13 +404,13 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
         addComponent(gridLayoutSelectingParents, "top:435px; left:15px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:650px; left:35px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:760px; left:35px;");
         
         crossesTableComponent = new MakeCrossesTableComponent();
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        addComponent(crossesTableComponent, "top:435px; left:590px;");
+        addComponent(crossesTableComponent, "top:425px; left:590px;");
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -418,7 +418,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         layoutButtonArea.addComponent(backButton);
         layoutButtonArea.addComponent(nextButton);
         
-        addComponent(layoutButtonArea, "top:780px; left:500px;");
+        addComponent(layoutButtonArea, "top:890px; left:500px;");
     }
 
     @Override

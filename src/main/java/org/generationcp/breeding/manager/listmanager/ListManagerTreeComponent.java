@@ -344,11 +344,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	            centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
 	        } catch (MiddlewareQueryException e) {
 	        	LOG.error("Error in getting top level lists.", e);
+	        	/** must be commented out because this will always cause an error if there is a prob with the Middleware call
+	        	 * that is because at this point this component class is not yet attached to its parent so getWindow() will trigger an NPE
 	            if (getWindow() != null){
 	                MessageNotifier.showWarning(getWindow(), 
 	                        messageSource.getMessage(Message.ERROR_DATABASE),
 	                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
 	            }
+	            **/
 	            centralGermplasmListParent = new ArrayList<GermplasmList>();
 	        }
         }

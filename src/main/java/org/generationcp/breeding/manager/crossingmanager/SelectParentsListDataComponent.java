@@ -85,6 +85,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 			e.printStackTrace();
 		}
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
+		tableWithSelectAllLayout.setWidth("700px");
 		
 		listDataTable = tableWithSelectAllLayout.getTable();
 		listDataTable.setData(LIST_DATA_TABLE_ID);

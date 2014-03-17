@@ -85,7 +85,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("900px");
+		tabSheet.setHeight("1100px");
 		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		
@@ -113,7 +113,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		setWidth("90%");
-		setHeight("1000px");
+		setHeight("1200px");
 		
 		addComponent(toolTitle);
 		addComponent(toolPopupView, "top:15px; left:240px");
