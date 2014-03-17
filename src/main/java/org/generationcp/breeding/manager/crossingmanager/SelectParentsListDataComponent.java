@@ -1,10 +1,10 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -20,11 +20,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
@@ -48,6 +45,8 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
+	
+	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -78,13 +77,21 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		listEntriesLabel = new Label("LIST ENTRIES");
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
-		listDataTable = new Table();
+		Long count = Long.valueOf(0);
+		try {
+			count = germplasmListManager.countGermplasmListDataByListId(this.germplasmListId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage());
+			e.printStackTrace();
+		}
+		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
+		
+		listDataTable = tableWithSelectAllLayout.getTable();
 		listDataTable.setData(LIST_DATA_TABLE_ID);
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
 		listDataTable.setColumnCollapsingAllowed(true);
 		listDataTable.setColumnReorderingAllowed(true);
-		listDataTable.setPageLength(9);
 		listDataTable.setImmediate(true);
 		listDataTable.setDragMode(TableDragMode.MULTIROW);
 		
@@ -163,52 +170,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 
 	@Override
 	public void addListeners() {
-		listDataTable.addListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 3013620721902728079L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Collection<Integer> entries = (Collection<Integer>) listDataTable.getItemIds();
-				Collection<Integer> selectedEntries = (Collection<Integer>) listDataTable.getValue();
-				if(selectedEntries.size() == entries.size()){
-					selectAllCheckBox.setValue(true);
-				} else{
-					selectAllCheckBox.setValue(false);
-				}
-				
-				for(Integer entry : entries){
-					CheckBox tag = (CheckBox) listDataTable.getItem(entry).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
-					if(selectedEntries.contains(entry)){
-						tag.setValue(true);
-					} else{
-						tag.setValue(false);
-					}
-				}
-			}
-		});
-		
-		selectAllCheckBox.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 5802358625446499994L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				boolean checkBoxValue = event.getButton().booleanValue();
-				if(checkBoxValue){
-					for(Object itemId : listDataTable.getItemIds()){
-						CheckBox tag = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
-						tag.setValue(true);
-					}
-					listDataTable.setValue(listDataTable.getItemIds());
-				} else{
-					for(Object itemId : listDataTable.getItemIds()){
-						CheckBox tag = (CheckBox) listDataTable.getItem(itemId).getItemProperty(CHECKBOX_COLUMN_ID).getValue();
-						tag.setValue(false);
-					}
-					listDataTable.setValue(null);
-				}
-			}
-		});
+//		
 	}
 
 	@Override
@@ -217,8 +179,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		setHeight("330px");
 		addComponent(listEntriesLabel, "top:10px; left:10px;");
 		addComponent(viewListHeaderButton, "top:10px; right:80px;");
-		addComponent(listDataTable, "top:40px; left:10px;");
-		addComponent(selectAllCheckBox, "top:305px; left:10px;");
+		addComponent(tableWithSelectAllLayout, "top:40px; left:10px;");
 	}
 	
 	public Table getListDataTable(){
