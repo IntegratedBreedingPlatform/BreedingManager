@@ -73,6 +73,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     public static final String BACK_BUTTON_ID = "back button";
 
     private static final String TAG_COLUMN_ID = "Tag";
+    private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
     
     private static final long serialVersionUID = 9097810121003895303L;
     
@@ -182,6 +183,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         femaleParents.setMultiSelect(true);
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+        femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
+        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         femaleParents.addContainerProperty("Female Parents", String.class, null);
         femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         femaleParents.setDragMode(TableDragMode.ROW);
@@ -224,6 +227,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
                     	dropToFemaleOrMaleTable(sourceTable, femaleParents);
                     }
+                    
+                    assignEntryNumber(femaleParents);
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
@@ -279,6 +284,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         maleParents.setMultiSelect(true);
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+        maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
+        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         maleParents.addContainerProperty("Male Parents", String.class, null);
         maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         maleParents.setDragMode(TableDragMode.ROW);
@@ -320,6 +327,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
                     	dropToFemaleOrMaleTable(sourceTable, maleParents);
                     }
+                    
+                    assignEntryNumber(maleParents);
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
@@ -653,9 +662,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	    		Item item = targetTable.addItem(entryObject);
 	    		if(item != null){
 		    		if(targetTable.equals(femaleParents)){
-		    			item.getItemProperty("Female Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
+		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
 		    		} else{
-		    			item.getItemProperty("Male Parents").setValue(entryObject.getEntryId() + " -> " + entryObject.getDesignation());
+		    			item.getItemProperty("Male Parents").setValue(entryObject.getDesignation());
 		    		}
 		    		
 		    		CheckBox tag = new CheckBox();
@@ -666,7 +675,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		    		}
 		            tag.setImmediate(true);
 		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-	    		}
+		        }
     		}
             
             targetTable.requestRepaint();
@@ -691,6 +700,18 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 				tab.setCaption(newName);
 				return;
 			}
+		}
+	}
+	
+	private void assignEntryNumber(Table parentsTable){
+		int entryNumber = 1;
+		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
+		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
+		
+		for(GermplasmListEntry itemId : itemIds){
+			Item item = parentsTable.getItem(itemId);
+    		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
+			entryNumber++;
 		}
 	}
 }
