@@ -278,4 +278,12 @@ public class ListManagerMain extends AbsoluteLayout implements
     public void updateUIForRename(){
     	
     }
+    
+    public void showBuildNewListComponent(){
+    	//TODO
+    }
+    
+    public void addGermplasmToBuildNewListTable(Integer gid){
+    	//TODO
+    }
 }
