@@ -157,6 +157,7 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
 		searchBar.addComponent(searchLabel, "top:13px; left:20px;");
@@ -166,7 +167,7 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
         searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
         searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 485px;");
         
-        searchPanel.addComponent(searchBar);
+        searchPanel.setLayout(searchBar);
        
 		addComponent(searchPanel, "top:10px; left:20px;");
 	}
