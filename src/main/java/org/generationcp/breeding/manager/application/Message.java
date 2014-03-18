@@ -220,6 +220,7 @@ public enum Message{
     ,VIEW_NOTES
     ,SAVE_LIST
     ,DETAILS
+    ,VIEW_HEADER
     
     //List Manager Screen: Data
     ,NO_LISTDATA_RETRIEVED_LABEL
