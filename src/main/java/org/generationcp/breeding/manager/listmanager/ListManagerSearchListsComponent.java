@@ -153,7 +153,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 350px;");
         searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 500px;");
         
-        searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
+        //searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
         //addComponent(searchBar, "top:20px; left:20px;");
         //p.addComponent(searchBar);

@@ -1,9 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,16 +27,10 @@ public class SearchResultsItemClickListener implements ItemClickListener {
 		Integer itemId = (Integer) event.getItemId();
 		
 		if(!event.isCtrlKey() && !event.isShiftKey()){
-			try {
-				
-				if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-					detailsLayout.createGermplasmInfoTab(itemId);
-				} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-					detailsLayout.createListInfoFromSearchScreen(itemId);
-				}
-				
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+			if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
+				detailsLayout.createGermplasmDetailsTab(itemId);
+			} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
+				detailsLayout.createListDetailsTab(itemId);
 			}
 		}
 
