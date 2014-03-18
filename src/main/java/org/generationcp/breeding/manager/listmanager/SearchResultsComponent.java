@@ -72,8 +72,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private GermplasmDataManager germplasmDataManager;
 	
 	
-	public SearchResultsComponent(ListManagerMain listManagerMain, AbsoluteLayout parentLayout
-			, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout){
+	public SearchResultsComponent(ListManagerMain listManagerMain, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout){
 		this.listManagerMain = listManagerMain;
 		this.displayDetailsLayout = displayDetailsLayout;
 	}

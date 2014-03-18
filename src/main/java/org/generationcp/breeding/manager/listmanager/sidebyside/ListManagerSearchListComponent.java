@@ -38,10 +38,6 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	private ListManagerMain source;
 	private ListManagerDetailsLayout listManagerDetailsLayout;
 
-	public ListManagerSearchListComponent() {
-		super();
-	}
-	
 	public ListManagerSearchListComponent(ListManagerMain source) {
 		super();
 		this.source = source; 
@@ -68,7 +64,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		leftLayout.setWidth("390px");
 		
 		listManagerDetailsLayout = new ListManagerDetailsLayout();
-		searchResultsComponent = new SearchResultsComponent(source, leftLayout, listManagerDetailsLayout);
+		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
 		
 		toggleLeftPaneButton = new Button();
 		toggleLeftPaneButton.setCaption("<<");
@@ -119,12 +115,8 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
     	toggleLeftPaneButton.setCaption(">>");
     }
     
-    public Table getMatchingListsTable() {
-		return searchResultsComponent.getMatchingListsTable();
-	}
-
-	public Table getMatchingGermplasmsTable() {
-		return searchResultsComponent.getMatchingGermplasmsTable();
-	}
+    public SearchResultsComponent getSearchResultsComponent(){
+    	return searchResultsComponent;
+    }
 }
 
