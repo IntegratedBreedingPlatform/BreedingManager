@@ -79,4 +79,23 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
 
     }
 
+    public void createGermplasmDetailsTab(){
+    	
+    }
+    
+    public void createListDetailsTab(){
+    	
+    }
+    
+    public void renameTab(){
+    	
+    }
+    
+    public void removeTab(){
+    	
+    }
+    
+    public void closeAllTab(){
+    	
+    }
 }
