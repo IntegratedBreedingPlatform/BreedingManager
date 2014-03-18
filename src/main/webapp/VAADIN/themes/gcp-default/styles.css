@@ -394,6 +394,11 @@
 	background-image: none;
 }
 
+.v-splitpanel-vsplitter, .v-splitpanel-vsplitter div {
+	height: 0px;
+	background-image: none;
+}
+
 .v-absolutelayout-leftPane  {
 	background-color: #f6f6f6;
 }
@@ -415,7 +420,7 @@
 	background: #f6f6f6;
 }
 
-.tabStyleButton .v-button-caption{
+.tabStyleButton .v-button-caption {
 	color: #333;
 
 /* Hides Required Field indicator */
@@ -427,4 +432,8 @@
 
 .marked_mandatory {
 	color: red;
+}
+
+.searchPaneLayout {
+	background-color: #f6f6f6; 
 }
