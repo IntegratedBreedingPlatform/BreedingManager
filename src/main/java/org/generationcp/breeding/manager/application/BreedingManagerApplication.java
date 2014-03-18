@@ -9,7 +9,6 @@ import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerSidebysideMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -177,7 +176,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window listManagerSideBySideWindow = new Window("List Manager (Side-by-side)");
                 listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
                 listManagerSideBySideWindow.setSizeFull();
-                listManagerSideBySideWindow.addComponent(new ListManagerSidebysideMain());
+                listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
                 this.setMainWindow(listManagerSideBySideWindow);
                 this.getMainWindow().getContent().setHeight("100%");
                 return listManagerSideBySideWindow;

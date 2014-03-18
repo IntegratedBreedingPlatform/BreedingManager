@@ -28,9 +28,9 @@ import com.vaadin.ui.VerticalLayout;
 
 
 @Configurable
-public class BuildNewListComponentSidebyside extends VerticalLayout implements InitializingBean {
+public class BuildNewListComponent extends VerticalLayout implements InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponentSidebyside.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
     
     private static final long serialVersionUID = -7736422783255724272L;
     
@@ -65,8 +65,15 @@ public class BuildNewListComponentSidebyside extends VerticalLayout implements I
     
     private Table germplasmsTable;
     
-    public BuildNewListComponentSidebyside() {
-        
+    private ListManagerMain source;
+    
+    public BuildNewListComponent() {
+        super();
+    }
+    
+    public BuildNewListComponent(ListManagerMain source) {
+        super();
+        this.source = source;
     }
 
     @Override

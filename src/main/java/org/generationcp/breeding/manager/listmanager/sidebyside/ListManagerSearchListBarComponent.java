@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -11,16 +10,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
@@ -52,11 +49,25 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
+
+    private Table matchingListsTable;
+    private Table matchingGermplasmsTable;
     
     Panel searchPanel;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
+	
+
+	public ListManagerSearchListBarComponent() {
+		super();
+	}
+	
+	public ListManagerSearchListBarComponent(Table matchingListsTable, Table matchingGermplasmsTable) {
+		super();
+		this.matchingGermplasmsTable = matchingGermplasmsTable;
+		this.matchingListsTable = matchingListsTable;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

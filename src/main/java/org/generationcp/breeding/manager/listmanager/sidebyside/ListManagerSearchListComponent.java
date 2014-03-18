@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -16,6 +17,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -43,6 +45,21 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
+	
+	private ListManagerMain source;
+	
+	private Table matchingListsTable;
+    private Table matchingGermplasmsTable;
+    private ListManagerDetailsLayout listManagerDetailsLayout;
+
+	public ListManagerSearchListComponent() {
+		super();
+	}
+	
+	public ListManagerSearchListComponent(ListManagerMain source) {
+		super();
+		this.source = source; 
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -86,7 +103,6 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		leftLayout.setWidth("390px");
 		
 		searchResultsComponent = new SearchResultsComponent(null,leftLayout);
-		searchResultsComponent.getDropHandlerComponent().enableDropHandler();
 		
 		toggleLeftPaneButton = new Button();
 		toggleLeftPaneButton.setCaption("<<");
@@ -146,5 +162,17 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
     	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
     	toggleLeftPaneButton.setCaption(">>");
     }
+    
+    
+    /* SETTERS AND GETTERS */
+	public Table getMatchingListsTable() {
+		return matchingListsTable;
+	}
+
+	public Table getMatchingGermplasmsTable() {
+		return matchingGermplasmsTable;
+	}
+    
+    
 }
 

@@ -390,12 +390,12 @@
 
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
-	width: 0px;
+	width: 1px;
 	background-image: none;
 }
 
 .v-splitpanel-vsplitter, .v-splitpanel-vsplitter div {
-	height: 0px;
+	height: 1px;
 	background-image: none;
 }
 

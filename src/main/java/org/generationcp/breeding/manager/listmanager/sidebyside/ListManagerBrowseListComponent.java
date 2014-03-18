@@ -44,13 +44,23 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	private TabSheet tabSheetList;
 	private ListManagerTreeMenu list1;
 	private ListManagerTreeMenu list2;
-	private DropHandlerComponent dropHandler;
 	
 	private Button toggleLeftPaneButton;
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("250");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
 	
+	private ListManagerMain source;
+	
+	public ListManagerBrowseListComponent() {
+		super();
+	}
+	
+	public ListManagerBrowseListComponent(ListManagerMain source) {
+		super();
+		this.source = source;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		instantiateComponents();
@@ -107,14 +117,8 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		
 		listManagerTreeComponent = new ListManagerTreeComponent(selectListComponent);
 		
-		dropHandler = new DropHandlerComponent(null, 220);
-		dropHandler.enableDropHandler();
-		
-		
 		leftLayout.addComponent(projectLists,"top:30px;left:20px");
 		leftLayout.addComponent(listManagerTreeComponent,"top:60px;left:20px");
-		leftLayout.addComponent(dropHandler,"top:345px;left:20px");
-		
 		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; right:0px");
 		
 		//right pane

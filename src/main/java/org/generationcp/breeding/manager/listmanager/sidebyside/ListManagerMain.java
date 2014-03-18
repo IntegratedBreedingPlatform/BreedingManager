@@ -15,6 +15,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -22,7 +23,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalSplitPanel;
 
 @Configurable
-public class ListManagerSidebysideMain extends AbsoluteLayout implements
+public class ListManagerMain extends AbsoluteLayout implements
 		InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = 5976245899964745758L;
@@ -38,7 +39,6 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
     private HorizontalLayout tabHeaderLayout;
     private Button showBrowseListsButton;
     private Button showSearchListsButton;
-    private Panel containerPanel;
     
     private HorizontalSplitPanel hSplitPanel;
     private VerticalSplitPanel vSplitPanel;
@@ -52,7 +52,7 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
     private ListManagerSearchListBarComponent searchListsBarComponent;
     private ListManagerBrowseListComponent browseListsComponent;
     private ListManagerSearchListComponent searchListsComponent;
-    
+    private BuildNewListComponent buildNewListComponent;
     
     private Button toggleBuildNewListButton;
 	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50); //actual width in pixel 650 
@@ -63,6 +63,7 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	
 	
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -141,9 +142,6 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setImmediate(true);
 		
-		containerPanel = new Panel();
-        containerPanel.setLayout(vSplitPanel);
-		
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setSizeFull();
 		hSplitPanel.setMargin(false);
@@ -171,10 +169,12 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
         toggleBuildNewListButton = new Button();
         toggleBuildNewListButton.setDescription("Toggle Build New List Pane");
         
+        buildNewListComponent = new BuildNewListComponent();
+        
 		buildListLayout = new HorizontalLayout();
 		buildListLayout.setSpacing(true);
 		buildListLayout.addComponent(toggleBuildNewListButton);
-		buildListLayout.addComponent(new BuildNewListComponentSidebyside());
+		buildListLayout.addComponent(buildNewListComponent);
 		
 		hSplitPanel.setFirstComponent(browserSearchLayout);
 		hSplitPanel.setSecondComponent(buildListLayout);
@@ -250,7 +250,7 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
 	public void layoutComponents() {
 		addComponent(titleLayout,"top:10px; left:10px");
 		addComponent(tabHeaderLayout,"top:50px;left:10px;");
-		addComponent(containerPanel,"top:75px;left:10px;");
+		addComponent(vSplitPanel,"top:75px;left:10px;");
 	}
 	
     private void expandRight(){
@@ -269,5 +269,13 @@ public class ListManagerSidebysideMain extends AbsoluteLayout implements
     
     private void expandTop(){
     	vSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
+    }
+    
+    public void updateUIForDelete(){
+    	
+    }
+    
+    public void updateUIForRename(){
+    	
     }
 }
