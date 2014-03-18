@@ -353,10 +353,4 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		this.getWindow().addWindow(selectFolderDialog);
 	}
 
-	@Override
-	public void setListName(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

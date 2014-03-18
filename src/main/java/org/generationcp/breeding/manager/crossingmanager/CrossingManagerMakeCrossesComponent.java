@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.action.SaveGermplasmListAction;
+import org.generationcp.breeding.manager.crossingmanager.dialog.SaveListAsDialog;
+import org.generationcp.breeding.manager.crossingmanager.dialog.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
@@ -23,6 +26,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -43,6 +47,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -61,7 +66,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener, SaveListAsDialogSource {
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -109,9 +114,19 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private Label listnameFemaleParent;
     private Label listnameMaleParent;
     
+    private Button saveFemaleListButton;
+    private Button saveMaleListButton;
+    private GermplasmList femaleParentList;
+    private GermplasmList maleParentList;
+	private SaveListAsDialog saveListAsWindow;
+    
     private enum CrossType { 
         MULTIPLY, TOP_TO_BOTTOM
     };
+    
+    private enum SaveListType {
+    	CROSS, MALE, FEMALE
+    }
         
     private ListManagerTreeComponent listTree;
     private Label selectParentsLabel;
@@ -351,6 +366,32 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			}
 		});
         
+        saveFemaleListButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
+        saveFemaleListButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        saveFemaleListButton.setEnabled(false);
+        saveFemaleListButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				saveFemaleParentList();
+			}
+        	
+        });
+        
+        saveMaleListButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
+        saveMaleListButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        saveMaleListButton.setEnabled(false);
+        saveMaleListButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				saveMaleParentList();
+			}
+        	
+        });
+        
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
         backButton = new Button();
@@ -372,14 +413,16 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         AbsoluteLayout femaleParentsTableLayout = new AbsoluteLayout();
         femaleParentsTableLayout.setWidth("260px");
         femaleParentsTableLayout.setHeight("330px");
-        femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:0px;left:20px");
+        femaleParentsTableLayout.addComponent(saveFemaleListButton,"top:0px;right:0px");
+        femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:30px;left:20px");
         gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,0);
         gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
         
         AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
         maleParentsTableLayout.setWidth("260px");
         maleParentsTableLayout.setHeight("330px");
-        maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:0px;left:20px");
+        maleParentsTableLayout.addComponent(saveMaleListButton, "top:0px;left:20px");
+        maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:30px;left:20px");
         gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,0);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
         
@@ -486,6 +529,32 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(maleParents, this,this.listnameMaleParent, maleParentsTagAll);
         selectListWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         this.getWindow().addWindow(selectListWindow);
+    }
+    
+    public void saveFemaleParentList() {
+    	if(femaleParentList == null){
+    		saveListAsWindow = new SaveListAsDialog(this,femaleParentList);
+    	}
+    	else{
+    		saveListAsWindow = new SaveListAsDialog(this,null);
+    	}
+        
+        saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        saveListAsWindow.setData(SaveListType.FEMALE);
+        this.getWindow().addWindow(saveListAsWindow);
+    }
+    
+    public void saveMaleParentList() {
+    	if(maleParentList == null){
+    		saveListAsWindow = new SaveListAsDialog(this,maleParentList);
+    	}
+    	else{
+    		saveListAsWindow = new SaveListAsDialog(this,null);
+    	}
+        
+        saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        saveListAsWindow.setData(SaveListType.MALE);
+        this.getWindow().addWindow(saveListAsWindow);
     }
 
      
@@ -663,8 +732,10 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	    		if(item != null){
 		    		if(targetTable.equals(femaleParents)){
 		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    			this.saveFemaleListButton.setEnabled(true);
 		    		} else{
 		    			item.getItemProperty("Male Parents").setValue(entryObject.getDesignation());
+		    			this.saveMaleListButton.setEnabled(true);
 		    		}
 		    		
 		    		CheckBox tag = new CheckBox();
@@ -712,6 +783,28 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			Item item = parentsTable.getItem(itemId);
     		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
 			entryNumber++;
+		}
+	}
+
+	@Override
+	public void saveList(GermplasmList list) {
+		SaveListType type = (SaveListType)saveListAsWindow.getData();
+		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list);
+		
+		try {
+			saveListAction.saveGermplasmListRecord(list);
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		if(type == SaveListType.FEMALE){
+			this.saveFemaleListButton.setEnabled(false);
+		}
+		else if(type == SaveListType.MALE){
+			this.saveMaleListButton.setEnabled(false);
+		}
+		else if(type == SaveListType.CROSS){
+		
 		}
 	}
 }

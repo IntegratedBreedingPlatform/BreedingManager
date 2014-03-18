@@ -6,48 +6,44 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 
-@Configurable 
-public class ListDescriptionField extends HorizontalLayout
-	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+@Configurable
+public class ListNotesField extends HorizontalLayout
+implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
 	private Label captionLabel;
 	private String caption;
-	private TextArea descriptionTextArea;
+	private TextArea listNotesTextArea;
 	private boolean isMandatory;
 	private Label mandatoryMark;
 	
-	public ListDescriptionField(String caption, boolean isMandatory){
-		this.isMandatory = isMandatory;
+	public ListNotesField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
+		this.isMandatory = isMandatory;
 	}
 	
 	@Override
 	public void instantiateComponents() {
-		
 		captionLabel = new Label(caption);
 		captionLabel.addStyleName("bold");
 		
-		descriptionTextArea = new TextArea();
-		descriptionTextArea.setWidth("200px");
-		descriptionTextArea.setHeight("35px");
-		descriptionTextArea.setImmediate(true);
-		descriptionTextArea.addValidator(new StringLengthValidator(
-                "List Description must not exceed 255 characters.", 1, 255, false)); 
+		listNotesTextArea = new TextArea();
+		listNotesTextArea.setWidth("255px");
+		listNotesTextArea.setHeight("65px");
+		listNotesTextArea.setImmediate(true);
 		
 		if(isMandatory){
 			mandatoryMark = new Label("* ");
 			mandatoryMark.setWidth("5px");
 			mandatoryMark.addStyleName("marked_mandatory");
 			
-			descriptionTextArea.setRequired(true);
-			descriptionTextArea.setRequiredError("Please specify the description of the list.");
+			listNotesTextArea.setRequired(true);
+			listNotesTextArea.setRequiredError("Please specify the notes of the list.");
 		}
 	}
 
@@ -73,7 +69,7 @@ public class ListDescriptionField extends HorizontalLayout
 			addComponent(mandatoryMark);
 		}
 		
-		addComponent(descriptionTextArea);
+		addComponent(listNotesTextArea);
 	}
 
 	@Override
@@ -90,20 +86,20 @@ public class ListDescriptionField extends HorizontalLayout
 		layoutComponents();
 	}
 
-	public TextArea getDescriptionTextArea() {
-		return descriptionTextArea;
+	public TextArea getListNotesTextArea() {
+		return listNotesTextArea;
 	}
 
-	public void setDescriptionTextArea(TextArea descriptionTextArea) {
-		this.descriptionTextArea = descriptionTextArea;
+	public void setListNotesTextArea(TextArea listNotesTextArea) {
+		this.listNotesTextArea = listNotesTextArea;
 	}
 	
 	public Object getValue(){
-		return descriptionTextArea.getValue();
+		return listNotesTextArea.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {
-		descriptionTextArea.validate();
+		listNotesTextArea.validate();
 	}
-	
+
 }

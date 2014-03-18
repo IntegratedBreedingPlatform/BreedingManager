@@ -421,4 +421,5 @@ public enum Message{
     ,SAVE_LIST_AS
     ,SELECT
     ,FINISH
+    ,NEW_LIST_DETAILS
 }

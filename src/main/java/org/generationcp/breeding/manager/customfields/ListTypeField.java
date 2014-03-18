@@ -44,6 +44,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		captionLabel.addStyleName("bold");
 		
 		listTypeComboBox = new ComboBox();
+		listTypeComboBox.setWidth("180px");
 		listTypeComboBox.setImmediate(true);
 		
 		if(isMandatory){

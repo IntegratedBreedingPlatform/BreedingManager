@@ -35,6 +35,7 @@ public class ListNameField extends HorizontalLayout
 		captionLabel.addStyleName("bold");
 		
 		listNameTextField = new TextField();
+		listNameTextField.setWidth("180px");
 		listNameTextField.setImmediate(true);
 		listNameTextField.addValidator(new StringLengthValidator(
                 "List Name must not exceed 100 characters.", 1, 100, false));

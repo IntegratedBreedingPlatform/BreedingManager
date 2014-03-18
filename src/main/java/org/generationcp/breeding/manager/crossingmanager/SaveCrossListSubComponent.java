@@ -171,13 +171,13 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		GermplasmList selectedFolder = (GermplasmList) folderToSaveListToLabel.getData();
 		
 		if(saveListNameButton.getCaption().equals(messageSource.getMessage(Message.CHANGE))){
-			selectFolderDialog.setListNameField(listNameLabel.getValue().toString());
+			//selectFolderDialog.setListNameField(listNameLabel.getValue().toString());
 		}
 		else{
 			if(selectedFolder != null){
-				selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId(), true);
+				selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId());
 			} else{
-				selectFolderDialog = new SelectLocationFolderDialog(this, null, true);
+				selectFolderDialog = new SelectLocationFolderDialog(this, null);
 			}
 		}
 		
