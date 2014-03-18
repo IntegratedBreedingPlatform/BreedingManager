@@ -347,20 +347,32 @@ public class SaveListButtonClickListener implements Button.ClickListener{
                 // copy only addable properties present in source table
                 if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)){
                     // setup added columns first before copying values
-                    if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_ID))
+                    if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
                         newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_ID, AddColumnContextMenu.PREFERRED_ID_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
                         newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_NAME, AddColumnContextMenu.PREFERRED_NAME_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
+                        newTable.addContainerProperty(AddColumnContextMenu.GERMPLASM_DATE, AddColumnContextMenu.GERMPLASM_DATE_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS)){
                         newTable.addContainerProperty(AddColumnContextMenu.LOCATIONS, AddColumnContextMenu.LOCATIONS_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME)){
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_NAME, AddColumnContextMenu.METHOD_NAME_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_ABBREV))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_ABBREV, AddColumnContextMenu.METHOD_ABBREV_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NUMBER))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_NUMBER, AddColumnContextMenu.METHOD_NUMBER_TYPE, "");
-                    else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP))
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
                         newTable.addContainerProperty(AddColumnContextMenu.METHOD_GROUP, AddColumnContextMenu.METHOD_GROUP_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_GID, AddColumnContextMenu.CROSS_FEMALE_GID_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_GID, AddColumnContextMenu.CROSS_MALE_GID_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME, AddColumnContextMenu.CROSS_MALE_PREF_NAME_TYPE, "");
+                    }
+
                     // copy value to new table
                     Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
                     newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());

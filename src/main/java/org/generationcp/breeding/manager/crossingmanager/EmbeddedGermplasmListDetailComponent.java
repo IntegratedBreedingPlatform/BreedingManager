@@ -16,6 +16,7 @@ import java.io.File;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -74,11 +75,17 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     private Button exportButton;
     private Button makeCrossesButton;
     
-    private CrossingManagerMain crossingManager;
+//    private CrossingManagerMain crossingManager;
+    private ManageCrossingSettingsMain source;
     private Integer listId;
     
     public EmbeddedGermplasmListDetailComponent(CrossingManagerMain crossingManager, Integer listId) {
-        this.crossingManager = crossingManager;
+//        this.crossingManager = crossingManager;
+        this.listId = listId;
+    }
+    
+    public EmbeddedGermplasmListDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain, Integer listId) {
+        this.source = manageCrossingSettingsMain;
         this.listId = listId;
     }
     
@@ -125,7 +132,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         HorizontalLayout buttonArea = new HorizontalLayout();
         buttonArea.setMargin(true);
         buttonArea.setSpacing(true);
-        buttonArea.addComponent(exportButton);
+//        buttonArea.addComponent(exportButton);
         buttonArea.addComponent(makeCrossesButton);
         
         addComponent(layoutForList);
@@ -154,7 +161,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        crossingManager.reset();
+                        source.reset();
                     }
                 }
             }
@@ -162,7 +169,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     }
     
     public void exportToFileButtonClickAction(){
-        CrossesMade crossesMade = this.crossingManager.getCrossesMade();
+        CrossesMade crossesMade = this.source.getCrossesMade();
 
         if(crossesMade != null){
             String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";

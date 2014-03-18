@@ -388,6 +388,7 @@
     display: inline-block;
 }
 
+
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
 	width: 0px;
 	background-image: none;
@@ -416,4 +417,14 @@
 
 .tabStyleButton .v-button-caption{
 	color: #333;
+
+/* Hides Required Field indicator */
+.v-required-field-indicator {
+	padding-left: 1px;
+	margin-top: 16px;
+	color: white;
+}
+
+.marked_mandatory {
+	color: red;
 }

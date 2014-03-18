@@ -14,6 +14,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Table.TableTransferable;
 
+@Deprecated
 public class DropHandlerComponent extends Panel {
 
 	private static final long serialVersionUID = 1L;

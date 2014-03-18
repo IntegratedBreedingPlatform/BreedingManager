@@ -12,7 +12,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent.CrossingMethodOption;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
@@ -39,7 +38,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
@@ -61,15 +59,16 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     public ManageCrossingSettingsMain manageCrossingSettingsMain;
     
     public enum Actions {
-    	SAVE, CANCEL
+    	SAVE, CANCEL, DELETE
     }
 	
-	private Label mandatoryLabel;
+	private DefineCrossingSettingComponent defineSettingComponent;
+	
 	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
 	
-	private Button saveButton;
+	private Button nextButton;
 	private Button cancelButton;
 	
 	private TemplateSetting currentSetting;
@@ -86,7 +85,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	@Override
 	public void updateLabels() {
-		messageSource.setCaption(saveButton, Message.SAVE_LABEL);
+		messageSource.setCaption(nextButton, Message.NEXT);
 		messageSource.setCaption(cancelButton, Message.CANCEL);
 	}
 
@@ -100,17 +99,16 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	@Override
 	public void instantiateComponents() {
-		mandatoryLabel = new Label("<i>" +messageSource.getMessage(Message.MANDATORY_FIELDS_ARE_NOTED)
-				+ "</i>", Label.CONTENT_XHTML);
+		defineSettingComponent = new DefineCrossingSettingComponent(this);
 		
 		methodComponent = new CrossingSettingsMethodComponent();
 		nameComponent = new CrossingSettingsNameComponent();
 		additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
 		
-        saveButton = new Button();
-        saveButton.setData(Actions.SAVE);
-        saveButton.setWidth("80px");
-        saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        nextButton = new Button();
+        nextButton.setData(Actions.SAVE);
+        nextButton.setWidth("80px");
+        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         cancelButton = new Button();
         cancelButton.setData(Actions.CANCEL);
@@ -125,13 +123,12 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 
 	@Override
 	public void addListeners() {
-		saveButton.addListener(new Button.ClickListener() {
+		nextButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -432280582291837428L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				doSaveAction();
-				manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(currentSetting);
+				doNextAction();
 			}
 		});
 		
@@ -149,26 +146,28 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("850px");
-		setHeight("580px");
-		addStyleName(AppConstants.CssStyles.GRAY_ROUNDED_BORDER);
+		setHeight("800px");
 		
-		addComponent(mandatoryLabel, "top:7px; left:10px");
-		addComponent(methodComponent, "top:30px; left:10px");
-		addComponent(nameComponent, "top:200px; left:10px");
-		addComponent(additionalDetailsComponent, "top:330px; left:10px");
+		addComponent(defineSettingComponent, "top:7px; left: 10px");
+		addComponent(methodComponent, "top:100px; left:10px");
+		addComponent(nameComponent, "top:220px; left:10px");
+		addComponent(additionalDetailsComponent, "top:435Wpx; left:10px");
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("200px");
+		buttonBar.setSpacing(true);
+		buttonBar.setMargin(true);
 		buttonBar.addComponent(cancelButton);
-		buttonBar.addComponent(saveButton);
+		buttonBar.addComponent(nextButton);
 		
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth("100%");
 		layout.addComponent(buttonBar);
 		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:510px; left:0px");
+		addComponent(layout, "top:650px");
+		
 	}
+	
 	
 	public void doResetAction(){
 		
@@ -210,7 +209,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 				nameComponent.setFields(templateSetting.getCrossNameSetting());
 				additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(), currentSetting.isDefault());
 				//set name text field
-				additionalDetailsComponent.getSettingsNameTextfield().setValue(currentSetting.getName());
+//				additionalDetailsComponent.getSettingsNameTextfield().setValue(currentSetting.getName());
 				
 			} catch (JAXBException e) {
 				LOG.error("Error with retrieving template setting.",e);
@@ -229,7 +228,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 						if (dialog.isConfirmed()) {
 							try {
 								workbenchDataManager.deleteTemplateSetting(currentSetting);
-								manageCrossingSettingsMain.getChooseSettingsComponent().setSettingsComboBox(null);
+								defineSettingComponent.setSettingsComboBox(null);
 								setDefaultManageCrossingSettingsFields();
 								
 								MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted."
@@ -249,7 +248,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		
 	} // end of doDeleteAction
 
-	private void doSaveAction(){
+	private void doNextAction(){
 		if(!methodComponent.validateInputFields()){
 			return;
 		}
@@ -262,6 +261,14 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			return;
 		}
 		
+		if (additionalDetailsComponent.doSaveSetting()){
+			saveSetting();	
+		}
+		
+		manageCrossingSettingsMain.nextStep();
+	}
+
+	private void saveSetting() {
 		Project project = null;
 		Tool crossingManagerTool = null;
 		try{
@@ -306,6 +313,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 					List<TemplateSetting> results = workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
 					if(!results.isEmpty()){
 						currentSetting = results.get(0);
+						defineSettingComponent.setSettingsComboBox(currentSetting);
+						
 					} else{
 						templateSetting.setTemplateSettingId(templateSettingId);
 						currentSetting = templateSetting;
@@ -366,17 +375,20 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 			}
 			
 			try{
-				workbenchDataManager.updateTemplateSetting(currentSetting);
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
-						, 3000,Notification.POSITION_CENTERED);
+				if (thereIsAChange){
+					workbenchDataManager.updateTemplateSetting(currentSetting);
+					//must reload settings combobox to solve out of sync when going back to this screen
+					defineSettingComponent.setSettingsComboBox(currentSetting);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
+							, 3000,Notification.POSITION_CENTERED);
+				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with updating template setting record.", ex);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."
 						, Notification.POSITION_CENTERED);
 				return;
 			}
-		}	
-		
+		}
 	}
 	
 	private boolean doesSettingNameExist(String name, Integer projectId, Tool tool){
@@ -407,28 +419,23 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	 * Make sure to validate the input fields first before calling this method.
 	 * @return
 	 */
-	private CrossingManagerSetting getCurrentlyDefinedSetting(){
+	public CrossingManagerSetting getCurrentlyDefinedSetting(){
 		CrossingManagerSetting toreturn = new CrossingManagerSetting();
 		
-		String prefix = (String) nameComponent.getPrefixTextField().getValue();
-		String suffix = (String) nameComponent.getSuffixTextField().getValue();
-		if(suffix != null){
-			suffix = suffix.trim();
-		}
-		if (suffix.length() == 0) {
-		    suffix = null; //set as null so attribute will not be marshalled
-		}
-		boolean addSpaceBetweenPrefixAndCode = true;
-		if(CrossingSettingsNameComponent.AddSpaceBetPrefixAndCodeOption.NO.equals(
-		        nameComponent.getAddSpaceOptionGroup().getValue())){
-			addSpaceBetweenPrefixAndCode = false;
-		}
-		Integer numOfDigits = null;
-		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
-			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
-		}
-		CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix
-				, addSpaceBetweenPrefixAndCode, numOfDigits);
+//		String prefix = (String) nameComponent.getPrefixTextField().getValue();
+//		String suffix = (String) nameComponent.getSuffixTextField().getValue();
+//		if(suffix != null){
+//			suffix = suffix.trim();
+//		}
+//		if (suffix.length() == 0) {
+//		    suffix = null; //set as null so attribute will not be marshalled
+//		}
+//		boolean addSpaceBetweenPrefixAndCode = nameComponent.doAddSpaceBetPrefixAndCode();
+//		Integer numOfDigits = null;
+//		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
+//			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
+//		}
+		CrossNameSetting crossNameSettingPojo = nameComponent.getCrossNameSettingObject();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 		
 		Integer locId = (Integer) additionalDetailsComponent.getHarvestLocComboBox().getValue();

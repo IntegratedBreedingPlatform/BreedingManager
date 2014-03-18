@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.ListManagerTabCha
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -104,12 +105,6 @@ public class ListManagerMain extends VerticalLayout implements
 		if(buildNewListButton.isVisible()){
 			buildNewListButton.setVisible(false);
 			
-			//show the drop area in Browse List
-			this.browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent().enableDropHandler();
-			
-			//show the drop area in Search Germplasm List and Germplasm
-			this.searchListsComponent.getSearchResultsComponent().getDropHandlerComponent().enableDropHandler();
-			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
 			
@@ -180,6 +175,24 @@ public class ListManagerMain extends VerticalLayout implements
 	
 	public Label getBuildNewListTitle(){
 		return this.buildNewListTitle;
+	}
+	
+	public void updateUIForDeletedList(GermplasmList germplasmList){
+		Integer listId = germplasmList.getId();
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().removeListTab(listId);
+		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
+		
+		this.getBrowseListsComponent().getListManagerTreeComponent().removeListFromTree(germplasmList);
+		//TODO remove from Matching Lists table and Build/Edit List screen
+	}
+	
+	public void updateUIForRenamedList(Integer listId, String newName){
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		
+		//TODO update Matching Lists table and Build/Edit List screen
 	}
 	
 }

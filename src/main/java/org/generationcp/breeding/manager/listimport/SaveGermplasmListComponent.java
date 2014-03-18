@@ -96,11 +96,18 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private String filename;
 
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
+    private boolean viaPopup;
     
     public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion){
         this.source = source;
         this.accordion = accordion;
     }
+    public SaveGermplasmListComponent(GermplasmImportMain source, Accordion accordion, boolean viaPopup){
+        this.source = source;
+        this.accordion = accordion;
+        this.viaPopup = viaPopup;
+    }
+    
     
     public void setPreviousScreen(Component previousScreen){
         this.previousScreen = previousScreen;
@@ -282,6 +289,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
           && BreedingManagerUtil.validateRequiredField(getWindow(), listDateField,
               messageSource, (String) listDateLabel.getCaption());
       }
+    private void notifyExternalApplication(Integer listId){
+    	 this.getWindow().executeJavaScript("window.parent.closeImportFrame("+listId+");");
+    	 source.reset();
+    }
      //Save records into DB and redirects to GermplasmListBrowser to view created list
     private void saveRecords() {
         SaveGermplasmListAction saveAction = new SaveGermplasmListAction();
@@ -352,9 +363,11 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
-
-            this.source.viewGermplasmListCreated(listId);
-
+             if(viaPopup)
+            	 notifyExternalApplication(listId);
+             else
+            	 this.source.viewGermplasmListCreated(listId);
+            
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
             e.printStackTrace();
@@ -450,4 +463,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 		}
 		this.getWindow().addWindow(selectFolderDialog);
 	}
+	@Override
+	public void setListName(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

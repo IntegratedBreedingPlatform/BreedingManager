@@ -14,6 +14,8 @@ public class CrossNameSetting implements Serializable {
 	private String suffix;
 	private boolean addSpaceBetweenPrefixAndCode;
 	private Integer numOfDigits;
+
+	private Integer startNumber; // "transient" attribute, not saved in DB
 	
 	public CrossNameSetting(){
 		
@@ -26,6 +28,15 @@ public class CrossNameSetting implements Serializable {
 		this.suffix = suffix;
 		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
 		this.numOfDigits = numOfDigits;
+	}
+	
+	public CrossNameSetting(String prefix, String suffix,
+			boolean addSpaceBetweenPrefixAndCode, Integer numOfDigits, Integer startNumber) {
+		this.prefix = prefix;
+		this.suffix = suffix;
+		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
+		this.numOfDigits = numOfDigits;
+		this.startNumber = startNumber;
 	}
 
 	@XmlAttribute
@@ -64,6 +75,14 @@ public class CrossNameSetting implements Serializable {
 		this.numOfDigits = numOfDigits;
 	}
 	
+	public Integer getStartNumber() {
+		return startNumber;
+	}
+
+	public void setStartNumber(Integer startNumber) {
+		this.startNumber = startNumber;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

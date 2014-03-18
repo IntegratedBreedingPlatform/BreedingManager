@@ -42,6 +42,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
@@ -220,7 +221,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	setHeight("315px");
     	
 		menu = new ContextMenu();
-
+		menu.setWidth("255px");
+		
 		// Generate main level items
 		menu.addItem(MENU_SELECT_ALL);
 		menuExportList = menu.addItem(MENU_EXPORT_LIST);
@@ -463,7 +465,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		         		listManagerMain.showBuildNewListComponent();
 		         		List<Integer> gids = listManagerMain.getBuildListComponent().getSelectedGids(listDataTable, ListDataTablePropertyID.GID.getName());
 	         			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(listDataTable, null);
-	         			listManagerMain.getBuildListComponent().updateDropListEntries();
 		         	}
 		         	
 		         }
@@ -544,6 +545,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			 
 			 addColumnContextMenu = new AddColumnContextMenu(listManagerTreeMenu, toolsMenuBar, addColumnButton, 
 			         listDataTable, ListDataTablePropertyID.GID.getName());
+			 
 		 }
 		 
 	}
@@ -657,9 +659,14 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		                	
 		                    // validate for designation
 		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
-		        				String designation = event.getSource().toString();
+		        			    Object source = event.getSource();
+                                String designation = source.toString();
+                                
+                                // retrieve item id at event source 
+                                ItemPropertyId itemProp = (ItemPropertyId) ((TextField) source).getData();
+                                Object sourceItemId = itemProp.getItemId();
 		        				
-		        				String[] items = listDataTable.getItem(selectedItemId).toString().split(" ");
+		        				String[] items = listDataTable.getItem(sourceItemId).toString().split(" ");
 								int gid =  Integer.valueOf(items[2]);
 								
 								if(isDesignationValid(designation,gid)){
@@ -792,18 +799,20 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     			designations.add(germplasm.getNval());
     		}
     		
-    		if(!designations.contains(designation)){
-    			return false;
+    		for (String nameInDb : designations) {
+    		    if (GermplasmDataManagerUtil.compareGermplasmNames(designation, nameInDb)){
+    		        return true;
+    		    }
     		}
     		
     	}catch(Exception e){
     		e.printStackTrace();
 			LOG.error("Database error!", e);
-			MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting numeric trait info given environment ids."
+			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
 					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	}
     	
-    	return true; 
+    	return false; 
     }
 
 
@@ -1434,20 +1443,42 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             	
             	listDataTable.setVisibleColumns(visibleColumns);
             	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID))
-            		addColumnContextMenu.setPreferredIdColumnValues(false);            	
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS))
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
+            		addColumnContextMenu.setPreferredIdColumnValues(false);            
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
             		addColumnContextMenu.setLocationColumnValues(false);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
             		addColumnContextMenu.setPreferredNameColumnValues(false);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.GERMPLASM_DATE)){
+                    addColumnContextMenu.setGermplasmDateColumnValues(false);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP))
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP)){
                     addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID)){
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_GID)){
+                    addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+            	}
+            	if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                    addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+            	}
             	
             	saveChangesAction();
             	listDataTable.refreshRowCache();

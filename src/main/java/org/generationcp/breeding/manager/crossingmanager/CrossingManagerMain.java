@@ -99,8 +99,8 @@ public class CrossingManagerMain extends VerticalLayout implements InitializingB
         wizardScreenOne.setNextScreen(wizardScreenTwo);
         wizardScreenOne.setNextNextScreen(wizardScreenThree);
         
-        wizardScreenTwo.setNextScreen(wizardScreenThree);
-        wizardScreenTwo.setPreviousScreen(wizardScreenOne);
+//        wizardScreenTwo.setNextScreen(wizardScreenThree);
+//        wizardScreenTwo.setPreviousScreen(wizardScreenOne);
         
         wizardScreenThree.setNextScreen(wizardScreenFour);
         

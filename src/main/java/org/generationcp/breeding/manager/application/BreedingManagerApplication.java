@@ -39,6 +39,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private static final long serialVersionUID = 1L;
     
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
+    public static final String GERMPLASM_IMPORT_WINDOW_NAME_POPUP = "germplasm-import-popup";
     public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
@@ -127,13 +128,20 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
-            } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
-                Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
-                crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
-                crossingManagerWindow.setSizeUndefined();
-                crossingManagerWindow.addComponent(new CrossingManagerMain(crossingManagerWindow));
-                this.addWindow(crossingManagerWindow);
-                return crossingManagerWindow;
+            } else if(name.equals(GERMPLASM_IMPORT_WINDOW_NAME_POPUP)){
+                Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+                germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
+                germplasmImportWindow.setSizeUndefined();
+                germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false, true));
+                this.addWindow(germplasmImportWindow);
+                return germplasmImportWindow;
+//            } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
+//                Window crossingManagerWindow = new Window(messageSource.getMessage(Message.CROSSING_MANAGER_TAB_LABEL));
+//                crossingManagerWindow.setName(CROSSING_MANAGER_WINDOW_NAME);
+//                crossingManagerWindow.setSizeUndefined();
+//                crossingManagerWindow.addComponent(new CrossingManagerMain(crossingManagerWindow));
+//                this.addWindow(crossingManagerWindow);
+//                return crossingManagerWindow;
             } else if(name.equals(NURSERY_TEMPLATE_WINDOW_NAME)){
                 Window nurseryTemplateWindow = new Window(messageSource.getMessage(Message.NURSERY_TEMPLATE_TAB_LABEL));
                 nurseryTemplateWindow.setName(NURSERY_TEMPLATE_WINDOW_NAME);
@@ -176,8 +184,11 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
             }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
                 Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
                 manageCrossingSettings.setName(MANAGE_SETTINGS_CROSSING_MANAGER);
+            }  else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
+                manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);
                 manageCrossingSettings.setSizeUndefined();
-                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain());
+                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain(manageCrossingSettings));
                 this.addWindow(manageCrossingSettings);
                 return manageCrossingSettings;
             } 
@@ -270,12 +281,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
-        
-        try{
-        	managerFactoryProvider.close();
-        }catch(Exception e){
-	        e.printStackTrace();	
-        }
         
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         

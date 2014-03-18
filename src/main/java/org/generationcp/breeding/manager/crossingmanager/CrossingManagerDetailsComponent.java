@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -44,26 +44,26 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
-    implements InitializingBean, InternationalizableComponent, CrossesMadeContainer, SelectLocationFolderDialogSource {
+    implements InitializingBean, InternationalizableComponent, SelectLocationFolderDialogSource {
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerDetailsComponent.class);
     
-    private CrossingManagerMain source;
-    private Accordion accordion;
+//    private CrossingManagerMain source;
+//    private Accordion accordion;
     
-    private Component previousScreen;
+    private ManageCrossingSettingsMain source;
+//    private Component previousScreen;
     
     private Label saveInFolderLabel;
     private Label folderToSaveListTo;
@@ -90,32 +90,20 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private CrossesMade crossesMade;
+//    private CrossesMade crossesMade;
         
     
     public CrossingManagerDetailsComponent(CrossingManagerMain source, Accordion accordion){
-        this.source = source;
-        this.accordion = accordion;
-        
-    }
-
-    @Override
-    public CrossesMade getCrossesMade() {
-        return this.crossesMade;
-    }
-
-
-    @Override
-    public void setCrossesMade(CrossesMade crossesMade) {
-        this.crossesMade = crossesMade;
+//        this.source = source;
+//        this.accordion = accordion;
         
     }
     
-    public void setPreviousScreen(Component backScreen){
-            this.previousScreen = backScreen; 
+    public CrossingManagerDetailsComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
+    	this.source = manageCrossingSettingsMain;
     }
 
-    
+       
     @Override
     public void afterPropertiesSet() throws Exception {
         setHeight("300px");
@@ -264,10 +252,9 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
         try {
-            Integer listId = saveAction.saveRecords(crossesMade);
+            Integer listId = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-            
             this.source.viewGermplasmListCreated(listId);
             
         } catch (MiddlewareQueryException e) {
@@ -294,7 +281,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         list.setUserId(0);
         list.setParent((GermplasmList) folderToSaveListTo.getData());
         
-        this.crossesMade.setGermplasmList(list);
+        source.getCrossesMade().setGermplasmList(list);
     }
 
     
@@ -315,8 +302,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 
     
     public void backButtonClickAction(){
-        source.enableWizardTabs();
-        accordion.setSelectedTab(previousScreen);
+        source.backStep();
     }
 
     @Override
@@ -366,4 +352,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 		}
 		this.getWindow().addWindow(selectFolderDialog);
 	}
+
+	@Override
+	public void setListName(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

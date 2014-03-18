@@ -96,10 +96,10 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
         SAME_FOR_ALL_CROSSES, BASED_ON_PARENTAL_LINES
     };
     
-    @Override
-    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-        this.container = container;
-    }
+//    @Override
+//    public void setCrossesMadeContainer(CrossesMadeContainer container) {
+//        this.container = container;
+//    }
     
     @Override
     public void afterPropertiesSet() throws Exception {  
@@ -333,7 +333,7 @@ public class AdditionalDetailsBreedingMethodComponent extends AbsoluteLayout
     }
 
     @Override
-    public boolean updateCrossesMadeContainer() {
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
         
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossesMap()!= null && validateBreedingMethod()){

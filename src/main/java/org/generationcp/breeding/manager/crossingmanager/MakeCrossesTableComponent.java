@@ -77,18 +77,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     private Label crossesMadeCountContainer;
     
-    private CrossesMadeContainer container;
-    
     @Override
-    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-        this.container = container;
-        
-    }
-
-    @Override
-    public boolean updateCrossesMadeContainer() {
-        this.container.getCrossesMade().setCrossesMap(generateCrossesMadeMap());
-        
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
+        container.getCrossesMade().setCrossesMap(generateCrossesMadeMap(container));
         return true;
     }
     
@@ -99,7 +90,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
         tableCrossesMade = new Table();
         tableCrossesMade.setWidth("100%");
-        tableCrossesMade.setHeight("320px");
+        tableCrossesMade.setHeight("420px");
         tableCrossesMade.setImmediate(true);
         tableCrossesMade.setSelectable(true);    
         tableCrossesMade.setMultiSelect(true);
@@ -271,7 +262,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         addTableCrossesMadeCounter();
     }
     
-    private Map<Germplasm, Name > generateCrossesMadeMap(){
+    private Map<Germplasm, Name > generateCrossesMadeMap(CrossesMadeContainer container){
         Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
         List<ImportedGermplasmCross> crossesToExport = new ArrayList<ImportedGermplasmCross>();
         
@@ -317,8 +308,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
         }
         
         //update list of crosses to export in CrossingManagerUploader
-        this.container.getCrossesMade().getCrossingManagerUploader()
-                .getImportedGermplasmCrosses().setImportedGermplasmCross(crossesToExport);
+//        container.getCrossesMade().getCrossingManagerUploader()
+//                .getImportedGermplasmCrosses().setImportedGermplasmCross(crossesToExport);
         
         return crossesMadeMap;
     }

@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -57,7 +59,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	protected Tree germplasmListTree;
     protected AbsoluteLayout germplasmListBrowserMainLayout;
 	protected Button refreshButton;
-	protected DropHandlerComponent dropHandler;
 	
     @Autowired
     protected GermplasmListManager germplasmListManager;
@@ -85,6 +86,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     protected Object selectedListId;
     
     private boolean forSelectingFolderToSaveIn;
+    
+    private CrossingManagerMakeCrossesComponent makeCrossesComponent;
     
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
     	this.listManagerMain = listManagerMain;
@@ -116,6 +119,17 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.forGermplasmListWindow = false;
         this.listId = folderId;
     }
+    
+    public ListManagerTreeComponent(CrossingManagerMakeCrossesComponent makeCrossesComponent){
+    	super();
+    	this.makeCrossesComponent = makeCrossesComponent;
+    	this.forSelectingFolderToSaveIn = false;
+    	this.selectListComponent = null;
+    	this.listManagerMain = null;
+        this.germplasmListBrowserMainLayout = null;
+        this.forGermplasmListWindow = false;
+        this.listId = null;
+    }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
@@ -123,10 +137,15 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		
     	displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
     	
-		heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.setStyleName(Bootstrap.Typography.H4.styleName());
-		heading.setWidth("90px");
+    	heading = new Label();
+    	heading.setWidth("90px");
+    	if(makeCrossesComponent == null){
+			heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
+			heading.setStyleName(Bootstrap.Typography.H4.styleName());
+		} else{
+			heading.setValue("Available Lists");
+			heading.setStyleName(Bootstrap.Typography.H6.styleName());
+    	}
     	
 		if (this.germplasmListBrowserMainLayout != null){
 			displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
@@ -134,14 +153,14 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			addComponent(controlButtonsLayout);
 		}
 		
-		if(forSelectingFolderToSaveIn){
+		if(forSelectingFolderToSaveIn || makeCrossesComponent != null){
 			initializeButtonPanel();
 			addComponent(controlButtonsLayout);
 		}
     	
 		germplasmListTree = new Tree();
 		
-		if(!forSelectingFolderToSaveIn){
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
 			refreshButton = new Button();
 			refreshButton.setData(REFRESH_BUTTON_ID);
 			refreshButton.addListener(new GermplasmListButtonClickListener(this));
@@ -149,16 +168,13 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		}
 		
-		dropHandler = new DropHandlerComponent(listManagerMain, 220);
-		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);
 		
 		addComponent(treeContainerLayout);
-		if(!forSelectingFolderToSaveIn){
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
 			addComponent(refreshButton);
 		}
-		addComponent(dropHandler);
 		
 		createTree();
 		
@@ -176,7 +192,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
+				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -205,7 +221,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
+				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -324,17 +340,20 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	            centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
 	        } catch (MiddlewareQueryException e) {
 	        	LOG.error("Error in getting top level lists.", e);
+	        	/** must be commented out because this will always cause an error if there is a prob with the Middleware call
+	        	 * that is because at this point this component class is not yet attached to its parent so getWindow() will trigger an NPE
 	            if (getWindow() != null){
 	                MessageNotifier.showWarning(getWindow(), 
 	                        messageSource.getMessage(Message.ERROR_DATABASE),
 	                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
 	            }
+	            **/
 	            centralGermplasmListParent = new ArrayList<GermplasmList>();
 	        }
         }
         
         Tree germplasmListTree = new Tree();
-        if (listManagerMain != null || this.forSelectingFolderToSaveIn){
+        if (listManagerMain != null || this.forSelectingFolderToSaveIn || makeCrossesComponent != null){
         	germplasmListTree.setDragMode(TreeDragMode.NODE);
         }
 
@@ -407,7 +426,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     public void updateButtons(Object itemId){
     	setSelectedListId(itemId);
-    	if (listManagerMain != null || forSelectingFolderToSaveIn){
+    	if (listManagerMain != null || forSelectingFolderToSaveIn || makeCrossesComponent != null){
     		try {
     			//If any of the central lists/folders is selected
     			if(Integer.valueOf(itemId.toString())>0){
@@ -467,6 +486,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         			//open details in Select List pop-up
         			} else if (this.selectListComponent != null){
         				this.selectListComponent.getListInfoComponent().displayListInfo(germplasmList);
+        			} else if(this.makeCrossesComponent != null){
+        				this.makeCrossesComponent.createListDetailsTab(germplasmList.getId(), germplasmList.getName());
         			}
         			
         		//toggle folder
@@ -596,7 +617,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return true;
     }
     
-    public ListManagerDetailsLayout getViewDetailsTabbedLayout(){
+    public ListManagerDetailsLayout getListManagerDetailsLayout(){
     	return this.displayDetailsLayout;
     }
     
@@ -615,10 +636,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	return germplasmListTree;
     }
     
-    public DropHandlerComponent getDropHandlerComponent(){
-    	return dropHandler;
-    }
-
     public void setSelectedListId(Object listId){
     	this.selectedListId = listId;
     	germplasmListTree.setNullSelectionAllowed(false);
@@ -650,5 +667,31 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     		return super.getWindow();
     	}
     }
+    
+    public void removeListFromTree(GermplasmList germplasmList){
+    	Integer listId = germplasmList.getId();
+		Item item = germplasmListTree.getItem(listId);
+    	if (item != null){
+    		germplasmListTree.removeItem(listId);
+    	}
+    	GermplasmList parent = germplasmList.getParent();
+		if (parent == null) {
+			germplasmListTree.select(LOCAL);
+			setSelectedListId(LOCAL);
+		} else {
+			germplasmListTree.select(parent.getId());
+			germplasmListTree.expandItem(parent.getId());
+			setSelectedListId(parent.getId());
+		}
+    }
+    
+    //SETTERS and GETTERS
+	public Label getHeading() {
+		return heading;
+	}
+
+	public void setHeading(Label heading) {
+		this.heading = heading;
+	}
 
 }

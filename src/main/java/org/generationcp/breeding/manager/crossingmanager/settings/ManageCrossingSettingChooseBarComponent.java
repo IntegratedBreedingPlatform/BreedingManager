@@ -28,7 +28,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
+public class ManageCrossingSettingChooseBarComponent extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	public ManageCrossingSettingsMain manageCrossingSettingsMain;
@@ -57,7 +57,7 @@ public class ChooseCrossingSettingsComponent extends AbsoluteLayout implements
 	@Autowired
     WorkbenchDataManager workbenchDataManager;
 	
-	public ChooseCrossingSettingsComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
+	public ManageCrossingSettingChooseBarComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
 	}
 

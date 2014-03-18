@@ -159,9 +159,9 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     }
     
     private void setUpdateListeners(){
-        crossingMethodComponent.setCrossesMadeContainer(this);
-        crossNameComponent.setCrossesMadeContainer(this);
-        crossInfoComponent.setCrossesMadeContainer(this);
+//        crossingMethodComponent.setCrossesMadeContainer(this);
+//        crossNameComponent.setCrossesMadeContainer(this);
+//        crossInfoComponent.setCrossesMadeContainer(this);
         
         updateListeners[0] = crossingMethodComponent;
         updateListeners[1] = crossNameComponent;
@@ -181,7 +181,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         //perform validations and update CrossesMade instance
         for (CrossesMadeContainerUpdateListener listener : updateListeners){
             if (listener != null){
-                if (!listener.updateCrossesMadeContainer()){
+                if (!listener.updateCrossesMadeContainer(this)){
                     allValidationsPassed = false;
                     break;
                 }
@@ -189,7 +189,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         }  
         
         nextScreen = source.getWizardScreenFour();
-        source.getWizardScreenFour().setPreviousScreen(this);
+//        source.getWizardScreenFour().setPreviousScreen(this);
         
         if (this.nextScreen != null && allValidationsPassed){
             source.enableWizardTabs();

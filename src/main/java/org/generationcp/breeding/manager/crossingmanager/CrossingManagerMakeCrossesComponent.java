@@ -8,30 +8,36 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
+import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.event.dd.acceptcriteria.And;
-import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
-import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -43,45 +49,48 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
     
-    public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
+	@SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
+	
+	public static final String SELECT_FEMALE_PARENT_BUTTON_ID = "Female Parent Button";
     public static final String SELECT_MALE_PARENT_BUTTON_ID = "Male Parent Button";
     public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
 
     private static final String TAG_COLUMN_ID = "Tag";
+    private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
     
     private static final long serialVersionUID = 9097810121003895303L;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private CrossingManagerMain source;
-    private Accordion accordion;
-    private Component nextScreen;
-    private Component previousScreen;
+    private ManageCrossingSettingsMain source;
+    
+    private TableWithSelectAllLayout femaleTableWithSelectAll;
+    private TableWithSelectAllLayout maleTableWIthSelectAll;
     
     private Label lblFemaleParent;
-    private Button btnSelectListFemaleParent;
     private Label lblMaleParent;
-    private Button btnSelectListMaleParent;
     private Label crossingMethodLabel;
     private ComboBox crossingMethodComboBox;
     private CheckBox chkBoxMakeReciprocalCrosses;
     private Button btnMakeCross;
-    //private ListSelect listSelectFemale;
-    //private ListSelect listSelectMale;
     private Table femaleParents;
     private CheckBox femaleParentsTagAll;
     private Table maleParents;
@@ -103,126 +112,130 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private enum CrossType { 
         MULTIPLY, TOP_TO_BOTTOM
     };
+        
+    private ListManagerTreeComponent listTree;
+    private Label selectParentsLabel;
+    private Label instructionForSelectParents;
+    private TabSheet listDetailsTabSheet;
+    private Button closeAllTabsButton;
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
-        this.source = source;
-        this.accordion = accordion;
         lastOpenedListId = null;
     }
     
-    public CrossingManagerMain getSource() {
-        return source;
+    public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
+    	this.source = manageCrossingSettingsMain;
     }
-    
-    public void setNextScreen(Component nextScreen){
-        this.nextScreen = nextScreen;
-    }
-    
-    public void setPreviousScreen(Component backScreen){
-        this.previousScreen = backScreen;
-    }
-    
-    @Override
-    public CrossesMade getCrossesMade() {
-        return this.crossesMade;
-    }
-
-    @Override
-    public void setCrossesMade(CrossesMade crossesMade) {
-        this.crossesMade = crossesMade;
-        
-    }
+       
     
     @Override
     public void afterPropertiesSet() throws Exception {
-    	
-    	setHeight("420px");
+    	setWidth("1200px");
+    	setHeight("1050px");
         this.setMargin(true, true, true, true);
 
+        listTree = new ListManagerTreeComponent(this);
+        addComponent(listTree, "top:15px; left:15px;");
+        
+        selectParentsLabel = new Label("Select Parents");
+        selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        addComponent(selectParentsLabel, "top:15px; left:250px;");
+        
+        instructionForSelectParents = new Label("To begin making crosses, open one or more lists from the left, then select entries and drag them into</br>"
+        		+ "the male and female parent lists below.");
+        instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
+        addComponent(instructionForSelectParents, "top:50px; left:250px;");
+        
+        listDetailsTabSheet = new TabSheet();
+        listDetailsTabSheet.setWidth("800px");
+        listDetailsTabSheet.setHeight("380px");
+        listDetailsTabSheet.setVisible(false);
+        addComponent(listDetailsTabSheet, "top:40px; left:250px;");
+        
+        closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+        closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+        closeAllTabsButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -2946008623293356900L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Util.closeAllTab(listDetailsTabSheet);
+				listDetailsTabSheet.setVisible(false);
+				instructionForSelectParents.setVisible(true);
+				closeAllTabsButton.setVisible(false);
+			}
+		});
+        closeAllTabsButton.setVisible(false);
+        addComponent(closeAllTabsButton, "top:30px; right:115px;");
+        
         lblFemaleParent= new Label(); 
         listnameFemaleParent= new Label();
         listnameMaleParent=new Label();
         
-        btnSelectListFemaleParent= new Button();
-        btnSelectListFemaleParent.setData(SELECT_FEMALE_PARENT_BUTTON_ID);
-        btnSelectListFemaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
+        femaleTableWithSelectAll = new TableWithSelectAllLayout(TAG_COLUMN_ID);
+        femaleParents = femaleTableWithSelectAll.getTable();
+        femaleParentsTagAll = femaleTableWithSelectAll.getCheckBox();
         
-        //listSelectFemale = new ListSelect();
-        //listSelectFemale.setRows(10);
-        //listSelectFemale.setWidth(240, UNITS_PIXELS);
-        //listSelectFemale.setNullSelectionAllowed(true);
-        //listSelectFemale.setMultiSelect(true);
-        //listSelectFemale.setImmediate(true);
-        
-        femaleParents = new Table();
-        femaleParents.setHeight(160, UNITS_PIXELS);
+        femaleParents.setHeight(290, UNITS_PIXELS);
         femaleParents.setWidth(240, UNITS_PIXELS);
         femaleParents.setNullSelectionAllowed(true);
         femaleParents.setSelectable(true);
         femaleParents.setMultiSelect(true);
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+        femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
+        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         femaleParents.addContainerProperty("Female Parents", String.class, null);
         femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
-        //femaleParents.setColumnWidth("Female Parents", 160);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -3048433522366977000L;
 
+				@SuppressWarnings("unchecked")
 				public void drop(DragAndDropEvent dropEvent) {
-                    TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
+					TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                        
                     Table sourceTable = (Table) transferable.getSourceComponent();
                     Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
                         
                     AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                     Object targetItemId = dropData.getItemIdOver();
-
-                    //Check first if item is dropped on top of itself
-                    if(!transferable.getItemId().equals(targetItemId)){
-                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Female Parents").getValue();
-                		sourceTable.removeItem(transferable.getItemId());
-                		Item item;
-                    	//switch (dropData.getDropLocation()){
-                        //	case BOTTOM :
-                        		item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
-                        //	break;
-                        //	case MIDDLE: 
-                        //	case TOP :
-                        //		item = targetTable.addItemAt(indexOfId(targetItemId), transferable.getItemId());
-                        //	break;
-                    	//}
-                    	item.getItemProperty("Female Parents").setValue(femaleParentValue);
+                    
+                    if(sourceTable.equals(femaleParents)){
+	                    Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
+	
+	                    //Check first if item is dropped on top of itself
+	                    if(!transferable.getItemId().equals(targetItemId)){
+	                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Female Parents").getValue();
+	                		GermplasmListEntry femaleItemId = (GermplasmListEntry) transferable.getItemId();
+	                		CheckBox tag = (CheckBox) sourceTable.getItem(femaleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+							
+	                		sourceTable.removeItem(transferable.getItemId());
+	                		
+							Item item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
+	                    	item.getItemProperty("Female Parents").setValue(femaleParentValue);
+	                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                      	
+	                      	if(selectedEntries.contains(femaleItemId)){
+	                      		tag.setValue(true);
+								tag.addListener(new ParentsTableCheckboxListener(targetTable, femaleItemId, femaleParentsTagAll));
+					            tag.setImmediate(true);
+					            targetTable.select(transferable.getItemId());
+							} 	
+	                      	
+	                    }
+                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
+                    	dropToFemaleOrMaleTable(sourceTable, femaleParents);
                     }
+                    
+                    assignEntryNumber(femaleParents);
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
-                	return new And(new SourceIs(femaleParents), AcceptItem.ALL);
+                	return AcceptAll.get();
                 }
         });
         femaleParents.addActionHandler(new CrossingManagerActionHandler(this));
-        
-        femaleParents.addListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 4586965346236384519L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
-				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) femaleParents.getValue();
-				if(selectedEntries.size() == entries.size()){
-					femaleParentsTagAll.setValue(true);
-				}
-				for(GermplasmListEntry entry : entries){
-					CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-					if(selectedEntries.contains(entry)){
-						tag.setValue(true);
-					} else{
-						tag.setValue(false);
-					}
-				}
-			}
-		});
         
         femaleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
 			private static final long serialVersionUID = -3207714818504151649L;
@@ -235,33 +248,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			    	return name;
 			    }                                                                       
 			    return null;
-			}
-		});
-        
-        femaleParentsTagAll = new CheckBox();
-        femaleParentsTagAll.setCaption(messageSource.getMessage(Message.SELECT_ALL));
-        femaleParentsTagAll.setImmediate(true);
-        femaleParentsTagAll.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 7882379695058054587L;
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public void buttonClick(ClickEvent event) {
-				boolean checkBoxValue = event.getButton().booleanValue();
-				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) femaleParents.getItemIds();
-				if(checkBoxValue){
-					for(GermplasmListEntry entry : entries){
-						CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-						tag.setValue(true);
-					}
-					femaleParents.setValue(entries);
-				} else{
-					for(GermplasmListEntry entry : entries){
-						CheckBox tag = (CheckBox) femaleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-						tag.setValue(false);
-					}
-					femaleParents.setValue(null);
-				}
 			}
 		});
         
@@ -287,82 +273,69 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         lblMaleParent=new Label();
         
-        btnSelectListMaleParent= new Button();
-        btnSelectListMaleParent.setData(SELECT_MALE_PARENT_BUTTON_ID);
-        btnSelectListMaleParent.addListener(new CrossingManagerImportButtonClickListener(this));
+        maleTableWIthSelectAll = new TableWithSelectAllLayout(TAG_COLUMN_ID);
+        maleParents = maleTableWIthSelectAll.getTable();
+        maleParentsTagAll = maleTableWIthSelectAll.getCheckBox();
         
-        //listSelectMale = new ListSelect();
-        //listSelectMale.setRows(10);
-        //listSelectMale.setWidth(240, UNITS_PIXELS);
-        //listSelectMale.setNullSelectionAllowed(true);
-        //listSelectMale.setMultiSelect(true);
-        //listSelectMale.setImmediate(true);
-        
-        maleParents = new Table();
-        maleParents.setHeight(160, UNITS_PIXELS);
+        maleParents.setHeight(290, UNITS_PIXELS);
         maleParents.setWidth(240, UNITS_PIXELS);
         maleParents.setNullSelectionAllowed(true);
         maleParents.setSelectable(true);
         maleParents.setMultiSelect(true);
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
+        maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
+        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         maleParents.addContainerProperty("Male Parents", String.class, null);
         maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
-        //maleParents.setColumnWidth("Male Parents", 160);
         maleParents.setDragMode(TableDragMode.ROW);
         maleParents.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -6464944116431652229L;
 
+				@SuppressWarnings("unchecked")
 				public void drop(DragAndDropEvent dropEvent) {
                     TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                         
                     Table sourceTable = (Table) transferable.getSourceComponent();
                     Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
-                        
+                    
                     AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                     Object targetItemId = dropData.getItemIdOver();
 
-                    //Check first if item is dropped on top of itself
-                    if(!transferable.getItemId().equals(targetItemId)){
-                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Male Parents").getValue();
-                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
+                    if(sourceTable.equals(maleParents)){
+                    	Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
                         
-                        sourceTable.removeItem(transferable.getItemId());
-                        
-                        Item item = targetTable.addItemAfter(targetItemId, maleItemId);
-                      	item.getItemProperty("Male Parents").setValue(maleParentValue);
-                	}
+	                    //Check first if item is dropped on top of itself
+	                    if(!transferable.getItemId().equals(targetItemId)){
+	                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty("Male Parents").getValue();
+	                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
+	                        CheckBox tag = (CheckBox) sourceTable.getItem(maleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+	                        	
+	                        sourceTable.removeItem(transferable.getItemId());
+	                        
+							Item item = targetTable.addItemAfter(targetItemId, maleItemId);
+	                      	item.getItemProperty("Male Parents").setValue(maleParentValue);
+	                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                      	
+	                      	if(selectedEntries.contains(maleItemId)){
+								tag.setValue(true);
+								tag.addListener(new ParentsTableCheckboxListener(targetTable, maleItemId, maleParentsTagAll));
+					            tag.setImmediate(true);
+					            targetTable.select(transferable.getItemId());
+							}
+	                	}
+                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
+                    	dropToFemaleOrMaleTable(sourceTable, maleParents);
+                    }
+                    
+                    assignEntryNumber(maleParents);
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
-                	return new And(new SourceIs(maleParents), AcceptItem.ALL);
+                	return AcceptAll.get();
                 }
         });
         maleParents.addActionHandler(new CrossingManagerActionHandler(this));
-        
-        maleParents.addListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 4586965346236384519L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
-				Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) maleParents.getValue();
-				
-				if(selectedEntries.size() == entries.size()){
-					maleParentsTagAll.setValue(true);
-				}
-				
-				for(GermplasmListEntry entry : entries){
-					CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-					if(selectedEntries.contains(entry)){
-						tag.setValue(true);
-					} else{
-						tag.setValue(false);
-					}
-				}
-			}
-		});
         
         maleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
 			private static final long serialVersionUID = -3207714818504151649L;
@@ -378,67 +351,36 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 			}
 		});
         
-        maleParentsTagAll = new CheckBox();
-        maleParentsTagAll.setCaption(messageSource.getMessage(Message.SELECT_ALL));
-        maleParentsTagAll.setImmediate(true);
-        maleParentsTagAll.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -6111529620495423779L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void buttonClick(ClickEvent event) {
-				boolean checkBoxValue = event.getButton().booleanValue();
-				Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) maleParents.getItemIds();
-				if(checkBoxValue){
-					for(GermplasmListEntry entry : entries){
-						CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-						tag.setValue(true);
-					}
-					maleParents.setValue(entries);
-				} else{
-					for(GermplasmListEntry entry : entries){
-						CheckBox tag = (CheckBox) maleParents.getItem(entry).getItemProperty(TAG_COLUMN_ID).getValue();
-						tag.setValue(false);
-					}
-					maleParents.setValue(null);
-				}
-			}
-		});
-        
         CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
         
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
+        backButton.setWidth("80px");
         backButton.addListener(listener);
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
+        nextButton.setWidth("80px");
         nextButton.addListener(listener);
         nextButton.setEnabled(false);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
         //Widget Layout
-        gridLayoutSelectingParents = new GridLayout(2,2);
+        gridLayoutSelectingParents = new GridLayout(2,1);
         gridLayoutSelectingParents.setSpacing(true);
         
-        gridLayoutSelectingParents.addComponent(btnSelectListFemaleParent,0,0);
         AbsoluteLayout femaleParentsTableLayout = new AbsoluteLayout();
         femaleParentsTableLayout.setWidth("260px");
-        femaleParentsTableLayout.setHeight("180px");
-        femaleParentsTableLayout.addComponent(femaleParents, "top:0px;left:20px");
-        femaleParentsTableLayout.addComponent(femaleParentsTagAll, "top:164px;left:27px");
-        gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,1);
-        gridLayoutSelectingParents.setComponentAlignment(btnSelectListFemaleParent,  Alignment.MIDDLE_CENTER);
+        femaleParentsTableLayout.setHeight("330px");
+        femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:0px;left:20px");
+        gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,0);
         gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParents.addComponent(btnSelectListMaleParent,1,0);
         AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
         maleParentsTableLayout.setWidth("260px");
-        maleParentsTableLayout.setHeight("180px");
-        maleParentsTableLayout.addComponent(maleParents, "top:0px;left:20px");
-        maleParentsTableLayout.addComponent(maleParentsTagAll, "top:164px;left:27px");
-        gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,1);
-        gridLayoutSelectingParents.setComponentAlignment(btnSelectListMaleParent,  Alignment.MIDDLE_CENTER);
+        maleParentsTableLayout.setHeight("330px");
+        maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:0px;left:20px");
+        gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,0);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
         
         gridLayoutSelectingParents.setWidth(550, UNITS_PIXELS);
@@ -461,14 +403,14 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
-        addComponent(gridLayoutSelectingParents, "top:15px; left:15px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:230px; left:35px;");
+        addComponent(gridLayoutSelectingParents, "top:435px; left:15px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:760px; left:35px;");
         
         crossesTableComponent = new MakeCrossesTableComponent();
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        addComponent(crossesTableComponent, "top:15px; left:590px;");
+        addComponent(crossesTableComponent, "top:425px; left:590px;");
         
         layoutButtonArea = new HorizontalLayout();
         layoutButtonArea.setSpacing(true);
@@ -476,7 +418,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         layoutButtonArea.addComponent(backButton);
         layoutButtonArea.addComponent(nextButton);
         
-        addComponent(layoutButtonArea, "top:360px; left:500px;");
+        addComponent(layoutButtonArea, "top:890px; left:500px;");
     }
 
     @Override
@@ -489,8 +431,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     public void updateLabels() {
         messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENTS);
         messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENTS);
-        messageSource.setCaption(btnSelectListFemaleParent, Message.SELECT_FEMALE_LIST_BUTTON_LABEL);
-        messageSource.setCaption(btnSelectListMaleParent, Message.SELECT_MALE_LIST_BUTTON_LABEL);
         messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
         messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
@@ -550,38 +490,16 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
      
     public void nextButtonClickAction(){
-        nextScreen = source.getWizardScreenThree();
-        
-        if(this.nextScreen != null){
-            assert this.nextScreen instanceof CrossesMadeContainer;
-            assert crossesTableComponent instanceof CrossesMadeContainerUpdateListener;
-            
-            CrossesMadeContainerUpdateListener listener = ((CrossesMadeContainerUpdateListener) crossesTableComponent);
-            listener.setCrossesMadeContainer(this);
-            listener.updateCrossesMadeContainer();
-            ((CrossesMadeContainer) nextScreen).setCrossesMade(this.crossesMade);
-        
-            source.getWizardScreenThree().setPreviousScreen(this);
-            source.enableWizardTabs();
-            this.accordion.setSelectedTab(this.nextScreen);
-            source.enableOnlyWizardTabThree();
-            source.enableWizardTabOne();
-            source.enableWizardTabTwo();
-        } else {
-            this.nextButton.setEnabled(false);
-        }
+    	if (this.source != null){
+    		this.source.nextStep();
+    	}
     }
     
     
     public void backButtonClickAction(){
-        if(this.previousScreen != null){
-            source.enableWizardTabs();
-            this.accordion.setSelectedTab(this.previousScreen);
-            //if(previousScreen instanceof CrossingManagerImportFileComponent)
-            //    source.enableOnlyWizardTabOne();
-        } else {
-            this.backButton.setEnabled(false);
-        }
+    	if (this.source != null){
+    		this.source.backStep();
+    	}
     }
     
     public Integer getLastOpenedListId() {
@@ -684,4 +602,116 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         this.maleParents.removeAllItems();
         this.crossesTableComponent.clearCrossesTable();
     }
+    
+    public void createListDetailsTab(Integer listId, String listName){
+    	instructionForSelectParents.setVisible(false);
+    	listDetailsTabSheet.setVisible(true);
+    	if(Util.isTabExist(listDetailsTabSheet, listName)){
+    		Tab tabToFocus = null;
+    		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+    			Tab tab = listDetailsTabSheet.getTab(ctr);
+    			if(tab != null && tab.getCaption().equals(listName)){
+    				tabToFocus = tab;
+    			}
+    		}
+    		if (tabToFocus != null){
+            	listDetailsTabSheet.setSelectedTab(tabToFocus);
+            }
+	    } else{
+	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId), listName);
+	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
+	    	newTab.setClosable(true);
+	    	listDetailsTabSheet.setSelectedTab(newTab);
+    	}
+    	
+    	if(listDetailsTabSheet.getComponentCount() >= 2){
+    		closeAllTabsButton.setVisible(true);
+    	} else{
+    		closeAllTabsButton.setVisible(false);
+    	}
+    }
+
+	@Override
+	public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
+		boolean updatedFromTable = crossesTableComponent.updateCrossesMadeContainer(container);
+		
+		if (updatedFromTable){
+			ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction(source.getDetailComponent().getCurrentlyDefinedSetting());
+			return applySetting.updateCrossesMadeContainer(container);
+		}
+		
+		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
+		List<Integer> selectedListEntries = new ArrayList<Integer>();
+    	selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
+    	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
+    	entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
+    	
+    	for(Integer itemId : entryIdsInSourceTable){
+    		if(selectedListEntries.contains(itemId)){
+	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+	    		Button designationButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
+	    		String designation = designationButton.getCaption();
+	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption())); 
+	    		
+	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation);
+	    		Item item = targetTable.addItem(entryObject);
+	    		if(item != null){
+		    		if(targetTable.equals(femaleParents)){
+		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    		} else{
+		    			item.getItemProperty("Male Parents").setValue(entryObject.getDesignation());
+		    		}
+		    		
+		    		CheckBox tag = new CheckBox();
+		    		if(targetTable.equals(femaleParents)){
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+		    		} else{
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+		    		}
+		            tag.setImmediate(true);
+		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		        }
+    		}
+            
+            targetTable.requestRepaint();
+        }
+	}
+	
+	public void updateUIForDeletedList(String listName){
+		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+			Tab tab = listDetailsTabSheet.getTab(ctr);
+			if(tab != null && tab.getCaption().equals(listName)){
+				listDetailsTabSheet.removeTab(tab);
+				return;
+			}
+		}
+	}
+	
+	public void updateUIForRenamedList(Integer listId, String newName){
+		String description = ListManagerDetailsLayout.generateTabDescription(listId);
+		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+			Tab tab = listDetailsTabSheet.getTab(ctr);
+			if(tab != null && tab.getDescription().equals(description)){
+				tab.setCaption(newName);
+				return;
+			}
+		}
+	}
+	
+	private void assignEntryNumber(Table parentsTable){
+		int entryNumber = 1;
+		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
+		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
+		
+		for(GermplasmListEntry itemId : itemIds){
+			Item item = parentsTable.getItem(itemId);
+    		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
+			entryNumber++;
+		}
+	}
 }

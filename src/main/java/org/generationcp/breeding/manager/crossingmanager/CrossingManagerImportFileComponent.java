@@ -308,12 +308,12 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             crossesMade.setCrossesMap(generateCrossesMadeMap());
         }
         ((CrossesMadeContainer) nextStep).setCrossesMade(crossesMade);
-        source.getWizardScreenTwo().setPreviousScreen(this);
+//        source.getWizardScreenTwo().setPreviousScreen(this);
         source.getWizardScreenThree().setPreviousScreen(this);
 
         source.enableWizardTabs();
         if(nextStep instanceof CrossingManagerMakeCrossesComponent){
-            source.getWizardScreenTwo().setPreviousScreen(this);
+//            source.getWizardScreenTwo().setPreviousScreen(this);
             this.accordion.setSelectedTab(nextStep);
             source.enableOnlyWizardTabTwo();
             source.enableWizardTabOne();
