@@ -2,11 +2,13 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.slf4j.Logger;
@@ -16,14 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 
@@ -45,27 +45,15 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private Label buildNewListTitle;
     private Label buildNewListDesc;
     
-    private HorizontalLayout detailsSubLayout1;
-    private Label listNameLabel;
-    private TextField listNameText;
-    private Label listTypeLabel;
-    private ComboBox listTypeComboBox;
+    private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     
-    private HorizontalLayout detailsSubLayout2;
-    private Label listDateLabel;
-    private DateField listDateField;
-    private Label notesLabel;
-    private TextArea notesTextArea;
-    
-    private HorizontalLayout detailsSubLayout3;
-    private Label descriptionLabel;
-    private TextField descriptionText;
-    
-    private HorizontalLayout detailsLayout;
-    
-    private Table germplasmsTable;
+    private TableWithSelectAllLayout tableWithSelectAllLayout;
     
     private ListManagerMain source;
+    
+    private HorizontalLayout buttonRow;
+    private Button saveButton;
+    private Button resetButton;
     
     public BuildNewListComponent() {
         super();
@@ -94,109 +82,71 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         buildNewListDesc.setValue(messageSource.getMessage(Message.BUILD_YOUR_LIST_BY_DRAGGING_LISTS_OR_GERMPLASM_RECORDS_INTO_THIS_NEW_LIST_WINDOW));
         buildNewListDesc.setWidth("500px");
         
-        detailsSubLayout1 = new HorizontalLayout();
+        breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
+        breedingManagerListDetailsComponent.getContainerPanel().setWidth("631px");
         
-        listNameLabel = new Label();
-        listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
-        detailsSubLayout1.addComponent(listNameLabel);
+        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
+        createGermplasmTable(tableWithSelectAllLayout.getTable());
         
-        listNameText = new TextField();
-        listNameText.setWidth("200px");
-        listNameText.setMaxLength(50);
-        detailsSubLayout1.addComponent(listNameText);        
+        buttonRow = new HorizontalLayout();
+        saveButton = new Button();
+        resetButton = new Button();
+        
+        buttonRow.setWidth("100%");
+        buttonRow.setHeight("50px");
+        buttonRow.setSpacing(true);
 
-        listTypeLabel = new Label();
-        listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
-        detailsSubLayout1.addComponent(listTypeLabel);
-        
-        listTypeComboBox = new ComboBox();
-        listTypeComboBox.setWidth("200px");
-        listTypeComboBox.setNullSelectionAllowed(false);
-        detailsSubLayout1.addComponent(listTypeComboBox);
-        
-        
-        detailsSubLayout2 = new HorizontalLayout();
-        
-        listDateLabel = new Label();
-        listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
-        detailsSubLayout2.addComponent(listDateLabel);
-      
-        listDateField = new DateField();
-        listDateField.setDateFormat("yyyy-MM-dd");
-        listDateField.setResolution(DateField.RESOLUTION_DAY);
-        listDateField.setValue(new Date());
-        detailsSubLayout2.addComponent(listDateField);
-        
-        notesLabel = new Label();
-        notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
-        detailsSubLayout2.addComponent(notesLabel);
-        
-        notesTextArea = new TextArea();
-        notesTextArea.setWidth("300px");
-        notesTextArea.setHeight("65px");
-        notesTextArea.addStyleName("noResizeTextArea");
-        detailsSubLayout2.addComponent(notesTextArea);
-        
-        detailsSubLayout3 = new HorizontalLayout();
-        
-        descriptionLabel = new Label();
-        descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
-        detailsSubLayout3.addComponent(descriptionLabel);
-        
-        descriptionText = new TextField();
-        descriptionText.setWidth("420px");
-        detailsSubLayout3.addComponent(descriptionText);
-        
-        createGermplasmTable();
+        saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
+        saveButton.setWidth("80px");
+        saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+        resetButton.setCaption(messageSource.getMessage(Message.RESET));
+        resetButton.setWidth("80px");
+        resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
+
     }
     
     private void initializeLayout() {
         this.setSpacing(true);
         this.addComponent(buildNewListTitle);
         this.addComponent(buildNewListDesc);
+        this.addComponent(breedingManagerListDetailsComponent);
+        this.addComponent(tableWithSelectAllLayout);
         
-        detailsSubLayout1.setSpacing(true);        
-        detailsSubLayout2.setSpacing(true);
-        detailsSubLayout3.setSpacing(true);
+        buttonRow.addComponent(resetButton);
+        buttonRow.setComponentAlignment(resetButton, Alignment.MIDDLE_RIGHT);
+        buttonRow.addComponent(saveButton);
+        buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
         
-        VerticalLayout detailsVertical = new VerticalLayout();
-        detailsVertical.setSpacing(true);
-        detailsVertical.addComponent(detailsSubLayout1);
-        detailsVertical.addComponent(detailsSubLayout2);
-        detailsVertical.addComponent(detailsSubLayout3);
-        
-        detailsLayout = new HorizontalLayout();
-        detailsLayout.setSpacing(true);
-        detailsLayout.addComponent(detailsVertical);
-        
-        this.addComponent(detailsLayout);
-        this.addComponent(germplasmsTable);
+        this.addComponent(buttonRow);
+        this.setComponentAlignment(buttonRow, Alignment.MIDDLE_CENTER);
     };
     
-    public void createGermplasmTable(){
+    public void createGermplasmTable(final Table table){
         
-        germplasmsTable = new Table();
-        germplasmsTable.setData(GERMPLASMS_TABLE_DATA);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
-        germplasmsTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
+    	table.setData(GERMPLASMS_TABLE_DATA);
+    	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
         
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
-        messageSource.setColumnHeader(germplasmsTable, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.TAG);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
         
-        germplasmsTable.setSelectable(true);
-        germplasmsTable.setMultiSelect(true);
-        germplasmsTable.setWidth("100%");
-        germplasmsTable.setHeight("280px");
+        table.setSelectable(true);
+        table.setMultiSelect(true);
+        table.setWidth("100%");
+        table.setHeight("280px");
         
-        germplasmsTable.addActionHandler(new Action.Handler() {
+        table.addActionHandler(new Action.Handler() {
 
             private static final long serialVersionUID = 1884343225476178686L;
 
@@ -207,7 +157,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             @Override
             public void handleAction(Action action, Object sender, Object target) {
                 if(ACTION_SELECT_ALL == action) {
-                    germplasmsTable.setValue(germplasmsTable.getItemIds());
+                	table.setValue(table.getItemIds());
                 } else if(ACTION_DELETE_SELECTED_ENTRIES == action) {
                     deleteSelectedEntries();
                 }
@@ -218,9 +168,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     @SuppressWarnings("unchecked")
     private void deleteSelectedEntries(){
         List<Integer> selectedItemIds = new ArrayList<Integer>();
-        selectedItemIds.addAll((Collection<? extends Integer>) germplasmsTable.getValue());
+        selectedItemIds.addAll((Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue());
         for(Integer selectedItemId:selectedItemIds){
-            germplasmsTable.removeItem(selectedItemId);
+        	tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
         }
         assignSerializedEntryNumber();
     }
@@ -229,11 +179,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
      * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
      */
     private void assignSerializedEntryNumber(){
-        List<Integer> itemIds = getItemIds(germplasmsTable);
+        List<Integer> itemIds = getItemIds(tableWithSelectAllLayout.getTable());
                 
         int id = 1;
         for(Integer itemId : itemIds){
-            germplasmsTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
+        	tableWithSelectAllLayout.getTable().getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             id++;
         }
     }
