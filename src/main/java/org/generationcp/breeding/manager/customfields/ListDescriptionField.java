@@ -98,6 +98,10 @@ public class ListDescriptionField extends HorizontalLayout
 		this.descriptionTextArea = descriptionTextArea;
 	}
 	
+	public void setValue(String value){
+		descriptionTextArea.setValue(value);
+	}
+	
 	public Object getValue(){
 		return descriptionTextArea.getValue();
 	}

@@ -45,7 +45,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private GermplasmList germplasmList;
 	
 	public BreedingManagerListDetailsComponent(){
-		
+		super();
+	}
+	
+	public BreedingManagerListDetailsComponent(GermplasmList germplasmList){
+		super();
+		this.germplasmList = germplasmList;  
 	}
 	
 	@Override
@@ -71,8 +76,13 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	}
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+		if(germplasmList != null){
+			listNameField.setValue(germplasmList.getName());
+			listDescriptionField.setValue(germplasmList.getDescription());
+			listTypeField.setValue(germplasmList.getType());
+			listDateField.setValue(germplasmList.getDate());
+			listNotesField.setValue(germplasmList.getNotes());
+		}
 	}
 	@Override
 	public void addListeners() {

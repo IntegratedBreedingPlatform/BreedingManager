@@ -421,7 +421,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
         maleParentsTableLayout.setWidth("260px");
         maleParentsTableLayout.setHeight("330px");
-        maleParentsTableLayout.addComponent(saveMaleListButton, "top:0px;left:20px");
+        maleParentsTableLayout.addComponent(saveMaleListButton, "top:0px;right:0px");
         maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:30px;left:20px");
         gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,0);
         gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
@@ -788,23 +788,40 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
 	@Override
 	public void saveList(GermplasmList list) {
+		System.out.println("Pumasok dito???..");
 		SaveListType type = (SaveListType)saveListAsWindow.getData();
-		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list);
-		
-		try {
-			saveListAction.saveGermplasmListRecord(list);
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+		List<GermplasmListEntry> listEntries = null;
+	    
+		System.out.println("Type: " + type.toString());
+        
+		if(type == SaveListType.CROSS){
+			// for Make Crosses as a whole
 		}
-		
-		if(type == SaveListType.FEMALE){
+		else if(type == SaveListType.FEMALE){
 			this.saveFemaleListButton.setEnabled(false);
+			listEntries = getCorrectSortedValue(femaleParents);
+			
+			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list,listEntries);
+			try {
+				femaleParentList = saveListAction.saveRecords();
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+			
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SUCCESS_SAVE_FOR_FEMALE_LIST));
 		}
 		else if(type == SaveListType.MALE){
 			this.saveMaleListButton.setEnabled(false);
-		}
-		else if(type == SaveListType.CROSS){
-		
+			listEntries = getCorrectSortedValue(maleParents);
+			
+			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list,listEntries);
+			try {
+				maleParentList = saveListAction.saveRecords();
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+			
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SUCCESS_SAVE_FOR_MALE_LIST));
 		}
 	}
 }

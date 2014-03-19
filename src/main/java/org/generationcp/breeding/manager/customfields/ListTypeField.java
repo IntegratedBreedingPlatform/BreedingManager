@@ -123,6 +123,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.listTypeComboBox = listTypeComboBox;
 	}
 	
+	public void setValue(String value){
+		listTypeComboBox.select(value);
+	}
+	
 	public Object getValue(){
 		return listTypeComboBox.getValue();
 	}

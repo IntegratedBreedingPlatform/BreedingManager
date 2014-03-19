@@ -74,8 +74,6 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setCaption(messageSource.getMessage(Message.SAVE_LIST_AS));
 		addStyleName(Reindeer.WINDOW_LIGHT);
 		setResizable(false);
-		setWidth("625px");
-		setHeight("441px");
 		setModal(true);
 
 		germplasmListTree = new ListManagerTreeComponent(true, folderId);
@@ -96,8 +94,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+		if(germplasmList != null){
+			germplasmListTree.setSelectedListId(germplasmList.getParent().getId());
+		}
 	}
 
 	@Override
@@ -111,6 +110,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				if(validateAllFields()){
 					source.saveList(germplasmList);
 				}
+				
+				Window window = event.getButton().getWindow();
+		        window.getParent().removeWindow(window);
 			}
 			
 		});
@@ -118,6 +120,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
+		setWidth("625px");
+		setHeight("461px");
+		
 		contentLayout = new HorizontalLayout();
 		contentLayout.setSpacing(true);
 		contentLayout.addComponent(germplasmListTree);
@@ -135,6 +140,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 		
 		mainLayout = new VerticalLayout();
+		mainLayout.setHeight("364px");
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
 		
