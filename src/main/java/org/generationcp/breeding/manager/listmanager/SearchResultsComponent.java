@@ -104,7 +104,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
-		matchingListsTable.setHeight("120px");
+		matchingListsTable.setPageLength(5);
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
@@ -127,7 +127,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
-		matchingGermplasmsTable.setHeight("120px");
+		matchingGermplasmsTable.setPageLength(10);
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
@@ -187,9 +187,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:190px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:213px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:230px; left:0px;");
+		addComponent(matchingGermplasmsLabel, "top:210px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:233px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:250px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){

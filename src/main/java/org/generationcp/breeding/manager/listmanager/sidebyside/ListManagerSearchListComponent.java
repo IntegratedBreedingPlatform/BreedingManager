@@ -56,6 +56,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
+		hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		
 		//left pane
 		leftLayout = new AbsoluteLayout();
