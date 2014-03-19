@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class ListManagerSearchListComponent extends VerticalLayout implements
-			InitializingBean, BreedingManagerLayout {
+			InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -27,17 +27,15 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
+	private Button toggleLeftPaneButton;
 	
 	private SearchResultsComponent searchResultsComponent;
-	
-	private Button toggleLeftPaneButton;
+	private ListManagerMain source;
+	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
 	
-	private ListManagerMain source;
-	private ListManagerDetailsLayout listManagerDetailsLayout;
-
 	public ListManagerSearchListComponent(ListManagerMain source) {
 		super();
 		this.source = source; 
@@ -118,5 +116,10 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
     public SearchResultsComponent getSearchResultsComponent(){
     	return searchResultsComponent;
     }
+
+	@Override
+	public void updateLabels() {
+		
+	}
 }
 
