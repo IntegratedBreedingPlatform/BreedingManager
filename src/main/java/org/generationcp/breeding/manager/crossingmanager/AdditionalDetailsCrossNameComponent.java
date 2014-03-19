@@ -324,8 +324,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             return false;
 
         // if prefix specifications were changed and next name in sequence not generated first
-        } else if (specifyStartNumberCheckbox.booleanValue() && !this.nextNumberInSequence.toString().equals(
-        		startNumberTextField.getValue().toString())){
+        } else if (specifyStartNumberCheckbox.booleanValue() && !this.nextNumberInSequence.equals(
+        		Integer.valueOf(startNumberTextField.getValue().toString()))){
         	 MessageNotifier.showError(getWindow(), "Error with Cross Code", MessageFormat.format(
                      messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""
                      ), Notification.POSITION_CENTERED);
