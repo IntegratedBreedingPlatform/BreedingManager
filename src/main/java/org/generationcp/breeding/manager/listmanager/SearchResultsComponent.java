@@ -32,6 +32,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -98,10 +99,10 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
 		matchingListsTable.setHeight("120px");
-		
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
+		matchingListsTable.setDragMode(TableDragMode.ROW);
 		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
 		matchingListsTable.addListener(new Table.ValueChangeListener() {
 			private static final long serialVersionUID = 3615932501066430909L;
@@ -130,6 +131,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
+		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
 		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
 		matchingGermplasmsTable.addListener(new Table.ValueChangeListener() {
 			private static final long serialVersionUID = -4395373252903594080L;

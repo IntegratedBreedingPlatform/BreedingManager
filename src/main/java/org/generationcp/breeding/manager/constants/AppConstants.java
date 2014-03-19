@@ -21,6 +21,10 @@ public final class AppConstants {
 		public static final String BOLD = "bold";
 		public static final String POPUP_VIEW = "gcp-popup-view";
 		
+		public static final String TREE_ROOT_NODE = "listManagerTreeRootNode";
+		public static final String TREE_REGULAR_PARENT_NODE = "listManagerTreeRegularParentNode";
+		public static final String TREE_REGULAR_CHILD_NODE = "listManagerTreeRegularChildNode";
+		
 	}
 	
 	public static class Icons {
@@ -29,6 +33,10 @@ public final class AppConstants {
 		public static final ThemeResource TRASH_ICON_GRAY_BG = new ThemeResource("images/bluetrash-icon-graybg.png");
 		public static final String POPUP_VIEW_ICON = "?";
 		
+	}
+	
+	public static class DB {
+		public static final String FOLDER = "FOLDER";
 	}
 
 }

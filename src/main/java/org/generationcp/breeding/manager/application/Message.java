@@ -423,4 +423,8 @@ public enum Message{
     ,SAVE_LIST_AS
     ,SELECT
     ,FINISH
+    
+    //Side by Side - List Manager
+    ,LISTS
+    ,AVAILABLE_LISTS
 }

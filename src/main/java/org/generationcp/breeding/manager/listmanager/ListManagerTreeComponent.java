@@ -36,13 +36,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
+@Deprecated
 public class ListManagerTreeComponent extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean, Serializable {
 
@@ -178,7 +179,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 		
 		createTree();
 		
-		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
+//		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
 	}
 
 	protected void initializeButtonPanel() {
@@ -192,7 +193,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
+//				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -221,7 +222,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
+//				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -312,7 +313,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         germplasmListTree.setImmediate(true);
         
         if (this.listManagerMain != null || this.forSelectingFolderToSaveIn){
-        	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
+//        	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
         }
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
