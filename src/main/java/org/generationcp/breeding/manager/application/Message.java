@@ -196,6 +196,7 @@ public enum Message{
     ,SELECT_LOCATION
     ,SELECT_LOCATION_FOLDER
     ,LIST_LOCATION
+    ,NEW_LIST_DETAILS
     
     //List Manager Screen: List Details
     ,NAME_LABEL
