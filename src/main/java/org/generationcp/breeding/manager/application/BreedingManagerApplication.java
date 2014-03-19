@@ -261,12 +261,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
         
-        try{
-        	managerFactoryProvider.close();
-        }catch(Exception e){
-	        e.printStackTrace();	
-        }
-        
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {

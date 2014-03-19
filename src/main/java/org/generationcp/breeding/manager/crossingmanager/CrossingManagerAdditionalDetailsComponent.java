@@ -27,8 +27,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     public static final String BACK_BUTTON_ID = "back button";
     
     private static final long serialVersionUID = 9097810121003895303L;
-    @SuppressWarnings("unused")
-	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerAdditionalDetailsComponent.class);
+    private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerAdditionalDetailsComponent.class);
     
     private CrossingManagerMain source;
     private Accordion accordion;
@@ -134,11 +133,11 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         // Layout Components
-        addComponent(crossingMethodForm, "top:40px;left:100px");
-        addComponent(crossNameForm, "top:230px;left:100px");
-        addComponent(crossInfoForm, "top:460px;left:100px");
-        addComponent(backButton, "top:570px;left:320px");
-        addComponent(nextButton, "top:570px;left:390px");
+        addComponent(crossingMethodForm, "top:40px;left:120px");
+        addComponent(crossNameForm, "top:230px;left:120px");
+        addComponent(crossInfoForm, "top:490px;left:120px");
+        addComponent(backButton, "top:600px;left:340px");
+        addComponent(nextButton, "top:600px;left:410px");
         
         setUpdateListeners();
     }

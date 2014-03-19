@@ -91,7 +91,7 @@
     <bean id="managerFactory" name="managerFactory"
     	factory-bean="managerFactoryProvider"
     	factory-method="createInstance"
-    	scope="session" destroy-method="close">
+    	scope="session" >
     	<aop:scoped-proxy/>
     </bean>
     
