@@ -187,9 +187,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:210px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:233px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:250px; left:0px;");
+		addComponent(matchingGermplasmsLabel, "top:232px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:255px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:272px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){

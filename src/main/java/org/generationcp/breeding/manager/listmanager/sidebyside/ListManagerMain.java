@@ -136,8 +136,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private void setContent(){
 		
 		vSplitPanel = new VerticalSplitPanel();
-		vSplitPanel.setWidth("100%");
-		vSplitPanel.setHeight("600px");
+		vSplitPanel.setSizeFull();
 		vSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setImmediate(true);
