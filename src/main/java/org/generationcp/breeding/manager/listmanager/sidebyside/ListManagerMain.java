@@ -149,23 +149,20 @@ public class ListManagerMain extends AbsoluteLayout implements
 		hSplitPanel.setMinSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setImmediate(true);
 		
-		// Top Pane
-		searchListsBarComponent = new ListManagerSearchListBarComponent();
+		searchListsComponent = new ListManagerSearchListComponent(this);
+		
+		searchListsBarComponent = new ListManagerSearchListBarComponent(searchListsComponent.getSearchResultsComponent());
 		searchBarLayout = new HorizontalLayout();
 		searchBarLayout.setSizeFull();
 		searchBarLayout.setMargin(true);
 		searchBarLayout.addComponent(searchListsBarComponent);
 		
-        
-		//Left Pane
-        browseListsComponent = new ListManagerBrowseListComponent();
-        searchListsComponent = new ListManagerSearchListComponent();
+		browseListsComponent = new ListManagerBrowseListComponent();
         browserSearchLayout = new AbsoluteLayout();
         browserSearchLayout.addStyleName("leftPane");
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
         
-        //Right Pane
         toggleBuildNewListButton = new Button();
         toggleBuildNewListButton.setDescription("Toggle Build New List Pane");
         
@@ -277,5 +274,13 @@ public class ListManagerMain extends AbsoluteLayout implements
     
     public void updateUIForRename(){
     	
+    }
+    
+    public void showBuildNewListComponent(){
+    	//TODO
+    }
+    
+    public void addGermplasmToBuildNewListTable(Integer gid){
+    	//TODO
     }
 }

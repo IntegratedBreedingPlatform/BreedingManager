@@ -79,4 +79,23 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
 
     }
 
+    public void createGermplasmDetailsTab(Integer gid){
+    	// TODO method stub
+    }
+    
+    public void createListDetailsTab(Integer listId){
+    	// TODO method stub
+    }
+    
+    public void renameTab(String tabName){
+    	// TODO method stub
+    }
+    
+    public void removeTab(String tabName){
+    	// TODO method stub
+    }
+    
+    public void closeAllTab(String tabName){
+    	// TODO method stub
+    }
 }

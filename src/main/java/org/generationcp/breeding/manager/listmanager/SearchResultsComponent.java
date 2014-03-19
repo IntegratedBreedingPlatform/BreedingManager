@@ -1,13 +1,14 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -31,6 +32,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -55,9 +57,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
-	private ListManagerDetailsLayout displayDetailsLayout;
-	private ListManagerMain listManagerMain;
-	private AbsoluteLayout parentLayout;
+	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout;
+	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
 	private CheckBox matchingListsTagAllCheckBox;
 	private CheckBox matchingGermplasmsTagAllCheckBox;
@@ -72,19 +73,17 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	private GermplasmDataManager germplasmDataManager;
 	
 	
-	public SearchResultsComponent(ListManagerMain listManagerMain, AbsoluteLayout parentLayout){
+	public SearchResultsComponent(ListManagerMain listManagerMain, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout){
 		this.listManagerMain = listManagerMain;
-		this.parentLayout = parentLayout;
+		this.displayDetailsLayout = displayDetailsLayout;
 	}
+	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		displayDetailsLayout = new ListManagerDetailsLayout(this.listManagerMain, this.parentLayout, true);
-		
 		matchingListsLabel = new Label();
 		matchingListsLabel.setWidth("250px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
@@ -100,13 +99,15 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
 		matchingListsTable.setHeight("120px");
-		
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
+		matchingListsTable.setDragMode(TableDragMode.ROW);
 		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
 		matchingListsTable.addListener(new Table.ValueChangeListener() {
-			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+			private static final long serialVersionUID = 3615932501066430909L;
+
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
 				 syncItemCheckBoxes(matchingListsTable);
 			 }
 		 });		
@@ -130,9 +131,12 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
+		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
 		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
 		matchingGermplasmsTable.addListener(new Table.ValueChangeListener() {
-			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+			private static final long serialVersionUID = -4395373252903594080L;
+
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
 				 syncItemCheckBoxes(matchingGermplasmsTable);
 			 }
 		 });
@@ -168,7 +172,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
              		List<Integer> gids = new ArrayList<Integer>();
              		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
              		for(Integer gid : gids){
-             			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
+             			listManagerMain.addGermplasmToBuildNewListTable(gid);
              		}
              	}
 			}
@@ -233,8 +237,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
             itemCheckBox.setImmediate(true);
 	   		itemCheckBox.addListener(new ClickListener() {
 	 			private static final long serialVersionUID = 1L;
-	 			@SuppressWarnings("unchecked")
-				@Override
+	 			@Override
 	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
 	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
@@ -275,8 +278,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
             itemCheckBox.setImmediate(true);
 	   		itemCheckBox.addListener(new ClickListener() {
 	 			private static final long serialVersionUID = 1L;
-	 			@SuppressWarnings("unchecked")
-				@Override
+	 			@Override
 	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
 	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
@@ -412,7 +414,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	return itemIds;
 	}
 
-	
+	/**
     private int getTotalWidth(Table table){
     	int totalWidth = 0;
     	List<Object> visibleColumnIds = new ArrayList<Object>();
@@ -422,6 +424,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	}
     	return totalWidth;
     }
+    **/
     
     public ListManagerDetailsLayout getListManagerDetailsLayout(){
     	return this.displayDetailsLayout;

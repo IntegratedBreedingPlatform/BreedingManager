@@ -181,7 +181,7 @@ public class ListManagerMain extends VerticalLayout implements
 		Integer listId = germplasmList.getId();
 		//remove from Browse Lists and Search Lists tabsheets
 		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().removeListTab(listId);
-		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
+		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
 		
 		this.getBrowseListsComponent().getListManagerTreeComponent().removeListFromTree(germplasmList);
 		//TODO remove from Matching Lists table and Build/Edit List screen
@@ -190,7 +190,7 @@ public class ListManagerMain extends VerticalLayout implements
 	public void updateUIForRenamedList(Integer listId, String newName){
 		//remove from Browse Lists and Search Lists tabsheets
 		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
-		this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
 		
 		//TODO update Matching Lists table and Build/Edit List screen
 	}

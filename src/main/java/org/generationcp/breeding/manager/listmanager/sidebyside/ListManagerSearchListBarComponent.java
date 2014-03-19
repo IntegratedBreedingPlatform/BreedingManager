@@ -1,15 +1,26 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -18,6 +29,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
@@ -49,24 +62,22 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
+    private PopupView popup;
 
-    private Table matchingListsTable;
-    private Table matchingGermplasmsTable;
-    
-    Panel searchPanel;
+    private Panel searchPanel;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
 	
-
-	public ListManagerSearchListBarComponent() {
-		super();
-	}
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 	
-	public ListManagerSearchListBarComponent(Table matchingListsTable, Table matchingGermplasmsTable) {
+	@Autowired
+	private GermplasmListManager germplasmListManager;
+		
+	public ListManagerSearchListBarComponent(SearchResultsComponent searchResultsComponent) {
 		super();
-		this.matchingGermplasmsTable = matchingGermplasmsTable;
-		this.matchingListsTable = matchingListsTable;
+		this.searchResultsComponent = searchResultsComponent;
 	}
 
 	@Override
@@ -98,10 +109,6 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
         searchField = new TextField();
         searchField.setImmediate(true);
         
-        /**
-         * TODO: replace with image button
-         */
-        
         searchButton = new Button();
         searchButton.setWidth("30px");
         searchButton.setHeight("30px");
@@ -112,7 +119,7 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 
         Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
         descLbl.setWidth("300px");
-        PopupView popup = new PopupView(" ? ",descLbl);
+        popup = new PopupView(" ? ",descLbl);
         popup.setStyleName("gcp-popup-view");
         
         likeOrEqualCheckBox = new CheckBox();
@@ -120,17 +127,7 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
         
         includeParentsCheckBox = new CheckBox();
         includeParentsCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PARENTS));
-        
-        searchBar.addComponent(searchLabel, "top:13px; left:20px;");
-        searchBar.addComponent(searchField, "top:10px; left:100px;");
-        searchBar.addComponent(searchButton, "top:8px; left:280px;");
-        searchBar.addComponent(popup, "top:12px; left:330px;");
-        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 350px;");
-        searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 500px;");
-        
-        searchPanel.setLayout(searchBar);
-       
-	}
+    }
 
 	@Override
 	public void initializeValues() {
@@ -140,13 +137,39 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
+		searchButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1926462184420334992L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				searchButtonClickAction();	
+			}
+		});
 		
+		searchPanel.addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+            private static final long serialVersionUID = 288627665348761948L;
+
+            @Override
+            public void handleAction(Object sender, Object target) {
+                searchButtonClickAction();
+            }
+        });
+
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		 addComponent(searchPanel, "top:10px; left:20px;");
+		searchBar.addComponent(searchLabel, "top:13px; left:20px;");
+        searchBar.addComponent(searchField, "top:10px; left:100px;");
+        searchBar.addComponent(searchButton, "top:8px; left:265px;");
+        searchBar.addComponent(popup, "top:12px; left:315px;");
+        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
+        searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 485px;");
+        
+        searchPanel.setLayout(searchBar);
+       
+		addComponent(searchPanel, "top:10px; left:20px;");
 	}
 
 	@Override
@@ -155,4 +178,45 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 		
 	}
 
+	public void searchButtonClickAction(){
+		String q = searchField.getValue().toString();
+		doSearch(q);
+	}
+	
+	public void doSearch(String q){
+		try {
+			
+			List<GermplasmList> germplasmLists;
+			List<Germplasm> germplasms;
+			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
+			if((Boolean) likeOrEqualCheckBox.getValue() == true){
+				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
+				germplasms = doGermplasmSearch(q, Operation.EQUAL, includeParents);
+			} else {
+				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
+				germplasms = doGermplasmSearch(q, Operation.LIKE, includeParents);
+			}
+			
+			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
+					(germplasms == null || germplasms.isEmpty())){
+				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
+						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+			} 
+			searchResultsComponent.applyGermplasmListResults(germplasmLists);
+			searchResultsComponent.applyGermplasmResults(germplasms);
+			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
+		return germplasmListManager.searchForGermplasmList(q, o);
+	}
+	
+	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{
+		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
+	}
 }
