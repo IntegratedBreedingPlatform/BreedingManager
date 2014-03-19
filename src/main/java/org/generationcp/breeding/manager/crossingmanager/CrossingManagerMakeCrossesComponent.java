@@ -15,8 +15,8 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingS
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -61,7 +61,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener, ListTreeActionsListener {
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -113,7 +113,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         MULTIPLY, TOP_TO_BOTTOM
     };
         
-    private ListManagerTreeComponent listTree;
+    private CrossingManagerListTreeComponent listTree;
     private Label selectParentsLabel;
     private Label instructionForSelectParents;
     private TabSheet listDetailsTabSheet;
@@ -134,7 +134,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     	setHeight("1050px");
         this.setMargin(true, true, true, true);
 
-        listTree = new ListManagerTreeComponent(this);
+        listTree = new CrossingManagerListTreeComponent(this);
         addComponent(listTree, "top:15px; left:15px;");
         
         selectParentsLabel = new Label("Select Parents");
@@ -682,7 +682,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         }
 	}
 	
-	public void updateUIForDeletedList(String listName){
+	@Override
+	public void updateUIForDeletedList(GermplasmList list){
+		String listName = list.getName();
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
 			if(tab != null && tab.getCaption().equals(listName)){
@@ -692,7 +694,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 	}
 	
-	public void updateUIForRenamedList(Integer listId, String newName){
+	@Override
+	public void updateUIForRenamedList(GermplasmList list, String newName){
+		Integer listId = list.getId();
 		String description = ListManagerDetailsLayout.generateTabDescription(listId);
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
@@ -703,6 +707,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void assignEntryNumber(Table parentsTable){
 		int entryNumber = 1;
 		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
@@ -713,5 +718,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
 			entryNumber++;
 		}
+	}
+
+
+	@Override
+	public void openListDetails(GermplasmList list) {
+		createListDetailsTab(list.getId(), list.getName());
+		
 	}
 }

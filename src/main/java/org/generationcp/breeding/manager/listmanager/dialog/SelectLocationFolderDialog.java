@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListNameField;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -28,13 +28,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectLocationFolderDialog extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout{
+public class SelectLocationFolderDialog extends Window implements 
+		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -5502264917037916149L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SelectLocationFolderDialog.class);
 
 	private SelectLocationFolderDialogSource source;
-	private ListManagerTreeComponent germplasmListTree;
+	private LocalListFoldersTreeComponent germplasmListTree;
 	
 	private Button cancelButton;
 	private Button selectLocationButton;
@@ -57,6 +58,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId){
 		this.source = source;
 		this.folderId = folderId;
+		this.fromMakeCrosses = false;
 	}
 	
 	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId, Boolean fromMakeCrosses){
@@ -109,7 +111,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		selectLocationButton = new Button(selectBtnCaption);
 		selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 				
-		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
+		germplasmListTree = new LocalListFoldersTreeComponent(folderId); 
 				
 	}
 
@@ -166,8 +168,8 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 			setWidth("280px");
 		}
 		else{
-			setHeight("380px");
-			setWidth("250px");
+			setHeight("445px");
+			setWidth("270px");
 		}
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -208,5 +210,5 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		
 		return true;
 	}
-	
+
 }
