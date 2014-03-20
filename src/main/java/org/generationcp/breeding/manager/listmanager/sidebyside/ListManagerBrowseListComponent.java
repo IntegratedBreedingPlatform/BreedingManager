@@ -1,11 +1,9 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -106,7 +103,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		listTreeComponent = new ListManagerTreeComponent(this);
 		
 		leftLayout.addComponent(listTreeComponent,"top:30px;left:20px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; right:0px");
+		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
 		
 		//right pane
 		createViewListDetailsTabSheet();
