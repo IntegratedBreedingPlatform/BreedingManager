@@ -2,9 +2,11 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -15,16 +17,14 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalSplitPanel;
 
 @Configurable
 public class ListManagerMain extends AbsoluteLayout implements
-		InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+		InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
 
     private static final long serialVersionUID = 5976245899964745758L;
     private static final String VERSION = "1.0.0";
@@ -82,7 +82,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 		// TODO Auto-generated method stub
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void instantiateComponents() {
 		setSizeFull(); 
@@ -132,7 +131,6 @@ public class ListManagerMain extends AbsoluteLayout implements
         tabHeaderLayout.addComponent(showSearchListsButton);
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void setContent(){
 		
 		vSplitPanel = new VerticalSplitPanel();
@@ -156,7 +154,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		searchBarLayout.setMargin(true);
 		searchBarLayout.addComponent(searchListsBarComponent);
 		
-		browseListsComponent = new ListManagerBrowseListComponent();
+		browseListsComponent = new ListManagerBrowseListComponent(this);
         browserSearchLayout = new AbsoluteLayout();
         browserSearchLayout.addStyleName("leftPane");
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
@@ -267,14 +265,6 @@ public class ListManagerMain extends AbsoluteLayout implements
     	vSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
     }
     
-    public void updateUIForDelete(){
-    	
-    }
-    
-    public void updateUIForRename(){
-    	
-    }
-    
     public void showBuildNewListComponent(){
     	//TODO
     }
@@ -282,4 +272,21 @@ public class ListManagerMain extends AbsoluteLayout implements
     public void addGermplasmToBuildNewListTable(Integer gid){
     	//TODO
     }
+
+	@Override
+	public void updateUIForDeletedList(GermplasmList list) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateUIForRenamedList(GermplasmList list, String newName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openListDetails(GermplasmList list) {
+		browseListsComponent.openListDetails(list);
+	}
 }

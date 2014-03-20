@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -19,10 +18,10 @@ import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class ListManagerBrowseListComponent extends VerticalLayout implements
-	InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
+	InternationalizableComponent, InitializingBean, BreedingManagerLayout{
 
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -383145225475654748L;
+
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -41,10 +40,6 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	
 	private ListManagerMain source;
 	
-	public ListManagerBrowseListComponent() {
-		super();
-	}
-	
 	public ListManagerBrowseListComponent(ListManagerMain source) {
 		super();
 		this.source = source;
@@ -59,28 +54,8 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		expandLeft();
 	}
 	
-	private void createViewListDetailsTabSheet(){
-//		tabSheetList = new TabSheet();
-//		tabSheetList.setWidth("95%");
-//		tabSheetList.setHeight("500px");
-//		
-//		VerticalLayout layout = new VerticalLayout();
-//		list1 = new ListManagerTreeMenu(1426,"IIRON-1986",1,1,false,null);
-//		layout.addComponent(list1);
-//		Tab tab1 = tabSheetList.addTab(layout, "IIRON-1986");
-//		tab1.setClosable(true);
-//    	
-//		VerticalLayout layout2 = new VerticalLayout();
-//		list2 = new ListManagerTreeMenu(1427,"IIRON-1987",1,1,false,null);
-//		layout2.addComponent(list2);
-//		Tab tab2 = tabSheetList.addTab(layout2, "IIRON-1987");
-//		tab2.setClosable(true);
-		listDetailsLayout = new ListManagerDetailsLayout();
-	}
-
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -94,29 +69,22 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		
 		//left pane
 		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("240px");
 		
 		toggleLeftPaneButton = new Button();
 		toggleLeftPaneButton.setCaption("<<");
 		toggleLeftPaneButton.setDescription("Toggle List Manager Tree");
 		
-		listTreeComponent = new ListManagerTreeComponent(this);
-		
-		leftLayout.addComponent(listTreeComponent,"top:30px;left:20px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
+		listTreeComponent = new ListManagerTreeComponent(source);
 		
 		//right pane
-		createViewListDetailsTabSheet();
+		listDetailsLayout = new ListManagerDetailsLayout();
 		
 		rightLayout = new VerticalLayout();
 		rightLayout.setMargin(true);
-		rightLayout.addComponent(listDetailsLayout);
-		
 	}
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -140,6 +108,12 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
+		leftLayout.setWidth("240px");
+		leftLayout.addComponent(listTreeComponent,"top:30px;left:20px");
+		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
+		
+		rightLayout.addComponent(listDetailsLayout);
+		
 		hSplitPanel.setFirstComponent(leftLayout);
 		hSplitPanel.setSecondComponent(rightLayout);
 		addComponent(hSplitPanel);
@@ -157,21 +131,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
     	toggleLeftPaneButton.setCaption(">>");
     }
 
-	@Override
-	public void updateUIForDeletedList(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void openListDetails(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
+    public void openListDetails(GermplasmList list) {
+		listDetailsLayout.createListDetailsTab(list.getId());
 	}
 }
