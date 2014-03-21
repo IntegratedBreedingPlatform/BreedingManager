@@ -161,9 +161,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	            	Integer listId = Integer.parseInt(listIdPart);
 	            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 	                listManagerWindow.setName(name);
-	                listManagerWindow.setSizeUndefined();
-	                listManagerWindow.addComponent(new ListManagerMain(listId));
+	                listManagerWindow.setSizeFull();
+	                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain(listId));
 	                this.addWindow(listManagerWindow);
+	                listManagerWindow.getContent().setHeight("100%");
 	                return listManagerWindow;
             	} catch(NumberFormatException ex){
             		Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));

@@ -40,9 +40,18 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	
 	private ListManagerMain source;
 	
+	private Integer selectedListId;
+	
 	public ListManagerBrowseListComponent(ListManagerMain source) {
 		super();
 		this.source = source;
+		this.selectedListId = null;
+	}
+	
+	public ListManagerBrowseListComponent(ListManagerMain source, Integer listId) {
+		super();
+		this.source = source;
+		this.selectedListId = listId;
 	}
 
 	@Override
@@ -74,7 +83,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		toggleLeftPaneButton.setCaption("<<");
 		toggleLeftPaneButton.setDescription("Toggle List Manager Tree");
 		
-		listTreeComponent = new ListManagerTreeComponent(source);
+		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		
 		//right pane
 		listDetailsLayout = new ListManagerDetailsLayout();

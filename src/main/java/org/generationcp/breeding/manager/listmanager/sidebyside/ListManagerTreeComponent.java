@@ -17,6 +17,10 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	public ListManagerTreeComponent(ListTreeActionsListener treeActionsListener) {
 		super(treeActionsListener);
 	}
+	
+	public ListManagerTreeComponent(ListTreeActionsListener treeActionListener, Integer listId){
+		super(treeActionListener, listId);
+	}
 
 
 	@Autowired

@@ -61,9 +61,20 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
 	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
+	private Integer selectedListId;
+	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
+    public ListManagerMain(){
+    	super();
+    	this.selectedListId = null;
+    }
+    
+    public ListManagerMain(Integer selectedListId){
+    	super();
+    	this.selectedListId = selectedListId;
+    }
 	
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -154,7 +165,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		searchBarLayout.setMargin(true);
 		searchBarLayout.addComponent(searchListsBarComponent);
 		
-		browseListsComponent = new ListManagerBrowseListComponent(this);
+		browseListsComponent = new ListManagerBrowseListComponent(this, selectedListId);
         browserSearchLayout = new AbsoluteLayout();
         browserSearchLayout.addStyleName("leftPane");
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
