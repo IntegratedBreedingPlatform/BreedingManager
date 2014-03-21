@@ -13,6 +13,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
+@Deprecated
 @Configurable
 public class ConfirmDialogSelectedTabCloseHandler implements TabSheet.CloseHandler{
 

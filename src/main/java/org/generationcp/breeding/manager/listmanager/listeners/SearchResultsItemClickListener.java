@@ -1,7 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +33,14 @@ public class SearchResultsItemClickListener implements ItemClickListener {
 			if (resultType.equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
 				detailsLayout.createGermplasmDetailsTab(itemId);
 			} else if (resultType.equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-				detailsLayout.createListDetailsTab(itemId);
+			    try{
+			        detailsLayout.createListDetailsTab(itemId);
+		        } catch (MiddlewareQueryException e){
+		            LOG.error("Error in displaying germplasm list details.", e);
+		            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+		                    Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
+		        }
+				
 			}
 		}
 

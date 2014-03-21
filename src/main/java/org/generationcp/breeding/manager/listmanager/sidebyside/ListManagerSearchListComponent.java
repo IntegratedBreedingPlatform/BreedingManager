@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -62,7 +63,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("390px");
 		
-		listManagerDetailsLayout = new ListManagerDetailsLayout();
+		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
 		
 		toggleLeftPaneButton = new Button();

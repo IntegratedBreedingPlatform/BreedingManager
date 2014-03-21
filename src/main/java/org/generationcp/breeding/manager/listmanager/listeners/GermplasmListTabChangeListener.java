@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 
+@Deprecated
 public class GermplasmListTabChangeListener implements TabSheet.SelectedTabChangeListener{
     
 	@SuppressWarnings("unused")
