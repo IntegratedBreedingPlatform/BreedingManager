@@ -74,11 +74,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		
 		List<GermplasmListData> currentListDataEntries = new ArrayList<GermplasmListData>();
         
-		int count = 1;
 		for (GermplasmListEntry listEntry : listEntries){
 			int id = listEntry.getListDataId();
             int gid = listEntry.getGid();
-            int entryId = count; //entry no 
+            int entryId = listEntry.getEntryId(); 
             String designation = listEntry.getDesignation();
             String groupName = germplasmManager.getCrossExpansion(gid, 1);
             String seedSource = listEntry.getSeedSource();
@@ -88,11 +87,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
             
             germplasmListData.setId(id);
             currentListDataEntries.add(germplasmListData); // with no ids
-            count++;
         }
 		
 		List<GermplasmListData> existingListDataEntries = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Integer.MAX_VALUE);
-		System.out.println("No of Existing List: " + existingListDataEntries.size());
+		
 		//get all the list to add
 		List<GermplasmListData> listToAdd = new ArrayList<GermplasmListData>();
 		if(existingListDataEntries.size() > 0){
@@ -122,7 +120,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
 		for(GermplasmListData entry: currentListDataEntries){
 			if(!existingListDataEntries.contains(entry)){
-				System.out.println("New Entries: " + entry);
 				entry.setId(null);
 				toreturn.add(entry);
 			}
@@ -132,9 +129,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	
 	private List<GermplasmListData> getEntriesToUpdate(List<GermplasmListData> currentListDataEntries, List<GermplasmListData> existingListDataEntries){		
 		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
-		for(GermplasmListData entry: currentListDataEntries){
-			if(existingListDataEntries.contains(entry)){
-				System.out.println("Entries to Update: " + entry);
+		for(GermplasmListData entry: existingListDataEntries){
+			if(currentListDataEntries.contains(entry)){
 				toreturn.add(entry);
 			}
 		}

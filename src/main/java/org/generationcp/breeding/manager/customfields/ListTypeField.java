@@ -75,8 +75,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             String typeCode = listType.getFcode();
             selectType.addItem(typeCode);
             selectType.setItemCaption(typeCode, listType.getFname());
-            //set "F1 Nursery List" as the default value
-            if ("F1".equals(typeCode)) {
+            //set "Germplasm List" as the default value
+            if ("LST".equals(typeCode)) {
                 selectType.setValue(typeCode);
             }
         }

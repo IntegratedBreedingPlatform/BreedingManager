@@ -92,8 +92,7 @@ public class ListDateField extends HorizontalLayout
 		this.listDtDateField = listDtDateField;
 	}
 	
-	public void setValue(Long dateValue){
-		Date date = new Date(dateValue);
+	public void setValue(Date date){
 		listDtDateField.setValue(date);
 	}
 
