@@ -286,14 +286,14 @@ public class ListManagerMain extends AbsoluteLayout implements
 
 	@Override
 	public void updateUIForDeletedList(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
+		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
+		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());
 	}
 
 	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		// TODO Auto-generated method stub
-		
+		browseListsComponent.getListDetailsLayout().renameTab(list.getId(), newName);
+		searchListsComponent.getListManagerDetailsLayout().renameTab(list.getId(), newName);
 	}
 
 	@Override
