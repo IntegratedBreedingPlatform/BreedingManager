@@ -1,9 +1,15 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -19,6 +25,8 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class ListManagerBrowseListComponent extends VerticalLayout implements
 	InternationalizableComponent, InitializingBean, BreedingManagerLayout{
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ListManagerBrowseListComponent.class);
 
 	private static final long serialVersionUID = -383145225475654748L;
 
@@ -86,7 +94,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		
 		//right pane
-		listDetailsLayout = new ListManagerDetailsLayout();
+		listDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE);
 		
 		rightLayout = new VerticalLayout();
 		rightLayout.setMargin(true);
@@ -141,6 +149,12 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
     }
 
     public void openListDetails(GermplasmList list) {
-		listDetailsLayout.createListDetailsTab(list.getId());
+        try{
+            listDetailsLayout.createListDetailsTab(list.getId());
+        } catch (MiddlewareQueryException e){
+            LOG.error("Error in displaying germplasm list details.", e);
+            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+                    Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
+        }
 	}
 }

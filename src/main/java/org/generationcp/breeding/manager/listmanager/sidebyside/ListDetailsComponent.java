@@ -21,6 +21,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	private Label listEntriesLabel;
 	private ListDataComponent listDataComponent;
 	private Integer listId;
+	private boolean hasChanged = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -72,5 +73,18 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean hasChanged() {
+	    return hasChanged;
+	}
+	
+	public void setChanged(boolean hasChanged) {
+	    this.hasChanged = hasChanged;
+	}
+	
+	public void setListNameLabel(String name){
+	    //TODO implement changing of List Name in details section for Rename List
+        //lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
+    }
 
 }
