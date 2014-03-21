@@ -2,13 +2,14 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
+import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.action.SaveGermplasmListAction;
-import org.generationcp.breeding.manager.crossingmanager.dialog.SaveListAsDialog;
-import org.generationcp.breeding.manager.crossingmanager.dialog.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
@@ -17,7 +18,10 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -27,6 +31,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -66,7 +71,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener, SaveListAsDialogSource {
+        implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener, SaveListAsDialogSource, SaveGermplasmListActionSource {
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -133,6 +138,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private Label instructionForSelectParents;
     private TabSheet listDetailsTabSheet;
     private Button closeAllTabsButton;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
     
     public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
         lastOpenedListId = null;
@@ -532,7 +540,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     }
     
     public void saveFemaleParentList() {
-    	if(femaleParentList == null){
+    	saveListAsWindow = null;
+    	if(femaleParentList != null){
     		saveListAsWindow = new SaveListAsDialog(this,femaleParentList);
     	}
     	else{
@@ -545,7 +554,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     }
     
     public void saveMaleParentList() {
-    	if(maleParentList == null){
+    	saveListAsWindow = null;
+    	
+    	if(maleParentList != null){
     		saveListAsWindow = new SaveListAsDialog(this,maleParentList);
     	}
     	else{
@@ -687,7 +698,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             	listDetailsTabSheet.setSelectedTab(tabToFocus);
             }
 	    } else{
-	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId), listName);
+	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId,listName), listName);
 	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
 	    	newTab.setClosable(true);
 	    	listDetailsTabSheet.setSelectedTab(newTab);
@@ -725,9 +736,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	    		Button designationButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
 	    		String designation = designationButton.getCaption();
 	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
-	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption())); 
+	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption()));
 	    		
-	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation);
+	    		String seedSource = getSeedSource(sourceTable,entryId);
+	    		
+	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
 	    		Item item = targetTable.addItem(entryObject);
 	    		if(item != null){
 		    		if(targetTable.equals(femaleParents)){
@@ -753,6 +766,17 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         }
 	}
 	
+	public String getSeedSource(Table table, Integer entryId){
+		String seedSource = "";
+		if(table.getParent().getParent() instanceof SelectParentsListDataComponent ){
+			SelectParentsListDataComponent parentComponent = (SelectParentsListDataComponent) table.getParent().getParent();
+			String listname = parentComponent.getListName();			
+			seedSource = listname + " : " + entryId;
+		}
+		
+		return seedSource;
+	}
+	
 	public void updateUIForDeletedList(String listName){
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
@@ -774,6 +798,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void assignEntryNumber(Table parentsTable){
 		int entryNumber = 1;
 		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
@@ -786,42 +811,119 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void saveList(GermplasmList list) {
-		System.out.println("Pumasok dito???..");
 		SaveListType type = (SaveListType)saveListAsWindow.getData();
-		List<GermplasmListEntry> listEntries = null;
-	    
-		System.out.println("Type: " + type.toString());
-        
+		List<GermplasmListEntry> listEntries = new ArrayList<GermplasmListEntry>();
+		
 		if(type == SaveListType.CROSS){
 			// for Make Crosses as a whole
 		}
 		else if(type == SaveListType.FEMALE){
 			this.saveFemaleListButton.setEnabled(false);
-			listEntries = getCorrectSortedValue(femaleParents);
+			listEntries.addAll((Collection<GermplasmListEntry>) femaleParents.getItemIds());
 			
-			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list,listEntries);
+			//TO DO correct the entryID, get from the parent table
+			// Create Map <Key: "GID+ENTRYID">, <Value:CheckBox Obj>
+			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, listEntries);
 			try {
 				femaleParentList = saveListAction.saveRecords();
 			} catch (MiddlewareQueryException e) {
+				LOG.error("Error in saving the Female Parent List",e);
 				e.printStackTrace();
 			}
 			
+			listTree.setListId(femaleParentList.getId());
+			listTree.createTree();
+			listTree.setSelectedListId(femaleParentList.getId());
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SUCCESS_SAVE_FOR_FEMALE_LIST));
 		}
 		else if(type == SaveListType.MALE){
 			this.saveMaleListButton.setEnabled(false);
-			listEntries = getCorrectSortedValue(maleParents);
+			listEntries.addAll((Collection<GermplasmListEntry>) maleParents.getItemIds());
 			
-			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(list,listEntries);
+			SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, listEntries);
 			try {
 				maleParentList = saveListAction.saveRecords();
 			} catch (MiddlewareQueryException e) {
+				LOG.error("Error in saving the Male Parent List",e);
 				e.printStackTrace();
 			}
 			
+			listTree.setListId(maleParentList.getId());
+			listTree.createTree();
+			listTree.setSelectedListId(maleParentList.getId());
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SUCCESS_SAVE_FOR_MALE_LIST));
+		}
+	}
+
+	@Override
+	public void updateListDataTable(List<GermplasmListData> savedListEntries) {
+		SaveListType type = (SaveListType)saveListAsWindow.getData();
+
+		if(type == SaveListType.CROSS){
+			// for Make Crosses as a whole
+		}
+		else if(type == SaveListType.FEMALE){
+			
+			List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
+			selectedItemIds.addAll((Collection<GermplasmListEntry>) femaleParents.getValue());
+			
+			femaleParents.removeAllItems();
+			
+			for(GermplasmListData entry : savedListEntries){
+				GermplasmListEntry itemId = new GermplasmListEntry(entry.getId(),entry.getGid(), entry.getEntryId(), entry.getDesignation(), entry.getSeedSource());
+				
+				Item newItem = femaleParents.addItem(itemId);
+				
+				CheckBox tag = new CheckBox();
+				newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+				
+				tag.setValue(true);
+				tag.addListener(new ParentsTableCheckboxListener(femaleParents, itemId, femaleParentsTagAll));
+	            tag.setImmediate(true);
+	            
+	            if(selectedItemIds.contains(itemId)){
+	            	femaleParents.select(itemId);
+	            }
+	            
+				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entry.getEntryId());
+				newItem.getItemProperty("Female Parents").setValue(entry.getDesignation());
+
+			}
+			
+			this.femaleParents.requestRepaint();
+		}
+		else if(type == SaveListType.MALE){
+			List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
+			selectedItemIds.addAll((Collection<GermplasmListEntry>) maleParents.getValue());
+			
+			maleParents.removeAllItems();
+			
+			for(GermplasmListData entry : savedListEntries){
+				GermplasmListEntry itemId = new GermplasmListEntry(entry.getId(),entry.getGid(), entry.getEntryId(), entry.getDesignation(), entry.getSeedSource());
+				
+				Item newItem = maleParents.addItem(itemId);
+				
+				CheckBox tag = new CheckBox();
+				newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+				
+				tag.setValue(true);
+				tag.addListener(new ParentsTableCheckboxListener(maleParents, itemId, maleParentsTagAll));
+	            tag.setImmediate(true);
+	            
+	            if(selectedItemIds.contains(itemId)){
+	            	maleParents.select(itemId);
+	            }
+	            
+				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entry.getEntryId());
+				newItem.getItemProperty("Male Parents").setValue(entry.getDesignation());
+
+			}
+			
+			this.maleParents.requestRepaint();
+
 		}
 	}
 }

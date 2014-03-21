@@ -127,7 +127,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listTypeField.validate();
 			listDateField.validate();
 
-			return false;
+			return true;
 			
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
@@ -151,8 +151,50 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         list.setDate(Long.parseLong(formatter.format(date)));
         list.setNotes(listNotesField.getValue().toString());
         list.setUserId(0);
-        //list.setParent((GermplasmList) getFolderToSaveListToLabel().getData());
+
         return list;
 	}
+	
 
+	//SETTERS and GETTERS
+	public ListNameField getListNameField() {
+		return listNameField;
+	}
+
+	public void setListNameField(ListNameField listNameField) {
+		this.listNameField = listNameField;
+	}
+
+	public ListDescriptionField getListDescriptionField() {
+		return listDescriptionField;
+	}
+
+	public void setListDescriptionField(ListDescriptionField listDescriptionField) {
+		this.listDescriptionField = listDescriptionField;
+	}
+
+	public ListTypeField getListTypeField() {
+		return listTypeField;
+	}
+
+	public void setListTypeField(ListTypeField listTypeField) {
+		this.listTypeField = listTypeField;
+	}
+
+	public ListDateField getListDateField() {
+		return listDateField;
+	}
+
+	public void setListDateField(ListDateField listDateField) {
+		this.listDateField = listDateField;
+	}
+
+	public ListNotesField getListNotesField() {
+		return listNotesField;
+	}
+
+	public void setListNotesField(ListNotesField listNotesField) {
+		this.listNotesField = listNotesField;
+	}
+	
 }

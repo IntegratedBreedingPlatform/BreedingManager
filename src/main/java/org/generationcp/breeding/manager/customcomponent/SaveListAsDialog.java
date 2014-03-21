@@ -1,10 +1,12 @@
-package org.generationcp.breeding.manager.crossingmanager.dialog;
+package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -82,7 +84,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
 		germplasmListTree.setHeading(listLocationLabel);
 		
-		listDetailsComponent = new BreedingManagerListDetailsComponent();
+		listDetailsComponent = new BreedingManagerListDetailsComponent(germplasmList);
 		
 		cancelButton = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
 		cancelButton.setWidth("80px");
@@ -95,7 +97,24 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	@Override
 	public void initializeValues() {
 		if(germplasmList != null){
-			germplasmListTree.setSelectedListId(germplasmList.getParent().getId());
+			
+			GermplasmList parent = germplasmList.getParent();
+			
+			ListNameField listNameField = this.listDetailsComponent.getListNameField();
+			ListNameValidator listNameValidator = listNameField.getListNameValidator();
+			listNameValidator.setCurrentListName(germplasmList.getName());
+			
+			if(parent != null){ // if not "Program Lists"
+				germplasmListTree.setListId(parent.getId());
+				germplasmListTree.setSelectedListId(parent.getId());
+				
+				listNameValidator.setParentFolder(germplasmList.getParent().getName());
+			}
+			
+			germplasmListTree.createTree();
+			
+			listNameField.setListNameValidator(listNameValidator);
+			listDetailsComponent.setListNameField(listNameField);
 		}
 	}
 
@@ -108,7 +127,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(validateAllFields()){
-					source.saveList(germplasmList);
+					source.saveList(getGermplasmListToSave());
 				}
 				
 				Window window = event.getButton().getWindow();
@@ -173,9 +192,15 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	}
 	
 	public GermplasmList getGermplasmListToSave(){
+		Integer currentId = null;
+		if(germplasmList != null){
+			currentId = germplasmList.getId();
+		}
 		germplasmList = listDetailsComponent.getGermplasmList();
+		germplasmList.setId(currentId);
 		germplasmList.setParent(getParentList());         
-
+		germplasmList.setStatus(0);
+		
         return germplasmList;
 	}
 

@@ -45,6 +45,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
+	private String listName;
 	
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	
@@ -57,6 +58,12 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	public SelectParentsListDataComponent(Integer germplasmListId){
 		super();
 		this.germplasmListId = germplasmListId;
+	}
+	
+	public SelectParentsListDataComponent(Integer germplasmListId, String listName){
+		super();
+		this.germplasmListId = germplasmListId;
+		this.listName = listName;
 	}
 	
 	@Override
@@ -185,5 +192,9 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 	
 	public Table getListDataTable(){
 		return this.listDataTable;
+	}
+
+	public String getListName() {
+		return this.listName;
 	}
 }

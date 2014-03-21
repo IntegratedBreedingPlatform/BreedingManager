@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.crossingmanager.dialog;
+package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.middleware.pojos.GermplasmList;
 

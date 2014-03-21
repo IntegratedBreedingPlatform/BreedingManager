@@ -118,7 +118,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		listNameTextField.setRequiredError("Please specify the name of the list.");
 		listNameTextField.addValidator(new StringLengthValidator(
                 "List Description must not exceed 255 characters.", 1, 100, false));
-		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
+		//listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
 		
 		saveListNameButton = new Button();
 		saveListNameButton.setWidth("100px");
