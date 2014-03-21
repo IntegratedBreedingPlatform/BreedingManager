@@ -122,5 +122,10 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	public void updateLabels() {
 		
 	}
+
+	public ListManagerDetailsLayout getListManagerDetailsLayout() {
+		return listManagerDetailsLayout;
+	}
+	
 }
 

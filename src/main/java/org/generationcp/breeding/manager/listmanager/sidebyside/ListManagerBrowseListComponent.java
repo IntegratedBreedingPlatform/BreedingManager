@@ -143,4 +143,9 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
     public void openListDetails(GermplasmList list) {
 		listDetailsLayout.createListDetailsTab(list.getId());
 	}
+
+	public ListManagerDetailsLayout getListDetailsLayout() {
+		return listDetailsLayout;
+	}
+    
 }
