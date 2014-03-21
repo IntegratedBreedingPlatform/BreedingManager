@@ -68,9 +68,20 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     private HorizontalLayout headingBar;
     private Button btnCloseAllTabs;
     
+    private Integer listId;
+    
     public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource) {
+    	super();
         this.listManagerMain = listManagerMain;
         this.detailSource = detailSource;
+        this.listId = null;
+    }
+    
+    public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource, Integer listId) {
+    	super();
+        this.listManagerMain = listManagerMain;
+        this.detailSource = detailSource;
+        this.listId = listId;
     }
     
     @Override
@@ -79,11 +90,19 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         initializeValues();
         layoutComponents();
         addListeners();
+        
+        if(listId != null){
+        	try{
+        		createListDetailsTab(listId);
+        	} catch(MiddlewareQueryException ex){
+        		LOG.error("Error with opening list details tab of list with id: " + listId);
+        	}
+        }
     }
     
     @Override
     public void instantiateComponents() {
-        detailsTabSheet = new TabSheet();
+    	detailsTabSheet = new TabSheet();
         
         noListLabel = new Label();
         noListLabel.setImmediate(true);
@@ -92,6 +111,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
+        
+        headingBar = new HorizontalLayout();
         
         heading = new Label();
         heading.setImmediate(true);
@@ -112,7 +133,6 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     @Override
     public void layoutComponents() {
-        headingBar = new HorizontalLayout();
         headingBar.setWidth("100%");
         headingBar.setHeight("27px");
         headingBar.addComponent(heading);

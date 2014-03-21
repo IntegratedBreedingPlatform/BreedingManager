@@ -94,7 +94,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		
 		//right pane
-		listDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE);
+		listDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
 		
 		rightLayout = new VerticalLayout();
 		rightLayout.setMargin(true);
