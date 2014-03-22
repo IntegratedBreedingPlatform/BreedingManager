@@ -46,6 +46,15 @@
 	font-weight: bold;
 }
 
+/* Search Bar Component Layout*/
+.v-panel-search-panel {
+	background-color: #e3e3e3;
+}
+
+.v-panel-search-panel div {
+	background-color: #e3e3e3;
+}
+
 .gcp-popup-view {
      background-color: #5A5A5A;
      border-radius: 1px 1px 1px 1px;
@@ -236,12 +245,6 @@
 	padding: 10px;
 }
 
-.list-manager-search-bar {
-	border:1px solid #e0e0e0;
-	background: #efefef;
-	
-}
-
 .gray-rounded-border{
 	border:1px solid #e0e0e0;
 	border-radius: 3px;	
@@ -329,10 +332,6 @@
 .overflow_scroll {
 	overflow: scroll !important;
 }
-.v-panel-search-panel {
-	background-color: #e3e3e3;	
-	max-width: 98%;
-}
 
 /* context menu tools button */
 .v-ctxmenu .ctxmenu-menu-item:hover {
@@ -399,11 +398,6 @@
 	background-image: none;
 }
 
-/*
-.v-absolutelayout-leftPane  {
-	background-color: #ffffff;
-}*/
-
 /* TabStyled Header */
 .v-button-tabStyleButton {
 	border-color: #f6f6f6;
@@ -412,17 +406,56 @@
 .v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
 .tabHeaderStyle div div .v-button:hover,
 .tabHeaderStyle div div .v-button:hover .v-button-wrap,
-.tabHeaderStyle div div .v-button:focus,
-.tabHeaderStyle div div .v-button:focus .v-button-wrap, .tabHeaderStyle div div .v-button:hover .v-button-wrap,
-.tabHeaderStyle div div .v-button:active, .tabHeaderStyle div div .v-pressed.v-button,
-.tabHeaderStyle div div .v-button:active .v-button-wrap, .tabHeaderStyle div div .v-pressed.v-button .v-button-wrap
+.tabHeaderStyle div div .v-button:active, 
+.tabHeaderStyle div div .v-button:active .v-button-wrap
 {
 	border-color: #f6f6f6;
 	background: #f6f6f6;
 }
 
+.v-button-tabStyleButton,
+.tabHeaderStyle div div .v-button:hover,
+.tabHeaderStyle div div .v-button:active{
+	border: 1px solid #e3e3e3;
+}
+
+.tabHeaderStyle div div .v-button:focus,
+.tabHeaderStyle div div .v-button:focus .v-button-wrap,
+.tabHeaderStyle div div .v-pressed.v-button,
+.tabHeaderStyle div div .v-pressed.v-button .v-button-wrap 
+{
+	background: #ffffff;
+}
+
+.tabHeaderStyle div div .v-button:focus,
+.tabHeaderStyle div div .v-pressed.v-button{
+	border: 1px solid #e3e3e3;	
+}
+
+.v-button-tabHeaderSelectedStyle, 
+.tabHeaderSelectedStyle .v-button-wrap,
+.tabHeaderSelectedStyle div div .v-button:hover,
+.tabHeaderSelectedStyle div div .v-button:hover .v-button-wrap,
+.tabHeaderSelectedStyle div div .v-button:active, 
+.tabHeaderSelectedStyle div div .v-button:active .v-button-wrap
+{
+	background: #ffffff;
+}
+
+.v-button-tabHeaderSelectedStyle,
+.tabHeaderSelectedStyle div div .v-button:hover,
+.tabHeaderSelectedStyle div div .v-button:active
+{
+	border: 1px solid #e3e3e3;
+}
+
+.tabContainerStyle {
+	border: 1px solid #e3e3e3;
+}
+
 .tabStyleButton .v-button-caption {
 	color: #333;
+}
 
 /* Hides Required Field indicator */
 .v-required-field-indicator {
@@ -436,5 +469,9 @@
 }
 
 .searchPaneLayout {
-	background-color: #f6f6f6; 
+	background-color: #ffffff; 
+}
+
+.searchBarLayout > div {
+	background-color: #e3e3e3;
 }

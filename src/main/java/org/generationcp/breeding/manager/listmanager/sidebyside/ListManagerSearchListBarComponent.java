@@ -19,23 +19,22 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Runo;
 
 @Configurable
-public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
+public class ListManagerSearchListBarComponent extends HorizontalLayout implements
 	InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
@@ -55,7 +54,7 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
 	        " or to only return results which match the query exactly (when checked).";
 	
-	private AbsoluteLayout searchBar;
+	private AbsoluteLayout searchBarLayout;
 	private Label searchLabel;
 	private TextField searchField;
 	private SearchResultsComponent searchResultsComponent;
@@ -93,14 +92,10 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 		addStyleName("searchPaneLayout");
 		
 		searchPanel = new Panel();
-        searchPanel.addStyleName("search-panel");
-        searchPanel.addStyleName(Runo.PANEL_LIGHT);
-        searchPanel.addStyleName("list-manager-search-bar");
-        searchPanel.setScrollable(false);
+		searchPanel.setWidth("100%");
+		searchPanel.setHeight("45px");
         
-        searchBar = new AbsoluteLayout();
-        searchBar.setWidth("80%");
-        searchBar.setHeight("40px");
+        //searchPanel.setScrollable(false);
         
         searchLabel = new Label();
         searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
@@ -160,16 +155,22 @@ public class ListManagerSearchListBarComponent extends AbsoluteLayout implements
 	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		searchBar.addComponent(searchLabel, "top:13px; left:20px;");
-        searchBar.addComponent(searchField, "top:10px; left:100px;");
-        searchBar.addComponent(searchButton, "top:8px; left:265px;");
-        searchBar.addComponent(popup, "top:12px; left:315px;");
-        searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
-        searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 485px;");
+		searchBarLayout = new AbsoluteLayout();
+		searchBarLayout.setHeight("40px");
+		searchBarLayout.addStyleName("searchBarLayout");
+		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
+        searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
+        searchBarLayout.addComponent(searchButton, "top:8px; left:265px;");
+        searchBarLayout.addComponent(popup, "top:12px; left:315px;");
+        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
+        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 485px;");
         
-        searchPanel.setLayout(searchBar);
-       
-		addComponent(searchPanel, "top:10px; left:20px;");
+        searchPanel.setLayout(searchBarLayout);
+        
+        setWidth("99%");
+        setHeight("75px");
+        setMargin(true);
+		addComponent(searchPanel);
 	}
 
 	@Override

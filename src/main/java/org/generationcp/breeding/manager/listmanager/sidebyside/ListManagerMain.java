@@ -44,7 +44,6 @@ public class ListManagerMain extends AbsoluteLayout implements
     private VerticalSplitPanel vSplitPanel;
     
     //Layouts on every pane
-    private HorizontalLayout searchBarLayout;
     private AbsoluteLayout browserSearchLayout;
     private HorizontalLayout buildListLayout;
     
@@ -58,7 +57,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(66); //actual width in pixel 650 
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
 	
-	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
+	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(80); //actual width in pixel
 	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
 	private Integer selectedListId;
@@ -130,6 +129,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private void setTabHeader(){
         showBrowseListsButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
         showSearchListsButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        showBrowseListsButton.addStyleName("tabHeaderSelectedStyle");
         showBrowseListsButton.addStyleName("tabStyleButton");
         showSearchListsButton.addStyleName("tabStyleButton");
         showBrowseListsButton.setImmediate(true);
@@ -149,6 +149,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		vSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setImmediate(true);
+		vSplitPanel.addStyleName("tabContainerStyle");
 		
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setSizeFull();
@@ -157,17 +158,12 @@ public class ListManagerMain extends AbsoluteLayout implements
 		hSplitPanel.setMinSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setImmediate(true);
 		
-		searchListsComponent = new ListManagerSearchListComponent(this);
 		
+		searchListsComponent = new ListManagerSearchListComponent(this);
 		searchListsBarComponent = new ListManagerSearchListBarComponent(searchListsComponent.getSearchResultsComponent());
-		searchBarLayout = new HorizontalLayout();
-		searchBarLayout.setSizeFull();
-		searchBarLayout.setMargin(true);
-		searchBarLayout.addComponent(searchListsBarComponent);
 		
 		browseListsComponent = new ListManagerBrowseListComponent(this, selectedListId);
         browserSearchLayout = new AbsoluteLayout();
-        browserSearchLayout.addStyleName("leftPane");
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
         
@@ -206,6 +202,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 			public void buttonClick(ClickEvent event) {
 				showBrowseListPane();
 				collapseTop();
+				showBrowseListsButton.removeStyleName("tabHeaderStyle");
+				showBrowseListsButton.addStyleName("tabHeaderSelectedStyle");
+				
+				showSearchListsButton.removeStyleName("tabHeaderSelectedStyle");
+		        showSearchListsButton.addStyleName("tabHeaderStyle");
 			}
 
 		});
@@ -217,6 +218,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 			public void buttonClick(ClickEvent event) {
 				expandTop();
 				showSearchListPane();
+				showBrowseListsButton.removeStyleName("tabHeaderSelectedStyle");
+				showBrowseListsButton.addStyleName("tabHeaderStyle");
+				
+				showSearchListsButton.removeStyleName("tabHeaderStyle");
+		        showSearchListsButton.addStyleName("tabHeaderSelectedStyle");
 			}
 		});
 		
