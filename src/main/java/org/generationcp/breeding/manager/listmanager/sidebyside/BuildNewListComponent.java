@@ -147,7 +147,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
         
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.TAG);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.CHECK_ICON);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);

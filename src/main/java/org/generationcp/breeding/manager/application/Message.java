@@ -427,4 +427,5 @@ public enum Message{
     //Side by Side - List Manager
     ,LISTS
     ,AVAILABLE_LISTS
+    ,CHECK_ICON
 }

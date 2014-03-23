@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -35,6 +36,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	
 	private String MATCHING_GERMPLASMS_TABLE_DATA = SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
 	private String MATCHING_LISTS_TABLE_DATA = SearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
+	private String LIST_DATA_TABLE_DATA = ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA;
 	
 	private GermplasmDataManager germplasmDataManager;
 	private GermplasmListManager germplasmListManager;
@@ -49,32 +51,46 @@ public class BuildNewListDropHandler implements DropHandler {
 	@Override
 	public void drop(DragAndDropEvent event) {
 		
-		TableTransferable transferable = (TableTransferable) event.getTransferable();
-        Table sourceTable = (Table) transferable.getSourceComponent();
-        String sourceTableData = sourceTable.getData().toString();
-        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
-        targetTable = (Table) dropData.getTarget();
-		
-		if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
+		if(event.getTransferable() instanceof TableTransferable){
 			
-			//If table has selected items, add selected items
-			if(hasSelectedItems(sourceTable))
-				addSelectedGermplasmsFromTable(sourceTable);
-			//If none, add what was dropped
-			else
-				addGermplasm((Integer) transferable.getItemId());
+			TableTransferable transferable = (TableTransferable) event.getTransferable();
+	        Table sourceTable = (Table) transferable.getSourceComponent();
+	        String sourceTableData = sourceTable.getData().toString();
+	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
+	        targetTable = (Table) dropData.getTarget();
 			
-		} else if (sourceTableData.equals(MATCHING_LISTS_TABLE_DATA)){
-			
-			//If table has selected items, add selected items
-			if(hasSelectedItems(sourceTable))
-				addSelectedGermplasmListsFromTable(sourceTable);
-			//If none, add what was dropped
-			else
-				addGermplasmList((Integer) transferable.getItemId());
-			
+			if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
+				
+				//If table has selected items, add selected items
+				if(hasSelectedItems(sourceTable))
+					addSelectedGermplasmsFromTable(sourceTable);
+				//If none, add what was dropped
+				else
+					addGermplasm((Integer) transferable.getItemId());
+				
+			} else if (sourceTableData.equals(MATCHING_LISTS_TABLE_DATA)){
+				
+				//If table has selected items, add selected items
+				if(hasSelectedItems(sourceTable))
+					addSelectedGermplasmListsFromTable(sourceTable);
+				//If none, add what was dropped
+				else
+					addGermplasmList((Integer) transferable.getItemId());
+	
+			} else if (sourceTableData.equals(LIST_DATA_TABLE_DATA)){
+				
+				//If table has selected items, add selected items
+				if(hasSelectedItems(sourceTable))
+					addSelectedGermplasmsFromTable(sourceTable);
+				//If none, add what was dropped
+				else
+					addGermplasm(getGidFromButtonCaption(sourceTable, (Integer) transferable.getItemId()));
+			} else {
+				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
+			}
+					
+		//If source is from tree
 		} else {
-			LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
 		}
 	}
 
@@ -120,8 +136,8 @@ public class BuildNewListDropHandler implements DropHandler {
 	
 	private void addSelectedGermplasmsFromTable(Table sourceTable) {
 		List<Integer> selectedGermplasmIds = getSelectedItemIds(sourceTable);
-		for(Integer gid : selectedGermplasmIds){
-			addGermplasm(gid);
+		for(Integer itemId : selectedGermplasmIds){
+			addGermplasm(getGidFromButtonCaption(sourceTable, itemId));
 		}
 	}
 	
@@ -256,4 +272,13 @@ public class BuildNewListDropHandler implements DropHandler {
         
         return trueOrderedSelectedItemIds;
     }    
+    
+    private Integer getGidFromButtonCaption(Table table, Integer itemId){
+    	Item item = table.getItem(itemId);
+   	    if(item!=null){
+    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString();
+    	    return Integer.valueOf(buttonCaption);
+    	}
+    	return null;	
+    }
 }
