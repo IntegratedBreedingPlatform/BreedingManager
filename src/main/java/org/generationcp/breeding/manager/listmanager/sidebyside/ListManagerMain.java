@@ -17,6 +17,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -64,6 +65,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    //Theme Resource
+  	private static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
 	
     public ListManagerMain(){
     	super();
@@ -166,7 +170,10 @@ public class ListManagerMain extends AbsoluteLayout implements
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
         
         toggleBuildNewListButton = new Button();
+        toggleBuildNewListButton.setIcon(ICON_TOOGLE);
         toggleBuildNewListButton.setDescription("Toggle Build New List Pane");
+        toggleBuildNewListButton.setStyleName(Reindeer.BUTTON_LINK);
+        toggleBuildNewListButton.setWidth("30px");
         
         buildNewListComponent = new BuildNewListComponent();
         
@@ -187,7 +194,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 		browserSearchLayout.setWidth("100%");
         browserSearchLayout.setHeight("600px");
         searchListsComponent.setVisible(false);
-		toggleBuildNewListButton.setCaption(">>");
 	}
 
 	@Override
@@ -264,12 +270,10 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
     private void expandRight(){
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-    	toggleBuildNewListButton.setCaption(">>");
     }
 
     private void collapseRight(){
     	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-    	toggleBuildNewListButton.setCaption("<<");
     }
     
     private void collapseTop(){

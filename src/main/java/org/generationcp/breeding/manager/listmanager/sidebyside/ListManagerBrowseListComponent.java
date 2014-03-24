@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -49,6 +51,9 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	private ListManagerMain source;
 	
 	private Integer selectedListId;
+	
+	//Theme Resource
+	private static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
 	
 	public ListManagerBrowseListComponent(ListManagerMain source) {
 		super();
@@ -88,9 +93,10 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		leftLayout = new AbsoluteLayout();
 		
 		toggleLeftPaneButton = new Button();
-		toggleLeftPaneButton.setCaption("<<");
+		toggleLeftPaneButton.setIcon(ICON_TOOGLE);
 		toggleLeftPaneButton.setDescription("Toggle List Manager Tree");
-		
+		toggleLeftPaneButton.setStyleName(Reindeer.BUTTON_LINK);
+		toggleLeftPaneButton.setWidth("30px");
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		
 		//right pane
@@ -139,13 +145,11 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
     private void expandLeft(){
     	leftLayout.setWidth("240px");
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    	toggleLeftPaneButton.setCaption("<<");
     }
 
     private void collapseLeft(){
     	leftLayout.setWidth("100%");
     	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    	toggleLeftPaneButton.setCaption(">>");
     }
 
     public void openListDetails(GermplasmList list) {
