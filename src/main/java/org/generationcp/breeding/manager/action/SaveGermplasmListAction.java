@@ -27,7 +27,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
     
 	public static final String LIST_DATA_SOURCE = "Crossing Manager Tool";
-    public static final Integer LIST_DATA_STATUS = 0;
+    public static final Integer LIST_DATA_STATUS = 1;
     public static final Integer LIST_DATA_LRECID = 0;
     
 	private GermplasmList germplasmList;
