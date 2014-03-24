@@ -180,7 +180,9 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
 
     public void createGermplasmDetailsTab(Integer gid){
-    	// TODO method stub
+        String tabName = "Germplasm - " + gid;
+        createTab(gid, null, tabName);
+        showDetailsTabsheet();
     }
     
     public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
@@ -233,16 +235,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
     
     private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
-        
-        //FIXME: sidebyside
-        /*if (germplasmList != null){
-            return new ListDetailsComponent(listManagerMain, germplasmList.getId());
+        if (germplasmList != null){
+            return new ListDetailsComponent(listManagerMain, germplasmList);
         } else {
-            //TODO return new BrowseGermplasmTreeMenu(this.listManagerMain, id);
-        }*/
-        
-        return new ListDetailsComponent(listManagerMain, id, germplasmList.getStatus());
-        
+            return new GermplasmDetailsComponent(listManagerMain, id);
+        }
     }
     
     private String generateTabDescription(Integer listId){

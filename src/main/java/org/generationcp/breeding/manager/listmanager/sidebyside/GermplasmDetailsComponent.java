@@ -1,7 +1,12 @@
-package org.generationcp.breeding.manager.listmanager;
+package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.GermplasmAttributesComponent;
+import org.generationcp.breeding.manager.listmanager.GermplasmHeaderInfoComponent;
+import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
@@ -30,16 +35,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
-@Deprecated
 @Configurable
-public class BrowseGermplasmTreeMenu extends VerticalLayout implements
-		InitializingBean, InternationalizableComponent {
+public class GermplasmDetailsComponent extends VerticalLayout implements
+		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	public static final String SAVE_TO_LIST = "Germplasm Details - Save to List";
 	public static final String MORE_DETAILS = "Germplasm Details - More Details";
 
 	@SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(BrowseGermplasmTreeMenu.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmDetailsComponent.class);
 	private static final long serialVersionUID = -6789065165873336884L;
 	
 	@Autowired
@@ -63,7 +67,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
     
     private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
-    public BrowseGermplasmTreeMenu(ListManagerMain listManagerMain, Integer germplasmId){
+    public GermplasmDetailsComponent(ListManagerMain listManagerMain, Integer germplasmId){
     	this.listManagerMain = listManagerMain;
     	this.germplasmId = germplasmId;
     }
@@ -76,57 +80,80 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		qQuery = new GermplasmQueries();
-		gDetailModel = qQuery.getGermplasmDetails(this.germplasmId);
-		
-		basicDetailsComponent = new GermplasmHeaderInfoComponent(gDetailModel);
-		pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
-		germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel);
-		
-		ComponentTree content = new ComponentTree();
+	    instantiateComponents();
+	    initializeValues();
+	    layoutComponents();
+	    addListeners();
+	}
+	
+    @Override
+    public void instantiateComponents() {
+        qQuery = new GermplasmQueries();
+        gDetailModel = qQuery.getGermplasmDetails(this.germplasmId);
+        
+        basicDetailsComponent = new GermplasmHeaderInfoComponent(gDetailModel);
+        pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
+        germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel);
+    }
+
+    @Override
+    public void initializeValues() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void layoutComponents() {
+        ComponentTree content = new ComponentTree();
         content.setWidth("95%");
-                
+        
         basicDetails = content.addChild(createBasicDetailsHeader(messageSource.getMessage(Message.BASIC_DETAILS)));
         basicDetails.showChild();
         basicDetails.addChild(basicDetailsComponent);
-        basicDetails.addListener(new LayoutClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
-					basicDetails.toggleChild();
-				}
-			}
-        });
         
         attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
         VerticalLayout layoutForAttributes = new VerticalLayout();
         layoutForAttributes.addComponent(germplasmAttributesComponent);
         attributesDetails.addChild(layoutForAttributes);
-        attributesDetails.addListener(new LayoutClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
-					attributesDetails.toggleChild();
-				}
-			}
-        });
         
         pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);
-        pedigreeDetails.addListener(new LayoutClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void layoutClick(LayoutClickEvent event) {
-				if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
-					pedigreeDetails.toggleChild();
-				}
-			}
+        
+        this.addComponent(content);
+    }
+
+    @Override
+    public void addListeners() {
+        basicDetails.addListener(new LayoutClickListener() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+                if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
+                    basicDetails.toggleChild();
+                }
+            }
         });
-		
-		addComponent(content);
-	}
+        
+        attributesDetails.addListener(new LayoutClickListener() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+                if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
+                    attributesDetails.toggleChild();
+                }
+            }
+        });
+        
+        pedigreeDetails.addListener(new LayoutClickListener() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+                if(event.getRelativeY()< ListManagerTreeMenu.TOGGABLE_Y_COORDINATE){
+                    pedigreeDetails.toggleChild();
+                }
+            }
+        });
+    }    
 	
 	private Component createBasicDetailsHeader (String header) {
 		HorizontalLayout mainLayout = new HorizontalLayout();
@@ -155,12 +182,13 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
         
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.addComponent(layout);
-		leftLayout.addComponent(saveToListLink);
+		leftLayout.addComponent(moreDetailsLink);
+		leftLayout.setComponentAlignment(moreDetailsLink, Alignment.MIDDLE_LEFT);
 		
         mainLayout.addComponent(leftLayout);
-        mainLayout.addComponent(moreDetailsLink);
+        mainLayout.addComponent(saveToListLink);
         mainLayout.setComponentAlignment(leftLayout, Alignment.BOTTOM_LEFT);
-        mainLayout.setComponentAlignment(moreDetailsLink, Alignment.BOTTOM_RIGHT);
+        mainLayout.setComponentAlignment(saveToListLink, Alignment.BOTTOM_RIGHT);
 
         return mainLayout;
 	}

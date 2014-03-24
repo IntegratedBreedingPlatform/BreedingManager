@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -20,18 +21,16 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	private ListManagerMain source;
 	private Label listEntriesLabel;
 	private ListDataComponent listDataComponent;
-	private Integer listId;
-	private Integer listStatus;
+	private GermplasmList germplasmList;
 	private boolean hasChanged = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListDetailsComponent(ListManagerMain source, Integer listId, Integer listStatus){
+	public ListDetailsComponent(ListManagerMain source, GermplasmList germplasmList){
 		super();
 		this.source = source;
-		this.listId = listId;
-		this.listStatus = listStatus;
+		this.germplasmList = germplasmList;
 	}
 	
 	@Override
@@ -47,7 +46,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
 		
-		listDataComponent = new ListDataComponent(source, this, listId, listStatus);
+		listDataComponent = new ListDataComponent(source, this, germplasmList);
 	}
 
 	@Override

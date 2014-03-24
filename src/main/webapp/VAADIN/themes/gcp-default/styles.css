@@ -379,7 +379,11 @@
 }
 
 /* Tabsheet formatting GCP-7370 */
-.v-tabsheet-content{position:absolute}
+.v-tabsheet-content{
+	position:absolute;
+	border-bottom: 1px solid #dcdcdc; 
+}
+
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
 .v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
 

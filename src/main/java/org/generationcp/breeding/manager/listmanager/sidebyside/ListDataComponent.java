@@ -26,6 +26,7 @@ import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
@@ -146,12 +147,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Autowired
     private PedigreeDataManager pedigreeDataManager;
 	
-	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, Integer listId, Integer listStatus) {
+	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
-		this.germplasmListId = listId;
-		this.germplasmListStatus = listStatus;
+		this.germplasmListId = germplasmList.getId();
+		this.germplasmListStatus = germplasmList.getStatus();
 		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
 		this.itemsToDelete = new HashMap<Object, String>();
 	}
@@ -735,5 +736,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entryId);
             entryId += 1;
         }
+	}
+	
+	public Integer getGermplasmListId(){
+		return germplasmListId;
 	}
 }

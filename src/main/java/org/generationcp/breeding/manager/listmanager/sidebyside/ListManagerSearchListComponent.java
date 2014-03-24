@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -36,6 +38,9 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
+	
+	//Theme Resource
+  	private static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
 	
 	public ListManagerSearchListComponent(ListManagerMain source) {
 		super();
@@ -67,8 +72,10 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
 		
 		toggleLeftPaneButton = new Button();
-		toggleLeftPaneButton.setCaption("<<");
+		toggleLeftPaneButton.setIcon(ICON_TOOGLE);
 		toggleLeftPaneButton.setDescription("Toggle Search Results Table");
+		toggleLeftPaneButton.setStyleName(Reindeer.BUTTON_LINK);
+		toggleLeftPaneButton.setWidth("30px");
 	}
 
 	@Override
@@ -106,13 +113,11 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
     private void expandLeft(){
     	leftLayout.setWidth("390px");
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    	toggleLeftPaneButton.setCaption("<<");
     }
 
     private void collapseLeft(){
     	leftLayout.setWidth("100%");
     	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    	toggleLeftPaneButton.setCaption(">>");
     }
     
     public SearchResultsComponent getSearchResultsComponent(){
