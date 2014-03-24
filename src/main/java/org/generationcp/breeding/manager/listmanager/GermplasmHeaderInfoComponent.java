@@ -24,13 +24,6 @@ public class GermplasmHeaderInfoComponent extends GridLayout implements
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	private Label lblGid;
-	private Label lblCreationMethod;
-	private Label lblLocation;
-	private Label lblPreferredName;
-	private Label lblCreationDate;
-	private Label lblReference;
-	
 	private Label gid;
 	private Label creationMethod;
 	private Label location;
@@ -53,48 +46,43 @@ public class GermplasmHeaderInfoComponent extends GridLayout implements
 		
 		addStyleName("overflow_x_auto");
 
-		setRows(3);
-        setColumns(4);
-        setColumnExpandRatio(1, 2);
-        setColumnExpandRatio(3, 2);
+		setRows(2);
+        setColumns(3);
         setSpacing(true);
         setMargin(true);
         
 		initializeLabels();
 
         //1st row
-        addComponent(lblGid, 0, 0);
-        addComponent(gid, 1, 0);
-        addComponent(lblPreferredName, 2, 0);
-        addComponent(prefName, 3, 0);
+		addComponent(prefName, 0, 0);
+		addComponent(creationDate, 1, 0);
+        addComponent(gid, 2, 0);
         
         //2nd row
-        addComponent(lblCreationMethod, 0, 1);
-        addComponent(creationMethod, 1, 1);
-        addComponent(lblCreationDate, 2, 1);
-        addComponent(creationDate, 3, 1);
-        
-        //3rd row
-        addComponent(lblLocation, 0, 2);
-        addComponent(location, 1, 2);
-        addComponent(lblReference, 2, 2);
-        addComponent(reference, 3, 2);
+        addComponent(creationMethod, 0, 1);
+        addComponent(location, 1, 1);
+        addComponent(reference, 2, 1);
     }
 
 	private void initializeLabels() {
-		lblGid = new Label( "<b>" + messageSource.getMessage(Message.LISTDATA_GID_HEADER) + ":</b> ", Label.CONTENT_XHTML);
-		lblCreationMethod = new Label( "<b>" + messageSource.getMessage(Message.CREATION_METHOD) + ":</b> ", Label.CONTENT_XHTML); 
-		lblLocation = new Label( "<b>" + messageSource.getMessage(Message.LOCATION) + ":</b> ", Label.CONTENT_XHTML); 
-		lblPreferredName = new Label( "<b>" + messageSource.getMessage(Message.PREFERRED_NAME) + ":</b> ", Label.CONTENT_XHTML); 
-		lblCreationDate = new Label( "<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> ", Label.CONTENT_XHTML); 
-		lblReference = new Label( "<b>" + messageSource.getMessage(Message.REFERENCE) + ":</b> ", Label.CONTENT_XHTML); 
-		
-		gid = new Label(String.valueOf(gDetailModel.getGid()));
-        prefName = new Label(gDetailModel.getGermplasmPreferredName());
-        location = new Label( gDetailModel.getGermplasmLocation());
-        creationMethod = new Label(gDetailModel.getGermplasmMethod());
-        creationDate = new Label(!gDetailModel.getGermplasmCreationDate().equals("0") ? gDetailModel.getGermplasmCreationDate() : "-" );
-        reference = new Label(String.valueOf( gDetailModel.getReference()));
+        gid = new Label("<b>" + messageSource.getMessage(Message.LISTDATA_GID_HEADER) + ":</b> "
+                + String.valueOf(gDetailModel.getGid()), Label.CONTENT_XHTML);
+        
+        prefName = new Label("<b>" + messageSource.getMessage(Message.PREFERRED_NAME) + ":</b> "
+                + gDetailModel.getGermplasmPreferredName(), Label.CONTENT_XHTML);
+        
+        location = new Label("<b>" + messageSource.getMessage(Message.LOCATION) + ":</b> " 
+                + gDetailModel.getGermplasmLocation(), Label.CONTENT_XHTML);
+        
+        creationMethod = new Label("<b>" + messageSource.getMessage(Message.CREATION_METHOD) + ":</b> "
+                + gDetailModel.getGermplasmMethod(), Label.CONTENT_XHTML);
+        
+        creationDate = new Label("<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> "
+                + (!gDetailModel.getGermplasmCreationDate().equals("0") ? gDetailModel.getGermplasmCreationDate() : "-") 
+                , Label.CONTENT_XHTML);
+        
+        reference = new Label("<b>" + messageSource.getMessage(Message.REFERENCE) + ":</b> "
+                + String.valueOf( gDetailModel.getReference()), Label.CONTENT_XHTML);
 	}
 
 }
