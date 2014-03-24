@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.ListDataComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -83,8 +83,9 @@ public class BuildNewListDropHandler implements DropHandler {
 				if(hasSelectedItems(sourceTable))
 					addSelectedGermplasmsFromTable(sourceTable);
 				//If none, add what was dropped
-				else
-					addGermplasm(getGidFromButtonCaption(sourceTable, (Integer) transferable.getItemId()));
+				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListDataComponent)
+					addGermplasmFromList(((ListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
+
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
 			}
@@ -122,7 +123,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		try {
 			List<GermplasmListData> germplasmListData = germplasmListManager.getGermplasmListById(listId).getListData();
 			for(GermplasmListData listData : germplasmListData){
-				addGermplasm(listData.getGid());
+				addGermplasmFromList(listId, listData.getId());
 			}
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm list.", e);
@@ -190,7 +191,56 @@ public class BuildNewListDropHandler implements DropHandler {
 	}
 	
 	
+	private Integer addGermplasmFromList(Integer listId, Integer lrecid){
+        try {
+            
+        	GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+        	
+        	if(germplasmListData!=null){
+        		
+	            Integer gid = germplasmListData.getGid();
+	            Item newItem = targetTable.addItem(getNextListEntryId());
+	            
+	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+	            
+	            String crossExpansion = "";
+	            
+	                try {
+	                	Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid); 
+	                    if(germplasmDataManager!=null)
+	                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+	                } catch(MiddlewareQueryException ex){
+	                    LOG.error("Error in retrieving cross expansion data for GID: " + gid + ". ", ex);
+	                    crossExpansion = "-";
+	                }
 	
+	            List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+	            importedGermplasmGids.add(gid);
+	
+	            CheckBox tagCheckBox = new CheckBox();
+	            
+	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
+	            if(newItem!=null && gidButton!=null)
+	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(germplasmListData.getDesignation());
+	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+	            
+	            assignSerializedEntryNumber();
+	            
+	            return getNextListEntryId();
+        	}
+            
+        	return null;
+        	
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in adding germplasm to germplasm table.", e);
+            e.printStackTrace();
+            return null;
+        }
+		
+	}	
     /**
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */

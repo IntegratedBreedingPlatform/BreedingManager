@@ -728,4 +728,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             entryId += 1;
         }
 	}
+	
+	public Integer getGermplasmListId(){
+		return germplasmListId;
+	}
 }
