@@ -1,6 +1,9 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -12,6 +15,8 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -42,7 +47,26 @@ public class ListCommonActionsUtil {
 
 	}
 	
-	
-	
+	/**
+     * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
+     */
+    @SuppressWarnings("unchecked")
+    public static List<Integer> getSelectedGidsFromListDataTable(Table table, String GIDItemId){
+        List<Integer> itemIds = new ArrayList<Integer>();
+        List<Integer> selectedItemIds = new ArrayList<Integer>();
+        List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();
+        
+        selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+        itemIds.addAll((Collection<Integer>) table.getItemIds());
+    
+        for(Integer itemId: itemIds){
+            if(selectedItemIds.contains(itemId)){
+                Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue()).getCaption().toString());
+                trueOrderedSelectedGIDs.add(gid);
+            }
+        }
+        
+        return trueOrderedSelectedGIDs;
+    }
 
 }

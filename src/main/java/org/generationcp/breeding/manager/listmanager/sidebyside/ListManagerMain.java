@@ -283,7 +283,7 @@ public class ListManagerMain extends AbsoluteLayout implements
     }
     
     public void showBuildNewListComponent(){
-    	//TODO
+    	expandRight();
     }
     
     public void addGermplasmToBuildNewListTable(Integer gid){
