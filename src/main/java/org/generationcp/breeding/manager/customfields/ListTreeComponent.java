@@ -190,7 +190,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		refreshButton = new Button();
 		refreshButton.setData(REFRESH_BUTTON_ID);
 		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
-		refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 	}
 	
 	protected void initializeButtonPanel() {
