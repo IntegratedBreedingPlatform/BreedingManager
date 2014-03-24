@@ -1,19 +1,28 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,25 +31,43 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
 	
-	private static final long serialVersionUID = 1L;
+	private static final int MINIMUM_WIDTH = 10;
+	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
 
 	private ListManagerMain source;
 	private Integer germplasmListId;
@@ -85,11 +112,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	//Theme Resource
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	
+	private Object selectedColumn = "";
+	private Object selectedItemId;
+	private String lastCellvalue = "";
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
+	
+	@Autowired
+    private GermplasmDataManager germplasmDataManager;
 	
 	public ListDataComponent() {
 		super();
@@ -229,11 +263,23 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
     	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
     	   	}
+			
+			listDataTable.sort(new Object[]{ListDataTablePropertyID.ENTRY_ID.getName()}, new boolean[]{true});
+			
+			// render additional columns
+	    	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
+	    	try{
+	    		newColumnsRenderer.render();
+	    	} catch(MiddlewareQueryException ex){
+	    		LOG.error("Error with displaying added columns for entries of list: " + germplasmListId, ex);
+	    	}
 		}
 	}
 
 	@Override
 	public void addListeners() {
+		makeTableEditable();
+	
 		toolsButton.addListener(new ClickListener() {
 	   		 private static final long serialVersionUID = 272707576878821700L;
 	
@@ -304,4 +350,214 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void makeTableEditable(){
+    	listDataTable.addListener(new ItemClickListener(){
+			private static final long serialVersionUID = 1L;
+			public void itemClick(ItemClickEvent event) {
+				selectedColumn = event.getPropertyId();
+				selectedItemId = event.getItemId();
+			}
+		});
+    	
+    	listDataTable.setTableFieldFactory(new TableFieldFactory() {
+			private static final long serialVersionUID = 1L;
+
+			public Field createField(Container container, final Object itemId,
+		            final Object propertyId, Component uiContext) {
+		    	
+		    	if(propertyId.equals(ListDataTablePropertyID.GID.getName()) || propertyId.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
+		    		return null;
+		    	}
+		    	
+		    	final TextField tf = new TextField();
+		        tf.setData(new ItemPropertyId(itemId, propertyId));
+		        
+		        //set the size of textfield based on text of cell
+		        String value = (String) container.getItem(itemId).getItemProperty(propertyId).getValue();
+		        Double d = computeTextFieldWidth(value);
+				tf.setWidth(d.floatValue(), UNITS_EM);
+		        
+		        // Needed for the generated column
+		        tf.setImmediate(true);
+
+		        // Manage the field in the field storage
+		        HashMap<Object,Field> itemMap = fields.get(itemId);
+		        if (itemMap == null) {
+		            itemMap = new HashMap<Object,Field>();
+		            fields.put(itemId, itemMap);
+		        }
+		        itemMap.put(propertyId, tf);
+		        
+		        tf.setReadOnly(true);
+		        
+		        tf.addListener(new FocusListener() {
+					private static final long serialVersionUID = 1L;
+
+					public void focus(FocusEvent event) {
+		                // Make the entire item editable
+		                HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		                	Object column = entry.getKey();
+		        			if(column.equals(selectedColumn)){		        				
+		        				Field f = entry.getValue();
+			                	//f.setReadOnly(false);
+		        			}
+		                }
+		                
+		                listDataTable.select(itemId);
+		            }
+		        });
+		        tf.addListener(new BlurListener() {
+					private static final long serialVersionUID = 1L;
+
+					public void blur(BlurEvent event) {
+						HashMap<Object,Field> itemMap = fields.get(itemId);
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		                	Object column = entry.getKey();
+		                	Field f = entry.getValue();
+		                	Object fieldValue = f.getValue();
+		                	
+		                	// mark list as changed if value for the cell was changed
+		                	if (column.equals(selectedColumn)) {
+		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
+		                	        source.setThereAreListDataChangesFlag(true);
+		                	    }
+		                	}
+		                	
+		                    // validate for designation
+		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
+		        			    Object source = event.getSource();
+                                String designation = source.toString();
+                                
+                                // retrieve item id at event source 
+                                ItemPropertyId itemProp = (ItemPropertyId) ((TextField) source).getData();
+                                Object sourceItemId = itemProp.getItemId();
+		        				
+		        				String[] items = listDataTable.getItem(sourceItemId).toString().split(" ");
+								int gid =  Integer.valueOf(items[2]);
+								
+								if(isDesignationValid(designation,gid)){
+									Double d = computeTextFieldWidth(f.getValue().toString());
+									f.setWidth(d.floatValue(), UNITS_EM);
+									f.setReadOnly(true);
+									listDataTable.focus();
+								}
+								else{
+									ConfirmDialog.show(getWindow(), "Update Designation", "The value you entered is not one of the germplasm names. Are you sure you want to update Designation with new value?",
+													"Yes", "No", new ConfirmDialog.Listener() {	
+											private static final long serialVersionUID = 1L;	
+											public void onClose(ConfirmDialog dialog) {
+												if (!dialog.isConfirmed()) {
+													tf.setReadOnly(false);
+													tf.setValue(lastCellvalue);
+												}
+												else{
+													Double d = computeTextFieldWidth(tf.getValue().toString());
+													tf.setWidth(d.floatValue(), UNITS_EM);
+												}
+												tf.setReadOnly(true);
+												listDataTable.focus();
+											}
+										}
+									);
+								}
+		        			}
+		        			else{
+		        				Double d = computeTextFieldWidth(f.getValue().toString());
+								f.setWidth(d.floatValue(), UNITS_EM);
+		        				f.setReadOnly(true);
+		        			}
+		                }
+		            }
+		        });
+		        tf.addListener(new Property.ValueChangeListener() {//this area can be used for validation
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						Double d = computeTextFieldWidth(tf.getValue().toString());
+						tf.setWidth(d.floatValue(), UNITS_EM);
+						tf.setReadOnly(true);
+					}
+	        	});
+		        tf.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+		            public void handleAction(Object sender, Object target) {
+						Double d = computeTextFieldWidth(tf.getValue().toString());
+						tf.setWidth(d.floatValue(), UNITS_EM);
+						tf.setReadOnly(true);
+		                listDataTable.focus();
+		               
+		            }
+		        });
+		        
+		        return tf;
+		    }
+
+			private Double computeTextFieldWidth(String value) {
+		        double multiplier = 0.55;
+		        int length = 1; 
+		        if (value != null && !value.isEmpty()){
+		        	length = value.length();
+		        	if (value.equals(value.toUpperCase())){ 
+		        		multiplier = 0.75;  // if all caps, provide bigger space
+		        	}	
+		        }		        
+				Double d = length * multiplier;
+				// set a minimum textfield width
+				return NumberUtils.max(new double[]{MINIMUM_WIDTH, d});
+			}
+		});
+		
+		listDataTable.setEditable(true);
+	}
+	
+	// This is needed for storing back-references
+	class ItemPropertyId {
+	    Object itemId;
+	    Object propertyId;
+	    
+	    public ItemPropertyId(Object itemId, Object propertyId) {
+	        this.itemId = itemId;
+	        this.propertyId = propertyId;
+	    }
+	    
+	    public Object getItemId() {
+	        return itemId;
+	    }
+	    
+	    public Object getPropertyId() {
+	        return propertyId;
+	    }
+	}
+	
+	public boolean isDesignationValid(String designation, int gid){
+    	List<Name> germplasms = new ArrayList<Name>();
+    	List<String> designations = new ArrayList<String>();
+    	
+    	try{
+    		germplasms = germplasmDataManager.getNamesByGID(gid, null, null);
+    		
+    		for(Name germplasm : germplasms){
+    			designations.add(germplasm.getNval());
+    		}
+    		
+    		for (String nameInDb : designations) {
+    		    if (GermplasmDataManagerUtil.compareGermplasmNames(designation, nameInDb)){
+    		        return true;
+    		    }
+    		}
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+			LOG.error("Database error!", e);
+			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
+					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
+    	}
+    	
+    	return false; 
+    }
 }

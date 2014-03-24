@@ -177,7 +177,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private Label totalListEntries;
 
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
-	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
 	
 	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -609,8 +608,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		            fields.put(itemId, itemMap);
 		        }
 		        itemMap.put(propertyId, tf);
-		        
-		        itemIds.put(tf, itemId);
 		        
 		        tf.setReadOnly(true);
 		        
