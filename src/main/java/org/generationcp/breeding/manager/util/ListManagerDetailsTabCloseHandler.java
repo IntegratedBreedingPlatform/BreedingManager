@@ -52,7 +52,7 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
                 if (detailsTabComponent instanceof ListDetailsComponent) {
                     confirmTabClose(detailsTabSheet, detailsTabComponent);
                 } else {
-                    detailsTabSheet.removeTab(detailsTab);
+                    closeTab(detailsTabSheet, detailsTabComponent);
                 }
             }
         }

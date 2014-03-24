@@ -14,11 +14,11 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 
 @Configurable
-public class GermplasmDetailsComponent extends GridLayout implements
+public class GermplasmHeaderInfoComponent extends GridLayout implements
 		InitializingBean, InternationalizableComponent {
 
 	@SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmDetailsComponent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GermplasmHeaderInfoComponent.class);
 	private static final long serialVersionUID = -4916820997495310249L;
 	
 	@Autowired
@@ -40,7 +40,7 @@ public class GermplasmDetailsComponent extends GridLayout implements
 
 	private GermplasmDetailModel gDetailModel;
 	
-	public GermplasmDetailsComponent(GermplasmDetailModel germplasmDetailModel){
+	public GermplasmHeaderInfoComponent(GermplasmDetailModel germplasmDetailModel){
 		this.gDetailModel = germplasmDetailModel;
 	}
 	
