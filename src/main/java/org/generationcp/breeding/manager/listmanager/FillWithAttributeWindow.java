@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListDetailsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -57,6 +58,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private Button okButton;
     private List<UserDefinedField> attributeList;
     private BuildNewListComponent buildNewListComponent;
+    private ListDetailsComponent listDetailsComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -71,12 +73,13 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     }
     
     public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent) {
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent, ListDetailsComponent listDetailsComponent) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
         this.buildNewListComponent = buildNewListComponent;
+        this.listDetailsComponent = listDetailsComponent;
     }
     
     @Override
@@ -166,6 +169,9 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         //mark flag that changes have been made in buildNewListTable
         if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
 
+        if(listDetailsComponent != null){
+        	listDetailsComponent.setChanged(true);
+        }
      }
     
     private List<Integer> getGidsFromTable(Table table){

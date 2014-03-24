@@ -47,7 +47,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
 		
-		listDataComponent = new ListDataComponent(source, listId, listStatus);
+		listDataComponent = new ListDataComponent(source, this, listId, listStatus);
 	}
 
 	@Override

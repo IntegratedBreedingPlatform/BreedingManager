@@ -306,8 +306,4 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public void openListDetails(GermplasmList list) {
 		browseListsComponent.openListDetails(list);
 	}
-	
-	public void setThereAreListDataChangesFlag(boolean flagValue){
-		//TODO implement for list data fields being editable
-	}
 }

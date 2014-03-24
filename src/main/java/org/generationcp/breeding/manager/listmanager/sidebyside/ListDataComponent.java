@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -75,6 +76,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
 
 	private ListManagerMain source;
+	private ListDetailsComponent parentListDetailsComponent;
 	private Integer germplasmListId;
 	private Integer germplasmListStatus;
 	
@@ -144,9 +146,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Autowired
     private PedigreeDataManager pedigreeDataManager;
 	
-	public ListDataComponent(ListManagerMain source, Integer listId, Integer listStatus) {
+	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, Integer listId, Integer listStatus) {
 		super();
 		this.source = source;
+		this.parentListDetailsComponent = parentListDetailsComponent;
 		this.germplasmListId = listId;
 		this.germplasmListStatus = listStatus;
 		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
@@ -296,6 +299,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void addListeners() {
+		if(germplasmListId<0 && germplasmListStatus<100){
+	        new FillWith(parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	    }
+		
 		makeTableEditable();
 		
 		if(!fromUrl){
@@ -413,6 +420,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		addComponent(headerLayout);
 		addComponent(listDataTableWithSelectAll);
+		
+		parentListDetailsComponent.addComponent(menu);
 	}
 
 	@Override
@@ -494,7 +503,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                	// mark list as changed if value for the cell was changed
 		                	if (column.equals(selectedColumn)) {
 		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
-		                	        source.setThereAreListDataChangesFlag(true);
+		                	        parentListDetailsComponent.setChanged(true);
 		                	    }
 		                	}
 		                	
@@ -664,11 +673,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	private void removeRowsInListDataTable(Collection<?> selectedIds){
     	//marks that there is a change in listDataTable
-    	source.setThereAreListDataChangesFlag(true);
+    	parentListDetailsComponent.setChanged(true);
     	
     	//Marks the Local Germplasm to be deleted 
     	try {
-			final List<Integer> gidsWithoutChildren = getGidsToDeletedWithOutChildren(selectedIds);
+			final List<Integer> gidsWithoutChildren = getGidsToDeletedWithoutChildren(selectedIds);
 			if(gidsWithoutChildren.size() > 0){
 				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database", "Would you like to delete the germplasm(s) from the database also?",
 	        			"Yes", "No", new ConfirmDialog.Listener() {
@@ -700,7 +709,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         listDataTable.requestRepaint();
     }
 	
-	private ArrayList<Integer> getGidsToDeletedWithOutChildren(Collection<?> selectedIds) throws NumberFormatException, MiddlewareQueryException{
+	private ArrayList<Integer> getGidsToDeletedWithoutChildren(Collection<?> selectedIds) throws NumberFormatException, MiddlewareQueryException{
     	ArrayList<Integer> gids= new ArrayList<Integer>();
 	    for (final Object itemId : selectedIds) {
     		 Button gidButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
