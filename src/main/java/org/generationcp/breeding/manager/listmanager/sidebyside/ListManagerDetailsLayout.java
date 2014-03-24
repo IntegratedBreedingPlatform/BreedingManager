@@ -241,7 +241,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
             //TODO return new BrowseGermplasmTreeMenu(this.listManagerMain, id);
         }*/
         
-        return new ListDetailsComponent(listManagerMain, id);
+        return new ListDetailsComponent(listManagerMain, id, germplasmList.getStatus());
         
     }
     

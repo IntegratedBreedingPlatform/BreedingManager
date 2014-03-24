@@ -1148,6 +1148,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	
     } // end of removeRowsinListDataTable
     
+    //TODO review this method as there are redundant codes here that is also in saveChangesAction()
+    //might be possible to eliminate this method altogether and reduce the number of middleware calls
     private void performListEntriesDeletion(Map<Object, String> itemsToDelete){    	
 		try {
             if(getCurrentUserLocalId()==germplasListUserId) {

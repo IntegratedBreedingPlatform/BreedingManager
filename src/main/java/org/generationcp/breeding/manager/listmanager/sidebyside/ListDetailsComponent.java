@@ -21,15 +21,17 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	private Label listEntriesLabel;
 	private ListDataComponent listDataComponent;
 	private Integer listId;
+	private Integer listStatus;
 	private boolean hasChanged = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListDetailsComponent(ListManagerMain source, Integer listId){
+	public ListDetailsComponent(ListManagerMain source, Integer listId, Integer listStatus){
 		super();
 		this.source = source;
 		this.listId = listId;
+		this.listStatus = listStatus;
 	}
 	
 	@Override
@@ -45,7 +47,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
 		
-		listDataComponent = new ListDataComponent(source,listId);
+		listDataComponent = new ListDataComponent(source, listId, listStatus);
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -21,6 +24,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
@@ -35,6 +39,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
@@ -53,10 +58,10 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -105,6 +110,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
   	private static String TOOLS_TOOLTIP = "Tools";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
   	private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
+  	
+  	//TODO must i18nalize right click context menu options
+  	private static final Action ACTION_SELECT_ALL = new Action("Select All");
+  	private static final Action ACTION_DELETE = new Action("Delete selected entries");
+  	private static final Action ACTION_EDIT = new Action("Edit Value");
+  	private static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
+  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_EDIT, ACTION_COPY_TO_NEW_LIST };
+  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE, ACTION_COPY_TO_NEW_LIST };
+  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL, ACTION_COPY_TO_NEW_LIST };
     
   	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
   	private long listEntriesCount;
@@ -115,6 +129,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
+	private List<Integer> gidsWithoutChildrenToDelete;
+	private Map<Object, String> itemsToDelete;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -125,14 +141,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Autowired
     private GermplasmDataManager germplasmDataManager;
 	
-	public ListDataComponent() {
-		super();
-	}
-
-	public ListDataComponent(ListManagerMain source, Integer listId) {
+	@Autowired
+    private PedigreeDataManager pedigreeDataManager;
+	
+	public ListDataComponent(ListManagerMain source, Integer listId, Integer listStatus) {
 		super();
 		this.source = source;
 		this.germplasmListId = listId;
+		this.germplasmListStatus = listStatus;
+		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
+		this.itemsToDelete = new HashMap<Object, String>();
 	}
 
 	@Override
@@ -279,6 +297,58 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Override
 	public void addListeners() {
 		makeTableEditable();
+		
+		if(!fromUrl){
+			listDataTable.addActionHandler(new Action.Handler() {
+				private static final long serialVersionUID = -897257270314381555L;
+
+				public Action[] getActions(Object target, Object sender) {
+					if (germplasmListId < 0 &&  germplasmListStatus < 100){
+						if(selectedColumn == null){
+							return ACTIONS_TABLE_CONTEXT_MENU;
+						} else {
+							if(selectedColumn.equals(ListDataTablePropertyID.GID.getName()) 
+									|| selectedColumn.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
+								return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT;
+							} else{
+								return ACTIONS_TABLE_CONTEXT_MENU;
+							} 
+						}
+					}else{
+						return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
+					}
+				}
+  
+				public void handleAction(Action action, Object sender, Object target) {
+					if (ACTION_DELETE == action) {
+						deleteListButtonClickAction();
+					}else if(ACTION_SELECT_ALL == action) {
+						listDataTable.setValue(listDataTable.getItemIds());
+					}else if(ACTION_EDIT == action){
+						// Make the entire item editable
+						HashMap<Object,Field> itemMap = fields.get(selectedItemId);
+		                if(itemMap != null){
+			                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+			        			Object column = entry.getKey();
+			        			if(column.equals(selectedColumn)){
+			        				Field f = entry.getValue();
+			        				Object fieldValue = f.getValue();
+									lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
+				                	f.setReadOnly(false);
+				                	f.focus();
+			        			}
+			                }
+		                }
+	                
+		                listDataTable.select(selectedItemId);
+					}else if(ACTION_COPY_TO_NEW_LIST == action){
+						source.showBuildNewListComponent();
+						//List<Integer> gids = ListCommonActionsUtil.getSelectedGidsFromListDataTable(listDataTable, ListDataTablePropertyID.GID.getName());
+						//TODO call method from BuildNewListDropHandler
+					}
+	         	}
+			});
+		}
 	
 		toolsButton.addListener(new ClickListener() {
 	   		 private static final long serialVersionUID = 272707576878821700L;
@@ -347,7 +417,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -395,7 +464,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 					private static final long serialVersionUID = 1L;
 
 					public void focus(FocusEvent event) {
+						//TODO review if this is still needed
 		                // Make the entire item editable
+						/*
 		                HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
 		                	Object column = entry.getKey();
@@ -404,10 +475,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			                	//f.setReadOnly(false);
 		        			}
 		                }
+		                */
 		                
 		                listDataTable.select(itemId);
 		            }
 		        });
+		        
 		        tf.addListener(new BlurListener() {
 					private static final long serialVersionUID = 1L;
 
@@ -444,8 +517,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 									listDataTable.focus();
 								}
 								else{
-									ConfirmDialog.show(getWindow(), "Update Designation", "The value you entered is not one of the germplasm names. Are you sure you want to update Designation with new value?",
-													"Yes", "No", new ConfirmDialog.Listener() {	
+									ConfirmDialog.show(getWindow(), "Update Designation", "The value you entered is not one of the germplasm names. "
+										+ "Are you sure you want to update Designation with new value?"
+										, "Yes", "No", new ConfirmDialog.Listener() {	
 											private static final long serialVersionUID = 1L;	
 											public void onClose(ConfirmDialog dialog) {
 												if (!dialog.isConfirmed()) {
@@ -471,6 +545,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                }
 		            }
 		        });
+		        
 		        tf.addListener(new Property.ValueChangeListener() {//this area can be used for validation
 					private static final long serialVersionUID = 1L;
 
@@ -481,6 +556,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 						tf.setReadOnly(true);
 					}
 	        	});
+		        
 		        tf.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
 					private static final long serialVersionUID = 1L;
 
@@ -552,12 +628,103 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		}
     		
     	}catch(Exception e){
-    		e.printStackTrace();
-			LOG.error("Database error!", e);
+    		LOG.error("Database error!", e);
 			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
 					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
     	}
     	
-    	return false; 
+    	return false;
     }
+	
+	public void deleteListButtonClickAction()  throws InternationalizableException {
+        Collection<?> selectedIdsToDelete = (Collection<?>)listDataTable.getValue();
+        
+        if(selectedIdsToDelete.size() > 0){
+        	if(listDataTable.size() == selectedIdsToDelete.size()){
+        		ConfirmDialog.show(this.getWindow(), "Delete All Entries in List Data", "Are you sure you want to delete all list data entries for this list?",
+	        			"Yes", "No", new ConfirmDialog.Listener() {
+	        		private static final long serialVersionUID = 1L;
+	        		public void onClose(ConfirmDialog dialog) {
+	        			if (dialog.isConfirmed()) {
+	        				removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
+	        			}
+	        		}
+	        		
+	        	});
+        	}
+        	else{
+        		removeRowsInListDataTable(selectedIdsToDelete);
+        	}
+        	
+        }else{
+            MessageNotifier.showError(this.getWindow(), "Error with deleteting entries." 
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
+        }
+    }
+	
+	private void removeRowsInListDataTable(Collection<?> selectedIds){
+    	//marks that there is a change in listDataTable
+    	source.setThereAreListDataChangesFlag(true);
+    	
+    	//Marks the Local Germplasm to be deleted 
+    	try {
+			final List<Integer> gidsWithoutChildren = getGidsToDeletedWithOutChildren(selectedIds);
+			if(gidsWithoutChildren.size() > 0){
+				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database", "Would you like to delete the germplasm(s) from the database also?",
+	        			"Yes", "No", new ConfirmDialog.Listener() {
+	        		private static final long serialVersionUID = 1L;
+	        		public void onClose(ConfirmDialog dialog) {
+	        			if (dialog.isConfirmed()) {
+	        				gidsWithoutChildrenToDelete.addAll(gidsWithoutChildren);
+	        			}
+	        		}
+	        		
+	        	});
+			}
+		} catch (NumberFormatException e) {
+			LOG.error("Error with deleting list entries.", e);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.", Notification.POSITION_CENTERED);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error with deleting list entries.", e);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.", Notification.POSITION_CENTERED);
+		}
+    	
+    	//marks the entryId and designationId of the list entries to delete
+    	for(final Object itemId : selectedIds){
+    		itemsToDelete.put(itemId,
+    				listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue().toString());
+    		listDataTable.removeItem(itemId);
+    	}
+    	
+    	renumberEntryIds();
+        listDataTable.requestRepaint();
+    }
+	
+	private ArrayList<Integer> getGidsToDeletedWithOutChildren(Collection<?> selectedIds) throws NumberFormatException, MiddlewareQueryException{
+    	ArrayList<Integer> gids= new ArrayList<Integer>();
+	    for (final Object itemId : selectedIds) {
+    		 Button gidButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+    		 Integer germplasmID = Integer.parseInt(gidButton.getCaption());
+    		
+			 // only allow deletions for local germplasms
+			 if(germplasmID.toString().contains("-")){
+				 long count = pedigreeDataManager.countDescendants(germplasmID);
+				 if(count == 0){
+					gids.add(germplasmID);
+				 }
+			 }
+	     }
+	    	   			 
+	   	return gids;
+    }
+	
+	private void renumberEntryIds(){
+		Integer entryId = 1;
+        for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+            int listDataId = (Integer) i.next();
+            Item item = listDataTable.getItem(listDataId);
+            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entryId);
+            entryId += 1;
+        }
+	}
 }
