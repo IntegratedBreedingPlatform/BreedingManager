@@ -145,19 +145,17 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private void setContent(){
 		
 		vSplitPanel = new VerticalSplitPanel();
-		vSplitPanel.setSizeFull();
 		vSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
 		vSplitPanel.setImmediate(true);
 		vSplitPanel.addStyleName("tabContainerStyle");
 		
 		hSplitPanel = new HorizontalSplitPanel();
-		hSplitPanel.setSizeFull();
 		hSplitPanel.setMargin(false);
 		hSplitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setMinSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setImmediate(true);
-		
+		hSplitPanel.setWidth("99%");
 		
 		searchListsComponent = new ListManagerSearchListComponent(this);
 		searchListsBarComponent = new ListManagerSearchListBarComponent(searchListsComponent.getSearchResultsComponent());
