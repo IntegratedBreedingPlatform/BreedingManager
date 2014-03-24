@@ -236,7 +236,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
         if (germplasmList != null){
-            return new ListDetailsComponent(listManagerMain, id, germplasmList.getStatus());
+            return new ListDetailsComponent(listManagerMain, germplasmList);
         } else {
             return new GermplasmDetailsComponent(listManagerMain, id);
         }
