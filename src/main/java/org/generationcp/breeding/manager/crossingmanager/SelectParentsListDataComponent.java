@@ -92,7 +92,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 			e.printStackTrace();
 		}
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
-		tableWithSelectAllLayout.setWidth("700px");
+		tableWithSelectAllLayout.setWidth("100%");
 		
 		listDataTable = tableWithSelectAllLayout.getTable();
 		listDataTable.setData(LIST_DATA_TABLE_ID);
@@ -183,7 +183,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 
 	@Override
 	public void layoutComponents() {
-		setWidth("700px");
+		setWidth("100%");
 		setHeight("330px");
 		addComponent(listEntriesLabel, "top:10px; left:10px;");
 		addComponent(viewListHeaderButton, "top:10px; right:80px;");

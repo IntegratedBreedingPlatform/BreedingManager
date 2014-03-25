@@ -419,7 +419,7 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
         
         addComponent(gridLayoutSelectingParents, "top:0px; left:0px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:325px; left:20px;");
+        addComponent(gridLayoutSelectingParentOptions, "top:330px; left:20px;");
 
 
 	}
@@ -522,13 +522,9 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, listEntries);
 		try {
 			GermplasmList savedList = saveListAction.saveRecords();
-			if (parentContainer.equals(femaleParentContainer)){
-				this.femaleParentList = savedList;
-			} else {
-				this.maleParentList = savedList;
-				
-			}
+			updateCrossesSeedSource(parentContainer, savedList);
 			updateUIForSuccessfulSaving(parentContainer, savedList);
+
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in saving the Parent List",e);
 			e.printStackTrace();
@@ -536,6 +532,25 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 	}
 
 
+	private void updateCrossesSeedSource(ParentContainer parentContainer,
+			GermplasmList savedList) {
+		if (parentContainer.equals(femaleParentContainer)){
+			this.femaleParentList = savedList;
+			if (femaleListNameForCrosses != null && !femaleListNameForCrosses.equals(femaleParentList.getName())){
+				femaleListNameForCrosses = femaleParentList.getName();
+				makeCrossesMain.updateCrossesSeedSource(femaleListNameForCrosses, 
+						maleListNameForCrosses);
+			}
+		} else {
+			this.maleParentList = savedList;
+			if (maleListNameForCrosses != null && !maleListNameForCrosses.equals(maleParentList.getName())){
+				maleListNameForCrosses = maleParentList.getName();
+				makeCrossesMain.updateCrossesSeedSource(femaleListNameForCrosses, 
+						maleListNameForCrosses);
+			}
+		}
+	}
+	
 	private void updateUIForSuccessfulSaving(ParentContainer parentContainer, GermplasmList list) {
 		parentContainer.getButton().setEnabled(false);
 		makeCrossesMain.toggleNextButton();
@@ -612,8 +627,10 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
     	List<GermplasmListEntry> maleList = getCorrectSortedValue(maleParents);
       
     	CrossType type = (CrossType) crossingMethodComboBox.getValue();
+    	
     	femaleListNameForCrosses = getFemaleList() != null ? getFemaleList().getName() : "";
     	maleListNameForCrosses = getMaleList() != null ? getMaleList().getName() : "";
+    	
     	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
     			femaleListNameForCrosses, maleListNameForCrosses, type, chkBoxMakeReciprocalCrosses.booleanValue());
     }

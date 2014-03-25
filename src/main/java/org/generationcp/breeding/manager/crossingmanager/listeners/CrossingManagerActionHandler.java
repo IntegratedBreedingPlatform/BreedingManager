@@ -58,7 +58,7 @@ public class CrossingManagerActionHandler implements Handler {
 		Collection<?> itemIds = table.getItemIds();
 		if (itemIds != null && !itemIds.isEmpty()){
 			table.setValue(itemIds);
-			table.setPageLength(0);
+//			table.setPageLength(0);
 		}
 	}
 
