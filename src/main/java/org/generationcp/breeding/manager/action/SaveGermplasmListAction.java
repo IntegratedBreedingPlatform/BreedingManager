@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class SaveGermplasmListAction implements Serializable, InitializingBean {
+public class SaveGermplasmListAction implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -40,12 +40,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
     	this.germplasmList = germplasmList;
     	this.listEntries = listEntries;
     }
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public GermplasmList saveRecords() throws MiddlewareQueryException{
 		germplasmList = saveGermplasmListRecord(germplasmList);
@@ -112,7 +106,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
         //after saving iterate through the itemIds
         int currentSaveListCount = (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
         List<GermplasmListData> currentSavedList = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, currentSaveListCount);
-        source.updateListDataTable(currentSavedList);
+        if (source != null){
+        	source.updateListDataTable(currentSavedList);
+        }
         
 	}
 	
