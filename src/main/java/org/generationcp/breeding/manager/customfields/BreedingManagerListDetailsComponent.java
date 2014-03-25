@@ -1,20 +1,26 @@
 package org.generationcp.breeding.manager.customfields;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property.ConversionException;
+import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -26,6 +32,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
+	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
 	private Label newListLabel;
 	private Panel containerPanel;
@@ -45,7 +53,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private GermplasmList germplasmList;
 	
 	public BreedingManagerListDetailsComponent(){
-		
+		super();
+	}
+	
+	public BreedingManagerListDetailsComponent(GermplasmList germplasmList){
+		super();
+		this.germplasmList = germplasmList;  
 	}
 	
 	@Override
@@ -71,8 +84,27 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	}
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+		if(germplasmList != null){
+			listNameField.setValue(germplasmList.getName());
+			listDescriptionField.setValue(germplasmList.getDescription());
+			listTypeField.setValue(germplasmList.getType());
+			
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+            try {
+                this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
+            } catch (ReadOnlyException e) {
+                LOG.error("Error in parsing date field.", e);
+                e.printStackTrace();
+            } catch (ConversionException e) {
+                LOG.error("Error in parsing date field.", e);
+                e.printStackTrace();
+            } catch (ParseException e) {
+                LOG.error("Error in parsing date field.", e);
+                e.printStackTrace();
+            }
+            
+			listNotesField.setValue(germplasmList.getNotes());
+		}
 	}
 	@Override
 	public void addListeners() {
@@ -117,7 +149,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listTypeField.validate();
 			listDateField.validate();
 
-			return false;
+			return true;
 			
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
@@ -141,12 +173,53 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         list.setDate(Long.parseLong(formatter.format(date)));
         list.setNotes(listNotesField.getValue().toString());
         list.setUserId(0);
-        //list.setParent((GermplasmList) getFolderToSaveListToLabel().getData());
+
         return list;
+	}
+	
+
+	//SETTERS and GETTERS
+	public ListNameField getListNameField() {
+		return listNameField;
+	}
+
+	public void setListNameField(ListNameField listNameField) {
+		this.listNameField = listNameField;
+	}
+
+	public ListDescriptionField getListDescriptionField() {
+		return listDescriptionField;
+	}
+
+	public void setListDescriptionField(ListDescriptionField listDescriptionField) {
+		this.listDescriptionField = listDescriptionField;
+	}
+
+	public ListTypeField getListTypeField() {
+		return listTypeField;
+	}
+
+	public void setListTypeField(ListTypeField listTypeField) {
+		this.listTypeField = listTypeField;
+	}
+
+	public ListDateField getListDateField() {
+		return listDateField;
+	}
+
+	public void setListDateField(ListDateField listDateField) {
+		this.listDateField = listDateField;
+	}
+
+	public ListNotesField getListNotesField() {
+		return listNotesField;
+	}
+
+	public void setListNotesField(ListNotesField listNotesField) {
+		this.listNotesField = listNotesField;
 	}
 
 	public Panel getContainerPanel(){
 		return containerPanel;
 	}
-	
 }

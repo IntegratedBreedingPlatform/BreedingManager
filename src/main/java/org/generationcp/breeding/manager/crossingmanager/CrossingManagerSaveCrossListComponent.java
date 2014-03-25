@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
+@Deprecated
 @Configurable
 public class CrossingManagerSaveCrossListComponent extends VerticalLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -177,10 +178,10 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
         SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
         try {
-            Integer listId = saveAction.saveRecords(source.getCrossesMade());
+            GermplasmList list = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-            this.source.viewGermplasmListCreated(listId);
+            this.source.viewGermplasmListCreated(list);
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());

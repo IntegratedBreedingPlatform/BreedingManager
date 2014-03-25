@@ -30,30 +30,39 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
     private Integer gid;
     private Integer entryId;
     private String designation;
+    private String seedSource;
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
-            this.listDataId = listDataId;
+        this.listDataId = listDataId;
         this.gid = gid;
         this.entryId = entryId;        
     }
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
-            this.listDataId = listDataId;
+        this.listDataId = listDataId;
         this.gid = gid;
         this.entryId = entryId;        
         this.designation = designation;
     }
     
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource){
+        this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+        this.designation = designation;
+        this.seedSource = seedSource;
+    }
+    
     public Integer getListDataId() {
-            return listDataId;
-        }
+        return listDataId;
+    }
 
-        public void setListDataId(Integer listDataId) {
-            this.listDataId = listDataId;
-        }
+    public void setListDataId(Integer listDataId) {
+        this.listDataId = listDataId;
+    }
 
-        public Integer getGid() {
-            return gid;
+    public Integer getGid() {
+    	return gid;
     }
 
     public void setGid(Integer gid) {
@@ -76,7 +85,15 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         this.designation = designation;
     }
 
-    @Override
+    public String getSeedSource() {
+		return seedSource;
+	}
+
+	public void setSeedSource(String seedSource) {
+		this.seedSource = seedSource;
+	}
+
+	@Override
     public int compareTo(GermplasmListEntry entry) {
         return this.entryId - entry.getEntryId();
     }
@@ -90,6 +107,8 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         builder.append(entryId);
         builder.append(", designation=");
         builder.append(designation);
+        builder.append(", seedSource=");
+        builder.append(seedSource);
         builder.append("]");
         return builder.toString();
     }

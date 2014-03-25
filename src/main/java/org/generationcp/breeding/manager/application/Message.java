@@ -423,6 +423,9 @@ public enum Message{
     ,SAVE_LIST_AS
     ,SELECT
     ,FINISH
+    ,NEW_LIST_DETAILS
+    ,SUCCESS_SAVE_FOR_FEMALE_LIST
+    ,SUCCESS_SAVE_FOR_MALE_LIST
     
     //Side by Side - List Manager
     ,LISTS

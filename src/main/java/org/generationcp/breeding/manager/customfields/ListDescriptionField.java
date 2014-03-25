@@ -35,8 +35,8 @@ public class ListDescriptionField extends HorizontalLayout
 		captionLabel.addStyleName("bold");
 		
 		descriptionTextArea = new TextArea();
-		descriptionTextArea.setWidth("260px");
-		descriptionTextArea.setHeight("50px");
+		descriptionTextArea.setWidth("200px");
+		descriptionTextArea.setHeight("35px");
 		descriptionTextArea.setImmediate(true);
 		descriptionTextArea.addValidator(new StringLengthValidator(
                 "List Description must not exceed 255 characters.", 1, 255, false)); 
@@ -96,6 +96,10 @@ public class ListDescriptionField extends HorizontalLayout
 
 	public void setDescriptionTextArea(TextArea descriptionTextArea) {
 		this.descriptionTextArea = descriptionTextArea;
+	}
+	
+	public void setValue(String value){
+		descriptionTextArea.setValue(value);
 	}
 	
 	public Object getValue(){

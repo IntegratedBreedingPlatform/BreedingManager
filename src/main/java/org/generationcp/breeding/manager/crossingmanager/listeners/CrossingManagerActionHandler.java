@@ -2,7 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.Collection;
 
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
+import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesTableComponent;
 
 import com.vaadin.event.Action;
@@ -33,7 +33,7 @@ public class CrossingManagerActionHandler implements Handler {
 
 	@Override
 	public Action[] getActions(Object target, Object sender) {
-		if (source instanceof CrossingManagerMakeCrossesComponent ){
+		if (source instanceof MakeCrossesParentsComponent ){
 			return SELECT_LIST_ENTRIES;
 			
 		} else if (source instanceof MakeCrossesTableComponent){

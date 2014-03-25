@@ -40,6 +40,15 @@ public class TableWithSelectAllLayout extends VerticalLayout implements Breeding
 		
 		setup();
 	}
+	
+	public TableWithSelectAllLayout(int recordCount, Object checkboxColumnId){
+		super();
+		this.recordCount = recordCount;
+		this.maxRecords = recordCount;
+		this.checkboxColumnId = checkboxColumnId;
+		
+		setup();
+	}
 
 	private void setup() {
 		instantiateComponents();

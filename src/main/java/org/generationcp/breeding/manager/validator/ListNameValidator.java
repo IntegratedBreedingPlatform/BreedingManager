@@ -28,7 +28,9 @@ public class ListNameValidator implements Validator {
 	private static final String SAME_PARENT_FOLDER_LIST_NAME_ERROR = "List Name and its Parent Folder must not have the same name";
 	
 	private String errorDetails;
-	private Label parentFolder;
+	private String parentFolder;
+	
+	private String currentListName;
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
@@ -39,9 +41,15 @@ public class ListNameValidator implements Validator {
 	public ListNameValidator(){
 	}
 	
-	public ListNameValidator(Label parentFolder){
+	public ListNameValidator(String parentFolder){
 		this.parentFolder = parentFolder;
 		this.errorDetails = DEFAULT_ERROR;
+	}
+	
+	public ListNameValidator(String parentFolder, String currentListName){
+		this.parentFolder = parentFolder;
+		this.errorDetails = DEFAULT_ERROR;
+		this.currentListName = currentListName;
 	}
 	
 	@Override
@@ -57,12 +65,12 @@ public class ListNameValidator implements Validator {
 	public boolean isValid(Object value) {
 		if(parentFolder != null){
 			
-	    	if(parentFolder.getValue().toString().trim().length() == 0){
+	    	if(parentFolder.trim().length() == 0){
 				this.errorDetails = DEFAULT_ERROR;
 				return false;
 			}
 	    	
-			if(parentFolder.getValue().toString().trim().endsWith(value.toString() + " >")){	
+			if(parentFolder.trim().endsWith(value.toString() + " >")){	
 				this.errorDetails = SAME_PARENT_FOLDER_LIST_NAME_ERROR;
 				return false;
 			}
@@ -78,16 +86,25 @@ public class ListNameValidator implements Validator {
 	private boolean validateListName(String listName){
 		try{
 			List<GermplasmList> centralLists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL, Database.CENTRAL);
+			
 			if(!centralLists.isEmpty()){
 				this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE);
 				return false;
 			}
 			
 			List<GermplasmList> localLists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL, Database.LOCAL);
-			if(!localLists.isEmpty()){
+			
+			if(localLists.size() == 1){
+				if(!localLists.get(0).getName().trim().equals(currentListName)){
+					this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
+					return false;
+				}
+			}
+			else if(!localLists.isEmpty()){
 				this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
 				return false;
 			}
+			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting germplasm list by list name - " + listName, ex);
 			this.errorDetails = messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
@@ -97,4 +114,19 @@ public class ListNameValidator implements Validator {
 		return true;
 	}
 
+	public String getCurrentListName() {
+		return currentListName;
+	}
+
+	public void setCurrentListName(String currentListName) {
+		this.currentListName = currentListName;
+	}
+
+	public String getParentFolder() {
+		return parentFolder;
+	}
+
+	public void setParentFolder(String parentFolder) {
+		this.parentFolder = parentFolder;
+	}
 }
