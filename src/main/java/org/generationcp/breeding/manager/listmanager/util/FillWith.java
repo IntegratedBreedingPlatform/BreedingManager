@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListDetailsComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -32,6 +33,7 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Table;
@@ -51,7 +53,7 @@ public class FillWith implements InternationalizableComponent  {
     private GermplasmDataManager germplasmDataManager;
 
     private ListManagerTreeMenu listManagerTreeMenu;
-    private AbsoluteLayout absoluteLayout;
+    private AbstractLayout parentLayout;
     
     private Table targetTable;
     private String GIDPropertyId;
@@ -82,8 +84,9 @@ public class FillWith implements InternationalizableComponent  {
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
     
-    private boolean fromBuildNewList;
     private BuildNewListComponent buildNewListComponent;
+    
+    private ListDetailsComponent listDetailsComponent;
     
 	/**
 	 * Add Fill With context menu to a table
@@ -105,15 +108,15 @@ public class FillWith implements InternationalizableComponent  {
     
 	/**
 	 * Add Fill With context menu to a table
-	 * @param absoluteLayout - contextMenu will attach to this
+	 * @param parentLayout - contextMenu will attach to this
 	 * @param targetTable - table where data will be manipulated
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 */
-    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
+    public FillWith(AbstractLayout parentLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
-    	this.absoluteLayout = absoluteLayout;
+    	this.parentLayout = parentLayout;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	
@@ -122,28 +125,38 @@ public class FillWith implements InternationalizableComponent  {
     
 	/**
 	 * Add Fill With context menu to a table
-	 * @param absoluteLayout - contextMenu will attach to this
+	 * @param parentLayout - contextMenu will attach to this
 	 * @param targetTable - table where data will be manipulated
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 * @param fromBuildNewList - specify if the creation is from BuildNewListComponent
 	 */
-    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
+    public FillWith(AbstractLayout parentLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
     		String GIDPropertyId, boolean fromBuildNewList){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
-    	this.absoluteLayout = absoluteLayout;
+    	this.parentLayout = parentLayout;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
-    	this.fromBuildNewList = fromBuildNewList;
     	
     	if(fromBuildNewList){
-    		buildNewListComponent = ((BuildNewListComponent) absoluteLayout);
+    		buildNewListComponent = ((BuildNewListComponent) parentLayout);
     	}
     	
     	setupContextMenu();
     }
     
+    public FillWith(ListDetailsComponent listDetailsComponent, AbstractLayout parentLayout
+    		,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.parentLayout = parentLayout;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.listDetailsComponent = listDetailsComponent;
+    	
+    	setupContextMenu();
+    }
     
     private void setupContextMenu(){
     	
@@ -218,8 +231,8 @@ public class FillWith implements InternationalizableComponent  {
 	   			}
 	   	 });
 	   	 
-	   	 if(absoluteLayout!=null){
-	   		 absoluteLayout.addComponent(fillWithMenu);
+	   	 if(parentLayout!=null){
+	   		 parentLayout.addComponent(fillWithMenu);
 	   	 } else {
 	   		 listManagerTreeMenu.addComponent(fillWithMenu);
 	   	 }
@@ -270,23 +283,34 @@ public class FillWith implements InternationalizableComponent  {
     	return itemIds;
 	}
 	
+	private void markHasChangesFlags(){
+		//mark flag that changes have been made in listDataTable
+		if(listManagerTreeMenu != null){ 
+			listManagerTreeMenu.setChanged(true); 
+		}
+	       
+	    //mark flag that changes have been made in buildNewListTable
+	    if(buildNewListComponent != null){ 
+	    	buildNewListComponent.setHasChanges(true); 
+	    }
+	    
+	    if(listDetailsComponent != null){
+	    	listDetailsComponent.setChanged(true);
+	    }
+	}
+	
     public void fillWithEmpty(Table table, String propertyId){
        List<Integer> itemIds = getItemIds(table);
        for(Integer itemId: itemIds){
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
        
-       //mark flag that changes have been made in listDataTable
-       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-       
-       //mark flag that changes have been made in buildNewListTable
-       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
-       
+       markHasChangesFlags();	
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent);
         attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);
     }
@@ -309,11 +333,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -337,11 +357,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -366,11 +382,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -395,11 +407,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -424,11 +432,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -438,7 +442,6 @@ public class FillWith implements InternationalizableComponent  {
     public void fillWithCrossFemaleGID(Table table, String propertyId){
  	   try {
 		   List<Integer> itemIds = getItemIds(table);
-		   List<Integer> gids = getGidsFromTable(table);
 		   for(Integer itemId: itemIds){
 			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
 			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
@@ -452,11 +455,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlags();
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -466,7 +465,6 @@ public class FillWith implements InternationalizableComponent  {
     public void fillWithCrossFemalePreferredName(Table table, String propertyId){
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
- 		   List<Integer> gids = getGidsFromTable(table);
  		   for(Integer itemId: itemIds){
  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
  			  Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
@@ -483,11 +481,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 
- 		   //mark flag that changes have been made in listDataTable
- 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
- 	       
- 	       //mark flag that changes have been made in buildNewListTable
- 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+ 		  markHasChangesFlags();
 
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -497,7 +491,6 @@ public class FillWith implements InternationalizableComponent  {
     public void fillWithCrossMaleGID(Table table, String propertyId){
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
- 		   List<Integer> gids = getGidsFromTable(table);
  		   for(Integer itemId: itemIds){
  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
  			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
@@ -511,11 +504,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 
- 		   //mark flag that changes have been made in listDataTable
- 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
- 	       
- 	       //mark flag that changes have been made in buildNewListTable
- 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+ 		  markHasChangesFlags();
  	       
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -525,7 +514,6 @@ public class FillWith implements InternationalizableComponent  {
     public void fillWithCrossMalePreferredName(Table table, String propertyId){
    	   try {
   		   List<Integer> itemIds = getItemIds(table);
-  		   List<Integer> gids = getGidsFromTable(table);
   		   for(Integer itemId: itemIds){
   			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
   			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
@@ -542,11 +530,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 
-  		   //mark flag that changes have been made in listDataTable
-  	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-  	       
-  	       //mark flag that changes have been made in buildNewListTable
-  	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+  		   markHasChangesFlags();
 
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
@@ -571,11 +555,7 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(true);
 		}
 
-        //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+        markHasChangesFlags();
 
 	}
     
@@ -597,11 +577,7 @@ public class FillWith implements InternationalizableComponent  {
 		   targetTable.setEditable(true);
         }
 
-        //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+        markHasChangesFlags();	
 
 	}
     
@@ -627,11 +603,7 @@ public class FillWith implements InternationalizableComponent  {
     		   targetTable.setEditable(true);
     		}
 	
-            //mark flag that changes have been made in listDataTable
-            if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-            
-            //mark flag that changes have been made in buildNewListTable
-            if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+        	markHasChangesFlags();	
 
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
@@ -671,9 +643,7 @@ public class FillWith implements InternationalizableComponent  {
             ++number;
         }
         
-        if(listManagerTreeMenu != null){
-     	   listManagerTreeMenu.setChanged(true);
-        }
+        markHasChangesFlags();
     }
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
@@ -748,11 +718,7 @@ public class FillWith implements InternationalizableComponent  {
 			   targetTable.setEditable(true);
 		   }
 
-	        //mark flag that changes have been made in listDataTable
-	        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	        
-	        //mark flag that changes have been made in buildNewListTable
-	        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+	    	markHasChangesFlags();	
 
     	}
     }
@@ -787,22 +753,22 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     private String getGermplasmPrefID(int gid) throws InternationalizableException {
-   	 String prefId = "";
-   	try {
-           ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
+    	String prefId = "";
+    	try {
+    		ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
           
-           for (Name n : names) {
-               if (n.getNstat() == 8) {
-                   prefId = n.getNval();
-                   break;
-               }
-           }
-           return prefId;
-       } catch (MiddlewareQueryException e) {
-//           throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
-       }
+    		for (Name n : names) {
+    			if (n.getNstat() == 8) {
+    				prefId = n.getNval();
+    				break;
+    			}
+    		}
+    		return prefId;
+    	} catch (MiddlewareQueryException e) {
+    		LOG.error("Error with getting preferred id of germplasm: " + gid, e);
+    	}
 		return prefId;
-   }
+    }
 
 	@Override
 	public void updateLabels() {
@@ -840,9 +806,5 @@ public class FillWith implements InternationalizableComponent  {
 	
 	public int getNumberOfEntries(){
 		return targetTable.getItemIds().size();
-	}
-	
-	public void setFromBuildNewList(boolean fromBuildNewList){
-		this.fromBuildNewList = fromBuildNewList;
 	}
 }
