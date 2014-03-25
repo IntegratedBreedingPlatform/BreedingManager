@@ -144,7 +144,8 @@ public class BuildNewListDropHandler implements DropHandler {
             
             Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
-            Item newItem = targetTable.addItem(getNextListEntryId());
+            final Integer newItemId = getNextListEntryId();
+            Item newItem = targetTable.addItem(newItemId);
             
             Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -166,6 +167,20 @@ public class BuildNewListDropHandler implements DropHandler {
             String preferredName = preferredNames.get(gid); 
 
             CheckBox tagCheckBox = new CheckBox();
+            tagCheckBox.setImmediate(true);
+            tagCheckBox.addListener(new ClickListener() {
+	 			private static final long serialVersionUID = 1L;
+	 			@Override
+	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+	 					targetTable.select(newItemId);
+	 				} else {
+	 					targetTable.unselect(newItemId);
+	 				}
+	 			}
+	 			 
+	 		});
             
             newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
             if(newItem!=null && gidButton!=null)
@@ -194,30 +209,34 @@ public class BuildNewListDropHandler implements DropHandler {
         	if(germplasmListData!=null){
         		
 	            Integer gid = germplasmListData.getGid();
-	            Item newItem = targetTable.addItem(getNextListEntryId());
+	            final Integer newItemId = getNextListEntryId();
+	            Item newItem = targetTable.addItem(newItemId);
 	            
 	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            
-	            String crossExpansion = "";
-	            
-	                try {
-	                	Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid); 
-	                    if(germplasmDataManager!=null)
-	                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
-	                } catch(MiddlewareQueryException ex){
-	                    LOG.error("Error in retrieving cross expansion data for GID: " + gid + ". ", ex);
-	                    crossExpansion = "-";
-	                }
-	
 	            CheckBox tagCheckBox = new CheckBox();
+	            tagCheckBox.setImmediate(true);
+	            tagCheckBox.addListener(new ClickListener() {
+    	 			private static final long serialVersionUID = 1L;
+    	 			@Override
+    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+    	 					targetTable.select(newItemId);
+    	 				} else {
+    	 					targetTable.unselect(newItemId);
+    	 				}
+    	 			}
+    	 			 
+    	 		});
 	            
 	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
 	            if(newItem!=null && gidButton!=null)
 	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(germplasmListData.getDesignation());
-	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
 	            assignSerializedEntryNumber();
 	            

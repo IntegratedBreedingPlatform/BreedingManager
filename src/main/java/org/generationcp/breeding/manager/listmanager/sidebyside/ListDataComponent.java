@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Container;
@@ -58,7 +59,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
@@ -98,7 +101,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	
-	//Toos Menu Options
+	//Tools Menu Options
 	private String MENU_SELECT_ALL="Select All"; 
     private String MENU_EXPORT_LIST="Export List"; 
     private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
@@ -394,6 +397,32 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	   		 }
 	   	 });
+		
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+	
+			public void contextItemClick(ClickEvent event) {
+			      // Get reference to clicked item
+			      ContextMenuItem clickedItem = event.getClickedItem();
+			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
+			    	  listDataTable.setValue(listDataTable.getItemIds());
+			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
+			    	  //exportListAction();
+			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
+			    	  //exportListForGenotypingOrderAction();
+			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			    	  //copyToNewListAction();
+			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
+			    	  //addEntryButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
+			    	  //saveChangesAction();
+			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
+			    	  //deleteListButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
+			    	  editListButtonClickAction();
+			      }		      
+		   }
+		});
 
 	}//end of addListeners
 
@@ -737,6 +766,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
 	}
 	
+	/* MENU ACTIONS */ 
+	private void editListButtonClickAction() {
+		source.showBuildNewListComponent(germplasmListId);
+	}
+	
+	/*SETTERS AND GETTERS*/
 	public Integer getGermplasmListId(){
 		return germplasmListId;
 	}

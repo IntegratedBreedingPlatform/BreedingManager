@@ -40,6 +40,7 @@ import com.vaadin.ui.Upload.FinishedListener;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
+@Deprecated
 public class CrossingManagerImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
     
     private static final long serialVersionUID = 9097810121003895303L;
@@ -261,7 +262,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             crossingManagerUploader.uploadSucceeded(null);
             if(this.nextScreen != null){
                 saveCrossesInfoToNextWizardStep(this.nextScreen, false);
-                ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
+//                ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
                 ((CrossingManagerMakeCrossesComponent)this.nextScreen).clearParentsListsAndCrossesTable();
             } else {
                 this.nextButton.setEnabled(false);
@@ -291,7 +292,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             } else {
                 if(this.nextScreen != null){
                     saveCrossesInfoToNextWizardStep(this.nextScreen, false);
-                    ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
+//                    ((CrossingManagerMakeCrossesComponent)this.nextScreen).setupDefaultListFromFile();
                 } else {
                     this.nextButton.setEnabled(false);
                 }

@@ -23,6 +23,7 @@ public class ListNameField extends HorizontalLayout
 	private TextField listNameTextField;
 	private boolean isMandatory;
 	private Label mandatoryMark;
+	private ListNameValidator listNameValidator;
 	
 	public ListNameField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
@@ -35,10 +36,13 @@ public class ListNameField extends HorizontalLayout
 		captionLabel.addStyleName("bold");
 		
 		listNameTextField = new TextField();
+		listNameTextField.setWidth("180px");
 		listNameTextField.setImmediate(true);
 		listNameTextField.addValidator(new StringLengthValidator(
                 "List Name must not exceed 100 characters.", 1, 100, false));
-		listNameTextField.addValidator(new ListNameValidator());
+		
+		listNameValidator = new ListNameValidator();
+		listNameTextField.addValidator(listNameValidator);
 		
 		if(isMandatory){
 			mandatoryMark = new Label("* ");
@@ -106,6 +110,16 @@ public class ListNameField extends HorizontalLayout
 		return listNameTextField.getValue();
 	}
 	
+	public ListNameValidator getListNameValidator() {
+		return listNameValidator;
+	}
+
+	public void setListNameValidator(ListNameValidator listNameValidator) {
+		listNameTextField.removeValidator(this.listNameValidator);
+		this.listNameValidator = listNameValidator;
+		listNameTextField.addValidator(this.listNameValidator);
+	}
+
 	public void validate() throws InvalidValueException {
 		listNameTextField.validate();
 	}

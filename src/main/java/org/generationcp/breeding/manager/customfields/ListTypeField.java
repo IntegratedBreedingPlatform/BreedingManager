@@ -44,6 +44,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		captionLabel.addStyleName("bold");
 		
 		listTypeComboBox = new ComboBox();
+		listTypeComboBox.setWidth("180px");
 		listTypeComboBox.setImmediate(true);
 		
 		if(isMandatory){
@@ -74,8 +75,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             String typeCode = listType.getFcode();
             selectType.addItem(typeCode);
             selectType.setItemCaption(typeCode, listType.getFname());
-            //set "F1 Nursery List" as the default value
-            if ("F1".equals(typeCode)) {
+            //set "Germplasm List" as the default value
+            if ("LST".equals(typeCode)) {
                 selectType.setValue(typeCode);
             }
         }
@@ -120,6 +121,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	public void setListTypeComboBox(ComboBox listTypeComboBox) {
 		this.listTypeComboBox = listTypeComboBox;
+	}
+	
+	public void setValue(String value){
+		listTypeComboBox.select(value);
 	}
 	
 	public Object getValue(){

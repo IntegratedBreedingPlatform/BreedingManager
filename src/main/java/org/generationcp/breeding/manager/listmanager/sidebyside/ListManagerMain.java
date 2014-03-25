@@ -289,6 +289,11 @@ public class ListManagerMain extends AbsoluteLayout implements
     	expandRight();
     }
     
+    public void showBuildNewListComponent(Integer germplasmListId){
+    	buildNewListComponent.editList(germplasmListId);
+    	expandRight();
+    }
+    
     public void addGermplasmToBuildNewListTable(Integer gid){
     	//TODO
     }
@@ -313,4 +318,5 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public void addFromListDataTable(Table sourceTable){
 		buildNewListComponent.addFromListDataTable(sourceTable);
 	}
+	
 }

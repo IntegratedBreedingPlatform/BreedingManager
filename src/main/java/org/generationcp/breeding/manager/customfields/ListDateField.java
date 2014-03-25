@@ -91,6 +91,10 @@ public class ListDateField extends HorizontalLayout
 	public void setListDtDateField(BreedingManagerDateField listDtDateField) {
 		this.listDtDateField = listDtDateField;
 	}
+	
+	public void setValue(Date date){
+		listDtDateField.setValue(date);
+	}
 
 	public Object getValue(){
 		return listDtDateField.getValue();
