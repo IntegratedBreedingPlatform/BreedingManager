@@ -89,6 +89,10 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
     	this.germplasmList = germplasmList;
     }
     
+    public SaveCrossesMadeAction(){
+    	super();
+    }
+    
     /**
      * Saves records in Germplasm, GermplasmList and GermplasmListData,
      * ProjectActivity (Workbench).

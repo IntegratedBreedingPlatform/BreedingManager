@@ -52,6 +52,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
     implements InitializingBean, InternationalizableComponent, SelectLocationFolderDialogSource {
@@ -252,10 +253,10 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
         try {
-            Integer listId = saveAction.saveRecords(source.getCrossesMade());
+            GermplasmList list = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-            this.source.viewGermplasmListCreated(listId);
+            this.source.viewGermplasmListCreated(list);
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());

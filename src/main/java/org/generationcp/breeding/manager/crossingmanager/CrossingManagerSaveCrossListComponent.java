@@ -181,7 +181,7 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
             GermplasmList list = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-            this.source.viewGermplasmListCreated(list.getId());
+            this.source.viewGermplasmListCreated(list);
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
