@@ -244,6 +244,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         	Boolean lastOpenedProjectChanged = true;
         	try {
 				lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+				workbenchDataManager.close();
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 			}

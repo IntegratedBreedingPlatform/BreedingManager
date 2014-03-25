@@ -128,10 +128,10 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 			public void buttonClick(ClickEvent event) {
 				if(validateAllFields()){
 					source.saveList(getGermplasmListToSave());
+					
+					Window window = event.getButton().getWindow();
+			        window.getParent().removeWindow(window);
 				}
-				
-				Window window = event.getButton().getWindow();
-		        window.getParent().removeWindow(window);
 			}
 			
 		});
