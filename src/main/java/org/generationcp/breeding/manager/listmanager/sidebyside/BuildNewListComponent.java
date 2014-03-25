@@ -376,8 +376,15 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
 	public void resetGermplasmTable(){
+		this.removeComponent(tableWithSelectAllLayout);
+		this.removeComponent(buttonRow);
+		
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
+        
+        this.addComponent(tableWithSelectAllLayout);
+		this.addComponent(buttonRow);
+		this.setComponentAlignment(buttonRow, Alignment.MIDDLE_CENTER);
 	}
 	
 	/* SETTERS AND GETTERS */
