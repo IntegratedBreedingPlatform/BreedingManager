@@ -52,7 +52,6 @@ public class SelectLocationFolderDialog extends Window implements
 	public SelectLocationFolderDialog(SelectLocationFolderDialogSource source, Integer folderId){
 		this.source = source;
 		this.folderId = folderId;
-		this.fromMakeCrosses = false;
 	}
 	
 	@Override

@@ -35,7 +35,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
-	private Label newListLabel;
+	private Label headerListLabel;
 	private Panel containerPanel;
 	private Label indicatesMandatoryLabel;
 	private VerticalLayout containerLayout;
@@ -71,8 +71,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Override
 	public void instantiateComponents() {
-		newListLabel = new Label(messageSource.getMessage(Message.NEW_LIST_DETAILS));
-		newListLabel.setStyleName(Bootstrap.Typography.H6.styleName());
+		headerListLabel = new Label(messageSource.getMessage(Message.LIST_DETAILS));
+		headerListLabel.setStyleName(Bootstrap.Typography.H6.styleName());
 		
 		indicatesMandatoryLabel = new Label(messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		indicatesMandatoryLabel.addStyleName("italic");
@@ -132,7 +132,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		setSpacing(true);
 		
-		addComponent(this.newListLabel);
+		addComponent(this.headerListLabel);
 		addComponent(containerPanel);
 	}
 	@Override
@@ -177,8 +177,39 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         return list;
 	}
 	
+	public void setGermplasmListDetails(GermplasmList germplasmList){
+		this.germplasmList = germplasmList;
+		
+		listNameField.setValue(germplasmList.getName());
+		listDescriptionField.setValue(germplasmList.getDescription());
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+        try {
+            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
+        } catch (ReadOnlyException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        } catch (ConversionException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        } catch (ParseException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        }
+		
+		listTypeField.setValue(germplasmList.getType());
+		listNotesField.setValue(germplasmList.getNotes());
+	}
 
 	//SETTERS and GETTERS
+	public Label getHeaderListLabel() {
+		return headerListLabel;
+	}
+
+	public void setHeaderListLabel(String header) {
+		this.headerListLabel.setValue(header);
+	}
+	
 	public ListNameField getListNameField() {
 		return listNameField;
 	}

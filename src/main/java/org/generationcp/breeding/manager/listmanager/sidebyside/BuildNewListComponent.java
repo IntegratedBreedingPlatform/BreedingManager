@@ -8,12 +8,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -214,4 +215,15 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         return itemIds;
     }
 
+	public void editList(Integer germplasmListId) {
+		try {
+			GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(germplasmListId);
+			buildNewListTitle.setValue(messageSource.getMessage(Message.EDIT_LIST));
+			breedingManagerListDetailsComponent.setGermplasmListDetails(germplasmList);
+			
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error in retrieving germplasm list",e);
+			e.printStackTrace();
+		}
+	}
 }
