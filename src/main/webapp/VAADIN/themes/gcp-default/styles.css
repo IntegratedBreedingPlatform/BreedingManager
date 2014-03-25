@@ -393,7 +393,7 @@
 
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
-	width: 1px;
+	width: 20px;
 	background-image: none;
 }
 

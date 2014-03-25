@@ -30,6 +30,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
+	private VerticalLayout rightLayout;
 	private Button toggleLeftPaneButton;
 	
 	private SearchResultsComponent searchResultsComponent;
@@ -64,10 +65,6 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		
-		//left pane
-		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("390px");
-		
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
 		
@@ -101,11 +98,19 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
-		leftLayout.addComponent(searchResultsComponent, "top:0px; left:20px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; right:0px");
+		
+		//left pane
+		leftLayout = new AbsoluteLayout();
+		leftLayout.setWidth("390px");
+		leftLayout.addComponent(searchResultsComponent, "top:0px; left:30px");
+		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
+		
+		rightLayout = new VerticalLayout();
+		rightLayout.setMargin(false,true,false,false);
+		rightLayout.addComponent(listManagerDetailsLayout);
 		
 		hSplitPanel.setFirstComponent(leftLayout);
-		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
+		hSplitPanel.setSecondComponent(rightLayout);
 		
 		addComponent(hSplitPanel);
 	}

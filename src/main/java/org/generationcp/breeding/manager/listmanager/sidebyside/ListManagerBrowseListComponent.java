@@ -88,10 +88,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-		
-		//left pane
-		leftLayout = new AbsoluteLayout();
-		
+				
 		toggleLeftPaneButton = new Button();
 		toggleLeftPaneButton.setIcon(ICON_TOOGLE);
 		toggleLeftPaneButton.setDescription("Toggle List Manager Tree");
@@ -99,11 +96,8 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		toggleLeftPaneButton.setWidth("30px");
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		
-		//right pane
 		listDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
 		
-		rightLayout = new VerticalLayout();
-		rightLayout.setMargin(true);
 	}
 
 	@Override
@@ -131,10 +125,15 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
+		//left pane
+		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("240px");
 		leftLayout.addComponent(listTreeComponent,"top:30px;left:20px");
 		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
 		
+		//right pane
+		rightLayout = new VerticalLayout();
+		rightLayout.setMargin(true,false,false,false);
 		rightLayout.addComponent(listDetailsLayout);
 		
 		hSplitPanel.setFirstComponent(leftLayout);

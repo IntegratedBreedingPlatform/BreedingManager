@@ -149,7 +149,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         
         this.setWidth("98%");
         this.setStyleName(Runo.TABSHEET_SMALL);
-        this.setMargin(false, false, false, true);
+        this.setMargin(false);
     }
 
     @Override
