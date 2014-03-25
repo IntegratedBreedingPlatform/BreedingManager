@@ -7,7 +7,7 @@ import java.util.Date;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -181,6 +181,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.germplasmList = germplasmList;
 		
 		listNameField.setValue(germplasmList.getName());
+		
+		resetListNameFieldForExistingList(germplasmList);
+		
 		listDescriptionField.setValue(germplasmList.getDescription());
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
@@ -199,6 +202,16 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		listTypeField.setValue(germplasmList.getType());
 		listNotesField.setValue(germplasmList.getNotes());
+	}
+	
+	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
+		ListNameValidator listNameValidator = listNameField.getListNameValidator();
+		listNameValidator.setCurrentListName(germplasmList.getName());
+
+		GermplasmList parentList = germplasmList.getParent();
+		if(parentList != null){
+			listNameValidator.setParentFolder(parentList.getName());
+		}		
 	}
 
 	//SETTERS and GETTERS

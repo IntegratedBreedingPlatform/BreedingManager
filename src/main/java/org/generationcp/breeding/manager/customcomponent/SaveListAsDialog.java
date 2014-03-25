@@ -3,10 +3,8 @@ package org.generationcp.breeding.manager.customcomponent;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
-import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -99,22 +97,15 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		if(germplasmList != null){
 			
 			GermplasmList parent = germplasmList.getParent();
-			
-			ListNameField listNameField = this.listDetailsComponent.getListNameField();
-			ListNameValidator listNameValidator = listNameField.getListNameValidator();
-			listNameValidator.setCurrentListName(germplasmList.getName());
-			
 			if(parent != null){ // if not "Program Lists"
 				germplasmListTree.setListId(parent.getId());
 				germplasmListTree.setSelectedListId(parent.getId());
-				
-				listNameValidator.setParentFolder(germplasmList.getParent().getName());
 			}
 			
 			germplasmListTree.createTree();
 			
-			listNameField.setListNameValidator(listNameValidator);
-			listDetailsComponent.setListNameField(listNameField);
+			listDetailsComponent.setGermplasmListDetails(germplasmList);
+
 		}
 	}
 
