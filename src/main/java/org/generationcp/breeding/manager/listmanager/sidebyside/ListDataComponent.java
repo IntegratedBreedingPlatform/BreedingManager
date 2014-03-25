@@ -502,20 +502,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 					private static final long serialVersionUID = 1L;
 
 					public void focus(FocusEvent event) {
-						//TODO review if this is still needed
-		                // Make the entire item editable
-						/*
-		                HashMap<Object,Field> itemMap = fields.get(itemId);
-		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-		                	Object column = entry.getKey();
-		        			if(column.equals(selectedColumn)){		        				
-		        				Field f = entry.getValue();
-			                	//f.setReadOnly(false);
-		        			}
-		                }
-		                */
-		                
-		                listDataTable.select(itemId);
+						listDataTable.select(itemId);
 		            }
 		        });
 		        
@@ -529,14 +516,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                	Field f = entry.getValue();
 		                	Object fieldValue = f.getValue();
 		                	
-		                	// mark list as changed if value for the cell was changed
-		                	if (column.equals(selectedColumn)) {
-		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
-		                	        parentListDetailsComponent.setChanged(true);
-		                	    }
-		                	}
-		                	
-		                    // validate for designation
+		                	// validate for designation
 		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
 		        			    Object source = event.getSource();
                                 String designation = source.toString();
@@ -592,6 +572,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 						Double d = computeTextFieldWidth(tf.getValue().toString());
 						tf.setWidth(d.floatValue(), UNITS_EM);
 						tf.setReadOnly(true);
+						
+						parentListDetailsComponent.setChanged(true);
 					}
 	        	});
 		        
