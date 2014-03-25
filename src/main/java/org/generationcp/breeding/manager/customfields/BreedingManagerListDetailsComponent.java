@@ -213,6 +213,14 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listNameValidator.setParentFolder(parentList.getName());
 		}		
 	}
+	
+	public void resetFields() {
+		listNameField.setValue("");
+		listDescriptionField.setValue("");
+		listTypeField.setValue(listTypeField.getDEFAULT_LIST_TYPE());
+		listDateField.setValue(new Date());
+		listNotesField.setValue("");
+	}
 
 	//SETTERS and GETTERS
 	public Label getHeaderListLabel() {

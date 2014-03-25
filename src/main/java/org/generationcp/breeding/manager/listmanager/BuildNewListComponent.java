@@ -495,7 +495,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         resetButton.setCaption(messageSource.getMessage(Message.RESET));
         resetButton.setWidth("80px");
         resetButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
+     //   resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
         
         buttonRow.addComponent(resetButton);
         buttonRow.setComponentAlignment(resetButton, Alignment.MIDDLE_RIGHT);
@@ -1491,8 +1491,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     public void viewEditList(int listId){
         
-    	ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
-    	resetListButtonClick.resetListBuilder();
+    	//ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
+    	//resetListButtonClick.resetListBuilder();
     	
     	this.fromEditList = true;
         this.germplasmListId = listId;

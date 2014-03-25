@@ -750,10 +750,50 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	/* MENU ACTIONS */ 
 	private void editListButtonClickAction() {
-		source.showBuildNewListComponent(germplasmListId);
+		final BuildNewListComponent buildNewListComponent = source.getBuildNewListComponent();
+		
+    	if(buildNewListComponent.getHasChanges()){
+    		String message = "";
+    		
+    		String buildNewListTitle = buildNewListComponent.getBuildNewListTitle().getValue().toString();
+    		if(buildNewListTitle.equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
+        		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	else {
+        		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+    		
+    		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+				private static final long serialVersionUID = 1L;
+				
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						buildNewListComponent.getSaveButton().click(); // save the existing list	
+					}
+					
+					source.showBuildNewListComponent(getGermplasmList());
+					buildNewListComponent.setHasChanges(false); // reset
+				}
+			}
+		);
+    	}
+    	else{
+    		source.showBuildNewListComponent(getGermplasmList());
+    	}
 	}
 	
 	/*SETTERS AND GETTERS*/
+	public GermplasmList getGermplasmList(){
+		GermplasmList germplasmList = null;
+		try {
+			germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving germplasmList",e);
+			e.printStackTrace();
+		}
+		return germplasmList;
+	}
 	public Integer getGermplasmListId(){
 		return germplasmListId;
 	}

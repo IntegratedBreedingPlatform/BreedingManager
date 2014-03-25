@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,12 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -176,7 +179,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         toggleBuildNewListButton.setStyleName(Reindeer.BUTTON_LINK);
         toggleBuildNewListButton.setWidth("30px");
         
-        buildNewListComponent = new BuildNewListComponent();
+        buildNewListComponent = new BuildNewListComponent(this);
         
 		buildListLayout = new HorizontalLayout();
 		buildListLayout.setSpacing(true);
@@ -289,8 +292,9 @@ public class ListManagerMain extends AbsoluteLayout implements
     	expandRight();
     }
     
-    public void showBuildNewListComponent(Integer germplasmListId){
-    	buildNewListComponent.editList(germplasmListId);
+    public void showBuildNewListComponent(GermplasmList list){
+    	updateUIForDeletedList(list); // remove the list to be edited from the review list details tabsheet
+		buildNewListComponent.editList(list);
     	expandRight();
     }
     
@@ -317,6 +321,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
 	public void addFromListDataTable(Table sourceTable){
 		buildNewListComponent.addFromListDataTable(sourceTable);
+	}		
+	
+	/* SETTERS AND GETTERS */
+	public BuildNewListComponent getBuildNewListComponent() {
+		return buildNewListComponent;
 	}
 	
 }
