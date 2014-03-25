@@ -17,11 +17,12 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerMain extends AbsoluteLayout implements
@@ -307,5 +308,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 	@Override
 	public void openListDetails(GermplasmList list) {
 		browseListsComponent.openListDetails(list);
+	}
+	
+	public void addFromListDataTable(Table sourceTable){
+		buildNewListComponent.addFromListDataTable(sourceTable);
 	}
 }

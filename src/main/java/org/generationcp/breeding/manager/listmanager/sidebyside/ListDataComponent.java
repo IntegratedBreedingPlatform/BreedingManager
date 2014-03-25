@@ -351,8 +351,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                listDataTable.select(selectedItemId);
 					}else if(ACTION_COPY_TO_NEW_LIST == action){
 						source.showBuildNewListComponent();
-						//List<Integer> gids = ListCommonActionsUtil.getSelectedGidsFromListDataTable(listDataTable, ListDataTablePropertyID.GID.getName());
-						//TODO call method from BuildNewListDropHandler
+						source.addFromListDataTable(listDataTable);
 					}
 	         	}
 			});

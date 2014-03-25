@@ -23,6 +23,7 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
@@ -43,9 +44,10 @@ public class BuildNewListDropHandler implements DropHandler {
 	
 	private Table targetTable;
 	
-	public BuildNewListDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager) {
+	public BuildNewListDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, Table targetTable) {
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
+		this.targetTable = targetTable;
 	}
 
 	@Override
@@ -109,8 +111,6 @@ public class BuildNewListDropHandler implements DropHandler {
         	return true;
         return false;
 	}
-	
-
 
 	private void addSelectedGermplasmListsFromTable(Table sourceTable) {
 		List<Integer> selectedGermplasmListIds = getSelectedItemIds(sourceTable);
@@ -132,16 +132,12 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 	}
 	
-	
-	
-	
 	private void addSelectedGermplasmsFromTable(Table sourceTable) {
 		List<Integer> selectedGermplasmIds = getSelectedItemIds(sourceTable);
 		for(Integer itemId : selectedGermplasmIds){
 			addGermplasm(getGidFromButtonCaption(sourceTable, itemId));
 		}
 	}
-	
 
 	private Integer addGermplasm(Integer gid){
         try {
@@ -190,7 +186,6 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 	}
 	
-	
 	private Integer addGermplasmFromList(Integer listId, Integer lrecid){
         try {
             
@@ -215,9 +210,6 @@ public class BuildNewListDropHandler implements DropHandler {
 	                    crossExpansion = "-";
 	                }
 	
-	            List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-	            importedGermplasmGids.add(gid);
-	
 	            CheckBox tagCheckBox = new CheckBox();
 	            
 	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
@@ -240,7 +232,55 @@ public class BuildNewListDropHandler implements DropHandler {
             return null;
         }
 		
-	}	
+	}
+	
+	public void addFromListDataTable(Table sourceTable){
+		List<Integer> itemIds = getSelectedItemIds(sourceTable);
+		
+		for(Integer itemId : itemIds){
+			Item itemFromSourceTable = sourceTable.getItem(itemId);
+			Integer newItemId = getNextListEntryId();
+			Item newItem = targetTable.addItem(newItemId);
+			
+			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
+			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+            gidButton.setDescription("Click to view Germplasm information");
+            
+            CheckBox itemCheckBox = new CheckBox();
+            itemCheckBox.setData(newItemId);
+            itemCheckBox.setImmediate(true);
+	   		itemCheckBox.addListener(new ClickListener() {
+	 			private static final long serialVersionUID = 1L;
+	 			@Override
+	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+	 					targetTable.select(itemCheckBox.getData());
+	 				} else {
+	 					targetTable.unselect(itemCheckBox.getData());
+	 				}
+	 			}
+	 			 
+	 		});
+	   		
+	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+	   		Button designationButton = (Button) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
+	   		String designation = designationButton.getCaption();
+	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
+	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+	   		
+	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
+	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designation);
+	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
+	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
+		}
+		
+		assignSerializedEntryNumber();
+	}
+	
     /**
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */

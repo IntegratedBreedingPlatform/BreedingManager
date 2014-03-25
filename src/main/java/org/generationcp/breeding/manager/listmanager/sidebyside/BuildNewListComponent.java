@@ -8,7 +8,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -64,6 +63,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private Button saveButton;
     private Button resetButton;
     
+    private BuildNewListDropHandler dropHandler;
+    
     public BuildNewListComponent() {
         super();
     }
@@ -85,11 +86,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     }
     
     private void initializeHandlers() {
-    	tableWithSelectAllLayout.getTable().setDropHandler(new BuildNewListDropHandler(germplasmDataManager, germplasmListManager));
+    	tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
     }
     
     private void initializeComponents() {
-        buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+    	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
         buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
         
         buildNewListDesc = new Label();
@@ -101,6 +102,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
+        
+        dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
         buttonRow = new HorizontalLayout();
         saveButton = new Button();
@@ -213,5 +216,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
         return itemIds;
     }
-
+    
+    public void addFromListDataTable(Table sourceTable){
+    	dropHandler.addFromListDataTable(sourceTable);
+    }
 }
