@@ -307,6 +307,7 @@ public class BuildNewListDropHandler implements DropHandler {
             
 			currentColumnsInfo = null;
             currentListId = null;
+            
             return null;
         }
         
