@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
@@ -94,8 +95,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					
 					
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
-					//TODO:
-					//((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
+					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
+					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().select(listId);
+					
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
@@ -155,8 +157,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						source.setHasChanges(false);
 						
 						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
-						//TODO: Update tree
-						//((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
+						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().select(listId);
+						
 					}
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error in updating germplasm list: " + currentlySavedList.getId(), ex);
