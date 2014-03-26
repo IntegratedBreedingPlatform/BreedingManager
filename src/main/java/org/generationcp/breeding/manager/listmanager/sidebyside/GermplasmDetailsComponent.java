@@ -184,7 +184,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 		mainLayout.setHeight("30px");
         mainLayout.addComponent(leftLayout);
         mainLayout.addComponent(saveToListLink);
-        mainLayout.setComponentAlignment(leftLayout, Alignment.BOTTOM_LEFT);
+        mainLayout.setComponentAlignment(leftLayout, Alignment.TOP_LEFT);
         mainLayout.setComponentAlignment(saveToListLink, Alignment.BOTTOM_RIGHT);
         
         CssLayout l = new CssLayout();
