@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
+import org.generationcp.breeding.manager.customcomponent.ToogleButton;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -10,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -38,9 +37,6 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
-	
-	//Theme Resource
-  	private static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
 	
 	public ListManagerSearchListComponent(ListManagerMain source) {
 		super();
@@ -66,12 +62,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
-		
-		toggleLeftPaneButton = new Button();
-		toggleLeftPaneButton.setIcon(ICON_TOOGLE);
-		toggleLeftPaneButton.setDescription("Toggle Search Results Table");
-		toggleLeftPaneButton.setStyleName(Reindeer.BUTTON_LINK);
-		toggleLeftPaneButton.setWidth("30px");
+		toggleLeftPaneButton = new ToogleButton("Toggle Search Results Table");
 	}
 
 	@Override

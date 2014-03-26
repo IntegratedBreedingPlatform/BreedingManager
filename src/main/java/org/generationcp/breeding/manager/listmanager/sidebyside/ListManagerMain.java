@@ -2,6 +2,8 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.ToogleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -22,7 +23,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerMain extends AbsoluteLayout implements
@@ -35,7 +35,6 @@ public class ListManagerMain extends AbsoluteLayout implements
     private Label mainTitle;
     private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
-    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
     //For Main Tab 
     private HorizontalLayout tabHeaderLayout;
@@ -66,10 +65,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
-    //Theme Resource
-  	private static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
-	
+    	
     public ListManagerMain(){
     	super();
     	this.selectedListId = null;
@@ -125,7 +121,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
         buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
         buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        buildNewListButton.setIcon(ICON_PLUS);
+        buildNewListButton.setIcon(AppConstants.Icons.ICON_PLUS);
         
         titleLayout.addComponent(mainTitle,"top:0px;left:0px");
         titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
@@ -170,11 +166,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
         
-        toggleBuildNewListButton = new Button();
-        toggleBuildNewListButton.setIcon(ICON_TOOGLE);
-        toggleBuildNewListButton.setDescription("Toggle Build New List Pane");
-        toggleBuildNewListButton.setStyleName(Reindeer.BUTTON_LINK);
-        toggleBuildNewListButton.setWidth("30px");
+        toggleBuildNewListButton = new ToogleButton("Toggle Build New List Pane");
         
         buildNewListComponent = new BuildNewListComponent(this);
         

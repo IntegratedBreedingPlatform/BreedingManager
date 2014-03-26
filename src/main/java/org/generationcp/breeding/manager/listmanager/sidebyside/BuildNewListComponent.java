@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -26,7 +27,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.event.Action;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -75,9 +75,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private ContextMenuItem menuExportForGenotypingOrder;
     private ContextMenuItem menuCopyToList;
     
-    //Theme Resource
-    private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
-    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     public static String TOOLS_BUTTON_ID = "Tools";
     
     //For Edit
@@ -131,7 +128,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         resetMenuOptions();
         
         toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
-        toolsButton.setIcon(ICON_TOOLS);
+        toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
         toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
              
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());

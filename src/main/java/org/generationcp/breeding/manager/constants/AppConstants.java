@@ -32,7 +32,9 @@ public final class AppConstants {
 		public static final ThemeResource TRASH_ICON = new ThemeResource("images/trash-icon-blue.png");
 		public static final ThemeResource TRASH_ICON_GRAY_BG = new ThemeResource("images/bluetrash-icon-graybg.png");
 		public static final String POPUP_VIEW_ICON = "?";
-		
+		public static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+	    public static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
+	    public static final ThemeResource ICON_TOOGLE = new ThemeResource("images/toogle_icon.PNG");
 	}
 	
 	public static class DB {
