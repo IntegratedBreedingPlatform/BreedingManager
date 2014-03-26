@@ -317,4 +317,8 @@ public class ListManagerMain extends AbsoluteLayout implements
 		return buildNewListComponent;
 	}
 	
+	public ListManagerBrowseListComponent getBrowseListsComponent(){
+		return browseListsComponent;
+	}
+	
 }

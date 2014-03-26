@@ -155,4 +155,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		return listDetailsLayout;
 	}
     
+	public ListManagerTreeComponent getListTreeComponent(){
+		return listTreeComponent;
+	}
 }
