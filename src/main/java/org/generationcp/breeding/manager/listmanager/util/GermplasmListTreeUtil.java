@@ -191,6 +191,13 @@ public class GermplasmListTreeUtil implements Serializable {
     }
     
     public void addFolder(final Object parentItemId){
+    	final Window mainWindow;
+    	// show window
+        if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
     	
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
@@ -331,7 +338,7 @@ public class GermplasmListTreeUtil implements Serializable {
                 }
 
                 // close popup
-                source.getWindow().removeWindow(event.getComponent().getWindow());
+                mainWindow.removeWindow(event.getComponent().getWindow());
             }
         });
 
@@ -341,7 +348,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	mainWindow.removeWindow(w);
             }
         });
 
@@ -354,12 +361,19 @@ public class GermplasmListTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+    	mainWindow.addWindow(w);    	
     }    
 
     
     public void renameFolderOrList(final Integer listId, final ListTreeActionsListener listener){
-
+    	final Window mainWindow;
+    	// show window
+        if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
+        
     	GermplasmList germplasmList = null;
         try {
 			germplasmList = germplasmListManager.getGermplasmListById(listId);
@@ -425,7 +439,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	mainWindow.removeWindow(w);
             }
         });
 
@@ -438,7 +452,7 @@ public class GermplasmListTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+        mainWindow.addWindow(w);
     }
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
@@ -548,6 +562,13 @@ public class GermplasmListTreeUtil implements Serializable {
 		
 		@Override
 		public void buttonClick(Button.ClickEvent event) {
+			final Window mainWindow;
+	        if (source.usedInSubWindow()){
+	        	mainWindow = event.getComponent().getWindow().getParent();
+	        } else {        	
+	        	mainWindow = event.getComponent().getWindow();   	
+	        }  
+	        
 		    String newName = name.getValue().toString();
 			if(newName.replace(" ","").equals("")){
 		    	MessageNotifier.showWarning(source.getWindow(),
@@ -598,7 +619,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		        return;
 		    }
 		
-		    source.getWindow().removeWindow(event.getComponent().getWindow());
+		    mainWindow.removeWindow(event.getComponent().getWindow());
 		}
 }
 

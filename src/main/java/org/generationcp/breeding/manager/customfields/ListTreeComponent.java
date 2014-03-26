@@ -141,6 +141,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
+		setWidth("225px");
 		if (doIncludeActionsButtons()){
 			addComponent(controlButtonsLayout);
 		}
@@ -174,6 +175,10 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	}
 	protected String getTreeStyleName(){
 		return "listManagerTree";
+	}
+	
+	public boolean usedInSubWindow(){
+		return false;
 	}
 	
 	protected abstract boolean doIncludeRefreshButton();
@@ -611,6 +616,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     	return selectedListId;
     }
     
-    
+    public void setListId(Integer listId){
+    	this.listId = listId; 
+    }
 
 }
