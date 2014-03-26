@@ -58,6 +58,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
@@ -211,7 +212,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
 	private void initializeListDataTable(){
-		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), 15, CHECKBOX_COLUMN_ID);
+		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), 13, CHECKBOX_COLUMN_ID);
 		listDataTable = listDataTableWithSelectAll.getTable();
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
@@ -427,21 +428,25 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Override
 	public void layoutComponents() {
 		setSpacing(true);
-		setMargin(true);
 		
-		VerticalLayout headerLayout = new VerticalLayout();
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
-		headerLayout.addComponent(viewHeaderButton);
-		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
+		
+		HorizontalLayout headerLayoutLeft = new HorizontalLayout();
+		headerLayoutLeft.setSpacing(true);
+		headerLayoutLeft.addComponent(viewHeaderButton);
+		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
 		
 		if(listEntriesCount == 0) {
-			headerLayout.addComponent(noListDataLabel); 
-			headerLayout.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
+			headerLayoutLeft.addComponent(noListDataLabel); 
+			headerLayoutLeft.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
 		} else{
-			headerLayout.addComponent(totalListEntriesLabel);
-			headerLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+			headerLayoutLeft.addComponent(totalListEntriesLabel);
+			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		}
 		
+		headerLayout.addComponent(headerLayoutLeft);
 		headerLayout.addComponent(toolsButton);
 		headerLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		

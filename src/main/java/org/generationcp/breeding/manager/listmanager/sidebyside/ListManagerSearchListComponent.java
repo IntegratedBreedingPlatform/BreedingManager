@@ -30,7 +30,6 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
-	private VerticalLayout rightLayout;
 	private Button toggleLeftPaneButton;
 	
 	private SearchResultsComponent searchResultsComponent;
@@ -104,13 +103,9 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		leftLayout.setWidth("390px");
 		leftLayout.addComponent(searchResultsComponent, "top:0px; left:30px");
 		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
-		
-		rightLayout = new VerticalLayout();
-		rightLayout.setMargin(false,true,false,false);
-		rightLayout.addComponent(listManagerDetailsLayout);
-		
+	
 		hSplitPanel.setFirstComponent(leftLayout);
-		hSplitPanel.setSecondComponent(rightLayout);
+		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
 		
 		addComponent(hSplitPanel);
 	}
