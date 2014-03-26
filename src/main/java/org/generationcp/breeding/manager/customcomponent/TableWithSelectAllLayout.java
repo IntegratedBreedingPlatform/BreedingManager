@@ -1,8 +1,9 @@
-package org.generationcp.breeding.manager.customfields;
+package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.Collection;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -11,56 +12,36 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
-public class TableWithSelectAllLayout extends VerticalLayout implements BreedingManagerLayout{
+@Configurable
+public class TableWithSelectAllLayout extends TableLayout implements BreedingManagerLayout {
 	
 	private static final long serialVersionUID = 5246715520145983375L;
 
 	private CheckBox selectAllCheckBox;
-	private BreedingManagerTable table;
 	private Object checkboxColumnId;
 	private Label dummyLabel;
 	
-	private int recordCount = 0;
-	private int maxRecords = 0;
-	
 	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId){
-		super();
-		this.recordCount = recordCount;
-		this.maxRecords = maxRecords;
+		super(recordCount, maxRecords);
 		this.checkboxColumnId = checkboxColumnId;
-		
-		setup();
 	}
 	
 	public TableWithSelectAllLayout(Object checkboxColumnId){
 		super();
 		this.checkboxColumnId = checkboxColumnId;
-		
-		setup();
 	}
 	
 	public TableWithSelectAllLayout(int recordCount, Object checkboxColumnId){
-		super();
-		this.recordCount = recordCount;
-		this.maxRecords = recordCount;
+		super(recordCount);
 		this.checkboxColumnId = checkboxColumnId;
-		
-		setup();
 	}
 
-	private void setup() {
-		instantiateComponents();
-		addListeners();
-		layoutComponents();
-	}
-	
 	@SuppressWarnings("unchecked")
 	private void syncItemCheckBoxes(){
 		Collection<Object> entries = (Collection<Object>) table.getItemIds();
 		Collection<Object> selectedEntries = (Collection<Object>) table.getValue();
-		if(selectedEntries.size() == entries.size()){
+		if(selectedEntries.size() == entries.size() && selectedEntries.size() > 0){
 			selectAllCheckBox.setValue(true);
 		} else{
 			selectAllCheckBox.setValue(false);
@@ -78,7 +59,7 @@ public class TableWithSelectAllLayout extends VerticalLayout implements Breeding
 			}
 		}
     }
-	 
+	
 	public Table getTable(){
 		return this.table;
 	}
@@ -89,8 +70,7 @@ public class TableWithSelectAllLayout extends VerticalLayout implements Breeding
 
 	@Override
 	public void instantiateComponents() {
-		this.table = new BreedingManagerTable(recordCount, maxRecords);
-		this.table.setImmediate(true);
+		super.instantiateComponents();
 		
 		this.selectAllCheckBox = new CheckBox("Select All");
 		this.selectAllCheckBox.setImmediate(true);
@@ -106,14 +86,12 @@ public class TableWithSelectAllLayout extends VerticalLayout implements Breeding
 
 	@Override
 	public void addListeners() {
-		this.table.addListener(new Table.ValueChangeListener() {
+		super.addListeners();
+		
+		table.addListener(new Table.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				@SuppressWarnings("unchecked")
-				Collection<Object> value = (Collection<Object>) event.getProperty().getValue();
-				if (!value.isEmpty()){
-					syncItemCheckBoxes();
-				}
+				syncItemCheckBoxes();
              }
          });
 		
@@ -141,9 +119,7 @@ public class TableWithSelectAllLayout extends VerticalLayout implements Breeding
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(table);
+		super.layoutComponents();
 		
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addComponent(dummyLabel);
