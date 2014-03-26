@@ -56,7 +56,7 @@ public class ListManagerMain extends AbsoluteLayout implements
     private BuildNewListComponent buildNewListComponent;
     
     private Button toggleBuildNewListButton;
-	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(66); //actual width in pixel 650 
+	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(65); //actual width in pixel 650 
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
 	
 	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(80); //actual width in pixel
@@ -179,7 +179,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         buildNewListComponent = new BuildNewListComponent(this);
         
 		buildListLayout = new HorizontalLayout();
-		buildListLayout.setSpacing(true);
+		buildListLayout.setMargin(false,true,true,false);
 		buildListLayout.addComponent(toggleBuildNewListButton);
 		buildListLayout.addComponent(buildNewListComponent);
 		

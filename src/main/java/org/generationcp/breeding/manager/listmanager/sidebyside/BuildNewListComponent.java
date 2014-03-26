@@ -63,7 +63,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private Label buildNewListDesc;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
-    private HorizontalLayout buttonRow;
     private Button toolsButton;
     private Button saveButton;
     private Button resetButton;
@@ -116,12 +115,10 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
         
         buildNewListDesc = new Label();
-        buildNewListDesc.setValue(messageSource.getMessage(Message.BUILD_YOUR_LIST_BY_DRAGGING_LISTS_OR_GERMPLASM_RECORDS_INTO_THIS_NEW_LIST_WINDOW));
-        buildNewListDesc.setWidth("500px");
+        buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
+        buildNewListDesc.setWidth("300px");
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
-        breedingManagerListDetailsComponent.getContainerPanel().setWidth("631px");
-        
         
         menu = new ContextMenu();
         menu.setWidth("255px");
@@ -142,20 +139,12 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
-        buttonRow = new HorizontalLayout();
         saveButton = new Button();
-        resetButton = new Button();
+        saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
+        saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         
-        buttonRow.setWidth("100%");
-        buttonRow.setHeight("50px");
-        buttonRow.setSpacing(true);
-
-        saveButton.setCaption(messageSource.getMessage(Message.SAVE_LIST));
-        saveButton.setWidth("80px");
-        saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-
-        resetButton.setCaption(messageSource.getMessage(Message.RESET));
-        resetButton.setWidth("80px");
+        resetButton = new Button();
+        resetButton.setCaption(messageSource.getMessage(Message.RESET_LIST));
         resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 	}
 	
@@ -218,7 +207,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	public void layoutComponents() {
 		this.setSpacing(true);
         this.addComponent(buildNewListTitle);
-        this.addComponent(buildNewListDesc);
+        
+        HorizontalLayout instructionLayout = new HorizontalLayout();
+        instructionLayout.setSpacing(true);
+        instructionLayout.setWidth("100%");
+        instructionLayout.addComponent(buildNewListDesc);
+        instructionLayout.addComponent(saveButton);
+        instructionLayout.setComponentAlignment(buildNewListDesc, Alignment.MIDDLE_LEFT);
+        instructionLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+        
+        this.addComponent(instructionLayout);
         this.addComponent(breedingManagerListDetailsComponent);
         
         this.addComponent(toolsButton);
@@ -226,14 +224,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         this.addComponent(menu);
         
         this.addComponent(tableWithSelectAllLayout);
-        
-        buttonRow.addComponent(resetButton);
-        buttonRow.setComponentAlignment(resetButton, Alignment.MIDDLE_RIGHT);
-        buttonRow.addComponent(saveButton);
-        buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
-        
-        this.addComponent(buttonRow);
-        this.setComponentAlignment(buttonRow, Alignment.MIDDLE_CENTER);
+        this.addComponent(resetButton);
 	}
     
     public void createGermplasmTable(final Table table){
@@ -257,7 +248,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         table.setSelectable(true);
         table.setMultiSelect(true);
-        table.setWidth("100%");
+        table.setWidth("365px");
         table.setHeight("280px");
         
         table.addActionHandler(new Action.Handler() {
@@ -377,14 +368,13 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	
 	public void resetGermplasmTable(){
 		this.removeComponent(tableWithSelectAllLayout);
-		this.removeComponent(buttonRow);
+		this.removeComponent(resetButton);
 		
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
         
         this.addComponent(tableWithSelectAllLayout);
-		this.addComponent(buttonRow);
-		this.setComponentAlignment(buttonRow, Alignment.MIDDLE_CENTER);
+		this.addComponent(resetButton);
 	}
 	
 	/* SETTERS AND GETTERS */
