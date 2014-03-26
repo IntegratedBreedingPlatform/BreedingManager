@@ -63,6 +63,7 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.Window.Notification;
 
+@Deprecated
 public class CrossingManagerUploader implements Receiver, SucceededListener {
         
     private static final long serialVersionUID = -1740972379887956957L;

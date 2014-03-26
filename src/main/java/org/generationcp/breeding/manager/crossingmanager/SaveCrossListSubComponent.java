@@ -13,7 +13,6 @@ import org.generationcp.breeding.manager.customfields.ListTypeField;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
-import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -39,6 +38,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class SaveCrossListSubComponent extends AbsoluteLayout 
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SelectLocationFolderDialogSource {

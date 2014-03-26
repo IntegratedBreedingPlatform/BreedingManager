@@ -135,13 +135,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
         ListIterator<GermplasmListEntry> iterator2 = parents2.listIterator();
 
         tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
-
         while (iterator1.hasNext()){
             GermplasmListEntry parent1 = iterator1.next();
             GermplasmListEntry parent2 = iterator2.next();
             String caption1 = parent1.getDesignation();
             String caption2 = parent2.getDesignation();
-            String caption3 =listnameFemaleParent+":"+parent1.getEntryId() + "/"
+            String seedSource =listnameFemaleParent+":"+parent1.getEntryId() + "/"
             +listnameMaleParent+":"+parent2.getEntryId();
             
             
@@ -149,7 +148,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             
             if (!crossAlreadyExists(parents)){
                 tableCrossesMade.addItem(new Object[] {1,
-                        BreedingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,caption3 
+                        BreedingManagerUtil.generateFemaleandMaleCrossName(caption1, caption2), caption1, caption2,seedSource 
                     }, parents); 
                
             }     
@@ -262,7 +261,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             String crossName = String.valueOf(crossNameProp.toString());
             String crossSource= String.valueOf(crossSourceProp.toString());
             
-                // get GIDs and entryIDs of female and male parents
+            // get GIDs and entryIDs of female and male parents
             CrossParents parents = (CrossParents) itemId;
             Integer gpId1 = parents.getFemaleParent().getGid();
             Integer gpId2 = parents.getMaleParent().getGid();
@@ -300,49 +299,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     }
     
     //internal POJO for ad ID of each row in Crosses Made table (need both GID and entryid of parents)
-    private class CrossParents{
-    
-        private GermplasmListEntry femaleParent;
-        
-        private GermplasmListEntry maleParent;
-        
-        public CrossParents(GermplasmListEntry femaleParent, GermplasmListEntry maleParent){
-            this.femaleParent = femaleParent;
-            this.maleParent = maleParent;
-        }
-        
-        public GermplasmListEntry getFemaleParent() {
-            return femaleParent;
-        }
-        
-        public GermplasmListEntry getMaleParent() {
-            return maleParent;
-        }
-    
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            CrossParents other = (CrossParents) obj;
-            if (femaleParent == null) {
-                if (other.femaleParent != null)
-                    return false;
-                } else if (!femaleParent.equals(other.femaleParent))
-                    return false;
-            if (maleParent == null) {
-                if (other.maleParent != null)
-                    return false;
-             } else if (!maleParent.equals(other.maleParent))
-                return false;
-            
-            return true;
-        }
-
-    }
+   
     
     public void clearCrossesTable(){
         this.tableCrossesMade.removeAllItems();
@@ -430,10 +387,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private void launchSaveListAsWindow() {
     	saveListAsWindow = null;
     	if(crossList != null){
-    		saveListAsWindow = new SaveListAsDialog(this, crossList);
+    		saveListAsWindow = new SaveCrossListAsDialog(this, crossList);
     	}
     	else{
-    		saveListAsWindow = new SaveListAsDialog(this,null);
+    		saveListAsWindow = new SaveCrossListAsDialog(this,null);
     	}
         
         saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
@@ -478,6 +435,47 @@ public class MakeCrossesTableComponent extends VerticalLayout
             MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
                 messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
         }
+    }
+    
+    /**
+     * Update seed source of existing listdata records with new list names
+     * 
+     * @param femaleListName
+     * @param maleListName
+     */
+    @SuppressWarnings("unchecked")
+	public void updateSeedSource(String femaleListName, String maleListName){
+    	if (!tableCrossesMade.getItemIds().isEmpty()){
+    		for (Object itemId : tableCrossesMade.getItemIds()){
+    			CrossParents crossParents = (CrossParents) itemId;
+    			
+    			Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(SOURCE);
+    			String crossSource= String.valueOf(crossSourceProp.toString());
+    			String[] parents = crossSource.split("/");
+    			
+    			String[] femaleSource = parents[0].split(":");
+    			String[] maleSource = parents[1].split(":");
+    			
+    			String newFemaleSource = femaleListName + ":" + femaleSource[1].trim();
+    			String newMaleSource = maleListName + ":" + maleSource[1].trim();
+    			String newSeedSource = newFemaleSource + "/" + newMaleSource;
+
+    			crossSourceProp.setValue(newSeedSource);
+    			crossParents.setSeedSource(newSeedSource);
+    		}
+
+    		
+    		SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
+    		try {
+    			saveAction.updateSeedSource((Collection<CrossParents>) tableCrossesMade.getItemIds());
+    		} catch (MiddlewareQueryException e) {
+    			e.printStackTrace();
+    			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+    					messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES), Notification.POSITION_CENTERED);
+    		}
+    		
+    	}
+		   
     }
     
     public GermplasmList getCrossList(){
