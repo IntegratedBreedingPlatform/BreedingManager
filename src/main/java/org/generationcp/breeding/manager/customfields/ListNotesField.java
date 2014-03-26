@@ -94,6 +94,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.listNotesTextArea = listNotesTextArea;
 	}
 	
+	public void setValue(String value){
+		listNotesTextArea.setValue(value);
+	}
+	
 	public Object getValue(){
 		return listNotesTextArea.getValue();
 	}

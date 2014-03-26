@@ -118,7 +118,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		listNameTextField.setRequiredError("Please specify the name of the list.");
 		listNameTextField.addValidator(new StringLengthValidator(
                 "List Description must not exceed 255 characters.", 1, 100, false));
-		listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
+		//listNameTextField.addValidator(new ListNameValidator(folderToSaveListToLabel));
 		
 		saveListNameButton = new Button();
 		saveListNameButton.setWidth("100px");
@@ -171,13 +171,13 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		GermplasmList selectedFolder = (GermplasmList) folderToSaveListToLabel.getData();
 		
 		if(saveListNameButton.getCaption().equals(messageSource.getMessage(Message.CHANGE))){
-			selectFolderDialog.setListNameField(listNameLabel.getValue().toString());
+			//selectFolderDialog.setListNameField(listNameLabel.getValue().toString());
 		}
 		else{
 			if(selectedFolder != null){
-				selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId(), true);
+				selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId());
 			} else{
-				selectFolderDialog = new SelectLocationFolderDialog(this, null, true);
+				selectFolderDialog = new SelectLocationFolderDialog(this, null);
 			}
 		}
 		

@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Container;
@@ -57,6 +58,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
@@ -98,7 +100,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	
-	//Toos Menu Options
+	//Tools Menu Options
 	private String MENU_SELECT_ALL="Select All"; 
     private String MENU_EXPORT_LIST="Export List"; 
     private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
@@ -210,7 +212,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
 	private void initializeListDataTable(){
-		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), 15, CHECKBOX_COLUMN_ID);
+		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), 13, CHECKBOX_COLUMN_ID);
 		listDataTable = listDataTableWithSelectAll.getTable();
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
@@ -351,8 +353,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                listDataTable.select(selectedItemId);
 					}else if(ACTION_COPY_TO_NEW_LIST == action){
 						source.showBuildNewListComponent();
-						//List<Integer> gids = ListCommonActionsUtil.getSelectedGidsFromListDataTable(listDataTable, ListDataTablePropertyID.GID.getName());
-						//TODO call method from BuildNewListDropHandler
+						source.addFromListDataTable(listDataTable);
 					}
 	         	}
 			});
@@ -395,27 +396,57 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	   		 }
 	   	 });
+		
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+	
+			public void contextItemClick(ClickEvent event) {
+			      // Get reference to clicked item
+			      ContextMenuItem clickedItem = event.getClickedItem();
+			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
+			    	  listDataTable.setValue(listDataTable.getItemIds());
+			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
+			    	  //exportListAction();
+			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
+			    	  //exportListForGenotypingOrderAction();
+			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			    	  //copyToNewListAction();
+			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
+			    	  //addEntryButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
+			    	  //saveChangesAction();
+			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
+			    	  //deleteListButtonClickAction();
+			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
+			    	  editListButtonClickAction();
+			      }		      
+		   }
+		});
 
 	}//end of addListeners
 
 	@Override
 	public void layoutComponents() {
 		setSpacing(true);
-		setMargin(true);
 		
-		VerticalLayout headerLayout = new VerticalLayout();
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
-		headerLayout.addComponent(viewHeaderButton);
-		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
+		
+		HorizontalLayout headerLayoutLeft = new HorizontalLayout();
+		headerLayoutLeft.setSpacing(true);
+		headerLayoutLeft.addComponent(viewHeaderButton);
+		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
 		
 		if(listEntriesCount == 0) {
-			headerLayout.addComponent(noListDataLabel); 
-			headerLayout.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
+			headerLayoutLeft.addComponent(noListDataLabel); 
+			headerLayoutLeft.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
 		} else{
-			headerLayout.addComponent(totalListEntriesLabel);
-			headerLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+			headerLayoutLeft.addComponent(totalListEntriesLabel);
+			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		}
 		
+		headerLayout.addComponent(headerLayoutLeft);
 		headerLayout.addComponent(toolsButton);
 		headerLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		
@@ -474,20 +505,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 					private static final long serialVersionUID = 1L;
 
 					public void focus(FocusEvent event) {
-						//TODO review if this is still needed
-		                // Make the entire item editable
-						/*
-		                HashMap<Object,Field> itemMap = fields.get(itemId);
-		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-		                	Object column = entry.getKey();
-		        			if(column.equals(selectedColumn)){		        				
-		        				Field f = entry.getValue();
-			                	//f.setReadOnly(false);
-		        			}
-		                }
-		                */
-		                
-		                listDataTable.select(itemId);
+						listDataTable.select(itemId);
 		            }
 		        });
 		        
@@ -508,7 +526,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                	    }
 		                	}
 		                	
-		                    // validate for designation
+		                	// validate for designation
 		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
 		        			    Object source = event.getSource();
                                 String designation = source.toString();
@@ -564,6 +582,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 						Double d = computeTextFieldWidth(tf.getValue().toString());
 						tf.setWidth(d.floatValue(), UNITS_EM);
 						tf.setReadOnly(true);
+						
+						//parentListDetailsComponent.setChanged(true);
 					}
 	        	});
 		        
@@ -738,6 +758,52 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
 	}
 	
+	/* MENU ACTIONS */ 
+	private void editListButtonClickAction() {
+		final BuildNewListComponent buildNewListComponent = source.getBuildNewListComponent();
+		
+    	if(buildNewListComponent.getHasChanges()){
+    		String message = "";
+    		
+    		String buildNewListTitle = buildNewListComponent.getBuildNewListTitle().getValue().toString();
+    		if(buildNewListTitle.equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
+        		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+        	else {
+        		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
+        	}
+    		
+    		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+				private static final long serialVersionUID = 1L;
+				
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						buildNewListComponent.getSaveButton().click(); // save the existing list	
+					}
+					
+					source.showBuildNewListComponent(getGermplasmList());
+					buildNewListComponent.setHasChanges(false); // reset
+				}
+			}
+		);
+    	}
+    	else{
+    		source.showBuildNewListComponent(getGermplasmList());
+    	}
+	}
+	
+	/*SETTERS AND GETTERS*/
+	public GermplasmList getGermplasmList(){
+		GermplasmList germplasmList = null;
+		try {
+			germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving germplasmList",e);
+			e.printStackTrace();
+		}
+		return germplasmList;
+	}
 	public Integer getGermplasmListId(){
 		return germplasmListId;
 	}

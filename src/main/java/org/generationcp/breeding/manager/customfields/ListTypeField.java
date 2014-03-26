@@ -30,6 +30,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private ComboBox listTypeComboBox;
 	private boolean isMandatory;
 	private Label mandatoryMark;
+	private final String DEFAULT_LIST_TYPE = "LST"; 
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
@@ -44,6 +45,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		captionLabel.addStyleName("bold");
 		
 		listTypeComboBox = new ComboBox();
+		listTypeComboBox.setWidth("180px");
 		listTypeComboBox.setImmediate(true);
 		
 		if(isMandatory){
@@ -74,8 +76,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             String typeCode = listType.getFcode();
             selectType.addItem(typeCode);
             selectType.setItemCaption(typeCode, listType.getFname());
-            //set "F1 Nursery List" as the default value
-            if ("F1".equals(typeCode)) {
+            //set "Germplasm List" as the default value
+            if (DEFAULT_LIST_TYPE.equals(typeCode)) {
                 selectType.setValue(typeCode);
             }
         }
@@ -122,11 +124,20 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.listTypeComboBox = listTypeComboBox;
 	}
 	
+	public void setValue(String value){
+		listTypeComboBox.select(value);
+	}
+	
 	public Object getValue(){
 		return listTypeComboBox.getValue();
+	}
+	
+	public String getDEFAULT_LIST_TYPE() {
+		return DEFAULT_LIST_TYPE;
 	}
 	
 	public void validate() throws InvalidValueException {
 		listTypeComboBox.validate();
 	}
+	
 }

@@ -6,7 +6,6 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSaveCrossListComponent;
 import org.generationcp.breeding.manager.crossingmanager.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
@@ -14,6 +13,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -31,7 +31,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout, CrossesMadeContainer {
 	
 	private static final long serialVersionUID = 1L;
-	private static final int NUMBER_OF_STEPS = 3;
+	private static final int NUMBER_OF_STEPS = 2;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -91,13 +91,11 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		
 		tabSheet.addTab(detailComponent, wizardStepNames[0]);
 		tabSheet.addTab(new CrossingManagerMakeCrossesComponent(this), wizardStepNames[1]);
-		tabSheet.addTab(new CrossingManagerSaveCrossListComponent(this), wizardStepNames[2]);
 	}
 
 	private void instantiateWizardDisplay() {
 		wizardStepNames[0] = messageSource.getMessage(Message.CHOOSE_SETTING);
 		wizardStepNames[1] = messageSource.getMessage(Message.CREATE_CROSSES);
-		wizardStepNames[2] = messageSource.getMessage(Message.SAVE_CROSS_LIST);
 		wizardDisplay = new BreedingManagerWizardDisplay(wizardStepNames);
 		wizardDisplay.setWidth("70%");
 	}
@@ -160,9 +158,10 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		this.crossesMade = crossesMade;
 	}
 	
-    public void viewGermplasmListCreated(Integer listId){
+	//TODO deprecate this when summary page implemented
+    public void viewGermplasmListCreated(GermplasmList list){
         EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
-            new EmbeddedGermplasmListDetailComponent(this, listId);
+            new EmbeddedGermplasmListDetailComponent(this, list.getId());
         
         this.removeComponent(this.makeCrossesLabel);
         this.removeComponent(this.wizardDisplay);

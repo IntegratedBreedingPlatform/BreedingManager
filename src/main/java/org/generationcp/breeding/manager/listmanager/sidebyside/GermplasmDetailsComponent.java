@@ -156,16 +156,9 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     }    
 	
 	private Component createBasicDetailsHeader (String header) {
-		HorizontalLayout mainLayout = new HorizontalLayout();
-		mainLayout.setWidth("85%");
-		mainLayout.setHeight("30px");
-		
-        CssLayout layout = new CssLayout();
-        layout.setWidth("130px");
-        
-        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-        l1.setStyleName(Bootstrap.Typography.H4.styleName());
-        layout.addComponent(l1);
+		//Left Section
+        Label sectionLabel = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+        sectionLabel.setStyleName(Bootstrap.Typography.H4.styleName());
         
         saveToListLink = new Button(messageSource.getMessage(Message.SAVE_TO_LIST));
 		saveToListLink.setData(SAVE_TO_LIST);
@@ -181,16 +174,22 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 		moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
         
 		HorizontalLayout leftLayout = new HorizontalLayout();
-		leftLayout.addComponent(layout);
+		leftLayout.setSpacing(true);
+		leftLayout.addComponent(sectionLabel);
 		leftLayout.addComponent(moreDetailsLink);
 		leftLayout.setComponentAlignment(moreDetailsLink, Alignment.MIDDLE_LEFT);
 		
+		HorizontalLayout mainLayout = new HorizontalLayout();
+		mainLayout.setWidth("100%");
+		mainLayout.setHeight("30px");
         mainLayout.addComponent(leftLayout);
         mainLayout.addComponent(saveToListLink);
         mainLayout.setComponentAlignment(leftLayout, Alignment.BOTTOM_LEFT);
         mainLayout.setComponentAlignment(saveToListLink, Alignment.BOTTOM_RIGHT);
-
-        return mainLayout;
+        
+        CssLayout l = new CssLayout();
+        l.addComponent(mainLayout);
+        return l;
 	}
 	
 	public ListManagerMain getListManagerMain(){

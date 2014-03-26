@@ -13,7 +13,9 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -126,7 +128,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
             headingLabel = messageSource.getMessage(Message.REVIEW_LIST_DETAILS); //Browse Lists screen
         } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
-            headingLabel = messageSource.getMessage(Message.DETAILS);
+            headingLabel = messageSource.getMessage(Message.REVIEW_DETAILS);
         }
         heading.setValue(headingLabel);
     }
@@ -135,21 +137,31 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     public void layoutComponents() {
         headingBar.setWidth("100%");
         headingBar.setHeight("27px");
-        headingBar.addComponent(heading);
+        
+        HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
+        headingBar.addComponent(headingLayout);
+        
         headingBar.addComponent(btnCloseAllTabs);
-        headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
+        //headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
         headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
         
         noListLabel.setVisible(false);        
         headingBar.setVisible(false);
         detailsTabSheet.setVisible(false);
         this.addComponent(noListLabel);
+        this.setComponentAlignment(noListLabel, Alignment.TOP_LEFT);
+        this.setExpandRatio(noListLabel, 1);
         this.addComponent(headingBar);
+        this.setComponentAlignment(headingBar, Alignment.TOP_LEFT);
+        this.setExpandRatio(headingBar, 1);
         this.addComponent(detailsTabSheet);
+        this.setComponentAlignment(detailsTabSheet, Alignment.TOP_LEFT);
+        this.setExpandRatio(detailsTabSheet, 100);
         
+        //this.setHeight("800px");
         this.setWidth("98%");
         this.setStyleName(Runo.TABSHEET_SMALL);
-        this.setMargin(false, false, false, true);
+        this.setMargin(false);
     }
 
     @Override

@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
@@ -97,14 +99,14 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsDescription = new Label();
 		matchingListsDescription.setValue(messageSource.getMessage(Message.SELECT_A_LIST_TO_VIEW_THE_DETAILS));
 		
-		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(CHECKBOX_COLUMN_ID);
+		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5, CHECKBOX_COLUMN_ID);
 		matchingListsTable = matchingListsTableWithSelectAll.getTable();
 		matchingListsTable.setData(MATCHING_LISTS_TABLE_DATA);
 		matchingListsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
-		matchingListsTable.setPageLength(5);
+//		matchingListsTable.setPageLength(5);
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
@@ -119,7 +121,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsDescription = new Label();
 		matchingGermplasmsDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 		
-		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(CHECKBOX_COLUMN_ID);
+		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
@@ -127,7 +129,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
-		matchingGermplasmsTable.setPageLength(10);
+//		matchingGermplasmsTable.setPageLength(10);
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
@@ -183,13 +185,15 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		addComponent(matchingListsLabel, "top:0px; left:0px;");
+		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,matchingListsLabel);
+		addComponent(matchingListsHeader, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:232px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:255px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:272px; left:0px;");
+		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
+		addComponent(matchingGermplasmsHeader, "top:237px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:260px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:277px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){

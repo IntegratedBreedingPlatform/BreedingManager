@@ -393,7 +393,7 @@
 
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
-	width: 1px;
+	width: 15px;
 	background-image: none;
 }
 
@@ -478,4 +478,8 @@
 
 .searchBarLayout > div {
 	background-color: #e3e3e3;
+}
+
+.headerLabelLayout .v-caption {
+	height: 0px;	
 }
