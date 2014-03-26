@@ -519,6 +519,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		                	Field f = entry.getValue();
 		                	Object fieldValue = f.getValue();
 		                	
+		                	// mark list as changed if value for the cell was changed
+		                	if (column.equals(selectedColumn)) {
+		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
+		                	        parentListDetailsComponent.setChanged(true);
+		                	    }
+		                	}
+		                	
 		                	// validate for designation
 		        			if (column.equals(selectedColumn) && selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())){
 		        			    Object source = event.getSource();
@@ -576,7 +583,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 						tf.setWidth(d.floatValue(), UNITS_EM);
 						tf.setReadOnly(true);
 						
-						parentListDetailsComponent.setChanged(true);
+						//parentListDetailsComponent.setChanged(true);
 					}
 	        	});
 		        
