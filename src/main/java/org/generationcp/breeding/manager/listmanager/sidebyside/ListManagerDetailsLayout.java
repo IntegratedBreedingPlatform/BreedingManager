@@ -144,9 +144,16 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         headingBar.setVisible(false);
         detailsTabSheet.setVisible(false);
         this.addComponent(noListLabel);
+        this.setComponentAlignment(noListLabel, Alignment.TOP_LEFT);
+        this.setExpandRatio(noListLabel, 1.0f);
         this.addComponent(headingBar);
+        this.setComponentAlignment(headingBar, Alignment.TOP_LEFT);
+        this.setExpandRatio(headingBar, 1.0f);
         this.addComponent(detailsTabSheet);
+        this.setComponentAlignment(detailsTabSheet, Alignment.TOP_LEFT);
+        this.setExpandRatio(detailsTabSheet, 100.0f);
         
+        this.setHeight("800px");
         this.setWidth("98%");
         this.setStyleName(Runo.TABSHEET_SMALL);
         this.setMargin(false);
