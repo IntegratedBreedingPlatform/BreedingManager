@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,12 +13,16 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +32,8 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -54,10 +61,17 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     @Autowired
     private GermplasmListManager germplasmListManager;
     
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+        
+    
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
+    
+    public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
     
     //Components
     private Label buildNewListTitle;
@@ -85,7 +99,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
     private Boolean hasChanges;
+    private Integer saveInListId;    
     
+    private AddColumnContextMenu addColumnContextMenu;
     
     public BuildNewListComponent() {
         super();
@@ -135,11 +151,14 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
         
+        addColumnContextMenu = new AddColumnContextMenu(tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(), true);
+        
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
         saveButton = new Button();
         saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
         saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+        saveButton.addListener(new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager));
         
         resetButton = new Button();
         resetButton.setCaption(messageSource.getMessage(Message.RESET_LIST));
@@ -433,4 +452,117 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	public void setFromEditList(Boolean fromEditList) {
 		this.fromEditList = fromEditList;
 	}
+	
+    public GermplasmList getCurrentlySetGermplasmListInfo(){
+        GermplasmList toreturn = new GermplasmList();
+        
+        //try {
+        //	this.breedingManagerListDetailsComponent.getListNameField().validate();
+        
+	        Object name = this.breedingManagerListDetailsComponent.getListNameField().getValue();
+	        if(name != null){
+	            toreturn.setName(name.toString().trim());
+	        } else{
+	            toreturn.setName(null);
+	        }
+	        
+	    //    this.breedingManagerListDetailsComponent.getListDescriptionField().validate();
+	        
+	        Object description = this.breedingManagerListDetailsComponent.getListDescriptionField().getValue();
+	        if(description != null){
+	            toreturn.setDescription(description.toString().trim());
+	        } else{
+	            toreturn.setDescription(null);
+	        }
+	        
+	    //    breedingManagerListDetailsComponent.getListDateField().validate();
+	        
+	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+	        Object dateValue = this.breedingManagerListDetailsComponent.getListDateField().getValue();
+	        if(dateValue != null){
+	            String sDate = formatter.format(dateValue);
+	            Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
+	            toreturn.setDate(dataLongValue);
+	        } else{
+	            toreturn.setDate(null);
+	        }
+	        
+	        toreturn.setType(this.breedingManagerListDetailsComponent.getListTypeField().getValue().toString());
+	        toreturn.setNotes(this.breedingManagerListDetailsComponent.getListNotesField().getValue().toString());
+	        return toreturn;
+        
+        //} catch(InvalidValueException e) {
+        //	return null;
+        //}
+    }
+    
+    public List<GermplasmListData> getListEntriesFromTable(){
+        List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
+        
+        assignSerializedEntryNumber();
+        
+        for(Object id : this.tableWithSelectAllLayout.getTable().getItemIds()){
+            Integer entryId = (Integer) id;
+            Item item = this.tableWithSelectAllLayout.getTable().getItem(entryId);
+            
+            GermplasmListData listEntry = new GermplasmListData();
+            listEntry.setId(entryId);
+            
+            Object designation = item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            if(designation != null){
+                listEntry.setDesignation(designation.toString());
+            } else{
+                listEntry.setDesignation("-");
+            }
+            
+            Object entryCode = item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+            if(entryCode != null){
+                listEntry.setEntryCode(entryCode.toString());
+            } else{
+                listEntry.setEntryCode("-");
+            }
+            
+            Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+            listEntry.setGid(Integer.parseInt(gidButton.getCaption()));
+            
+            Object groupName = item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+            if(groupName != null){
+                String groupNameString = groupName.toString();
+                if(groupNameString.length() > 255){
+                    groupNameString = groupNameString.substring(0, 255);
+                }
+                listEntry.setGroupName(groupNameString);
+            } else{
+                listEntry.setGroupName("-");
+            }
+            
+            listEntry.setEntryId((Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue());
+            
+            Object seedSource = item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+            if(seedSource != null){
+                listEntry.setSeedSource(seedSource.toString());
+            } else{
+                listEntry.setSeedSource("-");
+            }
+            
+            toreturn.add(listEntry);
+        }
+        return toreturn;
+    }	
+	
+    public ListManagerMain getSource(){
+    	return source;
+    }
+    
+    public Integer getSaveInListId(){
+    	return saveInListId;
+    }
+    
+    public void setSaveInListId(Integer saveInListId){
+    	this.saveInListId = saveInListId;
+    }
+    
+    public AddColumnContextMenu getAddColumnContextMenu(){
+    	return addColumnContextMenu;
+    }
 }

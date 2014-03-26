@@ -162,6 +162,21 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     /**
      * Add "Add column" context menu to a table
+     * @param listManagerTreeMenu - tab content from list manager details section.
+     * @param source - context menu will attach to this
+     * @param targetTable - table where data will be manipulated
+     * @param gid - property of GID (button with GID as caption) on that table
+     * @param fromBuildNewList - boolean to set if classes involved is from build new list
+     */
+    public AddColumnContextMenu(Table targetTable, String gid, boolean fromBuildNewList){
+        this.GIDPropertyId = gid;
+        this.targetTable = targetTable;
+        this.fromBuildNewList = fromBuildNewList;        
+        setupContextMenu();
+    }    
+    
+    /**
+     * Add "Add column" context menu to a table
      * @param source - context menu will attach to this
      * @param addColumnButton - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
