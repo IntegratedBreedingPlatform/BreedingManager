@@ -149,11 +149,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 this.addWindow(nurseryTemplateWindow);
                 return nurseryTemplateWindow;
             } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
-                Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-                listManagerWindow.setName(LIST_MANAGER_WINDOW_NAME);
-                listManagerWindow.setSizeUndefined();
-                listManagerWindow.addComponent(new ListManagerMain());
+            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+                listManagerWindow.setName(name);
+                listManagerWindow.setSizeFull();
+                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
                 this.addWindow(listManagerWindow);
+                listManagerWindow.getContent().setHeight("100%");
                 return listManagerWindow;
             } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
             	String listIdPart = name.substring(name.indexOf("-") + 1);
