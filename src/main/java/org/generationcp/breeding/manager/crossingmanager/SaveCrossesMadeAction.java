@@ -13,13 +13,13 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Configurable;
  *
  */
 @Configurable
-public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListActionSource {
+public class SaveCrossesMadeAction implements Serializable {
     
     public static final Integer GERMPLASM_LIST_STATUS = 1;    
     
@@ -82,8 +82,10 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
     
     private GermplasmList germplasmList;
     private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
+    private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
     
     private List<Integer> indicesOfAddedCrosses = new ArrayList<Integer>();
+    private List<Integer> indicesOfRetainedCrosses = new ArrayList<Integer>();
     
     public SaveCrossesMadeAction(GermplasmList germplasmList){
     	this.germplasmList = germplasmList;
@@ -136,15 +138,18 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
 			CrossingManagerSetting setting = crossesMade.getSetting();
 			int nextNumberInSequence = generateAction.getNextNumberInSequence(setting.getCrossNameSetting());
 			
-			List<Germplasm> existingGplasms = retrieveGermplasmsOfList();
-			int ctr = 0;
+			retrieveGermplasmsOfList();
+			int ctr = 0; // counter for index of added germplasms
 			for (Germplasm currentGplasm : currentCrossesMap.keySet()){
 				boolean existsAlready = false;
-				for (Germplasm existingGplasm : existingGplasms){
+				int index = 0;  // counter for removed listdata record(s)
+				for (Germplasm existingGplasm : this.existingGermplasms){
 					if (haveSameParents(currentGplasm, existingGplasm)){
 						existsAlready = true;
+						indicesOfRetainedCrosses.add(index);
 						break;
 					}
+					index++;
 				}
 				if (!existsAlready){
 					/*
@@ -170,15 +175,13 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
 	}
 	
 	
-	private List<Germplasm> retrieveGermplasmsOfList()
-			throws MiddlewareQueryException {
+	private void retrieveGermplasmsOfList() throws MiddlewareQueryException {
 		this.existingListEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
 		List<Integer> gids = new ArrayList<Integer>();
 		for (GermplasmListData entry : existingListEntries){
 			gids.add(entry.getGid());
 		}
-		List<Germplasm> existingGplasms = this.germplasmManager.getGermplasms(gids);
-		return existingGplasms;
+		this.existingGermplasms = this.germplasmManager.getGermplasms(gids);
 	}
 	
 	private boolean haveSameParents(Germplasm g1, Germplasm g2){
@@ -222,8 +225,35 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
     
     private void saveGermplasmListDataRecords(CrossesMade crossesMade,
         List<Integer> germplasmIDs, GermplasmList list) throws MiddlewareQueryException {
+    	
+    	deleteRemovedListData(crossesMade);
+        addNewGermplasmListData(crossesMade, germplasmIDs, list);
+    }
+
     
-        Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
+	private void deleteRemovedListData(CrossesMade crossesMade) throws MiddlewareQueryException {
+		List<GermplasmListData> retainedCrosses = new ArrayList<GermplasmListData>();
+    	for (int i=0; i < existingGermplasms.size(); i++){
+    		Germplasm existingGermplasm = existingGermplasms.get(i);
+    		for (Germplasm currentGermplasm : crossesMade.getCrossesMap().keySet()){
+    			if (haveSameParents(currentGermplasm, existingGermplasm)){
+    				GermplasmListData germplasmListData = this.existingListEntries.get(i);
+					retainedCrosses.add(germplasmListData);
+    			}
+    		}
+    	}
+    	
+    	List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(existingListEntries);
+    	listToDelete.removeAll(retainedCrosses);
+    	
+    	this.germplasmListManager.deleteGermplasmListData(listToDelete);
+	}
+
+	
+	private void addNewGermplasmListData(CrossesMade crossesMade,
+			List<Integer> germplasmIDs, GermplasmList list)
+			throws MiddlewareQueryException {
+		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
         int ctr = 0;
         
@@ -239,12 +269,13 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
         		
         		listToSave.add(germplasmListData);
         		entryId++;
-        	}
+        		
+        	} 
         	ctr++;
         }
         
         this.germplasmListManager.addGermplasmListData(listToSave);
-    }
+	}
 
     
     /*
@@ -305,11 +336,24 @@ public class SaveCrossesMadeAction implements Serializable, SaveGermplasmListAct
         }
     
     }
-
-	@Override
-	public void updateListDataTable(List<GermplasmListData> listDataEntries) {
-		// TODO Auto-generated method stub
-		
-	}
+    
+    public void updateSeedSource(Collection<CrossParents> crossParents) throws MiddlewareQueryException{
+    	retrieveGermplasmsOfList();
+    	for (CrossParents parents : crossParents){
+    		Germplasm currentGermplasm = new Germplasm();
+    		currentGermplasm.setGpid1(parents.getFemaleParent().getGid());
+    		currentGermplasm.setGpid2(parents.getMaleParent().getGid());
+    		
+    		for (int i=0; i<existingGermplasms.size(); i++){
+    			if (haveSameParents(currentGermplasm, existingGermplasms.get(i))){
+    				GermplasmListData germplasmListData = this.existingListEntries.get(i);
+    				if (germplasmListData != null){
+    					germplasmListData.setSeedSource(parents.getSeedSource());
+    				}
+    			}
+    		}
+    	}
+    	germplasmListManager.updateGermplasmListData(this.existingListEntries);
+    }
 
 }

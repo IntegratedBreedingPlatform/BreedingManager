@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.customcomponent;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -39,8 +40,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	private SaveListAsDialogSource source;
 	
-	private Label listLocationLabel;
-	private ListManagerTreeComponent germplasmListTree;
+//	private Label listLocationLabel;
+	private LocalListFoldersTreeComponent germplasmListTree;
 	private Integer folderId;
 	
 	private BreedingManagerListDetailsComponent listDetailsComponent;
@@ -76,11 +77,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setResizable(false);
 		setModal(true);
 
-		germplasmListTree = new ListManagerTreeComponent(true, folderId);
-		listLocationLabel = germplasmListTree.getHeading();
-		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
-		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
-		germplasmListTree.setHeading(listLocationLabel);
+		germplasmListTree = new LocalListFoldersTreeComponent(folderId);
+//		listLocationLabel = germplasmListTree.getHeading();
+//		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
+//		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
+//		germplasmListTree.setHeading(listLocationLabel);
 		
 		listDetailsComponent = new BreedingManagerListDetailsComponent(germplasmList);
 		
@@ -202,5 +203,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		}
 		
 		return true;
+	}
+	
+	protected BreedingManagerListDetailsComponent getDetailsComponent(){
+		return this.listDetailsComponent;
 	}
 }

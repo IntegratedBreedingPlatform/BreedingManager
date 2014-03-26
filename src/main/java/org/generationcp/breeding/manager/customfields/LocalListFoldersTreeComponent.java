@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -25,7 +26,7 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected String getTreeHeading() {
-		return messageSource.getMessage(Message.PROJECT_LISTS);
+		return messageSource.getMessage(Message.LIST_LOCATION);
 	}
 
 	@Override
@@ -45,6 +46,16 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected boolean doShowFoldersOnly() {
+		return true;
+	}
+	
+	@Override
+	protected String getTreeHeadingStyleName() {
+		return Bootstrap.Typography.H6.styleName();
+	}
+	
+	@Override
+	public boolean usedInSubWindow() {
 		return true;
 	}
 

@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -41,6 +42,8 @@ public class CrossesMade implements Serializable{
     
     private CrossingManagerSetting setting;
     private GermplasmList germplasmList;
+
+    private List<Pair<GermplasmListEntry, GermplasmListEntry>> parentList;
     
     public CrossesMade(){
     }
@@ -92,6 +95,15 @@ public class CrossesMade implements Serializable{
 
 	public void setSetting(CrossingManagerSetting setting) {
 		this.setting = setting;
+	}
+
+	public List<Pair<GermplasmListEntry, GermplasmListEntry>> getParentList() {
+		return parentList;
+	}
+
+	public void setParentList(
+			List<Pair<GermplasmListEntry, GermplasmListEntry>> parentList) {
+		this.parentList = parentList;
 	}
     
 }
