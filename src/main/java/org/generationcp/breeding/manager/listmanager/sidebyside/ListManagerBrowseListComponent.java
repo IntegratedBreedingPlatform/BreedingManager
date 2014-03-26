@@ -117,13 +117,13 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	public void layoutComponents() {
 		//left pane
 		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("240px");
-		leftLayout.addComponent(listTreeComponent,"top:30px;left:20px");
+		leftLayout.setWidth("250px");
+		leftLayout.addComponent(listTreeComponent,"top:10px;left:30px");
 		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
 		
 		//right pane
 		rightLayout = new VerticalLayout();
-		rightLayout.setMargin(true,false,false,false);
+		rightLayout.setMargin(false);
 		rightLayout.addComponent(listDetailsLayout);
 		
 		hSplitPanel.setFirstComponent(leftLayout);
@@ -132,7 +132,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	}
 	
     private void expandLeft(){
-    	leftLayout.setWidth("240px");
+    	leftLayout.setWidth("250px");
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
     }
 

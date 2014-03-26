@@ -30,7 +30,7 @@ public class ToogleButton  extends Button implements InitializingBean, Internati
 		setIcon(AppConstants.Icons.ICON_TOOGLE);
 		setDescription(description);
 		setStyleName(Reindeer.BUTTON_LINK);
-		setWidth("28px");
+		setWidth("25px");
 	}
 	
 }

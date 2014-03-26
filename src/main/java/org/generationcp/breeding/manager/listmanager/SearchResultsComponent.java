@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
@@ -183,11 +185,13 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		addComponent(matchingListsLabel, "top:0px; left:0px;");
+		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,matchingListsLabel);
+		addComponent(matchingListsHeader, "top:0px; left:0px;");
 		addComponent(matchingListsDescription, "top:23px; left:0px;");
 		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
 		
-		addComponent(matchingGermplasmsLabel, "top:232px; left:0px;");
+		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
+		addComponent(matchingGermplasmsHeader, "top:232px; left:0px;");
 		addComponent(matchingGermplasmsDescription, "top:255px; left:0px;");
 		addComponent(matchingGermplasmsTableWithSelectAll, "top:272px; left:0px;");
 	}

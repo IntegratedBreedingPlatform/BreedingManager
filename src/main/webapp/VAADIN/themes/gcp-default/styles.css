@@ -479,3 +479,7 @@
 .searchBarLayout > div {
 	background-color: #e3e3e3;
 }
+
+.headerLabelLayout .v-caption {
+	height: 0px;	
+}

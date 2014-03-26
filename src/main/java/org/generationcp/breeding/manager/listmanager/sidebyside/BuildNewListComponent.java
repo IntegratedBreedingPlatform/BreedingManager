@@ -7,6 +7,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -203,7 +204,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void layoutComponents() {
 		this.setSpacing(true);
-        this.addComponent(buildNewListTitle);
+		
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,buildNewListTitle);
+        this.addComponent(headingLayout);
         
         HorizontalLayout instructionLayout = new HorizontalLayout();
         instructionLayout.setSpacing(true);
