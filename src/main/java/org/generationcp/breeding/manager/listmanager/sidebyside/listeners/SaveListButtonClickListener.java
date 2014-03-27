@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
@@ -315,12 +317,30 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			this.listDataTable.setImmediate(true);
 			this.listDataTable.removeAllItems();
 			
-			for(GermplasmListData entry : savedListEntries){
-				Item item = this.listDataTable.addItem(entry.getId());
+			for(final GermplasmListData entry : savedListEntries){
+				final Item item = this.listDataTable.addItem(entry.getId());
 				
 				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkButtonClickListener(entry.getGid().toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				
+	            CheckBox tagCheckBox = new CheckBox();
+	            tagCheckBox.setImmediate(true);
+	            tagCheckBox.addListener(new ClickListener() {
+    	 			private static final long serialVersionUID = 1L;
+    	 			@Override
+    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+    	 					listDataTable.select(entry.getId());
+    	 				} else {
+    	 					listDataTable.unselect(entry.getId());
+    	 				}
+    	 				System.out.println("Checkbox value: "+((Boolean) itemCheckBox.getValue()));
+    	 			}
+    	 			 
+    	 		});
+	            
+	            item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
 	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(entry.getDesignation());
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
