@@ -39,7 +39,7 @@ public class ListNameField extends HorizontalLayout
 		listNameTextField.setWidth("180px");
 		listNameTextField.setImmediate(true);
 		listNameTextField.addValidator(new StringLengthValidator(
-                "List Name must not exceed 100 characters.", 1, 100, false));
+                "List Name must not exceed 50 characters.", 1, 50, false));
 		
 		listNameValidator = new ListNameValidator();
 		listNameTextField.addValidator(listNameValidator);
