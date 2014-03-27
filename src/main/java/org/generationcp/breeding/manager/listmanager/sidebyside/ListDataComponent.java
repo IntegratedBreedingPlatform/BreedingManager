@@ -762,7 +762,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private void editListButtonClickAction() {
 		final BuildNewListComponent buildNewListComponent = source.getBuildNewListComponent();
 		
-    	if(buildNewListComponent.getHasChanges()){
+    	if(buildNewListComponent.isChanged()){
     		String message = "";
     		
     		String buildNewListTitle = buildNewListComponent.getBuildNewListTitle().getValue().toString();
@@ -775,18 +775,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		
     		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
-				private static final long serialVersionUID = 1L;
-				
+				private static final long serialVersionUID = 1L;	
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						buildNewListComponent.getSaveButton().click(); // save the existing list	
 					}
 					
 					source.showBuildNewListComponent(getGermplasmList());
-					buildNewListComponent.setHasChanges(false); // reset
 				}
-			}
-		);
+			});
     	}
     	else{
     		source.showBuildNewListComponent(getGermplasmList());

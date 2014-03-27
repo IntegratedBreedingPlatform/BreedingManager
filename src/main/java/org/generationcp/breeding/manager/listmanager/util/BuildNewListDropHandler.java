@@ -56,6 +56,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	private Integer currentListId;
 	private GermplasmListNewColumnsInfo currentColumnsInfo;
 	
+	private boolean changed = false;
 	
 	public BuildNewListDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, Table targetTable) {
 		this.germplasmDataManager = germplasmDataManager;
@@ -75,6 +76,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	        targetTable = (Table) dropData.getTarget();
 			
 			if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
+				changed = true;
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
@@ -84,6 +86,7 @@ public class BuildNewListDropHandler implements DropHandler {
 					addGermplasm((Integer) transferable.getItemId());
 				
 			} else if (sourceTableData.equals(MATCHING_LISTS_TABLE_DATA)){
+				changed = true;
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
@@ -93,6 +96,7 @@ public class BuildNewListDropHandler implements DropHandler {
 					addGermplasmList((Integer) transferable.getItemId());
 	
 			} else if (sourceTableData.equals(LIST_DATA_TABLE_DATA)){
+				changed = true;
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
@@ -132,7 +136,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		}		
 	}
 
-	private void addGermplasmList(Integer listId){
+	public void addGermplasmList(Integer listId){
 		
 		currentListId = listId;
 		
@@ -514,4 +518,12 @@ public class BuildNewListDropHandler implements DropHandler {
     	}
     	return null;	
     }
+
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
 }

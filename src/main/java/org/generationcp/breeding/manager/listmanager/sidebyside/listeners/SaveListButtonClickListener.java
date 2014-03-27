@@ -8,8 +8,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -93,8 +93,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
 					
-					source.setHasChanges(false);
-					
+					source.setChanged(false);
 					
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
@@ -156,7 +155,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					} else{
 						currentlySavedList = listFromDB;
 						this.source.setCurrentlySavedGermplasmList(listFromDB);
-						source.setHasChanges(false);
+						source.setChanged(false);
 						
 						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
 						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
@@ -349,7 +348,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 //	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
-			
+
 			copyAddedColumnsFromTemp(tempTable);
             
             this.listDataTable.requestRepaint();

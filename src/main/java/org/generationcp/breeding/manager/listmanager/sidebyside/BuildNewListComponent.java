@@ -33,7 +33,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -92,16 +91,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     
     public static String TOOLS_BUTTON_ID = "Tools";
     
-    //For Edit
-    private Boolean fromEditList;
-    
     //For Saving
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
-    private Boolean hasChanges;
+    private boolean changed = false;
     private Integer saveInListId;    
     
     private AddColumnContextMenu addColumnContextMenu;
+    
+    //Listener
+    SaveListButtonClickListener saveListButtonListener;
     
     public BuildNewListComponent() {
         super();
@@ -111,7 +110,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
-        this.hasChanges = false;
     }
 
     @Override
@@ -158,7 +156,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         saveButton = new Button();
         saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
         saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-        saveButton.addListener(new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager));
         
         resetButton = new Button();
         resetButton.setCaption(messageSource.getMessage(Message.RESET_LIST));
@@ -215,8 +212,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                 menu.show(event.getClientX(), event.getClientY());
             }
          });
-
 		
+		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
+		saveButton.addListener(saveListButtonListener);
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 	}
 
@@ -353,11 +351,22 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     }
     
 	public void editList(GermplasmList germplasmList) {
-		hasChanges = true; //marked as edited
+		resetList(); //reset list before placing new one
 		
 		buildNewListTitle.setValue(messageSource.getMessage(Message.EDIT_LIST));
 		breedingManagerListDetailsComponent.setGermplasmListDetails(germplasmList);
 		breedingManagerListDetailsComponent.getListNameField().getListNameTextField().focus();
+		
+		currentlySavedGermplasmList = germplasmList;
+		
+		//TO DO Update the Parent of the germplamsList, for now just used the current value of germplasmList.getParent()
+		this.tableWithSelectAllLayout.getTable().removeAllItems();		
+        dropHandler.addGermplasmList(germplasmList.getId());
+        
+        //reset the change status to false after loading the germplasm list details and list data in the screen
+        setChanged(false);
+        dropHandler.setChanged(false);
+        
 	}
 	
 	public void resetList(){
@@ -378,10 +387,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 		
 		//Reset the marker for changes in Build New List
-		hasChanges = false;
+		setChanged(false);
 		
-		//set the status back to build new list
-		setFromEditList(false);
+		//List Data Table
+		dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
+		initializeHandlers();
+		
+		//Reset Save Listener
+		saveButton.removeListener(saveListButtonListener);
+		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
+		saveButton.addListener(saveListButtonListener);
 		
 	}
 	
@@ -394,63 +409,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         this.addComponent(tableWithSelectAllLayout);
 		this.addComponent(resetButton);
-	}
-	
-	/* SETTERS AND GETTERS */
-    public void setHasChanges(boolean hasChanges){
-        this.hasChanges = hasChanges;
-    }
-    
-    public boolean getHasChanges(){
-        return hasChanges;
-    }
-
-	public Label getBuildNewListTitle() {
-		return buildNewListTitle;
-	}
-
-	public void setBuildNewListTitle(Label buildNewListTitle) {
-		this.buildNewListTitle = buildNewListTitle;
-	}
-	
-	public BreedingManagerListDetailsComponent getBreedingManagerListDetailsComponent() {
-		return breedingManagerListDetailsComponent;
-	}
-	
-    public TableWithSelectAllLayout getTableWithSelectAllLayout() {
-		return tableWithSelectAllLayout;
-	}
-
-	public void setTableWithSelectAllLayout(TableWithSelectAllLayout tableWithSelectAllLayout) {
-		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
-	}
-
-	public Table getGermplasmsTable(){
-        return tableWithSelectAllLayout.getTable();
-    }
-
-	public Button getSaveButton() {
-		return saveButton;
-	}
-
-	public void setSaveButton(Button saveButton) {
-		this.saveButton = saveButton;
-	}
-	
-    public GermplasmList getCurrentlySavedGermplasmList(){
-        return this.currentlySavedGermplasmList;
-    }
-    
-    public void setCurrentlySavedGermplasmList(GermplasmList list){
-        this.currentlySavedGermplasmList = list;
-    }
-
-	public Boolean getFromEditList() {
-		return fromEditList;
-	}
-
-	public void setFromEditList(Boolean fromEditList) {
-		this.fromEditList = fromEditList;
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -550,6 +508,47 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         return toreturn;
     }	
 	
+	/* SETTERS AND GETTERS */
+	public Label getBuildNewListTitle() {
+		return buildNewListTitle;
+	}
+
+	public void setBuildNewListTitle(Label buildNewListTitle) {
+		this.buildNewListTitle = buildNewListTitle;
+	}
+	
+	public BreedingManagerListDetailsComponent getBreedingManagerListDetailsComponent() {
+		return breedingManagerListDetailsComponent;
+	}
+	
+    public TableWithSelectAllLayout getTableWithSelectAllLayout() {
+		return tableWithSelectAllLayout;
+	}
+
+	public void setTableWithSelectAllLayout(TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+	}
+
+	public Table getGermplasmsTable(){
+        return tableWithSelectAllLayout.getTable();
+    }
+
+	public Button getSaveButton() {
+		return saveButton;
+	}
+
+	public void setSaveButton(Button saveButton) {
+		this.saveButton = saveButton;
+	}
+	
+    public GermplasmList getCurrentlySavedGermplasmList(){
+        return this.currentlySavedGermplasmList;
+    }
+    
+    public void setCurrentlySavedGermplasmList(GermplasmList list){
+        this.currentlySavedGermplasmList = list;
+    }
+	
     public ListManagerMain getSource(){
     	return source;
     }
@@ -565,4 +564,27 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     public AddColumnContextMenu getAddColumnContextMenu(){
     	return addColumnContextMenu;
     }
+
+	public boolean isChanged() {
+		
+		if(this.breedingManagerListDetailsComponent.isChanged()){
+			changed = true;
+		}
+		
+		if(dropHandler.isChanged()){
+			changed = true;
+		}
+		
+		//TO DO mark the changes in germplasmListDataTable during fill with and add column functions
+		
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+		this.breedingManagerListDetailsComponent.setChanged(changed);
+		
+		//TO DO mark the changes in germplasmListDataTable during fill with functions
+	}
+    
 }
