@@ -619,5 +619,9 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     public void setListId(Integer listId){
     	this.listId = listId; 
     }
+    
+    public Tree getGermplasmListTree(){
+    	return germplasmListTree;
+    }
 
 }
