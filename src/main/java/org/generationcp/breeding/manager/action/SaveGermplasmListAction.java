@@ -50,7 +50,6 @@ public class SaveGermplasmListAction implements Serializable {
 		//set the listnms.listuid to the current user
 		Integer userId = getCurrentUserLocalId();
 		germplasmList.setUserId(userId);
-		System.out.println(germplasmList);
 		germplasmList = saveGermplasmListRecord(germplasmList);
 		saveGermplasmListDataRecords(germplasmList,listEntries);
         
