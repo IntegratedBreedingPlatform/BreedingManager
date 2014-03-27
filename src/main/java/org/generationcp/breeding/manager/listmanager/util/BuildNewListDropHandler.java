@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
@@ -16,6 +17,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +96,7 @@ public class BuildNewListDropHandler implements DropHandler {
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
-					addSelectedGermplasmsFromTable(sourceTable);
+					addFromListDataTable(sourceTable);
 				//If none, add what was dropped
 				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListDataComponent)
 					addGermplasmFromList(((ListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
@@ -139,9 +141,10 @@ public class BuildNewListDropHandler implements DropHandler {
 			if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId))
 				currentColumnsInfo = germplasmListManager.getAdditionalColumnsForList(listId);
 			
-			List<GermplasmListData> germplasmListData = germplasmListManager.getGermplasmListById(listId).getListData();
+			GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+			List<GermplasmListData> germplasmListData = germplasmList.getListData();
 			for(GermplasmListData listData : germplasmListData){
-				addGermplasmFromList(listId, listData.getId());
+				addGermplasmFromList(listId, listData.getId(), germplasmList);
 			}
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm list.", e);
@@ -212,6 +215,12 @@ public class BuildNewListDropHandler implements DropHandler {
             
             assignSerializedEntryNumber();
             
+            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+            
+        	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
+				FW.fillWith(targetTable, column, true);
+        	}
+            
             return newItemId;
             
         } catch (MiddlewareQueryException e) {
@@ -222,7 +231,12 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 	}
 	
+	
 	private Integer addGermplasmFromList(Integer listId, Integer lrecid){
+		return addGermplasmFromList(listId, lrecid, null);
+	}
+	
+	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList){
 		
 		currentListId = listId;
 		
@@ -240,7 +254,16 @@ public class BuildNewListDropHandler implements DropHandler {
     			}
     		}
         	
-        	GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+    		GermplasmListData germplasmListData = null;
+    		
+    		if(germplasmList==null){
+    			germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+        	} else {
+        		for(GermplasmListData listData : germplasmList.getListData()){
+        			if(listData.getId().equals(lrecid))
+        				germplasmListData = listData;
+        		}
+        	}
         	
         	if(germplasmListData!=null){
         		
@@ -296,8 +319,6 @@ public class BuildNewListDropHandler implements DropHandler {
 	            currentListId = null;
 	            return newItemId;
         	}
-            
-
         	
         	return null;
         	
@@ -316,7 +337,29 @@ public class BuildNewListDropHandler implements DropHandler {
 	public void addFromListDataTable(Table sourceTable){
 		List<Integer> itemIds = getSelectedItemIds(sourceTable);
 		
+		Integer listId = null;
+		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListDataComponent)
+			listId = ((ListDataComponent) sourceTable.getParent().getParent()).getGermplasmListId();
+		
+    	//Load currentColumnsInfo if cached list info is null or not matching the needed list id
+    	if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId)){
+			try {
+				currentColumnsInfo = germplasmListManager.getAdditionalColumnsForList(listId);
+			} catch (MiddlewareQueryException e) {
+				LOG.error("Error During getAdditionalColumnsForList("+listId+"): "+e);
+			}
+    	}
+    	
+		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
+			String column = columnEntry.getKey();
+			if(!AddColumnContextMenu.propertyExists(column, targetTable)){
+				targetTable.addContainerProperty(column, String.class, "");
+				targetTable.setColumnWidth(column, 250);
+			}
+		}
+		
 		for(Integer itemId : itemIds){
+			
 			Item itemFromSourceTable = sourceTable.getItem(itemId);
 			Integer newItemId = getNextListEntryId();
 			Item newItem = targetTable.addItem(newItemId);
@@ -355,9 +398,26 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designation);
 	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
 	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
+	   		
+    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
+    			String column = columnEntry.getKey();
+    			for (ListDataColumnValues columnValue : columnEntry.getValue()){
+    				if (columnValue.getListDataId().equals(itemId)){
+    					String value = columnValue.getValue();
+    					newItem.getItemProperty(column).setValue(value == null ? "" : value);
+    				}
+    			}
+    		}
+    			
 		}
 		
 		assignSerializedEntryNumber();
+		
+        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+        
+    	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
+			FW.fillWith(targetTable, column, true);
+    	}
 	}
 	
     /**
