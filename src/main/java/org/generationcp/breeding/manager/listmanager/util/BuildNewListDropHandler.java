@@ -402,7 +402,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		Button designationButton = (Button) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
 	   		String designation = designationButton.getCaption();
 	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
-	   		String entryId = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
 	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
 	   		
 	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
