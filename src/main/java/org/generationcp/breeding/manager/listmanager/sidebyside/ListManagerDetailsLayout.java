@@ -248,7 +248,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
         if (germplasmList != null){
-            return new ListDetailsComponent(listManagerMain, germplasmList);
+            return new ListDetailsComponent(listManagerMain, this, germplasmList);
         } else {
             return new GermplasmDetailsComponent(listManagerMain, id);
         }
@@ -260,6 +260,10 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     public TabSheet getDetailsTabsheet() {
         return this.detailsTabSheet;
+    }
+    
+    public ListManagerDetailsTabSource getDetailsSource() {
+        return this.detailSource;
     }
     
     public void showDetailsTabsheet() {

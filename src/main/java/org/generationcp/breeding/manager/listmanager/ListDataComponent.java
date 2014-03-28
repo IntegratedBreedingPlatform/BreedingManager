@@ -95,6 +95,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class ListDataComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource  {
 
@@ -245,7 +246,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
 			    	  exportListForGenotypingOrderAction();
 			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
-			    	  copyToNewListAction();
+			    	  //copyToNewListAction();
 			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
 			    	  addEntryButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
@@ -1240,6 +1241,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         , Notification.POSITION_CENTERED);
     }
 
+    /*@Deprecated
     public void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
         if (listEntries == null || listEntries.isEmpty()){
@@ -1271,7 +1273,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                 e.printStackTrace();
             }
         }
-    }
+    }*/
     
     public void lockList() throws MiddlewareQueryException{
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
