@@ -4,7 +4,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -23,7 +22,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -56,6 +54,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
     private GermplasmListManager germplasmListManager;
 	
 	private GermplasmList germplasmList;
+	
+	public static final Integer LIST_NAMES_STATUS = 1;
 	
 	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList){
 		this.source = source;
@@ -191,7 +191,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		germplasmList = listDetailsComponent.getGermplasmList();
 		germplasmList.setId(currentId);
 		germplasmList.setParent(getParentList());         
-		germplasmList.setStatus(0);
+		germplasmList.setStatus(LIST_NAMES_STATUS);
 		
         return germplasmList;
 	}
