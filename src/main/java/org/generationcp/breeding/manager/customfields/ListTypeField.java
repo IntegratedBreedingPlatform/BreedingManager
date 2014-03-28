@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -53,9 +54,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeComboBox.setImmediate(true);
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			listTypeComboBox.setRequired(true);
 			listTypeComboBox.setRequiredError("Please specify the type of the list.");
@@ -78,11 +77,13 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         
         for (UserDefinedField listType : listTypes) {
             String typeCode = listType.getFcode();
-            selectType.addItem(typeCode);
-            selectType.setItemCaption(typeCode, listType.getFname());
-            //set "Germplasm List" as the default value
-            if (DEFAULT_LIST_TYPE.equals(typeCode)) {
-                selectType.setValue(typeCode);
+            if (!AppConstants.DB.FOLDER.equals(typeCode)){
+            	selectType.addItem(typeCode);
+            	selectType.setItemCaption(typeCode, listType.getFname());
+            	//set "Germplasm List" as the default value
+            	if (DEFAULT_LIST_TYPE.equals(typeCode)) {
+            		selectType.setValue(typeCode);
+            	}
             }
         }
     }

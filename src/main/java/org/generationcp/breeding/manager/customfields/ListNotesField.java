@@ -42,9 +42,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listNotesTextArea.setImmediate(true);
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			listNotesTextArea.setRequired(true);
 			listNotesTextArea.setRequiredError("Please specify the notes of the list.");

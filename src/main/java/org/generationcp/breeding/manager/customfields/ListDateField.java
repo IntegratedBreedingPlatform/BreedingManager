@@ -42,9 +42,7 @@ public class ListDateField extends HorizontalLayout
 		listDtDateField.setImmediate(true);
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			listDtDateField.setRequired(true);
 			listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
