@@ -261,6 +261,7 @@ public class BuildNewListDropHandler implements DropHandler {
     		GermplasmListData germplasmListData = null;
     		
     		if(germplasmList==null){
+    			germplasmList = germplasmListManager.getGermplasmListById(listId);
     			germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
         	} else {
         		for(GermplasmListData listData : germplasmList.getListData()){
@@ -298,7 +299,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	            if(newItem!=null && gidButton!=null)
 	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
 	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(germplasmListData.getDesignation());
 	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
@@ -344,6 +345,13 @@ public class BuildNewListDropHandler implements DropHandler {
 		Integer listId = null;
 		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListDataComponent)
 			listId = ((ListDataComponent) sourceTable.getParent().getParent()).getGermplasmListId();
+
+		GermplasmList germplasmList;
+		try {
+			germplasmList = germplasmListManager.getGermplasmListById(listId);
+		} catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm list with id "+listId, e);
+		}
 		
     	//Load currentColumnsInfo if cached list info is null or not matching the needed list id
     	if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId)){
@@ -394,11 +402,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		Button designationButton = (Button) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
 	   		String designation = designationButton.getCaption();
 	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
+	   		String entryId = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
 	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
 	   		
 	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
 	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
 	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designation);
 	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
 	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
