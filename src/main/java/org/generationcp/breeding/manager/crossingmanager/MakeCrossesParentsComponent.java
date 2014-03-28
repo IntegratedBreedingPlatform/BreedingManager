@@ -184,8 +184,12 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         maleParents.addContainerProperty(MALE_PARENTS_LABEL, String.class, null);
+        
+        maleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
+        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
+        maleParents.setColumnHeader(MALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        
         maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         maleParents.setDragMode(TableDragMode.ROW);
         
@@ -267,8 +271,12 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         femaleParents.addContainerProperty(FEMALE_PARENTS_LABEL, String.class, null);
+
+        femaleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
+        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
+        femaleParents.setColumnHeader(FEMALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        
         femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
