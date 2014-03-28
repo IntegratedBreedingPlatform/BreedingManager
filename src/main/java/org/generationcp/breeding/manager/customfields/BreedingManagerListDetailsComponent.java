@@ -220,6 +220,26 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeField.setValue(listTypeField.getDEFAULT_LIST_TYPE());
 		listDateField.setValue(new Date());
 		listNotesField.setValue("");
+		
+		setChanged(false);
+	}
+	
+	public boolean isChanged(){
+		if(listNameField.isChanged() || listDescriptionField.isChanged()
+			|| listTypeField.isChanged() || listDateField.isChanged()
+			|| listNotesField.isChanged() ){
+			return true;
+		}
+		return false;
+	}
+	
+	public void setChanged(boolean changed){
+		//Reset Marked Changes
+		listNameField.setChanged(changed);
+		listDescriptionField.setChanged(changed);
+		listTypeField.setChanged(changed);
+		listDateField.setChanged(changed);
+		listNotesField.setChanged(changed);
 	}
 
 	//SETTERS and GETTERS

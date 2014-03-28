@@ -19,6 +19,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	private static final long serialVersionUID = 1L;
 	
 	private ListManagerMain source;
+	private ListManagerDetailsLayout detailsLayout;
 	private Label listEntriesLabel;
 	private ListDataComponent listDataComponent;
 	private GermplasmList germplasmList;
@@ -27,9 +28,10 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListDetailsComponent(ListManagerMain source, GermplasmList germplasmList){
+	public ListDetailsComponent(ListManagerMain source, ListManagerDetailsLayout detailsLayout, GermplasmList germplasmList){
 		super();
 		this.source = source;
+		this.detailsLayout = detailsLayout;
 		this.germplasmList = germplasmList;
 	}
 	
@@ -86,6 +88,14 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	public void setListNameLabel(String name){
 	    //TODO implement changing of List Name in details section for Rename List
         //lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
+    }
+	
+	public ListManagerDetailsLayout getDetailsLayout() {
+	    return this.detailsLayout;
+	}
+	
+	public ListDataComponent getListDataComponent() {
+        return this.listDataComponent;
     }
 
 }

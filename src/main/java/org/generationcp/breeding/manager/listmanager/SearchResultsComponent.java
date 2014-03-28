@@ -191,9 +191,9 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
 		
 		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
-		addComponent(matchingGermplasmsHeader, "top:237px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:260px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:277px; left:0px;");
+		addComponent(matchingGermplasmsHeader, "top:257px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:280px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:297px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){

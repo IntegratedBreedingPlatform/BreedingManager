@@ -13,6 +13,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,6 +33,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private boolean isMandatory;
 	private Label mandatoryMark;
 	private final String DEFAULT_LIST_TYPE = "LST"; 
+	private boolean changed;
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
@@ -38,6 +41,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public ListTypeField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
+		this.changed = false;
 	}
 	@Override
 	public void instantiateComponents() {
@@ -85,8 +89,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		listTypeComboBox.addListener(new Property.ValueChangeListener(){
+            
+            private static final long serialVersionUID = 2323698194362809907L;
+
+            public void valueChange(ValueChangeEvent event) {
+                changed = true;
+            }
+            
+        });
 	}
 
 	@Override
@@ -138,6 +149,14 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	public void validate() throws InvalidValueException {
 		listTypeComboBox.validate();
+	}
+	
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
 	}
 	
 }

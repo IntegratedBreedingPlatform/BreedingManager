@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -115,9 +116,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     private WorkbenchDataManager workbenchDataManager;
     
     
-    private ListManagerMain listManagerMain;
+    private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
     
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, ListManagerMain listManagerMain) {
+    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain) {
         this.dialogWindow = dialogWindow;
         this.mainWindow = mainWindow;
         this.listEntriesTable=listEntriesTable;
@@ -289,8 +290,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         try{
                             GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
                             addGermplasmListData(germList,1);
-                            listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-                            listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(newListid, true);
+                            listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                            listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                            listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
                             germplasmListManager.deleteGermplasmListByListId(newListid);
                             LOG.error("Error with copying list entries", e);
@@ -317,8 +319,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         addGermplasmListData(germList,countOfExistingList+1);
                         this.mainWindow.removeWindow(dialogWindow);
                         
-                        listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().createTree();
-                        listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(Integer.valueOf(listId), true);
+                        listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                        listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                        listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(Integer.valueOf(listId));
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
                             e.printStackTrace();
@@ -351,7 +354,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 int gid=Integer.valueOf(pGidButton.getCaption().toString());
                 String entryCode=String.valueOf((pEntryCode.getValue().toString()));
                 String seedSource=listName+": "+entryIdOfList;
-                String designation=String.valueOf((pDesignation.getValue().toString()));
+                Button pDesigButton = (Button) pDesignation.getValue();
+                String designation=String.valueOf((pDesigButton.getCaption().toString()));
                 designationOfListEntriesCopied+=designation+",";
                 String groupName=String.valueOf((pGroupName.getValue().toString()));
 
@@ -370,7 +374,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                 String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
                 String entryCode=String.valueOf((pEntryCode.getValue().toString()));
                 String seedSource=listName+": "+entryIdOfList;
-                String designation=String.valueOf((pDesignation.getValue().toString()));
+                Button pDesigButton = (Button) pDesignation.getValue();
+                String designation=String.valueOf((pDesigButton.getCaption().toString()));
                 designationOfListEntriesCopied+=designation+",";
                 String groupName=String.valueOf((pGroupName.getValue().toString()));
 

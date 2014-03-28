@@ -1,21 +1,30 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -26,9 +35,14 @@ import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,12 +79,14 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, 
+        BreedingManagerLayout, AddEntryDialogSource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
@@ -80,8 +96,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	private ListManagerMain source;
 	private ListDetailsComponent parentListDetailsComponent;
-	private Integer germplasmListId;
-	private Integer germplasmListStatus;
+	private GermplasmList germplasmList;
+	private List<GermplasmListData> listEntries;
+	private long listEntriesCount;
+	private String designationOfListEntriesDeleted="";
 	
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
@@ -126,10 +144,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
   	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL, ACTION_COPY_TO_NEW_LIST };
     
   	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
-  	private long listEntriesCount;
   	
 	//Theme Resource
+  	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
+	private static final String USER_HOME = "user.home";
 	
 	private Object selectedColumn = "";
 	private Object selectedItemId;
@@ -149,12 +168,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Autowired
     private PedigreeDataManager pedigreeDataManager;
 	
+	@Autowired
+    private WorkbenchDataManager workbenchDataManager;
+	
 	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
-		this.germplasmListId = germplasmList.getId();
-		this.germplasmListStatus = germplasmList.getStatus();
+		this.germplasmList = germplasmList;
 		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
 		this.itemsToDelete = new HashMap<Object, String>();
 	}
@@ -193,9 +214,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuEditList = menu.addItem(MENU_EDIT_LIST);
 		
 		try{
-			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmListId);
+			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
 		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with retrieving count of list entries for list: " + germplasmListId, ex);
+			LOG.error("Error with retrieving count of list entries for list: " + germplasmList.getId(), ex);
 			listEntriesCount = 0;
 		}
 		
@@ -243,11 +264,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	@Override
 	public void initializeValues() {
 		if(listEntriesCount > 0){
-			List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
+		    listEntries = new ArrayList<GermplasmListData>();
 			try{
-				listEntries.addAll(germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, Long.valueOf(listEntriesCount).intValue()));
+				listEntries.addAll(germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Long.valueOf(listEntriesCount).intValue()));
 			} catch(MiddlewareQueryException ex){
-				LOG.error("Error with retrieving list entries for list: " + germplasmListId, ex);
+				LOG.error("Error with retrieving list entries for list: " + germplasmList.getId(), ex);
 				listEntries = new ArrayList<GermplasmListData>();
 			}
 			
@@ -291,18 +312,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			listDataTable.sort(new Object[]{ListDataTablePropertyID.ENTRY_ID.getName()}, new boolean[]{true});
 			
 			// render additional columns
-	    	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmListId, listDataTable);
+	    	ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(germplasmList.getId(), listDataTable);
 	    	try{
 	    		newColumnsRenderer.render();
 	    	} catch(MiddlewareQueryException ex){
-	    		LOG.error("Error with displaying added columns for entries of list: " + germplasmListId, ex);
+	    		LOG.error("Error with displaying added columns for entries of list: " + germplasmList.getId(), ex);
 	    	}
 		}
 	}
 
 	@Override
 	public void addListeners() {
-		if(germplasmListId<0 && germplasmListStatus<100){
+		if(germplasmList.getId()<0 && germplasmList.getStatus()<100){
 	        new FillWith(parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
 		
@@ -313,7 +334,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				private static final long serialVersionUID = -897257270314381555L;
 
 				public Action[] getActions(Object target, Object sender) {
-					if (germplasmListId < 0 &&  germplasmListStatus < 100){
+					if (germplasmList.getId() < 0 &&  germplasmList.getStatus() < 100){
 						if(selectedColumn == null){
 							return ACTIONS_TABLE_CONTEXT_MENU;
 						} else {
@@ -374,8 +395,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   			 
 				// Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID).
 				// and when not accessed directly from URL or popup window
-	   			 if (germplasmListId < 0 && !fromUrl) {
-	   				 if(germplasmListStatus>=100){
+	   			 if (germplasmList.getId() < 0 && !fromUrl) {
+	   				 if(germplasmList.getStatus()>=100){
 	   					 menuEditList.setVisible(false);
 	   					 menuDeleteEntries.setVisible(false);
 	   					 menuSaveChanges.setVisible(false);
@@ -406,17 +427,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
 			    	  listDataTable.setValue(listDataTable.getItemIds());
 			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
-			    	  //exportListAction();
+			    	  exportListAction();
 			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
-			    	  //exportListForGenotypingOrderAction();
+			    	  exportListForGenotypingOrderAction();
 			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
-			    	  //copyToNewListAction();
+			    	  copyToNewListAction();
 			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
-			    	  //addEntryButtonClickAction();
+			    	  addEntryButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
-			    	  //saveChangesAction();
+			    	  saveChangesAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
-			    	  //deleteListButtonClickAction();
+			    	  deleteListButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
 			    	  editListButtonClickAction();
 			      }		      
@@ -721,8 +742,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	
     	//marks the entryId and designationId of the list entries to delete
     	for(final Object itemId : selectedIds){
-    		itemsToDelete.put(itemId,
-    				listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue().toString());
+            Button desigButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            String designation = String.valueOf((desigButton.getCaption().toString()));
+    		itemsToDelete.put(itemId, designation);
     		listDataTable.removeItem(itemId);
     	}
     	
@@ -762,7 +784,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private void editListButtonClickAction() {
 		final BuildNewListComponent buildNewListComponent = source.getBuildNewListComponent();
 		
-    	if(buildNewListComponent.getHasChanges()){
+    	if(buildNewListComponent.isChanged()){
     		String message = "";
     		
     		String buildNewListTitle = buildNewListComponent.getBuildNewListTitle().getValue().toString();
@@ -775,36 +797,605 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		
     		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
-				private static final long serialVersionUID = 1L;
-				
+				private static final long serialVersionUID = 1L;	
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						buildNewListComponent.getSaveButton().click(); // save the existing list	
 					}
 					
 					source.showBuildNewListComponent(getGermplasmList());
-					buildNewListComponent.setHasChanges(false); // reset
 				}
-			}
-		);
+			});
     	}
     	else{
     		source.showBuildNewListComponent(getGermplasmList());
     	}
 	}
 	
+    public void exportListAction() throws InternationalizableException {
+        if(germplasmList.getId()>0 || (germplasmList.getId()<0 && germplasmList.getStatus()>=100)){
+            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
+            GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+            try {
+                listExporter.exportGermplasmListExcel(tempFileName);
+                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                String listName = germplasmList.getName();
+                fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
+                this.getWindow().open(fileDownloadResource);
+                //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                    //File tempFile = new File(tempFileName);
+                    //tempFile.delete();
+            } catch (GermplasmListExporterException e) {
+                LOG.error("Error with exporting list.", e);
+                MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                            , "Error with exporting list."    
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                            , Notification.POSITION_CENTERED);
+            }
+        } else {
+            ConfirmDialog.show(this.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM), "Yes", "No", 
+                new ConfirmDialog.Listener() {
+                    private static final long serialVersionUID = -4433860112118910452L;
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
+                            try {
+                                lockList();
+                                //germplasmListStatus=germplasmList.getStatus();
+                                exportListAction();
+                                /*if (source != null && source.getListManagerListDetailComponent() != null){
+                                    source.getListManagerListDetailComponent().recreateTab();
+                                }*/
+                                recreateTab();
+                            } catch (MiddlewareQueryException e) {
+                                LOG.error("Error with exporting list.", e);
+                                e.printStackTrace();
+                            }
+                        } else {
+        
+                        }
+                    }
+                });
+        }
+    }
+    
+    public void lockList() throws MiddlewareQueryException{
+        germplasmList.setStatus(germplasmList.getStatus()+100);
+        try {
+            germplasmListManager.updateGermplasmList(germplasmList);
+        
+            User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+            ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                    workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+                "Locked a germplasm list.", 
+                "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
+            workbenchDataManager.addProjectActivity(projAct);
+            
+            menuDeleteEntries.setVisible(false);
+            menuSaveChanges.setVisible(false);
+            menuAddEntry.setVisible(false);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error with locking list.", e);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                    , Notification.POSITION_CENTERED);
+            return;
+        }
+    }
+    
+    public void recreateTab() throws MiddlewareQueryException {
+        /*TabSheet parentTabSheet = parentListDetailsComponent.getDetailsLayout().getDetailsTabsheet();
+        String tabSheetName = germplasmList.getName();
+        Tab tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+        if(tab != null){
+            parentTabSheet.removeTab(tab);
+        }
+        else{
+            tabSheetName = "List - " + germplasmList.getName();
+            tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+            if(tab != null){
+                parentTabSheet.removeTab(tab);
+            }
+        }
+        
+        if(tabSheetName.contains("List - ")){
+            listManagerTreeMenu.getDetailsLayout().createListInfoFromSearchScreen(germplasmList.getId());                 
+        }
+        else{
+            listManagerTreeMenu.getDetailsLayout().createListInfoFromBrowseScreen(germplasmList.getId());
+        }*/
+        parentListDetailsComponent.getDetailsLayout().removeTab(germplasmList.getId());
+        parentListDetailsComponent.getDetailsLayout().createListDetailsTab(germplasmList.getId());
+        
+        /*tab = Util.getTabAlreadyExist(parentTabSheet, tabSheetName);
+        parentTabSheet.setSelectedTab(tab.getComponent());*/
+    }
+    
+    public void exportListForGenotypingOrderAction() throws InternationalizableException {
+        if(germplasmList.getId()>0 || (germplasmList.getId()<0 && germplasmList.getStatus()>=100)){
+            String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
+            GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+            
+            try {
+                listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
+                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                String listName = germplasmList.getName();
+                fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
+                
+                this.getWindow().open(fileDownloadResource);
+                
+                //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                //File tempFile = new File(tempFileName);
+                //tempFile.delete();
+            } catch (GermplasmListExporterException e) {
+                MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                        , "Error with exporting list."
+                        , e.getMessage(), Notification.POSITION_CENTERED);
+            }
+        } else {
+            MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                    , "Error with exporting list."    
+                    , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
+        }
+    }
+    
+    public void copyToNewListAction(){
+        Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
+        if (listEntries == null || listEntries.isEmpty()){
+            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            
+        } else {
+            listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+            listManagerCopyToNewListDialog.setModal(true);
+            listManagerCopyToNewListDialog.setWidth("700px");
+            listManagerCopyToNewListDialog.setHeight("350px");
+            listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+            
+            try {
+                listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(parentListDetailsComponent.getWindow(),
+                        listManagerCopyToNewListDialog,germplasmList.getName(),listDataTable,getCurrentUserLocalId(),source));
+                parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error copying list entries.", e);
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private int getCurrentUserLocalId() throws MiddlewareQueryException {
+        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
+        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+        if (localIbdbUserId != null) {
+            return localIbdbUserId;
+        } else {
+            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+        }
+    }
+    
+    public void addEntryButtonClickAction(){
+        Window parentWindow = this.getWindow();
+        AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+        addEntriesDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+        parentWindow.addWindow(addEntriesDialog);
+    }
+    
+    @Override
+    public void finishAddingEntry(Integer gid) {
+        Germplasm germplasm = null;
+
+        try {
+            germplasm = germplasmDataManager.getGermplasmWithPrefName(gid);
+        } catch(MiddlewareQueryException ex){
+            LOG.error("Error with getting germplasm with id: " + gid, ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                    , Notification.POSITION_CENTERED);
+            return;
+        }
+        
+        Integer maxEntryId = Integer.valueOf(0);
+        if (listDataTable != null){
+            for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+                //iterate through the table elements' IDs
+                int listDataId = (Integer) i.next();
+                
+                //update table item's entryId
+                Item item = listDataTable.getItem(listDataId);
+                Integer entryId = (Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+                if(maxEntryId < entryId){
+                    maxEntryId = entryId;
+                }
+            }
+        }
+        
+        
+        GermplasmListData listData = new GermplasmListData();
+        listData.setList(germplasmList);
+        if(germplasm.getPreferredName() != null){
+            listData.setDesignation(germplasm.getPreferredName().getNval());
+        } else {
+            listData.setDesignation("-");
+        }
+        listData.setEntryId(maxEntryId+1);
+        listData.setGid(gid);
+        listData.setLocalRecordId(Integer.valueOf(0));
+        listData.setStatus(Integer.valueOf(0));
+        
+        String preferredId = "-";
+        try{
+            Name nameRecord = this.germplasmDataManager.getPreferredIdByGID(gid);
+            if(nameRecord != null){
+                preferredId = nameRecord.getNval();
+            }
+        } catch(MiddlewareQueryException ex){
+            preferredId = "-";
+        }
+        listData.setEntryCode(preferredId);
+        
+        listData.setSeedSource("From Add Entry Feature of List Manager");
+        
+        String groupName = "-";
+        try{
+            groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
+        } catch(MiddlewareQueryException ex){
+            groupName = "-";
+        }
+        listData.setGroupName(groupName);
+            
+        Integer listDataId = null;
+        try {
+            listDataId = this.germplasmListManager.addGermplasmListData(listData);
+            
+            Object gidObject;
+            Object desigObject;
+            if (!fromUrl) {
+                // make GID as link only if the page wasn't directly accessed from the URL
+                String gidString = String.format("%s", gid.toString());
+                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,false));
+                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                gidButton.setDescription("Click to view Germplasm information");
+                gidObject = gidButton;
+                
+                String desigString = listData.getDesignation();
+                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,false));
+                desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+                desigButton.setDescription("Click to view Germplasm information");
+                desigObject = desigButton;
+            } else {
+                gidObject = gid;
+                desigObject = listData.getDesignation();
+            }
+            
+            // create table if added entry is first listdata record
+            if (listDataTable == null){
+                if (noListDataLabel != null){
+                    removeComponent(noListDataLabel);
+                }
+                initializeListDataTable();
+                initializeValues();
+                
+            } else {
+                listDataTable.setEditable(false);
+                
+                Object[] visibleColumns = listDataTable.getVisibleColumns();
+                
+                listDataTable.setVisibleColumns(new String[] {
+                        CHECKBOX_COLUMN_ID,
+                        ListDataTablePropertyID.GID.getName()
+                        ,ListDataTablePropertyID.ENTRY_ID.getName()
+                        ,ListDataTablePropertyID.ENTRY_CODE.getName()
+                        ,ListDataTablePropertyID.SEED_SOURCE.getName()
+                        ,ListDataTablePropertyID.DESIGNATION.getName()
+                        ,ListDataTablePropertyID.GROUP_NAME.getName()
+//                  ,ListDataTablePropertyID.STATUS.getName()
+                });
+                
+                
+                CheckBox itemCheckBox = new CheckBox();
+                itemCheckBox.setData(listData.getId());
+                itemCheckBox.setImmediate(true);
+                itemCheckBox.addListener(new ClickListener() {
+                    private static final long serialVersionUID = 1L;
+                    @Override
+                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                        CheckBox itemCheckBox = (CheckBox) event.getButton();
+                        if(((Boolean) itemCheckBox.getValue()).equals(true)){
+                            listDataTable.select(itemCheckBox.getData());
+                        } else {
+                            listDataTable.unselect(itemCheckBox.getData());
+                        }
+                    }
+                     
+                });
+                
+                listDataTable.addItem(new Object[] {
+                        itemCheckBox, gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
+                        desigObject, listData.getGroupName()
+//                            , listData.getStatusString()
+                }, listDataId);
+                
+                listDataTable.setVisibleColumns(visibleColumns);
+                
+                //FIXME: sidebyside re-enable after add columns are done
+                /*if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
+                    addColumnContextMenu.setPreferredIdColumnValues(false);            
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
+                    addColumnContextMenu.setLocationColumnValues(false);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_NAME)){
+                    addColumnContextMenu.setPreferredNameColumnValues(false);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.GERMPLASM_DATE)){
+                    addColumnContextMenu.setGermplasmDateColumnValues(false);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NAME)){
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_ABBREV)){
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_NUMBER)){
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.METHOD_GROUP)){
+                    addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_GID)){
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+                    addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_GID)){
+                    addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+                }
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                    addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+                }*/
+                
+                saveChangesAction();
+                listDataTable.refreshRowCache();
+                listDataTable.setImmediate(true);
+                listDataTable.setEditable(true);
+            }
+            
+            MessageNotifier.showMessage(this.getWindow(), 
+                    messageSource.getMessage(Message.SUCCESS), 
+                    "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
+            
+            User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+
+            ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                            workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+                            "Added list entry.", 
+                            "Added " + gid + " as list entry to " + germplasmList.getId() + ":" + germplasmList.getName(),user,new Date());
+            try {
+                workbenchDataManager.addProjectActivity(projAct);
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error with adding workbench activity log.", e);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                        , Notification.POSITION_CENTERED);
+            }
+            //populateTable();
+            //listDataTable.requestRepaint();
+//            if(this.germplasmListAccordionMenu != null)
+//                this.germplasmListAccordionMenu.refreshListData();
+        } catch (MiddlewareQueryException ex) {
+            LOG.error("Error with adding list entry.", ex);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                    , Notification.POSITION_CENTERED);
+            return;
+        }
+    }
+    
+    public boolean isColumnVisible(Object[] columns, String columnName){
+        
+        for(Object col : columns){
+            if(col.equals(columnName)){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public void saveChangesAction() throws InternationalizableException {
+        saveChangesAction(this.getWindow());
+    }
+
+    public void saveChangesAction(Window window) throws InternationalizableException {
+        
+        //selected entries to entries       
+        if(itemsToDelete.size() > 0){
+            performListEntriesDeletion(itemsToDelete);
+        }
+        
+        try {
+            listEntriesCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
+            listEntries = this.germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, (int) listEntriesCount);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
+        }
+     
+        int entryId = 1;
+        //re-assign "Entry ID" field based on table's sorting
+        for (Iterator<?> i = listDataTable.getItemIds().iterator(); i.hasNext();) {
+            //iterate through the table elements' IDs
+            int listDataId = (Integer) i.next();
+
+            //update table item's entryId
+            Item item = listDataTable.getItem(listDataId);
+            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entryId);
+
+            //then find the corresponding ListData and assign a new entryId to it
+            for (GermplasmListData listData : listEntries) {
+                if (listData.getId().equals(listDataId)) {
+                    listData.setEntryId(entryId);
+                    
+                    String entryCode = (String) item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+                    if(entryCode != null && entryCode.length() != 0){
+                        listData.setEntryCode(entryCode);
+                    } else {
+                        listData.setEntryCode(Integer.valueOf(entryId).toString());
+                    }
+                    
+                    String seedSource = (String) item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+                    if(seedSource != null && seedSource.length() != 0){
+                        listData.setSeedSource(seedSource);
+                    } else {
+                        listData.setSeedSource("-");
+                    }
+                    
+                    Button desigButton = (Button) (item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName())).getValue();
+                    String designation = String.valueOf((desigButton.getCaption().toString()));
+                    if(designation != null && designation.length() != 0){
+                        listData.setDesignation(designation);
+                    } else {
+                        listData.setDesignation("-");
+                    }
+                    
+                    String groupName = (String) item.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
+                    if(groupName != null && groupName.length() != 0){
+                        if(groupName.length() > 255){
+                            groupName = groupName.substring(0, 255);
+                        }
+                        listData.setGroupName(groupName);
+                    } else {
+                        listData.setGroupName("-");
+                    }
+                    
+                    break;
+                }
+            }
+            entryId += 1;
+        }
+        //save the list of Germplasm List Data to the database
+        try {
+            
+            germplasmListManager.updateGermplasmListData(listEntries);
+            //FIXME: sidebyside
+            //germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
+            
+            listDataTable.requestRepaint();
+            //reset flag to indicate unsaved changes
+            parentListDetailsComponent.setChanged(false);
+            
+            MessageNotifier.showMessage(window, 
+                    messageSource.getMessage(Message.SUCCESS), 
+                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
+                    ,3000, Notification.POSITION_CENTERED);
+        } catch (MiddlewareQueryException e) {
+            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
+        }
+
+    } // end of saveChangesAction
+    
+    //TODO review this method as there are redundant codes here that is also in saveChangesAction()
+    //might be possible to eliminate this method altogether and reduce the number of middleware calls
+    private void performListEntriesDeletion(Map<Object, String> itemsToDelete){     
+        try {
+            if(getCurrentUserLocalId()==germplasmList.getUserId()) {
+                designationOfListEntriesDeleted="";
+                
+                for (Map.Entry<Object, String> item : itemsToDelete.entrySet()) {
+                    
+                    Object sLRecId = item.getKey();
+                    String sDesignation = item.getValue();
+                    
+                    try {
+                        int lrecId=Integer.valueOf(sLRecId.toString());
+                        designationOfListEntriesDeleted += sDesignation +",";
+                        germplasmListManager.deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
+                    } catch (MiddlewareQueryException e) {
+                        LOG.error("Error with deleting list entries.", e);
+                        e.printStackTrace();
+                    }
+                }
+                
+                deleteGermplasmDialogBox(gidsWithoutChildrenToDelete);
+                designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
+    
+                //Change entry IDs on listData
+                List<GermplasmListData> listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0
+                            , (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId()));
+                Integer entryId = 1;
+                for (GermplasmListData listData : listDatas) {
+                    listData.setEntryId(entryId);
+                    entryId++;
+                }
+                germplasmListManager.updateGermplasmListData(listDatas);
+                
+                try {
+                    logDeletedListEntriesToWorkbenchProjectActivity();
+                } catch (MiddlewareQueryException e) {
+                    LOG.error("Error logging workbench activity.", e);
+                    e.printStackTrace();
+                }
+
+                //reset items to delete in listDataTable
+                itemsToDelete.clear(); 
+                
+            } else {
+                showMessageInvalidDeletingListEntries();
+            }
+            
+        } catch (NumberFormatException e) {
+            LOG.error("Error with deleting list entries.", e);
+            e.printStackTrace();
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error with deleting list entries.", e);
+            e.printStackTrace();
+        }
+        
+    } // end of performListEntriesDeletion
+    
+    protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
+
+        if (gidsWithoutChildren!= null && gidsWithoutChildren.size() > 0){
+            ArrayList<Germplasm> gList = new ArrayList<Germplasm>();
+            try {
+                for(Integer gid : gidsWithoutChildren){
+                    Germplasm g= germplasmDataManager.getGermplasmByGID(gid);
+                    g.setGrplce(gid);
+                    gList.add(g);
+                }// end loop
+                
+                germplasmDataManager.updateGermplasm(gList);
+                
+            } catch (MiddlewareQueryException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
+        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+
+        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+                "Deleted list entries.", 
+                "Deleted list entries from the list id " + germplasmList.getId() + " - " + germplasmList.getName(),user,new Date());
+        try {
+            workbenchDataManager.addProjectActivity(projAct);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error with logging workbench activity.", e);
+            e.printStackTrace();
+        }
+    }
+
+    private void showMessageInvalidDeletingListEntries(){
+    MessageNotifier.showError(this.getWindow()
+        , messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES) 
+        , messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES)
+        , Notification.POSITION_CENTERED);
+    }
+    
 	/*SETTERS AND GETTERS*/
 	public GermplasmList getGermplasmList(){
-		GermplasmList germplasmList = null;
-		try {
-			germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error retrieving germplasmList",e);
-			e.printStackTrace();
-		}
 		return germplasmList;
 	}
+	
 	public Integer getGermplasmListId(){
-		return germplasmListId;
+		return germplasmList.getId();
 	}
 }

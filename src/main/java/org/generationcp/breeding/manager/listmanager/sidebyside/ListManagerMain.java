@@ -185,7 +185,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	@Override
 	public void initializeValues() {
 		browserSearchLayout.setWidth("100%");
-        browserSearchLayout.setHeight("600px");
+        browserSearchLayout.setHeight("630px");
         searchListsComponent.setVisible(false);
 	}
 

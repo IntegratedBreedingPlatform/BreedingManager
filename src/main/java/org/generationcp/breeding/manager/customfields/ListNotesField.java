@@ -5,6 +5,8 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -21,10 +23,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private TextArea listNotesTextArea;
 	private boolean isMandatory;
 	private Label mandatoryMark;
+	private boolean changed;
 	
 	public ListNotesField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
+		this.changed = false;
 	}
 	
 	@Override
@@ -55,8 +59,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		listNotesTextArea.addListener(new Property.ValueChangeListener(){
+            
+            private static final long serialVersionUID = 2323698194362809907L;
+
+            public void valueChange(ValueChangeEvent event) {
+                changed = true;
+            }
+            
+        });
 	}
 
 	@Override
@@ -104,6 +115,14 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	public void validate() throws InvalidValueException {
 		listNotesTextArea.validate();
+	}
+	
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
 	}
 
 }
