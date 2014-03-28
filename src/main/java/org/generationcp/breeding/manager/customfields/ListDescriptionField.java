@@ -46,9 +46,7 @@ public class ListDescriptionField extends HorizontalLayout
                 "List Description must not exceed 255 characters.", 1, 255, false));
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			descriptionTextArea.setRequired(true);
 			descriptionTextArea.setRequiredError("Please specify the description of the list.");

@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.customfields.ListDescriptionField;
 import org.generationcp.breeding.manager.customfields.ListTypeField;
+import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -98,9 +99,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		saveAsLabel.setValue(saveAsCaption);
 		saveAsLabel.addStyleName("bold");
 		
-		markAsMandatory = new Label("* ");
-		markAsMandatory.setWidth("5px");
-		markAsMandatory.addStyleName("marked_mandatory");
+		markAsMandatory = new MandatoryMarkLabel();
 		
 		folderToSaveListToLabel = new Label();
 		folderToSaveListToLabel.setData(null);

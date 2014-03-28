@@ -49,9 +49,7 @@ public class ListNameField extends HorizontalLayout
 		listNameTextField.addValidator(listNameValidator);
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			listNameTextField.setRequired(true);
 			listNameTextField.setRequiredError("Please specify the name of the list.");

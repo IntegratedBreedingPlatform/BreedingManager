@@ -25,7 +25,10 @@ public final class AppConstants {
 		public static final String TREE_REGULAR_PARENT_NODE = "listManagerTreeRegularParentNode";
 		public static final String TREE_REGULAR_CHILD_NODE = "listManagerTreeRegularChildNode";
 		
+		public static final String MARKED_MANDATORY = "marked_mandatory";
+		
 	}
+	
 	
 	public static class Icons {
 		
@@ -39,6 +42,7 @@ public final class AppConstants {
 	    public static final ThemeResource ICON_REVIEW_LIST_DETAILS = new ThemeResource("images/review-list-details.png");
 	    public static final ThemeResource ICON_MATCHING_GERMPLASMS = new ThemeResource("images/matching-germplasms.png");
 	}
+	
 	
 	public static class DB {
 		public static final String FOLDER = "FOLDER";
