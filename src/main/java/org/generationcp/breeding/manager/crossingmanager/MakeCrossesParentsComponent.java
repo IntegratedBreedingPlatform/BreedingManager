@@ -568,6 +568,7 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 		makeCrossesMain.toggleNextButton();
 		
 		makeCrossesMain.selectListInTree(list.getId());
+		makeCrossesMain.updateUIForDeletedList(list);
 		
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 				messageSource.getMessage(parentContainer.getSuccessMessage()));
@@ -652,7 +653,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 	public void updateListDataTable(List<GermplasmListData> savedListEntries) {
 		ParentContainer container = (ParentContainer) saveListAsWindow.getData();
 
-//		if(type == SaveListType.FEMALE){
 			
 		List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
 		Table table = container.getTableWithSelectAll().getTable();
@@ -668,7 +668,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 			CheckBox tag = new CheckBox();
 			newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 			
-			tag.setValue(true);
 			tag.addListener(new ParentsTableCheckboxListener(table, itemId, container.getTableWithSelectAll().getCheckBox()));
             tag.setImmediate(true);
             

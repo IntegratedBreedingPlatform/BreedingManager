@@ -317,9 +317,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	}
 	
 	public void updateCrossesSeedSource(String femaleListName, String maleListName){
-		if (crossesTableComponent.getCrossList() != null){
-			crossesTableComponent.updateSeedSource(femaleListName, maleListName);
-		}
+		crossesTableComponent.updateSeedSource(femaleListName, maleListName);
 	}
 	
 	public CrossingManagerSetting getCurrentCrossingSetting(){

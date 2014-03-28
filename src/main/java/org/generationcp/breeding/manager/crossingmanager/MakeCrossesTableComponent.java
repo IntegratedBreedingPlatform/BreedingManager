@@ -324,7 +324,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private void initializeCrossesMadeTable() {
 		tableCrossesMade = new Table();
-        tableCrossesMade.setWidth("100%");
+        tableCrossesMade.setWidth("400px");
         tableCrossesMade.setHeight("420px");
         tableCrossesMade.setImmediate(true);
         tableCrossesMade.setSelectable(true);    
@@ -404,6 +404,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		if (updateCrossesMadeContainer(makeCrossesMain.getCrossesMadeContainer(), list)){
 			saveRecords();
 			makeCrossesMain.selectListInTree(crossList.getId());
+			makeCrossesMain.updateUIForDeletedList(crossList);
 		}
 		
 	}
@@ -464,14 +465,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
     			crossParents.setSeedSource(newSeedSource);
     		}
 
-    		
-    		SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
-    		try {
-    			saveAction.updateSeedSource((Collection<CrossParents>) tableCrossesMade.getItemIds());
-    		} catch (MiddlewareQueryException e) {
-    			e.printStackTrace();
-    			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-    					messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES), Notification.POSITION_CENTERED);
+    		if (getCrossList() != null){
+    			makeCrossesMain.updateUIForDeletedList(this.getCrossList());
+    			
+    			SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
+    			try {
+    				saveAction.updateSeedSource((Collection<CrossParents>) tableCrossesMade.getItemIds());
+    			} catch (MiddlewareQueryException e) {
+    				e.printStackTrace();
+    				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+    						messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES), Notification.POSITION_CENTERED);
+    			}
     		}
     		
     	}
@@ -481,4 +485,5 @@ public class MakeCrossesTableComponent extends VerticalLayout
     public GermplasmList getCrossList(){
     	return crossList;
     }
+
 }
