@@ -252,9 +252,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
 		
-		messageSource.setColumnHeader(listDataTable, CHECKBOX_COLUMN_ID, Message.TAG);
+		messageSource.setColumnHeader(listDataTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.LISTDATA_ENTRY_ID_HEADER);
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), Message.HASHTAG);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);

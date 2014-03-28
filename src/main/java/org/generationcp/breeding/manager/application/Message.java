@@ -434,4 +434,5 @@ public enum Message{
     ,LISTS
     ,AVAILABLE_LISTS
     ,CHECK_ICON 
+    ,HASHTAG
 }
