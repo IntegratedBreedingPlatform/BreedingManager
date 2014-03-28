@@ -70,7 +70,7 @@
     </bean>
     
     <bean id="managerFactoryProvider" 
-    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
+    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider"  destroy-method="closeAllSessionFactories">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedLocalSessionFactories" value="1" />
     	<property name="localPort" value="${workbench.port}" />
