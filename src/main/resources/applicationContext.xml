@@ -67,15 +67,15 @@
     </bean>
     
     
-    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request">
-        <property name="sessionFactory" ref="workbenchSessionFactory"/>
+    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
+        <property name="sessionFactory" ref="workbenchSessionFactory" />
         
         <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
     <bean id="managerFactoryProvider" 
-    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
+    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider" destroy-method="closeAllSessionFactories">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedLocalSessionFactories" value="5" />
     	<property name="localPort" value="${workbench.port}" />
@@ -91,7 +91,7 @@
     <bean id="managerFactory" name="managerFactory"
     	factory-bean="managerFactoryProvider"
     	factory-method="createInstance"
-    	scope="session">
+    	scope="session" destroy-method="close">
     	<aop:scoped-proxy/>
     </bean>
     
