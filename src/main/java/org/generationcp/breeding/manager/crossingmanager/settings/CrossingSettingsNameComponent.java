@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
+import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -50,6 +51,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
     private Label addSpaceLabel;
     private Label nextNameInSequenceLabel;
     private Label generatedNextNameLabel;
+    private Label mandatoryMarkLabel;
    
     private TextField prefixTextField;
     private TextField suffixTextField;
@@ -93,7 +95,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	public void updateLabels() {
 		crossNameLabel.setValue(messageSource.getMessage(Message.NAMING).toUpperCase());
 		specifyNamingConventionLabel.setValue(messageSource.getMessage(Message.SPECIFY_NAMING_CONVENTION_FOR_CROSSES));
-		specifyPrefixLabel.setValue(messageSource.getMessage(Message.CROSS_NAME_PREFIX) + ": *");
+		specifyPrefixLabel.setValue(messageSource.getMessage(Message.CROSS_NAME_PREFIX) + ":");
 		specifySuffixLabel.setValue(messageSource.getMessage(Message.SUFFIX_OPTIONAL) + ":");
 		addSpaceLabel.setValue(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE) + "?");
 		digitsLabel.setValue(messageSource.getMessage(Message.DIGITS));
@@ -118,6 +120,10 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         addSpaceOptionGroup.addStyleName(AppConstants.CssStyles.HORIZONTAL_GROUP);
         
         specifyPrefixLabel = new Label();
+        specifyPrefixLabel.addStyleName(AppConstants.CssStyles.BOLD);
+        
+        mandatoryMarkLabel = new MandatoryMarkLabel();
+        
         prefixTextField = new TextField();
         prefixTextField.setImmediate(true);
         prefixTextField.setWidth("120px");
@@ -132,6 +138,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         leadingZerosSelect.setWidth("50px");
         
         specifySuffixLabel = new Label();
+        specifySuffixLabel.addStyleName(AppConstants.CssStyles.BOLD);
         suffixTextField = new TextField();
         suffixTextField.setImmediate(true);
         suffixTextField.setWidth("120px");
@@ -206,6 +213,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		addComponent(specifyNamingConventionLabel, "top:26px; left:0px");
 			
 		addComponent(specifyPrefixLabel, "top:71px;left:0px");
+		addComponent(mandatoryMarkLabel, "top:71px;left:128px");
         addComponent(prefixTextField, "top:71px;left:145px");
         addComponent(sequenceNumCheckBox, "top:75px;left:300px");
         addComponent(leadingZerosSelect, "top:75px;left:540px");
