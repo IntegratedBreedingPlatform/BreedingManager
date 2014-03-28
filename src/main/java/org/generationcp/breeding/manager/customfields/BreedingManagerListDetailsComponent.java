@@ -201,7 +201,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         }
 		
 		listTypeField.setValue(germplasmList.getType());
-		listNotesField.setValue(germplasmList.getNotes());
+		
+		String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
+		listNotesField.setValue(notes);
 	}
 	
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
