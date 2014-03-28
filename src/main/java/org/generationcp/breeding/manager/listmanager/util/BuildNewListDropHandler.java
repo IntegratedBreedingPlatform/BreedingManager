@@ -346,7 +346,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListDataComponent)
 			listId = ((ListDataComponent) sourceTable.getParent().getParent()).getGermplasmListId();
 
-		GermplasmList germplasmList;
+		GermplasmList germplasmList = null;
 		try {
 			germplasmList = germplasmListManager.getGermplasmListById(listId);
 		} catch (MiddlewareQueryException e) {
