@@ -472,8 +472,8 @@
 	color: red;
 }
 
-.searchPaneLayout {
-	background-color: #ffffff; 
+.searchPaneLayout, .white_bg_panel > div {
+	background-color: #ffffff !important; 
 }
 
 .searchBarLayout > div {
@@ -483,3 +483,8 @@
 .headerLabelLayout .v-caption {
 	height: 0px;	
 }
+
+.v-panel-content-section_panel_layout > div {
+	background-color: #f6f6f6;
+}
+

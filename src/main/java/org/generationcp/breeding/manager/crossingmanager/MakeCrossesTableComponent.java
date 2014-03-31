@@ -51,6 +51,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
@@ -84,6 +85,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     @Autowired
     private GermplasmListManager germplasmListManager;
      
+    private Label lblReviewCrosses;
     private Table tableCrossesMade;
     private Label lblCrossMade;
     
@@ -308,9 +310,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void instantiateComponents() {
+		setMargin(true);
 		setSpacing(true);
+		
+		lblReviewCrosses = new Label(messageSource.getMessage(Message.REVIEW_CROSSES));
+		lblReviewCrosses.addStyleName(Bootstrap.Typography.H3.styleName());
+		
 		lblCrossMade = new Label();
-		lblCrossMade.addStyleName(Bootstrap.Typography.H3.styleName());
+		lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
 		lblCrossMade.addStyleName(AppConstants.CssStyles.BOLD);
 		
         totalCrossesLabel = new Label();
@@ -324,8 +331,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private void initializeCrossesMadeTable() {
 		tableCrossesMade = new Table();
-        tableCrossesMade.setWidth("550px");
-        tableCrossesMade.setHeight("420px");
+        tableCrossesMade.setWidth("100%");
+        tableCrossesMade.setHeight("439px");
         tableCrossesMade.setImmediate(true);
         tableCrossesMade.setSelectable(true);    
         tableCrossesMade.setMultiSelect(true);
@@ -343,7 +350,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setColumnHeader(MALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_MALE_PARENT));
         tableCrossesMade.setColumnHeader(SOURCE, "SOURCE");
         
-        tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE, FEMALE_PARENT_COLUMN, MALE_PARENT_COLUMN, SOURCE});
+        tableCrossesMade.setColumnCollapsingAllowed(true);
+        
+        tableCrossesMade.setColumnCollapsed(FEMALE_PARENT_COLUMN, true);
+        tableCrossesMade.setColumnCollapsed(MALE_PARENT_COLUMN, true);
+        tableCrossesMade.setColumnCollapsed(SOURCE, true);
+        
+        //tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE, FEMALE_PARENT_COLUMN, MALE_PARENT_COLUMN, SOURCE});
+        
         tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
 
@@ -367,21 +381,31 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		});
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
 		HorizontalLayout labelContainer = new HorizontalLayout();
         labelContainer.setWidth("100%");
-        
         labelContainer.addComponent(lblCrossMade);
         labelContainer.addComponent(totalCrossesLabel);
         labelContainer.addComponent(saveButton);
-        
         labelContainer.setComponentAlignment(lblCrossMade, Alignment.MIDDLE_LEFT);
         labelContainer.setComponentAlignment(totalCrossesLabel, Alignment.MIDDLE_CENTER);
         labelContainer.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         
-        addComponent(labelContainer);
-        addComponent(tableCrossesMade);
+		VerticalLayout makeCrossesLayout = new VerticalLayout();
+		makeCrossesLayout.setSpacing(true);
+		makeCrossesLayout.setMargin(true);
+        makeCrossesLayout.addComponent(labelContainer);
+        makeCrossesLayout.addComponent(tableCrossesMade);
+		
+        Panel makeCrossesPanel = new Panel();
+        makeCrossesPanel.setWidth("550px");
+        makeCrossesPanel.setLayout(makeCrossesLayout);
+        makeCrossesPanel.addStyleName("section_panel_layout");
+		
+        addComponent(lblReviewCrosses);
+        addComponent(makeCrossesPanel);
 	}
 	
 	private void launchSaveListAsWindow() {

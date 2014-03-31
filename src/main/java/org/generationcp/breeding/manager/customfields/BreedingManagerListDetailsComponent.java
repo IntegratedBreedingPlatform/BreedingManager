@@ -12,7 +12,11 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,9 +50,13 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private ListTypeField listTypeField;
 	private ListDateField listDateField;
 	private ListNotesField listNotesField;
+	private ListOwnerField listOwnerField;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+    private UserDataManager userDataManager;
 	
 	private GermplasmList germplasmList;
 	
@@ -81,7 +89,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeField = new ListTypeField(messageSource.getMessage(Message.LIST_TYPE), true);
 		listDateField = new ListDateField(messageSource.getMessage(Message.LIST_DATE), true);
 		listNotesField = new ListNotesField(messageSource.getMessage(Message.NOTES), false);
+		listOwnerField = new ListOwnerField(messageSource.getMessage(Message.LIST_OWNER_LABEL), false);
 	}
+	
 	@Override
 	public void initializeValues() {
 		if(germplasmList != null){
@@ -104,8 +114,11 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             }
             
 			listNotesField.setValue(germplasmList.getNotes());
+			
+			listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
 		}
 	}
+	
 	@Override
 	public void addListeners() {
 		// TODO Auto-generated method stub
@@ -119,6 +132,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		containerLayout.setMargin(true);
 		containerLayout.addComponent(indicatesMandatoryLabel);
 		containerLayout.addComponent(listNameField);
+		containerLayout.addComponent(listOwnerField);
 		containerLayout.addComponent(listDescriptionField);
 		containerLayout.addComponent(listTypeField);
 		containerLayout.addComponent(listDateField);
@@ -126,9 +140,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		containerPanel = new Panel();
 		containerPanel.setWidth("345px");
-		containerPanel.setHeight("283px");
+		containerPanel.setHeight("315px");
 		containerPanel.setContent(containerLayout);
-		
 		
 		setSpacing(true);
 		
@@ -296,4 +309,25 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public Panel getContainerPanel(){
 		return containerPanel;
 	}
+	
+	private String getOwnerListName(Integer userId) {
+		try{
+	        User user=userDataManager.getUserById(userId);
+	        if(user != null){
+	            int personId=user.getPersonid();
+	            Person p =userDataManager.getPersonById(personId);
+	    
+	            if(p!=null){
+	                return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+	            }else{
+	                return user.getName();
+	            }
+	        } else {
+	            return "";
+	        }
+		} catch(MiddlewareQueryException ex){
+			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
+			return "";
+		}
+    }
 }

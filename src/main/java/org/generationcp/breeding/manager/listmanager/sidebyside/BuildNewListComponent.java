@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +8,8 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -42,10 +43,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class BuildNewListComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout {
+public class BuildNewListComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
     
@@ -75,8 +77,10 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     //Components
     private Label buildNewListTitle;
     private Label buildNewListDesc;
+    private Label dragInstructionLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
+    private Button editHeaderButton;
     private Button toolsButton;
     private Button saveButton;
     private Button resetButton;
@@ -94,8 +98,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     //For Saving
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
+    private GermplasmList currentlySetGermplasmInfo;
     private boolean changed = false;
-    private Integer saveInListId;    
     
     private AddColumnContextMenu addColumnContextMenu;
     
@@ -110,6 +114,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
+        this.currentlySetGermplasmInfo = null;
     }
 
     @Override
@@ -129,6 +134,12 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         buildNewListDesc = new Label();
         buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
         buildNewListDesc.setWidth("300px");
+        
+        dragInstructionLabel = new Label(messageSource.getMessage(Message.BUILD_LIST_DRAG_INSTRUCTIONS));
+        
+        editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
+        editHeaderButton.setImmediate(true);
+        editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
@@ -178,8 +189,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void addListeners() {
 		menu.addListener(new ContextMenu.ClickListener() {
-
-            private static final long serialVersionUID = -2331333436994090161L;
+			private static final long serialVersionUID = -2331333436994090161L;
 
             @Override
             public void contextItemClick(ClickEvent event) {
@@ -201,8 +211,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         });
 		
 		toolsButton.addListener(new ClickListener() {
-
-            private static final long serialVersionUID = 1345004576139547723L;
+			private static final long serialVersionUID = 1345004576139547723L;
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -213,8 +222,29 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             }
          });
 		
+		editHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = -6306973449416812850L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openSaveListAsDialog();
+			}
+		});
+		
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
+		
+		saveButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 7449465533478658983L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(currentlySetGermplasmInfo == null){
+					openSaveListAsDialog();
+				}
+			}
+		});
+		
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 	}
 
@@ -234,14 +264,29 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         instructionLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         
         this.addComponent(instructionLayout);
-        this.addComponent(breedingManagerListDetailsComponent);
         
-        this.addComponent(toolsButton);
-        this.setComponentAlignment(toolsButton, Alignment.BOTTOM_RIGHT);
-        this.addComponent(menu);
+        VerticalLayout listDataTableLayout = new VerticalLayout();
+        listDataTableLayout.setSpacing(true);
+        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.addComponent(dragInstructionLabel);
         
-        this.addComponent(tableWithSelectAllLayout);
+        HorizontalLayout toolsAndEditHeaderLayout = new HorizontalLayout();
+        toolsAndEditHeaderLayout.setSpacing(true);
+        toolsAndEditHeaderLayout.setWidth("365px");
+        toolsAndEditHeaderLayout.addComponent(editHeaderButton);
+        toolsAndEditHeaderLayout.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
+        toolsAndEditHeaderLayout.addComponent(toolsButton);
+        toolsAndEditHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+        
+        listDataTableLayout.addComponent(toolsAndEditHeaderLayout);
+        
+        listDataTableLayout.addComponent(tableWithSelectAllLayout);
+        
+        this.addComponent(listDataTableLayout);
+        
         this.addComponent(resetButton);
+        
+        this.addComponent(menu);
 	}
     
     public void createGermplasmTable(final Table table){
@@ -354,22 +399,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		resetList(); //reset list before placing new one
 		
 		buildNewListTitle.setValue(messageSource.getMessage(Message.EDIT_LIST));
-		breedingManagerListDetailsComponent.setGermplasmListDetails(germplasmList);
-		breedingManagerListDetailsComponent.getListNameField().getListNameTextField().focus();
 		
 		currentlySavedGermplasmList = germplasmList;
+		currentlySetGermplasmInfo = germplasmList;
 		
-		//TO DO Update the Parent of the germplamsList, for now just used the current value of germplasmList.getParent()
-		saveInListId = currentlySavedGermplasmList.getParentId();
-		
-		this.tableWithSelectAllLayout.getTable().removeAllItems();		
-        dropHandler.addGermplasmList(germplasmList.getId());
+		dropHandler.addGermplasmList(germplasmList.getId());
         
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
-        
-	}
+    }
 	
 	public void resetList(){
 		
@@ -384,6 +423,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 		//Clear flag, this is used for saving logic (to save new list or update)
 		setCurrentlySavedGermplasmList(null);
+		currentlySetGermplasmInfo = null;
 
 		//Rename the Build New List Header
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
@@ -403,6 +443,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
 	public void resetGermplasmTable(){
+		/**
 		this.removeComponent(tableWithSelectAllLayout);
 		this.removeComponent(resetButton);
 		
@@ -411,49 +452,24 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         this.addComponent(tableWithSelectAllLayout);
 		this.addComponent(resetButton);
+		**/
+		tableWithSelectAllLayout.getTable().removeAllItems();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
-        GermplasmList toreturn = new GermplasmList();
-        
-        //try {
-        //	this.breedingManagerListDetailsComponent.getListNameField().validate();
-        
-	        Object name = this.breedingManagerListDetailsComponent.getListNameField().getValue();
+    	if(currentlySetGermplasmInfo != null){
+	        String name = currentlySetGermplasmInfo.getName();
 	        if(name != null){
-	            toreturn.setName(name.toString().trim());
-	        } else{
-	            toreturn.setName(null);
+	            currentlySetGermplasmInfo.setName(name.trim());
 	        }
 	        
-	    //    this.breedingManagerListDetailsComponent.getListDescriptionField().validate();
-	        
-	        Object description = this.breedingManagerListDetailsComponent.getListDescriptionField().getValue();
+	        String description = currentlySetGermplasmInfo.getDescription();
 	        if(description != null){
-	            toreturn.setDescription(description.toString().trim());
-	        } else{
-	            toreturn.setDescription(null);
+	            currentlySetGermplasmInfo.setDescription(description.trim());
 	        }
-	        
-	    //    breedingManagerListDetailsComponent.getListDateField().validate();
-	        
-	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-	        Object dateValue = this.breedingManagerListDetailsComponent.getListDateField().getValue();
-	        if(dateValue != null){
-	            String sDate = formatter.format(dateValue);
-	            Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
-	            toreturn.setDate(dataLongValue);
-	        } else{
-	            toreturn.setDate(null);
-	        }
-	        
-	        toreturn.setType(this.breedingManagerListDetailsComponent.getListTypeField().getValue().toString());
-	        toreturn.setNotes(this.breedingManagerListDetailsComponent.getListNotesField().getValue().toString());
-	        return toreturn;
+    	}
         
-        //} catch(InvalidValueException e) {
-        //	return null;
-        //}
+        return currentlySetGermplasmInfo;
     }
     
     public List<GermplasmListData> getListEntriesFromTable(){
@@ -555,14 +571,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     	return source;
     }
     
-    public Integer getSaveInListId(){
-    	return saveInListId;
-    }
-    
-    public void setSaveInListId(Integer saveInListId){
-    	this.saveInListId = saveInListId;
-    }
-    
     public AddColumnContextMenu getAddColumnContextMenu(){
     	return addColumnContextMenu;
     }
@@ -587,6 +595,20 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		this.breedingManagerListDetailsComponent.setChanged(changed);
 		
 		//TO DO mark the changes in germplasmListDataTable during fill with functions
+	}
+	
+	public void openSaveListAsDialog(){
+		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.getWindow().addWindow(dialog);
+	}
+
+	/**
+	 * This method is called by the SaveListAsDialog window displayed when Edit Header button is clicked.
+	 */
+	@Override
+	public void saveList(GermplasmList list) {
+		currentlySetGermplasmInfo = list;
+		saveListButtonListener.doSaveAction();
 	}
     
 }

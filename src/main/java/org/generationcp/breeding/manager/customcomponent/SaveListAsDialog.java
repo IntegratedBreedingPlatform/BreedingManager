@@ -47,6 +47,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private Button cancelButton;
 	private Button saveButton;
 	
+	private String windowCaption;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -60,6 +62,13 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList){
 		this.source = source;
 		this.germplasmList = germplasmList;
+		this.windowCaption = null;
+	}
+	
+	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList, String windowCaption){
+		this.source = source;
+		this.germplasmList = germplasmList;
+		this.windowCaption = windowCaption;
 	}
 	
 	@Override
@@ -72,7 +81,12 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	@Override
 	public void instantiateComponents() {
-		setCaption(messageSource.getMessage(Message.SAVE_LIST_AS));
+		if(windowCaption == null){
+			setCaption(messageSource.getMessage(Message.SAVE_LIST_AS));
+		} else{
+			setCaption(windowCaption);
+		}
+		
 		addStyleName(Reindeer.WINDOW_LIGHT);
 		setResizable(false);
 		setModal(true);
@@ -132,7 +146,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	@Override
 	public void layoutComponents() {
 		setWidth("625px");
-		setHeight("461px");
+		setHeight("493px");
 		
 		contentLayout = new HorizontalLayout();
 		contentLayout.setSpacing(true);
@@ -151,7 +165,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 		
 		mainLayout = new VerticalLayout();
-		mainLayout.setHeight("364px");
+		mainLayout.setHeight("396px");
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
 		

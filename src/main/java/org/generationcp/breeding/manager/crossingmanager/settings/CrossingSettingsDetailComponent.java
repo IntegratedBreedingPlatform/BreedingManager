@@ -146,7 +146,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("850px");
-		setHeight("800px");
+		setHeight("730px");
 		
 		addComponent(defineSettingComponent, "top:7px; left: 10px");
 		addComponent(methodComponent, "top:100px; left:10px");
