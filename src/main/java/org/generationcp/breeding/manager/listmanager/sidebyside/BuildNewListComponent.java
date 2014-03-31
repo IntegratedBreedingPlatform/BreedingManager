@@ -360,6 +360,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		currentlySavedGermplasmList = germplasmList;
 		
 		//TO DO Update the Parent of the germplamsList, for now just used the current value of germplasmList.getParent()
+		saveInListId = currentlySavedGermplasmList.getParentId();
+		
 		this.tableWithSelectAllLayout.getTable().removeAllItems();		
         dropHandler.addGermplasmList(germplasmList.getId());
         
