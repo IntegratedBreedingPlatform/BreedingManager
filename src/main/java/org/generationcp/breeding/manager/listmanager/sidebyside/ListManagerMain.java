@@ -302,6 +302,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 		browseListsComponent.getListDetailsLayout().renameTab(list.getId(), newName);
 		searchListsComponent.getListManagerDetailsLayout().renameTab(list.getId(), newName);
 	}
+	
+	public void removeListTab(GermplasmList list) {
+		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
+		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());
+	}
 
 	@Override
 	public void openListDetails(GermplasmList list) {

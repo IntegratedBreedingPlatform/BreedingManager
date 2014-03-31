@@ -116,6 +116,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
+        this.currentlySetGermplasmInfo = null;
     }
 
     @Override
@@ -234,6 +235,18 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
+		
+		saveButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 7449465533478658983L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(currentlySetGermplasmInfo == null){
+					openSaveListAsDialog();
+				}
+			}
+		});
+		
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 	}
 
@@ -418,6 +431,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 		//Clear flag, this is used for saving logic (to save new list or update)
 		setCurrentlySavedGermplasmList(null);
+		currentlySetGermplasmInfo = null;
 
 		//Rename the Build New List Header
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
@@ -448,15 +462,17 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
-        String name = currentlySetGermplasmInfo.getName();
-        if(name != null){
-            currentlySetGermplasmInfo.setName(name.trim());
-        }
-        
-        String description = currentlySetGermplasmInfo.getDescription();
-        if(description != null){
-            currentlySetGermplasmInfo.setDescription(description.trim());
-        } 
+    	if(currentlySetGermplasmInfo != null){
+	        String name = currentlySetGermplasmInfo.getName();
+	        if(name != null){
+	            currentlySetGermplasmInfo.setName(name.trim());
+	        }
+	        
+	        String description = currentlySetGermplasmInfo.getDescription();
+	        if(description != null){
+	            currentlySetGermplasmInfo.setDescription(description.trim());
+	        }
+    	}
         
         return currentlySetGermplasmInfo;
     }

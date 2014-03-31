@@ -67,6 +67,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	public void doSaveAction(){
 		GermplasmList currentlySavedList = this.source.getCurrentlySavedGermplasmList();
 		GermplasmList listToSave = this.source.getCurrentlySetGermplasmListInfo();
+		
+		if(listToSave == null){
+			return;
+		}
 		List<GermplasmListData> listEntries = this.source.getListEntriesFromTable();
 		
 		if(listEntries.isEmpty()){
@@ -216,6 +220,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
 				, 3000, Notification.POSITION_CENTERED);
+		
+		((ListManagerMain) this.source.getSource()).removeListTab(currentlySavedList);
 	}
 	
 	private void saveListDataColumns(GermplasmList listToSave) {
