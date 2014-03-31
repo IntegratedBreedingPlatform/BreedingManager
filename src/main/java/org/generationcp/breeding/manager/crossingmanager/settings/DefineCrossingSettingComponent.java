@@ -5,6 +5,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -79,8 +80,8 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 
 	@Override
 	public void instantiateComponents() {
-		defineCrossingSettingsLabel =  new Label("<b>" +messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS) 
-				+ "</b>", Label.CONTENT_XHTML);
+		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
+		defineCrossingSettingsLabel.setWidth("175px");
 		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		mandatoryFieldLabel =  new Label("<i>" +messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD) 
@@ -164,7 +165,8 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 
 	@Override
 	public void layoutComponents() {
-		addComponent(defineCrossingSettingsLabel, "top:0px; left:0px");
+		HeaderLabelLayout manageGermplasmHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, defineCrossingSettingsLabel);
+		addComponent(manageGermplasmHeader, "top:0px; left:0px");
 		addComponent(mandatoryFieldLabel, "top:30px; left:0px");
 		
 		addComponent(usePreviouslySavedSettingLabel, "top:60px; left:0px");

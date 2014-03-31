@@ -85,7 +85,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("1100px");
+		tabSheet.setHeight("740px");
 		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		
@@ -145,6 +145,13 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
 		if (tab != null){
 			tabSheet.setSelectedTab(tab.getComponent());
+		}
+		
+		if(step == 0){
+			tabSheet.setHeight("740px");
+		}
+		else if(step == 1){
+			tabSheet.setHeight("1100px");
 		}
 	}
 
