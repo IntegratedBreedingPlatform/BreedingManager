@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -34,6 +36,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class BuildNewListDropHandler implements DropHandler {
@@ -111,6 +115,8 @@ public class BuildNewListDropHandler implements DropHandler {
 					
 		//If source is from tree
 		} else {
+			Transferable transferable = (Transferable) event.getTransferable();
+			addGermplasmList((Integer) transferable.getData("itemId"));
 		}
 	}
 
@@ -150,6 +156,8 @@ public class BuildNewListDropHandler implements DropHandler {
 			if(germplasmListData == null){
 				germplasmListData = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Integer.MAX_VALUE);
 			}
+			
+		    Collections.reverse(germplasmListData);
 			
 			for(GermplasmListData listData : germplasmListData){
 				addGermplasmFromList(listId, listData.getId(), germplasmList);
