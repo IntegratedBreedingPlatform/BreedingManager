@@ -132,7 +132,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	@Override
 	public void layoutComponents() {
 		setWidth("625px");
-		setHeight("461px");
+		setHeight("493px");
 		
 		contentLayout = new HorizontalLayout();
 		contentLayout.setSpacing(true);
@@ -151,7 +151,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 		
 		mainLayout = new VerticalLayout();
-		mainLayout.setHeight("364px");
+		mainLayout.setHeight("396px");
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
 		
