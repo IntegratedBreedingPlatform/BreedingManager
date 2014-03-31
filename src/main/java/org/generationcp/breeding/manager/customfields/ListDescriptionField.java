@@ -5,6 +5,8 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.HorizontalLayout;
@@ -22,10 +24,12 @@ public class ListDescriptionField extends HorizontalLayout
 	private TextArea descriptionTextArea;
 	private boolean isMandatory;
 	private Label mandatoryMark;
+	private boolean changed;
 	
 	public ListDescriptionField(String caption, boolean isMandatory){
 		this.isMandatory = isMandatory;
 		this.caption = caption + ": ";
+		this.changed = false;
 	}
 	
 	@Override
@@ -39,12 +43,10 @@ public class ListDescriptionField extends HorizontalLayout
 		descriptionTextArea.setHeight("35px");
 		descriptionTextArea.setImmediate(true);
 		descriptionTextArea.addValidator(new StringLengthValidator(
-                "List Description must not exceed 255 characters.", 1, 255, false)); 
+                "List Description must not exceed 255 characters.", 1, 255, false));
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			descriptionTextArea.setRequired(true);
 			descriptionTextArea.setRequiredError("Please specify the description of the list.");
@@ -59,8 +61,15 @@ public class ListDescriptionField extends HorizontalLayout
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		descriptionTextArea.addListener(new Property.ValueChangeListener(){
+            
+            private static final long serialVersionUID = 2323698194362809907L;
+
+            public void valueChange(ValueChangeEvent event) {
+                changed = true;
+            }
+            
+        });
 	}
 
 	@Override
@@ -110,4 +119,12 @@ public class ListDescriptionField extends HorizontalLayout
 		descriptionTextArea.validate();
 	}
 	
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
+
 }

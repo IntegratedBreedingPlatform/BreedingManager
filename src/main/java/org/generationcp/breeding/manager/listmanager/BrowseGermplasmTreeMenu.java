@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
+@Deprecated
 @Configurable
 public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		InitializingBean, InternationalizableComponent {
@@ -46,7 +47,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 	
     private GermplasmQueries qQuery;
     private GermplasmDetailModel gDetailModel;
-    private GermplasmDetailsComponent basicDetailsComponent;
+    private GermplasmHeaderInfoComponent basicDetailsComponent;
     private GermplasmPedigreeComponent pedigreeComponent;
     private GermplasmAttributesComponent germplasmAttributesComponent;
     private ListManagerMain listManagerMain;
@@ -78,7 +79,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		qQuery = new GermplasmQueries();
 		gDetailModel = qQuery.getGermplasmDetails(this.germplasmId);
 		
-		basicDetailsComponent = new GermplasmDetailsComponent(gDetailModel);
+		basicDetailsComponent = new GermplasmHeaderInfoComponent(gDetailModel);
 		pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
 		germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel);
 		

@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -30,6 +33,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private ComboBox listTypeComboBox;
 	private boolean isMandatory;
 	private Label mandatoryMark;
+	private final String DEFAULT_LIST_TYPE = "LST"; 
+	private boolean changed;
 	
 	@Autowired
     private GermplasmListManager germplasmListManager;
@@ -37,6 +42,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public ListTypeField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
+		this.changed = false;
 	}
 	@Override
 	public void instantiateComponents() {
@@ -48,9 +54,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeComboBox.setImmediate(true);
 		
 		if(isMandatory){
-			mandatoryMark = new Label("* ");
-			mandatoryMark.setWidth("5px");
-			mandatoryMark.addStyleName("marked_mandatory");
+			mandatoryMark = new MandatoryMarkLabel();
 			
 			listTypeComboBox.setRequired(true);
 			listTypeComboBox.setRequiredError("Please specify the type of the list.");
@@ -73,19 +77,28 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         
         for (UserDefinedField listType : listTypes) {
             String typeCode = listType.getFcode();
-            selectType.addItem(typeCode);
-            selectType.setItemCaption(typeCode, listType.getFname());
-            //set "Germplasm List" as the default value
-            if ("LST".equals(typeCode)) {
-                selectType.setValue(typeCode);
+            if (!AppConstants.DB.FOLDER.equals(typeCode)){
+            	selectType.addItem(typeCode);
+            	selectType.setItemCaption(typeCode, listType.getFname());
+            	//set "Germplasm List" as the default value
+            	if (DEFAULT_LIST_TYPE.equals(typeCode)) {
+            		selectType.setValue(typeCode);
+            	}
             }
         }
     }
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		listTypeComboBox.addListener(new Property.ValueChangeListener(){
+            
+            private static final long serialVersionUID = 2323698194362809907L;
+
+            public void valueChange(ValueChangeEvent event) {
+                changed = true;
+            }
+            
+        });
 	}
 
 	@Override
@@ -131,7 +144,20 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		return listTypeComboBox.getValue();
 	}
 	
+	public String getDEFAULT_LIST_TYPE() {
+		return DEFAULT_LIST_TYPE;
+	}
+	
 	public void validate() throws InvalidValueException {
 		listTypeComboBox.validate();
 	}
+	
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
+	
 }

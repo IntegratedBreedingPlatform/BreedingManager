@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.customfields;
+package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.Collection;
 

@@ -143,12 +143,14 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		additionalDetailsSectionTitle.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		harvestDateLabel = new Label();
+		harvestDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         harvestDtDateField = new BreedingManagerDateField(
         		messageSource.getMessage(Message.HARVEST_DATE));
         harvestDtDateField.setWidth("240px");
         
         harvestLocationLabel = new Label();
+        harvestLocationLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         harvestLocComboBox = new ComboBox();
         harvestLocComboBox.setWidth("240px");

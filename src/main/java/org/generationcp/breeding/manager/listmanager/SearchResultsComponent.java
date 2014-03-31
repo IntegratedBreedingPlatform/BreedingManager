@@ -1,13 +1,18 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -31,21 +36,24 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class SearchResultsComponent extends AbsoluteLayout implements
-		InitializingBean, InternationalizableComponent {
+		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
 	private Label matchingListsLabel;
 	private Label matchingListsDescription;
 	private Table matchingListsTable;
+	private TableWithSelectAllLayout matchingListsTableWithSelectAll;
 	
 	private Label matchingGermplasmsLabel;
 	private Label matchingGermplasmsDescription;
 	private Table matchingGermplasmsTable;
+	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
 	
 	private static final String CHECKBOX_COLUMN_ID = "Tag All Column";
 	
@@ -55,15 +63,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
-	private ListManagerDetailsLayout displayDetailsLayout;
-	private ListManagerMain listManagerMain;
-	private AbsoluteLayout parentLayout;
-	
-	private CheckBox matchingListsTagAllCheckBox;
-	private CheckBox matchingGermplasmsTagAllCheckBox;
-	
-	private boolean matchingListsTagAllWasJustClicked = false;
-	private boolean matchingGermplasmsTagAllWasJustClicked = false;
+	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout;
+	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -71,45 +72,46 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 	
-	
-	public SearchResultsComponent(ListManagerMain listManagerMain, AbsoluteLayout parentLayout){
+	public SearchResultsComponent(ListManagerMain listManagerMain, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout){
 		this.listManagerMain = listManagerMain;
-		this.parentLayout = parentLayout;
+		this.displayDetailsLayout = displayDetailsLayout;
 	}
+	
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		displayDetailsLayout = new ListManagerDetailsLayout(this.listManagerMain, this.parentLayout, true);
-		
+		instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+	}
+	
+	@Override
+	public void instantiateComponents() {
 		matchingListsLabel = new Label();
+		matchingListsLabel.setWidth("250px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
 		matchingListsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
 		
 		matchingListsDescription = new Label();
 		matchingListsDescription.setValue(messageSource.getMessage(Message.SELECT_A_LIST_TO_VIEW_THE_DETAILS));
 		
-		matchingListsTable = new Table();
+		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5, CHECKBOX_COLUMN_ID);
+		matchingListsTable = matchingListsTableWithSelectAll.getTable();
 		matchingListsTable.setData(MATCHING_LISTS_TABLE_DATA);
 		matchingListsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class, null);
 		matchingListsTable.setWidth("350px");
-		matchingListsTable.setHeight("120px");
-		
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
+		matchingListsTable.setDragMode(TableDragMode.ROW);
 		matchingListsTable.addListener(new SearchResultsItemClickListener(MATCHING_LISTS_TABLE_DATA, displayDetailsLayout));
-		matchingListsTable.addListener(new Table.ValueChangeListener() {
-			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				 syncItemCheckBoxes(matchingListsTable);
-			 }
-		 });		
-		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID, Message.TAG);
+		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
@@ -118,24 +120,20 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsDescription = new Label();
 		matchingGermplasmsDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 		
-		matchingGermplasmsTable = new Table();
+		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
+		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.setWidth("350px");
-		matchingGermplasmsTable.setHeight("120px");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
+		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
 		matchingGermplasmsTable.addListener(new SearchResultsItemClickListener(MATCHING_GEMRPLASMS_TABLE_DATA, displayDetailsLayout));
-		matchingGermplasmsTable.addListener(new Table.ValueChangeListener() {
-			 public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				 syncItemCheckBoxes(matchingGermplasmsTable);
-			 }
-		 });
-		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.TAG);
+		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 			private static final long serialVersionUID = 1L;
@@ -151,76 +149,50 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 				}
 			}
         });
-		
-		matchingGermplasmsTable.addActionHandler(new Action.Handler() {
-       	 private static final long serialVersionUID = -897257270314381555L;
 
-			public Action[] getActions(Object target, Object sender) {
-				return GERMPLASMS_TABLE_CONTEXT_MENU;
-            }
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-             	if (ACTION_COPY_TO_NEW_LIST == action) {
-             		listManagerMain.showBuildNewListComponent();
-             		List<Integer> gids = new ArrayList<Integer>();
-             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
-             		for(Integer gid : gids){
-             			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(gid, null);
-             		}
-             	}
-			}
-		});
-
-		matchingListsTagAllCheckBox = new CheckBox();
-		matchingListsTagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
-		matchingListsTagAllCheckBox.setImmediate(true);
-		matchingListsTagAllCheckBox.addListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				if(((Boolean) matchingListsTagAllCheckBox.getValue()).equals(true)){
-					matchingListsTagAllWasJustClicked = true;
-					matchingListsTable.setValue(matchingListsTable.getItemIds());
-				} else {
-					matchingListsTagAllWasJustClicked = false;
-					matchingListsTable.setValue(null);
-				}
-			}
-			 
-		 });
-
-		matchingGermplasmsTagAllCheckBox = new CheckBox();
-		matchingGermplasmsTagAllCheckBox.setCaption(messageSource.getMessage(Message.SELECT_ALL));
-		matchingGermplasmsTagAllCheckBox.setImmediate(true);
-		matchingGermplasmsTagAllCheckBox.setStyleName(Bootstrap.Buttons.INFO.styleName());
-		matchingGermplasmsTagAllCheckBox.addListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				if(((Boolean) matchingGermplasmsTagAllCheckBox.getValue()).equals(true)){
-					matchingGermplasmsTagAllWasJustClicked = true;
-					matchingGermplasmsTable.setValue(matchingGermplasmsTable.getItemIds());
-				} else {
-					matchingGermplasmsTagAllWasJustClicked = false;
-					matchingGermplasmsTable.setValue(null);
-				}
-			}
-			 
-		 });
-		
-		addComponent(matchingListsLabel, "top:0px; left:0px;");
-		addComponent(matchingListsDescription, "top:23px; left:0px;");
-		addComponent(matchingListsTable, "top:40px; left:0px;");
-		addComponent(matchingListsTagAllCheckBox, "top:165px; left:0px;");
-		
-		addComponent(matchingGermplasmsLabel, "top:190px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:213px; left:0px;");
-		addComponent(matchingGermplasmsTable, "top:230px; left:0px;");
-		addComponent(matchingGermplasmsTagAllCheckBox, "top:355px; left:0px;");
 	}
 
+	@Override
+	public void initializeValues() {
+		
+	}
+
+	@Override
+	public void addListeners() {
+		matchingGermplasmsTable.addActionHandler(new Action.Handler() {
+	       	 private static final long serialVersionUID = -897257270314381555L;
+
+				public Action[] getActions(Object target, Object sender) {
+					return GERMPLASMS_TABLE_CONTEXT_MENU;
+	            }
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public void handleAction(Action action, Object sender, Object target) {
+	             	if (ACTION_COPY_TO_NEW_LIST == action) {
+	             		listManagerMain.showBuildNewListComponent();
+	             		List<Integer> gids = new ArrayList<Integer>();
+	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
+	             		for(Integer gid : gids){
+	             			listManagerMain.addGermplasmToBuildNewListTable(gid);
+	             		}
+	             	}
+				}
+			});
+	}
+
+	@Override
+	public void layoutComponents() {
+		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,matchingListsLabel);
+		addComponent(matchingListsHeader, "top:0px; left:0px;");
+		addComponent(matchingListsDescription, "top:23px; left:0px;");
+		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
+		
+		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
+		addComponent(matchingGermplasmsHeader, "top:257px; left:0px;");
+		addComponent(matchingGermplasmsDescription, "top:280px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:297px; left:0px;");
+	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": "+String.valueOf(germplasmLists.size()));
@@ -232,8 +204,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
             itemCheckBox.setImmediate(true);
 	   		itemCheckBox.addListener(new ClickListener() {
 	 			private static final long serialVersionUID = 1L;
-	 			@SuppressWarnings("unchecked")
-				@Override
+	 			@Override
 	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
 	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
@@ -274,8 +245,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
             itemCheckBox.setImmediate(true);
 	   		itemCheckBox.addListener(new ClickListener() {
 	 			private static final long serialVersionUID = 1L;
-	 			@SuppressWarnings("unchecked")
-				@Override
+	 			@Override
 	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
 	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
@@ -347,8 +317,12 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     public Table getMatchingListsTable(){
     	return matchingListsTable;
     }    
-
     
+    public ListManagerDetailsLayout getListManagerDetailsLayout(){
+    	return this.displayDetailsLayout;
+    }
+	
+    /**
     private void syncItemCheckBoxes(Table table){
     	List<Integer> itemIds = getItemIds(table);
     	for(Integer itemId : itemIds){
@@ -376,11 +350,12 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     		}
     		matchingListsTagAllWasJustClicked = false;
     	}
-    }
+    }**/
     
 	/**
 	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
 	 */
+    /**
 	@SuppressWarnings("unchecked")
 	private List<Integer> getSelectedItemIds(Table table){
 		List<Integer> itemIds = new ArrayList<Integer>();
@@ -397,21 +372,22 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	}
     	
     	return trueOrderedSelectedItemIds;
-    }
+    }**/
     
 	/**
 	 * Get item id's of a table, and return it as a list 
 	 * @param table
 	 * @return
 	 */
+    /**
 	@SuppressWarnings("unchecked")
 	private List<Integer> getItemIds(Table table){
 		List<Integer> itemIds = new ArrayList<Integer>();
     	itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
     	return itemIds;
-	}
+	}**/
 
-	
+	/**
     private int getTotalWidth(Table table){
     	int totalWidth = 0;
     	List<Object> visibleColumnIds = new ArrayList<Object>();
@@ -421,9 +397,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	}
     	return totalWidth;
     }
-    
-    public ListManagerDetailsLayout getListManagerDetailsLayout(){
-    	return this.displayDetailsLayout;
-    }
-    
+    **/
+        
 }

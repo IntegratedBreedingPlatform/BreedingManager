@@ -83,6 +83,8 @@ public class SaveCrossesMadeAction implements Serializable {
     private GermplasmList germplasmList;
     private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
     private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
+    private Map<Germplasm, GermplasmListData> germplasmToListDataMap = new LinkedHashMap<Germplasm, GermplasmListData>();
+    
     
     private List<Integer> indicesOfAddedCrosses = new ArrayList<Integer>();
     private List<Integer> indicesOfRetainedCrosses = new ArrayList<Integer>();
@@ -176,12 +178,22 @@ public class SaveCrossesMadeAction implements Serializable {
 	
 	
 	private void retrieveGermplasmsOfList() throws MiddlewareQueryException {
+		germplasmToListDataMap.clear();
 		this.existingListEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+		
 		List<Integer> gids = new ArrayList<Integer>();
 		for (GermplasmListData entry : existingListEntries){
 			gids.add(entry.getGid());
 		}
 		this.existingGermplasms = this.germplasmManager.getGermplasms(gids);
+		
+		for (Germplasm germplasm : this.existingGermplasms){
+			for (GermplasmListData entry : this.existingListEntries){
+				if (entry.getGid().equals(germplasm.getGid())){
+					germplasmToListDataMap.put(germplasm, entry);
+				}
+			}
+		}
 	}
 	
 	private boolean haveSameParents(Germplasm g1, Germplasm g2){
@@ -345,8 +357,9 @@ public class SaveCrossesMadeAction implements Serializable {
     		currentGermplasm.setGpid2(parents.getMaleParent().getGid());
     		
     		for (int i=0; i<existingGermplasms.size(); i++){
-    			if (haveSameParents(currentGermplasm, existingGermplasms.get(i))){
-    				GermplasmListData germplasmListData = this.existingListEntries.get(i);
+    			Germplasm existingGermplasm = existingGermplasms.get(i);
+				if (haveSameParents(currentGermplasm, existingGermplasm)){
+    				GermplasmListData germplasmListData = germplasmToListDataMap.get(existingGermplasm);
     				if (germplasmListData != null){
     					germplasmListData.setSeedSource(parents.getSeedSource());
     				}

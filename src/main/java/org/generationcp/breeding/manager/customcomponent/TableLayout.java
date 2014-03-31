@@ -1,6 +1,7 @@
-package org.generationcp.breeding.manager.customfields;
+package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -69,7 +70,7 @@ public class TableLayout extends VerticalLayout implements
 	}
 	
 	protected boolean doHideEmptyTable(){
-		return true;
+		return false;
 	}
 	
 	public Table getTable(){

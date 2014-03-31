@@ -95,6 +95,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class ListDataComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, AddEntryDialogSource  {
 
@@ -177,7 +178,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private Label totalListEntries;
 
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();      
-	private final HashMap<Field,Object> itemIds = new HashMap<Field,Object>();
 	
 	private Window listManagerCopyToNewListDialog;
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
@@ -246,7 +246,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
 			    	  exportListForGenotypingOrderAction();
 			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
-			    	  copyToNewListAction();
+			    	  //copyToNewListAction();
 			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
 			    	  addEntryButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
@@ -609,8 +609,6 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 		            fields.put(itemId, itemMap);
 		        }
 		        itemMap.put(propertyId, tf);
-		        
-		        itemIds.put(tf, itemId);
 		        
 		        tf.setReadOnly(true);
 		        
@@ -1151,6 +1149,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     	
     } // end of removeRowsinListDataTable
     
+    //TODO review this method as there are redundant codes here that is also in saveChangesAction()
+    //might be possible to eliminate this method altogether and reduce the number of middleware calls
     private void performListEntriesDeletion(Map<Object, String> itemsToDelete){    	
 		try {
             if(getCurrentUserLocalId()==germplasListUserId) {
@@ -1241,6 +1241,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         , Notification.POSITION_CENTERED);
     }
 
+    /*@Deprecated
     public void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
         if (listEntries == null || listEntries.isEmpty()){
@@ -1272,7 +1273,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                 e.printStackTrace();
             }
         }
-    }
+    }*/
     
     public void lockList() throws MiddlewareQueryException{
         germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);

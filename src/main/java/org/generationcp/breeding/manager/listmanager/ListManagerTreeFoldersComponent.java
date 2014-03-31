@@ -21,6 +21,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 
+@Deprecated
 public class ListManagerTreeFoldersComponent extends ListManagerTreeComponent {
 
 	private static final long serialVersionUID = 1L;

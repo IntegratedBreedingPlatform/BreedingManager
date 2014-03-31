@@ -98,11 +98,12 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		settingsComboBox.setImmediate(true);
 		settingsComboBox.setNullSelectionAllowed(true);
 		settingsComboBox.setTextInputAllowed(false);
-		
-		deleteSettingButton = new Button();
-		deleteSettingButton.setIcon(AppConstants.Icons.TRASH_ICON_GRAY_BG);
-		deleteSettingButton.setData(CrossingSettingsDetailComponent.Actions.DELETE);
+			
+		deleteSettingButton = new Button("<span class='glyphicon glyphicon-trash' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+		deleteSettingButton.setHtmlContentAllowed(true);
+		deleteSettingButton.setDescription("Delete Setting");
 		deleteSettingButton.setStyleName(Reindeer.BUTTON_LINK);
+		deleteSettingButton.setWidth("25px");
 	}
 
 	@Override
@@ -169,7 +170,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 		addComponent(usePreviouslySavedSettingLabel, "top:60px; left:0px");
 		addComponent(usePreviousSettingOptionGroup, "top:60px; left:205px");
 		addComponent(settingsComboBox, "top:60px; left:300px");
-		addComponent(deleteSettingButton, "top:60px; left:570px");
+		addComponent(deleteSettingButton, "top:63px; left:570px");
 	}
 	
 	public void setSettingsComboBox(TemplateSetting currentSetting){

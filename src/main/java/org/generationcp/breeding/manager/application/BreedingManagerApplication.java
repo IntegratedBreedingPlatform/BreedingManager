@@ -43,6 +43,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
     public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
     public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
+    public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
     public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
     
     private Window window;
@@ -148,11 +149,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 this.addWindow(nurseryTemplateWindow);
                 return nurseryTemplateWindow;
             } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
-                Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-                listManagerWindow.setName(LIST_MANAGER_WINDOW_NAME);
-                listManagerWindow.setSizeUndefined();
-                listManagerWindow.addComponent(new ListManagerMain());
+            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+                listManagerWindow.setName(name);
+                listManagerWindow.setSizeFull();
+                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
                 this.addWindow(listManagerWindow);
+                listManagerWindow.getContent().setHeight("100%");
                 return listManagerWindow;
             } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
             	String listIdPart = name.substring(name.indexOf("-") + 1);
@@ -160,9 +162,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	            	Integer listId = Integer.parseInt(listIdPart);
 	            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 	                listManagerWindow.setName(name);
-	                listManagerWindow.setSizeUndefined();
-	                listManagerWindow.addComponent(new ListManagerMain(listId));
+	                listManagerWindow.setSizeFull();
+	                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain(listId));
 	                this.addWindow(listManagerWindow);
+	                listManagerWindow.getContent().setHeight("100%");
 	                return listManagerWindow;
             	} catch(NumberFormatException ex){
             		Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
@@ -171,6 +174,17 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                     this.addWindow(emptyGermplasmListDetailsWindow);
                     return emptyGermplasmListDetailsWindow;
             	}
+            } else if (name.equals(LIST_MANAGER_SIDEBYSIDE)){
+                Window listManagerSideBySideWindow = new Window("List Manager (Side-by-side)");
+                listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
+                listManagerSideBySideWindow.setSizeFull();
+                listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
+                this.setMainWindow(listManagerSideBySideWindow);
+                this.getMainWindow().getContent().setHeight("100%");
+                return listManagerSideBySideWindow;
+            }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
+                manageCrossingSettings.setName(MANAGE_SETTINGS_CROSSING_MANAGER);
             }  else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
                 Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
                 manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);

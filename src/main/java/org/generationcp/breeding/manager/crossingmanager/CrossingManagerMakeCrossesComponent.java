@@ -8,13 +8,14 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,7 +35,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout{
+        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ListTreeActionsListener{
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -57,7 +58,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     private MakeCrossesTableComponent crossesTableComponent;
     private Integer lastOpenedListId;
 
-    private ListManagerTreeComponent listTree;
+    private CrossingManagerListTreeComponent listTree;
     private Label selectParentsLabel;
     private Label instructionForSelectParents;
     private TabSheet listDetailsTabSheet;
@@ -198,7 +199,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     	}
     }
 	
-	public void updateUIForDeletedList(String listName){
+	//@Override
+	public void updateUIForDeletedList(GermplasmList list){
+		String listName = list.getName();
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
 			if(tab != null && tab.getCaption().equals(listName)){
@@ -208,7 +211,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 	}
 	
-	public void updateUIForRenamedList(Integer listId, String newName){
+	//@Override
+	public void updateUIForRenamedList(GermplasmList list, String newName){
+		Integer listId = list.getId();
 		String description = ListManagerDetailsLayout.generateTabDescription(listId);
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
@@ -225,7 +230,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     	setHeight("1050px");
         this.setMargin(true, true, true, true);
 
-        listTree = new ListManagerTreeComponent(this);
+        listTree = new CrossingManagerListTreeComponent(this);
         
         selectParentsLabel = new Label("Select Parents");
         selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
@@ -312,9 +317,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	}
 	
 	public void updateCrossesSeedSource(String femaleListName, String maleListName){
-		if (crossesTableComponent.getCrossList() != null){
-			crossesTableComponent.updateSeedSource(femaleListName, maleListName);
-		}
+		crossesTableComponent.updateSeedSource(femaleListName, maleListName);
 	}
 	
 	public CrossingManagerSetting getCurrentCrossingSetting(){
@@ -323,5 +326,10 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	
 	public CrossesMadeContainer getCrossesMadeContainer(){
 		return source;
+	}
+
+	@Override
+	public void openListDetails(GermplasmList list) {
+		createListDetailsTab(list.getId(), list.getName());
 	}
 }

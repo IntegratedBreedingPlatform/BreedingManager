@@ -7,7 +7,7 @@ import java.util.Date;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -35,7 +35,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
-	private Label newListLabel;
+	private Label headerListLabel;
 	private Panel containerPanel;
 	private Label indicatesMandatoryLabel;
 	private VerticalLayout containerLayout;
@@ -71,8 +71,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Override
 	public void instantiateComponents() {
-		newListLabel = new Label(messageSource.getMessage(Message.NEW_LIST_DETAILS));
-		newListLabel.setStyleName(Bootstrap.Typography.H6.styleName());
+		headerListLabel = new Label(messageSource.getMessage(Message.LIST_DETAILS));
+		headerListLabel.setStyleName(Bootstrap.Typography.H6.styleName());
 		
 		indicatesMandatoryLabel = new Label(messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		indicatesMandatoryLabel.addStyleName("italic");
@@ -132,7 +132,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		setSpacing(true);
 		
-		addComponent(this.newListLabel);
+		addComponent(this.headerListLabel);
 		addComponent(containerPanel);
 	}
 	@Override
@@ -177,8 +177,82 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         return list;
 	}
 	
+	public void setGermplasmListDetails(GermplasmList germplasmList){
+		this.germplasmList = germplasmList;
+		
+		listNameField.setValue(germplasmList.getName());
+		
+		resetListNameFieldForExistingList(germplasmList);
+		
+		listDescriptionField.setValue(germplasmList.getDescription());
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+        try {
+            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
+        } catch (ReadOnlyException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        } catch (ConversionException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        } catch (ParseException e) {
+            LOG.error("Error in parsing date field.", e);
+            e.printStackTrace();
+        }
+		
+		listTypeField.setValue(germplasmList.getType());
+		
+		String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
+		listNotesField.setValue(notes);
+	}
+	
+	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
+		ListNameValidator listNameValidator = listNameField.getListNameValidator();
+		listNameValidator.setCurrentListName(germplasmList.getName());
+
+		GermplasmList parentList = germplasmList.getParent();
+		if(parentList != null){
+			listNameValidator.setParentFolder(parentList.getName());
+		}		
+	}
+	
+	public void resetFields() {
+		listNameField.setValue("");
+		listDescriptionField.setValue("");
+		listTypeField.setValue(listTypeField.getDEFAULT_LIST_TYPE());
+		listDateField.setValue(new Date());
+		listNotesField.setValue("");
+		
+		setChanged(false);
+	}
+	
+	public boolean isChanged(){
+		if(listNameField.isChanged() || listDescriptionField.isChanged()
+			|| listTypeField.isChanged() || listDateField.isChanged()
+			|| listNotesField.isChanged() ){
+			return true;
+		}
+		return false;
+	}
+	
+	public void setChanged(boolean changed){
+		//Reset Marked Changes
+		listNameField.setChanged(changed);
+		listDescriptionField.setChanged(changed);
+		listTypeField.setChanged(changed);
+		listDateField.setChanged(changed);
+		listNotesField.setChanged(changed);
+	}
 
 	//SETTERS and GETTERS
+	public Label getHeaderListLabel() {
+		return headerListLabel;
+	}
+
+	public void setHeaderListLabel(String header) {
+		this.headerListLabel.setValue(header);
+	}
+	
 	public ListNameField getListNameField() {
 		return listNameField;
 	}
@@ -218,5 +292,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setListNotesField(ListNotesField listNotesField) {
 		this.listNotesField = listNotesField;
 	}
-	
+
+	public Panel getContainerPanel(){
+		return containerPanel;
+	}
 }

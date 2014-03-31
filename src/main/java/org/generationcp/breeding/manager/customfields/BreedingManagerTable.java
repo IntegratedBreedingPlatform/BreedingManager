@@ -10,6 +10,8 @@ public class BreedingManagerTable extends Table {
 		Integer pageLength = Math.min(recordCount, maxRecords);
 		if (pageLength > 0){
 			setPageLength(pageLength);
+		} else{
+			setPageLength(maxRecords);
 		}
 	}
 	

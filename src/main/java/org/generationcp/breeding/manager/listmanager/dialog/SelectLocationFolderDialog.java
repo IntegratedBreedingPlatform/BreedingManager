@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListNameField;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -26,13 +26,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectLocationFolderDialog extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout{
+public class SelectLocationFolderDialog extends Window implements 
+		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -5502264917037916149L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SelectLocationFolderDialog.class);
 
 	private SelectLocationFolderDialogSource source;
-	private ListManagerTreeComponent germplasmListTree;
+	private LocalListFoldersTreeComponent germplasmListTree;
 	
 	private Button cancelButton;
 	private Button selectLocationButton;
@@ -82,7 +83,7 @@ public class SelectLocationFolderDialog extends Window implements InitializingBe
 		selectLocationButton = new Button(selectBtnCaption);
 		selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 				
-		germplasmListTree = new ListManagerTreeComponent(true, folderId); 
+		germplasmListTree = new LocalListFoldersTreeComponent(folderId); 
 				
 	}
 

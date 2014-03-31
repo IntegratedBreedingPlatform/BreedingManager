@@ -9,7 +9,8 @@ public enum ListDataTablePropertyID {
     ,DESIGNATION("desig")
     ,GROUP_NAME("groupName")
 //    ,STATUS("status")
-    ,PARENTAGE("parentage");
+    ,PARENTAGE("parentage")
+	,TAG("tag");
     
     private String name;
 	

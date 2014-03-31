@@ -15,7 +15,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableC
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
-import org.generationcp.breeding.manager.customfields.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -184,8 +184,12 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         maleParents.addContainerProperty(MALE_PARENTS_LABEL, String.class, null);
+        
+        maleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
+        maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
+        maleParents.setColumnHeader(MALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        
         maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         maleParents.setDragMode(TableDragMode.ROW);
         
@@ -267,8 +271,12 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, "#");
         femaleParents.addContainerProperty(FEMALE_PARENTS_LABEL, String.class, null);
+
+        femaleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
+        femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
+        femaleParents.setColumnHeader(FEMALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        
         femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         femaleParents.setDragMode(TableDragMode.ROW);
         femaleParents.setItemDescriptionGenerator(new ItemDescriptionGenerator() {                             
@@ -439,32 +447,44 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption()));
 	    		
-	    		String seedSource = getSeedSource(sourceTable,entryId);
-	    		
-	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
-	    		Item item = targetTable.addItem(entryObject);
-	    		if(item != null){
-		    		if(targetTable.equals(femaleParents)){
-		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
-		    			this.saveFemaleListButton.setEnabled(true);
-		    		} else{
-		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
-		    			this.saveMaleListButton.setEnabled(true);
-		    		}
+	    		if(!checkIfGIDisInTable(targetTable, gid)){
+		    		String seedSource = getSeedSource(sourceTable,entryId);
 		    		
-		    		CheckBox tag = new CheckBox();
-		    		if(targetTable.equals(femaleParents)){
-		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
-		    		} else{
-		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
-		    		}
-		            tag.setImmediate(true);
-		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-		        }
+		    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
+		    		Item item = targetTable.addItem(entryObject);
+		    		if(item != null){
+			    		if(targetTable.equals(femaleParents)){
+			    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+			    			this.saveFemaleListButton.setEnabled(true);
+			    		} else{
+			    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
+			    			this.saveMaleListButton.setEnabled(true);
+			    		}
+			    		
+			    		CheckBox tag = new CheckBox();
+			    		if(targetTable.equals(femaleParents)){
+			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+			    		} else{
+			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+			    		}
+			            tag.setImmediate(true);
+			            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+			        }
+	    		}
     		}
             
             targetTable.requestRepaint();
         }
+	}
+	
+	private boolean checkIfGIDisInTable(Table targetTable, Integer gid){
+		for(Object itemId : targetTable.getItemIds()){
+			GermplasmListEntry entry = (GermplasmListEntry) itemId;
+			if(gid.equals(entry.getGid())){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -556,6 +576,7 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 		makeCrossesMain.toggleNextButton();
 		
 		makeCrossesMain.selectListInTree(list.getId());
+		makeCrossesMain.updateUIForDeletedList(list);
 		
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 				messageSource.getMessage(parentContainer.getSuccessMessage()));
@@ -640,7 +661,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 	public void updateListDataTable(List<GermplasmListData> savedListEntries) {
 		ParentContainer container = (ParentContainer) saveListAsWindow.getData();
 
-//		if(type == SaveListType.FEMALE){
 			
 		List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
 		Table table = container.getTableWithSelectAll().getTable();
@@ -656,7 +676,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 			CheckBox tag = new CheckBox();
 			newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 			
-			tag.setValue(true);
 			tag.addListener(new ParentsTableCheckboxListener(table, itemId, container.getTableWithSelectAll().getCheckBox()));
             tag.setImmediate(true);
             

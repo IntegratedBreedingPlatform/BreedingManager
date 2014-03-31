@@ -12,9 +12,7 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
@@ -32,10 +30,9 @@ public class GermplasmListTreeCollapseListener implements Tree.CollapseListener{
 
 	@Override
 	public void nodeCollapse(CollapseEvent event) {
-        if (source instanceof ListManagerTreeComponent) {
-    		((ListManagerTreeComponent) source).getGermplasmListTree().select(event.getItemId());
-       		((ListManagerTreeComponent) source).getGermplasmListTree().setValue(event.getItemId());
-       		((ListManagerTreeComponent) source).updateButtons(event.getItemId());
+        if (source instanceof ListTreeComponent) {
+    		((ListTreeComponent) source).setSelectedListId(event.getItemId());
+       		((ListTreeComponent) source).updateButtons(event.getItemId());
         }		
 	}
     

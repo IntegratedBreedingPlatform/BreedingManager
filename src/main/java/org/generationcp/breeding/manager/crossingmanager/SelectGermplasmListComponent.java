@@ -26,6 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
+@Deprecated
 public class SelectGermplasmListComponent extends HorizontalLayout implements InitializingBean, InternationalizableComponent  {
 
     private static final long serialVersionUID = 1L;
