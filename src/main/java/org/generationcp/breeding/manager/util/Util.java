@@ -387,7 +387,7 @@ public class Util {
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(false);
         layout.setSpacing(false);
-        layout.setHeight("100%");
+        layout.setHeight("500px");
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
@@ -396,8 +396,8 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("90%");
-        popupWindow.setHeight("80%");
+        popupWindow.setWidth("95%");
+        popupWindow.setHeight("97%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
@@ -436,7 +436,7 @@ public class Util {
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(false);
         layout.setSpacing(false);
-        layout.setHeight("100%");
+        layout.setHeight("500px");
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
@@ -445,8 +445,8 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("90%");
-        popupWindow.setHeight("80%");
+        popupWindow.setWidth("95%");
+        popupWindow.setHeight("97%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
