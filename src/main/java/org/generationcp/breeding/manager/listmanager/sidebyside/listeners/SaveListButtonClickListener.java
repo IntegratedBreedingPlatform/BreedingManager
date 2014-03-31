@@ -61,6 +61,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	
 	@Override
 	public void buttonClick(ClickEvent event) {
+		doSaveAction();
+	}
+	
+	public void doSaveAction(){
 		GermplasmList currentlySavedList = this.source.getCurrentlySavedGermplasmList();
 		GermplasmList listToSave = this.source.getCurrentlySetGermplasmListInfo();
 		List<GermplasmListData> listEntries = this.source.getListEntriesFromTable();
@@ -77,12 +81,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 		if(currentlySavedList == null){
 			listToSave.setStatus(Integer.valueOf(1));
-			try {
-				listToSave.setParent(dataManager.getGermplasmListById(source.getSaveInListId()));
-			} catch (MiddlewareQueryException e) {
-				listToSave.setParent(null);
-				e.printStackTrace();
-			}
 			listToSave.setUserId(getLocalIBDBUserId());
 			
 			try{
@@ -138,12 +136,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					listFromDB.setDate(listToSave.getDate());
 					listFromDB.setType(listToSave.getType());
 					listFromDB.setNotes(listToSave.getNotes());
-					try {
-						listFromDB.setParent(dataManager.getGermplasmListById(source.getSaveInListId()));
-					} catch (MiddlewareQueryException e) {
-						listToSave.setParent(null);
-						e.printStackTrace();
-					}
+					listFromDB.setParent(listToSave.getParent());
 					
 					Integer listId = this.dataManager.updateGermplasmList(listFromDB);
 					
