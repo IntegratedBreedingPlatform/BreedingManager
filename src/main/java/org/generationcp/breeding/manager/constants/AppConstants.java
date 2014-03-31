@@ -41,6 +41,7 @@ public final class AppConstants {
 	    public static final ThemeResource ICON_BUILD_NEW_LIST = new ThemeResource("images/build-new-list.png");
 	    public static final ThemeResource ICON_REVIEW_LIST_DETAILS = new ThemeResource("images/review-list-details.png");
 	    public static final ThemeResource ICON_MATCHING_GERMPLASMS = new ThemeResource("images/matching-germplasms.png");
+	    public static final ThemeResource ICON_MANAGE_SETTINGS = new ThemeResource("images/manage-settings.png");
 	}
 	
 	

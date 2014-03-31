@@ -21,17 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class SelectParentsListDataComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class SelectParentsListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SelectParentsListDataComponent.class);
 	private static final long serialVersionUID = 7907737258051595316L;
@@ -81,6 +84,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 
 	@Override
 	public void instantiateComponents() {
+		
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
@@ -95,6 +99,7 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 		tableWithSelectAllLayout.setWidth("100%");
 		
 		listDataTable = tableWithSelectAllLayout.getTable();
+		listDataTable.setWidth("100%");
 		listDataTable.setData(LIST_DATA_TABLE_ID);
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
@@ -183,11 +188,18 @@ public class SelectParentsListDataComponent extends AbsoluteLayout implements In
 
 	@Override
 	public void layoutComponents() {
-		setWidth("100%");
-		setHeight("330px");
-		addComponent(listEntriesLabel, "top:10px; left:10px;");
-		addComponent(viewListHeaderButton, "top:10px; right:80px;");
-		addComponent(tableWithSelectAllLayout, "top:40px; left:10px;");
+		setMargin(true);
+		setSpacing(true);
+		
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
+		headerLayout.addComponent(listEntriesLabel);
+		headerLayout.addComponent(viewListHeaderButton);
+		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
+		
+		addComponent(headerLayout);
+		addComponent(tableWithSelectAllLayout);
 	}
 	
 	public Table getListDataTable(){

@@ -46,7 +46,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
@@ -54,7 +56,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class MakeCrossesParentsComponent extends AbsoluteLayout implements BreedingManagerLayout,
+public class MakeCrossesParentsComponent extends VerticalLayout implements BreedingManagerLayout,
 		InitializingBean, InternationalizableComponent, SaveListAsDialogSource, SaveGermplasmListActionSource {
 	
 	public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
@@ -68,10 +70,12 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
     
     private static final String TAG_COLUMN_ID = "Tag";
     private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
-    
+        
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
+    private Panel parentListsPanel;
+    private Label parentListsLabel;
     private Label lblFemaleParent;
     private Label lblMaleParent;
     private Label crossingMethodLabel;
@@ -82,9 +86,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
     private CheckBox femaleParentsTagAll;
     private Table maleParents;
     private CheckBox maleParentsTagAll;
-    private GridLayout gridLayoutSelectingParents;
-    private GridLayout gridLayoutSelectingParentOptions;
-    private VerticalLayout layoutCrossOption;
     
     private TableWithSelectAllLayout femaleTableWithSelectAll;
     private TableWithSelectAllLayout maleTableWIthSelectAll;
@@ -116,8 +117,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
     }
 	@Override
 	public void updateLabels() {
-        messageSource.setCaption(lblFemaleParent, Message.LABEL_FEMALE_PARENTS);
-        messageSource.setCaption(lblMaleParent, Message.LABEL_MALE_PARENTS);
         messageSource.setCaption(chkBoxMakeReciprocalCrosses, Message.MAKE_CROSSES_CHECKBOX_LABEL);
         messageSource.setCaption(btnMakeCross, Message.MAKE_CROSSES_BUTTON_LABEL);
 	}
@@ -132,14 +131,19 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
 
 	@Override
 	public void instantiateComponents() {
-        this.setMargin(true, true, true, true);
+        setMargin(true);
+        setSpacing(true);
         
-        lblFemaleParent= new Label(); 
+        parentListsLabel = new Label(messageSource.getMessage(Message.PARENTS_LISTS));
+        parentListsLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+        
+        lblFemaleParent= new Label(messageSource.getMessage(Message.FEMALE));
+        lblFemaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
         
         initializeFemaleParentsTable();
         
         crossingMethodLabel = new Label(messageSource.getMessage(Message.CROSSING_METHOD));
-        crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
+        crossingMethodLabel.addStyleName(Bootstrap.Typography.H4.styleName());
         
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setNewItemsAllowed(false);
@@ -152,7 +156,8 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         btnMakeCross.setData(MAKE_CROSS_BUTTON_ID);
         btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 
-        lblMaleParent=new Label();
+        lblMaleParent=new Label(messageSource.getMessage(Message.MALE));
+        lblMaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
         
         initializeMaleParentsTable();
         
@@ -263,7 +268,6 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         femaleParents = femaleTableWithSelectAll.getTable();
         femaleParentsTagAll = femaleTableWithSelectAll.getCheckBox();
         
-//        femaleParents.setHeight(290, UNITS_PIXELS);
         femaleParents.setWidth(240, UNITS_PIXELS);
         femaleParents.setNullSelectionAllowed(true);
         femaleParents.setSelectable(true);
@@ -384,52 +388,52 @@ public class MakeCrossesParentsComponent extends AbsoluteLayout implements Breed
         });
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-        //Widget Layout
-        gridLayoutSelectingParents = new GridLayout(2,1);
-        gridLayoutSelectingParents.setSpacing(true);
-        
+		
+		HorizontalLayout parentsLayout = new HorizontalLayout();
+		parentsLayout.setWidth("100%");
+		parentsLayout.setSpacing(true);
+		
         AbsoluteLayout femaleParentsTableLayout = new AbsoluteLayout();
-        femaleParentsTableLayout.setWidth("260px");
+        femaleParentsTableLayout.setWidth("240px");
         femaleParentsTableLayout.setHeight("350px");
+        femaleParentsTableLayout.addComponent(lblFemaleParent,"top:0px;left:0px");
         femaleParentsTableLayout.addComponent(saveFemaleListButton,"top:0px;right:0px");
-        femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:30px;left:20px");
-        gridLayoutSelectingParents.addComponent(femaleParentsTableLayout,0,0);
-        gridLayoutSelectingParents.setComponentAlignment(femaleParents,  Alignment.MIDDLE_CENTER);
+        femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:30px;left:0px");
         
         AbsoluteLayout maleParentsTableLayout = new AbsoluteLayout();
-        maleParentsTableLayout.setWidth("260px");
+        maleParentsTableLayout.setWidth("240px");
         maleParentsTableLayout.setHeight("350px");
+        maleParentsTableLayout.addComponent(lblMaleParent, "top:0px;left:0px");
         maleParentsTableLayout.addComponent(saveMaleListButton, "top:0px;right:0px");
-        maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:30px;left:20px");
-        gridLayoutSelectingParents.addComponent(maleParentsTableLayout,1,0);
-        gridLayoutSelectingParents.setComponentAlignment(maleParents,  Alignment.MIDDLE_CENTER);
+        maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:30px;left:0px");
         
-        gridLayoutSelectingParents.setWidth(550, UNITS_PIXELS);
+        parentsLayout.addComponent(femaleParentsTableLayout);
+        parentsLayout.addComponent(maleParentsTableLayout);
         
-        gridLayoutSelectingParentOptions = new GridLayout(1,1);
-        gridLayoutSelectingParentOptions.setSpacing(true);
-        gridLayoutSelectingParentOptions.setMargin(true, false, false, true);
-        
-        layoutCrossOption = new VerticalLayout();
+        VerticalLayout layoutCrossOption = new VerticalLayout();
         layoutCrossOption.setSpacing(true);
         layoutCrossOption.addComponent(crossingMethodLabel);
         layoutCrossOption.addComponent(crossingMethodComboBox);
         layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
         layoutCrossOption.addComponent(btnMakeCross);
-        layoutCrossOption.setComponentAlignment(btnMakeCross,Alignment.MIDDLE_CENTER);
         
-        gridLayoutSelectingParentOptions.setWidth(500, UNITS_PIXELS);
-        gridLayoutSelectingParentOptions.setMargin(true, false, false, false);
+		VerticalLayout parentListMainLayout = new VerticalLayout();
+		parentListMainLayout.setWidth("540px");
+		parentListMainLayout.setSpacing(true);
+		parentListMainLayout.setMargin(true);
+		parentListMainLayout.addComponent(parentsLayout);
+		parentListMainLayout.addComponent(layoutCrossOption);
+		
+        parentListsPanel = new Panel();
+        parentListsPanel.setWidth("540px");
+        parentListsPanel.setLayout(parentListMainLayout);
+        parentListsPanel.addStyleName("section_panel_layout");
         
-        gridLayoutSelectingParentOptions.addComponent(layoutCrossOption,0,0);
-        gridLayoutSelectingParentOptions.setComponentAlignment(layoutCrossOption,  Alignment.TOP_LEFT);
-        
-        addComponent(gridLayoutSelectingParents, "top:0px; left:0px;");
-        addComponent(gridLayoutSelectingParentOptions, "top:330px; left:20px;");
-
-
+        addComponent(parentListsLabel);
+        addComponent(parentListsPanel);
 	}
 	
 	@SuppressWarnings("unchecked")

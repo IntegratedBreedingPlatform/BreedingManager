@@ -24,12 +24,14 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -52,7 +54,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
     private Button backButton;
     private Button nextButton;
-    private HorizontalLayout layoutButtonArea;
     
     private MakeCrossesParentsComponent parentsComponent;
     private MakeCrossesTableComponent crossesTableComponent;
@@ -226,8 +227,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
 	@Override
 	public void instantiateComponents() {
-		setWidth("1200px");
-    	setHeight("1050px");
+		addStyleName("white_bg_panel");
+		this.setSizeFull();
         this.setMargin(true, true, true, true);
 
         listTree = new CrossingManagerListTreeComponent(this);
@@ -240,8 +241,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
         
         listDetailsTabSheet = new TabSheet();
-        listDetailsTabSheet.setWidth("800px");
-        listDetailsTabSheet.setHeight("380px");
+        listDetailsTabSheet.setWidth("900px");
+        listDetailsTabSheet.setHeight("390px");
         listDetailsTabSheet.setVisible(false);
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -264,12 +265,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        
-        layoutButtonArea = new HorizontalLayout();
-        layoutButtonArea.setSpacing(true);
-        layoutButtonArea.setMargin(true);
-        layoutButtonArea.addComponent(backButton);
-        layoutButtonArea.addComponent(nextButton);
 	}
 
 	@Override
@@ -303,11 +298,26 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         addComponent(selectParentsLabel, "top:15px; left:250px;");
         addComponent(instructionForSelectParents, "top:50px; left:250px;");
         addComponent(listDetailsTabSheet, "top:40px; left:250px;");
-        addComponent(closeAllTabsButton, "top:30px; right:115px;");
-    
-        addComponent(parentsComponent, "top:435px; left:15px;");
-        addComponent(crossesTableComponent, "top:425px; left:590px;");
-        addComponent(layoutButtonArea, "top:890px; left:500px;");
+        addComponent(closeAllTabsButton, "top:30px; right:35px;");
+        
+        HorizontalLayout resultsTableLayout = new HorizontalLayout();
+        resultsTableLayout.setSpacing(true);
+        resultsTableLayout.addComponent(parentsComponent);
+        resultsTableLayout.addComponent(crossesTableComponent);
+        
+        HorizontalLayout layoutButtonArea = new HorizontalLayout();
+        layoutButtonArea.setSpacing(true);
+        layoutButtonArea.addComponent(backButton);
+        layoutButtonArea.addComponent(nextButton);
+        
+        VerticalLayout bottomLayout = new VerticalLayout();
+        bottomLayout.setSpacing(true);
+        bottomLayout.addComponent(resultsTableLayout);
+        bottomLayout.addComponent(layoutButtonArea);
+        bottomLayout.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
+        
+        addComponent(bottomLayout, "top:435px; left:15px;");
+        
 	}
 	
 	public void selectListInTree(Integer id){
