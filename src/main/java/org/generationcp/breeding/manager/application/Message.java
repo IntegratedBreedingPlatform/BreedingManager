@@ -435,4 +435,8 @@ public enum Message{
     ,AVAILABLE_LISTS
     ,CHECK_ICON 
     ,HASHTAG
+    
+    ,EDIT_LIST_HEADER
+    ,EDIT_HEADER
+    ,BUILD_LIST_DRAG_INSTRUCTIONS
 }

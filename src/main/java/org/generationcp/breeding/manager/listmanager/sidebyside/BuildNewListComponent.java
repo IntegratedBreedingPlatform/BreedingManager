@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,13 +38,12 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
@@ -137,9 +135,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
         buildNewListDesc.setWidth("300px");
         
-        dragInstructionLabel = new Label("Drag lists or germplasm into the table below.");
+        dragInstructionLabel = new Label(messageSource.getMessage(Message.BUILD_LIST_DRAG_INSTRUCTIONS));
         
-        editHeaderButton = new Button("Edit Header");
+        editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
         
@@ -401,22 +399,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		resetList(); //reset list before placing new one
 		
 		buildNewListTitle.setValue(messageSource.getMessage(Message.EDIT_LIST));
-		breedingManagerListDetailsComponent.setGermplasmListDetails(germplasmList);
-		breedingManagerListDetailsComponent.getListNameField().getListNameTextField().focus();
 		
 		currentlySavedGermplasmList = germplasmList;
+		currentlySetGermplasmInfo = germplasmList;
 		
-		//TO DO Update the Parent of the germplamsList, for now just used the current value of germplasmList.getParent()
-		//saveInListId = currentlySavedGermplasmList.getParentId();
-		
-		this.tableWithSelectAllLayout.getTable().removeAllItems();		
-        dropHandler.addGermplasmList(germplasmList.getId());
+		dropHandler.addGermplasmList(germplasmList.getId());
         
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
-        
-	}
+    }
 	
 	public void resetList(){
 		
@@ -451,6 +443,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
 	public void resetGermplasmTable(){
+		/**
 		this.removeComponent(tableWithSelectAllLayout);
 		this.removeComponent(resetButton);
 		
@@ -459,6 +452,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         this.addComponent(tableWithSelectAllLayout);
 		this.addComponent(resetButton);
+		**/
+		tableWithSelectAllLayout.getTable().removeAllItems();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -603,7 +598,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
 	public void openSaveListAsDialog(){
-		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList);
+		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.getWindow().addWindow(dialog);
 	}
 

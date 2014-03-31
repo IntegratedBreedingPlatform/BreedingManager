@@ -89,7 +89,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeField = new ListTypeField(messageSource.getMessage(Message.LIST_TYPE), true);
 		listDateField = new ListDateField(messageSource.getMessage(Message.LIST_DATE), true);
 		listNotesField = new ListNotesField(messageSource.getMessage(Message.NOTES), false);
-		listOwnerField = new ListOwnerField("List Owner", false);
+		listOwnerField = new ListOwnerField(messageSource.getMessage(Message.LIST_OWNER_LABEL), false);
 	}
 	
 	@Override
