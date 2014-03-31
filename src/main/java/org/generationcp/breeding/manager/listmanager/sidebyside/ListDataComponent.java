@@ -155,7 +155,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private String lastCellvalue = "";
 	private List<Integer> gidsWithoutChildrenToDelete;
 	private Map<Object, String> itemsToDelete;
+
+    private Button lockButton;
+    private Button unlockButton;
 	
+    public static String LOCK_BUTTON_ID = "Lock Germplasm List";
+    public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
+
+    private static final ThemeResource ICON_LOCK = new ThemeResource("images/lock.png");
+    private static final ThemeResource ICON_UNLOCK = new ThemeResource("images/unlock.png");	
+	
+    private static String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
+    
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -226,8 +237,38 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		} else {
         	totalListEntriesLabel = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         		 + "  " + listEntriesCount, Label.CONTENT_XHTML);
-        	totalListEntriesLabel.setWidth("150px");
+        	totalListEntriesLabel.setWidth("120px");
         }
+	
+        unlockButton = new Button();
+        unlockButton.setData(UNLOCK_BUTTON_ID);
+        unlockButton.setIcon(ICON_LOCK);
+        unlockButton.setWidth("140px");
+        unlockButton.setDescription(LOCK_TOOLTIP);
+        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
+        unlockButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				unlockGermplasmList();
+			}
+        });
+
+        lockButton = new Button();
+        lockButton.setData(LOCK_BUTTON_ID);
+        lockButton.setIcon(ICON_UNLOCK);
+        lockButton.setWidth("140px");
+        lockButton.setDescription(LOCK_TOOLTIP);
+        lockButton.setStyleName(Reindeer.BUTTON_LINK);
+        lockButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				lockGermplasmList();
+			}
+        });
 		
 		initializeListDataTable(); //listDataTable
 	}
@@ -465,6 +506,20 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		} else{
 			headerLayoutLeft.addComponent(totalListEntriesLabel);
 			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		}
+		
+		headerLayoutLeft.addComponent(lockButton);
+		headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
+
+		headerLayoutLeft.addComponent(unlockButton);
+		headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
+
+		if(germplasmList.getStatus()<100){
+			lockButton.setVisible(true);
+			unlockButton.setVisible(false);
+		} else {
+			lockButton.setVisible(false);
+			unlockButton.setVisible(true);
 		}
 		
 		headerLayout.addComponent(headerLayoutLeft);
@@ -1398,4 +1453,57 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public Integer getGermplasmListId(){
 		return germplasmList.getId();
 	}
+	
+    public void lockGermplasmList() {
+        if(germplasmList.getStatus()<100){
+		    germplasmList.setStatus(germplasmList.getStatus()+100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+		
+		        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Locked a germplasm list.",
+		                "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		
+		        lockButton.setVisible(false);
+				unlockButton.setVisible(true);
+		        //recreateTab();
+		
+		    } catch (MiddlewareQueryException e) {
+		        e.printStackTrace();
+		    }
+		}
+	}
+
+    public void unlockGermplasmList() {
+        if(germplasmList.getStatus()>=100){
+	    germplasmList.setStatus(germplasmList.getStatus()-100);
+	    try {
+	        germplasmListManager.updateGermplasmList(germplasmList);
+	
+	        recreateTab();
+	
+	        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+	        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+	                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+	                "Unlocked a germplasm list.",
+	                "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+	                user,
+	                new Date());
+	        workbenchDataManager.addProjectActivity(projAct);
+	        
+	        lockButton.setVisible(true);
+			unlockButton.setVisible(false);
+			
+	    } catch (MiddlewareQueryException e) {
+	        e.printStackTrace();
+	    }
+	}
+}
+    
+	
 }
