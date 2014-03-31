@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
@@ -100,15 +101,14 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
         searchLabel = new Label();
         searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
         searchLabel.setWidth("200px");
+        searchLabel.addStyleName("bold");
         
         searchField = new TextField();
         searchField.setImmediate(true);
         
-        searchButton = new Button();
-        searchButton.setWidth("30px");
-        searchButton.setHeight("30px");
-        searchButton.setStyleName(BaseTheme.BUTTON_LINK);
-        searchButton.addStyleName("search-button");
+        searchButton = new Button(messageSource.getMessage(Message.SEARCH));
+        searchButton.setHeight("24px");
+        searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         searchButton.setData(SEARCH_BUTTON);
         searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
 
@@ -160,11 +160,11 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 		searchBarLayout.addStyleName("searchBarLayout");
 		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
         searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
-        searchBarLayout.addComponent(searchButton, "top:8px; left:265px;");
-        searchBarLayout.addComponent(popup, "top:12px; left:315px;");
-        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 335px;");
-        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 485px;");
-        
+        searchBarLayout.addComponent(searchButton, "top:10px; left:265px;");
+        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 355px;");
+        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 505px;");
+        searchBarLayout.addComponent(popup, "top:12px; left:735px;");
+
         searchPanel.setLayout(searchBarLayout);
         
         setWidth("99%");
