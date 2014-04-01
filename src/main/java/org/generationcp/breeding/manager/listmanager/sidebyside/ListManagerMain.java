@@ -171,7 +171,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         buildNewListComponent = new BuildNewListComponent(this);
         
 		buildListLayout = new HorizontalLayout();
-		buildListLayout.setMargin(false,true,true,false);
+		buildListLayout.setMargin(false,false,true,false);
 		buildListLayout.addComponent(toggleBuildNewListButton);
 		buildListLayout.addComponent(buildNewListComponent);
 		

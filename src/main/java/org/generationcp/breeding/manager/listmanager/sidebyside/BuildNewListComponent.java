@@ -130,6 +130,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+    	buildNewListTitle.setWidth("200px");
         buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
         
         buildNewListDesc = new Label();
@@ -258,7 +259,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         HorizontalLayout instructionLayout = new HorizontalLayout();
         instructionLayout.setSpacing(true);
-        instructionLayout.setWidth("100%");
+        instructionLayout.setWidth("400px");
         instructionLayout.addComponent(buildNewListDesc);
         instructionLayout.addComponent(saveButton);
         instructionLayout.setComponentAlignment(buildNewListDesc, Alignment.MIDDLE_LEFT);
@@ -269,6 +270,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         Panel listDataTablePanel = new Panel();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         VerticalLayout listDataTableLayout = new VerticalLayout();
+        listDataTableLayout.setMargin(true);
         listDataTableLayout.setSpacing(true);
         listDataTableLayout.setWidth("100%");
         listDataTableLayout.addComponent(dragInstructionLabel);
