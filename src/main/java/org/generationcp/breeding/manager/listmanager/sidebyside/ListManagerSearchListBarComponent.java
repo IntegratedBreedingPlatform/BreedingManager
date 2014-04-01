@@ -167,9 +167,10 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 
         searchPanel.setLayout(searchBarLayout);
         
+        addStyleName("overflow-hidden");
         setWidth("99%");
-        setHeight("75px");
-        setMargin(true);
+        setHeight("58px");
+        setMargin(true, true, false, true);
 		addComponent(searchPanel);
 	}
 

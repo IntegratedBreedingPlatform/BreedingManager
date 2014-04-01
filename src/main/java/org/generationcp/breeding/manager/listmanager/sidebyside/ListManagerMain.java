@@ -58,7 +58,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(65); //actual width in pixel 650 
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
 	
-	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(80); //actual width in pixel
+	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
 	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
 	private Integer selectedListId;
@@ -180,6 +180,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		
 		vSplitPanel.setFirstComponent(searchListsBarComponent);
 		vSplitPanel.setSecondComponent(hSplitPanel);
+		
 	}
 
 	@Override
