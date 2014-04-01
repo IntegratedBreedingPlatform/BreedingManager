@@ -237,7 +237,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		} else {
         	totalListEntriesLabel = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         		 + "  " + listEntriesCount, Label.CONTENT_XHTML);
-        	totalListEntriesLabel.setWidth("120px");
+        	totalListEntriesLabel.setWidth("135px");
         }
 	
 		Integer localUserId = null;
