@@ -45,13 +45,13 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
+	private Label searchDescription;
+	
 	private Label matchingListsLabel;
-	private Label matchingListsDescription;
 	private Table matchingListsTable;
 	private TableWithSelectAllLayout matchingListsTableWithSelectAll;
 	
 	private Label matchingGermplasmsLabel;
-	private Label matchingGermplasmsDescription;
 	private Table matchingGermplasmsTable;
 	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
 	
@@ -91,13 +91,15 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	
 	@Override
 	public void instantiateComponents() {
+		
+		searchDescription = new Label();
+		searchDescription.setValue(messageSource.getMessage(Message.SELECT_A_MATCHING_LIST_OR_GERMPLASM_TO_VIEW_THE_DETAILS));
+		searchDescription.setWidth("375px");
+		
 		matchingListsLabel = new Label();
 		matchingListsLabel.setWidth("250px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
 		matchingListsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
-		
-		matchingListsDescription = new Label();
-		matchingListsDescription.setValue(messageSource.getMessage(Message.SELECT_A_LIST_TO_VIEW_THE_DETAILS));
 		
 		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5, CHECKBOX_COLUMN_ID);
 		matchingListsTable = matchingListsTableWithSelectAll.getTable();
@@ -116,9 +118,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
 		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
-		
-		matchingGermplasmsDescription = new Label();
-		matchingGermplasmsDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 		
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
@@ -184,14 +183,14 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,matchingListsLabel);
-		addComponent(matchingListsHeader, "top:0px; left:0px;");
-		addComponent(matchingListsDescription, "top:23px; left:0px;");
-		addComponent(matchingListsTableWithSelectAll, "top:40px; left:0px;");
+		addComponent(searchDescription, "top:0px; left:0px;");
+		
+		addComponent(matchingListsHeader, "top:20px; left:0px;");
+		addComponent(matchingListsTableWithSelectAll, "top:55px; left:0px;");
 		
 		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
 		addComponent(matchingGermplasmsHeader, "top:257px; left:0px;");
-		addComponent(matchingGermplasmsDescription, "top:280px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:297px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:288px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){
