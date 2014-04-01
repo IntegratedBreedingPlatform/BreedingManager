@@ -73,12 +73,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 		List<GermplasmListData> listEntries = this.source.getListEntriesFromTable();
 		
-		if(listEntries.isEmpty()){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-					, messageSource.getMessage(Message.NO_ENTRIES_ERROR_MESSAGE), Notification.POSITION_CENTERED);
-			return;
-		}
-	
 		if(!validateListDetails(listToSave, currentlySavedList)){
 			return;
 		}
@@ -114,15 +108,17 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				return;
 			}
 			
-			setNeededValuesForNewListEntries(currentlySavedList, listEntries);
-			
-			if(!saveNewListEntries(listEntries)){
-				return;
+			if(!listEntries.isEmpty()){
+				setNeededValuesForNewListEntries(currentlySavedList, listEntries);
+				
+				if(!saveNewListEntries(listEntries)){
+					return;
+				}
+				
+				updateListDataTableContent(currentlySavedList);
+				
+				saveListDataColumns(listToSave);
 			}
-			
-			updateListDataTableContent(currentlySavedList);
-			
-			saveListDataColumns(listToSave);
 			
 		} else if(currentlySavedList != null){
 			
@@ -197,7 +193,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				updateListDataTableContent(currentlySavedList);
 			}
 			
-			saveListDataColumns(listToSave);
+			if(!listEntries.isEmpty()){
+				saveListDataColumns(listToSave);
+			}
 			
 		}
 		
