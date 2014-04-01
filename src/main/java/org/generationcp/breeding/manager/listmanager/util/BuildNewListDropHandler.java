@@ -157,7 +157,10 @@ public class BuildNewListDropHandler implements DropHandler {
 				germplasmListData = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Integer.MAX_VALUE);
 			}
 			
-		    Collections.reverse(germplasmListData);
+			//Fix for adding entries in reverse
+			if(germplasmListData.size()>1 && germplasmListData.get(0).getEntryId()>germplasmListData.get(1).getEntryId()){
+				Collections.reverse(germplasmListData);
+			}
 			
 			for(GermplasmListData listData : germplasmListData){
 				addGermplasmFromList(listId, listData.getId(), germplasmList);
