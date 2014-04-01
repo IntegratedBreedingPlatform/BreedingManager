@@ -240,35 +240,44 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         	totalListEntriesLabel.setWidth("120px");
         }
 	
-        unlockButton = new Button();
-        unlockButton.setData(UNLOCK_BUTTON_ID);
-        unlockButton.setIcon(ICON_LOCK);
-        unlockButton.setWidth("140px");
-        unlockButton.setDescription(LOCK_TOOLTIP);
-        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
-        unlockButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				unlockGermplasmList();
-			}
-        });
-
-        lockButton = new Button();
-        lockButton.setData(LOCK_BUTTON_ID);
-        lockButton.setIcon(ICON_UNLOCK);
-        lockButton.setWidth("140px");
-        lockButton.setDescription(LOCK_TOOLTIP);
-        lockButton.setStyleName(Reindeer.BUTTON_LINK);
-        lockButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				lockGermplasmList();
-			}
-        });
+		Integer localUserId = null;
+		try {
+			localUserId = getCurrentUserLocalId();
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error with retrieving local user ID", e);
+		}
+		
+		if(germplasmList.getId()<0 && germplasmList.getUserId().equals(localUserId)){
+	        unlockButton = new Button();
+	        unlockButton.setData(UNLOCK_BUTTON_ID);
+	        unlockButton.setIcon(ICON_LOCK);
+	        unlockButton.setWidth("140px");
+	        unlockButton.setDescription(LOCK_TOOLTIP);
+	        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
+	        unlockButton.addListener(new ClickListener(){
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+					unlockGermplasmList();
+				}
+	        });
+	
+	        lockButton = new Button();
+	        lockButton.setData(LOCK_BUTTON_ID);
+	        lockButton.setIcon(ICON_UNLOCK);
+	        lockButton.setWidth("140px");
+	        lockButton.setDescription(LOCK_TOOLTIP);
+	        lockButton.setStyleName(Reindeer.BUTTON_LINK);
+	        lockButton.addListener(new ClickListener(){
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+					lockGermplasmList();
+				}
+	        });
+		}
 		
 		initializeListDataTable(); //listDataTable
 	}
@@ -508,18 +517,27 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		}
 		
-		headerLayoutLeft.addComponent(lockButton);
-		headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
-
-		headerLayoutLeft.addComponent(unlockButton);
-		headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
-
-		if(germplasmList.getStatus()<100){
-			lockButton.setVisible(true);
-			unlockButton.setVisible(false);
-		} else {
-			lockButton.setVisible(false);
-			unlockButton.setVisible(true);
+		Integer localUserId = null;
+		try {
+			localUserId = getCurrentUserLocalId();
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error with retrieving local user ID", e);
+		}
+		
+		if(germplasmList.getId()<0 && germplasmList.getUserId().equals(localUserId)){
+			headerLayoutLeft.addComponent(lockButton);
+			headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
+	
+			headerLayoutLeft.addComponent(unlockButton);
+			headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
+	
+			if(germplasmList.getStatus()<100){
+				lockButton.setVisible(true);
+				unlockButton.setVisible(false);
+			} else {
+				lockButton.setVisible(false);
+				unlockButton.setVisible(true);
+			}
 		}
 		
 		headerLayout.addComponent(headerLayoutLeft);
