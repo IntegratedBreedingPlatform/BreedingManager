@@ -91,9 +91,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					
 					source.setChanged(false);
 					
-					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
-					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
-					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().select(listId);
+					((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
 					
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
@@ -150,9 +148,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						this.source.setCurrentlySavedGermplasmList(listFromDB);
 						source.setChanged(false);
 						
-						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().createTree();
-						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
-						((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().select(listId);
+						((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
 						
 					}
 				} catch(MiddlewareQueryException ex){
