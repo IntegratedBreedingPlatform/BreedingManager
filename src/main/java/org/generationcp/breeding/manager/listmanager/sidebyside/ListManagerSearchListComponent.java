@@ -36,7 +36,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
-	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
+	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("60");
 	
 	public ListManagerSearchListComponent(ListManagerMain source) {
 		super();
