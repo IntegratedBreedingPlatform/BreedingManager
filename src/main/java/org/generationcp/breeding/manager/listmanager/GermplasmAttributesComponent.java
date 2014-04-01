@@ -46,11 +46,19 @@ public class GermplasmAttributesComponent extends BreedingManagerTable implement
     
     GermplasmDetailModel gDetailModel;
     
+    private static final Integer MAX_RECORDS = 8;
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel, int recordCount, int maxRecords) {
     	super(recordCount, maxRecords);
+        this.dataIndexContainer = dataIndexContainer;
+        this.gDetailModel = gDetailModel;
+    }
+    
+    public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
+    	super(MAX_RECORDS, MAX_RECORDS);
         this.dataIndexContainer = dataIndexContainer;
         this.gDetailModel = gDetailModel;
     }
