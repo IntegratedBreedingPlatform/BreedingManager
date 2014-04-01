@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
@@ -162,6 +163,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private Button lockButton;
     private Button unlockButton;
     private Button editHeaderButton;
+    
+    private ViewListHeaderWindow viewListHeaderWindow;
 	
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
@@ -205,8 +208,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	@Override
 	public void instantiateComponents() {
+		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
+		
 		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
+		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
 		editHeaderButton =new Button("<span class='glyphicon glyphicon-pencil' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
 		editHeaderButton.setHtmlContentAllowed(true);
@@ -383,6 +389,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void addListeners() {
+		viewHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 329434322390122057L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openViewListHeaderWindow();
+			}
+		});
+		
 		if(germplasmList.getId()<0 && germplasmList.getStatus()<100){
 	        new FillWith(parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
@@ -1580,6 +1595,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				}
 				
 				source.showNodeOnTree(listFromDB.getId());
+				viewListHeaderWindow = new ViewListHeaderWindow(listFromDB);
+				viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 				MessageNotifier.showMessage(this.getWindow(), messageSource.getMessage(Message.SUCCESS), "Changes to list header were saved."
 						, 3000, Notification.POSITION_CENTERED);
 			}
@@ -1591,4 +1608,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		}
 	}
 	
+	public void openViewListHeaderWindow(){
+		this.getWindow().addWindow(viewListHeaderWindow);
+	}
 }
