@@ -331,5 +331,10 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public ListManagerBrowseListComponent getBrowseListsComponent(){
 		return browseListsComponent;
 	}
+
+	public void addGemplasmToBuildList(Integer gid) {
+		buildNewListComponent.addGermplasm(gid);
+		expandRight();
+	}
 	
 }

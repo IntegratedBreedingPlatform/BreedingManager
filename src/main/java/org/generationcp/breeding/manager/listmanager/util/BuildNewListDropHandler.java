@@ -165,6 +165,9 @@ public class BuildNewListDropHandler implements DropHandler {
 			for(GermplasmListData listData : germplasmListData){
 				addGermplasmFromList(listId, listData.getId(), germplasmList);
 			}
+			
+			changed = true;
+			
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm list.", e);
 			e.printStackTrace();
@@ -182,7 +185,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		}
 	}
 
-	private Integer addGermplasm(Integer gid){
+	public Integer addGermplasm(Integer gid){
         try {
             
             Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);

@@ -13,6 +13,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -26,11 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class GermplasmAttributesComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmAttributesComponent extends BreedingManagerTable implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,9 +49,14 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel) {
+    public GermplasmAttributesComponent(GermplasmIndexContainer dataIndexContainer, GermplasmDetailModel gDetailModel, int recordCount, int maxRecords) {
+    	super(recordCount, maxRecords);
         this.dataIndexContainer = dataIndexContainer;
         this.gDetailModel = gDetailModel;
+    }
+    
+    public GermplasmAttributesComponent(int recordCount, int maxRecords){
+    	super(recordCount, maxRecords);
     }
 
     @Override
@@ -62,8 +67,8 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
 	        setSelectable(true);
 	        setMultiSelect(false);
 	        setHeight("100%");
-	        setWidth("92%");
-	        setPageLength(5);
+	        setWidth("100%");
+	        //setPageLength(5);
 	        setImmediate(true); // react at once when something is
 	        setColumnReorderingAllowed(true);
 	        setColumnCollapsingAllowed(true);

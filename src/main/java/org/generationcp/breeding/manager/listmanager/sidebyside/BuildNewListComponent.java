@@ -468,6 +468,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         return currentlySetGermplasmInfo;
     }
     
+    public void addGermplasm(Integer gid){
+    	dropHandler.addGermplasm(gid);
+    	changed = true;
+    }
+    
     public List<GermplasmListData> getListEntriesFromTable(){
         List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
         
