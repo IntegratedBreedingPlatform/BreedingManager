@@ -316,7 +316,12 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
 	public void addFromListDataTable(Table sourceTable){
 		buildNewListComponent.addFromListDataTable(sourceTable);
-	}		
+	}	
+	
+	public void showNodeOnTree(Integer listId){
+		browseListsComponent.getListTreeComponent().setListId(listId);
+		browseListsComponent.getListTreeComponent().createTree();
+	}
 	
 	/* SETTERS AND GETTERS */
 	public BuildNewListComponent getBuildNewListComponent() {

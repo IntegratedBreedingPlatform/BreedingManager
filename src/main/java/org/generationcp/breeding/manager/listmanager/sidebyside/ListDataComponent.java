@@ -13,9 +13,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -86,7 +89,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, 
-        BreedingManagerLayout, AddEntryDialogSource {
+        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
@@ -158,6 +161,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
     private Button lockButton;
     private Button unlockButton;
+    private Button editHeaderButton;
 	
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
@@ -203,6 +207,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public void instantiateComponents() {
 		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
+		
+		editHeaderButton =new Button("<span class='glyphicon glyphicon-pencil' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+		editHeaderButton.setHtmlContentAllowed(true);
+		editHeaderButton.setDescription("Edit List Header");
+		editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
+		editHeaderButton.setWidth("25px");
 		
 		toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
@@ -493,6 +503,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			      }		      
 		   }
 		});
+		
+		editHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = -788407324474054727L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openSaveListAsDialog();
+			}
+		});
 
 	}//end of addListeners
 
@@ -508,6 +527,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		headerLayoutLeft.setSpacing(true);
 		headerLayoutLeft.addComponent(viewHeaderButton);
 		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
+		
+		if(germplasmList.getId() < 0 && germplasmList.getStatus() < 100){
+			headerLayoutLeft.addComponent(editHeaderButton);
+			headerLayoutLeft.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
+		}
 		
 		if(listEntriesCount == 0) {
 			headerLayoutLeft.addComponent(noListDataLabel); 
@@ -1489,7 +1513,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		        lockButton.setVisible(false);
 				unlockButton.setVisible(true);
-		        //recreateTab();
+				
+		        recreateTab();
 		
 		    } catch (MiddlewareQueryException e) {
 		        e.printStackTrace();
@@ -1499,29 +1524,71 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
     public void unlockGermplasmList() {
         if(germplasmList.getStatus()>=100){
-	    germplasmList.setStatus(germplasmList.getStatus()-100);
-	    try {
-	        germplasmListManager.updateGermplasmList(germplasmList);
-	
-	        recreateTab();
-	
-	        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-	        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-	                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-	                "Unlocked a germplasm list.",
-	                "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
-	                user,
-	                new Date());
-	        workbenchDataManager.addProjectActivity(projAct);
-	        
-	        lockButton.setVisible(true);
-			unlockButton.setVisible(false);
-			
-	    } catch (MiddlewareQueryException e) {
-	        e.printStackTrace();
-	    }
+		    germplasmList.setStatus(germplasmList.getStatus()-100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+		
+		        recreateTab();
+		
+		        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Unlocked a germplasm list.",
+		                "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		        
+		        lockButton.setVisible(true);
+				unlockButton.setVisible(false);
+				
+		    } catch (MiddlewareQueryException e) {
+		        e.printStackTrace();
+		    }
+        }
+    }
+
+    public void openSaveListAsDialog(){
+		SaveListAsDialog dialog = new SaveListAsDialog(this, germplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.getWindow().addWindow(dialog);
 	}
-}
     
+	@Override
+	public void saveList(GermplasmList list) {
+		try{
+			String oldName = germplasmList.getName();
+			GermplasmList listFromDB = this.germplasmListManager.getGermplasmListById(germplasmList.getId());
+			listFromDB.setName(list.getName());
+			listFromDB.setDescription(list.getDescription());
+			listFromDB.setDate(list.getDate());
+			listFromDB.setType(list.getType());
+			listFromDB.setNotes(list.getNotes());
+			listFromDB.setParent(list.getParent());
+			
+			Integer listId = this.germplasmListManager.updateGermplasmList(listFromDB);
+			
+			if(listId == null){
+				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+						, Notification.POSITION_CENTERED);
+				return;
+			} else{
+				germplasmList = listFromDB;
+				
+				if(!oldName.equals(list.getName())){
+					source.updateUIForRenamedList(germplasmList, list.getName());
+				}
+				
+				source.showNodeOnTree(listFromDB.getId());
+				MessageNotifier.showMessage(this.getWindow(), messageSource.getMessage(Message.SUCCESS), "Changes to list header were saved."
+						, 3000, Notification.POSITION_CENTERED);
+			}
+		} catch(MiddlewareQueryException ex){
+			LOG.error("Error in updating germplasm list: " + germplasmList.getId(), ex);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+					, Notification.POSITION_CENTERED);
+			return;
+		}
+	}
 	
 }

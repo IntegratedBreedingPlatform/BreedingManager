@@ -291,7 +291,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                             GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
                             addGermplasmListData(germList,1);
                             listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                            //TODO must accommodate the expanding of the folder up to the parent of the list being opened
                             listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                            //TODO must accommodate opening in the search screen also
                             listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
                             germplasmListManager.deleteGermplasmListByListId(newListid);
