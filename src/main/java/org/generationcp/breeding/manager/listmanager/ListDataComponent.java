@@ -325,7 +325,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
          } else {
         	 totalListEntries = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
         			 + "  " + listDataCount, Label.CONTENT_XHTML);
-        	 totalListEntries.setWidth("150px");
+        	 totalListEntries.setWidth("165px");
         	 toolsMenuBar.addComponent(totalListEntries,"top:4px; left:0px;");
         	 initializeListDataTable(toolsMenuBar);    	 
              
