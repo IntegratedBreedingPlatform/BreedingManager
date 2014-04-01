@@ -27,6 +27,8 @@ public final class AppConstants {
 		
 		public static final String MARKED_MANDATORY = "marked_mandatory";
 		
+		public static final String PANEL_GRAY_BACKGROUND = "section_panel_layout";
+		
 	}
 	
 	

@@ -41,6 +41,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
@@ -265,6 +266,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         this.addComponent(instructionLayout);
         
+        Panel listDataTablePanel = new Panel();
+        listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setSpacing(true);
         listDataTableLayout.setWidth("100%");
@@ -282,7 +285,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         listDataTableLayout.addComponent(tableWithSelectAllLayout);
         
-        this.addComponent(listDataTableLayout);
+        listDataTablePanel.setLayout(listDataTableLayout);
+        this.addComponent(listDataTablePanel);
         
         this.addComponent(resetButton);
         
@@ -443,16 +447,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	}
 	
 	public void resetGermplasmTable(){
-		/**
-		this.removeComponent(tableWithSelectAllLayout);
-		this.removeComponent(resetButton);
-		
-		tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        createGermplasmTable(tableWithSelectAllLayout.getTable());
-        
-        this.addComponent(tableWithSelectAllLayout);
-		this.addComponent(resetButton);
-		**/
 		tableWithSelectAllLayout.getTable().removeAllItems();
 	}
 	
