@@ -6,7 +6,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.EmbeddedGermplasmListDetailComponent;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.util.Util;
@@ -165,16 +165,14 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		this.crossesMade = crossesMade;
 	}
 	
-	//TODO deprecate this when summary page implemented
-    public void viewGermplasmListCreated(GermplasmList list){
-        EmbeddedGermplasmListDetailComponent germplasmListBrowser = 
-            new EmbeddedGermplasmListDetailComponent(this, list.getId());
+    public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList){
+    	CrossingManagerSummaryComponent summaryComponent = new CrossingManagerSummaryComponent(this, crossList.getId(), 
+    			femaleList.getId(), maleList.getId(), detailComponent.getCurrentlyDefinedSetting());
         
-        this.removeComponent(this.makeCrossesLabel);
         this.removeComponent(this.wizardDisplay);
         this.removeComponent(this.tabSheet);
         
-        this.addComponent(germplasmListBrowser, "top:40px");
+        this.addComponent(summaryComponent, "top:75px");
     }
     
     public void reset(){

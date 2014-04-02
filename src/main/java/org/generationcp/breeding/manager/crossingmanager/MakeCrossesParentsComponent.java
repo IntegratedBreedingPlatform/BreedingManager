@@ -8,7 +8,6 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
@@ -45,7 +44,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -148,7 +146,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setNewItemsAllowed(false);
         crossingMethodComboBox.setNullSelectionAllowed(false);
-        crossingMethodComboBox.setWidth("500px");
+        crossingMethodComboBox.setWidth("100%");
         
         chkBoxMakeReciprocalCrosses = new CheckBox();
     
@@ -413,12 +411,19 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         parentsLayout.addComponent(femaleParentsTableLayout);
         parentsLayout.addComponent(maleParentsTableLayout);
         
+        HorizontalLayout optionsHeaderLayout = new HorizontalLayout();
+        optionsHeaderLayout.setWidth("100%");
+        optionsHeaderLayout.addComponent(crossingMethodLabel);
+        optionsHeaderLayout.addComponent(btnMakeCross);
+        optionsHeaderLayout.setComponentAlignment(crossingMethodLabel, Alignment.TOP_LEFT);
+        optionsHeaderLayout.setComponentAlignment(btnMakeCross, Alignment.TOP_RIGHT);
+        
         VerticalLayout layoutCrossOption = new VerticalLayout();
+        layoutCrossOption.setWidth("495px");
         layoutCrossOption.setSpacing(true);
-        layoutCrossOption.addComponent(crossingMethodLabel);
+        layoutCrossOption.addComponent(optionsHeaderLayout);
         layoutCrossOption.addComponent(crossingMethodComboBox);
         layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
-        layoutCrossOption.addComponent(btnMakeCross);
         
 		VerticalLayout parentListMainLayout = new VerticalLayout();
 		parentListMainLayout.setWidth("540px");

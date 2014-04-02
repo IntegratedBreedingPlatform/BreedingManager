@@ -436,6 +436,16 @@ public enum Message{
     ,SUCCESS_SAVE_FOR_MALE_LIST
     ,PARENTS_LISTS
     
+    //Crossing Manager-Summary page
+    ,SUMMARY
+    ,CROSS_LIST_ENTRIES
+    ,EXPORT_CROSS_LIST
+    ,MGID
+    ,FGID
+    ,FEMALE_PARENT_LIST_DETAILS
+    ,MALE_PARENT_LIST_DETAILS
+    ,SAVED_AS
+    ,BREEDING_METHOD_APPLIED_TO_NEW_CROSSES
     //Side by Side - List Manager
     ,LISTS
     ,AVAILABLE_LISTS

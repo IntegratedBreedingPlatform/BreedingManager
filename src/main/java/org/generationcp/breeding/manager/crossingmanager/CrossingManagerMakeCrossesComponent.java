@@ -140,7 +140,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     public void nextButtonClickAction(){
     	if (crossesTableComponent.getCrossList() != null){
-    		source.viewGermplasmListCreated(crossesTableComponent.getCrossList());
+    		source.viewGermplasmListCreated(crossesTableComponent.getCrossList(), 
+    				parentsComponent.getFemaleList(), parentsComponent.getMaleList());
     	}
     }
     
