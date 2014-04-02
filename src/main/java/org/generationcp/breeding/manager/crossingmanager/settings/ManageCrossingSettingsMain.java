@@ -166,8 +166,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	}
 	
     public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList){
-    	CrossingManagerSummaryComponent summaryComponent = new CrossingManagerSummaryComponent(this, crossList.getId(), 
-    			femaleList.getId(), maleList.getId(), detailComponent.getCurrentlyDefinedSetting());
+    	CrossingManagerSummaryComponent summaryComponent = new CrossingManagerSummaryComponent(this, crossList, 
+    			femaleList, maleList, detailComponent.getCurrentlyDefinedSetting());
         
         this.removeComponent(this.wizardDisplay);
         this.removeComponent(this.tabSheet);

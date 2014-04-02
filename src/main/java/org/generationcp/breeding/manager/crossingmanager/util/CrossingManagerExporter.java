@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -28,15 +29,18 @@ import org.generationcp.breeding.manager.constants.ExportCrossesObservationSheet
 import org.generationcp.breeding.manager.constants.TemplateConditionHeader;
 import org.generationcp.breeding.manager.constants.TemplateFactorHeader;
 import org.generationcp.breeding.manager.constants.TemplateForExportListDetails;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.CrossParents;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -48,22 +52,54 @@ public class CrossingManagerExporter{
     private static final String VARIATE_HEADING_STYLE = "variateHeadingStyle";
     private static final String NUMERIC_STYLE = "numericStyle";
     
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-    
     private static final int NUM_OF_COLUMNS = 8;
     
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+    
+    @Autowired
+    private UserDataManager userDataManager;
+    
     private GermplasmList crossesList;
-    private CrossesMade crossesMade;
+    private List<GermplasmListData> listEntries;
+    private Map<Integer, CrossParents> parentsInfo;
     
     private List<ImportedCondition> conditionsToWriteOnFile;
     private List<ImportedFactor> factorsToWriteOnFile;
+    private User listCreator;
+    private User listExporter;
     
-    public CrossingManagerExporter(GermplasmList crossesList, CrossesMade crossesMade, User listCreator, User exporter){
-        this.crossesList = crossesList;
-        this.crossesMade = crossesMade;
-        
-        conditionsToWriteOnFile = new ArrayList<ImportedCondition>();
+	public CrossingManagerExporter(GermplasmList crossesList,
+			List<GermplasmListData> listEntries,
+			Map<Integer, CrossParents> parentsInfo) {
+		super();
+		this.crossesList = crossesList;
+		this.listEntries = listEntries;
+		this.parentsInfo = parentsInfo;
+	}
+	
+	
+
+	private void initializeUserValues() throws CrossingManagerExporterException{
+		try{
+			listCreator = userDataManager.getUserById(crossesList.getUserId());
+		} catch(MiddlewareQueryException ex){
+			throw new CrossingManagerExporterException("Error getting owner of list.");
+		}
+  
+		try{
+			WorkbenchRuntimeData data = workbenchDataManager.getWorkbenchRuntimeData();
+			Project project = workbenchDataManager.getLastOpenedProject(data.getUserId());
+			Integer userId = workbenchDataManager.getLocalIbdbUserId(data.getUserId(), project.getProjectId());
+			listExporter = userDataManager.getUserById(userId);
+		} catch(MiddlewareQueryException ex){
+			throw new CrossingManagerExporterException("Error getting current user.");
+		}
+  
+	}
+
+	private void initializeConditionsAndFactors() {
+		conditionsToWriteOnFile = new ArrayList<ImportedCondition>();
         ImportedCondition userNameCondition = new ImportedCondition("LIST USER", "PERSON WHO MADE THE LIST", "PERSON", "DBCV" 
                 ,"ASSIGNED", "C", listCreator.getName(), "LIST");
         conditionsToWriteOnFile.add(userNameCondition);
@@ -71,10 +107,10 @@ public class CrossingManagerExporter{
                 ,"ASSIGNED", "N", listCreator.getUserid().toString(), "LIST");
         conditionsToWriteOnFile.add(userIdCondition);
         ImportedCondition exporterNameCondition = new ImportedCondition("LIST EXPORTER", "PERSON EXPORTING THE LIST", "PERSON", "DBCV" 
-                ,"ASSIGNED", "C", exporter.getName(), "LIST");
+                ,"ASSIGNED", "C", listExporter.getName(), "LIST");
         conditionsToWriteOnFile.add(exporterNameCondition);
         ImportedCondition exporterIdCondition = new ImportedCondition("LIST EXPORTER ID", "ID OF LIST EXPORTER", "PERSON", "DBID" 
-                ,"ASSIGNED", "N", exporter.getUserid().toString(), "LIST");
+                ,"ASSIGNED", "N", listExporter.getUserid().toString(), "LIST");
         conditionsToWriteOnFile.add(exporterIdCondition);
         
         factorsToWriteOnFile = new ArrayList<ImportedFactor>();
@@ -98,9 +134,12 @@ public class CrossingManagerExporter{
         factorsToWriteOnFile.add(maleGIDFactor);
         ImportedFactor sourceFactor = new ImportedFactor("SOURCE", "The seed source of the germplasm", "SEED SOURCE", "NAME", "Seed Source", "C", "Entry ID");
         factorsToWriteOnFile.add(sourceFactor);
-    }
+	}
     
     public FileOutputStream exportCrossingManagerExcel(String filename) throws CrossingManagerExporterException {
+    	initializeUserValues();
+    	initializeConditionsAndFactors();
+    	
         //create workbook
         HSSFWorkbook wb = new HSSFWorkbook();
         
@@ -290,17 +329,7 @@ public class CrossingManagerExporter{
         
         // write the Crosses Made
         currentRow++;
-        List<GermplasmListData> listDatas = null;
-        int germplasmListId =  this.crossesList.getId();
-        try {
-        	long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
-			listDatas = this.germplasmListManager.getGermplasmListDataByListId(
-			        germplasmListId, 0, (int) listDataCount);
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-       
-        for (GermplasmListData cross: listDatas){
+        for (GermplasmListData cross: listEntries){
             HSSFRow conditionRow = descriptionSheet.createRow(currentRow++); 
             conditionRow.createCell(0).setCellValue(cross.getEntryId());
             conditionRow.createCell(1).setCellValue(cross.getGid());
@@ -309,31 +338,23 @@ public class CrossingManagerExporter{
             conditionRow.createCell(4).setCellValue(cross.getGroupName());
             conditionRow.createCell(5).setCellValue(cross.getSeedSource());
             
-            String splitOfGroupName[] = cross.getGroupName().split("/");
-            String femaleName = splitOfGroupName[0];
-            String maleName = splitOfGroupName[1];
-            ImportedGermplasmCross importedCross = getImportedGermplasmCrossByNamesOfParents(femaleName, maleName);
-            if(importedCross != null){
-                conditionRow.createCell(6).setCellValue(importedCross.getFemaleDesignation());
-                conditionRow.createCell(7).setCellValue(importedCross.getMaleDesignation());
-                conditionRow.createCell(8).setCellValue(importedCross.getFemaleGId());
-                conditionRow.createCell(9).setCellValue(importedCross.getMaleGId());
+            Integer listDataId = cross.getId();
+            CrossParents parents = parentsInfo.get(listDataId);
+            if (parents != null){
+            	GermplasmListEntry femaleParent = parents.getFemaleParent();
+            	GermplasmListEntry maleParent = parents.getMaleParent();
+            	
+            	conditionRow.createCell(6).setCellValue(femaleParent.getDesignation());
+            	conditionRow.createCell(7).setCellValue(maleParent.getDesignation());
+            	conditionRow.createCell(8).setCellValue(femaleParent.getGid());
+            	conditionRow.createCell(9).setCellValue(maleParent.getGid());
             }
+
         }
     
         return currentRow + 1;
     }
     
-    private ImportedGermplasmCross getImportedGermplasmCrossByNamesOfParents(String femaleName, String maleName){
-        List<ImportedGermplasmCross> crosses = this.crossesMade.getCrossingManagerUploader().getImportedGermplasmCrosses().getImportedGermplasmCrosses();
-        for(ImportedGermplasmCross cross : crosses){
-            if(cross.getFemaleDesignation().equals(femaleName) && cross.getMaleDesignation().equals(maleName)){
-                return cross;
-            }
-        }
-        
-        return null;
-    }
     
     private void setListDetailCellValue(TemplateForExportListDetails listDetail, Cell cell){
         switch (listDetail){

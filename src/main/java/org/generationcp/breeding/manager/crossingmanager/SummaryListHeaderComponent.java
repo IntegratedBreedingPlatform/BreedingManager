@@ -51,6 +51,12 @@ public class SummaryListHeaderComponent extends VerticalLayout
 	private Integer listId;
 	private String sectionTitle;
 
+	public SummaryListHeaderComponent(GermplasmList list, String sectionTitle) {
+		super();
+		this.list = list;
+		this.sectionTitle = sectionTitle;
+	}
+	
 	public SummaryListHeaderComponent(Integer listId, String sectionTitle) {
 		super();
 		this.listId = listId;
@@ -107,7 +113,9 @@ public class SummaryListHeaderComponent extends VerticalLayout
 
 	@Override
 	public void initializeValues() {
-		retrieveListDetails();
+		if (list == null){
+			retrieveListDetails();
+		}
 		
 		listNameValue.setValue(list.getName());
 		descriptionValue.setValue(list.getDescription());
