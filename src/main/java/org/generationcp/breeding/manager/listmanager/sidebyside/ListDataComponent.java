@@ -130,7 +130,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private String MENU_EXPORT_LIST="Export List"; 
     private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
     private String MENU_COPY_TO_NEW_LIST="Copy List Entries"; 
-    private String MENU_ADD_ENTRY="Add Entry"; 
+    private String MENU_ADD_ENTRY="Add Entries"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
     private String MENU_EDIT_LIST="Edit List";
@@ -1608,5 +1608,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	public void openViewListHeaderWindow(){
 		this.getWindow().addWindow(viewListHeaderWindow);
+	}
+
+	@Override
+	public void finishAddingEntry(List<Integer> gids) {
+		for(Integer gid : gids){
+			finishAddingEntry(gid);
+		}
+		
 	}
 }

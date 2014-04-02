@@ -8,6 +8,8 @@ import com.vaadin.terminal.ThemeResource;
  */
 public final class AppConstants {
 	
+	public static final String USER_HOME = "user.home";
+	
 	private AppConstants(){
 		//make static by making non-instantiable
 	}

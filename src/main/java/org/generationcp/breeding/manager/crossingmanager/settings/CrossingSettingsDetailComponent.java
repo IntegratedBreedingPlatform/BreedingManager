@@ -151,7 +151,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		addComponent(defineSettingComponent, "top:7px; left: 10px");
 		addComponent(methodComponent, "top:100px; left:10px");
 		addComponent(nameComponent, "top:220px; left:10px");
-		addComponent(additionalDetailsComponent, "top:435Wpx; left:10px");
+		addComponent(additionalDetailsComponent, "top:465px; left:10px");
 		
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
@@ -159,12 +159,12 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		buttonBar.addComponent(cancelButton);
 		buttonBar.addComponent(nextButton);
 		
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth("100%");
-		layout.addComponent(buttonBar);
-		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setWidth("100%");
+		buttonLayout.addComponent(buttonBar);
+		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:650px");
+		addComponent(buttonLayout, "top:670px");
 		
 	}
 	
@@ -422,19 +422,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	public CrossingManagerSetting getCurrentlyDefinedSetting(){
 		CrossingManagerSetting toreturn = new CrossingManagerSetting();
 		
-//		String prefix = (String) nameComponent.getPrefixTextField().getValue();
-//		String suffix = (String) nameComponent.getSuffixTextField().getValue();
-//		if(suffix != null){
-//			suffix = suffix.trim();
-//		}
-//		if (suffix.length() == 0) {
-//		    suffix = null; //set as null so attribute will not be marshalled
-//		}
-//		boolean addSpaceBetweenPrefixAndCode = nameComponent.doAddSpaceBetPrefixAndCode();
-//		Integer numOfDigits = null;
-//		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
-//			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
-//		}
 		CrossNameSetting crossNameSettingPojo = nameComponent.getCrossNameSettingObject();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 		

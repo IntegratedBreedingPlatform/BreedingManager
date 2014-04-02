@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,9 +9,13 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -18,6 +23,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Method;
 import org.slf4j.Logger;
@@ -34,7 +40,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
@@ -75,18 +80,19 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	private enum CrossListDataColumn {
 		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
 	}
-
-	private Integer listId;
-	private Layout parentLayout;
+	
+	private GermplasmList list;
 
 	private List<GermplasmListData> listEntries;
 	private Map<Integer, Germplasm> germplasmMap;
+	private Map<Integer, CrossParents> parentsInfo; //list data id, CrossParents info
+
+	//Used maps to make use of existing Middleware methods
 	private Map<Integer, String> parentGermplasmNames; // gid of parent, preferred name
 	private Map<Integer, Object> methodMap; // Gid, Method of germplasm
 	
-	public CrossesSummaryListDataComponent(Layout parentLayout, Integer listId){
-		this.parentLayout = parentLayout;
-		this.listId = listId;
+	public CrossesSummaryListDataComponent(GermplasmList list){
+		this.list = list;
 	}
 	
 	@Override
@@ -111,7 +117,8 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		
 		
 		menu = new ContextMenu();
-		menu.setWidth("255px");
+		menu.setWidth("200px");
+		menu.setVisible(true);
 		
 		// Generate menu items
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_CROSS_LIST));
@@ -125,35 +132,55 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		populateTable();
 	}
 
+	
 	private void populateTable() {
+		parentsInfo = new HashMap<Integer, CrossParents>();
+		
 		for(GermplasmListData entry : listEntries){
-			String gid = String.format("%s", entry.getGid().toString());
+			Integer gid = entry.getGid();
+			String gidString = String.format("%s", gid.toString());
             
-			Button gidButton = generateLaunchGermplasmDetailsButton(gid, gid, CLICK_TO_VIEW_CROSS_INFORMATION);
-            Button desigButton = generateLaunchGermplasmDetailsButton(entry.getDesignation(), gid, CLICK_TO_VIEW_CROSS_INFORMATION);
+			Button gidButton = generateLaunchGermplasmDetailsButton(gidString, gidString, CLICK_TO_VIEW_CROSS_INFORMATION);
+            Button desigButton = generateLaunchGermplasmDetailsButton(entry.getDesignation(), gidString, CLICK_TO_VIEW_CROSS_INFORMATION);
             
-            Germplasm germplasm = germplasmMap.get(entry.getGid());
+            Germplasm germplasm = germplasmMap.get(gid);
             Integer femaleGid = germplasm.getGpid1();
             String femaleGidString = femaleGid.toString();
 			Button femaleGidButton = generateLaunchGermplasmDetailsButton(femaleGidString, femaleGidString, CLICK_TO_VIEW_FEMALE_INFORMATION);
-            Button femaleDesigButton = generateLaunchGermplasmDetailsButton(parentGermplasmNames.get(femaleGid), 
-            		femaleGidString, CLICK_TO_VIEW_FEMALE_INFORMATION);
+            String femaleDesig = parentGermplasmNames.get(femaleGid);
+			Button femaleDesigButton = generateLaunchGermplasmDetailsButton(femaleDesig, femaleGidString, CLICK_TO_VIEW_FEMALE_INFORMATION);
             
             Integer maleGid = germplasm.getGpid2();
             String maleGidString = maleGid.toString();
             Button maleGidButton = generateLaunchGermplasmDetailsButton(maleGidString, maleGidString, CLICK_TO_VIEW_MALE_INFORMATION);
-            Button maleDesigButton = generateLaunchGermplasmDetailsButton(parentGermplasmNames.get(maleGid), maleGidString, CLICK_TO_VIEW_MALE_INFORMATION);
+            String maleDesig = parentGermplasmNames.get(maleGid);
+			Button maleDesigButton = generateLaunchGermplasmDetailsButton(maleDesig, maleGidString, CLICK_TO_VIEW_MALE_INFORMATION);
             
-            Method method = (Method) methodMap.get(entry.getGid());
+            Method method = (Method) methodMap.get(gid);
+            
             
 	   		listDataTable.addItem(new Object[] {
 	   				entry.getEntryId(), desigButton, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource(),
 	   				femaleDesigButton, femaleGidButton, maleDesigButton, maleGidButton, method.getMname()
    				}, entry.getId());
+	   		
+	   		
+	   		addToParentsInfoMap(entry.getId(), femaleGid, femaleDesig, maleGid, maleDesig);
 		}
 	
 	}
 
+	
+	private void addToParentsInfoMap(Integer id, Integer femaleGid,
+			String femaleDesig, Integer maleGid, String maleDesig) {
+		
+		GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig); 
+		GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig); 
+		CrossParents parents = new CrossParents(femaleEntry, maleEntry);
+		parentsInfo.put(id, parents);
+	}
+
+	
 	private Button generateLaunchGermplasmDetailsButton(String caption, String gid, String description) {
 		Button gidButton = new Button(caption, new GidLinkButtonClickListener(gid,true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -169,7 +196,20 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				menu.show(event.getClientX(), event.getClientX());
+				menu.show(event.getClientX(),event.getClientY());
+			}
+		});
+		
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void contextItemClick(
+					org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				ContextMenuItem clickedItem = event.getClickedItem();
+                if(menuExportList.equals(clickedItem)){
+                	exportCrossesMadeAction();
+                }      
 			}
 		});
 		
@@ -195,7 +235,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		
 		addComponent(tableHeaderLayout);
 		addComponent(tableLayout);
-		parentLayout.addComponent(menu);
+		addComponent(menu);
 	}
 	
 	
@@ -205,7 +245,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			germplasmMap = new HashMap<Integer, Germplasm>();
 
 			// retrieve germplasm of list data to get its parent germplasms
-			this.listEntries = germplasmListManager.getGermplasmListDataByListId(listId, 0, Integer.MAX_VALUE);
+			this.listEntries = germplasmListManager.getGermplasmListDataByListId(list.getId(), 0, Integer.MAX_VALUE);
 			for(GermplasmListData entry : listEntries){
 				germplasmIds.add(entry.getGid());
 			}
@@ -226,7 +266,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			parentGermplasmNames = germplasmDataManager.getPreferredNamesByGids(parentIds);
 			
 		} catch(MiddlewareQueryException ex){
-			LOG.error(ex.getMessage() + listId);
+			LOG.error(ex.getMessage() + list.getId());
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information."
 					, Notification.POSITION_CENTERED);
 		}
@@ -235,7 +275,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	private void initializeListEntriesTable(){
 		count = Long.valueOf(0);
 		try {
-			count = germplasmListManager.countGermplasmListDataByListId(this.listId);
+			count = germplasmListManager.countGermplasmListDataByListId(this.list.getId());
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 			e.printStackTrace();
@@ -286,9 +326,21 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		);
 	}
 	
-	
-	public int getTableEntriesCount(){
-		return listDataTable.getPageLength();
+	private void exportCrossesMadeAction(){
+		CrossingManagerExporter exporter = new CrossingManagerExporter(list, listEntries, 
+				parentsInfo);
+		 String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
+		 
+        try {
+            exporter.exportCrossingManagerExcel(tempFileName);
+            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+            fileDownloadResource.setFilename(list.getName().replace(" ", "_") + ".xls");
+
+            this.getWindow().open(fileDownloadResource);
+    
+        } catch (CrossingManagerExporterException e) {
+            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage(), Notification.POSITION_CENTERED);
+        }
 	}
 
 }
