@@ -70,7 +70,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                 }
             } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
-                    ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+                    ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource());
                 } catch (InternationalizableException e) {  
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();
