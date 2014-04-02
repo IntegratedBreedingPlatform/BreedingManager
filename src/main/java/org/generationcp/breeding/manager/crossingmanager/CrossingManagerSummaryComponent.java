@@ -77,7 +77,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabSheet.hideTabs(true);
 		tabContentLayout = new VerticalLayout();
 		
-		crossListComponent = new CrossesSummaryListDataComponent(tabContentLayout, crossList);
+		crossListComponent = new CrossesSummaryListDataComponent(crossList);
 		femaleDetailsComponent = new SummaryListHeaderComponent(femaleList, 
 				messageSource.getMessage(Message.FEMALE_PARENT_LIST_DETAILS));
 		maleDetailsComponent = new SummaryListHeaderComponent(maleList, 

@@ -40,7 +40,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
@@ -83,7 +82,6 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	}
 	
 	private GermplasmList list;
-	private Layout parentLayout;
 
 	private List<GermplasmListData> listEntries;
 	private Map<Integer, Germplasm> germplasmMap;
@@ -93,8 +91,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	private Map<Integer, String> parentGermplasmNames; // gid of parent, preferred name
 	private Map<Integer, Object> methodMap; // Gid, Method of germplasm
 	
-	public CrossesSummaryListDataComponent(Layout parentLayout, GermplasmList list){
-		this.parentLayout = parentLayout;
+	public CrossesSummaryListDataComponent(GermplasmList list){
 		this.list = list;
 	}
 	
