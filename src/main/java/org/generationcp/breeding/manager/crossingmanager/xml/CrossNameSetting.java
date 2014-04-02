@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 public class CrossNameSetting implements Serializable {
+	
+	public static final String DEFAULT_SEPARATOR = "/";
 
 	private static final long serialVersionUID = 2944997653987903733L;
 
@@ -14,6 +16,7 @@ public class CrossNameSetting implements Serializable {
 	private String suffix;
 	private boolean addSpaceBetweenPrefixAndCode;
 	private Integer numOfDigits;
+	private String separator;
 
 	private Integer startNumber; // "transient" attribute, not saved in DB
 	
@@ -22,22 +25,17 @@ public class CrossNameSetting implements Serializable {
 	}
 
 	public CrossNameSetting(String prefix, String suffix,
-			boolean addSpaceBetweenPrefixAndCode, Integer numOfDigits) {
+			boolean addSpaceBetweenPrefixAndCode, Integer numOfDigits,
+			String separator) {
 		super();
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
 		this.numOfDigits = numOfDigits;
+		this.separator = separator;
 	}
 	
-	public CrossNameSetting(String prefix, String suffix,
-			boolean addSpaceBetweenPrefixAndCode, Integer numOfDigits, Integer startNumber) {
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
-		this.numOfDigits = numOfDigits;
-		this.startNumber = startNumber;
-	}
+	
 
 	@XmlAttribute
 	public String getPrefix() {
@@ -83,6 +81,15 @@ public class CrossNameSetting implements Serializable {
 		this.startNumber = startNumber;
 	}
 
+	@XmlAttribute
+	public String getSeparator() {
+		return separator;
+	}
+
+	public void setSeparator(String separator) {
+		this.separator = separator;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -101,15 +108,25 @@ public class CrossNameSetting implements Serializable {
         		.append(suffix, rhs.suffix)
         		.append(addSpaceBetweenPrefixAndCode, rhs.addSpaceBetweenPrefixAndCode)
         		.append(numOfDigits, rhs.numOfDigits)
+        		.append(separator, rhs.separator)
         		.isEquals();
     }
 
 	@Override
 	public String toString() {
-		return "CrossNameSetting [prefix=" + prefix + ", suffix=" + suffix
-				+ ", addSpaceBetweenPrefixAndCode="
-				+ addSpaceBetweenPrefixAndCode + ", numOfDigits=" + numOfDigits
-				+ "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("CrossNameSetting [prefix=");
+		builder.append(prefix);
+		builder.append(", suffix=");
+		builder.append(suffix);
+		builder.append(", addSpaceBetweenPrefixAndCode=");
+		builder.append(addSpaceBetweenPrefixAndCode);
+		builder.append(", numOfDigits=");
+		builder.append(numOfDigits);
+		builder.append(", separator=");
+		builder.append(separator);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }
