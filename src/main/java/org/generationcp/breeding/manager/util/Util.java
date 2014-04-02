@@ -353,20 +353,6 @@ public class Util {
         return isLeapYear;
     }  
     
-	public static Component createHeaderComponent (String header) {
-		Label headerLabel = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-		headerLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		
-		HorizontalLayout headerLayout = new HorizontalLayout();
-        headerLayout.setWidth("100%");
-        headerLayout.setHeight("30px");
-        headerLayout.addComponent(headerLabel);
-        
-        CssLayout l = new CssLayout();
-        l.addComponent(headerLayout);
-        return l;
-	}
-
 	/**
 	 * Opens and attaches a modal window containing the location manager
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)

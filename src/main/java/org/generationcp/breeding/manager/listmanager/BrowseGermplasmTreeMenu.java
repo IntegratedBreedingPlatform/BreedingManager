@@ -5,13 +5,13 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClick
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
-import org.generationcp.breeding.manager.util.ComponentTree;
-import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ComponentTree;
+import org.generationcp.commons.vaadin.ui.ComponentTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -99,7 +99,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 			}
         });
         
-        attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
+        attributesDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
         VerticalLayout layoutForAttributes = new VerticalLayout();
         layoutForAttributes.addComponent(germplasmAttributesComponent);
         attributesDetails.addChild(layoutForAttributes);
@@ -113,7 +113,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 			}
         });
         
-        pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
+        pedigreeDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);
         pedigreeDetails.addListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;

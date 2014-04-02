@@ -12,13 +12,13 @@ import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
-import org.generationcp.breeding.manager.util.ComponentTree;
-import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ComponentTree;
+import org.generationcp.commons.vaadin.ui.ComponentTreeItem;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Attribute;
@@ -37,7 +37,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -117,10 +116,10 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
         basicDetails.showChild();
         basicDetails.addChild(basicDetailsComponent);
         
-        attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
+        attributesDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
         attributesDetails.addChild(createGermplasmAttribute());
         
-        pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
+        pedigreeDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);
         
         this.addComponent(content);
