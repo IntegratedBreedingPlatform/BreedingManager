@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDia
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
+import org.generationcp.breeding.manager.listmanager.sidebyside.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -122,6 +123,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
+	private AddColumnContextMenu addColumnContextMenu;
 	
 	//Tools Menu Options
 	private String MENU_SELECT_ALL="Select All"; 
@@ -230,7 +232,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		menu = new ContextMenu();
-		menu.setWidth("255px");
+		menu.setWidth("295px");
 		
 		// Generate main level items
 		menu.addItem(MENU_SELECT_ALL);
@@ -242,6 +244,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
 		menuEditList = menu.addItem(MENU_EDIT_LIST);
 		menuDeleteList = menu.addItem(MENU_DELETE_LIST);
+		// Add Column menu will be initialized after list data table is created 
 		
 		try{
 			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
@@ -328,6 +331,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
 		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GROUP_NAME.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+		
+		addColumnContextMenu = new AddColumnContextMenu(parentListDetailsComponent, menu, 
+                listDataTable, ListDataTablePropertyID.GID.getName());
 	}
 
 	@Override
@@ -463,6 +469,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 				 @Override
 	   		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				 addColumnContextMenu.refreshAddColumnMenu();
 	   			 menu.show(event.getClientX(), event.getClientY());
 	   			 
 	   			 if(fromUrl){
@@ -1180,8 +1187,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 
                 listDataTable.setVisibleColumns(visibleColumns);
                 
-                //FIXME: sidebyside re-enable after add columns are done
-                /*if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
+                if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
                     addColumnContextMenu.setPreferredIdColumnValues(false);            
                 }
                 if(isColumnVisible(visibleColumns, AddColumnContextMenu.LOCATIONS)){
@@ -1216,7 +1222,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 }
                 if(isColumnVisible(visibleColumns, AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
                     addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
-                }*/
+                }
                 
                 saveChangesAction();
                 listDataTable.refreshRowCache();
@@ -1338,8 +1344,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         try {
             
             germplasmListManager.updateGermplasmListData(listEntries);
-            //FIXME: sidebyside
-            //germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
+            germplasmListManager.saveListDataColumns(addColumnContextMenu.getListDataCollectionFromTable(listDataTable));
             
             listDataTable.requestRepaint();
             //reset flag to indicate unsaved changes
