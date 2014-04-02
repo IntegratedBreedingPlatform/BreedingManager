@@ -96,6 +96,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private ContextMenuItem menuExportList;
     private ContextMenuItem menuExportForGenotypingOrder;
     private ContextMenuItem menuCopyToList;
+    private ContextMenuItem menuAddColumn;
     
     public static String TOOLS_BUTTON_ID = "Tools";
     
@@ -155,6 +156,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+        menuAddColumn = menu.addItem(messageSource.getMessage(Message.ADD_COLUMN));
         
         resetMenuOptions();
         
@@ -183,6 +185,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuExportList.setEnabled(false);
         menuExportForGenotypingOrder.setEnabled(false);
         menuCopyToList.setEnabled(false);
+        menuAddColumn.setEnabled(false);
     }
 
 	@Override
@@ -402,6 +405,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuExportList.setEnabled(true);
         menuExportForGenotypingOrder.setEnabled(true);
         menuCopyToList.setEnabled(true);
+        menuAddColumn.setEnabled(true);
     }
     
 	public void editList(GermplasmList germplasmList) {
