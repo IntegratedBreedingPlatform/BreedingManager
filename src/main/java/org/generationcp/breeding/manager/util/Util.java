@@ -15,15 +15,20 @@ package org.generationcp.breeding.manager.util;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Calendar;
+import java.util.Deque;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +59,6 @@ public class Util {
 
 	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
 	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
-	
-	@Autowired
-	private static WorkbenchDataManager workbenchDataManager;
 	
 	@Autowired
     private static SimpleResourceBundleMessageSource messageSource;
@@ -457,6 +459,51 @@ public class Util {
         window.addWindow(popupWindow);
         
         return popupWindow;
+	}
+	
+	/**
+	 * Generates a string concatenation of full path of a folder
+	 * eg. output "Program Lists > Folder 1 > Sub Folder 1 >"
+	 * 
+	 * where "Sub Folder 1" is the name of the folder
+	 * 
+	 * @param germplasmListManager
+	 * @param folder
+	 * @return
+	 * @throws MiddlewareQueryException
+	 */
+	public static String generateListFolderPathLabel(GermplasmListManager germplasmListManager, GermplasmList folder) throws MiddlewareQueryException{
+		
+		Deque<GermplasmList> parentFolders = new ArrayDeque<GermplasmList>();
+        GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, folder, parentFolders);
+        
+        StringBuilder locationFolderString = new StringBuilder();
+        locationFolderString.append("Program Lists");
+        
+        while(!parentFolders.isEmpty())
+        {
+        	locationFolderString.append(" > ");
+        	GermplasmList parentFolder = parentFolders.pop();
+        	locationFolderString.append(parentFolder.getName());
+        }
+        
+        if(folder != null){
+        	locationFolderString.append(" > ");
+        	locationFolderString.append(folder.getName());
+        }
+        
+        String returnString = locationFolderString.toString();
+        if(folder != null && folder.getName().length() >= 40){
+        	returnString = folder.getName().substring(0, 47);
+        	
+        } else if(locationFolderString.length() > 47){
+        	int lengthOfFolderName = folder.getName().length();
+        	returnString = locationFolderString.substring(0, (47 - lengthOfFolderName - 6)) + "... > " + folder.getName();
+        } 
+        
+        returnString += " > ";
+        
+        return returnString;
 	}
 	
 }
