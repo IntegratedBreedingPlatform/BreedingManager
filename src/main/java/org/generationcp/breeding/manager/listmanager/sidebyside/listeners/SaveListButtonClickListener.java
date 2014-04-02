@@ -332,9 +332,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
     	 			 
     	 		});
 	            
+	            Button designationButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(entry.getGid().toString(), true));
+	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+	            designationButton.setDescription("Click to view Germplasm information");
+	            
 	            item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
 	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(entry.getDesignation());
+	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
 	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
