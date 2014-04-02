@@ -86,6 +86,9 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private Button saveButton;
     private Button resetButton;
     
+    //Layout Component
+    Panel listDataTablePanel;
+    
     private BuildNewListDropHandler dropHandler;
     
     //Tools Button Context Menu
@@ -267,7 +270,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         this.addComponent(instructionLayout);
         
-        Panel listDataTablePanel = new Panel();
+        listDataTablePanel = new Panel();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
@@ -299,20 +302,20 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
     	table.setData(GERMPLASMS_TABLE_DATA);
     	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-        
+    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+    	
         messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.CHECK_ICON);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_ID.getName(), Message.HASHTAG);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
         
         table.setSelectable(true);
         table.setMultiSelect(true);
@@ -448,7 +451,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 	}
 	
-	public void resetGermplasmTable(){
+	public void resetGermplasmTable(){		
 		tableWithSelectAllLayout.getTable().removeAllItems();
 	}
 	
@@ -485,9 +488,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             GermplasmListData listEntry = new GermplasmListData();
             listEntry.setId(entryId);
             
-            Object designation = item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            
+            Button designationButton = (Button)  item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            String designation = designationButton.getCaption();
             if(designation != null){
-                listEntry.setDesignation(designation.toString());
+                listEntry.setDesignation(designation);
             } else{
                 listEntry.setDesignation("-");
             }
