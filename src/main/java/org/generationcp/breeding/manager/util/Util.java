@@ -35,6 +35,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -353,11 +354,16 @@ public class Util {
     }  
     
 	public static Component createHeaderComponent (String header) {
+		Label headerLabel = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
+		headerLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		
+		HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setWidth("100%");
+        headerLayout.setHeight("30px");
+        headerLayout.addComponent(headerLabel);
+        
         CssLayout l = new CssLayout();
-        l.setWidth("200px");
-        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-        l1.setStyleName(Bootstrap.Typography.H4.styleName());
-        l.addComponent(l1);
+        l.addComponent(headerLayout);
         return l;
 	}
 
