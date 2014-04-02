@@ -292,6 +292,10 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         if (tab != null){
             detailsTabSheet.removeTab(tab);
         }
+        
+        if(detailsTabSheet.getComponentCount() == 0){
+            this.hideDetailsTabsheet();
+        }
     }
     
     /*public void closeAllTab(String tabName){
