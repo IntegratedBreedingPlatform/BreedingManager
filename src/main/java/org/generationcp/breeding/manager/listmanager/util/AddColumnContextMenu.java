@@ -30,6 +30,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table;
 
+@Deprecated
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
     private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
