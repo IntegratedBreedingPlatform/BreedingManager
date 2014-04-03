@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -214,6 +215,7 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label("Folder Name");
+        l.addStyleName(AppConstants.CssStyles.BOLD);
         final TextField name = new TextField();
         name.setMaxLength(50);
 
@@ -404,11 +406,11 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label();
-        
+        l.addStyleName(AppConstants.CssStyles.BOLD);
     	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		l.setCaption("Folder Name");
+    		l.setValue("Folder Name");
     	} else {
-    		l.setCaption("List Name");
+    		l.setValue("List Name");
     	}
 
         final TextField name = new TextField();
