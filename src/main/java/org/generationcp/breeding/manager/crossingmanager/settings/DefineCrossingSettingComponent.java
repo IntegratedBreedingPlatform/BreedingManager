@@ -81,7 +81,7 @@ public class DefineCrossingSettingComponent extends AbsoluteLayout implements Br
 	@Override
 	public void instantiateComponents() {
 		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
-		defineCrossingSettingsLabel.setWidth("175px");
+		defineCrossingSettingsLabel.setWidth("250px");
 		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		mandatoryFieldLabel =  new Label("<i>" +messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD) 

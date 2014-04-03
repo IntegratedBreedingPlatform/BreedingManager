@@ -426,7 +426,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
         
 		VerticalLayout parentListMainLayout = new VerticalLayout();
-		parentListMainLayout.setWidth("540px");
+		parentListMainLayout.setWidth("538px");
 		parentListMainLayout.setSpacing(true);
 		parentListMainLayout.setMargin(true);
 		parentListMainLayout.addComponent(parentsLayout);

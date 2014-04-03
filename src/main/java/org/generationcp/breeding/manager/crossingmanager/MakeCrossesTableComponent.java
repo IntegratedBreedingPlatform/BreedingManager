@@ -314,9 +314,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		lblCrossMade = new Label();
 		lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
 		lblCrossMade.addStyleName(AppConstants.CssStyles.BOLD);
+		lblCrossMade.setWidth("120px");
 		
         totalCrossesLabel = new Label();
         totalCrossesLabel.setContentMode(Label.CONTENT_XHTML);
+        totalCrossesLabel.setWidth("150px");
         
         saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -380,11 +382,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	@Override
 	public void layoutComponents() {
 		HorizontalLayout labelContainer = new HorizontalLayout();
+		labelContainer.setSpacing(true);
         labelContainer.setWidth("100%");
         labelContainer.addComponent(lblCrossMade);
         labelContainer.addComponent(totalCrossesLabel);
         labelContainer.addComponent(saveButton);
-        labelContainer.setComponentAlignment(lblCrossMade, Alignment.MIDDLE_LEFT);
         labelContainer.setComponentAlignment(totalCrossesLabel, Alignment.MIDDLE_CENTER);
         labelContainer.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         
@@ -395,7 +397,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         makeCrossesLayout.addComponent(tableCrossesMade);
 		
         Panel makeCrossesPanel = new Panel();
-        makeCrossesPanel.setWidth("550px");
+        makeCrossesPanel.setWidth("400px");
         makeCrossesPanel.setLayout(makeCrossesLayout);
         makeCrossesPanel.addStyleName("section_panel_layout");
 		

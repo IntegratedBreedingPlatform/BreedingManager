@@ -242,7 +242,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
         
         listDetailsTabSheet = new TabSheet();
-        listDetailsTabSheet.setWidth("900px");
+        listDetailsTabSheet.setWidth("746px");
         listDetailsTabSheet.setHeight("390px");
         listDetailsTabSheet.setVisible(false);
         
@@ -296,11 +296,20 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
         addComponent(listTree, "top:15px; left:15px;");
-        addComponent(selectParentsLabel, "top:15px; left:250px;");
+        
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setWidth("746px");
+        headerLayout.addComponent(selectParentsLabel);
+        headerLayout.addComponent(closeAllTabsButton);
+        headerLayout.setComponentAlignment(selectParentsLabel,Alignment.MIDDLE_LEFT);
+        headerLayout.setComponentAlignment(closeAllTabsButton,Alignment.MIDDLE_RIGHT);
+        
+        addComponent(headerLayout, "top:15px; left:250px;");
+        
         addComponent(instructionForSelectParents, "top:50px; left:250px;");
         addComponent(listDetailsTabSheet, "top:40px; left:250px;");
-        addComponent(closeAllTabsButton, "top:30px; right:35px;");
         
+//        listDetailsTabSheet.setWidth("746px");
         HorizontalLayout resultsTableLayout = new HorizontalLayout();
         resultsTableLayout.setSpacing(true);
         resultsTableLayout.addComponent(parentsComponent);
@@ -317,7 +326,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         bottomLayout.addComponent(layoutButtonArea);
         bottomLayout.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
         
-        addComponent(bottomLayout, "top:435px; left:15px;");
+        addComponent(bottomLayout, "top:435px; left:0px;");
         
 	}
 	
