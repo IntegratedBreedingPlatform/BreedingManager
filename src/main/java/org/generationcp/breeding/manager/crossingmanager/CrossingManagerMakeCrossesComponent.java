@@ -309,7 +309,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         addComponent(instructionForSelectParents, "top:50px; left:250px;");
         addComponent(listDetailsTabSheet, "top:40px; left:250px;");
         
-//        listDetailsTabSheet.setWidth("746px");
         HorizontalLayout resultsTableLayout = new HorizontalLayout();
         resultsTableLayout.setSpacing(true);
         resultsTableLayout.addComponent(parentsComponent);
