@@ -111,7 +111,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
-        
+    	
         noListLabel = new Label();
         noListLabel.setImmediate(true);
         
@@ -170,10 +170,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headingBar);
         innerLayout.addComponent(defaultLabel);
-        innerLayout.addComponent(detailsTabSheet);
-                
-        this.addComponent(innerLayout);
         
+        addComponent(innerLayout);
+        addComponent(detailsTabSheet);
+        setExpandRatio(innerLayout, 1);
+        setExpandRatio(detailsTabSheet, 99);
         displayDefault();
     }
     
