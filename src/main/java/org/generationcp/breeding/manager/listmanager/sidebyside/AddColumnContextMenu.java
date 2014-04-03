@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listmanager.util;
+package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -27,10 +26,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table;
 
-@Deprecated
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
     private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
@@ -38,13 +35,15 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    private ListManagerTreeMenu listManagerTreeMenu = null;
+    private ListDetailsComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
     private String GIDPropertyId;
-    private Button addColumnButton;
+    //private Button addColumnButton;
     private Table targetTable;
     
-    private ContextMenu menu;
+    //private ContextMenu menu;
+    private ContextMenu sourceContextMenu;
+    private ContextMenuItem addColumnItem;
     private ContextMenuItem menuFillWithPreferredId;
     private ContextMenuItem menuFillWithPreferredName;
     private ContextMenuItem menuFillWithGermplasmDate;
@@ -61,6 +60,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithCrossMaleGID;
     private ContextMenuItem menuFillWithCrossMalePrefName;
     
+    public static String ADD_COLUMN_MENU = "Add Column";
     public static String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
     public static String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
     public static String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
@@ -144,18 +144,17 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     /**
      * Add "Add column" context menu to a table
-     * @param listManagerTreeMenu - tab content from list manager details section.
-     * @param source - context menu will attach to this
-     * @param addColumnButton - util will attach event listener to this
+     * @param listDetailsComponent - tab content from list manager details section.
+     * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(ListManagerTreeMenu listManagerTreeMenu, AbsoluteLayout absoluteLayoutSource, 
-            Button addColumnButton, Table targetTable, String gid){
-        this.listManagerTreeMenu = listManagerTreeMenu;
+    public AddColumnContextMenu(ListDetailsComponent listDetailsComponent, 
+            ContextMenu sourceContextMenu, Table targetTable, String gid){
+        this.listDetailsComponent = listDetailsComponent;
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
-        this.addColumnButton = addColumnButton;
+        this.sourceContextMenu = sourceContextMenu;
         this.absoluteLayoutSource = absoluteLayoutSource;
         
         setupContextMenu();
@@ -163,7 +162,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     /**
      * Add "Add column" context menu to a table
-     * @param listManagerTreeMenu - tab content from list manager details section.
+     * @param listDetailsComponent - tab content from list manager details section.
      * @param source - context menu will attach to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
@@ -179,15 +178,15 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     /**
      * Add "Add column" context menu to a table
      * @param source - context menu will attach to this
-     * @param addColumnButton - util will attach event listener to this
+     * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
     public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
-            Button addColumnButton, Table targetTable, String gid){
+            ContextMenu sourceContextMenu, Table targetTable, String gid){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
-        this.addColumnButton = addColumnButton;
+        this.sourceContextMenu = sourceContextMenu;
         this.absoluteLayoutSource = absoluteLayoutSource;
         
         setupContextMenu();
@@ -196,15 +195,15 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     /**
      * Add "Add column" context menu to a table
      * @param source - context menu will attach to this
-     * @param addColumnButton - util will attach event listener to this
+     * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
     public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
-            Button addColumnButton, Table targetTable, String gid, boolean fromBuildNewList){
+            ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
-        this.addColumnButton = addColumnButton;
+        this.sourceContextMenu = sourceContextMenu;
         this.absoluteLayoutSource = absoluteLayoutSource;
         this.fromBuildNewList = fromBuildNewList;
         
@@ -231,14 +230,14 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void setupContextMenu(){
         
-        menu = new ContextMenu();
-        menuFillWithPreferredId = menu.addItem(FILL_WITH_PREFERRED_ID);
-        menuFillWithPreferredName = menu.addItem(FILL_WITH_PREFERRED_NAME);
-        menuFillWithGermplasmDate = menu.addItem(FILL_WITH_GERMPLASM_DATE);
-        menuFillWithLocations = menu.addItem(FILL_WITH_LOCATION);
-        menuFillWithMethodInfo = menu.addItem(FILL_WITH_METHOD_INFO);
-        menuFillWithCrossFemaleInfo = menu.addItem(FILL_WITH_CROSS_FEMALE_INFO);
-        menuFillWithCrossMaleInfo = menu.addItem(FILL_WITH_CROSS_MALE_INFO);
+        addColumnItem = sourceContextMenu.addItem(ADD_COLUMN_MENU);
+        menuFillWithPreferredId = addColumnItem.addItem(FILL_WITH_PREFERRED_ID);
+        menuFillWithPreferredName = addColumnItem.addItem(FILL_WITH_PREFERRED_NAME);
+        menuFillWithGermplasmDate = addColumnItem.addItem(FILL_WITH_GERMPLASM_DATE);
+        menuFillWithLocations = addColumnItem.addItem(FILL_WITH_LOCATION);
+        menuFillWithMethodInfo = addColumnItem.addItem(FILL_WITH_METHOD_INFO);
+        menuFillWithCrossFemaleInfo = addColumnItem.addItem(FILL_WITH_CROSS_FEMALE_INFO);
+        menuFillWithCrossMaleInfo = addColumnItem.addItem(FILL_WITH_CROSS_MALE_INFO);
         
         //breeding method sub-options
         menuFillWithMethodName = menuFillWithMethodInfo.addItem(FILL_WITH_METHOD_NAME);
@@ -254,7 +253,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithCrossMaleGID = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_GID);
         menuFillWithCrossMalePrefName = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_PREF_NAME);
         
-        menu.addListener(new ContextMenu.ClickListener() {
+        sourceContextMenu.addListener(new ContextMenu.ClickListener() {
             private static final long serialVersionUID = 1L;
 
             //Handle clicks on menu items
@@ -290,115 +289,216 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             
         });
         
+        //FIXME: sidebyside
         //Attach menu to whatever source passed to the constructor of this class/util
-        if(absoluteLayoutSource!=null)
-            absoluteLayoutSource.addComponent(menu);
+        /*if(absoluteLayoutSource!=null)
+            absoluteLayoutSource.addComponent(menu);*/
         
         //Attach listener to the "Add Column" button passed to the constructor of this class/util
-        if(addColumnButton!=null){
-            addColumnButton.addListener(new ClickListener() {
-                private static final long serialVersionUID = 1L;
+        /*if(this.sourceContextMenu!=null){
+            sourceContextMenu.addListener(new ContextMenu.ClickListener() {
     
+                private static final long serialVersionUID = -6399264383924196725L;
+
                 @Override
-                public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                    
-                    //Check if columns already exist in the table
-                    if(propertyExists(PREFERRED_ID)){
-                        menuFillWithPreferredId.setEnabled(false);
-                    } else {
-                        menuFillWithPreferredId.setEnabled(true);
+                public void contextItemClick(ClickEvent event) {
+                    ContextMenuItem clickedItem = event.getClickedItem();
+                    if(clickedItem.getName().equals(ADD_COLUMN_MENU)){
+                      //Check if columns already exist in the table
+                        if(propertyExists(PREFERRED_ID)){
+                            menuFillWithPreferredId.setEnabled(false);
+                        } else {
+                            menuFillWithPreferredId.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(PREFERRED_NAME)){
+                            menuFillWithPreferredName.setEnabled(false);
+                        } else {
+                            menuFillWithPreferredName.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(GERMPLASM_DATE)){
+                            menuFillWithGermplasmDate.setEnabled(false);
+                        } else {
+                            menuFillWithGermplasmDate.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(LOCATIONS)){
+                            menuFillWithLocations.setEnabled(false);
+                        } else {
+                            menuFillWithLocations.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(METHOD_NAME)){
+                            menuFillWithMethodName.setEnabled(false);
+                        } else {
+                            menuFillWithMethodName.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(METHOD_ABBREV)){
+                            menuFillWithMethodAbbrev.setEnabled(false);
+                        } else {
+                            menuFillWithMethodAbbrev.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(METHOD_NUMBER)){
+                            menuFillWithMethodNumber.setEnabled(false);
+                        } else {
+                            menuFillWithMethodNumber.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(METHOD_GROUP)){
+                            menuFillWithMethodGroup.setEnabled(false);
+                        } else {
+                            menuFillWithMethodGroup.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
+                                && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
+                            menuFillWithMethodInfo.setEnabled(false);
+                        } else {
+                            menuFillWithMethodInfo.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_FEMALE_GID)){
+                            menuFillWithCrossFemaleGID.setEnabled(false);
+                        } else {
+                            menuFillWithCrossFemaleGID.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_FEMALE_PREF_NAME)){
+                            menuFillWithCrossFemalePrefName.setEnabled(false);
+                        } else {
+                            menuFillWithCrossFemalePrefName.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
+                            menuFillWithCrossFemaleInfo.setEnabled(false);
+                        } else {
+                            menuFillWithCrossFemaleInfo.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_MALE_GID)){
+                            menuFillWithCrossMaleGID.setEnabled(false);
+                        } else {
+                            menuFillWithCrossMaleGID.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_MALE_PREF_NAME)){
+                            menuFillWithCrossMalePrefName.setEnabled(false);
+                        } else {
+                            menuFillWithCrossMalePrefName.setEnabled(true);
+                        }
+                        
+                        if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
+                            menuFillWithCrossMaleInfo.setEnabled(false);
+                        } else {
+                            menuFillWithCrossMaleInfo.setEnabled(true);
+                        }
+                        
+                        //Display context menu
+                        //menu.show(event.getClientX(), event.getClientY());
+                        //sourceContextMenu.requestRepaint();
                     }
-                    
-                    if(propertyExists(PREFERRED_NAME)){
-                        menuFillWithPreferredName.setEnabled(false);
-                    } else {
-                        menuFillWithPreferredName.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(GERMPLASM_DATE)){
-                        menuFillWithGermplasmDate.setEnabled(false);
-                    } else {
-                        menuFillWithGermplasmDate.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(LOCATIONS)){
-                        menuFillWithLocations.setEnabled(false);
-                    } else {
-                        menuFillWithLocations.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(METHOD_NAME)){
-                        menuFillWithMethodName.setEnabled(false);
-                    } else {
-                        menuFillWithMethodName.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(METHOD_ABBREV)){
-                        menuFillWithMethodAbbrev.setEnabled(false);
-                    } else {
-                        menuFillWithMethodAbbrev.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(METHOD_NUMBER)){
-                        menuFillWithMethodNumber.setEnabled(false);
-                    } else {
-                        menuFillWithMethodNumber.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(METHOD_GROUP)){
-                        menuFillWithMethodGroup.setEnabled(false);
-                    } else {
-                        menuFillWithMethodGroup.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
-                            && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
-                        menuFillWithMethodInfo.setEnabled(false);
-                    } else {
-                        menuFillWithMethodInfo.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_FEMALE_GID)){
-                        menuFillWithCrossFemaleGID.setEnabled(false);
-                    } else {
-                        menuFillWithCrossFemaleGID.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_FEMALE_PREF_NAME)){
-                        menuFillWithCrossFemalePrefName.setEnabled(false);
-                    } else {
-                        menuFillWithCrossFemalePrefName.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
-                        menuFillWithCrossFemaleInfo.setEnabled(false);
-                    } else {
-                        menuFillWithCrossFemaleInfo.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_MALE_GID)){
-                    	menuFillWithCrossMaleGID.setEnabled(false);
-                    } else {
-                    	menuFillWithCrossMaleGID.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_MALE_PREF_NAME)){
-                    	menuFillWithCrossMalePrefName.setEnabled(false);
-                    } else {
-                    	menuFillWithCrossMalePrefName.setEnabled(true);
-                    }
-                    
-                    if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
-                    	menuFillWithCrossMaleInfo.setEnabled(false);
-                    } else {
-                    	menuFillWithCrossMaleInfo.setEnabled(true);
-                    }
-                    
-                    //Display context menu
-                    menu.show(event.getClientX(), event.getClientY());
                 }
             });
+        }*/
+    }
+    
+    public void refreshAddColumnMenu() {
+      //Check if columns already exist in the table
+        if(propertyExists(PREFERRED_ID)){
+            menuFillWithPreferredId.setEnabled(false);
+        } else {
+            menuFillWithPreferredId.setEnabled(true);
         }
+        
+        if(propertyExists(PREFERRED_NAME)){
+            menuFillWithPreferredName.setEnabled(false);
+        } else {
+            menuFillWithPreferredName.setEnabled(true);
+        }
+        
+        if(propertyExists(GERMPLASM_DATE)){
+            menuFillWithGermplasmDate.setEnabled(false);
+        } else {
+            menuFillWithGermplasmDate.setEnabled(true);
+        }
+        
+        if(propertyExists(LOCATIONS)){
+            menuFillWithLocations.setEnabled(false);
+        } else {
+            menuFillWithLocations.setEnabled(true);
+        }
+        
+        if(propertyExists(METHOD_NAME)){
+            menuFillWithMethodName.setEnabled(false);
+        } else {
+            menuFillWithMethodName.setEnabled(true);
+        }
+        
+        if(propertyExists(METHOD_ABBREV)){
+            menuFillWithMethodAbbrev.setEnabled(false);
+        } else {
+            menuFillWithMethodAbbrev.setEnabled(true);
+        }
+        
+        if(propertyExists(METHOD_NUMBER)){
+            menuFillWithMethodNumber.setEnabled(false);
+        } else {
+            menuFillWithMethodNumber.setEnabled(true);
+        }
+        
+        if(propertyExists(METHOD_GROUP)){
+            menuFillWithMethodGroup.setEnabled(false);
+        } else {
+            menuFillWithMethodGroup.setEnabled(true);
+        }
+        
+        if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
+                && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
+            menuFillWithMethodInfo.setEnabled(false);
+        } else {
+            menuFillWithMethodInfo.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_FEMALE_GID)){
+            menuFillWithCrossFemaleGID.setEnabled(false);
+        } else {
+            menuFillWithCrossFemaleGID.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_FEMALE_PREF_NAME)){
+            menuFillWithCrossFemalePrefName.setEnabled(false);
+        } else {
+            menuFillWithCrossFemalePrefName.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
+            menuFillWithCrossFemaleInfo.setEnabled(false);
+        } else {
+            menuFillWithCrossFemaleInfo.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_MALE_GID)){
+            menuFillWithCrossMaleGID.setEnabled(false);
+        } else {
+            menuFillWithCrossMaleGID.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_MALE_PREF_NAME)){
+            menuFillWithCrossMalePrefName.setEnabled(false);
+        } else {
+            menuFillWithCrossMalePrefName.setEnabled(true);
+        }
+        
+        if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
+            menuFillWithCrossMaleInfo.setEnabled(false);
+        } else {
+            menuFillWithCrossMaleInfo.setEnabled(true);
+        }
+        
+        sourceContextMenu.requestRepaint();
     }
     
     private void doFixForTruncatedDataInEditableTable(){
@@ -410,8 +510,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     private void markHasChangesFlags(boolean fromAddColumn){
     	//mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null && fromAddColumn){ 
-        	listManagerTreeMenu.setChanged(true); 
+        if(listDetailsComponent != null && fromAddColumn){ 
+        	listDetailsComponent.setChanged(true); 
         }
         
         //mark flag that changes have been made in buildNewListTable

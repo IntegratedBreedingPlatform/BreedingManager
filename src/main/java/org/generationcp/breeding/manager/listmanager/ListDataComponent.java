@@ -1637,5 +1637,12 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     public List<GermplasmListData> getListDatas() {
         return listDatas;
     }
+
+	@Override
+	public void finishAddingEntry(List<Integer> gids) {
+		for(Integer gid : gids){
+			finishAddingEntry(gid);
+		}
+	}
     
 }
