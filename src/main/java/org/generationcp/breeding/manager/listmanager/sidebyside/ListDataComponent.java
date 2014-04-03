@@ -19,7 +19,6 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -134,7 +133,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Tools";
-  	private static String TOOLS_TOOLTIP = "Tools";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
   	private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
   	
@@ -224,7 +222,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		toolsButton.setData(TOOLS_BUTTON_ID);
 		toolsButton.setIcon(ICON_TOOLS);
 		toolsButton.setWidth("100px");
-		toolsButton.setDescription(TOOLS_TOOLTIP);
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		menu = new ContextMenu();
