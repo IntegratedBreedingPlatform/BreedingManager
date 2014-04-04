@@ -111,6 +111,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
+    	detailsTabSheet.setHeight("550px");
     	
         noListLabel = new Label();
         noListLabel.setImmediate(true);

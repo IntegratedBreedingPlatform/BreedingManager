@@ -106,7 +106,7 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         includeDerivativeLayout.addComponent(applyButton);
         
         HorizontalLayout pedigreeHorizontalLayout = new HorizontalLayout();
-		pedigreeHorizontalLayout.setWidth("400px");
+		pedigreeHorizontalLayout.setWidth("500px");
 		pedigreeHorizontalLayout.setMargin(false);
         pedigreeHorizontalLayout.addComponent(includeDerivativeLayout);
         pedigreeHorizontalLayout.addComponent(btnViewPedigreeGraph);
