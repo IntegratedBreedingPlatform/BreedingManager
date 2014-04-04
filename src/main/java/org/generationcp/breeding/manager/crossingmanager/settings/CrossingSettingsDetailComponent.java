@@ -51,7 +51,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 	private static final long serialVersionUID = -7733004867121978697L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsDetailComponent.class);
-	private static String CROSSING_MANAGER_TOOL_NAME = "crossing_manager";
 	private static final int SETTING_NAME_MAX_LENGTH = 64;
 	
     @Autowired
@@ -306,7 +305,7 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 		try{
 			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 			project = workbenchDataManager.getLastOpenedProject(wbUserId);
-			crossingManagerTool = workbenchDataManager.getToolWithName(CROSSING_MANAGER_TOOL_NAME);
+			crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
 		} catch(MiddlewareQueryException ex){
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);

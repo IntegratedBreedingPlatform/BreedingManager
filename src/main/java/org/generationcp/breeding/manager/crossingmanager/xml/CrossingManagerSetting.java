@@ -10,6 +10,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 
 @XmlRootElement
 public class CrossingManagerSetting implements Serializable {
+	
+	public static final String CROSSING_MANAGER_TOOL_NAME = "crossing_manager";
 
 	private static final long serialVersionUID = 905356968758567192L;
 

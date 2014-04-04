@@ -5,11 +5,13 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.TemplateSetting;
+import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -176,9 +178,13 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 	}
 	
 	public void setSettingsComboBox(TemplateSetting currentSetting){
-		TemplateSetting templateSettingFilter = new TemplateSetting();
 		settingsComboBox.removeAllItems();
 		try {
+			Tool crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
+			
+			TemplateSetting templateSettingFilter = new TemplateSetting();
+			templateSettingFilter.setTool(crossingManagerTool);
+			
 			List<TemplateSetting> templateSettings = workbenchDataManager.getTemplateSettings(templateSettingFilter);
 			
 			for(TemplateSetting ts : templateSettings){
