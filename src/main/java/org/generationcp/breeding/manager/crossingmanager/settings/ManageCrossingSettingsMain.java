@@ -8,7 +8,8 @@ import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpd
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -135,6 +136,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 				(CrossesMadeContainerUpdateListener) selectedStep;
 			listener.updateCrossesMadeContainer(this);
 		}
+		
 		int step = wizardDisplay.nextStep();
 		showNextWizardStep(step);
 		getWindow().setScrollTop(0);
@@ -148,7 +150,12 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	private void showNextWizardStep(int step) {
 		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
 		if (tab != null){
-			tabSheet.setSelectedTab(tab.getComponent());
+			Component tabComponent = tab.getComponent();
+			tabSheet.setSelectedTab(tabComponent);
+			if (tabComponent instanceof StepChangeListener){
+				StepChangeListener listener = (StepChangeListener) tabComponent;
+				listener.updatePage();
+			}
 		}
 		
 		if(step == 0){
@@ -182,6 +189,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     
     public void reset(){
         this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
+        getWindow().setScrollTop(0);
     }
 
 }

@@ -7,7 +7,9 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
@@ -37,7 +39,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ListTreeActionsListener{
+        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ListTreeActionsListener, StepChangeListener{
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -147,6 +149,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     
     public void backButtonClickAction(){
+    	if (crossesTableComponent.getCrossList() != null){
+    		MessageNotifier.showWarning(getWindow(), "Invalid Action", "Cannot change settings once crosses have been saved");
+    		return;
+    	}
+    	
     	if (this.source != null){
     		this.source.backStep();
     	}
@@ -350,5 +357,24 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	@Override
 	public void openListDetails(GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
+	}
+	
+    public String getSeparatorString(){
+    	CrossNameSetting crossNameSetting = getCurrentCrossingSetting().getCrossNameSetting();
+    	return crossNameSetting.getSeparator();
+    }
+
+	
+	private boolean doUpdateTable(){
+		return !getSeparatorString().equals(crossesTableComponent.getSeparator());
+	}
+
+	@Override
+	public void updatePage() {
+		// only make updates to the page if separator was changed
+		if (doUpdateTable() && crossesTableComponent.getCrossList() == null){
+			crossesTableComponent.updateSeparatorForCrossesMade();
+		}
+		
 	}
 }
