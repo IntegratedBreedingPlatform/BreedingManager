@@ -35,7 +35,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
+    
 	private Label toolTitle;
 	private Label makeCrossesLabel;
 	private PopupView toolPopupView;
@@ -135,6 +135,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		}
 		int step = wizardDisplay.nextStep();
 		showNextWizardStep(step);
+		getWindow().setScrollTop(0);
 	}
 	
 	public void backStep(){
@@ -174,6 +175,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
         this.removeComponent(this.tabSheet);
         
         this.addComponent(summaryComponent, "top:75px");
+        getWindow().setScrollTop(0);
     }
     
     public void reset(){

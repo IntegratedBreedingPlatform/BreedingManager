@@ -5,6 +5,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -13,6 +14,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -32,6 +33,7 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -43,12 +45,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
 	
 	private Integer germplasmListId;
+	private GermplasmList germplasmList;
+	private Long count;
 	
 	private Label listEntriesLabel;
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
 	private String listName;
+	
+	private ViewListHeaderWindow viewListHeaderWindow;
 	
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	
@@ -84,17 +90,17 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	@Override
 	public void instantiateComponents() {
+		retrieveListDetails();
 		
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
-		Long count = Long.valueOf(0);
-		try {
-			count = germplasmListManager.countGermplasmListDataByListId(this.germplasmListId);
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage());
-			e.printStackTrace();
-		}
+		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
+		
+		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
+		viewListHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
+		viewListHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+		
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
 		tableWithSelectAllLayout.setWidth("100%");
 		
@@ -140,6 +146,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 	}
 
+	private void retrieveListDetails() {
+		try {
+			germplasmList = germplasmListManager.getGermplasmListById(this.germplasmListId);
+			count = germplasmListManager.countGermplasmListDataByListId(this.germplasmListId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error getting list details" + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void initializeValues() {
 		try{
@@ -183,7 +199,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	@Override
 	public void addListeners() {
-//		
+		viewListHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 329434322390122057L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openViewListHeaderWindow();
+			}
+		});
 	}
 
 	@Override
@@ -200,6 +223,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		addComponent(headerLayout);
 		addComponent(tableWithSelectAllLayout);
+	}
+	
+	private void openViewListHeaderWindow(){
+		this.getWindow().addWindow(viewListHeaderWindow);
 	}
 	
 	public Table getListDataTable(){

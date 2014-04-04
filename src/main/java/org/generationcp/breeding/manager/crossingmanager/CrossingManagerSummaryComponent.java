@@ -7,7 +7,6 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +63,8 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
+		
+		crossListComponent.focus();
 	}
 
 	@Override
@@ -86,6 +87,8 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		
 		doneButton = new Button(messageSource.getMessage(Message.DONE));
 		doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		
+		
 	}
 
 
@@ -119,6 +122,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 
 	private void layoutSummaryPageContent() {
 		HorizontalLayout parentsLayout = new HorizontalLayout();
+		parentsLayout.setSpacing(true);
 		parentsLayout.setHeight("130px");
 		parentsLayout.setWidth("100%");
 		parentsLayout.addComponent(femaleDetailsComponent);
@@ -140,26 +144,13 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabContentLayout.addComponent(settingsComponent);
 		tabContentLayout.addComponent(buttonLayout);
 		
-		tabSheet.setHeight("590px");
+		tabSheet.setHeight("600px");
 		tabSheet.addTab(tabContentLayout);
 	}
 
 	
 	private void doneButtonClickAction(){
-		ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
-	            messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
-	            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
-	            new ConfirmDialog.Listener() {
-					private static final long serialVersionUID = 1L;
-
-					public void onClose(ConfirmDialog dialog) {
-	                    if (dialog.isConfirmed()) {
-	                        crossingManagerMain.reset();
-	                    }
-	                }
-	            }
-	        );
-		
+		crossingManagerMain.reset();
 	}
 
 

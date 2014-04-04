@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -44,6 +45,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class CrossesSummaryListDataComponent extends VerticalLayout implements 
@@ -70,12 +72,15 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	
 	private Table listDataTable;
 	private Button toolsButton;
+	private Button viewHeaderButton;
 	
 	private Long count;
 	
 	//Menu for tools button
 	private ContextMenu menu; 
 	private ContextMenuItem menuExportList;
+	
+	private ViewListHeaderWindow viewListHeaderWindow;
 	
 	private enum CrossListDataColumn {
 		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
@@ -107,6 +112,13 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	public void instantiateComponents() {
 		listEntriesLabel = new Label(messageSource.getMessage(Message.CROSS_LIST_ENTRIES).toUpperCase());
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		listEntriesLabel.setWidth("160px");
+		
+		viewListHeaderWindow = new ViewListHeaderWindow(list);
+		
+		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
+		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
+		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
 		initializeListEntriesTable();
 		
@@ -114,7 +126,6 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
 		toolsButton.setWidth("100px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		
 		
 		menu = new ContextMenu();
 		menu.setWidth("200px");
@@ -213,6 +224,15 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			}
 		});
 		
+		viewHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 329434322390122057L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openViewListHeaderWindow();
+			}
+		});
+		
 	}
 
 	@Override
@@ -223,9 +243,16 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		tableHeaderLayout.setHeight("25px");
 		tableHeaderLayout.setWidth("100%");
 		
-		tableHeaderLayout.addComponent(listEntriesLabel);
+		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setSpacing(true);
+		leftHeaderLayout.addComponent(listEntriesLabel);
+		leftHeaderLayout.addComponent(viewHeaderButton);
+		leftHeaderLayout.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_RIGHT);
+		
+		
+		tableHeaderLayout.addComponent(leftHeaderLayout);
 		tableHeaderLayout.addComponent(toolsButton);
-		tableHeaderLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		tableHeaderLayout.setComponentAlignment(leftHeaderLayout, Alignment.MIDDLE_LEFT);
 		tableHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		
 		VerticalLayout tableLayout = new VerticalLayout();
@@ -341,6 +368,14 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
         } catch (CrossingManagerExporterException e) {
             MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage(), Notification.POSITION_CENTERED);
         }
+	}
+	
+	public void openViewListHeaderWindow(){
+		this.getWindow().addWindow(viewListHeaderWindow);
+	}
+	
+	public void focus(){
+		listDataTable.focus();
 	}
 
 }

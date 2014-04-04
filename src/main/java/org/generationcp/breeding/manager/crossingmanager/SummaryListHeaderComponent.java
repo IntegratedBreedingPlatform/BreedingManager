@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 public class SummaryListHeaderComponent extends VerticalLayout
 		implements BreedingManagerLayout, InitializingBean {
 
+	private static final int DESCRIPTION_LENGTH = 80;
 	private static final long serialVersionUID = 6735189578521540285L;
 	private static final Logger LOG = LoggerFactory.getLogger(SummaryListHeaderComponent.class);
 	
@@ -118,7 +119,14 @@ public class SummaryListHeaderComponent extends VerticalLayout
 		}
 		
 		listNameValue.setValue(list.getName());
-		descriptionValue.setValue(list.getDescription());
+		
+		String description = list.getDescription();
+		if (description.length() > 70){
+			description = description.substring(0, DESCRIPTION_LENGTH) + "...";
+		}
+		descriptionValue.setValue(description);
+		descriptionValue.setDescription(list.getDescription());
+		
 		listDateValue.setValue(list.getDate());
 
 		initializeListTypeValue();
