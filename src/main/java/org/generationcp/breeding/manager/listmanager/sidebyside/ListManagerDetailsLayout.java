@@ -149,7 +149,15 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void layoutComponents() {
 
-    	setHeight("630px");
+    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
+    		setHeight("530px");
+        	detailsTabSheet.setHeight("481px");
+    	}
+    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
+    		setHeight("630px");
+        	detailsTabSheet.setHeight("558px");
+    	}
+    	
     	setWidth("98%");
     	
         setStyleName(Runo.TABSHEET_SMALL);
@@ -164,7 +172,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         headingBar.addComponent(btnCloseAllTabs);
         headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
         
-        detailsTabSheet.setHeight("530px");
+        
         
         VerticalLayout innerLayout = new VerticalLayout();
         innerLayout.addComponent(noListLabel);

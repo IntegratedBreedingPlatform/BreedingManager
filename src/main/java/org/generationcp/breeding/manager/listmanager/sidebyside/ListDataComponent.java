@@ -303,7 +303,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
 	private void initializeListDataTable(){
-		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), 13, CHECKBOX_COLUMN_ID);
+		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), getNoOfEntries(), CHECKBOX_COLUMN_ID);
 		listDataTable = listDataTableWithSelectAll.getTable();
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
@@ -332,6 +332,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		addColumnContextMenu = new AddColumnContextMenu(parentListDetailsComponent, menu, 
                 listDataTable, ListDataTablePropertyID.GID.getName());
+	}
+	
+	public int getNoOfEntries(){
+		if(source.getBrowseListsComponent().isVisible()){
+			return 10; 
+		}
+		
+		return 13;
 	}
 
 	@Override
