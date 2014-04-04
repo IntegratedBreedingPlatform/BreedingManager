@@ -655,7 +655,11 @@ public class FillWith implements InternationalizableComponent  {
         for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            if(!onlyFillWithThoseHavingEmptyValues || (targetTable.getItem(listDataId).getItemProperty(propertyId).getValue().equals(null) || targetTable.getItem(listDataId).getItemProperty(propertyId).getValue().equals(""))){
+            System.out.println("property id: " + propertyId);
+            if(!onlyFillWithThoseHavingEmptyValues   
+            		|| table.getItem(listDataId).getItemProperty(propertyId).getValue()==null  
+            		|| table.getItem(listDataId).getItemProperty(propertyId).getValue().equals("")
+            ){
 	            Item item = table.getItem(listDataId);
 	            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
 	            Button b = (Button) gidObject;
@@ -666,9 +670,9 @@ public class FillWith implements InternationalizableComponent  {
         }
 
         //To trigger TableFieldFactory (fix for truncated data)
-        if(targetTable.isEditable()){
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
+        if(table.isEditable()){
+		   table.setEditable(false);
+		   table.setEditable(true);
         }
 
         markHasChangesFlags();	
