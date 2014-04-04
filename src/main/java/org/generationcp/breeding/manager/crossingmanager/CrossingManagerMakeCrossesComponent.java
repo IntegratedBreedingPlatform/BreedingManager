@@ -228,7 +228,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
 	@Override
 	public void instantiateComponents() {
-		addStyleName("white_bg_panel");
+		//addStyleName("white_bg_panel");
 		this.setSizeFull();
         this.setMargin(true, true, true, true);
 

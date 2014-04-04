@@ -85,10 +85,10 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("740px");
+		tabSheet.setHeight("810px");
 		tabSheet.setWidth("100%");
 		
-		tabSheet.addStyleName("tabsheet-white");
+		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		
@@ -152,7 +152,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		}
 		
 		if(step == 0){
-			tabSheet.setHeight("740px");
+			tabSheet.setHeight("810px");
 		}
 		else if(step == 1){
 			tabSheet.setHeight("1100px");
