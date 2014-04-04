@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerListDetails
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -150,13 +149,12 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
         menu = new ContextMenu();
-        menu.setWidth("255px");
+        menu.setWidth("300px");
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-        menuAddColumn = menu.addItem(messageSource.getMessage(Message.ADD_COLUMN));
         
         resetMenuOptions();
         
@@ -167,7 +165,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
         
-        addColumnContextMenu = new AddColumnContextMenu(tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(), true);
+        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
+        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
@@ -185,7 +184,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuExportList.setEnabled(false);
         menuExportForGenotypingOrder.setEnabled(false);
         menuCopyToList.setEnabled(false);
-        menuAddColumn.setEnabled(false);
     }
 
 	@Override
@@ -223,10 +221,14 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            	
                 if(isCurrentListSave()){
                     enableMenuOptionsAfterSave();
                 }
+                
+                addColumnContextMenu.refreshAddColumnMenu();
                 menu.show(event.getClientX(), event.getClientY());
+                
             }
          });
 		
@@ -405,7 +407,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuExportList.setEnabled(true);
         menuExportForGenotypingOrder.setEnabled(true);
         menuCopyToList.setEnabled(true);
-        menuAddColumn.setEnabled(true);
     }
     
 	public void editList(GermplasmList germplasmList) {

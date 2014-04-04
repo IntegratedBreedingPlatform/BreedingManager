@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -27,6 +26,7 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -37,6 +37,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 
     private ListDetailsComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
+    private VerticalLayout verticalLayoutSource;
     private String GIDPropertyId;
     //private Button addColumnButton;
     private Table targetTable;
@@ -155,60 +156,29 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
-        this.absoluteLayoutSource = absoluteLayoutSource;
+        //this.absoluteLayoutSource = absoluteLayoutSource; 
         
         setupContextMenu();
     }
     
-    /**
-     * Add "Add column" context menu to a table
-     * @param listDetailsComponent - tab content from list manager details section.
-     * @param source - context menu will attach to this
-     * @param targetTable - table where data will be manipulated
-     * @param gid - property of GID (button with GID as caption) on that table
-     * @param fromBuildNewList - boolean to set if classes involved is from build new list
-     */
-    public AddColumnContextMenu(Table targetTable, String gid, boolean fromBuildNewList){
-        this.GIDPropertyId = gid;
-        this.targetTable = targetTable;
-        this.fromBuildNewList = fromBuildNewList;        
-        setupContextMenu();
-    }    
     
     /**
      * Add "Add column" context menu to a table
-     * @param source - context menu will attach to this
+     * @param verticalLayoutSource - context menu will attach to this
      * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
-            ContextMenu sourceContextMenu, Table targetTable, String gid){
-        this.GIDPropertyId = gid;
-        this.targetTable = targetTable;
-        this.sourceContextMenu = sourceContextMenu;
-        this.absoluteLayoutSource = absoluteLayoutSource;
-        
-        setupContextMenu();
-    }
-    
-    /**
-     * Add "Add column" context menu to a table
-     * @param source - context menu will attach to this
-     * @param sourceContextMenu - util will attach event listener to this
-     * @param targetTable - table where data will be manipulated
-     * @param gid - property of GID (button with GID as caption) on that table
-     */
-    public AddColumnContextMenu(AbsoluteLayout absoluteLayoutSource, 
+    public AddColumnContextMenu(VerticalLayout verticalLayoutSource, 
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
-        this.absoluteLayoutSource = absoluteLayoutSource;
+        this.verticalLayoutSource = verticalLayoutSource;
         this.fromBuildNewList = fromBuildNewList;
         
         if(fromBuildNewList){
-            buildNewListComponent = ((BuildNewListComponent) absoluteLayoutSource);
+            buildNewListComponent = ((BuildNewListComponent) verticalLayoutSource);
         }
         
         setupContextMenu();
@@ -516,7 +486,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         
         //mark flag that changes have been made in buildNewListTable
         if(buildNewListComponent != null){ 
-        	buildNewListComponent.setHasChanges(true); 
+        	buildNewListComponent.setChanged(true); 
         }
     }
     
