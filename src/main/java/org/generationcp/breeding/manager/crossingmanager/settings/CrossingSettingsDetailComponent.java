@@ -12,11 +12,13 @@ import javax.xml.bind.Unmarshaller;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent.CrossingMethodOption;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -33,15 +35,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class CrossingSettingsDetailComponent extends AbsoluteLayout 
+public class CrossingSettingsDetailComponent extends VerticalLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	private static final long serialVersionUID = -7733004867121978697L;
@@ -62,8 +66,8 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     	SAVE, CANCEL, DELETE
     }
 	
+    private Label defineCrossingSettingsLabel;
 	private DefineCrossingSettingComponent defineSettingComponent;
-	
 	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
@@ -72,6 +76,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	private Button cancelButton;
 	
 	private TemplateSetting currentSetting;
+	private Panel sectionPanel;
 	
 	public CrossingSettingsDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
@@ -99,6 +104,11 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	@Override
 	public void instantiateComponents() {
+		
+		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
+		defineCrossingSettingsLabel.setWidth("250px");
+		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		
 		defineSettingComponent = new DefineCrossingSettingComponent(this);
 		
 		methodComponent = new CrossingSettingsMethodComponent();
@@ -145,14 +155,34 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 
 	@Override
 	public void layoutComponents() {
-		setWidth("850px");
-		setHeight("730px");
+		setWidth("900px");
+		setHeight("800px");
 		
-		addComponent(defineSettingComponent, "top:7px; left: 10px");
-		addComponent(methodComponent, "top:100px; left:10px");
-		addComponent(nameComponent, "top:220px; left:10px");
-		addComponent(additionalDetailsComponent, "top:465px; left:10px");
+		//1
+		HeaderLabelLayout defineCrossingHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, defineCrossingSettingsLabel);
 		
+		//2
+		sectionPanel = new Panel();
+		sectionPanel.setWidth("100%");
+		sectionPanel.setHeight("700px");
+		sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+		
+		VerticalLayout sectionLayout = new VerticalLayout();
+		sectionLayout.setMargin(true);
+		
+		defineSettingComponent.setHeight("60px");
+		methodComponent.setHeight("150px");
+		nameComponent.setHeight("250px");
+		additionalDetailsComponent.setHeight("200px");
+		
+		sectionLayout.addComponent(defineSettingComponent);
+		sectionLayout.addComponent(methodComponent);
+		sectionLayout.addComponent(nameComponent);
+		sectionLayout.addComponent(additionalDetailsComponent);
+		
+		sectionPanel.setLayout(sectionLayout);
+		
+		//3
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
@@ -164,7 +194,9 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		buttonLayout.addComponent(buttonBar);
 		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(buttonLayout, "top:670px");
+		addComponent(defineCrossingHeader);
+		addComponent(sectionPanel);
+		addComponent(buttonLayout);
 		
 	}
 	

@@ -27,14 +27,17 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -42,7 +45,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
+public class CrossingSettingsMethodComponent extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean,
 		BreedingManagerLayout {
 
@@ -103,7 +106,8 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 			
 		crossingMethodOptionGroup = new OptionGroup();
         crossingMethodOptionGroup.setImmediate(true);
-        crossingMethodOptionGroup.setHeight("50px");
+        crossingMethodOptionGroup.setHeight("80px");
+        crossingMethodOptionGroup.setWidth("300px");
         
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setWidth("280px");
@@ -243,13 +247,35 @@ public class CrossingSettingsMethodComponent extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		addComponent(crossingMethodLabel, "top:5px; left:0px");
-		addComponent(chooseMethodLabel, "top:30px; left:0px");
-        addComponent(crossingMethodOptionGroup, "top:57px;left:0px");
-        addComponent(crossingMethodComboBox, "top:83px;left:280px");
-        addComponent(methodPopupView, "top:83px; left:570px"); 
-        addComponent(favoriteMethodsCheckbox, "top:83px;left:610px");
-        addComponent(manageFavoriteMethodsLink, "top:106px;left:620px");
+		setSpacing(true);
+		
+		addComponent(crossingMethodLabel);
+		addComponent(chooseMethodLabel);
+		
+		HorizontalLayout forAllCrossesLayout = new HorizontalLayout();
+		forAllCrossesLayout.setSpacing(true);
+		forAllCrossesLayout.addComponent(crossingMethodOptionGroup);
+		
+		HorizontalLayout forAllCrossesTopLayout = new HorizontalLayout();
+		forAllCrossesTopLayout.setSpacing(true);
+		forAllCrossesTopLayout.addComponent(crossingMethodComboBox);
+		forAllCrossesTopLayout.addComponent(methodPopupView);
+		
+		HorizontalLayout forAllCrossesBottomLayout = new HorizontalLayout();
+		forAllCrossesBottomLayout.setSpacing(true);
+		forAllCrossesBottomLayout.addComponent(favoriteMethodsCheckbox);
+		forAllCrossesBottomLayout.addComponent(manageFavoriteMethodsLink);
+		forAllCrossesBottomLayout.setComponentAlignment(manageFavoriteMethodsLink, Alignment.BOTTOM_LEFT);
+		
+		VerticalLayout forAllCrossesRightLayout = new VerticalLayout();
+		forAllCrossesRightLayout.setSpacing(true);
+		forAllCrossesRightLayout.addComponent(forAllCrossesTopLayout);
+		forAllCrossesRightLayout.addComponent(forAllCrossesBottomLayout);
+
+		forAllCrossesLayout.addComponent(forAllCrossesRightLayout);
+		forAllCrossesLayout.setComponentAlignment(forAllCrossesRightLayout, Alignment.BOTTOM_LEFT);
+		
+		addComponent(forAllCrossesLayout);
 	}
 	
     private void populateBreedingMethods(boolean showOnlyFavorites) {

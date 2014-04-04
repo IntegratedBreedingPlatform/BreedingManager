@@ -157,6 +157,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     	
     	innerLayout = new VerticalLayout();
     	innerLayout.setSpacing(true);
+    	innerLayout.setHeight("100%");
     	
     	//Components
         headingBar.setWidth("100%");
@@ -173,8 +174,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         
         addComponent(innerLayout);
         addComponent(detailsTabSheet);
-        setExpandRatio(innerLayout, 1);
-        setExpandRatio(detailsTabSheet, 99);
+        setExpandRatio(innerLayout, 1.0f);
+        setExpandRatio(detailsTabSheet, 9.0f);
         displayDefault();
     }
     
