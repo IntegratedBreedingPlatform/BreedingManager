@@ -88,6 +88,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet.setHeight("740px");
 		tabSheet.setWidth("100%");
 		
+		tabSheet.addStyleName("tabsheet-white");
+		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		
 		tabSheet.addTab(detailComponent, wizardStepNames[0]);
