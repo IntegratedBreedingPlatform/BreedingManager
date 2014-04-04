@@ -151,7 +151,9 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
 
     	if(detailSource == ListManagerDetailsTabSource.BROWSE){
     		setHeight("530px");
-        	detailsTabSheet.setHeight("481px");
+//        	detailsTabSheet.setHeight("481px");
+    		detailsTabSheet.setHeight("445px");
+        	detailsTabSheet.setWidth("99%");
     	}
     	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
     		setHeight("630px");

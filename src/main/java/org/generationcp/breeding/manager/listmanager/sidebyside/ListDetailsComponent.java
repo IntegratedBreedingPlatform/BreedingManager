@@ -65,7 +65,7 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void layoutComponents() {
-		setMargin(false,true,true,true);
+		setMargin(false,true,false,true);
 		setSpacing(true);
 		addComponent(listEntriesLabel);
 		addComponent(listDataComponent);
