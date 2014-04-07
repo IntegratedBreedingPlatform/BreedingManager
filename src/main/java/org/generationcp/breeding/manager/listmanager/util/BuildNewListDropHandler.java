@@ -239,7 +239,7 @@ public class BuildNewListDropHandler implements DropHandler {
             
             assignSerializedEntryNumber();
             
-            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
             
         	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 				FW.fillWith(targetTable, column, true);
@@ -345,7 +345,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	    			
 	            assignSerializedEntryNumber();
 
-	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
 	            
 	        	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
     				FW.fillWith(targetTable, column, true);
@@ -460,7 +460,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 		assignSerializedEntryNumber();
 		
-        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
         
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 			FW.fillWith(targetTable, column, true);
