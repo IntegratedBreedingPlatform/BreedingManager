@@ -22,7 +22,6 @@ import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDia
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
-import org.generationcp.breeding.manager.listmanager.sidebyside.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -191,8 +190,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	@Autowired
     private WorkbenchDataManager workbenchDataManager;
-	private Integer workbenchUserId;
-    private Integer ibdbUserId;
+	
+	private Integer localUserId = null;
 	
 	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
@@ -262,44 +261,20 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         	totalListEntriesLabel.setWidth("135px");
         }
 	
-		Integer localUserId = null;
-		try {
-			localUserId = getCurrentUserLocalId();
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with retrieving local user ID", e);
-		}
-		
-		if(germplasmList.isLocalList() && germplasmList.getUserId().equals(localUserId)){
-	        unlockButton = new Button();
-	        unlockButton.setData(UNLOCK_BUTTON_ID);
-	        unlockButton.setIcon(ICON_LOCK);
-	        unlockButton.setWidth("140px");
-	        unlockButton.setDescription(LOCK_TOOLTIP);
-	        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
-	        unlockButton.addListener(new ClickListener(){
-				private static final long serialVersionUID = 1L;
-	
-				@Override
-				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-					unlockGermplasmList();
-				}
-	        });
-	
-	        lockButton = new Button();
-	        lockButton.setData(LOCK_BUTTON_ID);
-	        lockButton.setIcon(ICON_UNLOCK);
-	        lockButton.setWidth("140px");
-	        lockButton.setDescription(LOCK_TOOLTIP);
-	        lockButton.setStyleName(Reindeer.BUTTON_LINK);
-	        lockButton.addListener(new ClickListener(){
-				private static final long serialVersionUID = 1L;
-	
-				@Override
-				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-					lockGermplasmList();
-				}
-	        });
-		}
+	    unlockButton = new Button();
+        unlockButton.setData(UNLOCK_BUTTON_ID);
+        unlockButton.setIcon(ICON_LOCK);
+        unlockButton.setWidth("140px");
+        unlockButton.setDescription(LOCK_TOOLTIP);
+        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
+        
+
+        lockButton = new Button();
+        lockButton.setData(LOCK_BUTTON_ID);
+        lockButton.setIcon(ICON_UNLOCK);
+        lockButton.setWidth("140px");
+        lockButton.setDescription(LOCK_TOOLTIP);
+        lockButton.setStyleName(Reindeer.BUTTON_LINK);
 		
 		initializeListDataTable(); //listDataTable
 	}
@@ -346,9 +321,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void initializeValues() {
-	    retrieveUserInfo();
+	    try {
+            localUserId = getCurrentUserLocalId();
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error with retrieving local user ID", e);
+            e.printStackTrace();
+        }
 	    
-		if(listEntriesCount > 0){
+	    if(listEntriesCount > 0){
 		    listEntries = new ArrayList<GermplasmListData>();
 			try{
 				listEntries.addAll(germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Long.valueOf(listEntriesCount).intValue()));
@@ -492,7 +472,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   			 // when the Germplasm List is not locked, and when not accessed directly from URL or popup window
 	   			 if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
                      menuEditList.setVisible(true);
-                     menuDeleteList.setVisible(userIsListOwner()); //show only Delete List when user is owner
+                     menuDeleteList.setVisible(localUserIsListOwner()); //show only Delete List when user is owner
                      menuDeleteEntries.setVisible(true); 
                      menuSaveChanges.setVisible(true);
                      menuAddEntry.setVisible(true);
@@ -544,6 +524,24 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				openSaveListAsDialog();
 			}
 		});
+		
+		lockButton.addListener(new ClickListener(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                lockGermplasmList();
+            }
+        });
+        
+        unlockButton.addListener(new ClickListener(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                unlockGermplasmList();
+            }
+        });
 
 	}//end of addListeners
 
@@ -573,27 +571,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		}
 		
-		Integer localUserId = null;
-		try {
-			localUserId = getCurrentUserLocalId();
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with retrieving local user ID", e);
-		}
-		
-		if(germplasmList.isLocalList() && germplasmList.getUserId().equals(localUserId)){
+		if(germplasmList.isLocalList() && localUserIsListOwner()){
 			headerLayoutLeft.addComponent(lockButton);
 			headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
 	
 			headerLayoutLeft.addComponent(unlockButton);
 			headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
 	
-			if(!germplasmList.isLockedList()){
-				lockButton.setVisible(true);
-				unlockButton.setVisible(false);
-			} else {
-				lockButton.setVisible(false);
-				unlockButton.setVisible(true);
-			}
+			showHideOptionsForLocked();
 		}
 		
 		headerLayout.addComponent(headerLayoutLeft);
@@ -611,20 +596,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 	}
 	
-	private void retrieveUserInfo() {
-	    try {
-	        Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-	        workbenchDataManager.getWorkbenchRuntimeData();
-	        workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-	        ibdbUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
-	    } catch (MiddlewareQueryException e) {
-	        LOG.error("Error in retrieving IBDB user info.", e);
-	        e.printStackTrace();
-	    }
-    }
-	
-	private boolean userIsListOwner() {
-        return germplasmList.getUserId().equals(ibdbUserId);
+	private boolean localUserIsListOwner() {
+        return germplasmList.getUserId().equals(localUserId);
     }
 	
 	public void makeTableEditable(){
@@ -963,22 +936,22 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
             try {
                 listExporter.exportGermplasmListExcel(tempFileName);
-                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
                 String listName = germplasmList.getName();
                 fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
-                this.getWindow().open(fileDownloadResource);
+                source.getWindow().open(fileDownloadResource);
                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
                     //File tempFile = new File(tempFileName);
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                 LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                             , "Error with exporting list."    
                             , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                             , Notification.POSITION_CENTERED);
             }
         } else {
-            ConfirmDialog.show(this.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM), "Yes", "No", 
+            ConfirmDialog.show(source.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM), "Yes", "No", 
                 new ConfirmDialog.Listener() {
                     private static final long serialVersionUID = -4433860112118910452L;
                     public void onClose(ConfirmDialog dialog) {
@@ -1005,22 +978,22 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             
             try {
                 listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
-                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
                 String listName = germplasmList.getName();
                 fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
                 
-                this.getWindow().open(fileDownloadResource);
+                source.getWindow().open(fileDownloadResource);
                 
                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
                 //File tempFile = new File(tempFileName);
                 //tempFile.delete();
             } catch (GermplasmListExporterException e) {
-                MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
                         , "Error with exporting list."
                         , e.getMessage(), Notification.POSITION_CENTERED);
             }
         } else {
-            MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+            MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                     , "Error with exporting list."    
                     , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
         }
@@ -1544,9 +1517,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         boolean locked = germplasmList.isLockedList();
         lockButton.setVisible(!locked);
         unlockButton.setVisible(locked);
-        menuDeleteEntries.setVisible(!locked);
+        
+        /*menuDeleteEntries.setVisible(!locked);
         menuSaveChanges.setVisible(!locked);
-        menuAddEntry.setVisible(!locked);
+        menuAddEntry.setVisible(!locked);*/
     }
     
     public void unlockGermplasmList() {
