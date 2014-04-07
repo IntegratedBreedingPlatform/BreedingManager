@@ -12,16 +12,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class GermplasmPedigreeComponent extends VerticalLayout implements
+public class GermplasmPedigreeComponent extends GridLayout implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	public static final String VIEW_PEDIGREE_GRAPH_ID = "List Manager Pedigree - View Pedigree Graph";
@@ -42,6 +42,7 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 	private Button applyButton;
 	
 	private Integer germplasmId;
+	private VerticalLayout pedigreeTreeLayout;
 	
 	public GermplasmPedigreeComponent(Integer germplasmId){
 		this.germplasmId = germplasmId;
@@ -77,9 +78,11 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         
         gQueries = new GermplasmQueries();
         container = new GermplasmIndexContainer(gQueries);
-       
+        
+        pedigreeTreeLayout = new VerticalLayout();
+        pedigreeTreeLayout.setSizeFull();
         germplasmPedigreeTreeComponent = new GermplasmPedigreeTreeComponent(this.germplasmId, gQueries, 
-        		container, this, null, (Boolean) pedigreeDerivativeCheckbox.getValue());
+        		container, pedigreeTreeLayout, null, (Boolean) pedigreeDerivativeCheckbox.getValue());
 	}
 
 	@Override
@@ -96,7 +99,11 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setMargin(true, false, false, false);
+		addStyleName("overflow_x_auto");
+		
+		setRows(2);
+        setColumns(3);
+        setMargin(true, false, false, false);
 		setSpacing(true);
 		
 		HorizontalLayout includeDerivativeLayout = new HorizontalLayout();
@@ -105,22 +112,25 @@ public class GermplasmPedigreeComponent extends VerticalLayout implements
         includeDerivativeLayout.addComponent(pedigreeDerivativeCheckbox);
         includeDerivativeLayout.addComponent(applyButton);
         
-        HorizontalLayout pedigreeHorizontalLayout = new HorizontalLayout();
-		pedigreeHorizontalLayout.setWidth("500px");
-		pedigreeHorizontalLayout.setMargin(false);
-        pedigreeHorizontalLayout.addComponent(includeDerivativeLayout);
-        pedigreeHorizontalLayout.addComponent(btnViewPedigreeGraph);
-        pedigreeHorizontalLayout.setComponentAlignment(includeDerivativeLayout, Alignment.TOP_LEFT);
-        pedigreeHorizontalLayout.setComponentAlignment(btnViewPedigreeGraph, Alignment.BOTTOM_RIGHT);
+        addComponent(includeDerivativeLayout, 0, 0);
+        addComponent(btnViewPedigreeGraph, 2, 0);
+        addComponent(germplasmPedigreeTreeComponent, 0, 1, 2, 1);
         
-        addComponent(pedigreeHorizontalLayout);
-        
-        addComponent(germplasmPedigreeTreeComponent);
+//        HorizontalLayout pedigreeHorizontalLayout = new HorizontalLayout();
+//		pedigreeHorizontalLayout.setWidth("100%");
+//		pedigreeHorizontalLayout.setMargin(false);
+//        pedigreeHorizontalLayout.addComponent(includeDerivativeLayout);
+//        pedigreeHorizontalLayout.addComponent(btnViewPedigreeGraph);
+//        pedigreeHorizontalLayout.setComponentAlignment(includeDerivativeLayout, Alignment.TOP_LEFT);
+//        pedigreeHorizontalLayout.setComponentAlignment(btnViewPedigreeGraph, Alignment.BOTTOM_LEFT);
+//        
+//        addComponent(pedigreeHorizontalLayout);
+//        addComponent(germplasmPedigreeTreeComponent);
 	}
 	
 	private void createTreeComponent() {
 		germplasmPedigreeTreeComponent = new GermplasmPedigreeTreeComponent(this.germplasmId, gQueries, 
-        		container, this, null, (Boolean) pedigreeDerivativeCheckbox.getValue());
+        		container, this.pedigreeTreeLayout, null, (Boolean) pedigreeDerivativeCheckbox.getValue());
 		 addComponent(germplasmPedigreeTreeComponent);
 	}
 	

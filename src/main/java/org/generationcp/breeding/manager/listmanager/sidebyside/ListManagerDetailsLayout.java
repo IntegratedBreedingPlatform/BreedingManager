@@ -150,23 +150,22 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     public void layoutComponents() {
 
     	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		setHeight("530px");
-//        	detailsTabSheet.setHeight("481px");
+    		setHeight("520px");
     		detailsTabSheet.setHeight("445px");
-        	detailsTabSheet.setWidth("99%");
     	}
     	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-    		setHeight("630px");
+    		setHeight("610px");
         	detailsTabSheet.setHeight("558px");
     	}
     	
+    	detailsTabSheet.setWidth("98%");
     	setWidth("98%");
     	
         setStyleName(Runo.TABSHEET_SMALL);
         setMargin(false);
     	 
     	//Components
-        headingBar.setWidth("100%");
+        headingBar.setWidth("98%");
         headingBar.setHeight("27px");
         
         HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
