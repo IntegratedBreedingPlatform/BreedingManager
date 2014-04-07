@@ -88,8 +88,9 @@ public class FillWith implements InternationalizableComponent  {
     
     private ListDetailsComponent listDetailsComponent;
     
-    public FillWith(String GIDPropertyId){
+    public FillWith(String GIDPropertyId, Table targetTable){
     	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
     }
     
 	/**
@@ -230,7 +231,7 @@ public class FillWith implements InternationalizableComponent  {
 		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_EMPTY))){
 		   				 fillWithEmpty(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-		   				 fillWithLocation();
+		   				 fillWithLocation(targetTable);
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
 		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
@@ -315,7 +316,7 @@ public class FillWith implements InternationalizableComponent  {
     	return itemIds;
 	}
 	
-	private void markHasChangesFlags(){
+	private void markHasChangesFlagsAndToggleTableEditable(Table table){
 		//mark flag that changes have been made in listDataTable
 		if(listManagerTreeMenu != null){ 
 			listManagerTreeMenu.setChanged(true); 
@@ -329,6 +330,12 @@ public class FillWith implements InternationalizableComponent  {
 	    if(listDetailsComponent != null){
 	    	listDetailsComponent.setChanged(true);
 	    }
+	    
+	    //To trigger TableFieldFactory (fix for truncated data)
+		if(table.isEditable()){
+			table.setEditable(false);
+			table.setEditable(true);
+		}
 	}
 	
     public void fillWithEmpty(Table table, String propertyId){
@@ -337,7 +344,7 @@ public class FillWith implements InternationalizableComponent  {
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
        
-       markHasChangesFlags();	
+       markHasChangesFlagsAndToggleTableEditable(table);	
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
@@ -365,13 +372,7 @@ public class FillWith implements InternationalizableComponent  {
 			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -395,13 +396,7 @@ public class FillWith implements InternationalizableComponent  {
 			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -425,13 +420,7 @@ public class FillWith implements InternationalizableComponent  {
 			   }
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -456,13 +445,7 @@ public class FillWith implements InternationalizableComponent  {
 			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -486,13 +469,7 @@ public class FillWith implements InternationalizableComponent  {
 			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -514,13 +491,7 @@ public class FillWith implements InternationalizableComponent  {
 			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -545,13 +516,7 @@ public class FillWith implements InternationalizableComponent  {
  			  } 
  		   }
  		   
-		   //To trigger TableFieldFactory (fix for truncated data)
- 		  if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
- 		  markHasChangesFlags();
+ 		   markHasChangesFlagsAndToggleTableEditable(table);
 
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -573,13 +538,8 @@ public class FillWith implements InternationalizableComponent  {
  			   }
  		   }
  		   	
-		   //To trigger TableFieldFactory (fix for truncated data)
- 		  if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
- 		  markHasChangesFlags();
+		   
+ 		  markHasChangesFlagsAndToggleTableEditable(table);
  	       
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -605,13 +565,7 @@ public class FillWith implements InternationalizableComponent  {
   			 	}
   		   }
   		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-  		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-  		   markHasChangesFlags();
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
@@ -637,13 +591,7 @@ public class FillWith implements InternationalizableComponent  {
         	}
         }
         
-        //To trigger TableFieldFactory (fix for truncated data)
-        if(table.isEditable()){
-		   table.setEditable(false);
-		   table.setEditable(true);
-		}
-
-        markHasChangesFlags();
+        markHasChangesFlagsAndToggleTableEditable(table);
 
 	}
     
@@ -669,17 +617,11 @@ public class FillWith implements InternationalizableComponent  {
             }
         }
 
-        //To trigger TableFieldFactory (fix for truncated data)
-        if(table.isEditable()){
-		   table.setEditable(false);
-		   table.setEditable(true);
-        }
-
-        markHasChangesFlags();	
+        markHasChangesFlagsAndToggleTableEditable(table);	
 
 	}
     
-    protected void fillWithLocation() {
+    protected void fillWithLocation(Table targetTable) {
     	
     	String propertyId = ListDataTablePropertyID.SEED_SOURCE.getName();
     	
@@ -697,13 +639,7 @@ public class FillWith implements InternationalizableComponent  {
            		item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
             }
     		
-    	    //To trigger TableFieldFactory (fix for truncated data)
-        	if(targetTable.isEditable()){
-    		   targetTable.setEditable(false);
-    		   targetTable.setEditable(true);
-    		}
-	
-        	markHasChangesFlags();	
+    	    markHasChangesFlagsAndToggleTableEditable(targetTable);	
 
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
@@ -779,7 +715,7 @@ public class FillWith implements InternationalizableComponent  {
         	}
         }
         
-        markHasChangesFlags();
+        markHasChangesFlagsAndToggleTableEditable(targetTable);
     }
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
@@ -848,13 +784,7 @@ public class FillWith implements InternationalizableComponent  {
 	            }
 	        }
 	    	
-		   //To trigger TableFieldFactory (fix for truncated data)
-	    	if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-	    	markHasChangesFlags();	
+		   markHasChangesFlagsAndToggleTableEditable(targetTable);	
 
     	}
     }
