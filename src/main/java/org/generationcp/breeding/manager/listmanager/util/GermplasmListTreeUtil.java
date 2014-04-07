@@ -565,10 +565,10 @@ public class GermplasmListTreeUtil implements Serializable {
 		@Override
 		public void buttonClick(Button.ClickEvent event) {
 			final Window mainWindow;
-	        if (source.usedInSubWindow()){
-	        	mainWindow = event.getComponent().getWindow().getParent();
+			if (source.usedInSubWindow()){
+	        	mainWindow = source.getWindow().getParent();
 	        } else {        	
-	        	mainWindow = event.getComponent().getWindow();   	
+	        	mainWindow = source.getWindow();   	
 	        }  
 	        
 		    String newName = name.getValue().toString();
