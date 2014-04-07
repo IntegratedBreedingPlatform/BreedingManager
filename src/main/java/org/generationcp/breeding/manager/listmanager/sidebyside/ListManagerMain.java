@@ -261,9 +261,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		addComponent(titleLayout,"top:10px; left:10px");
-		addComponent(tabHeaderLayout,"top:50px;left:10px;");
-		addComponent(vSplitPanel,"top:75px;left:10px;");
+		addComponent(titleLayout,"top:0px; left:10px");
+		addComponent(tabHeaderLayout,"top:40px;left:10px;");
+		addComponent(vSplitPanel,"top:65px;left:10px;");
 	}
 	
     private void expandRight(){

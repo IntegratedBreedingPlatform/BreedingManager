@@ -1008,4 +1008,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 
     }
     
+    public void showHideAddColumnMenu(boolean visible) {
+        addColumnItem.setVisible(visible);
+        sourceContextMenu.requestRepaint();
+    }
+    
 }
