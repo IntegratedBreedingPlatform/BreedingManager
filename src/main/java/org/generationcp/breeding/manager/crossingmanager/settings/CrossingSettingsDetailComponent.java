@@ -65,7 +65,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
     	SAVE, CANCEL, DELETE
     }
 	
-    private Label defineCrossingSettingsLabel;
 	private DefineCrossingSettingComponent defineSettingComponent;
 	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
@@ -103,10 +102,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 	
 	@Override
 	public void instantiateComponents() {
-		
-		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
-		defineCrossingSettingsLabel.setWidth("250px");
-		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		defineSettingComponent = new DefineCrossingSettingComponent(this);
 		
@@ -157,19 +152,15 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 		setWidth("900px");
 		setHeight("800px");
 		
-		//1
-		HeaderLabelLayout defineCrossingHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, defineCrossingSettingsLabel);
-		
-		//2
 		sectionPanel = new Panel();
 		sectionPanel.setWidth("100%");
-		sectionPanel.setHeight("700px");
+		sectionPanel.setHeight("730px");
 		sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 		
 		VerticalLayout sectionLayout = new VerticalLayout();
 		sectionLayout.setMargin(true);
 		
-		defineSettingComponent.setHeight("60px");
+		defineSettingComponent.setHeight("90px");
 		methodComponent.setHeight("150px");
 		nameComponent.setHeight("250px");
 		additionalDetailsComponent.setHeight("200px");
@@ -193,7 +184,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 		buttonLayout.addComponent(buttonBar);
 		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(defineCrossingHeader);
 		addComponent(sectionPanel);
 		addComponent(buttonLayout);
 		

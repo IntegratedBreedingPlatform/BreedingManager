@@ -54,6 +54,7 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 		
 		this.addStyleName("headerLabelLayout");
 		this.setComponentAlignment(icon, Alignment.TOP_LEFT);
+		this.setComponentAlignment(label, Alignment.TOP_LEFT);
 	}
 	
 	
