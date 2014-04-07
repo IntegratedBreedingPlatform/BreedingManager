@@ -312,7 +312,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
 	public int getNoOfEntries(){
-		if(source.getBrowseListsComponent().isVisible()){
+		// browse list component is null at this point when tool launched from Workbench dashboard
+		ListManagerBrowseListComponent browseListsComponent = source.getBrowseListsComponent();
+		if(browseListsComponent== null || browseListsComponent.isVisible()){
 			return 10; 
 		}
 		
