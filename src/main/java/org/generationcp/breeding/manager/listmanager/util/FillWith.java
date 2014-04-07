@@ -791,11 +791,12 @@ public class FillWith implements InternationalizableComponent  {
     
     private void displaySequenceNumberPopupWindow(String propertyId){
     	Window specifySequenceNumberWindow = new Window("Specify Sequence Number");
-    	specifySequenceNumberWindow.setHeight("300px");
-    	specifySequenceNumberWindow.setWidth("500px");
+    	specifySequenceNumberWindow.setHeight("320px");
+    	specifySequenceNumberWindow.setWidth("530px");
     	specifySequenceNumberWindow.setModal(true);
     	specifySequenceNumberWindow.setResizable(false);
     	specifySequenceNumberWindow.setContent(new AdditionalDetailsCrossNameComponent(this, propertyId, specifySequenceNumberWindow));
+    	specifySequenceNumberWindow.addStyleName(Reindeer.WINDOW_LIGHT);
     	this.targetTable.getWindow().addWindow(specifySequenceNumberWindow);
     }
     

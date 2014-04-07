@@ -30,6 +30,7 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -202,7 +203,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
-        w.setHeight("150px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -224,13 +225,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
-
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+     
+        Button ok = new Button("OK");
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -4225085062616113624L;
@@ -355,11 +351,16 @@ public class GermplasmListTreeUtil implements Serializable {
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
@@ -394,7 +395,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	
         
         w.setWidth("320px");
-        w.setHeight("150px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -426,13 +427,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
 
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+        Button ok = new Button("OK");
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new RenameListTreeItemListener(listener, listId, name));
 
@@ -446,11 +442,16 @@ public class GermplasmListTreeUtil implements Serializable {
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
