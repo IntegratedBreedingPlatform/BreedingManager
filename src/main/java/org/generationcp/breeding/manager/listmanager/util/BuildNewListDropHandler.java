@@ -141,6 +141,10 @@ public class BuildNewListDropHandler implements DropHandler {
 	}
 
 	public void addGermplasmList(Integer listId){
+		addGermplasmList(listId, false);
+	}
+	
+	public void addGermplasmList(Integer listId, Boolean fromEditList){
 		
 		currentListId = listId;
 		
@@ -161,7 +165,7 @@ public class BuildNewListDropHandler implements DropHandler {
 			}
 			
 			for(GermplasmListData listData : germplasmListData){
-				addGermplasmFromList(listId, listData.getId(), germplasmList);
+				addGermplasmFromList(listId, listData.getId(), germplasmList, fromEditList);
 			}
 			
 			changed = true;// mark that there is changes in a list that is currently building
@@ -260,7 +264,12 @@ public class BuildNewListDropHandler implements DropHandler {
 		return addGermplasmFromList(listId, lrecid, null);
 	}
 	
+	
 	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList){
+		return addGermplasmFromList(listId, lrecid, germplasmList, false);
+	}
+	
+	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList){
 		
 		currentListId = listId;
 		
@@ -299,7 +308,15 @@ public class BuildNewListDropHandler implements DropHandler {
         	if(germplasmListData!=null){
         		
 	            Integer gid = germplasmListData.getGid();
-	            final Integer newItemId = getNextListEntryId(germplasmListData.getId());
+	            
+	            Integer niid = null;
+	            if(forEditList.equals(true)){
+	            	niid = getNextListEntryId(germplasmListData.getId());
+	            } else {
+	            	niid = getNextListEntryId();
+	            }
+	            final Integer newItemId = niid;
+	            
 	            Item newItem = targetTable.addItem(newItemId);
 	            
 	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));

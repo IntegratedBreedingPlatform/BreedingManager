@@ -417,7 +417,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		currentlySavedGermplasmList = germplasmList;
 		currentlySetGermplasmInfo = germplasmList;
 		
-		dropHandler.addGermplasmList(germplasmList.getId());
+		dropHandler.addGermplasmList(germplasmList.getId(), true);
         
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
