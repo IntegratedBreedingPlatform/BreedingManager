@@ -25,6 +25,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -42,6 +43,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
@@ -115,11 +117,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	this.parentWindow = parentWindow;
     }
     
-//    @Override
-//    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-//        this.container = container;
-//    }
-    
     @SuppressWarnings("serial")
     @Override
     public void afterPropertiesSet() throws Exception {  
@@ -186,6 +183,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     		});
 
         	okButton = new Button();
+        	okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         	okButton.addListener(new Button.ClickListener() {
     			private static final long serialVersionUID = -3519880320817778816L;
 
@@ -330,8 +328,13 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             addComponent(specifySuffixLabel, "top:150px;left:10px");
             addComponent(suffixTextField, "top:130px;left:175px");
         	addComponent(addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
-        	addComponent(okButton, "top:215px;left:200px");
-        	addComponent(cancelButton, "top:215px;left:250px");
+        	
+        	HorizontalLayout layoutButtonArea = new HorizontalLayout();
+            layoutButtonArea.setSpacing(true);
+            layoutButtonArea.addComponent(cancelButton);
+            layoutButtonArea.addComponent(okButton);
+            
+            addComponent(layoutButtonArea, "top:205px; left:200px");
         }
     }
     
