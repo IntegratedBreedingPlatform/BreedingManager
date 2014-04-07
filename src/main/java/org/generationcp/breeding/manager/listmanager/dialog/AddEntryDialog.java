@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customfields.BreedingLocationField;
+import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
@@ -45,7 +47,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -79,7 +81,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public static final String BACK_BUTTON_ID = "AddEntryDialog Back Button";
     public static final String DONE_BUTTON_ID = "AddEntryDialog Done Button";
     private static final String GID = "gid";
-    private static final String DEFAULT_METHOD_CODE = "UDM";
     private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
     private static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
@@ -98,11 +99,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private SimpleResourceBundleMessageSource messageSource;
     
     private Window parentWindow;
-    private VerticalLayout firstTabLayout;
-    private AbsoluteLayout secondTabLayout;
+    private VerticalLayout topPart;
+    private AbsoluteLayout bottomPart;
     private AddEntryDialogSource source;
     private OptionGroup optionGroup;
     private List<Integer> selectedGids;
+    
+    private BreedingMethodField breedingMethodField;
+    private BreedingLocationField breedingLocationField;
     
 	private static final String GUIDE = 
 	        "You may search for germplasms using GID's, germplasm names (partial/full)" +
@@ -119,27 +123,18 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     private TableWithSelectAllLayout resultsTable;
     
-    private Accordion accordion;
-    
-    private Button nextButton;
-    private Button cancelButton;
     private Button doneButton;
-    private Button backButton;
+    private Button cancelButton;
     
-    private Label breedingMethodLabel;
     private Label germplasmDateLabel;
-    private Label locationLabel;
     private Label nameTypeLabel;
+    private Label bottomPartHeader;
+    private Label matchingGermplasmsCount;
     
-    private ComboBox breedingMethodComboBox;
-    private ComboBox locationComboBox;
     private ComboBox nameTypeComboBox;
     
     private DateField germplasmDateField;
     
-
-    private Germplasm selectedGermplasm;
-
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
         this.parentWindow = parentWindow;
@@ -159,15 +154,12 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         // center window within the browser
         center();
         
-        accordion = new Accordion();
-        accordion.setSizeFull();
+        assembleTopPart();
         
-        assembleFirstTab();
-        assembleSecondTab();
-        accordion.addTab(firstTabLayout, "Select a Germplasm");
-        accordion.addTab(secondTabLayout, "Specify additional details");
-        accordion.getTab(secondTabLayout).setEnabled(false);
-        addComponent(accordion);
+        assembleBottomPart();
+        setSpeficyDetailsVisible(false);
+        
+        assembleButtonLayout();
     }
     
     public void searchButtonClickAction() throws InternationalizableException {
@@ -235,6 +227,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 newItem.getItemProperty(GermplasmSearchQuery.LOCATION).setValue(locationName);
             
             }
+
+            setGermplasmCount(germplasms.size());
             
     	} catch (MiddlewareQueryException e) {
     		MessageNotifier.showError(getWindow(), "Database Error", "Error while performing search" , Notification.POSITION_CENTERED);
@@ -247,19 +241,19 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     	this.selectedGids = getSelectedItemIds(sourceTable);
     	
     	if(selectedGids.size()>0){
-    		this.nextButton.setEnabled(true);
+    		this.doneButton.setEnabled(true);
     	} else {
-    		this.nextButton.setEnabled(false);    		
+    		this.doneButton.setEnabled(false);    		
     	}
     }
     
     public void resultTableValueChangeAction() throws InternationalizableException {
     	this.selectedGids = getSelectedItemIds(resultsTable.getTable());
-    	if(nextButton!=null){
+    	if(doneButton!=null){
 	    	if(selectedGids.size()>0){
-	    		this.nextButton.setEnabled(true);
+	    		this.doneButton.setEnabled(true);
 	    	} else {
-	    		this.nextButton.setEnabled(false);    		
+	    		this.doneButton.setEnabled(false);    		
 	    	}
     	}
     }    
@@ -309,13 +303,10 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         this.parentWindow.addWindow(germplasmWindow);
     }
     
-    private void assembleFirstTab(){
-        firstTabLayout = new VerticalLayout();
-        firstTabLayout.setSpacing(true);
-        firstTabLayout.setMargin(true);
-        
-        Label step1Label = new Label("1. Search for Germplasm Record to add as List Entry.  Double click on a row in the result table to view germplasm details.");
-        firstTabLayout.addComponent(step1Label);
+    private void assembleTopPart(){
+        topPart = new VerticalLayout();
+        topPart.setSpacing(true);
+        topPart.setMargin(false);
         
         AbsoluteLayout searchFormLayout = new AbsoluteLayout();
         searchFormLayout.setHeight("45px");
@@ -359,8 +350,16 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         searchFormLayout.addStyleName("searchBarLayout");
 
+        topPart.addComponent(searchFormLayout);
         
-        firstTabLayout.addComponent(searchFormLayout);
+        Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
+        topPartHeader.addStyleName("bold");
+        topPartHeader.addStyleName("h3");
+        topPart.addComponent(topPartHeader);
+        
+        matchingGermplasmsCount = new Label();
+        topPart.addComponent(matchingGermplasmsCount);
+        setGermplasmCount(0);
         
         resultsTable = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         
@@ -371,7 +370,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         resultsTable.getTable().setColumnWidth(GermplasmSearchQuery.GID, 100);
         resultsTable.getTable().setWidth("100%");
-        resultsTable.getTable().setHeight("200px");
+        resultsTable.getTable().setHeight("110px");
         resultsTable.getTable().setSelectable(true);
         resultsTable.getTable().setMultiSelect(true);
         resultsTable.getTable().setColumnReorderingAllowed(true);
@@ -389,10 +388,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.METHOD, Message.METHOD_LABEL);
         messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.LOCATION, Message.LOCATION_LABEL);
         
-        firstTabLayout.addComponent(resultsTable);
+        topPart.addComponent(resultsTable);
         
-        Label step2Label = new Label("2. Select how you want to add the germplasm to the list.");
-        firstTabLayout.addComponent(step2Label);
+        Label step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
+        step2Label.addStyleName("bold");
+        topPart.addComponent(step2Label);
         
         optionGroup = new OptionGroup();
         optionGroup.addItem(OPTION_1_ID);
@@ -409,27 +409,71 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             @Override
             public void valueChange(ValueChangeEvent event) {
                 if(optionGroup.getValue().equals(OPTION_1_ID)){
-                    nextButton.setCaption("Done");
-                    accordion.getTab(secondTabLayout).setEnabled(false);
+                    setSpeficyDetailsVisible(false);
                     if(selectedGids.size()==0){
-                        nextButton.setEnabled(false);
+                        doneButton.setEnabled(false);
                     }
                 } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-                    nextButton.setCaption("Next");
+                    setSpeficyDetailsVisible(true);
                     if(selectedGids.size()==0){
-                        nextButton.setEnabled(false);
+                        doneButton.setEnabled(false);
                     } else {
-                        nextButton.setEnabled(true);
+                        doneButton.setEnabled(true);
                     }
                 } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-                    nextButton.setCaption("Next");
-                    nextButton.setEnabled(true);
+                    doneButton.setEnabled(true);
+                    setSpeficyDetailsVisible(true);
                 }
             }
         });
-        firstTabLayout.addComponent(optionGroup);
+        topPart.addComponent(optionGroup);
         
+        addComponent(topPart);
+    }
+    
+    private void assembleBottomPart(){
+        bottomPart = new AbsoluteLayout();
+        bottomPart.setWidth("600px");
+        bottomPart.setHeight("230px");
+        
+        bottomPartHeader = new Label(messageSource.getMessage(Message.SPECIFY_ADDITIONAL_DETAILS));
+        bottomPartHeader.addStyleName("bold");
+        bottomPartHeader.addStyleName("h3");
+        bottomPart.addComponent(bottomPartHeader, "top:15px;left:0px");
+        
+        breedingMethodField = new BreedingMethodField(parentWindow);
+        bottomPart.addComponent(breedingMethodField, "top:50px;left:0px");
+                
+        germplasmDateLabel = new Label("Creation Date: ");
+        germplasmDateLabel.addStyleName("bold");
+        bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
+        
+        germplasmDateField =  new DateField();
+        germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
+        germplasmDateField.setDateFormat("yyyy-MM-dd");
+        germplasmDateField.setValue(new Date());
+        bottomPart.addComponent(germplasmDateField, "top:102px;left:130px");
+        
+        breedingLocationField = new BreedingLocationField(parentWindow);
+        bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
+        
+        nameTypeLabel = new Label("Name Type: ");
+        nameTypeLabel.addStyleName("bold");
+        bottomPart.addComponent(nameTypeLabel, "top:185px;left:0px");
+        
+        nameTypeComboBox = new ComboBox();
+        nameTypeComboBox.setWidth("400px");
+        bottomPart.addComponent(nameTypeComboBox, "top:185px;left:130px");
+        populateNameTypeComboBox();
+        
+        addComponent(bottomPart);
+    }
+    
+    
+    public void assembleButtonLayout(){
         HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setWidth("100%");
+        buttonLayout.setHeight("50px");
         buttonLayout.setSpacing(true);
         
         cancelButton = new Button("Cancel");
@@ -437,62 +481,17 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         cancelButton.addListener(new CloseWindowAction());
         buttonLayout.addComponent(cancelButton);
         
-        nextButton = new Button("Done");
-        nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.addListener(new GermplasmListButtonClickListener(this));
-        nextButton.setEnabled(false);
-        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        buttonLayout.addComponent(nextButton);
-        
-        firstTabLayout.addComponent(buttonLayout);
-    }
-    
-    private void assembleSecondTab(){
-        secondTabLayout = new AbsoluteLayout();
-        secondTabLayout.setWidth("600px");
-        secondTabLayout.setHeight("400px");
-        
-        breedingMethodLabel = new Label("Breeding Method");
-        secondTabLayout.addComponent(breedingMethodLabel, "top:30px;left:20px");
-        
-        breedingMethodComboBox = new ComboBox();
-        breedingMethodComboBox.setWidth("400px");
-        secondTabLayout.addComponent(breedingMethodComboBox, "top:30px;left:200px");
-        
-        germplasmDateLabel = new Label("Date of Creation");
-        secondTabLayout.addComponent(germplasmDateLabel, "top:60px;left:20px");
-        
-        germplasmDateField =  new DateField();
-        germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
-        germplasmDateField.setDateFormat("yyyy-MM-dd");
-        germplasmDateField.setValue(new Date());
-        secondTabLayout.addComponent(germplasmDateField, "top:60px;left:200px");
-        
-        locationLabel = new Label("Location");
-        secondTabLayout.addComponent(locationLabel, "top:90px;left:20px");
-        
-        locationComboBox = new ComboBox();
-        locationComboBox.setWidth("400px");
-        secondTabLayout.addComponent(locationComboBox, "top:90px;left:200px");
-        
-        nameTypeLabel = new Label("Name Type");
-        secondTabLayout.addComponent(nameTypeLabel, "top:120px;left:20px");
-        
-        nameTypeComboBox = new ComboBox();
-        nameTypeComboBox.setWidth("400px");
-        secondTabLayout.addComponent(nameTypeComboBox, "top:120px;left:200px");
-        
-        backButton = new Button("Back");
-        backButton.setData(BACK_BUTTON_ID);
-        backButton.addListener(new GermplasmListButtonClickListener(this));
-        secondTabLayout.addComponent(backButton, "top:180px;left:20px");
-        
         doneButton = new Button("Done");
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(new GermplasmListButtonClickListener(this));
-        doneButton.addListener(new CloseWindowAction());
+        doneButton.setEnabled(false);
         doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        secondTabLayout.addComponent(doneButton, "top:180px;left:90px");
+        buttonLayout.addComponent(doneButton);
+        
+        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
+        buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
+        
+        addComponent(buttonLayout);
     }
     
     public void nextButtonClickAction(ClickEvent event){
@@ -508,17 +507,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
             if(this.selectedGids.size()>0){
-                if(this.breedingMethodComboBox.getItemIds().isEmpty()){
-                    populateBreedingMethodComboBox();
-                }
-                if(this.nameTypeComboBox.getItemIds().isEmpty()){
-                    populateNameTypeComboBox();
-                }
-                if(this.locationComboBox.getItemIds().isEmpty()){
-                    populateLocationComboBox();
-                }
-                this.accordion.getTab(secondTabLayout).setEnabled(true);
-                this.accordion.setSelectedTab(secondTabLayout);
+            	doneAction();
+            	Window window = event.getButton().getWindow();
+            	window.getParent().removeWindow(window);
             } else{
                 MessageNotifier.showWarning(this, "Warning!", 
                         "You must select a germplasm from the search results.", Notification.POSITION_CENTERED);
@@ -526,17 +517,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = this.searchField.getValue().toString();
             if(searchValue != null && searchValue.length() != 0){
-                if(this.breedingMethodComboBox.getItemIds().isEmpty()){
-                    populateBreedingMethodComboBox();
-                }
-                if(this.nameTypeComboBox.getItemIds().isEmpty()){
-                    populateNameTypeComboBox();
-                }
-                if(this.locationComboBox.getItemIds().isEmpty()){
-                    populateLocationComboBox();
-                }
-                this.accordion.getTab(secondTabLayout).setEnabled(true);
-                this.accordion.setSelectedTab(secondTabLayout);
+            	doneAction();
+            	Window window = event.getButton().getWindow();
+            	window.getParent().removeWindow(window);
             } else {
                 MessageNotifier.showWarning(this, "Warning!", 
                         "You must enter a germplasm name in the textbox.",
@@ -546,16 +529,15 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }
     
     public void backButtonClickAction(){
-        this.accordion.setSelectedTab(firstTabLayout);
     }
     
-    public void doneButtonClickAction(){
+    public void doneAction(){
     	
         if(this.optionGroup.getValue().equals(OPTION_2_ID) || this.optionGroup.getValue().equals(OPTION_3_ID)){
         	
-	        Integer breedingMethodId = (Integer) this.breedingMethodComboBox.getValue();
+	        Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
 	        Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
-	        Integer locationId = (Integer) this.locationComboBox.getValue();
+	        Integer locationId = (Integer) this.breedingLocationField.getbreedingLocationComboBox().getValue();
 	        Date dateOfCreation = (Date) this.germplasmDateField.getValue();
 	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 	        Integer date = Integer.parseInt(formatter.format(dateOfCreation));
@@ -664,30 +646,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
     }
     
-    private void populateBreedingMethodComboBox(){
-        try{
-            List<Method> methods = this.germplasmDataManager.getAllMethods();
-            for(Method method : methods){
-                String methodName = method.getMname();
-                String methodCode = method.getMcode();
-                Integer methodId = method.getMid();
-                this.breedingMethodComboBox.addItem(methodId);
-                this.breedingMethodComboBox.setItemCaption(methodId, methodName);
-                if(methodCode.equals(DEFAULT_METHOD_CODE)){
-                    this.breedingMethodComboBox.select(methodId);
-                }
-            }
-        } catch (MiddlewareQueryException ex){
-            LOG.error("Error with getting breeding methods!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding methods. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
-            Integer unknownId = Integer.valueOf(0);
-            this.breedingMethodComboBox.addItem(unknownId);
-            this.breedingMethodComboBox.setItemCaption(unknownId, "Unknown");
-        }
-        this.breedingMethodComboBox.setNullSelectionAllowed(false);
-    }
-    
     private void populateNameTypeComboBox(){
         try{
             List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
@@ -710,31 +668,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             this.nameTypeComboBox.setItemCaption(unknownId, "Unknown");
         }
         this.nameTypeComboBox.setNullSelectionAllowed(false);
-    }
-    
-    private void populateLocationComboBox(){
-        try{
-                List<Location> locations = this.germplasmDataManager.getAllBreedingLocations();
-                boolean isFirstLocation=false;
-            for(Location location : locations){
-                Integer locationId = location.getLocid();
-                String locationName = location.getLname();
-                this.locationComboBox.addItem(locationId);
-                this.locationComboBox.setItemCaption(locationId, locationName);
-                if(!isFirstLocation){
-                  this.locationComboBox.select(locationId);
-                  isFirstLocation=true;
-                }
-            }
-        } catch (MiddlewareQueryException ex){
-            LOG.error("Error with getting breeding locations!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting breeding locations. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
-            Integer unknownId = Integer.valueOf(0);
-            this.locationComboBox.addItem(unknownId);
-            this.locationComboBox.setItemCaption(unknownId, "Unknown");
-        }
-        this.locationComboBox.setNullSelectionAllowed(false);
     }
     
     private int getCurrentUserLocalId(){
@@ -793,4 +726,20 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         return itemIds;
     }    
     
+    
+    private void setGermplasmCount(Integer count){
+    	matchingGermplasmsCount.setCaption(messageSource.getMessage(Message.MATCHING_GERMPLASM_ENTRIES)+": "+count.toString());
+    }
+    
+    private void setSpeficyDetailsVisible(Boolean visible){
+    	if(visible){
+    		setHeight("720px");
+    		bottomPart.setVisible(true);
+    		center();
+    	} else {
+    		setHeight("480px");
+    		bottomPart.setVisible(false);
+    		center();
+    	}
+    }
 }

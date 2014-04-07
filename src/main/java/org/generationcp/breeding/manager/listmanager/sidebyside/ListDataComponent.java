@@ -478,12 +478,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                      menuDeleteEntries.setVisible(true); 
                      menuSaveChanges.setVisible(true);
                      menuAddEntry.setVisible(true);
+                     addColumnContextMenu.showHideAddColumnMenu(true);
 	   			 } else {
                      menuEditList.setVisible(false);
                      menuDeleteList.setVisible(false);
                      menuDeleteEntries.setVisible(false);
                      menuSaveChanges.setVisible(false);
                      menuAddEntry.setVisible(false);
+                     addColumnContextMenu.showHideAddColumnMenu(false);
 	   			 }
 	
 	   		 }
