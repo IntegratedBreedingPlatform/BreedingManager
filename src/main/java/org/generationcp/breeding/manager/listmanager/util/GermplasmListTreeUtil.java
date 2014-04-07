@@ -279,8 +279,9 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	
 	            	} else {
 	        			MessageNotifier.showWarning(source.getWindow(),
-	                            messageSource.getMessage(Message.INVALID_INPUT), 
-	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+	                            messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));        
+	        			return;
 	            	}
                 	
                 	
@@ -605,8 +606,9 @@ public class GermplasmListTreeUtil implements Serializable {
 		            }
 		    	} else {
 					MessageNotifier.showWarning(source.getWindow(),
-		                    messageSource.getMessage(Message.INVALID_INPUT), 
-		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+		                    messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)); 
+					return;
 		    	}
 		    	
 		    } catch (MiddlewareQueryException e) {
