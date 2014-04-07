@@ -458,6 +458,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	
 	public void resetGermplasmTable(){		
 		tableWithSelectAllLayout.getTable().removeAllItems();
+		for(Object col: tableWithSelectAllLayout.getTable().getContainerPropertyIds().toArray())  {
+			tableWithSelectAllLayout.getTable().removeContainerProperty(col);
+		}
+		tableWithSelectAllLayout.getTable().setWidth("400px");
+		createGermplasmTable(tableWithSelectAllLayout.getTable());
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
