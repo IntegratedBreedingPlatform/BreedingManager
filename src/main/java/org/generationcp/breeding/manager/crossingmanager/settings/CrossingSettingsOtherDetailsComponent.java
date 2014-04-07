@@ -238,13 +238,13 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		// Additional Details Section
 		addComponent(additionalDetailsSectionTitle, "top:0px;left:0px");
 		
-		addComponent(harvestLocationLabel, "top:26px;left:0px");
-		addComponent(harvestLocComboBox, "top:26px;left:145px");
-		addComponent(showFavoriteLocationsCheckBox, "top:26px;left:410px");
-		addComponent(manageFavoriteLocationsLink,"top:44px;left:430px;");
+		addComponent(harvestLocationLabel, "top:30px;left:0px");
+		addComponent(harvestLocComboBox, "top:30px;left:145px");
+		addComponent(showFavoriteLocationsCheckBox, "top:30px;left:410px");
+		addComponent(manageFavoriteLocationsLink,"top:48px;left:430px;");
 
-		addComponent(harvestDateLabel, "top:60px;left:0px");
-        addComponent(harvestDtDateField, "top:60px;left:145px");
+		addComponent(harvestDateLabel, "top:64px;left:0px");
+        addComponent(harvestDtDateField, "top:64px;left:145px");
 		
 		
         // Save Settings section

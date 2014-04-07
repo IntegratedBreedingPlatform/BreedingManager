@@ -6,8 +6,10 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.TemplateSetting;
@@ -48,6 +50,7 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 	
 	private CrossingSettingsDetailComponent settingsParentComponent;
 	
+	private Label defineCrossingSettingsLabel;
 	private Label mandatoryFieldLabel;
 	private Label usePreviouslySavedSettingLabel;
 	
@@ -80,6 +83,10 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 
 	@Override
 	public void instantiateComponents() {
+		
+		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
+		defineCrossingSettingsLabel.setWidth("250px");
+		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		mandatoryFieldLabel =  new Label("<i>" +messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD) 
 				+ "</i>", Label.CONTENT_XHTML);
@@ -164,6 +171,9 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 
 	@Override
 	public void layoutComponents() {
+
+		HeaderLabelLayout defineCrossingHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, defineCrossingSettingsLabel);
+		addComponent(defineCrossingHeader);
 		
 		addComponent(mandatoryFieldLabel);
 		
