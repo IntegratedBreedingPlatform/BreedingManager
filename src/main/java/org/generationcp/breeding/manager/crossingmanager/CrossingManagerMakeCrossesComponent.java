@@ -249,7 +249,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
         
         listDetailsTabSheet = new TabSheet();
-        listDetailsTabSheet.setWidth("746px");
+        listDetailsTabSheet.setWidth("730px");
         listDetailsTabSheet.setHeight("390px");
         listDetailsTabSheet.setVisible(false);
         
@@ -305,7 +305,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         addComponent(listTree, "top:15px; left:15px;");
         
         HorizontalLayout headerLayout = new HorizontalLayout();
-        headerLayout.setWidth("746px");
+        headerLayout.setWidth("730px");
         headerLayout.addComponent(selectParentsLabel);
         headerLayout.addComponent(closeAllTabsButton);
         headerLayout.setComponentAlignment(selectParentsLabel,Alignment.MIDDLE_LEFT);

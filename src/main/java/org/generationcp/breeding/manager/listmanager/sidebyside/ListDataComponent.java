@@ -191,6 +191,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	@Autowired
     private WorkbenchDataManager workbenchDataManager;
+	private Integer workbenchUserId;
+    private Integer ibdbUserId;
 	
 	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
@@ -267,7 +269,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			LOG.error("Error with retrieving local user ID", e);
 		}
 		
-		if(germplasmList.getId()<0 && germplasmList.getUserId().equals(localUserId)){
+		if(germplasmList.isLocalList() && germplasmList.getUserId().equals(localUserId)){
 	        unlockButton = new Button();
 	        unlockButton.setData(UNLOCK_BUTTON_ID);
 	        unlockButton.setIcon(ICON_LOCK);
@@ -344,6 +346,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void initializeValues() {
+	    retrieveUserInfo();
+	    
 		if(listEntriesCount > 0){
 		    listEntries = new ArrayList<GermplasmListData>();
 			try{
@@ -413,7 +417,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			}
 		});
 		
-		if(germplasmList.getId()<0 && germplasmList.getStatus()<100){
+		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
 	        new FillWith(parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
 		
@@ -424,7 +428,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				private static final long serialVersionUID = -897257270314381555L;
 
 				public Action[] getActions(Object target, Object sender) {
-					if (germplasmList.getId() < 0 &&  germplasmList.getStatus() < 100){
+					if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
 						if(selectedColumn == null){
 							return ACTIONS_TABLE_CONTEXT_MENU;
 						} else {
@@ -484,29 +488,20 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	   			  menuCopyToList.setVisible(false);
 	   			 }
 	   			 
-				// Show "Save Sorting" button only when Germplasm List open is a local IBDB record (negative ID).
-				// and when not accessed directly from URL or popup window
-	   			 if (germplasmList.getId() < 0 && !fromUrl) {
-	   				 if(germplasmList.getStatus()>=100){
-	   					 menuEditList.setVisible(false);
-	   					 menuDeleteList.setVisible(false);
-	   					 menuDeleteEntries.setVisible(false);
-	   					 menuSaveChanges.setVisible(false);
-	   					 menuAddEntry.setVisible(false);
-	   				 }else{
-	   					 menuEditList.setVisible(true);
-	   					 menuDeleteList.setVisible(true);
-	   					 menuDeleteEntries.setVisible(true); 
-	   					 menuSaveChanges.setVisible(true);
-	   					 menuAddEntry.setVisible(true);
-	   				 }
-			 
-	   			 }else{
-	   				 menuEditList.setVisible(false);
-	   				 menuDeleteList.setVisible(false);
-	   				 menuDeleteEntries.setVisible(false);
-					 menuSaveChanges.setVisible(false);
-					 menuAddEntry.setVisible(false);
+				 // Show items only when Germplasm List open is a local IBDB record (negative ID),
+	   			 // when the Germplasm List is not locked, and when not accessed directly from URL or popup window
+	   			 if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
+                     menuEditList.setVisible(true);
+                     menuDeleteList.setVisible(userIsListOwner()); //show only Delete List when user is owner
+                     menuDeleteEntries.setVisible(true); 
+                     menuSaveChanges.setVisible(true);
+                     menuAddEntry.setVisible(true);
+	   			 } else {
+                     menuEditList.setVisible(false);
+                     menuDeleteList.setVisible(false);
+                     menuDeleteEntries.setVisible(false);
+                     menuSaveChanges.setVisible(false);
+                     menuAddEntry.setVisible(false);
 	   			 }
 	
 	   		 }
@@ -565,7 +560,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		headerLayoutLeft.addComponent(viewHeaderButton);
 		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
 		
-		if(germplasmList.getId() < 0 && germplasmList.getStatus() < 100){
+		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
 			headerLayoutLeft.addComponent(editHeaderButton);
 			headerLayoutLeft.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
 		}
@@ -585,14 +580,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			LOG.error("Error with retrieving local user ID", e);
 		}
 		
-		if(germplasmList.getId()<0 && germplasmList.getUserId().equals(localUserId)){
+		if(germplasmList.isLocalList() && germplasmList.getUserId().equals(localUserId)){
 			headerLayoutLeft.addComponent(lockButton);
 			headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
 	
 			headerLayoutLeft.addComponent(unlockButton);
 			headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
 	
-			if(germplasmList.getStatus()<100){
+			if(!germplasmList.isLockedList()){
 				lockButton.setVisible(true);
 				unlockButton.setVisible(false);
 			} else {
@@ -615,6 +610,22 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public void updateLabels() {
 		
 	}
+	
+	private void retrieveUserInfo() {
+	    try {
+	        Long projectId = (long) workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+	        workbenchDataManager.getWorkbenchRuntimeData();
+	        workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+	        ibdbUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
+	    } catch (MiddlewareQueryException e) {
+	        LOG.error("Error in retrieving IBDB user info.", e);
+	        e.printStackTrace();
+	    }
+    }
+	
+	private boolean userIsListOwner() {
+        return germplasmList.getUserId().equals(ibdbUserId);
+    }
 	
 	public void makeTableEditable(){
     	listDataTable.addListener(new ItemClickListener(){
@@ -947,7 +958,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
     private void exportListAction() throws InternationalizableException {
-        if(germplasmList.getId()>0 || (germplasmList.getId()<0 && germplasmList.getStatus()>=100)){
+        if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
             String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
             try {
@@ -988,7 +999,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
-        if(germplasmList.getId()>0 || (germplasmList.getId()<0 && germplasmList.getStatus()>=100)){
+        if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
             String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
             
@@ -1480,15 +1491,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
     
     public void deleteGermplasmListConfirmed() {
-        if(germplasmList.getStatus()<100){ 
+        if(!germplasmList.isLockedList()){ 
             try {
-                
                 ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, 
                         germplasmList, workbenchDataManager, getWindow(), messageSource, "list");
                
                 source.getBrowseListsComponent().getListTreeComponent().removeListFromTree(germplasmList);
                 source.updateUIForDeletedList(germplasmList);
-                
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
                 e.printStackTrace();
@@ -1506,7 +1515,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
 	
     public void lockGermplasmList() {
-        if(germplasmList.getStatus()<100){
+        if(!germplasmList.isLockedList()){
 		    germplasmList.setStatus(germplasmList.getStatus()+100);
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
@@ -1532,16 +1541,16 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	}
     
     private void showHideOptionsForLocked() {
-        boolean locked = germplasmList.getStatus() >= 100;
+        boolean locked = germplasmList.isLockedList();
         lockButton.setVisible(!locked);
         unlockButton.setVisible(locked);
         menuDeleteEntries.setVisible(!locked);
         menuSaveChanges.setVisible(!locked);
         menuAddEntry.setVisible(!locked);
     }
-
+    
     public void unlockGermplasmList() {
-        if(germplasmList.getStatus()>=100){
+        if(germplasmList.isLockedList()){
 		    germplasmList.setStatus(germplasmList.getStatus()-100);
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
