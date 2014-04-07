@@ -112,6 +112,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private TableWithSelectAllLayout listDataTableWithSelectAll;
 	private Label noListDataLabel;
 	
+	private HorizontalLayout headerLayout;
+	private HorizontalLayout headerLayoutLeft;
+	
 	//Menu for tools button
 	private ContextMenu menu; 
 	private ContextMenuItem menuExportList;
@@ -553,11 +556,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public void layoutComponents() {
 		setSpacing(true);
 		
-		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		
-		HorizontalLayout headerLayoutLeft = new HorizontalLayout();
+		headerLayoutLeft = new HorizontalLayout();
 		headerLayoutLeft.setSpacing(true);
 		headerLayoutLeft.addComponent(viewHeaderButton);
 		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
@@ -1046,6 +1049,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     
     @Override
     public void finishAddingEntry(Integer gid) {
+    	
         Germplasm germplasm = null;
 
         try {
@@ -1251,6 +1255,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     , Notification.POSITION_CENTERED);
             return;
         }
+		
     }
     
     private boolean isColumnVisible(Object[] columns, String columnName){
@@ -1352,6 +1357,28 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
         }
 
+        //Update counter
+		try{
+			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
+		} catch(MiddlewareQueryException ex){
+			LOG.error("Error with retrieving count of list entries for list: " + germplasmList.getId(), ex);
+			listEntriesCount = 0;
+		}
+		
+		if(totalListEntriesLabel!=null){
+			if(listEntriesCount == 0) {
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+			} else {
+				totalListEntriesLabel.setValue("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " + listEntriesCount);
+			}        
+		} else if(noListDataLabel!=null) {
+			if(listEntriesCount == 0) {
+				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+			} else {
+				noListDataLabel.setValue("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " + listEntriesCount);
+			}   			
+		}
+        
     } // end of saveChangesAction
     
     //TODO review this method as there are redundant codes here that is also in saveChangesAction()
@@ -1608,6 +1635,5 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		for(Integer gid : gids){
 			finishAddingEntry(gid);
 		}
-		
 	}
 }
