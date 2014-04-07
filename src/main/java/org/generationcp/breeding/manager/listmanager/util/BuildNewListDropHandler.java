@@ -305,7 +305,7 @@ public class BuildNewListDropHandler implements DropHandler {
         		germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
     		}
     		
-        	if(germplasmListData!=null){
+        	if(germplasmListData!=null && germplasmListData.getStatus()!=9){
         		
 	            Integer gid = germplasmListData.getGid();
 	            
@@ -346,7 +346,11 @@ public class BuildNewListDropHandler implements DropHandler {
 	            if(newItem!=null && gidButton!=null)
 	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
+	            if(forEditList.equals(true)){
+	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            } else {
+	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
+	            }
 	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
