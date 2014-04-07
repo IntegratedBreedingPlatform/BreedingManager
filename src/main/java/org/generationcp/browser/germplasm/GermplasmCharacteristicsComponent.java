@@ -33,13 +33,6 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
     private Label lblCreationDate;
     private Label lblReference;
 
-    private Label gid;
-    private Label prefName;
-    private Label location;
-    private Label germplasmMethod;
-    private Label creationDate;
-    private Label reference;
-
     private GermplasmDetailModel gDetailModel;
     
     @Autowired
@@ -51,38 +44,48 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
     
     @Override
     public void afterPropertiesSet() {
-        setRows(7);
+        setRows(2);
         setColumns(3);
         setSpacing(true);
-        setMargin(true);
-
-        lblGID = new Label(messageSource.getMessage(Message.GID_LABEL)); // "GID"
-        lblPrefName = new Label(messageSource.getMessage(Message.PREFNAME_LABEL)); // "Preferred Name"
-        lblLocation = new Label(messageSource.getMessage(Message.LOCATION_LABEL)); // "Location"
-        lblGermplasmMethod = new Label(messageSource.getMessage(Message.CREATION_METHOD_LABEL)); // "Creation Method"
-        lblCreationDate = new Label(messageSource.getMessage(Message.CREATION_DATE_LABEL)); // "Creation Date"
-        lblReference = new Label(messageSource.getMessage(Message.REFERENCE_LABEL)); // "Reference"
-
-        gid = new Label(String.valueOf(gDetailModel.getGid()));
-        prefName = new Label(gDetailModel.getGermplasmPreferredName());
-        location = new Label( gDetailModel.getGermplasmLocation());
-        germplasmMethod = new Label(gDetailModel.getGermplasmMethod());
-        creationDate = new Label(String.valueOf(gDetailModel.getGermplasmCreationDate()));
-        reference = new Label(String.valueOf( gDetailModel.getReference()));
-
-        addComponent(lblGID, 1, 1);
-        addComponent(lblPrefName, 1, 2);
-        addComponent(lblLocation, 1, 3);
-        addComponent(lblGermplasmMethod, 1, 4);
-        addComponent(lblCreationDate, 1, 5);
-        addComponent(lblReference, 1, 6);
         
-        addComponent(gid, 2, 1);
-        addComponent(prefName, 2, 2);
-        addComponent(location, 2, 3);
-        addComponent(germplasmMethod, 2, 4);
-        addComponent(creationDate, 2, 5);
-        addComponent(reference, 2, 6);
+        lblPrefName = new Label("<b>" + messageSource.getMessage(Message.PREFNAME_LABEL) + ":</b> " + gDetailModel.getGermplasmPreferredName()); // "Preferred Name"
+        lblPrefName.setContentMode(Label.CONTENT_XHTML);
+        lblGermplasmMethod = new Label("<b>" + messageSource.getMessage(Message.CREATION_METHOD_LABEL) + ":</b> " + gDetailModel.getGermplasmMethod()); // "Creation Method"
+        lblGermplasmMethod.setContentMode(Label.CONTENT_XHTML);
+        lblGermplasmMethod.setDescription(gDetailModel.getGermplasmMethod());
+        lblCreationDate = new Label("<b>" + messageSource.getMessage(Message.CREATION_DATE_LABEL) + ":</b> " + String.valueOf(gDetailModel.getGermplasmCreationDate())); // "Creation Date"
+        lblCreationDate.setContentMode(Label.CONTENT_XHTML);
+        String locationName = gDetailModel.getGermplasmLocation();
+        if(locationName != null && locationName.length() > 40){
+        	locationName = locationName.substring(0, 40) + "...";
+        } else{
+        	locationName = "-";
+        }
+        lblLocation = new Label("<b>" + messageSource.getMessage(Message.LOCATION_LABEL) + ":</b> " + locationName); // "Location"
+        lblLocation.setContentMode(Label.CONTENT_XHTML);
+        lblLocation.setDescription(gDetailModel.getGermplasmLocation());
+        lblGID = new Label("<b>" + messageSource.getMessage(Message.GID_LABEL) + ":</b> " + String.valueOf(gDetailModel.getGid())); // "GID"
+        lblGID.setContentMode(Label.CONTENT_XHTML);
+        String reference = "-";
+        String referenceFullString = null;
+        if(gDetailModel.getReference() != null){
+        	referenceFullString = String.valueOf(gDetailModel.getReference());
+        	if(referenceFullString.length() > 40){
+        		reference = referenceFullString.substring(0, 40) + "...";
+        	} else{
+        		reference = referenceFullString;
+        	}
+        }
+        lblReference = new Label("<b>" + messageSource.getMessage(Message.REFERENCE_LABEL) + ":</b> " + reference); // "Reference"
+        lblReference.setContentMode(Label.CONTENT_XHTML);
+        lblReference.setDescription(referenceFullString);
+        
+        addComponent(lblPrefName, 0, 0);
+        addComponent(lblGermplasmMethod, 0, 1);
+        addComponent(lblCreationDate, 1, 0);
+        addComponent(lblLocation, 1, 1);
+        addComponent(lblGID, 2, 0);
+        addComponent(lblReference, 2, 1);
     }
     
     @Override
@@ -93,12 +96,7 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
 
     @Override
     public void updateLabels() {
-/*        messageSource.setCaption(lblGID, Message.gid_label);
-        messageSource.setCaption(lblPrefName, Message.prefname_label);
-        messageSource.setCaption(lblLocation, Message.location_label);
-        messageSource.setCaption(lblGermplasmMethod, Message.method_label);
-        messageSource.setCaption(lblCreationDate, Message.creation_date_label);
-        messageSource.setCaption(lblReference, Message.reference_label);*/
+
     }
 
 }

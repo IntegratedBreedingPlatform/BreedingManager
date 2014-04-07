@@ -21,22 +21,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmAttributesComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmAttributesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
-    
-    private static final String TYPE = "Type";
-    private static final String NAME = "Value";
-    private static final String DATE = "Date";
-    private static final String LOCATION = "Location";
-    private static final String TYPE_DESC = "Type Desc";
     
     GermplasmIndexContainer dataIndexContainer;
     
     GermplasmDetailModel gDetailModel;
+    
+    private Table attributesTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -48,30 +47,58 @@ public class GermplasmAttributesComponent extends Table implements InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        IndexedContainer dataSourceAttribute = dataIndexContainer.getGermplasmAttribute(gDetailModel);
-        this.setContainerDataSource(dataSourceAttribute);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { TYPE, TYPE_DESC, NAME, DATE, LOCATION, });
+        initializeComponents();
+        initializeValues();
+        addListeners();
+        layoutComponents();
     }
-
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    
+    public void initializeComponents(){
+    	IndexedContainer attributes = dataIndexContainer.getGermplasmAttribute(gDetailModel);
+        
+    	if(attributes.getItemIds().isEmpty()){
+    		noDataAvailableLabel = new Label("There is no Attributes information for this germplasm.");
+    	} else{
+	    	attributesTable = new Table();
+	    	attributesTable.setWidth("90%");
+	    	attributesTable.setContainerDataSource(attributes);
+	    	if(attributes.getItemIds().size() < 10){
+	    		attributesTable.setPageLength(attributes.getItemIds().size());
+	    	} else{
+	    		attributesTable.setPageLength(10);
+	    	}
+	    	attributesTable.setSelectable(true);
+	        attributesTable.setMultiSelect(false);
+	        attributesTable.setImmediate(true); // react at once when something is
+	        attributesTable.setColumnReorderingAllowed(true);
+	        attributesTable.setColumnCollapsingAllowed(true);
+	        attributesTable.setColumnHeaders(new String[] { messageSource.getMessage(Message.TYPE_LABEL)
+	        		, messageSource.getMessage(Message.TYPEDESC_LABEL)
+	        		, messageSource.getMessage(Message.NAME_LABEL)
+	        		, messageSource.getMessage(Message.DATE_LABEL)
+	        		, messageSource.getMessage(Message.LOCATION_LABEL)});
+    	}
     }
-
+    
+    public void initializeValues(){
+    	
+    }
+    
+    public void addListeners(){
+    	
+    }
+    
+    public void layoutComponents(){
+    	if(attributesTable != null){
+    		addComponent(attributesTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
+    }
+    
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, TYPE, Message.TYPE_LABEL);
-        messageSource.setColumnHeader(this, NAME, Message.NAME_LABEL);
-        messageSource.setColumnHeader(this, DATE, Message.DATE_LABEL);
-        messageSource.setColumnHeader(this, LOCATION, Message.LOCATION_LABEL);
-        messageSource.setColumnHeader(this, TYPE_DESC, Message.TYPEDESC_LABEL);
+        
     }
 
 }

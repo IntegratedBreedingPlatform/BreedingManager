@@ -33,29 +33,34 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmListComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmListComponent.class);
 	public static final String LIST_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-";
     
-    private GermplasmListManager dataManager;
     private Integer gid;
     private boolean fromUrl;                //this is true if this component is created by accessing the Germplasm Details page directly from the URL
+    
+    private Table listsTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
 
-    public GermplasmListComponent(GermplasmListManager dataManager, Integer gid, boolean fromUrl) {
-        this.dataManager = dataManager;
+    public GermplasmListComponent(Integer gid, boolean fromUrl) {
         this.gid = gid;
         this.fromUrl = fromUrl;
     }
@@ -102,7 +107,13 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ListsForGermplasmQueryFactory factory = new ListsForGermplasmQueryFactory(this.dataManager, this.gid);
+        initializeComponents();
+        addListeners();
+        layoutComponents();
+    }
+    
+    private void initializeComponents(){
+    	ListsForGermplasmQueryFactory factory = new ListsForGermplasmQueryFactory(germplasmListManager, gid);
         LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
         
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
@@ -111,25 +122,47 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DATE, String.class, null);
         container.addContainerProperty(ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, String.class, null);
         container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
-        setContainerDataSource(container);
         
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_ID, Message.ID_HEADER);
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, Message.NAME_HEADER);
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE, Message.DATE_HEADER);
-        messageSource.setColumnHeader(this, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, Message.DESCRIPTION_HEADER);
-        setVisibleColumns(new String[] { (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION});
-        
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
-        setPageLength(15);
-        
-        if (!fromUrl) {
-            addListener(new GermplasmListItemClickListener(this));
+        if(container.size() > 0){
+        	listsTable = new Table();
+        	listsTable.setWidth("90%");
+        	listsTable.setContainerDataSource(container);
+        	
+        	if(container.size() < 10){
+        		listsTable.setPageLength(container.size());
+        	} else{
+        		listsTable.setPageLength(10);
+        	}
+        	
+        	listsTable.setSelectable(true);
+        	listsTable.setMultiSelect(false);
+        	listsTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+        	listsTable.setColumnReorderingAllowed(true);
+        	listsTable.setColumnCollapsingAllowed(true);
+        	
+        	listsTable.setColumnHeader(ListsForGermplasmQuery.GERMPLASMLIST_ID, messageSource.getMessage(Message.ID_HEADER));
+        	listsTable.setColumnHeader(ListsForGermplasmQuery.GERMPLASMLIST_NAME, messageSource.getMessage(Message.NAME_HEADER));
+        	listsTable.setColumnHeader(ListsForGermplasmQuery.GERMPLASMLIST_DATE, messageSource.getMessage(Message.DATE_HEADER));
+        	listsTable.setColumnHeader(ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION, messageSource.getMessage(Message.DESCRIPTION_HEADER));
+        	listsTable.setVisibleColumns(new String[] { (String) ListsForGermplasmQuery.GERMPLASMLIST_NAME, (String) ListsForGermplasmQuery.GERMPLASMLIST_DATE
+        			, (String) ListsForGermplasmQuery.GERMPLASMLIST_DESCRIPTION});
+        } else{
+        	noDataAvailableLabel = new Label("There is no Lists Information for this germplasm.");
         }
+    }
+    
+    private void addListeners(){
+    	if (!fromUrl && listsTable != null) {
+    		listsTable.addListener(new GermplasmListItemClickListener(this));
+        }
+    }
+    
+    private void layoutComponents(){
+    	if(listsTable != null){
+    		addComponent(listsTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
 
     @Override
@@ -140,9 +173,7 @@ public class GermplasmListComponent extends Table implements InitializingBean, I
 
     @Override
     public void updateLabels() {
-        /*messageSource.setColumnHeader(this, NAME, Message.name_header);
-        messageSource.setColumnHeader(this, DATE, Message.date_header);
-        messageSource.setColumnHeader(this, DESCRIPTION, Message.description_header);*/
+        
     }
 
 }

@@ -21,18 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmGenerationHistoryComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmGenerationHistoryComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     
-    private static final String  GID = "GID";
-    private static final String PREF_NAME = "Preferred Name";
-    
     GermplasmIndexContainer dataIndexContainer;
     GermplasmDetailModel gDetailModel;
+    
+    private Table generationHistoryTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -44,28 +46,44 @@ public class GermplasmGenerationHistoryComponent extends Table implements Initia
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        IndexedContainer dataSourceGenerationHistory = dataIndexContainer.getGermplasmGenerationHistory(gDetailModel);
-
-        this.setContainerDataSource(dataSourceGenerationHistory);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { GID, PREF_NAME });
+    	initializeComponents();
+    	layoutComponents();
     }
+    
+    private void initializeComponents(){
+    	IndexedContainer generationHistory = dataIndexContainer.getGermplasmGenerationHistory(gDetailModel);
 
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    	if(generationHistory.getItemIds().isEmpty()){
+    		noDataAvailableLabel = new Label("There is no Generation History Information for this gemrplasm.");
+    	} else{
+    		generationHistoryTable = new Table();
+    		generationHistoryTable.setContainerDataSource(generationHistory);
+    		if(generationHistory.getItemIds().size() < 10){
+    			generationHistoryTable.setPageLength(generationHistory.getItemIds().size());
+    		} else{
+    			generationHistoryTable.setPageLength(10);
+    		}
+    		generationHistoryTable.setSelectable(true);
+    		generationHistoryTable.setMultiSelect(false);
+    		generationHistoryTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+    		generationHistoryTable.setColumnReorderingAllowed(true);
+    		generationHistoryTable.setColumnCollapsingAllowed(true);
+    		generationHistoryTable.setColumnHeaders(new String[] { messageSource.getMessage(Message.GID_LABEL)
+    				, messageSource.getMessage(Message.PREFNAME_LABEL)});
+    	}
+    }
+    
+    private void layoutComponents(){
+    	if(generationHistoryTable != null){
+    		addComponent(generationHistoryTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, PREF_NAME, Message.PREFNAME_LABEL);
+        
     }
 
 }

@@ -21,6 +21,7 @@ import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
+import org.generationcp.browser.germplasm.GermplasmDetailsComponentTree;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
@@ -315,8 +316,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      Window germplasmDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASM_DETAILS_TEXT) + " " + gid);  // "Germplasm Details"
                      germplasmDetailsWindow.setSizeUndefined();
                      GermplasmQueries queries = new GermplasmQueries();
-                     GermplasmIndexContainer container = new GermplasmIndexContainer(queries);
-                     germplasmDetailsWindow.addComponent(new GermplasmDetail(gid, queries, container, null, null, true));
+                     germplasmDetailsWindow.addComponent(new GermplasmDetailsComponentTree(gid, queries));
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {
