@@ -952,24 +952,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                 LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                             , "Error with exporting list."    
                             , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                             , Notification.POSITION_CENTERED);
             }
         } else {
-            ConfirmDialog.show(source.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM), "Yes", "No", 
-                new ConfirmDialog.Listener() {
-                    private static final long serialVersionUID = -4433860112118910452L;
-                    public void onClose(ConfirmDialog dialog) {
-                        if (dialog.isConfirmed()) {
-                            lockGermplasmList();
-                            exportListAction();
-                        } else {
-        
-                        }
-                    }
-                });
+            MessageNotifier.showError(source.getWindow()
+                    , "Error with exporting list."    
+                    , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
         }
     }
     
