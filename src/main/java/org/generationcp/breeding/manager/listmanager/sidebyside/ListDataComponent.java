@@ -995,12 +995,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 //File tempFile = new File(tempFileName);
                 //tempFile.delete();
             } catch (GermplasmListExporterException e) {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                MessageNotifier.showError(source.getWindow()
                         , "Error with exporting list."
                         , e.getMessage(), Notification.POSITION_CENTERED);
             }
         } else {
-            MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+            MessageNotifier.showError(source.getWindow()
                     , "Error with exporting list."    
                     , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
         }
