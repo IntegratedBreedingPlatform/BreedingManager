@@ -303,8 +303,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         this.addComponent(menu);
 	}
     
-    public void createGermplasmTable(final Table table){
-        
+	public void addBasicTableColumns(Table table){
     	table.setData(GERMPLASMS_TABLE_DATA);
     	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
@@ -321,6 +320,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+	}
+	
+    public void createGermplasmTable(final Table table){
+        
+    	addBasicTableColumns(table);
         
         table.setSelectable(true);
         table.setMultiSelect(true);
@@ -462,7 +466,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 			tableWithSelectAllLayout.getTable().removeContainerProperty(col);
 		}
 		tableWithSelectAllLayout.getTable().setWidth("400px");
-		createGermplasmTable(tableWithSelectAllLayout.getTable());
+		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
