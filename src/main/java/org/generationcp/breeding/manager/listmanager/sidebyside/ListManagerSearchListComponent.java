@@ -53,7 +53,9 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 
 	@Override
 	public void instantiateComponents() {
-		setSizeFull();
+		//setSizeFull();
+		setWidth("100%");
+		setHeight("630px");
 		
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
