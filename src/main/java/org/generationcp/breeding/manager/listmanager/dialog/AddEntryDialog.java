@@ -150,7 +150,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         setWidth("800px");
         setHeight("650px");
         setResizable(false);
-        setCaption("Add List Entry");
+        setCaption("Add List Entries");
         // center window within the browser
         center();
         
