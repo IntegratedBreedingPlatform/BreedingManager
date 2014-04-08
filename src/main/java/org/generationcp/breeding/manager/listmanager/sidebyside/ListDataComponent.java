@@ -1020,7 +1020,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             
             try {
                 listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(parentListDetailsComponent.getWindow(),
-                        listManagerCopyToNewListDialog,germplasmList.getName(),listDataTable,getCurrentUserLocalId(),source));
+                        listManagerCopyToNewListDialog,germplasmList.getName(),listDataTable,getCurrentUserLocalId(),source,false));
                 parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error copying list entries.", e);
