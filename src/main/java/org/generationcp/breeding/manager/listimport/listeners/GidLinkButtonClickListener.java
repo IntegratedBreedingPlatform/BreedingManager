@@ -97,7 +97,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         String windowTitle = "Germplasm Details: " + "(" + gid + ")";
         if(preferredName != null){
-        	windowTitle = "Germplasm Details: " + preferredName + " (" + gid + ")";
+        	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
         }
         Window germplasmWindow = new Window(windowTitle);
         
