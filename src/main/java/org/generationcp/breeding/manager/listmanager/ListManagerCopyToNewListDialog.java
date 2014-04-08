@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
@@ -57,13 +58,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 
 
 @Configurable
-public class ListManagerCopyToNewListDialog extends GridLayout implements InitializingBean, InternationalizableComponent,
+public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
@@ -138,14 +140,19 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        setRows(8);
-        setColumns(3);
-        setSpacing(true);
-        setMargin(true);
-
-        labelListName = new Label();
-        labelDescription = new Label();
-        labelType = new Label();
+    	setSpacing(true);
+    	
+    	GridLayout gridLayout = new GridLayout();
+        gridLayout.setRows(3);
+        gridLayout.setColumns(2);
+        gridLayout.setSpacing(true);
+        
+        labelListName = new Label(messageSource.getMessage(Message.LIST_NAME_LABEL));
+        labelListName.addStyleName("bold");
+        labelDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
+        labelDescription.addStyleName("bold");
+        labelType = new Label(messageSource.getMessage(Message.TYPE_LABEL));
+        labelType.addStyleName("bold");
 
         comboBoxListName = new ComboBox();
         populateComboBoxListName();
@@ -167,28 +174,32 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         
         HorizontalLayout hButton = new HorizontalLayout();
         hButton.setSpacing(true);
-        btnSave = new Button();
+        btnSave = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save New Germplasm List ");
         btnSave.addListener(new GermplasmListButtonClickListener(this));
         btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
-        hButton.addComponent(btnSave);
-        btnCancel = new Button();
+        btnCancel = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
         btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving New Germplasm List");
         btnCancel.addListener(new GermplasmListButtonClickListener(this));
+        
         hButton.addComponent(btnCancel);
-
-        addComponent(labelListName, 1, 1);
-        addComponent(comboBoxListName, 2, 1);
-        addComponent(labelDescription, 1, 2);
-        addComponent(txtDescription, 2, 2);
-        addComponent(labelType, 1, 3);
-        addComponent(selectType, 2, 3);
-        addComponent(hButton, 1, 6);
+        hButton.addComponent(btnSave);
+        
+        gridLayout.addComponent(labelListName, 0, 0);
+        gridLayout.addComponent(comboBoxListName, 1, 0);
+        gridLayout.addComponent(labelDescription, 0, 1);
+        gridLayout.addComponent(txtDescription, 1, 1);
+        gridLayout.addComponent(labelType, 0, 2);
+        gridLayout.addComponent(selectType, 1, 2);
+        
+        addComponent(gridLayout);
+        addComponent(hButton);
+        setComponentAlignment(hButton, Alignment.MIDDLE_CENTER);
     }
 
 
@@ -207,18 +218,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     }
 
     @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
-
-    @Override
     public void updateLabels() {
-        messageSource.setCaption(labelListName, Message.LIST_NAME_LABEL);
-        messageSource.setCaption(labelDescription, Message.DESCRIPTION_LABEL);
-        messageSource.setCaption(labelType, Message.TYPE_LABEL);
-        messageSource.setCaption(btnSave, Message.SAVE_LABEL);
-        messageSource.setCaption(btnCancel, Message.CANCEL_LABEL);
+        
     }
     
     private void populateComboBoxListName() throws MiddlewareQueryException {

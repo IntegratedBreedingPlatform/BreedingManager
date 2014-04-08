@@ -1296,8 +1296,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth("700px");
-                listManagerCopyToNewListDialog.setHeight("350px");
+                listManagerCopyToNewListDialog.setWidth("617px");
+                listManagerCopyToNewListDialog.setHeight("230px");
+                listManagerCopyToNewListDialog.setResizable(true);
                 
                 try {
                     
