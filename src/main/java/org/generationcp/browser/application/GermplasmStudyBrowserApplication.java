@@ -317,6 +317,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      germplasmDetailsWindow.setSizeUndefined();
                      GermplasmQueries queries = new GermplasmQueries();
                      germplasmDetailsWindow.addComponent(new GermplasmDetailsComponentTree(gid, queries));
+                     germplasmDetailsWindow.getContent().addStyleName("graybg");
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {

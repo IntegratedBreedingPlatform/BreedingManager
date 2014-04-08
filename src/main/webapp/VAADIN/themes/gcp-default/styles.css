@@ -231,3 +231,7 @@
 .v-tabsheet-content{position:absolute}
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
 .v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
+
+.v-verticallayout-graybg > div {
+	background-color: #f6f6f6;
+}
