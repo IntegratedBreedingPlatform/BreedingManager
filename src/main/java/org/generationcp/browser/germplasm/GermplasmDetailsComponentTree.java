@@ -95,7 +95,6 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	}
 
 	private void initializeComponents(){
-		addStyleName("graybg");
 		
 		componentTree = new ComponentTree();
 		componentTree.setWidth("95%");
