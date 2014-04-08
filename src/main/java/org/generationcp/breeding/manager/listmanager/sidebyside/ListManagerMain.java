@@ -186,7 +186,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 	@Override
 	public void initializeValues() {
 		browserSearchLayout.setWidth("100%");
-        browserSearchLayout.setHeight("530px");
         searchListsComponent.setVisible(false);
 	}
 
@@ -246,17 +245,27 @@ public class ListManagerMain extends AbsoluteLayout implements
 	}
 
 	protected void showSearchListPane() {
+		browserSearchLayout.setHeight("630px");
+		
+		browserSearchLayout.removeAllComponents();
+		browserSearchLayout.addComponent(searchListsComponent);
+		
 		browseListsComponent.setVisible(false);
 		searchListsComponent.setVisible(true);
 		
-		browserSearchLayout.setHeight("630px");
+		browserSearchLayout.requestRepaint();
 	}
 
 	protected void showBrowseListPane() {
+		browserSearchLayout.setHeight("530px");
+		
+		browserSearchLayout.removeAllComponents();
+		browserSearchLayout.addComponent(browseListsComponent);
+		
 		browseListsComponent.setVisible(true);
 		searchListsComponent.setVisible(false);
 		
-		browserSearchLayout.setHeight("530px");
+		browserSearchLayout.requestRepaint();
 	}
 
 	@Override

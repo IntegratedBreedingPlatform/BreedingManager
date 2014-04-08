@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
@@ -57,13 +58,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 
 
 @Configurable
-public class ListManagerCopyToNewListDialog extends GridLayout implements InitializingBean, InternationalizableComponent,
+public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
@@ -118,34 +120,31 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     
     private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
     
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain) {
+    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain, boolean fromBuildNewList) {
         this.dialogWindow = dialogWindow;
         this.mainWindow = mainWindow;
-        this.listEntriesTable=listEntriesTable;
-        this.listName=listName;
-        this.ibdbUserId=ibdbUserId;
-        this.listManagerMain= listManagerMain; 
-    }
-    
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, boolean fromBuildNewList) {
-        this.dialogWindow = dialogWindow;
-        this.mainWindow = mainWindow;
-        this.listEntriesTable=listEntriesTable;
-        this.listName=listName;
-        this.ibdbUserId=ibdbUserId;
+        this.listEntriesTable = listEntriesTable;
+        this.listName = listName;
+        this.ibdbUserId = ibdbUserId;
+        this.listManagerMain = listManagerMain;
         this.fromBuildNewList = fromBuildNewList;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        setRows(8);
-        setColumns(3);
-        setSpacing(true);
-        setMargin(true);
-
-        labelListName = new Label();
-        labelDescription = new Label();
-        labelType = new Label();
+    	setSpacing(true);
+    	
+    	GridLayout gridLayout = new GridLayout();
+        gridLayout.setRows(3);
+        gridLayout.setColumns(2);
+        gridLayout.setSpacing(true);
+        
+        labelListName = new Label(messageSource.getMessage(Message.LIST_NAME_LABEL));
+        labelListName.addStyleName("bold");
+        labelDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
+        labelDescription.addStyleName("bold");
+        labelType = new Label(messageSource.getMessage(Message.TYPE_LABEL));
+        labelType.addStyleName("bold");
 
         comboBoxListName = new ComboBox();
         populateComboBoxListName();
@@ -167,28 +166,32 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         
         HorizontalLayout hButton = new HorizontalLayout();
         hButton.setSpacing(true);
-        btnSave = new Button();
+        btnSave = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save New Germplasm List ");
         btnSave.addListener(new GermplasmListButtonClickListener(this));
         btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
-        hButton.addComponent(btnSave);
-        btnCancel = new Button();
+        btnCancel = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
         btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving New Germplasm List");
         btnCancel.addListener(new GermplasmListButtonClickListener(this));
+        
         hButton.addComponent(btnCancel);
-
-        addComponent(labelListName, 1, 1);
-        addComponent(comboBoxListName, 2, 1);
-        addComponent(labelDescription, 1, 2);
-        addComponent(txtDescription, 2, 2);
-        addComponent(labelType, 1, 3);
-        addComponent(selectType, 2, 3);
-        addComponent(hButton, 1, 6);
+        hButton.addComponent(btnSave);
+        
+        gridLayout.addComponent(labelListName, 0, 0);
+        gridLayout.addComponent(comboBoxListName, 1, 0);
+        gridLayout.addComponent(labelDescription, 0, 1);
+        gridLayout.addComponent(txtDescription, 1, 1);
+        gridLayout.addComponent(labelType, 0, 2);
+        gridLayout.addComponent(selectType, 1, 2);
+        
+        addComponent(gridLayout);
+        addComponent(hButton);
+        setComponentAlignment(hButton, Alignment.MIDDLE_CENTER);
     }
 
 
@@ -207,18 +210,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     }
 
     @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
-
-    @Override
     public void updateLabels() {
-        messageSource.setCaption(labelListName, Message.LIST_NAME_LABEL);
-        messageSource.setCaption(labelDescription, Message.DESCRIPTION_LABEL);
-        messageSource.setCaption(labelType, Message.TYPE_LABEL);
-        messageSource.setCaption(btnSave, Message.SAVE_LABEL);
-        messageSource.setCaption(btnCancel, Message.CANCEL_LABEL);
+        
     }
     
     private void populateComboBoxListName() throws MiddlewareQueryException {
@@ -322,7 +315,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         this.mainWindow.removeWindow(dialogWindow);
                         
                         listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                        //TODO must accommodate the expanding of the folder up to the parent of the list being opened
                         listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                        //TODO must accommodate opening in the search screen also
+                        listManagerMain.getBrowseListsComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
                         listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(Integer.valueOf(listId));
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
@@ -343,48 +339,31 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         designationOfListEntriesCopied="";
         Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
         for (final Object itemId : selectedIds) {
-            
+            Property pGroupName = null;
             if(fromBuildNewList){
-                Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
-                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
-                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
-                String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-                
-                Button pGidButton = (Button) pGid.getValue();
-                int gid=Integer.valueOf(pGidButton.getCaption().toString());
-                String entryCode=String.valueOf((pEntryCode.getValue().toString()));
-                String seedSource=listName+": "+entryIdOfList;
-                Button pDesigButton = (Button) pDesignation.getValue();
-                String designation=String.valueOf((pDesigButton.getCaption().toString()));
-                designationOfListEntriesCopied+=designation+",";
-                String groupName=String.valueOf((pGroupName.getValue().toString()));
-
-                GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
-                    designation, groupName, status, localRecordId);
-                germplasmListManager.addGermplasmListData(germplasmListData);
+                pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
             }else{
-                Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
-                Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-                Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-                Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
-                Property pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName());
-
-                Button pGidButton = (Button) pGid.getValue();
-                int gid=Integer.valueOf(pGidButton.getCaption().toString());
-                String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-                String entryCode=String.valueOf((pEntryCode.getValue().toString()));
-                String seedSource=listName+": "+entryIdOfList;
-                Button pDesigButton = (Button) pDesignation.getValue();
-                String designation=String.valueOf((pDesigButton.getCaption().toString()));
-                designationOfListEntriesCopied+=designation+",";
-                String groupName=String.valueOf((pGroupName.getValue().toString()));
-
-                GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
-                    designation, groupName, status, localRecordId);
-                germplasmListManager.addGermplasmListData(germplasmListData);
+                pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName());
             }
+            
+            Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
+            Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
+            Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+            Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
+
+            Button pGidButton = (Button) pGid.getValue();
+            int gid=Integer.valueOf(pGidButton.getCaption().toString());
+            String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
+            String entryCode=String.valueOf((pEntryCode.getValue().toString()));
+            String seedSource=listName+": "+entryIdOfList;
+            Button pDesigButton = (Button) pDesignation.getValue();
+            String designation=String.valueOf((pDesigButton.getCaption().toString()));
+            designationOfListEntriesCopied+=designation+",";
+            String groupName=String.valueOf((pGroupName.getValue().toString()));
+
+            GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
+                designation, groupName, status, localRecordId);
+            germplasmListManager.addGermplasmListData(germplasmListData);
             
             entryid++;
         }

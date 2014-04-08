@@ -226,7 +226,7 @@ public class GermplasmListTreeUtil implements Serializable {
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
      
-        Button ok = new Button("OK");
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -4225085062616113624L;
@@ -428,7 +428,7 @@ public class GermplasmListTreeUtil implements Serializable {
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
 
-        Button ok = new Button("OK");
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new RenameListTreeItemListener(listener, listId, name));
 

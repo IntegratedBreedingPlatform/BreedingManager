@@ -952,24 +952,15 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     //tempFile.delete();
             } catch (GermplasmListExporterException e) {
                 LOG.error("Error with exporting list.", e);
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                             , "Error with exporting list."    
                             , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                             , Notification.POSITION_CENTERED);
             }
         } else {
-            ConfirmDialog.show(source.getWindow(), "Export List", messageSource.getMessage(Message.LOCK_AND_EXPORT_CONFIRM), "Yes", "No", 
-                new ConfirmDialog.Listener() {
-                    private static final long serialVersionUID = -4433860112118910452L;
-                    public void onClose(ConfirmDialog dialog) {
-                        if (dialog.isConfirmed()) {
-                            lockGermplasmList();
-                            exportListAction();
-                        } else {
-        
-                        }
-                    }
-                });
+            MessageNotifier.showError(source.getWindow()
+                    , "Error with exporting list."    
+                    , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
         }
     }
     
@@ -995,12 +986,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 //File tempFile = new File(tempFileName);
                 //tempFile.delete();
             } catch (GermplasmListExporterException e) {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                MessageNotifier.showError(source.getWindow()
                         , "Error with exporting list."
                         , e.getMessage(), Notification.POSITION_CENTERED);
             }
         } else {
-            MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+            MessageNotifier.showError(source.getWindow()
                     , "Error with exporting list."    
                     , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
         }
@@ -1014,13 +1005,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
             listManagerCopyToNewListDialog.setModal(true);
-            listManagerCopyToNewListDialog.setWidth("700px");
-            listManagerCopyToNewListDialog.setHeight("350px");
+            listManagerCopyToNewListDialog.setWidth("617px");
+            listManagerCopyToNewListDialog.setHeight("230px");
+            listManagerCopyToNewListDialog.setResizable(false);
             listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
             
             try {
                 listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(parentListDetailsComponent.getWindow(),
-                        listManagerCopyToNewListDialog,germplasmList.getName(),listDataTable,getCurrentUserLocalId(),source));
+                        listManagerCopyToNewListDialog,germplasmList.getName(),listDataTable,getCurrentUserLocalId(),source,false));
                 parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error copying list entries.", e);

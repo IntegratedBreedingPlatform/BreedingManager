@@ -148,21 +148,16 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     @Override
     public void layoutComponents() {
-
+    	setWidth("98%");
+    	setStyleName(Runo.TABSHEET_SMALL);
+        setMargin(false);
+    	
     	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		setHeight("520px");
     		detailsTabSheet.setHeight("445px");
     	}
     	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-    		setHeight("610px");
         	detailsTabSheet.setHeight("558px");
     	}
-    	
-    	detailsTabSheet.setWidth("98%");
-    	setWidth("98%");
-    	
-        setStyleName(Runo.TABSHEET_SMALL);
-        setMargin(false);
     	 
     	//Components
         headingBar.setWidth("98%");
@@ -172,8 +167,6 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         headingBar.addComponent(headingLayout);
         headingBar.addComponent(btnCloseAllTabs);
         headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
-        
-        
         
         VerticalLayout innerLayout = new VerticalLayout();
         innerLayout.addComponent(noListLabel);
@@ -296,16 +289,28 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
     
     public void showDetailsTabsheet() {
+    	this.removeAllComponents();
+    	this.addComponent(headingBar);
+    	this.addComponent(detailsTabSheet);
+    	
         headingBar.setVisible(true);
         defaultLabel.setVisible(false);
         detailsTabSheet.setVisible(true);
+        
+    	this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
+        this.removeAllComponents();
+    	this.addComponent(headingBar);
+    	this.addComponent(defaultLabel);
+    	
         headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
         defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
+
+    	this.requestRepaint();
     }
     
     public void renameTab(Integer listId, String newName){

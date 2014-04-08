@@ -115,17 +115,6 @@ public class GermplasmPedigreeComponent extends GridLayout implements
         addComponent(includeDerivativeLayout, 0, 0);
         addComponent(btnViewPedigreeGraph, 2, 0);
         addComponent(germplasmPedigreeTreeComponent, 0, 1, 2, 1);
-        
-//        HorizontalLayout pedigreeHorizontalLayout = new HorizontalLayout();
-//		pedigreeHorizontalLayout.setWidth("100%");
-//		pedigreeHorizontalLayout.setMargin(false);
-//        pedigreeHorizontalLayout.addComponent(includeDerivativeLayout);
-//        pedigreeHorizontalLayout.addComponent(btnViewPedigreeGraph);
-//        pedigreeHorizontalLayout.setComponentAlignment(includeDerivativeLayout, Alignment.TOP_LEFT);
-//        pedigreeHorizontalLayout.setComponentAlignment(btnViewPedigreeGraph, Alignment.BOTTOM_LEFT);
-//        
-//        addComponent(pedigreeHorizontalLayout);
-//        addComponent(germplasmPedigreeTreeComponent);
 	}
 	
 	private void createTreeComponent() {
