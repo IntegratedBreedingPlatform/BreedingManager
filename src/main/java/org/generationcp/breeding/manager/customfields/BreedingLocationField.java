@@ -178,7 +178,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		layoutComponents();
 	}
 	
-	public ComboBox getbreedingLocationComboBox() {
+	public ComboBox getBreedingLocationComboBox() {
 		return breedingLocationComboBox;
 	}
 	

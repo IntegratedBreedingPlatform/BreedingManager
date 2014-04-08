@@ -495,6 +495,10 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }
     
     public void nextButtonClickAction(ClickEvent event){
+    	
+    	System.out.println("breedingMethodField.getBreedingMethodComboBox().getValue() : "+breedingMethodField.getBreedingMethodComboBox().getValue());
+    	System.out.println("breedingLocationField.getBreedingLocationComboBox().getValue() : "+breedingLocationField.getBreedingLocationComboBox().getValue());
+    	
         if(optionGroup.getValue().equals(OPTION_1_ID)){
             // add the germplasm selected as the list entry
             if(this.selectedGids.size()>0){
@@ -506,7 +510,13 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                         "You must select a germplasm/germplasms from the search results.", Notification.POSITION_CENTERED);
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-            if(this.selectedGids.size()>0){
+        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+        		MessageNotifier.showError(this, "Error", 
+                        "You must select a method for the germplasm.", Notification.POSITION_CENTERED);
+        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+            		MessageNotifier.showError(this, "Error", 
+                            "You must select a location for the germplasm.", Notification.POSITION_CENTERED);
+        	}else if(this.selectedGids.size()>0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
@@ -516,7 +526,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = this.searchField.getValue().toString();
-            if(searchValue != null && searchValue.length() != 0){
+            
+        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+        		MessageNotifier.showError(this, "Error", 
+                        "You must select a method for the germplasm.", Notification.POSITION_CENTERED);
+        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+            		MessageNotifier.showError(this, "Error", 
+                            "You must select a location for the germplasm.", Notification.POSITION_CENTERED);
+        	} else if(searchValue != null && searchValue.length() != 0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
@@ -537,7 +554,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         	
 	        Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
 	        Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
-	        Integer locationId = (Integer) this.breedingLocationField.getbreedingLocationComboBox().getValue();
+	        Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
 	        Date dateOfCreation = (Date) this.germplasmDateField.getValue();
 	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
 	        Integer date = Integer.parseInt(formatter.format(dateOfCreation));
@@ -742,4 +759,5 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     		center();
     	}
     }
+    
 }
