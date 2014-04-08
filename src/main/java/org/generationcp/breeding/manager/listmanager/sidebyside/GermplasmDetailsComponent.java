@@ -108,9 +108,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     }
     
     @Override
-    public void layoutComponents() {
-    	this.setWidth("100%");
-    	
+    public void layoutComponents() {    	
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
         
