@@ -97,7 +97,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		descriptionLabel.addStyleName("bold");
 		
 		String description = "-";
-		if(germplasmList.getDescription() != null){
+		if(germplasmList.getDescription() != null && germplasmList.getDescription().length() != 0){
 			description = germplasmList.getDescription().replaceAll("<", "&lt;");
 			description = description.replaceAll(">", "&gt;");
 			if(description.length() > 27){
@@ -126,7 +126,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		notesLabel.addStyleName("bold");
 		
 		String notes = "-";
-		if(germplasmList.getNotes() != null){
+		if(germplasmList.getNotes() != null && germplasmList.getNotes().length() != 0){
 			notes = germplasmList.getNotes();
 			if(notes.length() > 27){
 				notes = notes.substring(0, 27) + "...";
@@ -241,7 +241,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		builder.append("<tr>\n");
 		builder.append("<td><b>Description:</b></td>\n");
 		String description = "-";
-		if(germplasmList.getDescription() != null){
+		if(germplasmList.getDescription() != null && germplasmList.getDescription().length() != 0){
 			description = germplasmList.getDescription().replaceAll("<", "&lt;");
 			description = description.replaceAll(">", "&gt;");
 			if(description.length() > 27){
@@ -269,6 +269,9 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 			notes = notes.replaceAll(">", "&gt;");
 			if(notes.length() > 27){
 				notes = notes.substring(0, 27) + "...";
+			}
+			if(notes.length() == 0){
+				notes = "-";
 			}
 			builder.append("<td>" + notes + "</td>\n");
 		} else{
