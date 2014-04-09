@@ -127,8 +127,8 @@ public class SelectLocationFolderDialog extends Window implements
 	@Override
 	public void layoutComponents() {
 
-		setHeight("380px");
-		setWidth("250px");
+		setHeight("430px");
+		setWidth("270px");
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
