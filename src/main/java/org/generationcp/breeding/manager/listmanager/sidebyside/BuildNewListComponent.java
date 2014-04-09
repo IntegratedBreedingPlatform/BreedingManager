@@ -373,12 +373,44 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     
     @SuppressWarnings("unchecked")
     private void deleteSelectedEntries(){
-        List<Integer> selectedItemIds = new ArrayList<Integer>();
-        selectedItemIds.addAll((Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue());
-        for(Integer selectedItemId:selectedItemIds){
-        	tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
+        Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue();
+        if(selectedIdsToDelete.size() > 0){
+            if (!isCurrentListSaved()) {
+                // TODO directly remove list entries if list being built is not yet saved.
+            } else {
+                // TODO make behavior consistent with ListDataComponent.deleteEntriesButtonClickAction()
+                // for editing existing lists and after saving the new list
+                
+                // if list is already saved
+                /*if(tableWithSelectAllLayout.getTable().size() == selectedIdsToDelete.size()) {
+                    ConfirmDialog.show(this.getWindow(),
+                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES),
+                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES_CONFIRM),
+                            messageSource.getMessage(Message.YES),
+                            messageSource.getMessage(Message.NO),
+                            new ConfirmDialog.Listener() {
+                        private static final long serialVersionUID = 1L;
+                        public void onClose(ConfirmDialog dialog) {
+                            if (dialog.isConfirmed()) {
+                                removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
+                            }
+                        }
+                        
+                    });
+                } else {
+                    removeRowsInListDataTable(selectedIdsToDelete);
+                }*/
+            }
+            
+            //TODO replace with more advanced deletion handling
+            for(Integer selectedItemId : selectedIdsToDelete){
+                tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
+            }
+            assignSerializedEntryNumber();
+        }else{
+            MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
-        assignSerializedEntryNumber();
     }
     
     /**
