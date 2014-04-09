@@ -609,13 +609,13 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
                     LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                    MessageNotifier.showError(source.getWindow()
                                 , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                                 , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                                 , Notification.POSITION_CENTERED);
                 }
             } else {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                         , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
@@ -640,12 +640,12 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                     //File tempFile = new File(tempFileName);
                     //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                    MessageNotifier.showError(source.getWindow() 
                             , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                             , e.getMessage(), Notification.POSITION_CENTERED);
                 }
             } else {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                         , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
@@ -657,7 +657,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             Collection<?> listEntries = (Collection<?>) tableWithSelectAllLayout.getTable().getValue();
             
             if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
             } else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
