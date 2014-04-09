@@ -461,6 +461,13 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
 			final ListTreeActionsListener listener) {
+		
+		final Window mainWindow;
+        if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -492,12 +499,12 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 		} catch (Error e) {
-			MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR),e.getMessage());
+			MessageNotifier.showError(mainWindow,messageSource.getMessage(Message.ERROR),e.getMessage());
 			return;
 		}
 
 		final GermplasmList finalGpList = gpList;
-		ConfirmDialog.show(source.getWindow(),
+		ConfirmDialog.show(mainWindow,
 			messageSource.getMessage(Message.DELETE_LIST_FOLDER,targetTree.getItemCaption(lastItemId)),
 			messageSource.getMessage(Message.DELETE_LIST_FOLDER_CONFIRM,targetTree.getItemCaption(lastItemId)),
 			messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
@@ -516,7 +523,7 @@ public class GermplasmListTreeUtil implements Serializable {
 						}
 						
 					} catch (Error e) {
-						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
+						MessageNotifier.showError(mainWindow, e.getMessage(), "");
 					} catch (MiddlewareQueryException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
