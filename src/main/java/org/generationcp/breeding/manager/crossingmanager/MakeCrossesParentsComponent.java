@@ -442,7 +442,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
+	public void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
 		List<Integer> selectedListEntries = new ArrayList<Integer>();
     	selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
     	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
@@ -497,7 +497,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignEntryNumber(Table parentsTable){
+	public void assignEntryNumber(Table parentsTable){
 		int entryNumber = 1;
 		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
 		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
