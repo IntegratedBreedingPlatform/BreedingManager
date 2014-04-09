@@ -238,6 +238,47 @@
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
 .v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
 
-.v-verticallayout-graybg {
+.graybg, .v-verticallayout-graybg {
 	background-color: #f6f6f6;
+}
+
+.overflow_x_auto {
+	overflow-x: auto !important;
+}
+
+.overflow_y_auto {
+	overflow-y: auto !important;
+}
+
+.overflow_x_scroll {
+	overflow-x: scroll !important;
+}
+
+.overflow_y_scroll {
+	overflow-y: scroll !important;
+}
+
+.overflow_x_hidden {
+	overflow-x: hidden !important;
+}
+
+.overflow_y_hidden {
+	overflow-y: hidden !important;
+}
+
+
+.overflow_hidden {
+	overflow: hidden !important;
+}
+
+.overflow_auto {
+	overflow: auto !important;
+}
+
+.overflow_scroll {
+	overflow: scroll !important;
+}
+
+.headerLabelLayout .v-caption {
+	height: 0px;	
 }
