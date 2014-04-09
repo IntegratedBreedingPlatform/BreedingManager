@@ -576,16 +576,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                         //File tempFile = new File(tempFileName);
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                    LOG.error("Error with exporting list.", e);
+                    LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
                     MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
-                                , "Error with exporting list."    
+                                , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                                 , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                                 , Notification.POSITION_CENTERED);
                 }
             } else {
                 MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
-                        , "Error with exporting list."
-                        , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
         }
     }
@@ -609,13 +609,13 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                     //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
                     MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
-                            , "Error with exporting list."
+                            , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                             , e.getMessage(), Notification.POSITION_CENTERED);
                 }
             } else {
                 MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
-                        , "Error with exporting list."    
-                        , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
         }
     }
