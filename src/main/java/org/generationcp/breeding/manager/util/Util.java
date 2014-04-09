@@ -40,6 +40,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -354,15 +355,6 @@ public class Util {
         return isLeapYear;
     }  
     
-	public static Component createHeaderComponent (String header) {
-        CssLayout l = new CssLayout();
-        l.setWidth("200px");
-        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-        l1.setStyleName(Bootstrap.Typography.H4.styleName());
-        l.addComponent(l1);
-        return l;
-	}
-
 	/**
 	 * Opens and attaches a modal window containing the location manager
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)

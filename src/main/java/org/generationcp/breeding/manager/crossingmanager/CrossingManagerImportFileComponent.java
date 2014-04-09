@@ -348,8 +348,8 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
             String source=listnameFemaleParent+":"+cross.getFemaleEntryId()+"/"+listnameMaleParent+":"+cross.getMaleEntryId();
 
             Name name = new Name();
-            name.setNval(BreedingManagerUtil.generateFemaleandMaleCrossName(
-                    cross.getFemaleDesignation(), cross.getMaleDesignation())+","+source);
+//            name.setNval(BreedingManagerUtil.generateFemaleandMaleCrossName(
+//                    cross.getFemaleDesignation(), cross.getMaleDesignation(), "/")+","+source);
             name.setTypeId(crossingNameTypeId);
 
             crossesMadeMap.put(germplasm, name);

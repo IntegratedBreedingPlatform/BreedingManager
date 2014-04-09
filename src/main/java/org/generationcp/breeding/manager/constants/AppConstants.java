@@ -8,6 +8,8 @@ import com.vaadin.terminal.ThemeResource;
  */
 public final class AppConstants {
 	
+	public static final String USER_HOME = "user.home";
+	
 	private AppConstants(){
 		//make static by making non-instantiable
 	}
@@ -27,6 +29,9 @@ public final class AppConstants {
 		
 		public static final String MARKED_MANDATORY = "marked_mandatory";
 		
+		public static final String PANEL_GRAY_BACKGROUND = "section_panel_layout";
+		public static final String TABSHEET_WHITE = "tabsheet-white";
+		
 	}
 	
 	
@@ -41,6 +46,8 @@ public final class AppConstants {
 	    public static final ThemeResource ICON_BUILD_NEW_LIST = new ThemeResource("images/build-new-list.png");
 	    public static final ThemeResource ICON_REVIEW_LIST_DETAILS = new ThemeResource("images/review-list-details.png");
 	    public static final ThemeResource ICON_MATCHING_GERMPLASMS = new ThemeResource("images/matching-germplasms.png");
+	    public static final ThemeResource ICON_MANAGE_SETTINGS = new ThemeResource("images/manage-settings.png");
+	    public static final ThemeResource ICON_ARROW = new ThemeResource("images/arrow_icon.png"); 
 	}
 	
 	

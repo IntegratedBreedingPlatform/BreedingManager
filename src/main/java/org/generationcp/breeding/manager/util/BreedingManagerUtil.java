@@ -28,10 +28,6 @@ public class BreedingManagerUtil{
     
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 
-    public static String generateFemaleandMaleCrossName(String femaleName, String maleName){
-        return femaleName + "/" + maleName;
-    }
-    
     /**
      * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
      * (matches upper case of UserDefinedField either fCode or fName). Query is:

@@ -40,7 +40,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	private AbsoluteLayout leftLayout;
 	private VerticalLayout rightLayout;
 	
-	private ListManagerDetailsLayout listDetailsLayout;
+	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
 	private Button toggleLeftPaneButton;
 	
@@ -87,7 +87,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 				
 		toggleLeftPaneButton = new ToogleButton("Toggle List Manager Tree");
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
-		listDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
+		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
 	}
 
 	@Override
@@ -115,19 +115,15 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
+		
 		//left pane
 		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("250px");
 		leftLayout.addComponent(listTreeComponent,"top:10px;left:30px");
 		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
 		
-		//right pane
-		rightLayout = new VerticalLayout();
-		rightLayout.setMargin(false);
-		rightLayout.addComponent(listDetailsLayout);
-		
 		hSplitPanel.setFirstComponent(leftLayout);
-		hSplitPanel.setSecondComponent(rightLayout);
+		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
 		addComponent(hSplitPanel);
 	}
 	
@@ -143,7 +139,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
     public void openListDetails(GermplasmList list) {
         try{
-            listDetailsLayout.createListDetailsTab(list.getId());
+            listManagerDetailsLayout.createListDetailsTab(list.getId());
         } catch (MiddlewareQueryException e){
             LOG.error("Error in displaying germplasm list details.", e);
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
@@ -152,7 +148,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	}
 
 	public ListManagerDetailsLayout getListDetailsLayout() {
-		return listDetailsLayout;
+		return listManagerDetailsLayout;
 	}
     
 	public ListManagerTreeComponent getListTreeComponent(){

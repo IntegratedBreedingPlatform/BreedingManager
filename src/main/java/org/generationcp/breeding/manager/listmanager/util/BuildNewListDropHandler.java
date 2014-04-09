@@ -2,15 +2,16 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -24,13 +25,14 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
@@ -111,6 +113,8 @@ public class BuildNewListDropHandler implements DropHandler {
 					
 		//If source is from tree
 		} else {
+			Transferable transferable = (Transferable) event.getTransferable();
+			addGermplasmList((Integer) transferable.getData("itemId"));
 		}
 	}
 
@@ -137,6 +141,10 @@ public class BuildNewListDropHandler implements DropHandler {
 	}
 
 	public void addGermplasmList(Integer listId){
+		addGermplasmList(listId, false);
+	}
+	
+	public void addGermplasmList(Integer listId, Boolean fromEditList){
 		
 		currentListId = listId;
 		
@@ -147,9 +155,21 @@ public class BuildNewListDropHandler implements DropHandler {
 			
 			GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
 			List<GermplasmListData> germplasmListData = germplasmList.getListData();
-			for(GermplasmListData listData : germplasmListData){
-				addGermplasmFromList(listId, listData.getId(), germplasmList);
+			if(germplasmListData == null || germplasmListData.size() == 0 ){
+				germplasmListData = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Integer.MAX_VALUE);
 			}
+
+			//Fix for adding entries in reverse
+			if(germplasmListData.size()>1 && germplasmListData.get(0).getEntryId()>germplasmListData.get(1).getEntryId()){
+				Collections.reverse(germplasmListData);
+			}
+			
+			for(GermplasmListData listData : germplasmListData){
+				addGermplasmFromList(listId, listData.getId(), germplasmList, fromEditList);
+			}
+			
+			changed = true;// mark that there is changes in a list that is currently building
+			
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm list.", e);
 			e.printStackTrace();
@@ -167,7 +187,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		}
 	}
 
-	private Integer addGermplasm(Integer gid){
+	public Integer addGermplasm(Integer gid){
         try {
             
             Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
@@ -192,7 +212,11 @@ public class BuildNewListDropHandler implements DropHandler {
             List<Integer> importedGermplasmGids = new ArrayList<Integer>();
             importedGermplasmGids.add(gid);
             Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-            String preferredName = preferredNames.get(gid); 
+            String preferredName = preferredNames.get(gid);
+            Button designationButton = new Button(preferredName, new GidLinkButtonClickListener(gid.toString(), true));
+            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+            designationButton.setDescription("Click to view Germplasm information");
+            
 
             CheckBox tagCheckBox = new CheckBox();
             tagCheckBox.setImmediate(true);
@@ -214,12 +238,12 @@ public class BuildNewListDropHandler implements DropHandler {
             if(newItem!=null && gidButton!=null)
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
             newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("Germplasm Search");
-            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
+            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
             assignSerializedEntryNumber();
             
-            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
             
         	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 				FW.fillWith(targetTable, column, true);
@@ -240,7 +264,12 @@ public class BuildNewListDropHandler implements DropHandler {
 		return addGermplasmFromList(listId, lrecid, null);
 	}
 	
+	
 	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList){
+		return addGermplasmFromList(listId, lrecid, germplasmList, false);
+	}
+	
+	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList){
 		
 		currentListId = listId;
 		
@@ -260,20 +289,34 @@ public class BuildNewListDropHandler implements DropHandler {
         	
     		GermplasmListData germplasmListData = null;
     		
-    		if(germplasmList==null){
+    		if(germplasmList == null){
     			germplasmList = germplasmListManager.getGermplasmListById(listId);
-    			germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
-        	} else {
-        		for(GermplasmListData listData : germplasmList.getListData()){
-        			if(listData.getId().equals(lrecid))
+    			
+        	} 
+    		
+    		if(germplasmList.getListData() != null && germplasmList.getListData().size() > 0){
+    			for(GermplasmListData listData : germplasmList.getListData()){
+        			if(listData.getId().equals(lrecid)){
         				germplasmListData = listData;
+        			}
         		}
         	}
-        	
-        	if(germplasmListData!=null){
+    		else{
+        		germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+    		}
+    		
+        	if(germplasmListData!=null && germplasmListData.getStatus()!=9){
         		
 	            Integer gid = germplasmListData.getGid();
-	            final Integer newItemId = getNextListEntryId();
+	            
+	            Integer niid = null;
+	            if(forEditList.equals(true)){
+	            	niid = getNextListEntryId(germplasmListData.getId());
+	            } else {
+	            	niid = getNextListEntryId();
+	            }
+	            final Integer newItemId = niid;
+	            
 	            Item newItem = targetTable.addItem(newItemId);
 	            
 	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
@@ -295,12 +338,20 @@ public class BuildNewListDropHandler implements DropHandler {
     	 			 
     	 		});
 	            
+	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(gid.toString(), true));
+	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+	            designationButton.setDescription("Click to view Germplasm information");
+	            
 	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
 	            if(newItem!=null && gidButton!=null)
 	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-	            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
-	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(germplasmListData.getDesignation());
+	            if(forEditList.equals(true)){
+	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            } else {
+	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
+	            }
+	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
@@ -315,7 +366,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	    			
 	            assignSerializedEntryNumber();
 
-	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
 	            
 	        	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
     				FW.fillWith(targetTable, column, true);
@@ -399,8 +450,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	 		});
 	   		
 	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
-	   		Button designationButton = (Button) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
-	   		String designation = designationButton.getCaption();
+	   		
+	   		String designation = getDesignationFromButtonCaption(sourceTable,itemId);
+	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(gid.toString(), true));
+	   		designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+	   		designationButton.setDescription("Click to view Germplasm information");
+	   		
 	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue();
 	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
 	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
@@ -408,7 +463,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
 	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
-	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designation);
+	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
 	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
 	   		
@@ -426,7 +481,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 		assignSerializedEntryNumber();
 		
-        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName());
+        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
         
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 			FW.fillWith(targetTable, column, true);
@@ -498,6 +553,27 @@ public class BuildNewListDropHandler implements DropHandler {
         return Integer.valueOf(maxId);
     }
     
+    public Integer getNextListEntryId(Integer lrecId){
+    	
+    	Integer id = 0;
+    	
+    	try {
+			GermplasmListData entry = germplasmListManager.getGermplasmListDataByListIdAndLrecId(currentListId, lrecId);
+			
+			if(entry != null){
+				return entry.getId();
+			}
+			else{
+				return getNextListEntryId();
+			}
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving germplasm list data",e);
+			e.printStackTrace();
+		}
+    	
+    	return getNextListEntryId();
+    }
+    
     /**
      * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
      */
@@ -524,6 +600,15 @@ public class BuildNewListDropHandler implements DropHandler {
    	    if(item!=null){
     	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString();
     	    return Integer.valueOf(buttonCaption);
+    	}
+    	return null;	
+    }
+    
+    private String getDesignationFromButtonCaption(Table table, Integer itemId){
+    	Item item = table.getItem(itemId);
+   	    if(item!=null){
+    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue()).getCaption().toString();
+    	    return buttonCaption;
     	}
     	return null;	
     }

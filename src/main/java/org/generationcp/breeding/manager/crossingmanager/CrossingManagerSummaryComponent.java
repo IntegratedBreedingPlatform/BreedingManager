@@ -7,7 +7,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -42,16 +42,18 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 	private Button doneButton;
 	
 	private ManageCrossingSettingsMain crossingManagerMain;
-	private Integer listId;
-	private Integer maleListId;
-	private Integer femaleListId;
+	
+	private GermplasmList crossList;
+	private GermplasmList maleList;
+	private GermplasmList femaleList;
 	private CrossingManagerSetting setting;
 	
-	public CrossingManagerSummaryComponent(ManageCrossingSettingsMain crossingManagerMain, Integer listId, Integer femaleListId, Integer maleListId, CrossingManagerSetting setting){
+	public CrossingManagerSummaryComponent(ManageCrossingSettingsMain crossingManagerMain, GermplasmList crossList, 
+			GermplasmList femaleList, GermplasmList maleList, CrossingManagerSetting setting){
 		this.crossingManagerMain = crossingManagerMain;
-		this.listId = listId;
-		this.maleListId = maleListId;
-		this.femaleListId = femaleListId;
+		this.crossList = crossList;
+		this.maleList = maleList;
+		this.femaleList = femaleList;
 		this.setting = setting;
 	}
 	
@@ -61,6 +63,8 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
+		
+		crossListComponent.focus();
 	}
 
 	@Override
@@ -74,15 +78,17 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabSheet.hideTabs(true);
 		tabContentLayout = new VerticalLayout();
 		
-		crossListComponent = new CrossesSummaryListDataComponent(tabContentLayout, listId);
-		femaleDetailsComponent = new SummaryListHeaderComponent(femaleListId, 
+		crossListComponent = new CrossesSummaryListDataComponent(crossList);
+		femaleDetailsComponent = new SummaryListHeaderComponent(femaleList, 
 				messageSource.getMessage(Message.FEMALE_PARENT_LIST_DETAILS));
-		maleDetailsComponent = new SummaryListHeaderComponent(maleListId, 
+		maleDetailsComponent = new SummaryListHeaderComponent(maleList, 
 				messageSource.getMessage(Message.MALE_PARENT_LIST_DETAILS));
 		settingsComponent = new CrossesSummarySettingsComponent(setting);
 		
 		doneButton = new Button(messageSource.getMessage(Message.DONE));
 		doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		
+		
 	}
 
 
@@ -116,6 +122,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 
 	private void layoutSummaryPageContent() {
 		HorizontalLayout parentsLayout = new HorizontalLayout();
+		parentsLayout.setSpacing(true);
 		parentsLayout.setHeight("130px");
 		parentsLayout.setWidth("100%");
 		parentsLayout.addComponent(femaleDetailsComponent);
@@ -137,26 +144,14 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabContentLayout.addComponent(settingsComponent);
 		tabContentLayout.addComponent(buttonLayout);
 		
-		tabSheet.setHeight("590px");
+		tabSheet.setHeight("600px");
 		tabSheet.addTab(tabContentLayout);
 	}
 
 	
 	private void doneButtonClickAction(){
-		ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
-	            messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
-	            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
-	            new ConfirmDialog.Listener() {
-					private static final long serialVersionUID = 1L;
-
-					public void onClose(ConfirmDialog dialog) {
-	                    if (dialog.isConfirmed()) {
-	                        crossingManagerMain.reset();
-	                    }
-	                }
-	            }
-	        );
-		
+		crossingManagerMain.reset();
 	}
+
 
 }

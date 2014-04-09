@@ -58,7 +58,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(65); //actual width in pixel 650 
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
 	
-	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(80); //actual width in pixel
+	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
 	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
 	private Integer selectedListId;
@@ -171,7 +171,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         buildNewListComponent = new BuildNewListComponent(this);
         
 		buildListLayout = new HorizontalLayout();
-		buildListLayout.setMargin(false,true,true,false);
+		buildListLayout.setMargin(false,false,true,false);
 		buildListLayout.addComponent(toggleBuildNewListButton);
 		buildListLayout.addComponent(buildNewListComponent);
 		
@@ -180,12 +180,12 @@ public class ListManagerMain extends AbsoluteLayout implements
 		
 		vSplitPanel.setFirstComponent(searchListsBarComponent);
 		vSplitPanel.setSecondComponent(hSplitPanel);
+		
 	}
 
 	@Override
 	public void initializeValues() {
 		browserSearchLayout.setWidth("100%");
-        browserSearchLayout.setHeight("630px");
         searchListsComponent.setVisible(false);
 	}
 
@@ -245,20 +245,34 @@ public class ListManagerMain extends AbsoluteLayout implements
 	}
 
 	protected void showSearchListPane() {
+		browserSearchLayout.setHeight("630px");
+		
+		browserSearchLayout.removeAllComponents();
+		browserSearchLayout.addComponent(searchListsComponent);
+		
 		browseListsComponent.setVisible(false);
 		searchListsComponent.setVisible(true);
+		
+		browserSearchLayout.requestRepaint();
 	}
 
 	protected void showBrowseListPane() {
+		browserSearchLayout.setHeight("530px");
+		
+		browserSearchLayout.removeAllComponents();
+		browserSearchLayout.addComponent(browseListsComponent);
+		
 		browseListsComponent.setVisible(true);
 		searchListsComponent.setVisible(false);
+		
+		browserSearchLayout.requestRepaint();
 	}
 
 	@Override
 	public void layoutComponents() {
-		addComponent(titleLayout,"top:10px; left:10px");
-		addComponent(tabHeaderLayout,"top:50px;left:10px;");
-		addComponent(vSplitPanel,"top:75px;left:10px;");
+		addComponent(titleLayout,"top:0px; left:10px");
+		addComponent(tabHeaderLayout,"top:40px;left:10px;");
+		addComponent(vSplitPanel,"top:65px;left:10px;");
 	}
 	
     private void expandRight(){
@@ -302,6 +316,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 		browseListsComponent.getListDetailsLayout().renameTab(list.getId(), newName);
 		searchListsComponent.getListManagerDetailsLayout().renameTab(list.getId(), newName);
 	}
+	
+	public void removeListTab(GermplasmList list) {
+		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
+		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());
+	}
 
 	@Override
 	public void openListDetails(GermplasmList list) {
@@ -310,7 +329,12 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
 	public void addFromListDataTable(Table sourceTable){
 		buildNewListComponent.addFromListDataTable(sourceTable);
-	}		
+	}	
+	
+	public void showNodeOnTree(Integer listId){
+		browseListsComponent.getListTreeComponent().setListId(listId);
+		browseListsComponent.getListTreeComponent().createTree();
+	}
 	
 	/* SETTERS AND GETTERS */
 	public BuildNewListComponent getBuildNewListComponent() {
@@ -319,6 +343,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
 	public ListManagerBrowseListComponent getBrowseListsComponent(){
 		return browseListsComponent;
+	}
+
+	public void addGemplasmToBuildList(Integer gid) {
+		buildNewListComponent.addGermplasm(gid);
+		expandRight();
 	}
 	
 }

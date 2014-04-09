@@ -13,7 +13,6 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -79,6 +78,7 @@ import com.vaadin.ui.themes.Reindeer;
  * @author Efficio
  *
  */
+@Deprecated
 @Configurable
 public class BuildNewListComponent extends AbsoluteLayout implements
         InitializingBean, InternationalizableComponent {
@@ -1296,18 +1296,19 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth("700px");
-                listManagerCopyToNewListDialog.setHeight("350px");
+                listManagerCopyToNewListDialog.setWidth("617px");
+                listManagerCopyToNewListDialog.setHeight("230px");
+                listManagerCopyToNewListDialog.setResizable(true);
                 
-                try {
-                    
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(((ListManagerMain) source).getWindow(), listManagerCopyToNewListDialog, listName, germplasmsTable,getCurrentUserLocalId(), true));
-                    ((ListManagerMain) source).getWindow().addWindow(listManagerCopyToNewListDialog);
-                    
-                } catch (MiddlewareQueryException e) {
-                    LOG.error("Error copying list entries.", e);
-                    e.printStackTrace();
-                }
+                // COMMENT OUT codes, causing compile error in side by side implementation	
+//                try {
+//                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(((ListManagerMain) source).getWindow(), listManagerCopyToNewListDialog, listName, germplasmsTable,getCurrentUserLocalId(), true));
+//                    ((ListManagerMain) source).getWindow().addWindow(listManagerCopyToNewListDialog);
+//                    
+//                } catch (MiddlewareQueryException e) {
+//                    LOG.error("Error copying list entries.", e);
+//                    e.printStackTrace();
+//                }
             }
             
         }

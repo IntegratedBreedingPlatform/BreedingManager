@@ -1,28 +1,38 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import java.text.SimpleDateFormat;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,12 +50,16 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class BuildNewListComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout {
+public class BuildNewListComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
     
@@ -75,11 +89,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     //Components
     private Label buildNewListTitle;
     private Label buildNewListDesc;
+    private Label dragInstructionLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
+    private Button editHeaderButton;
     private Button toolsButton;
     private Button saveButton;
     private Button resetButton;
+    
+    //Layout Component
+    Panel listDataTablePanel;
     
     private BuildNewListDropHandler dropHandler;
     
@@ -88,14 +107,18 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private ContextMenuItem menuExportList;
     private ContextMenuItem menuExportForGenotypingOrder;
     private ContextMenuItem menuCopyToList;
+    private ContextMenuItem menuAddColumn;
+    
+    private static final String USER_HOME = "user.home";
+    private Window listManagerCopyToNewListDialog;
     
     public static String TOOLS_BUTTON_ID = "Tools";
     
     //For Saving
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
+    private GermplasmList currentlySetGermplasmInfo;
     private boolean changed = false;
-    private Integer saveInListId;    
     
     private AddColumnContextMenu addColumnContextMenu;
     
@@ -110,6 +133,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
+        this.currentlySetGermplasmInfo = null;
     }
 
     @Override
@@ -124,16 +148,23 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+    	buildNewListTitle.setWidth("200px");
         buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
         
         buildNewListDesc = new Label();
         buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
         buildNewListDesc.setWidth("300px");
         
+        dragInstructionLabel = new Label(messageSource.getMessage(Message.BUILD_LIST_DRAG_INSTRUCTIONS));
+        
+        editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
+        editHeaderButton.setImmediate(true);
+        editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
+        
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
         menu = new ContextMenu();
-        menu.setWidth("255px");
+        menu.setWidth("300px");
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
@@ -149,7 +180,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         createGermplasmTable(tableWithSelectAllLayout.getTable());
         
-        addColumnContextMenu = new AddColumnContextMenu(tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(), true);
+        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
+        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
@@ -178,8 +210,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void addListeners() {
 		menu.addListener(new ContextMenu.ClickListener() {
-
-            private static final long serialVersionUID = -2331333436994090161L;
+			private static final long serialVersionUID = -2331333436994090161L;
 
             @Override
             public void contextItemClick(ClickEvent event) {
@@ -190,31 +221,55 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
                       deleteSelectedEntries();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
-                    //exportListAction();
+                      exportListAction();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
-                    //exportListForGenotypingOrderAction();
+                      exportListForGenotypingOrderAction();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
-                    //copyToNewListAction();
+                      copyToNewListAction();
                 }                
             }
             
         });
 		
 		toolsButton.addListener(new ClickListener() {
-
-            private static final long serialVersionUID = 1345004576139547723L;
+			private static final long serialVersionUID = 1345004576139547723L;
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                if(isCurrentListSave()){
+            	
+                if(isCurrentListSaved()){
                     enableMenuOptionsAfterSave();
                 }
+                
+                addColumnContextMenu.refreshAddColumnMenu();
                 menu.show(event.getClientX(), event.getClientY());
+                
             }
          });
 		
+		editHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = -6306973449416812850L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openSaveListAsDialog();
+			}
+		});
+		
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
+		
+		saveButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 7449465533478658983L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(currentlySetGermplasmInfo == null){
+					openSaveListAsDialog();
+				}
+			}
+		});
+		
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 	}
 
@@ -227,41 +282,64 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         HorizontalLayout instructionLayout = new HorizontalLayout();
         instructionLayout.setSpacing(true);
-        instructionLayout.setWidth("100%");
+        instructionLayout.setWidth("400px");
         instructionLayout.addComponent(buildNewListDesc);
         instructionLayout.addComponent(saveButton);
         instructionLayout.setComponentAlignment(buildNewListDesc, Alignment.MIDDLE_LEFT);
         instructionLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         
         this.addComponent(instructionLayout);
-        this.addComponent(breedingManagerListDetailsComponent);
         
-        this.addComponent(toolsButton);
-        this.setComponentAlignment(toolsButton, Alignment.BOTTOM_RIGHT);
-        this.addComponent(menu);
+        listDataTablePanel = new Panel();
+        listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+        VerticalLayout listDataTableLayout = new VerticalLayout();
+        listDataTableLayout.setMargin(true);
+        listDataTableLayout.setSpacing(true);
+        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.addComponent(dragInstructionLabel);
         
-        this.addComponent(tableWithSelectAllLayout);
+        HorizontalLayout toolsAndEditHeaderLayout = new HorizontalLayout();
+        toolsAndEditHeaderLayout.setSpacing(true);
+        toolsAndEditHeaderLayout.setWidth("365px");
+        toolsAndEditHeaderLayout.addComponent(editHeaderButton);
+        toolsAndEditHeaderLayout.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
+        toolsAndEditHeaderLayout.addComponent(toolsButton);
+        toolsAndEditHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+        
+        listDataTableLayout.addComponent(toolsAndEditHeaderLayout);
+        
+        listDataTableLayout.addComponent(tableWithSelectAllLayout);
+        
+        listDataTablePanel.setLayout(listDataTableLayout);
+        this.addComponent(listDataTablePanel);
+        
         this.addComponent(resetButton);
+        
+        this.addComponent(menu);
 	}
     
-    public void createGermplasmTable(final Table table){
-        
+	public void addBasicTableColumns(Table table){
     	table.setData(GERMPLASMS_TABLE_DATA);
     	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-        
+    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+    	
         messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.CHECK_ICON);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_ID.getName(), Message.HASHTAG);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
         messageSource.setColumnHeader(table, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
+        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+	}
+	
+    public void createGermplasmTable(final Table table){
+        
+    	addBasicTableColumns(table);
         
         table.setSelectable(true);
         table.setMultiSelect(true);
@@ -333,7 +411,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     	dropHandler.addFromListDataTable(sourceTable);
     }
     
-    public boolean isCurrentListSave(){
+    public boolean isCurrentListSaved(){
         boolean isSaved = false;
         
         if(currentlySavedGermplasmList != null){
@@ -354,20 +432,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		resetList(); //reset list before placing new one
 		
 		buildNewListTitle.setValue(messageSource.getMessage(Message.EDIT_LIST));
-		breedingManagerListDetailsComponent.setGermplasmListDetails(germplasmList);
-		breedingManagerListDetailsComponent.getListNameField().getListNameTextField().focus();
 		
 		currentlySavedGermplasmList = germplasmList;
+		currentlySetGermplasmInfo = germplasmList;
 		
-		//TO DO Update the Parent of the germplamsList, for now just used the current value of germplasmList.getParent()
-		this.tableWithSelectAllLayout.getTable().removeAllItems();		
-        dropHandler.addGermplasmList(germplasmList.getId());
+		dropHandler.addGermplasmList(germplasmList.getId(), true);
         
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
-        
-	}
+    }
 	
 	public void resetList(){
 		
@@ -382,6 +456,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 		//Clear flag, this is used for saving logic (to save new list or update)
 		setCurrentlySavedGermplasmList(null);
+		currentlySetGermplasmInfo = null;
 
 		//Rename the Build New List Header
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
@@ -400,58 +475,34 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 	}
 	
-	public void resetGermplasmTable(){
-		this.removeComponent(tableWithSelectAllLayout);
-		this.removeComponent(resetButton);
-		
-		tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        createGermplasmTable(tableWithSelectAllLayout.getTable());
-        
-        this.addComponent(tableWithSelectAllLayout);
-		this.addComponent(resetButton);
+	public void resetGermplasmTable(){		
+		tableWithSelectAllLayout.getTable().removeAllItems();
+		for(Object col: tableWithSelectAllLayout.getTable().getContainerPropertyIds().toArray())  {
+			tableWithSelectAllLayout.getTable().removeContainerProperty(col);
+		}
+		tableWithSelectAllLayout.getTable().setWidth("400px");
+		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
-        GermplasmList toreturn = new GermplasmList();
-        
-        //try {
-        //	this.breedingManagerListDetailsComponent.getListNameField().validate();
-        
-	        Object name = this.breedingManagerListDetailsComponent.getListNameField().getValue();
+    	if(currentlySetGermplasmInfo != null){
+	        String name = currentlySetGermplasmInfo.getName();
 	        if(name != null){
-	            toreturn.setName(name.toString().trim());
-	        } else{
-	            toreturn.setName(null);
+	            currentlySetGermplasmInfo.setName(name.trim());
 	        }
 	        
-	    //    this.breedingManagerListDetailsComponent.getListDescriptionField().validate();
-	        
-	        Object description = this.breedingManagerListDetailsComponent.getListDescriptionField().getValue();
+	        String description = currentlySetGermplasmInfo.getDescription();
 	        if(description != null){
-	            toreturn.setDescription(description.toString().trim());
-	        } else{
-	            toreturn.setDescription(null);
+	            currentlySetGermplasmInfo.setDescription(description.trim());
 	        }
-	        
-	    //    breedingManagerListDetailsComponent.getListDateField().validate();
-	        
-	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-	        Object dateValue = this.breedingManagerListDetailsComponent.getListDateField().getValue();
-	        if(dateValue != null){
-	            String sDate = formatter.format(dateValue);
-	            Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
-	            toreturn.setDate(dataLongValue);
-	        } else{
-	            toreturn.setDate(null);
-	        }
-	        
-	        toreturn.setType(this.breedingManagerListDetailsComponent.getListTypeField().getValue().toString());
-	        toreturn.setNotes(this.breedingManagerListDetailsComponent.getListNotesField().getValue().toString());
-	        return toreturn;
+    	}
         
-        //} catch(InvalidValueException e) {
-        //	return null;
-        //}
+        return currentlySetGermplasmInfo;
+    }
+    
+    public void addGermplasm(Integer gid){
+    	dropHandler.addGermplasm(gid);
+    	changed = true;
     }
     
     public List<GermplasmListData> getListEntriesFromTable(){
@@ -466,9 +517,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             GermplasmListData listEntry = new GermplasmListData();
             listEntry.setId(entryId);
             
-            Object designation = item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            
+            Button designationButton = (Button)  item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            String designation = designationButton.getCaption();
             if(designation != null){
-                listEntry.setDesignation(designation.toString());
+                listEntry.setDesignation(designation);
             } else{
                 listEntry.setDesignation("-");
             }
@@ -506,7 +559,106 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             toreturn.add(listEntry);
         }
         return toreturn;
-    }	
+    }
+    
+    private void exportListAction() throws InternationalizableException {
+        if (currentlySavedGermplasmList != null) {
+            if(!currentlySavedGermplasmList.isLocalList() || (currentlySavedGermplasmList.isLocalList() && currentlySavedGermplasmList.isLockedList())){
+                String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
+                GermplasmListExporter listExporter = new GermplasmListExporter(currentlySavedGermplasmList.getId());
+                try {
+                    listExporter.exportGermplasmListExcel(tempFileName);
+                    FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+                    String listName = currentlySavedGermplasmList.getName();
+                    fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
+                    source.getWindow().open(fileDownloadResource);
+                    //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                        //File tempFile = new File(tempFileName);
+                        //tempFile.delete();
+                } catch (GermplasmListExporterException e) {
+                    LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
+                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                                , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                                , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+                                , Notification.POSITION_CENTERED);
+                }
+            } else {
+                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+            }
+        }
+    }
+    
+    private void exportListForGenotypingOrderAction() throws InternationalizableException {
+        if (isCurrentListSaved()) {
+            if(!currentlySavedGermplasmList.isLocalList() || (currentlySavedGermplasmList.isLocalList() && currentlySavedGermplasmList.isLockedList())){
+                String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
+                GermplasmListExporter listExporter = new GermplasmListExporter(currentlySavedGermplasmList.getId());
+                
+                try {
+                    listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
+                    FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+                    String listName = currentlySavedGermplasmList.getName();
+                    fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
+                    
+                    source.getWindow().open(fileDownloadResource);
+                    
+                    //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                    //File tempFile = new File(tempFileName);
+                    //tempFile.delete();
+                } catch (GermplasmListExporterException e) {
+                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                            , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                            , e.getMessage(), Notification.POSITION_CENTERED);
+                }
+            } else {
+                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+            }
+        }
+    }
+    
+    public void copyToNewListAction(){
+        if(isCurrentListSaved()){
+            Collection<?> listEntries = (Collection<?>) tableWithSelectAllLayout.getTable().getValue();
+            
+            if (listEntries == null || listEntries.isEmpty()){
+                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            } else {
+                listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+                listManagerCopyToNewListDialog.setModal(true);
+                listManagerCopyToNewListDialog.setWidth("700px");
+                listManagerCopyToNewListDialog.setHeight("350px");
+                try {
+                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
+                        source.getWindow(),
+                        listManagerCopyToNewListDialog,
+                        currentlySavedGermplasmList.getName(),
+                        tableWithSelectAllLayout.getTable(),
+                        getCurrentUserLocalId(),
+                        source,
+                        true));
+                    source.getWindow().addWindow(listManagerCopyToNewListDialog);
+                } catch (MiddlewareQueryException e) {
+                    LOG.error("Error copying list entries.", e);
+                    e.printStackTrace();
+                }
+            }
+        }
+    }// end of copyToNewListAction
+    
+    private int getCurrentUserLocalId() throws MiddlewareQueryException {
+        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
+        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+        if (localIbdbUserId != null) {
+            return localIbdbUserId;
+        } else {
+            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+        }
+    }
 	
 	/* SETTERS AND GETTERS */
 	public Label getBuildNewListTitle() {
@@ -553,14 +705,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     	return source;
     }
     
-    public Integer getSaveInListId(){
-    	return saveInListId;
-    }
-    
-    public void setSaveInListId(Integer saveInListId){
-    	this.saveInListId = saveInListId;
-    }
-    
     public AddColumnContextMenu getAddColumnContextMenu(){
     	return addColumnContextMenu;
     }
@@ -585,6 +729,20 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		this.breedingManagerListDetailsComponent.setChanged(changed);
 		
 		//TO DO mark the changes in germplasmListDataTable during fill with functions
+	}
+	
+	public void openSaveListAsDialog(){
+		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.getWindow().addWindow(dialog);
+	}
+
+	/**
+	 * This method is called by the SaveListAsDialog window displayed when Edit Header button is clicked.
+	 */
+	@Override
+	public void saveList(GermplasmList list) {
+		currentlySetGermplasmInfo = list;
+		saveListButtonListener.doSaveAction();
 	}
     
 }

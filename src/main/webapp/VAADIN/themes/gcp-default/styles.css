@@ -393,7 +393,7 @@
 
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
-	width: 15px;
+	width: 10px;
 	background-image: none;
 }
 
@@ -472,8 +472,8 @@
 	color: red;
 }
 
-.searchPaneLayout {
-	background-color: #ffffff; 
+.searchPaneLayout, .white_bg_panel > div {
+	background-color: #ffffff !important; 
 }
 
 .searchBarLayout > div {
@@ -482,4 +482,18 @@
 
 .headerLabelLayout .v-caption {
 	height: 0px;	
+}
+
+.v-panel-content-section_panel_layout > div {
+	background-color: #f6f6f6;
+}
+
+
+/* TABSHEET in Crossing Manager */
+.v-tabsheet-content-tabsheet-white > .v-tabsheet-tabsheetpanel {
+	background: #ffffff;
+}
+
+.tabsheet-white > .v-tabsheet-content {
+	border-color: #ffffff;
 }

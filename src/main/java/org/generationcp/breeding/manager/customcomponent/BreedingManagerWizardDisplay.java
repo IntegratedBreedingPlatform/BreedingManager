@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.util;
+package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,4 +120,13 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 		layoutComponents();
 	}
 
+	
+	/**
+	 * Updates the page according to inputs from
+	 * last selected step of the wizard 
+	 *
+	 */
+	public interface StepChangeListener {
+		public void updatePage();
+	}
 }

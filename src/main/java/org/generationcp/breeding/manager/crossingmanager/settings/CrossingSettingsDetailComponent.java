@@ -12,11 +12,13 @@ import javax.xml.bind.Unmarshaller;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent.CrossingMethodOption;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -33,21 +35,22 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class CrossingSettingsDetailComponent extends AbsoluteLayout 
+public class CrossingSettingsDetailComponent extends VerticalLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	private static final long serialVersionUID = -7733004867121978697L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsDetailComponent.class);
-	private static String CROSSING_MANAGER_TOOL_NAME = "crossing_manager";
 	private static final int SETTING_NAME_MAX_LENGTH = 64;
 	
     @Autowired
@@ -63,7 +66,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
     }
 	
 	private DefineCrossingSettingComponent defineSettingComponent;
-	
 	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
@@ -72,6 +74,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	private Button cancelButton;
 	
 	private TemplateSetting currentSetting;
+	private Panel sectionPanel;
 	
 	public CrossingSettingsDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
@@ -99,6 +102,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	
 	@Override
 	public void instantiateComponents() {
+		
 		defineSettingComponent = new DefineCrossingSettingComponent(this);
 		
 		methodComponent = new CrossingSettingsMethodComponent();
@@ -145,26 +149,43 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 
 	@Override
 	public void layoutComponents() {
-		setWidth("850px");
+		setWidth("900px");
 		setHeight("800px");
 		
-		addComponent(defineSettingComponent, "top:7px; left: 10px");
-		addComponent(methodComponent, "top:100px; left:10px");
-		addComponent(nameComponent, "top:220px; left:10px");
-		addComponent(additionalDetailsComponent, "top:435Wpx; left:10px");
+		sectionPanel = new Panel();
+		sectionPanel.setWidth("100%");
+		sectionPanel.setHeight("730px");
+		sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 		
+		VerticalLayout sectionLayout = new VerticalLayout();
+		sectionLayout.setMargin(true);
+		
+		defineSettingComponent.setHeight("90px");
+		methodComponent.setHeight("150px");
+		nameComponent.setHeight("250px");
+		additionalDetailsComponent.setHeight("200px");
+		
+		sectionLayout.addComponent(defineSettingComponent);
+		sectionLayout.addComponent(methodComponent);
+		sectionLayout.addComponent(nameComponent);
+		sectionLayout.addComponent(additionalDetailsComponent);
+		
+		sectionPanel.setLayout(sectionLayout);
+		
+		//3
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
 		buttonBar.addComponent(cancelButton);
 		buttonBar.addComponent(nextButton);
 		
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth("100%");
-		layout.addComponent(buttonBar);
-		layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setWidth("100%");
+		buttonLayout.addComponent(buttonBar);
+		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
 		
-		addComponent(layout, "top:650px");
+		addComponent(sectionPanel);
+		addComponent(buttonLayout);
 		
 	}
 	
@@ -274,7 +295,7 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 		try{
 			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 			project = workbenchDataManager.getLastOpenedProject(wbUserId);
-			crossingManagerTool = workbenchDataManager.getToolWithName(CROSSING_MANAGER_TOOL_NAME);
+			crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
 		} catch(MiddlewareQueryException ex){
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
@@ -422,19 +443,6 @@ public class CrossingSettingsDetailComponent extends AbsoluteLayout
 	public CrossingManagerSetting getCurrentlyDefinedSetting(){
 		CrossingManagerSetting toreturn = new CrossingManagerSetting();
 		
-//		String prefix = (String) nameComponent.getPrefixTextField().getValue();
-//		String suffix = (String) nameComponent.getSuffixTextField().getValue();
-//		if(suffix != null){
-//			suffix = suffix.trim();
-//		}
-//		if (suffix.length() == 0) {
-//		    suffix = null; //set as null so attribute will not be marshalled
-//		}
-//		boolean addSpaceBetweenPrefixAndCode = nameComponent.doAddSpaceBetPrefixAndCode();
-//		Integer numOfDigits = null;
-//		if(nameComponent.getSequenceNumCheckBox().booleanValue()){
-//			numOfDigits = (Integer) nameComponent.getLeadingZerosSelect().getValue();
-//		}
 		CrossNameSetting crossNameSettingPojo = nameComponent.getCrossNameSettingObject();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 		

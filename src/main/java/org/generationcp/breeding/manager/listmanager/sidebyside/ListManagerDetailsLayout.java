@@ -69,8 +69,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     private Label heading;
     private HorizontalLayout headingBar;
     private Button btnCloseAllTabs;
+    private Label defaultLabel;
     
     private Integer listId;
+    
+    private VerticalLayout innerLayout;
     
     public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource) {
     	super();
@@ -100,12 +103,15 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         		LOG.error("Error with opening list details tab of list with id: " + listId);
         	}
         }
+        else{
+        	displayDefault();
+        }
     }
     
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
-        
+    	
         noListLabel = new Label();
         noListLabel.setImmediate(true);
         
@@ -120,48 +126,64 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         heading.setImmediate(true);
         heading.setWidth("300px");
         heading.setStyleName(Bootstrap.Typography.H3.styleName());
+        
+        defaultLabel = new Label();
+        defaultLabel.setWidth("100%");
     }
 
     @Override
     public void initializeValues() {
         String headingLabel = "";
+        String defaultLabel = "";
         if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
-            headingLabel = messageSource.getMessage(Message.REVIEW_LIST_DETAILS); //Browse Lists screen
+            headingLabel = messageSource.getMessage(Message.REVIEW_LIST_DETAILS);
+            defaultLabel = messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE);
         } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
             headingLabel = messageSource.getMessage(Message.REVIEW_DETAILS);
+            defaultLabel = messageSource.getMessage(Message.SEARCH_LIST_DEFAULT_MESSAGE);
         }
         heading.setValue(headingLabel);
+        this.defaultLabel.setValue(defaultLabel); 
     }
     
     @Override
     public void layoutComponents() {
-        headingBar.setWidth("100%");
+    	setWidth("98%");
+    	setStyleName(Runo.TABSHEET_SMALL);
+        setMargin(false);
+    	
+    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
+    		detailsTabSheet.setHeight("445px");
+    	}
+    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
+        	detailsTabSheet.setHeight("558px");
+    	}
+    	 
+    	//Components
+        headingBar.setWidth("98%");
         headingBar.setHeight("27px");
         
         HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
         headingBar.addComponent(headingLayout);
-        
         headingBar.addComponent(btnCloseAllTabs);
-        //headingBar.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
         headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
         
-        noListLabel.setVisible(false);        
-        headingBar.setVisible(false);
-        detailsTabSheet.setVisible(false);
-        this.addComponent(noListLabel);
-        this.setComponentAlignment(noListLabel, Alignment.TOP_LEFT);
-        this.setExpandRatio(noListLabel, 1);
-        this.addComponent(headingBar);
-        this.setComponentAlignment(headingBar, Alignment.TOP_LEFT);
-        this.setExpandRatio(headingBar, 1);
-        this.addComponent(detailsTabSheet);
-        this.setComponentAlignment(detailsTabSheet, Alignment.TOP_LEFT);
-        this.setExpandRatio(detailsTabSheet, 100);
+        VerticalLayout innerLayout = new VerticalLayout();
+        innerLayout.addComponent(noListLabel);
+        innerLayout.addComponent(headingBar);
+        innerLayout.addComponent(defaultLabel);
+        innerLayout.addComponent(detailsTabSheet);
         
-        this.setHeight("630px");
-        this.setWidth("98%");
-        this.setStyleName(Runo.TABSHEET_SMALL);
-        this.setMargin(false);
+        addComponent(innerLayout);
+        displayDefault();
+    }
+    
+    public void displayDefault(){
+    	noListLabel.setVisible(false);        
+        headingBar.setVisible(true);
+        btnCloseAllTabs.setVisible(false);
+        defaultLabel.setVisible(true);
+        detailsTabSheet.setVisible(false);
     }
 
     @Override
@@ -267,13 +289,28 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
     
     public void showDetailsTabsheet() {
+    	this.removeAllComponents();
+    	this.addComponent(headingBar);
+    	this.addComponent(detailsTabSheet);
+    	
         headingBar.setVisible(true);
+        defaultLabel.setVisible(false);
         detailsTabSheet.setVisible(true);
+        
+    	this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
-        headingBar.setVisible(false);
+        this.removeAllComponents();
+    	this.addComponent(headingBar);
+    	this.addComponent(defaultLabel);
+    	
+        headingBar.setVisible(true);
+        btnCloseAllTabs.setVisible(false);
+        defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
+
+    	this.requestRepaint();
     }
     
     public void renameTab(Integer listId, String newName){
@@ -291,6 +328,10 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){
             detailsTabSheet.removeTab(tab);
+        }
+        
+        if(detailsTabSheet.getComponentCount() == 0){
+            this.hideDetailsTabsheet();
         }
     }
     

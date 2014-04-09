@@ -15,7 +15,9 @@ package org.generationcp.breeding.manager.listimport.listeners;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
@@ -41,6 +43,9 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
     
     @Autowired
     private TomcatUtil tomcatUtil;
@@ -80,7 +85,21 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication");
         }
         
-        Window germplasmWindow = new Window("Germplasm Information - " + gid);
+        String preferredName = null;
+        try{
+        	Name prefName = germplasmDataManager.getPreferredNameByGID(Integer.valueOf(gid));
+        	if(prefName != null){
+        		preferredName = prefName.getNval();
+        	}
+        } catch(MiddlewareQueryException ex){
+        	LOG.error("Error with getting preferred name of " + gid, ex);
+        }
+        
+        String windowTitle = "Germplasm Details: " + "(" + gid + ")";
+        if(preferredName != null){
+        	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
+        }
+        Window germplasmWindow = new Window(windowTitle);
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);

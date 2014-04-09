@@ -7,7 +7,9 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
@@ -24,18 +26,20 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout 
-        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ListTreeActionsListener{
+        implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ListTreeActionsListener, StepChangeListener{
     
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
@@ -52,7 +56,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
     private Button backButton;
     private Button nextButton;
-    private HorizontalLayout layoutButtonArea;
     
     private MakeCrossesParentsComponent parentsComponent;
     private MakeCrossesTableComponent crossesTableComponent;
@@ -146,6 +149,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     
     
     public void backButtonClickAction(){
+    	if (crossesTableComponent.getCrossList() != null){
+    		MessageNotifier.showWarning(getWindow(), "Invalid Action", "Cannot change settings once crosses have been saved");
+    		return;
+    	}
+    	
     	if (this.source != null){
     		this.source.backStep();
     	}
@@ -227,8 +235,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 
 	@Override
 	public void instantiateComponents() {
-		setWidth("1200px");
-    	setHeight("1050px");
+		//addStyleName("white_bg_panel");
+		this.setSizeFull();
         this.setMargin(true, true, true, true);
 
         listTree = new CrossingManagerListTreeComponent(this);
@@ -241,8 +249,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         instructionForSelectParents.setContentMode(Label.CONTENT_XHTML);
         
         listDetailsTabSheet = new TabSheet();
-        listDetailsTabSheet.setWidth("800px");
-        listDetailsTabSheet.setHeight("380px");
+        listDetailsTabSheet.setWidth("730px");
+        listDetailsTabSheet.setHeight("390px");
         listDetailsTabSheet.setVisible(false);
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -265,12 +273,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         crossesTableComponent.setWidth(550, UNITS_PIXELS);
         crossesTableComponent.setMargin(true, false, false, false);
         
-        
-        layoutButtonArea = new HorizontalLayout();
-        layoutButtonArea.setSpacing(true);
-        layoutButtonArea.setMargin(true);
-        layoutButtonArea.addComponent(backButton);
-        layoutButtonArea.addComponent(nextButton);
 	}
 
 	@Override
@@ -301,14 +303,37 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	@Override
 	public void layoutComponents() {
         addComponent(listTree, "top:15px; left:15px;");
-        addComponent(selectParentsLabel, "top:15px; left:250px;");
+        
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setWidth("730px");
+        headerLayout.addComponent(selectParentsLabel);
+        headerLayout.addComponent(closeAllTabsButton);
+        headerLayout.setComponentAlignment(selectParentsLabel,Alignment.MIDDLE_LEFT);
+        headerLayout.setComponentAlignment(closeAllTabsButton,Alignment.MIDDLE_RIGHT);
+        
+        addComponent(headerLayout, "top:15px; left:250px;");
+        
         addComponent(instructionForSelectParents, "top:50px; left:250px;");
         addComponent(listDetailsTabSheet, "top:40px; left:250px;");
-        addComponent(closeAllTabsButton, "top:30px; right:115px;");
-    
-        addComponent(parentsComponent, "top:435px; left:15px;");
-        addComponent(crossesTableComponent, "top:425px; left:590px;");
-        addComponent(layoutButtonArea, "top:890px; left:500px;");
+        
+        HorizontalLayout resultsTableLayout = new HorizontalLayout();
+        resultsTableLayout.setSpacing(true);
+        resultsTableLayout.addComponent(parentsComponent);
+        resultsTableLayout.addComponent(crossesTableComponent);
+        
+        HorizontalLayout layoutButtonArea = new HorizontalLayout();
+        layoutButtonArea.setSpacing(true);
+        layoutButtonArea.addComponent(backButton);
+        layoutButtonArea.addComponent(nextButton);
+        
+        VerticalLayout bottomLayout = new VerticalLayout();
+        bottomLayout.setSpacing(true);
+        bottomLayout.addComponent(resultsTableLayout);
+        bottomLayout.addComponent(layoutButtonArea);
+        bottomLayout.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
+        
+        addComponent(bottomLayout, "top:435px; left:0px;");
+        
 	}
 	
 	public void selectListInTree(Integer id){
@@ -332,5 +357,24 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	@Override
 	public void openListDetails(GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
+	}
+	
+    public String getSeparatorString(){
+    	CrossNameSetting crossNameSetting = getCurrentCrossingSetting().getCrossNameSetting();
+    	return crossNameSetting.getSeparator();
+    }
+
+	
+	private boolean doUpdateTable(){
+		return !getSeparatorString().equals(crossesTableComponent.getSeparator());
+	}
+
+	@Override
+	public void updatePage() {
+		// only make updates to the page if separator was changed
+		if (doUpdateTable() && crossesTableComponent.getCrossList() == null){
+			crossesTableComponent.updateSeparatorForCrossesMade();
+		}
+		
 	}
 }

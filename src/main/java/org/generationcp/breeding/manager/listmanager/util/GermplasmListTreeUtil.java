@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -29,6 +30,7 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -201,7 +203,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
-        w.setHeight("150px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -214,6 +216,7 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label("Folder Name");
+        l.addStyleName(AppConstants.CssStyles.BOLD);
         final TextField name = new TextField();
         name.setMaxLength(50);
 
@@ -222,13 +225,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
-
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+     
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -4225085062616113624L;
@@ -277,8 +275,9 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	
 	            	} else {
 	        			MessageNotifier.showWarning(source.getWindow(),
-	                            messageSource.getMessage(Message.INVALID_INPUT), 
-	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+	                            messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));        
+	        			return;
 	            	}
                 	
                 	
@@ -352,11 +351,16 @@ public class GermplasmListTreeUtil implements Serializable {
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
@@ -391,7 +395,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	
         
         w.setWidth("320px");
-        w.setHeight("150px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -404,11 +408,11 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label();
-        
+        l.addStyleName(AppConstants.CssStyles.BOLD);
     	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		l.setCaption("Folder Name");
+    		l.setValue("Folder Name");
     	} else {
-    		l.setCaption("List Name");
+    		l.setValue("List Name");
     	}
 
         final TextField name = new TextField();
@@ -423,13 +427,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
 
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new RenameListTreeItemListener(listener, listId, name));
 
@@ -443,11 +442,16 @@ public class GermplasmListTreeUtil implements Serializable {
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
@@ -563,10 +567,10 @@ public class GermplasmListTreeUtil implements Serializable {
 		@Override
 		public void buttonClick(Button.ClickEvent event) {
 			final Window mainWindow;
-	        if (source.usedInSubWindow()){
-	        	mainWindow = event.getComponent().getWindow().getParent();
+			if (source.usedInSubWindow()){
+	        	mainWindow = source.getWindow().getParent();
 	        } else {        	
-	        	mainWindow = event.getComponent().getWindow();   	
+	        	mainWindow = source.getWindow();   	
 	        }  
 	        
 		    String newName = name.getValue().toString();
@@ -603,8 +607,9 @@ public class GermplasmListTreeUtil implements Serializable {
 		            }
 		    	} else {
 					MessageNotifier.showWarning(source.getWindow(),
-		                    messageSource.getMessage(Message.INVALID_INPUT), 
-		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+		                    messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)); 
+					return;
 		    	}
 		    	
 		    } catch (MiddlewareQueryException e) {

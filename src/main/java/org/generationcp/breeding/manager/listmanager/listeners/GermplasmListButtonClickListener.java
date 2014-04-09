@@ -83,15 +83,6 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             
-    	}else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID)
-                && (source instanceof AddEntryDialog)){
-            try {
-                ((AddEntryDialog) source).doneButtonClickAction();
-            } catch (InternationalizableException e){
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
         }else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
                 && (source instanceof AddEntryDialog)){
             try {
@@ -101,7 +92,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-        }else if (event.getButton().getData().equals(AddEntryDialog.NEXT_BUTTON_ID)
+        }else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID)
                 && (source instanceof AddEntryDialog)){
             try {
                 ((AddEntryDialog) source).nextButtonClickAction(event);

@@ -8,7 +8,8 @@ import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpd
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.util.BreedingManagerWizardDisplay;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
+import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -35,7 +36,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
+    
 	private Label toolTitle;
 	private Label makeCrossesLabel;
 	private PopupView toolPopupView;
@@ -85,7 +86,10 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("1100px");
+		tabSheet.setHeight("810px");
+		tabSheet.setWidth("100%");
+		
+		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		
@@ -110,7 +114,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setWidth("90%");
+		setWidth("100%");
 		setHeight("1200px");
 		
 		addComponent(toolTitle);
@@ -132,8 +136,10 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 				(CrossesMadeContainerUpdateListener) selectedStep;
 			listener.updateCrossesMadeContainer(this);
 		}
+		
 		int step = wizardDisplay.nextStep();
 		showNextWizardStep(step);
+		getWindow().setScrollTop(0);
 	}
 	
 	public void backStep(){
@@ -144,7 +150,19 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	private void showNextWizardStep(int step) {
 		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
 		if (tab != null){
-			tabSheet.setSelectedTab(tab.getComponent());
+			Component tabComponent = tab.getComponent();
+			tabSheet.setSelectedTab(tabComponent);
+			if (tabComponent instanceof StepChangeListener){
+				StepChangeListener listener = (StepChangeListener) tabComponent;
+				listener.updatePage();
+			}
+		}
+		
+		if(step == 0){
+			tabSheet.setHeight("810px");
+		}
+		else if(step == 1){
+			tabSheet.setHeight("1100px");
 		}
 	}
 
@@ -159,17 +177,19 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	}
 	
     public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList){
-    	CrossingManagerSummaryComponent summaryComponent = new CrossingManagerSummaryComponent(this, crossList.getId(), 
-    			femaleList.getId(), maleList.getId(), detailComponent.getCurrentlyDefinedSetting());
+    	CrossingManagerSummaryComponent summaryComponent = new CrossingManagerSummaryComponent(this, crossList, 
+    			femaleList, maleList, detailComponent.getCurrentlyDefinedSetting());
         
         this.removeComponent(this.wizardDisplay);
         this.removeComponent(this.tabSheet);
         
         this.addComponent(summaryComponent, "top:75px");
+        getWindow().setScrollTop(0);
     }
     
     public void reset(){
         this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
+        getWindow().setScrollTop(0);
     }
 
 }

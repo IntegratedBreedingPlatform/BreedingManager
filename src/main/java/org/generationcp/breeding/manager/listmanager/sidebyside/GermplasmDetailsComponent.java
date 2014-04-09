@@ -1,22 +1,27 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmAttributesComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmHeaderInfoComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
-import org.generationcp.breeding.manager.util.ComponentTree;
-import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ComponentTree;
+import org.generationcp.commons.vaadin.ui.ComponentTreeItem;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,9 +30,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -65,7 +70,8 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     private ComponentTreeItem attributesDetails;
     private ComponentTreeItem pedigreeDetails;
     
-    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
     
     public GermplasmDetailsComponent(ListManagerMain listManagerMain, Integer germplasmId){
     	this.listManagerMain = listManagerMain;
@@ -93,7 +99,6 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
         
         basicDetailsComponent = new GermplasmHeaderInfoComponent(gDetailModel);
         pedigreeComponent = new GermplasmPedigreeComponent(this.germplasmId);
-        germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel);
     }
 
     @Override
@@ -103,7 +108,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     }
     
     @Override
-    public void layoutComponents() {
+    public void layoutComponents() {    	
         ComponentTree content = new ComponentTree();
         content.setWidth("95%");
         
@@ -111,12 +116,10 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
         basicDetails.showChild();
         basicDetails.addChild(basicDetailsComponent);
         
-        attributesDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
-        VerticalLayout layoutForAttributes = new VerticalLayout();
-        layoutForAttributes.addComponent(germplasmAttributesComponent);
-        attributesDetails.addChild(layoutForAttributes);
+        attributesDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.ATTRIBUTES)));
+        attributesDetails.addChild(createGermplasmAttribute());
         
-        pedigreeDetails = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
+        pedigreeDetails = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.PEDIGREE_TREE)));
         pedigreeDetails.addChild(this.pedigreeComponent);
         
         this.addComponent(content);
@@ -153,7 +156,46 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
                 }
             }
         });
-    }    
+        
+        //saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this, this.germplasmId));
+        saveToListLink.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				saveToList();
+			}
+        });
+        
+        moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
+    }
+    
+    private VerticalLayout createGermplasmAttribute(){
+    	VerticalLayout layoutForAttributes = new VerticalLayout();
+    	layoutForAttributes.setMargin(false,false,true,false);
+    	
+    	//Get the no of records
+        List<Attribute> attributeList;
+        int count = 0;
+		try {
+			attributeList = this.germplasmDataManager.getAttributesByGID(germplasmId);
+			count = attributeList.size();
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving gemplasm attributes.",e);
+			e.printStackTrace();
+		}
+		
+    	if(count > 0){ //Display the Table
+            germplasmAttributesComponent = new GermplasmAttributesComponent(new GermplasmIndexContainer(qQuery), gDetailModel,count,8);
+            layoutForAttributes.addComponent(germplasmAttributesComponent);
+    	}
+    	else{// Display a label with default message
+    		Label noRecordsLabel = new Label("There is no Attribute information available for this germplasm.");
+    		layoutForAttributes.addComponent(noRecordsLabel);
+    	}
+        
+        return layoutForAttributes;
+    }
 	
 	private Component createBasicDetailsHeader (String header) {
 		//Left Section
@@ -164,15 +206,13 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 		saveToListLink.setData(SAVE_TO_LIST);
 		saveToListLink.setImmediate(true);
 		saveToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
-		saveToListLink.setIcon(ICON_PLUS);
-		saveToListLink.addListener(new GermplasmListManagerButtonClickListener(this, this.germplasmId));
+		saveToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
 		
 		moreDetailsLink = new Button(messageSource.getMessage(Message.MORE_DETAILS));
 		moreDetailsLink.setData(MORE_DETAILS);
 		moreDetailsLink.setImmediate(true);
 		moreDetailsLink.setStyleName(BaseTheme.BUTTON_LINK);
-		moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
-        
+		
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.setSpacing(true);
 		leftLayout.addComponent(sectionLabel);
@@ -192,6 +232,11 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
         return l;
 	}
 	
+	public void saveToList(){
+		listManagerMain.addGemplasmToBuildList(germplasmId);
+	}
+	
+	// SETTERS and GETTERS
 	public ListManagerMain getListManagerMain(){
 		return this.listManagerMain;
 	}

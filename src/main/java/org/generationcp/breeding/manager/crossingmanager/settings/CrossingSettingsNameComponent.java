@@ -35,6 +35,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		BreedingManagerLayout, InternationalizableComponent,
 		InitializingBean {
 
+	private static final int SEPARATOR_MAX_CHARS_LENGTH = 3;
 	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
 	private static final Integer MAX_LEADING_ZEROS = 10;
@@ -51,10 +52,15 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
     private Label addSpaceLabel;
     private Label nextNameInSequenceLabel;
     private Label generatedNextNameLabel;
-    private Label mandatoryMarkLabel;
+    private Label prefixMandatoryMarkLabel;
+    private Label separatorForDesigLabel;
+    private Label separatorMandatoryMarkLabel;
+    private Label separatorExampleLabel;
+    private Label designationExampleValue;
    
     private TextField prefixTextField;
     private TextField suffixTextField;
+    private TextField separatorTextField;
     private CheckBox sequenceNumCheckBox;
     private OptionGroup addSpaceOptionGroup;
     private Select leadingZerosSelect;
@@ -122,7 +128,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         specifyPrefixLabel = new Label();
         specifyPrefixLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
-        mandatoryMarkLabel = new MandatoryMarkLabel();
+        prefixMandatoryMarkLabel = new MandatoryMarkLabel();
         
         prefixTextField = new TextField();
         prefixTextField.setImmediate(true);
@@ -153,8 +159,23 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         startNumberTextField = new TextField();
         startNumberTextField.setWidth("70px");
         startNumberTextField.setImmediate(true);
+        
+        separatorForDesigLabel = new Label(messageSource.getMessage(Message.SEPARATOR_FOR_PARENTAGE_DESIGNATION) + ":");
+        separatorForDesigLabel.addStyleName(AppConstants.CssStyles.BOLD);
+        separatorMandatoryMarkLabel = new MandatoryMarkLabel();
+        
+        separatorExampleLabel = new Label("Example:");
+        separatorExampleLabel.addStyleName(AppConstants.CssStyles.ITALIC);
+        
+        designationExampleValue = new Label();
+        
+        separatorTextField = new TextField();
+        separatorTextField.setWidth("35px");
+        separatorTextField.setImmediate(true);
+        separatorTextField.setMaxLength(SEPARATOR_MAX_CHARS_LENGTH);
 	}
 
+	
 	@Override
 	public void initializeValues() {
         digitsToggableComponents[0] = digitsLabel;
@@ -176,6 +197,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         setFieldsDefaultValue();
 	}
 
+	
 	@Override
 	public void addListeners() {
         sequenceNumCheckBox.addListener(new Property.ValueChangeListener() {
@@ -193,7 +215,15 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				startNumberTextField.setEnabled((Boolean) event.getProperty().getValue());
-				
+			}
+		});
+		
+		separatorTextField.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = -8395381042668695941L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateDesignationExample();
 			}
 		});
 		
@@ -204,16 +234,16 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		leadingZerosSelect.addListener(new CrossNameFieldsValueChangeListener());
 		startNumberTextField.addListener(new CrossNameFieldsValueChangeListener());
 		specifyStartNumberCheckbox.addListener(new CrossNameFieldsValueChangeListener());
-
 	}
 
+	
 	@Override
 	public void layoutComponents() {
 		addComponent(crossNameLabel, "top:0px; left:0px");
 		addComponent(specifyNamingConventionLabel, "top:26px; left:0px");
 			
 		addComponent(specifyPrefixLabel, "top:71px;left:0px");
-		addComponent(mandatoryMarkLabel, "top:71px;left:128px");
+		addComponent(prefixMandatoryMarkLabel, "top:71px;left:128px");
         addComponent(prefixTextField, "top:71px;left:145px");
         addComponent(sequenceNumCheckBox, "top:75px;left:300px");
         addComponent(leadingZerosSelect, "top:75px;left:540px");
@@ -229,7 +259,14 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         
         addComponent(specifyStartNumberCheckbox, "top:162px;left:0px");
         addComponent(startNumberTextField, "top:162px;left:305px");
+        
+        addComponent(separatorForDesigLabel, "top:192px;left:0px");
+        addComponent(separatorMandatoryMarkLabel, "top:192px;left:250px");
+        addComponent(separatorTextField, "top:192px;left:275px");
+        addComponent(separatorExampleLabel, "top:192px;left:340px");
+        addComponent(designationExampleValue, "top:192px;left:400px");
 	}
+	
 	
 	public boolean validateCrossNameFields(){
         String prefix = ((String) prefixTextField.getValue()).trim();
@@ -244,7 +281,6 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
         	generatedNextNameLabel.setValue("");
         	return false;
         }
-        
         
         return true;
     }
@@ -330,6 +366,8 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		    suffix = "";
 		}
 		suffixTextField.setValue(suffix);
+		
+		separatorTextField.setValue(crossNameSetting.getSeparator());
 	}
 
 	// #####
@@ -367,6 +405,21 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		specifyStartNumberCheckbox.setValidationVisible(false);
 		startNumberTextField.setValue("");
 		startNumberTextField.setEnabled(false);
+		
+		separatorTextField.setValue(CrossNameSetting.DEFAULT_SEPARATOR);
+		updateDesignationExample();
+	}
+
+	private void updateDesignationExample() {
+		String female = "ABC-123";
+		String male = "ABC-456";
+		String separator = separatorTextField.getValue().toString();
+		
+		if (StringUtils.isEmpty(separator)){
+			separatorTextField.setValue(CrossNameSetting.DEFAULT_SEPARATOR);
+			separator = CrossNameSetting.DEFAULT_SEPARATOR;
+		}
+		designationExampleValue.setValue(female + separator + male);
 	}
 	
 	private boolean doSpecifyNameStartNumber(){
@@ -387,8 +440,9 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		if(sequenceNumCheckBox.booleanValue()){
 			numOfDigits = (Integer) leadingZerosSelect.getValue();
 		}
+		String separator = (String) separatorTextField.getValue();
 		CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix
-				, addSpaceBetweenPrefixAndCode, numOfDigits);
+				, addSpaceBetweenPrefixAndCode, numOfDigits, separator);
 		String startNumber = (String) startNumberTextField.getValue();
 		if (doSpecifyNameStartNumber() && !startNumber.isEmpty() && NumberUtils.isDigits(startNumber)){
 			crossNameSettingPojo.setStartNumber(Integer.parseInt(startNumber));
