@@ -202,7 +202,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	}
 	
 	protected void initializeButtonPanel() {
-		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 16px; font-weight: bold;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
         renameFolderBtn.setDescription("Rename Item");
         renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
@@ -216,7 +216,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
             }
         });
         
-        addFolderBtn = new Button("<span class='glyphicon glyphicon-plus-sign' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+        addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 16px; font-weight: bold;'></span>");
         addFolderBtn.setHtmlContentAllowed(true);
         addFolderBtn.setDescription("Add New Folder");
         addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
@@ -231,7 +231,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         });
         
 
-        deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+        deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 16px; font-weight: bold;'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
         deleteFolderBtn.setDescription("Delete Selected List/Folder");
         deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
