@@ -120,7 +120,6 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         germplasmWindow.setModal(true);
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        germplasmWindow.addStyleName("graybg");
         
         mainWindow.addWindow(germplasmWindow);
     }
