@@ -623,8 +623,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        
 			        try{
 			            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
-			            this.source.finishAddingEntry(gid);
-			            return true;
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
 			            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
@@ -632,6 +630,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			            return false;
 			        }
 	        	}
+
+		        this.source.finishAddingEntry(selectedGids);
+		        
+		        return true;
+		        
 	        } else {
 		        Integer userId = Integer.valueOf(getCurrentUserLocalId());
                 
