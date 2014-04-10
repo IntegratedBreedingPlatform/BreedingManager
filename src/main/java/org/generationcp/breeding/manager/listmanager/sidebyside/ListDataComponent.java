@@ -1042,8 +1042,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         parentWindow.addWindow(addEntriesDialog);
     }
     
+    
     @Override
     public void finishAddingEntry(Integer gid) {
+    	finishAddingEntry(gid, true);
+    }
+    
+    public Boolean finishAddingEntry(Integer gid, Boolean showSuccessMessage) {
     	
         Germplasm germplasm = null;
 
@@ -1054,7 +1059,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
                     + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
-            return;
+            return false;
         }
         
         Integer maxEntryId = Integer.valueOf(0);
@@ -1217,15 +1222,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
                 }
                 
-                saveChangesAction();
+                saveChangesAction(this.getWindow(), false);
                 listDataTable.refreshRowCache();
                 listDataTable.setImmediate(true);
                 listDataTable.setEditable(true);
             }
             
-            MessageNotifier.showMessage(this.getWindow(), 
+            if(showSuccessMessage){
+            	MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
-                    "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
+                    "Successful in adding list entries.", 3000, Notification.POSITION_CENTERED);
+            }
             
             User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
@@ -1244,11 +1251,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             //listDataTable.requestRepaint();
 //            if(this.germplasmListAccordionMenu != null)
 //                this.germplasmListAccordionMenu.refreshListData();
+            
+            return true;
+            
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
-            return;
+            return false;
         }
 		
     }
@@ -1268,7 +1278,11 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         saveChangesAction(this.getWindow());
     }
 
-    public void saveChangesAction(Window window) throws InternationalizableException {
+    public Boolean saveChangesAction(Window window) throws InternationalizableException {
+    	return saveChangesAction(window, true);
+    }
+    
+    public Boolean saveChangesAction(Window window, Boolean showSuccessMessage) throws InternationalizableException {
         
         //selected entries to entries       
         if(itemsToDelete.size() > 0){
@@ -1344,10 +1358,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             //reset flag to indicate unsaved changes
             parentListDetailsComponent.setChanged(false);
             
-            MessageNotifier.showMessage(window, 
+            if(showSuccessMessage){
+            	MessageNotifier.showMessage(window, 
                     messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
                     ,3000, Notification.POSITION_CENTERED);
+        	}
+        
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
         }
@@ -1374,6 +1391,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			}   			
 		}
         
+		return true;
+		
     } // end of saveChangesAction
     
     //TODO review this method as there are redundant codes here that is also in saveChangesAction()
@@ -1627,8 +1646,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void finishAddingEntry(List<Integer> gids) {
+		Boolean allSuccessful = true;
 		for(Integer gid : gids){
-			finishAddingEntry(gid);
+			if(finishAddingEntry(gid, false).equals(false)){
+				allSuccessful = false;
+			}
+		}
+		if(allSuccessful){
+			MessageNotifier.showMessage(getWindow(), 
+                    messageSource.getMessage(Message.SUCCESS), 
+                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
+                    ,3000, Notification.POSITION_CENTERED);
 		}
 	}
 }

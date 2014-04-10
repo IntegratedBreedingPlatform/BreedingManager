@@ -10,12 +10,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmSearchQuery;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -53,7 +54,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -133,7 +133,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     private ComboBox nameTypeComboBox;
     
-    private DateField germplasmDateField;
+    private ListDateField germplasmDateField;
     
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
@@ -193,7 +193,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     	 			 
     	 		});
             	
-                Button gidButton = new Button(String.format("%s", germplasm.getGid()), new GidLinkButtonClickListener(germplasm.getGid().toString(), true));
+                Button gidButton = new Button(String.format("%s", germplasm.getGid()), new GidLinkButtonClickListener(germplasm.getGid().toString(), false));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 
 	            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(germplasm.getGid()), null, null);
@@ -221,7 +221,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	            }
 	            
 	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
-                newItem.getItemProperty(GermplasmSearchQuery.GID).setValue(germplasm.getGid());
+                //newItem.getItemProperty(GermplasmSearchQuery.GID).setValue(germplasm.getGid());
+                newItem.getItemProperty(GermplasmSearchQuery.GID).setValue(gidButton);
                 newItem.getItemProperty(GermplasmSearchQuery.NAMES).setValue(germplasmNames);
                 newItem.getItemProperty(GermplasmSearchQuery.METHOD).setValue(methodName);
                 newItem.getItemProperty(GermplasmSearchQuery.LOCATION).setValue(locationName);
@@ -377,7 +378,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         resultsTable.getTable().setColumnCollapsingAllowed(true);
 
         resultsTable.getTable().addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.GID, String.class, null);
+        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.GID, Button.class, null);
         resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.NAMES, String.class, null);
         resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.METHOD, String.class, null);
         resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.LOCATION, String.class, null);
@@ -448,11 +449,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         germplasmDateLabel.addStyleName("bold");
         bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
         
-        germplasmDateField =  new DateField();
-        germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
-        germplasmDateField.setDateFormat("yyyy-MM-dd");
-        germplasmDateField.setValue(new Date());
-        bottomPart.addComponent(germplasmDateField, "top:102px;left:130px");
+        germplasmDateField =  new ListDateField("", false);
+        germplasmDateField.getListDtDateField().setValue(new Date());
+        bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
         
         breedingLocationField = new BreedingLocationField(parentWindow);
         bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
@@ -496,9 +495,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     public void nextButtonClickAction(ClickEvent event){
     	
-    	System.out.println("breedingMethodField.getBreedingMethodComboBox().getValue() : "+breedingMethodField.getBreedingMethodComboBox().getValue());
-    	System.out.println("breedingLocationField.getBreedingLocationComboBox().getValue() : "+breedingLocationField.getBreedingLocationComboBox().getValue());
-    	
         if(optionGroup.getValue().equals(OPTION_1_ID)){
             // add the germplasm selected as the list entry
             if(this.selectedGids.size()>0){
@@ -517,9 +513,10 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             		MessageNotifier.showError(this, "Error", 
                             "You must select a location for the germplasm.", Notification.POSITION_CENTERED);
         	}else if(this.selectedGids.size()>0){
-            	doneAction();
-            	Window window = event.getButton().getWindow();
-            	window.getParent().removeWindow(window);
+            	if(doneAction()){
+            		Window window = event.getButton().getWindow();
+            		window.getParent().removeWindow(window);
+            	}
             } else{
                 MessageNotifier.showWarning(this, "Warning!", 
                         "You must select a germplasm from the search results.", Notification.POSITION_CENTERED);
@@ -548,7 +545,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void backButtonClickAction(){
     }
     
-    public void doneAction(){
+    public Boolean doneAction(){
     	
         if(this.optionGroup.getValue().equals(OPTION_2_ID) || this.optionGroup.getValue().equals(OPTION_3_ID)){
         	
@@ -557,7 +554,20 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
 	        Date dateOfCreation = (Date) this.germplasmDateField.getValue();
 	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-	        Integer date = Integer.parseInt(formatter.format(dateOfCreation));
+	        
+	        if(dateOfCreation==null){
+	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
+	            MessageNotifier.showError(getWindow(), "Error!", "Please enter date in this format YYYY-MM-DD", Notification.POSITION_CENTERED);
+	            return false;
+	        }
+	        String parsedDate = formatter.format(dateOfCreation);
+	        if(parsedDate==null){
+	            LOG.error("Invalid date on add list entries! - " + parsedDate);
+	            MessageNotifier.showError(getWindow(), "Error!", "Please enter date in this format YYYY-MM-DD", Notification.POSITION_CENTERED);
+	            return false;
+	        }
+	        
+	        Integer date = Integer.parseInt(parsedDate);
 	        String germplasmName = this.searchField.getValue().toString();
 	        
 	        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
@@ -614,12 +624,12 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        try{
 			            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
 			            this.source.finishAddingEntry(gid);
-			            return;
+			            return true;
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
 			            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
 			                    , Notification.POSITION_CENTERED);
-			            return;
+			            return false;
 			        }
 	        	}
 	        } else {
@@ -650,17 +660,18 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 		        try{
 		            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
 		            this.source.finishAddingEntry(gid);
-		            return;
+		            return true;
 		        } catch(MiddlewareQueryException ex){
 		            LOG.error("Error with saving germplasm and name records!", ex);
 		            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
 		                    , Notification.POSITION_CENTERED);
-		            return;
+		            return false;
 		        }
 	        }
         
     	}
         
+        return false;
     }
     
     private void populateNameTypeComboBox(){

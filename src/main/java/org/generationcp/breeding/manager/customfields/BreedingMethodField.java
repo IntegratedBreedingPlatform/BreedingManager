@@ -33,6 +33,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -58,6 +59,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private Button manageFavoritesLink;
 
 	private Window attachToWindow;
+	
+	private Label methodDescription;
+	private PopupView popup;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -107,6 +111,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
         manageFavoritesLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
 
+        methodDescription = new Label();
+        methodDescription.setWidth("300px");
+        popup = new PopupView(" ? ", methodDescription);
+        popup.setStyleName("gcp-popup-view");
 	}
 
 	@Override
@@ -167,6 +175,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void layoutComponents() {
 		addComponent(captionLabel, "top:3px; left:0;");
 		addComponent(breedingMethodComboBox, "top:0; left:130px;");
+		addComponent(popup, "top:0; left:455px;");
 		addComponent(showFavoritesCheckBox, "top:25px; left:130px;");
 		addComponent(manageFavoritesLink, "top:28px; left:350px;");
 	}
@@ -217,7 +226,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     	Object breedingMethodComboBoxValue = breedingMethodComboBox.getValue();
     	breedingMethodComboBox.setDescription("");
     	if(breedingMethodComboBoxValue!=null){
-    		breedingMethodComboBox.setDescription(methodMap.get(breedingMethodComboBoxValue.toString()));
+    		//breedingMethodComboBox.setDescription(methodMap.get(breedingMethodComboBoxValue.toString()));
+    		methodDescription.setValue(methodMap.get(breedingMethodComboBoxValue.toString()));
     	}
     }
     
@@ -238,7 +248,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
             if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
                 breedingMethodComboBox.setValue(method.getMid());
-                breedingMethodComboBox.setDescription(method.getMdesc());
+                //breedingMethodComboBox.setDescription(method.getMdesc());
+                methodDescription.setValue(method.getMdesc());
             }
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
