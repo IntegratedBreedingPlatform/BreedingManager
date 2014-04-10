@@ -22,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -44,6 +45,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	
 	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
 	
+	private static final Action ACTION_ADD_TO_FEMALE_LIST = new Action("Add to Female List");
+	private static final Action ACTION_ADD_TO_MALE_LIST = new Action("Add to Male List");
+	private static final Action[] LIST_DATA_TABLE_ACTIONS = new Action[] {ACTION_ADD_TO_FEMALE_LIST, ACTION_ADD_TO_MALE_LIST};
+	
 	private Integer germplasmListId;
 	private GermplasmList germplasmList;
 	private Long count;
@@ -58,21 +63,19 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	
+	private MakeCrossesParentsComponent makeCrossesParentsComponent;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
     private GermplasmListManager germplasmListManager;
 	
-	public SelectParentsListDataComponent(Integer germplasmListId){
-		super();
-		this.germplasmListId = germplasmListId;
-	}
-	
-	public SelectParentsListDataComponent(Integer germplasmListId, String listName){
+	public SelectParentsListDataComponent(Integer germplasmListId, String listName, MakeCrossesParentsComponent makeCrossesParentsComponent){
 		super();
 		this.germplasmListId = germplasmListId;
 		this.listName = listName;
+		this.makeCrossesParentsComponent = makeCrossesParentsComponent;
 	}
 	
 	@Override
@@ -205,6 +208,26 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				openViewListHeaderWindow();
+			}
+		});
+		
+		listDataTable.addActionHandler(new Action.Handler() {
+			private static final long serialVersionUID = -2173636726748988046L;
+
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if(action.equals(ACTION_ADD_TO_FEMALE_LIST)){
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable());
+					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
+				} else if(action.equals(ACTION_ADD_TO_MALE_LIST)){
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable());
+					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
+				}
+			}
+			
+			@Override
+			public Action[] getActions(Object target, Object sender) {
+				return LIST_DATA_TABLE_ACTIONS;
 			}
 		});
 	}

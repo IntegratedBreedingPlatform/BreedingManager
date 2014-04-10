@@ -373,12 +373,44 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     
     @SuppressWarnings("unchecked")
     private void deleteSelectedEntries(){
-        List<Integer> selectedItemIds = new ArrayList<Integer>();
-        selectedItemIds.addAll((Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue());
-        for(Integer selectedItemId:selectedItemIds){
-        	tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
+        Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue();
+        if(selectedIdsToDelete.size() > 0){
+            if (!isCurrentListSaved()) {
+                // TODO directly remove list entries if list being built is not yet saved.
+            } else {
+                // TODO make behavior consistent with ListDataComponent.deleteEntriesButtonClickAction()
+                // for editing existing lists and after saving the new list
+                
+                // if list is already saved
+                /*if(tableWithSelectAllLayout.getTable().size() == selectedIdsToDelete.size()) {
+                    ConfirmDialog.show(this.getWindow(),
+                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES),
+                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES_CONFIRM),
+                            messageSource.getMessage(Message.YES),
+                            messageSource.getMessage(Message.NO),
+                            new ConfirmDialog.Listener() {
+                        private static final long serialVersionUID = 1L;
+                        public void onClose(ConfirmDialog dialog) {
+                            if (dialog.isConfirmed()) {
+                                removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
+                            }
+                        }
+                        
+                    });
+                } else {
+                    removeRowsInListDataTable(selectedIdsToDelete);
+                }*/
+            }
+            
+            //TODO replace with more advanced deletion handling
+            for(Integer selectedItemId : selectedIdsToDelete){
+                tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
+            }
+            assignSerializedEntryNumber();
+        }else{
+            MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
-        assignSerializedEntryNumber();
     }
     
     /**
@@ -577,13 +609,13 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                         //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
                     LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                    MessageNotifier.showError(source.getWindow()
                                 , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                                 , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                                 , Notification.POSITION_CENTERED);
                 }
             } else {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                         , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
@@ -608,12 +640,12 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                     //File tempFile = new File(tempFileName);
                     //tempFile.delete();
                 } catch (GermplasmListExporterException e) {
-                    MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
+                    MessageNotifier.showError(source.getWindow() 
                             , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                             , e.getMessage(), Notification.POSITION_CENTERED);
                 }
             } else {
-                MessageNotifier.showError(source.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
+                MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
                         , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
             }
@@ -625,7 +657,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             Collection<?> listEntries = (Collection<?>) tableWithSelectAllLayout.getTable().getValue();
             
             if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
             } else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);

@@ -480,7 +480,7 @@
 	background-color: #e3e3e3;
 }
 
-.headerLabelLayout .v-caption {
+.no-caption .v-caption {
 	height: 0px;	
 }
 

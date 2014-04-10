@@ -52,7 +52,7 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 		addComponent(icon);
 		addComponent(label);
 		
-		this.addStyleName("headerLabelLayout");
+		this.addStyleName("no-caption");
 		this.setComponentAlignment(icon, Alignment.TOP_LEFT);
 		this.setComponentAlignment(label, Alignment.TOP_LEFT);
 	}

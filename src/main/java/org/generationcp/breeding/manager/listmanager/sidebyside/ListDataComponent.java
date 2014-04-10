@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -817,8 +816,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         
         if(selectedIdsToDelete.size() > 0){
         	if(listDataTable.size() == selectedIdsToDelete.size()){
-        		ConfirmDialog.show(this.getWindow(), "Delete All Entries in List Data", "Are you sure you want to delete all list data entries for this list?",
-	        			"Yes", "No", new ConfirmDialog.Listener() {
+        	    ConfirmDialog.show(this.getWindow(),
+                        messageSource.getMessage(Message.DELETE_ALL_ENTRIES),
+                        messageSource.getMessage(Message.DELETE_ALL_ENTRIES_CONFIRM),
+                        messageSource.getMessage(Message.YES),
+                        messageSource.getMessage(Message.NO),
+                        new ConfirmDialog.Listener() {
 	        		private static final long serialVersionUID = 1L;
 	        		public void onClose(ConfirmDialog dialog) {
 	        			if (dialog.isConfirmed()) {
@@ -833,7 +836,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         	}
         	
         }else{
-            MessageNotifier.showError(this.getWindow(), "Error with deleting entries." 
+            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES) 
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
     }
