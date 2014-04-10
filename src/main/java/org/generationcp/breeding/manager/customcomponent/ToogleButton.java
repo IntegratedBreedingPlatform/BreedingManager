@@ -27,10 +27,12 @@ public class ToogleButton  extends Button implements InitializingBean, Internati
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		setIcon(AppConstants.Icons.ICON_TOOGLE);
+		setCaption("<span class='fa fa-bars' style='left: 2px; color: #717171;font-size: 18px; font-weight: bold;'></span>");
+        setHtmlContentAllowed(true);
 		setDescription(description);
 		setStyleName(Reindeer.BUTTON_LINK);
 		setWidth("25px");
+		setHeight("30px");
 	}
 	
 }
