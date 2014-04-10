@@ -100,6 +100,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 		componentTree.setWidth("100%");
 		componentTree.setHeight("350px");
 		componentTree.addStyleName("overflow_y_scroll");
+		componentTree.addStyleName("component-tree");
 		
 		germplasmDetailModel = germplasmQueries.getGermplasmDetails(gid);
 		basicDetailsComponent = new GermplasmCharacteristicsComponent(germplasmDetailModel);
