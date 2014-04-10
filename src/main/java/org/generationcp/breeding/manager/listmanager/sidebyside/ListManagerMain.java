@@ -257,7 +257,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	}
 
 	protected void showBrowseListPane() {
-		browserSearchLayout.setHeight("530px");
+		browserSearchLayout.setHeight("425px");
 		
 		browserSearchLayout.removeAllComponents();
 		browserSearchLayout.addComponent(browseListsComponent);
