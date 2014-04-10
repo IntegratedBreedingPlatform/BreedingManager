@@ -317,7 +317,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		// browse list component is null at this point when tool launched from Workbench dashboard
 		ListManagerBrowseListComponent browseListsComponent = source.getBrowseListsComponent();
 		if(browseListsComponent== null || browseListsComponent.isVisible()){
-			return 10; 
+			return 8; 
 		}
 		
 		return 13;
