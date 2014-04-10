@@ -197,6 +197,7 @@
 }
 .componenttree-parent {
 	padding: 8px 0 4px 0px;
+	text-transform:uppercase;
 }
 .componenttree-child {
 	padding: 5px 0 5px 15px;
