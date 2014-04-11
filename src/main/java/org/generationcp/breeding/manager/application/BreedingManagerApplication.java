@@ -8,7 +8,6 @@ import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -276,7 +275,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+            HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
     }
     
@@ -284,11 +283,18 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
         
+
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
             HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
         }
-    }
+
+        try{
+        	managerFactoryProvider.close();
+        }catch(Exception e){
+        	e.printStackTrace();	 
+        }
+    } 
 
 }
