@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.germplasm;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -58,7 +59,7 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         String locationName = gDetailModel.getGermplasmLocation();
         if(locationName != null && locationName.length() > 40){
         	locationName = locationName.substring(0, 40) + "...";
-        } else{
+        } else if (StringUtils.isEmpty(locationName)){
         	locationName = "-";
         }
         lblLocation = new Label("<b>" + messageSource.getMessage(Message.LOCATION_LABEL) + ":</b> " + locationName); // "Location"
