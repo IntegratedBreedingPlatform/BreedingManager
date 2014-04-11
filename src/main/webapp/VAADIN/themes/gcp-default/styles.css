@@ -197,6 +197,8 @@
 }
 .componenttree-parent {
 	padding: 8px 0 4px 0px;
+}
+.componenttree-parent div.v-label-h4{
 	text-transform:uppercase;
 }
 .componenttree-child {
