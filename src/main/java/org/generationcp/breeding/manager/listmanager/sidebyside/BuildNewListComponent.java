@@ -661,8 +661,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             } else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth("700px");
-                listManagerCopyToNewListDialog.setHeight("350px");
+                listManagerCopyToNewListDialog.setWidth("617px");
+                listManagerCopyToNewListDialog.setHeight("230px");
+                listManagerCopyToNewListDialog.setResizable(false);
+                listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+                
                 try {
                     listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
                         source.getWindow(),
@@ -673,6 +676,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                         source,
                         true));
                     source.getWindow().addWindow(listManagerCopyToNewListDialog);
+                    listManagerCopyToNewListDialog.center();
                 } catch (MiddlewareQueryException e) {
                     LOG.error("Error copying list entries.", e);
                     e.printStackTrace();
