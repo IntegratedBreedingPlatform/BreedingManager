@@ -188,8 +188,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     }
     
     public void reset(){
+    	this.parent.getWindow().setScrollTop(0);
         this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
-        getWindow().setScrollTop(0);
     }
 
 }
