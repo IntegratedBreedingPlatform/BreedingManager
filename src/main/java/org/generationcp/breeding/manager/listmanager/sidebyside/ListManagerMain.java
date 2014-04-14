@@ -301,11 +301,7 @@ public class ListManagerMain extends AbsoluteLayout implements
     	expandRight();
     }
     
-    public void addGermplasmToBuildNewListTable(Integer gid){
-    	//TODO
-    }
-
-	@Override
+    @Override
 	public void updateUIForDeletedList(GermplasmList list) {
 		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
 		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());

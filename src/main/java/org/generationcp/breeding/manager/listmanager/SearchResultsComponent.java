@@ -173,7 +173,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	             		List<Integer> gids = new ArrayList<Integer>();
 	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
 	             		for(Integer gid : gids){
-	             			listManagerMain.addGermplasmToBuildNewListTable(gid);
+	             			listManagerMain.addGemplasmToBuildList(gid);
 	             		}
 	             	}
 				}
