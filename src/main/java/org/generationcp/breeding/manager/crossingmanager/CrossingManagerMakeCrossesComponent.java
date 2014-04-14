@@ -250,7 +250,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         listDetailsTabSheet = new TabSheet();
         listDetailsTabSheet.setWidth("730px");
-        listDetailsTabSheet.setHeight("390px");
+        listDetailsTabSheet.setHeight("400px");
         listDetailsTabSheet.setVisible(false);
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
