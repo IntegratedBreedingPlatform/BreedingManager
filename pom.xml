@@ -309,6 +309,7 @@
 					<version>1.7</version>
 					<executions>
 						<execution>
+							<id>default-cli</id>
 							<phase>compile</phase>
 							<configuration>
 								<tasks>
