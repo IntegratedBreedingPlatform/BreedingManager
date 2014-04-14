@@ -22,13 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmGroupRelativesComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmGroupRelativesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     private int gid;
+    
+    private Table groupRelativesTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -39,37 +44,48 @@ public class GermplasmGroupRelativesComponent extends Table implements Initializ
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        GroupRelativesQueryFactory factory = new GroupRelativesQueryFactory(Integer.valueOf(this.gid));
+        initializeComponents();
+        layoutComponents();
+    }
+    
+    private void initializeComponents(){
+    	GroupRelativesQueryFactory factory = new GroupRelativesQueryFactory(Integer.valueOf(this.gid));
         LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
 
         // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
         container.addContainerProperty(GroupRelativesQuery.GID, String.class, null);
         container.addContainerProperty(GroupRelativesQuery.PREFERRED_NAME, String.class, null);
         
-        messageSource.setColumnHeader(this, (String) GroupRelativesQuery.GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, (String) GroupRelativesQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
-        
-        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
-        
-        this.setContainerDataSource(container);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
+        if(container.size() > 0){
+        	groupRelativesTable = new Table();
+        	
+	        groupRelativesTable.setColumnHeader((String) GroupRelativesQuery.GID, messageSource.getMessage(Message.GID_LABEL));
+	        groupRelativesTable.setColumnHeader((String) GroupRelativesQuery.PREFERRED_NAME, messageSource.getMessage(Message.PREFNAME_LABEL));
+	        
+	        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
+	        
+	        groupRelativesTable.setContainerDataSource(container);
+	        groupRelativesTable.setSelectable(true);
+	        groupRelativesTable.setMultiSelect(false);
+	        groupRelativesTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+	        groupRelativesTable.setColumnReorderingAllowed(true);
+	        groupRelativesTable.setColumnCollapsingAllowed(true);
+        } else{
+        	noDataAvailableLabel = new Label("There is no Group Relatives information for this germplasm.");
+        }
     }
 
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    private void layoutComponents(){
+    	if(groupRelativesTable != null){
+    		addComponent(groupRelativesTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, (String) GroupRelativesQuery.GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, (String) GroupRelativesQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
+        
     }
 
 }

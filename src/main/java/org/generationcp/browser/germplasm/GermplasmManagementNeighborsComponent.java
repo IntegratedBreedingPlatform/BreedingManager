@@ -22,14 +22,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmManagementNeighborsComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmManagementNeighborsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     
     private Integer gid;
+    
+    private Table managementNeighborsTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -40,37 +45,51 @@ public class GermplasmManagementNeighborsComponent extends Table implements Init
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ManagementNeighborsQueryFactory factory = new ManagementNeighborsQueryFactory(gid);
+        initializeComponents();
+        layoutComponents();
+    }
+    
+    private void initializeComponents(){
+    	ManagementNeighborsQueryFactory factory = new ManagementNeighborsQueryFactory(gid);
         LazyQueryContainer container = new LazyQueryContainer(factory, false, 50);
 
-        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
-        container.addContainerProperty(ManagementNeighborsQuery.GID, String.class, null);
-        container.addContainerProperty(ManagementNeighborsQuery.PREFERRED_NAME, String.class, null);
-        
-        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
-        
-        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
-        
-        this.setContainerDataSource(container);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
+        if(container.size() > 0){
+        	managementNeighborsTable = new Table();
+	        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
+	        container.addContainerProperty(ManagementNeighborsQuery.GID, String.class, null);
+	        container.addContainerProperty(ManagementNeighborsQuery.PREFERRED_NAME, String.class, null);
+	        
+	        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
+	        
+	        managementNeighborsTable.setContainerDataSource(container);
+	        if(container.size() < 10){
+	        	managementNeighborsTable.setPageLength(container.size());
+	        } else{
+	        	managementNeighborsTable.setPageLength(10);
+	        }
+	        managementNeighborsTable.setSelectable(true);
+	        managementNeighborsTable.setMultiSelect(false);
+	        managementNeighborsTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+	        managementNeighborsTable.setColumnReorderingAllowed(true);
+	        managementNeighborsTable.setColumnCollapsingAllowed(true);
+	        
+	        managementNeighborsTable.setColumnHeader((String) ManagementNeighborsQuery.GID, messageSource.getMessage(Message.GID_LABEL));
+	        managementNeighborsTable.setColumnHeader((String) ManagementNeighborsQuery.PREFERRED_NAME, messageSource.getMessage(Message.PREFNAME_LABEL));
+        } else{
+        	noDataAvailableLabel = new Label("There is no Management Neighbors Information for this germplasm.");
+        }
     }
-
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    
+    private void layoutComponents(){
+    	if(managementNeighborsTable != null){
+    		addComponent(managementNeighborsTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
 
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(this, (String) ManagementNeighborsQuery.PREFERRED_NAME, Message.PREFNAME_LABEL);
     }
 
 }

@@ -21,22 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmNamesComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmNamesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     
-    private static final String TYPE = "Type";
-    private static final String NAME = "Name";
-    private static final String DATE = "Date";
-    private static final String LOCATION = "Location";
-    private static final String TYPE_DESC = "Type Desc";
-    
     private GermplasmIndexContainer dataIndexContainer;
-    
     private GermplasmDetailModel gDetailModel;
+    
+    private Table namesTable;
+    private Label noDataAvailableLabel;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -48,30 +46,58 @@ public class GermplasmNamesComponent extends Table implements InitializingBean, 
     
     @Override
     public void afterPropertiesSet() {
-        IndexedContainer dataSourceNames = dataIndexContainer.getGermplasmNames(gDetailModel);
-        this.setContainerDataSource(dataSourceNames);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { NAME, DATE, LOCATION, TYPE, TYPE_DESC });
+    	initializeComponents();
+        initializeValues();
+        addListeners();
+        layoutComponents();
     }
     
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    private void initializeComponents(){
+    	IndexedContainer names = dataIndexContainer.getGermplasmNames(gDetailModel);
+    	
+    	if(names.getItemIds().isEmpty()){
+    		noDataAvailableLabel = new Label("There is no Names information for this germplasm.");
+    	} else{
+	    	namesTable = new Table();
+	    	namesTable.setWidth("90%");
+	    	namesTable.setContainerDataSource(names);
+	    	if(names.getItemIds().size() < 10){
+	    		namesTable.setPageLength(names.getItemIds().size());
+	    	} else{
+	    		namesTable.setPageLength(10);
+	    	}
+	    	namesTable.setSelectable(true);
+	    	namesTable.setMultiSelect(false);
+	        namesTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+	        namesTable.setColumnReorderingAllowed(true);
+	        namesTable.setColumnCollapsingAllowed(true);
+	        namesTable.setColumnHeaders(new String[] { messageSource.getMessage(Message.NAME_LABEL)
+	        		, messageSource.getMessage(Message.DATE_LABEL)
+	        		, messageSource.getMessage(Message.LOCATION_LABEL)
+	        		, messageSource.getMessage(Message.TYPE_LABEL)
+	        		, messageSource.getMessage(Message.TYPEDESC_LABEL)});
+    	}
+    }
+    
+    private void initializeValues(){
+    	
+    }
+    
+    private void addListeners(){
+    	
+    }
+    
+    private void layoutComponents(){
+    	if(namesTable != null){
+    		addComponent(namesTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
     
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, TYPE, Message.TYPE_LABEL);
-        messageSource.setColumnHeader(this, NAME, Message.NAME_LABEL);
-        messageSource.setColumnHeader(this, DATE, Message.DATE_LABEL);
-        messageSource.setColumnHeader(this, LOCATION, Message.LOCATION_LABEL);
-        messageSource.setColumnHeader(this, TYPE_DESC, Message.TYPEDESC_LABEL);
+        
     }
 
 }

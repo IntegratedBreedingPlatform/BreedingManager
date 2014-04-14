@@ -17,7 +17,7 @@ import org.generationcp.browser.study.listeners.StudySelectedTabChangeListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,7 +44,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
     private VerticalLayout layoutFactor;
     private VerticalLayout layoutEffect;
 
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     private StudyDetailComponent studyDetailComponent;
 
     private boolean fromUrl;                //this is true if this component is created by accessing the Study Details page directly from the URL
@@ -54,7 +54,7 @@ public class StudyAccordionMenu extends Accordion implements InitializingBean, I
 	private boolean h2hCall;
 
     public StudyAccordionMenu(int studyId, StudyDetailComponent studyDetailComponent,
-            StudyDataManagerImpl studyDataManager, boolean fromUrl,boolean h2hCall) {
+            StudyDataManager studyDataManager, boolean fromUrl,boolean h2hCall) {
         this.studyId = studyId;
         this.studyDataManager = studyDataManager;
         this.studyDetailComponent = studyDetailComponent;

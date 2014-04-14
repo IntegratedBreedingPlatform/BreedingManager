@@ -29,14 +29,14 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 
 
 public class DatasetExporter {
 
     private static final int CONDITION_LIST_HEADER_ROW_INDEX = 8;
     
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     private Integer studyId;
     private Integer datasetId;
     
@@ -48,13 +48,13 @@ public class DatasetExporter {
     private List <String> factors = new ArrayList<String>();
     private List <String> variates = new ArrayList<String>();
     
-    public DatasetExporter(StudyDataManagerImpl studyDataManager, Object traitDataManager, Integer studyId, Integer representationId) {
+    public DatasetExporter(StudyDataManager studyDataManager, Object traitDataManager, Integer studyId, Integer representationId) {
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.datasetId = representationId;
     }
    
-    public DatasetExporter(StudyDataManagerImpl studyDataManager, Integer studyId, Integer datasetId){
+    public DatasetExporter(StudyDataManager studyDataManager, Integer studyId, Integer datasetId){
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;
         this.datasetId = datasetId;

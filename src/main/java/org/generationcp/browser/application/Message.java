@@ -378,4 +378,6 @@ public enum Message {
      ,CANCEL
      ,SAVE_IN_WITH_COLON
      ,CHANGE_LOCATION
+     
+     ,CLOSE_ALL_TABS
 }

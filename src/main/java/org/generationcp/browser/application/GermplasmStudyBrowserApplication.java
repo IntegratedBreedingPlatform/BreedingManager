@@ -21,6 +21,7 @@ import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
+import org.generationcp.browser.germplasm.GermplasmDetailsComponentTree;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
@@ -35,12 +36,15 @@ import org.generationcp.browser.study.StudyDetailComponent;
 import org.generationcp.browser.study.StudyTreeComponent;
 import org.generationcp.browser.util.awhere.AWhereFormComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -87,6 +91,12 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private VerticalLayout rootLayoutForGermplasmListBrowser;
     
     @Autowired
+    private DynamicManagerFactoryProvider managerFactoryProvider;
+    
+    @Autowired
+    private WorkbenchDataManagerImpl workbenchDataManager;
+    
+    @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     private UpdateComponentLabelsAction messageSourceListener;
@@ -94,7 +104,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     private ApplicationContext applicationContext;
     
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     
     private GermplasmListBrowserMain germplasmListBrowserMain;
     
@@ -134,6 +144,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         window.setSizeUndefined();
 
         TabSheet tabSheet = new TabSheet();
+        tabSheet.setHeight("1000px");
         // add listener triggered by selecting tabs, this listener will create
         // the content for the tabs dynamically as needed
         tabSheet.addListener(new GermplasmSelectedTabChangeListener(this));
@@ -304,9 +315,10 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      int gid = Integer.parseInt(gidPart);
                      Window germplasmDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASM_DETAILS_TEXT) + " " + gid);  // "Germplasm Details"
                      germplasmDetailsWindow.setSizeUndefined();
+                     germplasmDetailsWindow.addStyleName("graybg");
                      GermplasmQueries queries = new GermplasmQueries();
-                     GermplasmIndexContainer container = new GermplasmIndexContainer(queries);
-                     germplasmDetailsWindow.addComponent(new GermplasmDetail(gid, queries, container, null, null, true));
+                     germplasmDetailsWindow.addComponent(new GermplasmDetailsComponentTree(gid, queries));
+                     germplasmDetailsWindow.getContent().addStyleName("graybg");
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {
@@ -441,18 +453,46 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
     @Override
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
-        super.doOnRequestStart(request, response);
+       
         
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
         
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+        	
+        /**	  Boolean lastOpenedProjectChanged = true;
+          	try {
+      			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
+      		} catch (MiddlewareQueryException e) {
+      			e.printStackTrace();
+      		}
+          	
+          	if (lastOpenedProjectChanged){	
+          		 try{
+          	        	managerFactoryProvider.close();
+          	        }catch(Exception e){
+          		        e.printStackTrace();	
+          	        }
+      			close();
+      			request.getSession().invalidate();
+      		
+      		}**/
+        	
+        	
+            HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
+        
+        super.doOnRequestStart(request, response);
     }
     
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestEnd(request, response);
+        
+        try{
+        	managerFactoryProvider.close();
+        }catch(Exception e){
+	        e.printStackTrace();	
+        }
         
         LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
         

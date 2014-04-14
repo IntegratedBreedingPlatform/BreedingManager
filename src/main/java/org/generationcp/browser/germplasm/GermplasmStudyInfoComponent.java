@@ -31,12 +31,13 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmStudyInfoComponent extends Table implements InitializingBean, InternationalizableComponent {
+public class GermplasmStudyInfoComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
 
     private static final long serialVersionUID = 1L;
     private final static Logger LOG = LoggerFactory.getLogger(GermplasmStudyInfoComponent.class);
@@ -47,9 +48,10 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
 	public static final String STUDY_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/study-";
     
     private GermplasmIndexContainer dataIndexContainer;
-    
     private GermplasmDetailModel gDetailModel;
     
+    private Table studiesTable;
+    private Label noDataAvailableLabel;
     private boolean fromUrl;                //this is true if this component is created by accessing the Germplasm Details page directly from the URL
     
     @Autowired
@@ -66,33 +68,54 @@ public class GermplasmStudyInfoComponent extends Table implements InitializingBe
     
     @Override
     public void afterPropertiesSet() {
-        IndexedContainer dataSourceStudyInformation = dataIndexContainer.getGermplasmStudyInformation(gDetailModel);
-        this.setContainerDataSource(dataSourceStudyInformation);
-        setSelectable(true);
-        setMultiSelect(false);
-        setSizeFull();
-        setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
-        setColumnReorderingAllowed(true);
-        setColumnCollapsingAllowed(true);
-        setColumnHeaders(new String[] { STUDY_ID, STUDY_NAME, DESCRIPTION});
-        setVisibleColumns(new String[] { GermplasmIndexContainer.STUDY_NAME, GermplasmIndexContainer.STUDY_DESCRIPTION});
-        
-        if (!fromUrl) {
-            addListener(new StudyItemClickListener(this));
+        initializeComponents();
+        addListeners();
+        layoutComponents();
+    }
+    
+    private void initializeComponents(){
+    	IndexedContainer studies = dataIndexContainer.getGermplasmStudyInformation(gDetailModel);
+    	
+    	if(!studies.getItemIds().isEmpty()){
+    		studiesTable = new Table();
+    		studiesTable.setWidth("90%");
+	        studiesTable.setContainerDataSource(studies);
+	        if(studies.getItemIds().size() < 10){
+	        	studiesTable.setPageLength(studies.getItemIds().size());
+	        } else{
+	        	studiesTable.setPageLength(10);
+	        }
+	        studiesTable.setSelectable(true);
+	        studiesTable.setMultiSelect(false);
+	        studiesTable.setImmediate(true); // react at once when something is selected turn on column reordering and collapsing
+	        studiesTable.setColumnReorderingAllowed(true);
+	        studiesTable.setColumnCollapsingAllowed(true);
+	        studiesTable.setColumnHeaders(new String[] { messageSource.getMessage(Message.STUDY_ID_LABEL)
+	        		, messageSource.getMessage(Message.STUDY_NAME_LABEL)
+	        		, messageSource.getMessage(Message.DESCRIPTION_LABEL)});
+	        studiesTable.setVisibleColumns(new String[] { GermplasmIndexContainer.STUDY_NAME, GermplasmIndexContainer.STUDY_DESCRIPTION});
+    	} else{
+    		noDataAvailableLabel = new Label("There is no Study Information for this germplasm.");
+    	}
+    }
+    
+    private void addListeners(){
+    	if (!fromUrl && studiesTable != null) {
+            studiesTable.addListener(new StudyItemClickListener(this));
         }
     }
     
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
+    private void layoutComponents(){
+    	if(studiesTable != null){
+    		addComponent(studiesTable);
+    	} else{
+    		addComponent(noDataAvailableLabel);
+    	}
     }
     
     @Override
     public void updateLabels() {
-        messageSource.setColumnHeader(this, STUDY_ID, Message.STUDY_ID_LABEL);
-        messageSource.setColumnHeader(this, STUDY_NAME, Message.STUDY_NAME_LABEL);
-        messageSource.setColumnHeader(this, DESCRIPTION, Message.DESCRIPTION_LABEL);
+        
     }
     
     public void studyItemClickAction(ItemClickEvent event, Integer studyId) {

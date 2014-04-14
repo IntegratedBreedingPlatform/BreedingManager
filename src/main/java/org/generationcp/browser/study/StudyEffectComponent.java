@@ -23,7 +23,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.DatasetReference;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private static final long serialVersionUID = 116672292965099233L;
     
     private final Accordion studyInfoAccordion;
-    private final StudyDataManagerImpl studyDataManager;
+    private final StudyDataManager studyDataManager;
     private final Integer studyId;
     private final Accordion accordion;
     private ListSelect datasetList;
@@ -61,7 +61,7 @@ public class StudyEffectComponent extends VerticalLayout implements Initializing
     private SimpleResourceBundleMessageSource messageSource;
 	private boolean h2hCall;
 
-    public StudyEffectComponent(StudyDataManagerImpl studyDataManager, int studyId, Accordion accordion, boolean fromUrl,boolean h2hCall) {
+    public StudyEffectComponent(StudyDataManager studyDataManager, int studyId, Accordion accordion, boolean fromUrl,boolean h2hCall) {
         this.studyInfoAccordion = accordion;
         this.studyDataManager = studyDataManager;
         this.studyId = studyId;

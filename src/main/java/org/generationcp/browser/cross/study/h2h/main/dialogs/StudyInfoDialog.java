@@ -9,7 +9,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,7 +38,7 @@ public class StudyInfoDialog extends Window implements InitializingBean, Interna
     private Button cancelButton;
     private Integer studyId;
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
 
 	private boolean h2hCall;
     

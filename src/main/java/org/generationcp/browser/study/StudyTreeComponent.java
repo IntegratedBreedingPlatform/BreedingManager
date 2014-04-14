@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.util.StudyBrowserTabCloseHandler;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.study.listeners.StudyTreeCollapseListener;
 import org.generationcp.browser.study.listeners.StudyTreeExpandListener;
 import org.generationcp.browser.study.util.StudyTreeUtil;
-import org.generationcp.browser.util.SelectedTabCloseHandler;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -33,10 +33,9 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.FolderReference;
 import org.generationcp.middleware.domain.dms.Reference;
-import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -54,6 +54,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -68,15 +69,18 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public static final String CENTRAL = "CENTRAL";
     
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
     
     private VerticalLayout treeContainer;
     private Tree studyTree;
-    private static TabSheet tabSheetStudy;
-    private HorizontalLayout studyBrowserMainLayout;
+    private TabSheet tabSheetStudy;
+    
+    private StudyBrowserMain studyBrowserMain;
+    private StudyBrowserMainLayout studyBrowserMainLayout;
     
     private Label controlButtonsHeading;
     private HorizontalLayout controlButtonsLayout;
+    private HorizontalLayout controlButtonsSubLayout;
     private Button addFolderBtn;
     private Button deleteFolderBtn;
     private Button renameFolderBtn;
@@ -91,12 +95,9 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 
-    static{
-        tabSheetStudy = new TabSheet();
-    }
-    
-    public StudyTreeComponent(HorizontalLayout studyBrowserMainLayout) {
-        this.studyBrowserMainLayout = studyBrowserMainLayout;
+    public StudyTreeComponent(StudyBrowserMain studyBrowserMain) {
+        this.studyBrowserMain = studyBrowserMain;
+        this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
     }
     
     // Called by StudyButtonClickListener
@@ -268,11 +269,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
-            studyBrowserMainLayout.addComponent(tabSheetStudy);
-            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 1.0f);
+            studyBrowserMainLayout.addStudyInfoTabSheet(tabSheetStudy);
+            studyBrowserMainLayout.showDetailsLayout();
             tabSheetStudy.setSelectedTab(layout);
-            tabSheetStudy.setCloseHandler(new SelectedTabCloseHandler());
-            
+            tabSheetStudy.setCloseHandler(new StudyBrowserTabCloseHandler(studyBrowserMainLayout));
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
             tabSheetStudy.setSelectedTab(tab.getComponent());
@@ -355,11 +355,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 		controlButtonsHeading.setStyleName(Bootstrap.Typography.H4.styleName());
 		controlButtonsHeading.setWidth("177px");
 		
-		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
+		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription(messageSource.getMessage(Message.RENAME_ITEM));
-        renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        renameFolderBtn.setWidth("40px");
+        renameFolderBtn.setDescription("Rename Item");
+        renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        renameFolderBtn.setWidth("25px");
+        renameFolderBtn.setHeight("30px");
         renameFolderBtn.setEnabled(false);
         renameFolderBtn.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -371,11 +372,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
         
-        addFolderBtn = new Button("<span class='glyphicon glyphicon-plus' style='right: 2px'></span>");
+        addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>");
         addFolderBtn.setHtmlContentAllowed(true);
         addFolderBtn.setDescription("Add New Folder");
-        addFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        addFolderBtn.setWidth("40px");
+        addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        addFolderBtn.setWidth("25px");
+        addFolderBtn.setHeight("30px");
         addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -385,11 +387,12 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
         
-        deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='right: 2px'></span>");
+        deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
-        deleteFolderBtn.setDescription("Delete Selected Folder");
-        deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
-        deleteFolderBtn.setWidth("40px");
+        deleteFolderBtn.setDescription("Delete Selected List/Folder");
+        deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        deleteFolderBtn.setWidth("25px");
+        deleteFolderBtn.setHeight("30px");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -400,12 +403,22 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             }
         });
         
+        controlButtonsSubLayout = new HorizontalLayout();
+        controlButtonsSubLayout.addComponent(addFolderBtn);
+        controlButtonsSubLayout.addComponent(renameFolderBtn);
+        controlButtonsSubLayout.addComponent(deleteFolderBtn);
+        controlButtonsSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
+        controlButtonsSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
+        controlButtonsSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
+        
         controlButtonsLayout = new HorizontalLayout();
+        controlButtonsLayout.setWidth("304px");
+        controlButtonsLayout.setSpacing(true);
+        
         controlButtonsLayout.addComponent(controlButtonsHeading);
-        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
-        controlButtonsLayout.addComponent(renameFolderBtn);
-        controlButtonsLayout.addComponent(addFolderBtn);
-        controlButtonsLayout.addComponent(deleteFolderBtn);
+        controlButtonsLayout.addComponent(controlButtonsSubLayout);
+        controlButtonsLayout.setComponentAlignment(controlButtonsHeading, Alignment.BOTTOM_LEFT);
+        controlButtonsLayout.setComponentAlignment(controlButtonsSubLayout, Alignment.BOTTOM_RIGHT);
         
 	}
     
@@ -421,7 +434,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     }
 
     
-    public static TabSheet getTabSheetStudy() {
+    public TabSheet getTabSheetStudy() {
         return tabSheetStudy;
     }
     

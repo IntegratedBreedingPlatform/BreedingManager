@@ -148,15 +148,17 @@ public class GermplasmDerivativeNeighborhoodComponent extends VerticalLayout imp
         addComponent(derivativeNeighborhoodTree);
         derivativeNeighborhoodTree.addListener(new GermplasmItemClickListener(this));
 
-        derivativeNeighborhoodTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-
-            private static final long serialVersionUID = 3442425534732855473L;
-
-            @Override
-            public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.CLICK_TO_VIEW_GERMPLASM_DETAILS);
-            }
-        });
+        if(mainLayout != null){
+	        derivativeNeighborhoodTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+	
+	            private static final long serialVersionUID = 3442425534732855473L;
+	
+	            @Override
+	            public String generateDescription(Component source, Object itemId, Object propertyId) {
+	                return messageSource.getMessage(Message.CLICK_TO_VIEW_GERMPLASM_DETAILS);
+	            }
+	        });
+        }
         
         displayButtonClickAction();
     }

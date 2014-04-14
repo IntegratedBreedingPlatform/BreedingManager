@@ -1,4 +1,4 @@
-@import url(../vaadin-retro/styles.css);
+@import url(../vaadin-retro/styles-min.css);
 
 .gcp-window-title {
     text-transform: uppercase;
@@ -177,17 +177,40 @@
 	background-repeat: no-repeat;
 }
 
+/* COMPONENT TREE */
+.component-tree {
+	background-color: #f6f6f6;
+	border: solid 1px #e6e6e6;
+	border-radius: 3px;
+}
+
+.componenttree-parent > div > div {
+	background: #e6e6e6;
+	margin-left: 5px;
+	margin-right: 5px;
+	border-radius: 3px;
+}
+
 .componenttree-children {
 	padding-left: 4px;
-	margin-left: 20px;
+	background: #f6f6f6;
 }
 .componenttree-parent {
-	padding: 4px 0 4px 0px;
+	padding: 8px 0 4px 0px;
+}
+.componenttree-parent div.v-label-h4{
+	text-transform:uppercase;
 }
 .componenttree-child {
-	padding: 4px 0 4px 19px;
-	margin-left: 20px;
+	padding: 5px 0 5px 15px;
+	margin-left: 9px;
 }
+
+/* Expand/collapse button: */
+.componenttree-expander {
+	float: left;
+	margin-left: 15px;
+	padding: 10px;
 }
 
 /* context menu tools button */
@@ -231,3 +254,44 @@
 .v-tabsheet-content{position:absolute}
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
 .v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
+
+.overflow_x_auto {
+	overflow-x: auto !important;
+}
+
+.overflow_y_auto {
+	overflow-y: auto !important;
+}
+
+.overflow_x_scroll {
+	overflow-x: scroll !important;
+}
+
+.overflow_y_scroll {
+	overflow-y: scroll !important;
+}
+
+.overflow_x_hidden {
+	overflow-x: hidden !important;
+}
+
+.overflow_y_hidden {
+	overflow-y: hidden !important;
+}
+
+
+.overflow_hidden {
+	overflow: hidden !important;
+}
+
+.overflow_auto {
+	overflow: auto !important;
+}
+
+.overflow_scroll {
+	overflow: scroll !important;
+}
+
+.headerLabelLayout .v-caption {
+	height: 0px;	
+}

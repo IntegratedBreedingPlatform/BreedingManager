@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
+import org.generationcp.browser.cross.study.util.StudyBrowserTabCloseHandler;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
 import org.generationcp.browser.study.listeners.StudyItemClickListener;
 import org.generationcp.browser.util.Util;
@@ -24,11 +25,11 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.StudyDataManagerImpl;
 import org.generationcp.middleware.domain.dms.Reference;
 import org.generationcp.middleware.domain.dms.Study;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Season;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
@@ -56,12 +56,13 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     private VerticalLayout mainLayout;
     private VerticalLayout searchResultLayout;
-    private static TabSheet tabSheetStudy;
+    private TabSheet tabSheetStudy;
 
     private StudySearchInputComponent searchInputComponent;
     private Table searchResultTable;
     
-    private HorizontalLayout studyBrowserMainLayout;
+    private StudyBrowserMain studyBrowserMain;
+    private StudyBrowserMainLayout studyBrowserMainLayout;
 
     private StudyDataIndexContainer studyDataIndexContainer;
     
@@ -69,17 +70,18 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
     private SimpleResourceBundleMessageSource messageSource;
 
     @Autowired
-    private StudyDataManagerImpl studyDataManager;
+    private StudyDataManager studyDataManager;
 
-    public StudySearchMainComponent(HorizontalLayout studyBrowserMainLayout) throws InternationalizableException {
-        this.studyBrowserMainLayout = studyBrowserMainLayout;
+    public StudySearchMainComponent(StudyBrowserMain studyBrowserMain) {
+        this.studyBrowserMain = studyBrowserMain;
+        this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
     }
 
     @Override
     public void afterPropertiesSet() throws Exception { 
 
         studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, 0);
-        tabSheetStudy = StudyTreeComponent.getTabSheetStudy();
+        tabSheetStudy = studyBrowserMain.getCombinedStudyTreeComponent().getTabSheetStudy();
 
         setSpacing(true);
         mainLayout = new VerticalLayout();
@@ -95,8 +97,8 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
         addComponent(mainLayout);
         
-        studyBrowserMainLayout.addComponent(this);
-        studyBrowserMainLayout.setExpandRatio(this, 1.0f);  
+        /*studyDetailsLayout.addComponent(this);
+        studyDetailsLayout.setExpandRatio(this, 1.0f);  */
 
     }
 
@@ -196,9 +198,10 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
             Tab tab = tabSheetStudy.addTab(layout, getStudyName(studyId), null);
             tab.setClosable(true);
 
-            studyBrowserMainLayout.addComponent(tabSheetStudy);
-            studyBrowserMainLayout.setExpandRatio(tabSheetStudy, 0.75f);
+            studyBrowserMainLayout.addStudyInfoTabSheet(tabSheetStudy);
+            studyBrowserMainLayout.showDetailsLayout();
             tabSheetStudy.setSelectedTab(layout);
+            tabSheetStudy.setCloseHandler(new StudyBrowserTabCloseHandler(studyBrowserMainLayout));
         } else {
             Tab tab = Util.getTabAlreadyExist(tabSheetStudy, getStudyName(studyId));
             tabSheetStudy.setSelectedTab(tab.getComponent());
