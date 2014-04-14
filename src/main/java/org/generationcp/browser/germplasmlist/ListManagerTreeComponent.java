@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -38,6 +39,7 @@ import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerTreeComponent extends VerticalLayout implements
@@ -95,8 +97,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	setSpacing(true);
 		
     	heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.setStyleName(Bootstrap.Typography.H4.styleName());
+		heading.setValue("List Location");
+		heading.setStyleName(Bootstrap.Typography.H6.styleName());
 		heading.setWidth("90px");
     	
 		if (this.germplasmListBrowserMainLayout != null){
@@ -133,11 +135,12 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	}
 
 	protected void initializeButtonPanel() {
-		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
+		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
         renameFolderBtn.setDescription("Rename Item");
-        renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        renameFolderBtn.setWidth("40px");
+        renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        renameFolderBtn.setWidth("25px");
+        renameFolderBtn.setHeight("30px");
         renameFolderBtn.setEnabled(false);
         renameFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -147,11 +150,12 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             }
         });
         
-        addFolderBtn = new Button("<span class='glyphicon glyphicon-plus' style='right: 2px'></span>");
+        addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>");
         addFolderBtn.setHtmlContentAllowed(true);
         addFolderBtn.setDescription("Add New Folder");
-        addFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        addFolderBtn.setWidth("40px");
+        addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        addFolderBtn.setWidth("25px");
+        addFolderBtn.setHeight("30px");
         addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -162,11 +166,12 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         });
         
 
-        deleteFolderBtn = new Button("<span class='glyphicon glyphicon-trash' style='right: 2px'></span>");
+        deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
         deleteFolderBtn.setDescription("Delete Selected List/Folder");
-        deleteFolderBtn.setStyleName(Bootstrap.Buttons.DANGER.styleName());
-        deleteFolderBtn.setWidth("40px");
+        deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
+        deleteFolderBtn.setWidth("25px");
+        deleteFolderBtn.setHeight("30px");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -178,11 +183,17 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         
         controlButtonsLayout = new HorizontalLayout();
         
+        HorizontalLayout buttonsPanel = new HorizontalLayout();
+        buttonsPanel.addComponent(addFolderBtn);
+        buttonsPanel.addComponent(renameFolderBtn);
+        buttonsPanel.addComponent(deleteFolderBtn);
+
+        controlButtonsLayout.setSizeFull();
+        controlButtonsLayout.setSpacing(true);
         controlButtonsLayout.addComponent(heading);
-        controlButtonsLayout.addComponent(new Label("&nbsp;&nbsp;",Label.CONTENT_XHTML));
-        controlButtonsLayout.addComponent(renameFolderBtn);
-        controlButtonsLayout.addComponent(addFolderBtn);
-        controlButtonsLayout.addComponent(deleteFolderBtn);
+        controlButtonsLayout.addComponent(buttonsPanel);
+        controlButtonsLayout.setComponentAlignment(heading, Alignment.MIDDLE_LEFT);
+        controlButtonsLayout.setComponentAlignment(buttonsPanel, Alignment.MIDDLE_RIGHT);
 	}
 
 	@Override
