@@ -340,7 +340,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         
         refreshButton = new Button(); // "Refresh"
         refreshButton.setData(REFRESH_BUTTON_ID);
-        refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+
         
         refreshButton.addListener(new StudyButtonClickListener(this));
         addComponent(refreshButton);
