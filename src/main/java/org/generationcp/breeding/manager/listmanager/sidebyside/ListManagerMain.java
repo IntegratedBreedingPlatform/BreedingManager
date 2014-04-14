@@ -165,6 +165,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         browserSearchLayout = new AbsoluteLayout();
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
+        browserSearchLayout.setHeight("425px");
         
         toggleBuildNewListButton = new ToogleButton("Toggle Build New List Pane");
         
