@@ -56,4 +56,15 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		return Bootstrap.Typography.H4.styleName();
 	}
 
+	@Override
+	protected boolean doIncludeToogleButton() {
+		return false;
+	}
+
+	@Override
+	protected void toogleListTreePane() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.ToogleButton;
+import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -167,7 +167,7 @@ public class ListManagerMain extends AbsoluteLayout implements
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
         browserSearchLayout.setHeight("425px");
         
-        toggleBuildNewListButton = new ToogleButton("Toggle Build New List Pane");
+        toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane");
         
         buildNewListComponent = new BuildNewListComponent(this);
         
@@ -333,6 +333,17 @@ public class ListManagerMain extends AbsoluteLayout implements
 		browseListsComponent.getListTreeComponent().createTree();
 	}
 	
+	public void addGemplasmToBuildList(Integer gid) {
+		buildNewListComponent.addGermplasm(gid);
+		expandRight();
+	}
+
+	@Override
+	public void toggleListTreeComponent() {
+		this.browseListsComponent.toggleListTreeComponent();
+	}
+	
+	
 	/* SETTERS AND GETTERS */
 	public BuildNewListComponent getBuildNewListComponent() {
 		return buildNewListComponent;
@@ -342,9 +353,5 @@ public class ListManagerMain extends AbsoluteLayout implements
 		return browseListsComponent;
 	}
 
-	public void addGemplasmToBuildList(Integer gid) {
-		buildNewListComponent.addGermplasm(gid);
-		expandRight();
-	}
-	
+
 }

@@ -59,4 +59,15 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 		return true;
 	}
 
+	@Override
+	protected boolean doIncludeToogleButton() {
+		return false;
+	}
+
+	@Override
+	protected void toogleListTreePane() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

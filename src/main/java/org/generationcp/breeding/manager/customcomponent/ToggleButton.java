@@ -9,13 +9,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ToogleButton  extends Button implements InitializingBean, InternationalizableComponent {
+public class ToggleButton  extends Button implements InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 1L;
 	
 	String description;
 	
-	public ToogleButton(String description){
+	public ToggleButton(String description){
 		this.description = description;
 	}
 		
@@ -32,7 +32,7 @@ public class ToogleButton  extends Button implements InitializingBean, Internati
 		setDescription(description);
 		setStyleName(Reindeer.BUTTON_LINK);
 		setWidth("25px");
-		setHeight("30px");
+		setHeight("20px");
 	}
 	
 }

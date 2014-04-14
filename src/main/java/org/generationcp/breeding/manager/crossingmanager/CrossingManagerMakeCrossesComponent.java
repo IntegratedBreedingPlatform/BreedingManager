@@ -377,4 +377,10 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 		
 	}
+
+	@Override
+	public void toggleListTreeComponent() {
+		// TODO Auto-generated method stub
+		
+	}
 }
