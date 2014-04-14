@@ -28,7 +28,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected String getTreeHeading() {
-		return messageSource.getMessage(Message.AVAILABLE_LISTS);
+		return messageSource.getMessage(Message.LISTS);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	
 	@Override
 	protected String getTreeHeadingStyleName() {
-		return Bootstrap.Typography.H6.styleName();
+		return Bootstrap.Typography.H4.styleName();
 	}
 
 }

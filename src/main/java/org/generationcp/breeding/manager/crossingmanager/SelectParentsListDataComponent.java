@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
@@ -95,8 +96,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public void instantiateComponents() {
 		retrieveListDetails();
 		
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL).toUpperCase());
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H5.styleName());
+		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		

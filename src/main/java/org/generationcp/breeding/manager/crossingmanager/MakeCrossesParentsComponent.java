@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
@@ -133,15 +134,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         setSpacing(true);
         
         parentListsLabel = new Label(messageSource.getMessage(Message.PARENTS_LISTS));
-        parentListsLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+        parentListsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
         
         lblFemaleParent= new Label(messageSource.getMessage(Message.FEMALE));
-        lblFemaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
+        lblFemaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
+        lblFemaleParent.addStyleName(AppConstants.CssStyles.BOLD);
         
         initializeFemaleParentsTable();
         
         crossingMethodLabel = new Label(messageSource.getMessage(Message.CROSSING_METHOD));
-        crossingMethodLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+        crossingMethodLabel.addStyleName(Bootstrap.Typography.H5.styleName());
+        crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setNewItemsAllowed(false);
@@ -155,7 +158,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 
         lblMaleParent=new Label(messageSource.getMessage(Message.MALE));
-        lblMaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
+        lblMaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
+        lblMaleParent.addStyleName(AppConstants.CssStyles.BOLD);
         
         initializeMaleParentsTable();
         

@@ -329,10 +329,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		setSpacing(true);
 		
 		lblReviewCrosses = new Label(messageSource.getMessage(Message.REVIEW_CROSSES));
-		lblReviewCrosses.addStyleName(Bootstrap.Typography.H3.styleName());
+		lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
 		
 		lblCrossMade = new Label();
-		lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
+		lblCrossMade.addStyleName(Bootstrap.Typography.H5.styleName());
 		lblCrossMade.addStyleName(AppConstants.CssStyles.BOLD);
 		lblCrossMade.setWidth("120px");
 		
