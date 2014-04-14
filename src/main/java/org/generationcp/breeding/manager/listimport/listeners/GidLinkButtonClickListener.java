@@ -95,7 +95,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         	LOG.error("Error with getting preferred name of " + gid, ex);
         }
         
-        String windowTitle = "Germplasm Details: " + "(" + gid + ")";
+        String windowTitle = "Germplasm Details: " + "(GID: " + gid + ")";
         if(preferredName != null){
         	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
         }
