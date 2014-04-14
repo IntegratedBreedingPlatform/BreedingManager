@@ -65,7 +65,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
     private static final long serialVersionUID = -1197900610042529900L;
     private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
-    private static final Integer MAX_LEADING_ZEROS = 10;
+    private static final Integer MAX_LEADING_ZEROS = 9;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -216,7 +216,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
     							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
     					return;
-    				} else if(startNumberTextField.getValue().toString().length() > 10){
+    				} else if(startNumberTextField.getValue().toString().length() > 9){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
     							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
     					return;

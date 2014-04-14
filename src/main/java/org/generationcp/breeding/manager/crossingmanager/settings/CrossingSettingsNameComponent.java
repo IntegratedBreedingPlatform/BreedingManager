@@ -38,7 +38,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 	private static final int SEPARATOR_MAX_CHARS_LENGTH = 3;
 	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
-	private static final Integer MAX_LEADING_ZEROS = 10;
+	private static final Integer MAX_LEADING_ZEROS = 9;
 	private static final Integer MAX_PREFIX_SUFFIX_LENGTH = 12;
 	
 	@Autowired
@@ -318,7 +318,7 @@ public class CrossingSettingsNameComponent extends AbsoluteLayout implements
 		
 		if (doSpecifyNameStartNumber()){
 			if (!StringUtils.isEmpty(startNumberString)){
-				if(startNumberString.length() > 10){
+				if(startNumberString.length() > 9){
 					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT) 
 							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
 					return false;
