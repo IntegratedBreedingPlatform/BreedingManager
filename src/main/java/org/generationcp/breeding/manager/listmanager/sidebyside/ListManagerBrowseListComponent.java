@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
-import org.generationcp.breeding.manager.customcomponent.ToogleButton;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -17,9 +16,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -38,13 +34,10 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
-	private VerticalLayout rightLayout;
 	
 	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
-	private Button toggleLeftPaneButton;
-	
-	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("250");
+	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("235");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
 	
 	private ListManagerMain source;
@@ -84,8 +77,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-				
-		toggleLeftPaneButton = new ToogleButton("Toggle List Manager Tree");
+		
 		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
 	}
@@ -97,20 +89,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
 	@Override
 	public void addListeners() {
-		toggleLeftPaneButton.addListener(new ClickListener(){
 
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
-					collapseLeft();
-				} else {
-					expandLeft();
-				}
-			}
-			
-		});
 	}
 
 	@Override
@@ -118,9 +97,9 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		
 		//left pane
 		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("250px");
-		leftLayout.addComponent(listTreeComponent,"top:10px;left:30px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
+		leftLayout.setWidth("235px");
+		leftLayout.addComponent(listTreeComponent,"top:0px;left:15px");
+		
 		
 		hSplitPanel.setFirstComponent(leftLayout);
 		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
@@ -128,7 +107,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	}
 	
     private void expandLeft(){
-    	leftLayout.setWidth("250px");
+    	leftLayout.setWidth("235px");
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
     }
 
@@ -146,6 +125,14 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
                     Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
         }
 	}
+    
+	protected void toggleListTreeComponent(){
+		if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
+			collapseLeft();
+		} else {
+			expandLeft();
+		}
+	}
 
 	public ListManagerDetailsLayout getListDetailsLayout() {
 		return listManagerDetailsLayout;
@@ -154,4 +141,5 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	public ListManagerTreeComponent getListTreeComponent(){
 		return listTreeComponent;
 	}
+	
 }

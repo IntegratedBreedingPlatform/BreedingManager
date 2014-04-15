@@ -12,6 +12,8 @@ import java.util.Map;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -104,6 +106,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted="";
 	
+	private Label listEntriesLabel;
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
 	private Button toolsButton;
@@ -112,7 +115,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private Label noListDataLabel;
 	
 	private HorizontalLayout headerLayout;
-	private HorizontalLayout headerLayoutLeft;
+	private HorizontalLayout subHeaderLayout;
 	
 	//Menu for tools button
 	private ContextMenu menu; 
@@ -172,9 +175,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
-
-    private static final ThemeResource ICON_LOCK = new ThemeResource("images/lock.png");
-    private static final ThemeResource ICON_UNLOCK = new ThemeResource("images/unlock.png");	
 	
     private static String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
     
@@ -214,6 +214,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	@Override
 	public void instantiateComponents() {
+		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		listEntriesLabel.setWidth("120px");
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
 		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
@@ -258,14 +262,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
             noListDataLabel.setWidth("250px");
 		} else {
-        	totalListEntriesLabel = new Label("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " 
-        		 + "  " + listEntriesCount, Label.CONTENT_XHTML);
+        	totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+        		 + "  <b>" + listEntriesCount + "</b>", Label.CONTENT_XHTML);
         	totalListEntriesLabel.setWidth("135px");
         }
 	
 	    unlockButton = new Button();
         unlockButton.setData(UNLOCK_BUTTON_ID);
-        unlockButton.setIcon(ICON_LOCK);
+        unlockButton.setIcon(AppConstants.Icons.ICON_LOCK);
         unlockButton.setWidth("140px");
         unlockButton.setDescription(LOCK_TOOLTIP);
         unlockButton.setStyleName(Reindeer.BUTTON_LINK);
@@ -273,7 +277,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
         lockButton = new Button();
         lockButton.setData(LOCK_BUTTON_ID);
-        lockButton.setIcon(ICON_UNLOCK);
+        lockButton.setIcon(AppConstants.Icons.ICON_UNLOCK);
         lockButton.setWidth("140px");
         lockButton.setDescription(LOCK_TOOLTIP);
         lockButton.setStyleName(Reindeer.BUTTON_LINK);
@@ -556,42 +560,47 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		setSpacing(true);
 		
 		headerLayout = new HorizontalLayout();
-		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		
-		headerLayoutLeft = new HorizontalLayout();
-		headerLayoutLeft.setSpacing(true);
-		headerLayoutLeft.addComponent(viewHeaderButton);
-		headerLayoutLeft.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_LEFT);
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
+		headerLayout.addComponent(headingLayout);
+		headerLayout.addComponent(viewHeaderButton);
+		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.BOTTOM_RIGHT);
 		
 		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
-			headerLayoutLeft.addComponent(editHeaderButton);
-			headerLayoutLeft.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
-		}
-		
-		if(listEntriesCount == 0) {
-			headerLayoutLeft.addComponent(noListDataLabel); 
-			headerLayoutLeft.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
-		} else{
-			headerLayoutLeft.addComponent(totalListEntriesLabel);
-			headerLayoutLeft.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+			headerLayout.addComponent(editHeaderButton);
+			headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
 		}
 		
 		if(germplasmList.isLocalList() && localUserIsListOwner()){
-			headerLayoutLeft.addComponent(lockButton);
-			headerLayoutLeft.setComponentAlignment(lockButton, Alignment.MIDDLE_LEFT);
+			headerLayout.addComponent(lockButton);
+			headerLayout.setComponentAlignment(lockButton, Alignment.BOTTOM_LEFT);
 	
-			headerLayoutLeft.addComponent(unlockButton);
-			headerLayoutLeft.setComponentAlignment(unlockButton, Alignment.MIDDLE_LEFT);
+			headerLayout.addComponent(unlockButton);
+			headerLayout.setComponentAlignment(unlockButton, Alignment.BOTTOM_LEFT);
 	
 			showHideOptionsForLocked();
 		}
 		
-		headerLayout.addComponent(headerLayoutLeft);
-		headerLayout.addComponent(toolsButton);
-		headerLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+		subHeaderLayout = new HorizontalLayout();
+		subHeaderLayout.setWidth("100%");
+		subHeaderLayout.setSpacing(true);
+		
+		if(listEntriesCount == 0) {
+			subHeaderLayout.addComponent(noListDataLabel); 
+			subHeaderLayout.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
+		} else{
+			subHeaderLayout.addComponent(totalListEntriesLabel);
+			subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		}
+		
+		subHeaderLayout.addComponent(toolsButton);
+		subHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+		
 		
 		addComponent(headerLayout);
+		addComponent(subHeaderLayout);
+		
 		addComponent(listDataTableWithSelectAll);
 		
 		parentListDetailsComponent.addComponent(menu);

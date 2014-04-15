@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
@@ -62,7 +63,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     protected SimpleResourceBundleMessageSource messageSource;
     
     protected HorizontalLayout controlButtonsLayout;
-    protected HorizontalLayout controlButtonsSubLayout;
+    protected HorizontalLayout ctrlBtnsLeftSubLayout;
+    protected HorizontalLayout ctrlBtnsRightSubLayout;
     protected VerticalLayout treeContainerLayout;
     
     protected Integer listId;
@@ -81,6 +83,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	protected Button refreshButton;
     
     protected Object selectedListId;
+    
+    protected ToggleButton toggleListTreeButton;
     
     public ListTreeComponent(Integer selectListId){
     	this.listId = selectListId;
@@ -107,6 +111,11 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		
 		treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, heading);
     	
+		// if tree will include the toogle button to hide itself
+		if (doIncludeToggleButton()){
+			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
+		}
+		
 		// assumes that all tree will display control buttons
 		if (doIncludeActionsButtons()){
 			initializeButtonPanel();
@@ -141,6 +150,18 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 				}
 			});
 		}
+		
+		if (doIncludeToggleButton()){
+			toggleListTreeButton.addListener(new Button.ClickListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void buttonClick(ClickEvent event) {
+					toogleListTreePane();
+				}
+			});
+			
+		}
+		
 
 	}
 
@@ -171,8 +192,11 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	 * START OF ABSTRACT / PROTECTED METHODS W/C CAN BE OVERRIDEN BY SUBCLASSES
 	 * #########################################################################
 	 */
-	
 	protected abstract boolean doIncludeActionsButtons();
+
+	protected void toogleListTreePane(){
+    	this.treeActionsListener.toggleListTreeComponent();
+    }
 	
 	protected String getTreeHeading(){
 		return messageSource.getMessage(Message.LISTS);
@@ -191,6 +215,10 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	
 	protected boolean doIncludeTreeHeadingIcon(){
 		return true;
+	}
+	
+	protected boolean doIncludeToggleButton(){
+		return false;
 	}
 	
 	protected abstract boolean doIncludeRefreshButton();
@@ -265,29 +293,35 @@ public abstract class ListTreeComponent extends VerticalLayout implements
             }
         });
         
-        controlButtonsSubLayout = new HorizontalLayout();
-        controlButtonsSubLayout.addComponent(addFolderBtn);
-        controlButtonsSubLayout.addComponent(renameFolderBtn);
-        controlButtonsSubLayout.addComponent(deleteFolderBtn);
-        controlButtonsSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
-        controlButtonsSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
-        controlButtonsSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
+        ctrlBtnsRightSubLayout = new HorizontalLayout();
+        ctrlBtnsRightSubLayout.addComponent(addFolderBtn);
+        ctrlBtnsRightSubLayout.addComponent(renameFolderBtn);
+        ctrlBtnsRightSubLayout.addComponent(deleteFolderBtn);
+        ctrlBtnsRightSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
+        ctrlBtnsRightSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
+        ctrlBtnsRightSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
+        
+        ctrlBtnsLeftSubLayout = new HorizontalLayout();
+    	
+        if(doIncludeToggleButton()){
+        	ctrlBtnsLeftSubLayout.addComponent(toggleListTreeButton);
+        	ctrlBtnsLeftSubLayout.setComponentAlignment(toggleListTreeButton, Alignment.BOTTOM_LEFT);
+        }
+        
+        if (doIncludeTreeHeadingIcon()){
+        	ctrlBtnsLeftSubLayout.addComponent(treeHeadingLayout);
+        } else {
+        	ctrlBtnsLeftSubLayout.addComponent(heading);
+        }
         
         controlButtonsLayout = new HorizontalLayout();
         controlButtonsLayout.setSizeFull();
         controlButtonsLayout.setSpacing(true);
-        if (doIncludeTreeHeadingIcon()){
-        	controlButtonsLayout.addComponent(treeHeadingLayout);
-            controlButtonsLayout.setComponentAlignment(treeHeadingLayout, Alignment.BOTTOM_LEFT);
 
-        } else {
-        	controlButtonsLayout.addComponent(heading);
-            controlButtonsLayout.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
-        }
-        controlButtonsLayout.addComponent(controlButtonsSubLayout);
-        controlButtonsLayout.setComponentAlignment(controlButtonsSubLayout, Alignment.BOTTOM_RIGHT);
-       
-        
+        controlButtonsLayout.addComponent(ctrlBtnsLeftSubLayout);
+        controlButtonsLayout.addComponent(ctrlBtnsRightSubLayout);
+        controlButtonsLayout.setComponentAlignment(ctrlBtnsLeftSubLayout, Alignment.BOTTOM_LEFT);
+        controlButtonsLayout.setComponentAlignment(ctrlBtnsRightSubLayout, Alignment.BOTTOM_RIGHT);
         
 	}
 	

@@ -43,5 +43,10 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}
-	
+
+	@Override
+	protected boolean doIncludeToggleButton() {
+		return true;
+	}
+
 }
