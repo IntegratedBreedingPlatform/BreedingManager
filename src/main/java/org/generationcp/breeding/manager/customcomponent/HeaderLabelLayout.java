@@ -48,14 +48,12 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 	public void afterPropertiesSet() throws Exception {
 		Embedded icon = new Embedded("",ICON);
 		
-		setHeight("30px");
+		setHeight("25px");
 		setSpacing(true);
 		addComponent(icon);
 		addComponent(label);
 		
 		this.addStyleName("no-caption");
-		this.setComponentAlignment(icon, Alignment.TOP_LEFT);
-		this.setComponentAlignment(label, Alignment.TOP_LEFT);
 	}
 	
 	
