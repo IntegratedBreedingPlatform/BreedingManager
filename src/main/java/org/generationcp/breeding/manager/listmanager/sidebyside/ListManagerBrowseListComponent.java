@@ -37,7 +37,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	
 	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
-	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("250");
+	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("235");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
 	
 	private ListManagerMain source;
@@ -97,8 +97,9 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		
 		//left pane
 		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("240px");
-		leftLayout.addComponent(listTreeComponent,"top:10px;left:20px");
+		leftLayout.setWidth("235px");
+		leftLayout.addComponent(listTreeComponent,"top:0px;left:15px");
+		
 		
 		hSplitPanel.setFirstComponent(leftLayout);
 		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
@@ -106,7 +107,7 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	}
 	
     private void expandLeft(){
-    	leftLayout.setWidth("240px");
+    	leftLayout.setWidth("235px");
     	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
     }
 

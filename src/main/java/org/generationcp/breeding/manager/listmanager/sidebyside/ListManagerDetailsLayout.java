@@ -149,7 +149,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     @Override
     public void layoutComponents() {
-    	setWidth("98%");
+    	setWidth("100%");
     	setStyleName(Runo.TABSHEET_SMALL);
         setMargin(false);
     	
