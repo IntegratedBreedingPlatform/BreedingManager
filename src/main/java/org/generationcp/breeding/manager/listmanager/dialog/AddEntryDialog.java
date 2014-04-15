@@ -572,6 +572,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        
 	        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
 		        
+	        	List<Integer> addedGids = new ArrayList<Integer>();
+	        	
 		        for(Integer selectedGid : selectedGids){
 		        
 		        	Germplasm selectedGermplasm = null;
@@ -623,6 +625,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        
 			        try{
 			            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
+			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
 			            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
@@ -631,7 +634,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        }
 	        	}
 
-		        this.source.finishAddingEntry(selectedGids);
+		        this.source.finishAddingEntry(addedGids);
 		        
 		        return true;
 		        
