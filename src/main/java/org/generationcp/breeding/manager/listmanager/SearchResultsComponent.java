@@ -99,7 +99,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingListsLabel = new Label();
 		matchingListsLabel.setWidth("250px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
-		matchingListsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
+		matchingListsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		matchingListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5, CHECKBOX_COLUMN_ID);
 		matchingListsTable = matchingListsTableWithSelectAll.getTable();
@@ -117,7 +118,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
-		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H3.styleName());
+		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		matchingGermplasmsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
@@ -183,14 +185,14 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,matchingListsLabel);
-		addComponent(searchDescription, "top:0px; left:0px;");
+		addComponent(searchDescription, "top:0px; left:30px;");
 		
 		addComponent(matchingListsHeader, "top:20px; left:0px;");
 		addComponent(matchingListsTableWithSelectAll, "top:55px; left:0px;");
 		
 		HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
 		addComponent(matchingGermplasmsHeader, "top:257px; left:0px;");
-		addComponent(matchingGermplasmsTableWithSelectAll, "top:288px; left:0px;");
+		addComponent(matchingGermplasmsTableWithSelectAll, "top:292px; left:0px;");
 	}
 		
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists){

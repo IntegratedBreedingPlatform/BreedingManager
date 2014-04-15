@@ -125,7 +125,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         heading = new Label();
         heading.setImmediate(true);
         heading.setWidth("300px");
-        heading.setStyleName(Bootstrap.Typography.H3.styleName());
+        heading.setStyleName(Bootstrap.Typography.H4.styleName());
+        heading.addStyleName(AppConstants.CssStyles.BOLD);
         
         defaultLabel = new Label();
         defaultLabel.setWidth("100%");

@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.customcomponent;
 
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
