@@ -1,11 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
@@ -13,9 +9,6 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 	private static final long serialVersionUID = 8112173851252075693L;
 	
-    @Autowired
-    protected SimpleResourceBundleMessageSource messageSource;
-
 	public CrossingManagerListTreeComponent(
 			ListTreeActionsListener treeActionsListener) {
 		super(treeActionsListener);
@@ -26,10 +19,6 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		return true;
 	}
 
-	@Override
-	protected String getTreeHeading() {
-		return messageSource.getMessage(Message.LISTS);
-	}
 
 	@Override
 	protected boolean doIncludeRefreshButton() {
@@ -51,9 +40,4 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		return false;
 	}
 	
-	@Override
-	protected String getTreeHeadingStyleName() {
-		return Bootstrap.Typography.H4.styleName();
-	}
-
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
@@ -74,6 +75,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     protected Button deleteFolderBtn;
     protected Button renameFolderBtn;
     
+    protected HeaderLabelLayout treeHeadingLayout;
     protected Label heading;
 	protected Tree germplasmListTree;
 	protected Button refreshButton;
@@ -98,9 +100,12 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		setSpacing(true);
     	
     	heading = new Label();
-    	heading.setWidth("90px");
+    	heading.setWidth("100px");
 		heading.setValue(getTreeHeading());
-		heading.setStyleName(getTreeHeadingStyleName());
+		heading.addStyleName(getTreeHeadingStyleName());
+		heading.addStyleName(AppConstants.CssStyles.BOLD);
+		
+		treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, heading);
     	
 		// assumes that all tree will display control buttons
 		if (doIncludeActionsButtons()){
@@ -168,7 +173,10 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	 */
 	
 	protected abstract boolean doIncludeActionsButtons();
-	protected abstract String getTreeHeading();
+	
+	protected String getTreeHeading(){
+		return messageSource.getMessage(Message.LISTS);
+	}
 	
 	protected String getTreeHeadingStyleName(){
 		return Bootstrap.Typography.H4.styleName();
@@ -179,6 +187,10 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	
 	public boolean usedInSubWindow(){
 		return false;
+	}
+	
+	protected boolean doIncludeTreeHeadingIcon(){
+		return true;
 	}
 	
 	protected abstract boolean doIncludeRefreshButton();
@@ -264,9 +276,15 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         controlButtonsLayout = new HorizontalLayout();
         controlButtonsLayout.setSizeFull();
         controlButtonsLayout.setSpacing(true);
-        controlButtonsLayout.addComponent(heading);
+        if (doIncludeTreeHeadingIcon()){
+        	controlButtonsLayout.addComponent(treeHeadingLayout);
+            controlButtonsLayout.setComponentAlignment(treeHeadingLayout, Alignment.BOTTOM_LEFT);
+
+        } else {
+        	controlButtonsLayout.addComponent(heading);
+            controlButtonsLayout.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
+        }
         controlButtonsLayout.addComponent(controlButtonsSubLayout);
-        controlButtonsLayout.setComponentAlignment(heading, Alignment.BOTTOM_LEFT);
         controlButtonsLayout.setComponentAlignment(controlButtonsSubLayout, Alignment.BOTTOM_RIGHT);
        
         

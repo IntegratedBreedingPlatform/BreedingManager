@@ -198,7 +198,7 @@
 
 .v-tree-node-listManagerTreeRegularParentNode {
 	padding-bottom:4px;
-	padding-top:4px;
+	margin-top:2px;
 }
 .v-tree-node-listManagerTreeRegularChildNode {
 	padding-bottom:3px;
