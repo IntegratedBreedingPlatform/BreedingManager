@@ -97,7 +97,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		searchDescription.setWidth("375px");
 		
 		matchingListsLabel = new Label();
-		matchingListsLabel.setWidth("250px");
+		matchingListsLabel.setWidth("300px");
 		matchingListsLabel.setValue(messageSource.getMessage(Message.MATCHING_LISTS)+": 0");
 		matchingListsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		matchingListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
@@ -117,6 +117,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		
 		matchingGermplasmsLabel = new Label();
+		matchingGermplasmsLabel.setWidth("300px");
 		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
 		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		matchingGermplasmsLabel.addStyleName(AppConstants.CssStyles.BOLD);
