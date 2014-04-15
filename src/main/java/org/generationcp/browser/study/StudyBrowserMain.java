@@ -65,6 +65,9 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         mainLayout = new StudyBrowserMainLayout(this);
         
         tabStudies = new VerticalLayout();
+        tabStudies.addStyleName("overflow_x_auto");
+        tabStudies.addStyleName("min_width_340px");
+        
         combinedStudyTree = new StudyTreeComponent(this);
         tabStudies.addComponent(combinedStudyTree);
         
