@@ -169,25 +169,25 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
+        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
+        createGermplasmTable(tableWithSelectAllLayout.getTable());
+        
         menu = new ContextMenu();
         menu.setWidth("300px");
-        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        
+        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
+        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
+        menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
-        menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetMenuOptions();
         
         toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
         toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
         toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-             
-        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        createGermplasmTable(tableWithSelectAllLayout.getTable());
-        
-        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
-        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         

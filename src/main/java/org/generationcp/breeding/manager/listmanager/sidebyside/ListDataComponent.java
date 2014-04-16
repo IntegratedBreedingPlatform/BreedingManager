@@ -236,21 +236,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		toolsButton.setWidth("100px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
-		menu = new ContextMenu();
-		menu.setWidth("295px");
-		
-		// Generate main level items
-		menu.addItem(MENU_SELECT_ALL);
-		menuExportList = menu.addItem(MENU_EXPORT_LIST);
-		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
-		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
-		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
-		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
-		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
-		menuEditList = menu.addItem(MENU_EDIT_LIST);
-		menuDeleteList = menu.addItem(MENU_DELETE_LIST);
-		// Add Column menu will be initialized after list data table is created 
-		
 		try{
 			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
 		} catch(MiddlewareQueryException ex){
@@ -282,7 +267,23 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         lockButton.setDescription(LOCK_TOOLTIP);
         lockButton.setStyleName(Reindeer.BUTTON_LINK);
 		
-		initializeListDataTable(); //listDataTable
+        menu = new ContextMenu();
+		menu.setWidth("295px");
+		
+		// Add Column menu will be initialized after list data table is created
+        initializeListDataTable(); //listDataTable
+        
+		// Generate main level items
+		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
+		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
+		menuDeleteList = menu.addItem(MENU_DELETE_LIST);
+		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
+		menuEditList = menu.addItem(MENU_EDIT_LIST);
+		menuExportList = menu.addItem(MENU_EXPORT_LIST);
+		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
+		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
+		menu.addItem(MENU_SELECT_ALL);
+		
 	}
 	
 	private void initializeListDataTable(){
