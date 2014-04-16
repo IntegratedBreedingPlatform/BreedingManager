@@ -31,7 +31,7 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	
 	@Override
 	protected String getTreeHeadingStyleName() {
-		return Bootstrap.Typography.H6.styleName();
+		return Bootstrap.Typography.H4.styleName();
 	}
 
 	@Override

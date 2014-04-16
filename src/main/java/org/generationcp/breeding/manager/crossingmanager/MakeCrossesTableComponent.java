@@ -330,6 +330,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		
 		lblReviewCrosses = new Label(messageSource.getMessage(Message.REVIEW_CROSSES));
 		lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
+		lblReviewCrosses.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		lblCrossMade = new Label();
 		lblCrossMade.addStyleName(Bootstrap.Typography.H5.styleName());

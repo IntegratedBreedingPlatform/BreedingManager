@@ -135,6 +135,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         
         parentListsLabel = new Label(messageSource.getMessage(Message.PARENTS_LISTS));
         parentListsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        parentListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         lblFemaleParent= new Label(messageSource.getMessage(Message.FEMALE));
         lblFemaleParent.setStyleName(Bootstrap.Typography.H5.styleName());

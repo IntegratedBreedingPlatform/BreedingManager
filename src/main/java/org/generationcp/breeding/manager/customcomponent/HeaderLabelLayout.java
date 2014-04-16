@@ -49,7 +49,7 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 		Embedded icon = new Embedded("",ICON);
 		
 		setHeight("25px");
-		setSpacing(true);
+		setSpacing(false);
 		addComponent(icon);
 		addComponent(label);
 		

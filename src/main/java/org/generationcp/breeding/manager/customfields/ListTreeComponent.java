@@ -70,9 +70,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     protected Integer listId;
     protected GermplasmListTreeUtil germplasmListTreeUtil;
     protected ListTreeActionsListener treeActionsListener;
-    
-    protected final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
-    
+
     protected Button addFolderBtn;
     protected Button deleteFolderBtn;
     protected Button renameFolderBtn;
@@ -104,7 +102,6 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		setSpacing(true);
     	
     	heading = new Label();
-    	heading.setWidth("100px");
 		heading.setValue(getTreeHeading());
 		heading.addStyleName(getTreeHeadingStyleName());
 		heading.addStyleName(AppConstants.CssStyles.BOLD);
@@ -114,6 +111,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		// if tree will include the toogle button to hide itself
 		if (doIncludeToggleButton()){
 			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
+			toggleListTreeButton.setHeight("25px");
 		}
 		
 		// assumes that all tree will display control buttons
@@ -247,7 +245,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         renameFolderBtn.setDescription("Rename Item");
         renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         renameFolderBtn.setWidth("25px");
-        renameFolderBtn.setHeight("30px");
+        renameFolderBtn.setHeight("25px");
         renameFolderBtn.setEnabled(false);
         renameFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -262,7 +260,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         addFolderBtn.setDescription("Add New Folder");
         addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         addFolderBtn.setWidth("25px");
-        addFolderBtn.setHeight("30px");
+        addFolderBtn.setHeight("25px");
         addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -278,7 +276,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         deleteFolderBtn.setDescription("Delete Selected List/Folder");
         deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         deleteFolderBtn.setWidth("25px");
-        deleteFolderBtn.setHeight("30px");
+        deleteFolderBtn.setHeight("25px");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.setData(this);
         deleteFolderBtn.addListener(new Button.ClickListener() {
@@ -294,6 +292,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         });
         
         ctrlBtnsRightSubLayout = new HorizontalLayout();
+        ctrlBtnsRightSubLayout.setHeight("30px");
         ctrlBtnsRightSubLayout.addComponent(addFolderBtn);
         ctrlBtnsRightSubLayout.addComponent(renameFolderBtn);
         ctrlBtnsRightSubLayout.addComponent(deleteFolderBtn);
@@ -302,6 +301,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         ctrlBtnsRightSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
         
         ctrlBtnsLeftSubLayout = new HorizontalLayout();
+        ctrlBtnsLeftSubLayout.setHeight("30px");
     	
         if(doIncludeToggleButton()){
         	ctrlBtnsLeftSubLayout.addComponent(toggleListTreeButton);
@@ -310,18 +310,23 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         
         if (doIncludeTreeHeadingIcon()){
         	ctrlBtnsLeftSubLayout.addComponent(treeHeadingLayout);
+        	heading.setWidth("80px");
         } else {
         	ctrlBtnsLeftSubLayout.addComponent(heading);
+        	heading.setWidth("140px");
         }
         
         controlButtonsLayout = new HorizontalLayout();
-        controlButtonsLayout.setSizeFull();
+        controlButtonsLayout.setWidth("100%");
+        controlButtonsLayout.setHeight("30px");
         controlButtonsLayout.setSpacing(true);
 
         controlButtonsLayout.addComponent(ctrlBtnsLeftSubLayout);
         controlButtonsLayout.addComponent(ctrlBtnsRightSubLayout);
         controlButtonsLayout.setComponentAlignment(ctrlBtnsLeftSubLayout, Alignment.BOTTOM_LEFT);
         controlButtonsLayout.setComponentAlignment(ctrlBtnsRightSubLayout, Alignment.BOTTOM_RIGHT);
+        
+        
         
 	}
 	
