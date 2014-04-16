@@ -89,7 +89,7 @@ public class SaveCrossesMadeAction implements Serializable {
     private List<Integer> indicesOfAddedCrosses = new ArrayList<Integer>();
     private List<Integer> indicesOfRetainedCrosses = new ArrayList<Integer>();
     
-    public SaveCrossesMadeAction(GermplasmList germplasmList){
+	public SaveCrossesMadeAction(GermplasmList germplasmList){
     	this.germplasmList = germplasmList;
     }
     
@@ -111,8 +111,6 @@ public class SaveCrossesMadeAction implements Serializable {
         updateConstantFields(crossesMade);
         
         List<Integer> germplasmIDs = saveGermplasmsAndNames(crossesMade);
-        
-//        SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, this.germplasmList, this.listEntries);
         
         GermplasmList list = saveGermplasmListRecord(crossesMade);
         saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
@@ -224,13 +222,24 @@ public class SaveCrossesMadeAction implements Serializable {
     
     private GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
     	int listId;
-    	if (this.germplasmList == null){
-    		listId = this.germplasmListManager.addGermplasmList(crossesMade.getGermplasmList());
+    	GermplasmList listToSave = crossesMade.getGermplasmList();
+		if (this.germplasmList == null){
+    		listId = this.germplasmListManager.addGermplasmList(listToSave);
+    		
     	} else {
-    		listId = this.germplasmListManager.updateGermplasmList(crossesMade.getGermplasmList());
+    		// GCP-8225 : set the updates manually on List object so that list entries are not deleted
+    		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
+
+    		this.germplasmList.setName(listToSave.getName());
+    		this.germplasmList.setDescription(listToSave.getDescription());
+    		this.germplasmList.setType(listToSave.getType());
+    		this.germplasmList.setDate(listToSave.getDate());
+    		this.germplasmList.setNotes(listToSave.getNotes());
+    		
+    		listId = this.germplasmListManager.updateGermplasmList(germplasmList);
     	}
+		
         GermplasmList list = this.germplasmListManager.getGermplasmListById(listId);
-        
         return list;
     }
 
@@ -249,8 +258,9 @@ public class SaveCrossesMadeAction implements Serializable {
     		Germplasm existingGermplasm = existingGermplasms.get(i);
     		for (Germplasm currentGermplasm : crossesMade.getCrossesMap().keySet()){
     			if (haveSameParents(currentGermplasm, existingGermplasm)){
-    				GermplasmListData germplasmListData = this.existingListEntries.get(i);
+    				GermplasmListData germplasmListData = germplasmToListDataMap.get(existingGermplasm);
 					retainedCrosses.add(germplasmListData);
+					break;
     			}
     		}
     	}
@@ -258,7 +268,9 @@ public class SaveCrossesMadeAction implements Serializable {
     	List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(existingListEntries);
     	listToDelete.removeAll(retainedCrosses);
     	
-    	this.germplasmListManager.deleteGermplasmListData(listToDelete);
+    	if (listToDelete.size() > 0){
+    		this.germplasmListManager.deleteGermplasmListData(listToDelete);
+    	}
 	}
 
 	
@@ -286,7 +298,9 @@ public class SaveCrossesMadeAction implements Serializable {
         	ctr++;
         }
         
-        this.germplasmListManager.addGermplasmListData(listToSave);
+        if (listToSave.size() > 0){
+        	this.germplasmListManager.addGermplasmListData(listToSave);
+        }
 	}
 
     
