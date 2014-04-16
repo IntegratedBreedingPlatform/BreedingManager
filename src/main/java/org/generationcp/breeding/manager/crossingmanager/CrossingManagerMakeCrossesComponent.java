@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
@@ -243,6 +244,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         selectParentsLabel = new Label("Select Parents");
         selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         instructionForSelectParents = new Label("To begin making crosses, open one or more lists from the left, then select entries and drag them into</br>"
         		+ "the male and female parent lists below.");
