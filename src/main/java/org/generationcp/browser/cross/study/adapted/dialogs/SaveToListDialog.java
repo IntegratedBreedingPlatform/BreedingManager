@@ -90,6 +90,8 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private Map<String, Integer> mapExistingList;
     
     private QueryForAdaptedGermplasmMain mainScreen;
+    
+    private GermplasmList lastSelectedFolder;
 	
 	public SaveToListDialog(QueryForAdaptedGermplasmMain mainScreen, Component source, Window parentWindow, Map<Integer,String> germplasmsMap){
 		this.mainScreen = mainScreen;
@@ -167,7 +169,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 				txtDescription.setEnabled(true);
 				selectType.setValue("LST");
 				selectType.setEnabled(true);
-				setSelectedFolder(null);
+				setSelectedFolder(lastSelectedFolder);
 				changeLocationFolderButton.setVisible(true);
 				comboBoxListName.addItem(newItemCaption);
 				comboBoxListName.setValue(newItemCaption);
@@ -493,6 +495,7 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
 	        
 	        this.folderToSaveListTo.setDescription(locationFolderString.toString());
 	        this.folderToSaveListTo.setData(folder);
+	        this.lastSelectedFolder = folder;
 	    } catch(MiddlewareQueryException ex){
 			LOG.error("Error with traversing parents of list: " + folder.getId(), ex);
 		}
