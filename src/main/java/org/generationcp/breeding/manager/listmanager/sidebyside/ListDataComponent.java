@@ -1404,6 +1404,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			if(listEntriesCount == 0) {
 				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 			} else {
+				noListDataLabel.setContentMode(Label.CONTENT_XHTML);
 				noListDataLabel.setValue("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " + listEntriesCount);
 			}   			
 		}
