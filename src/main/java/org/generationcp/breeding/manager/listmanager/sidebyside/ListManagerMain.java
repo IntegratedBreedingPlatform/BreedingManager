@@ -344,11 +344,11 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public void toggleBuildNewListComponent() {
 		if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() > EXPANDED_SPLIT_POSITION_RIGHT){
 			expandRight();
-			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
+			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.RIGHT);
 		}
 		else if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() <= EXPANDED_SPLIT_POSITION_RIGHT){
 			collapseRight();
-			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.RIGHT);
+			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
 		}
 	}
 	
