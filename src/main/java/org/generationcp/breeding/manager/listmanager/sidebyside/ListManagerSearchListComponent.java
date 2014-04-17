@@ -97,8 +97,8 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		//left pane
 		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("390px");
-		leftLayout.addComponent(searchResultsComponent, "top:0px; left:18px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:18px");
+		leftLayout.addComponent(searchResultsComponent, "top:7px; left:18px");
+		leftLayout.addComponent(toggleLeftPaneButton,"top:5px; left:18px");
 	
 		hSplitPanel.setFirstComponent(leftLayout);
 		hSplitPanel.setSecondComponent(listManagerDetailsLayout);

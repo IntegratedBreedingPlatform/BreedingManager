@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractSplitPanel.SplitterClickEvent;
+import com.vaadin.ui.AbstractSplitPanel.SplitterClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -222,6 +225,22 @@ public class ListManagerMain extends AbsoluteLayout implements
 				expandRight();
 			}
 		});
+		
+		this.hSplitPanel.addListener(new SplitterClickListener() {
+			
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void splitterClick(SplitterClickEvent event) {				
+				if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() > EXPANDED_SPLIT_POSITION_RIGHT){
+					buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
+				}
+				else if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() <= EXPANDED_SPLIT_POSITION_RIGHT){
+					buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.RIGHT);
+				}
+			}
+		});
+		
 	}
 
 	protected void showSearchListPane() {

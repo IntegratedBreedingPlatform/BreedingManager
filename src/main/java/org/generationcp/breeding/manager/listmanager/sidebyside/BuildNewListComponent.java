@@ -303,6 +303,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		
 		//Build New List Header
 		HorizontalLayout buildNewListHeaderLayout = new HorizontalLayout();
+		buildNewListHeaderLayout.setHeight("30px");
 		buildNewListHeaderLayout.addComponent(toggleBuildNewListButton);
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,buildNewListTitle);
 		buildNewListHeaderLayout.addComponent(headingLayout);
@@ -728,10 +729,15 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     }
 	
 	/* SETTERS AND GETTERS */
+
+	public ToggleButton getToggleBuildNewListButton() {
+		return toggleBuildNewListButton;
+	}
+	
 	public Label getBuildNewListTitle() {
 		return buildNewListTitle;
 	}
-
+	
 	public void setBuildNewListTitle(Label buildNewListTitle) {
 		this.buildNewListTitle = buildNewListTitle;
 	}
