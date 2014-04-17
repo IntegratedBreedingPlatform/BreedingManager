@@ -135,6 +135,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
 		
+		listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 25);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 25);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 130);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.PARENTAGE.getName(), 130);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 100);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 60);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 110);
+		
 		listDataTable.setVisibleColumns(new String[] { 
         		CHECKBOX_COLUMN_ID
         		,ListDataTablePropertyID.ENTRY_ID.getName()
