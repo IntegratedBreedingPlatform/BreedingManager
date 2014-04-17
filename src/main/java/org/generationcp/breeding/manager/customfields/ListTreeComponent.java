@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -155,12 +154,6 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 				@Override
 				public void buttonClick(ClickEvent event) {
 					toogleListTreePane();
-					if(toggleListTreeButton.getDirection() == ToggleDirection.LEFT){
-						toggleListTreeButton.setDirection(ToggleDirection.RIGHT);
-					}
-					else{
-						toggleListTreeButton.setDirection(ToggleDirection.LEFT);
-					}
 				}
 			});
 			
@@ -690,4 +683,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     	return germplasmListTree;
     }
 
+	public ToggleButton getToggleListTreeButton() {
+		return toggleListTreeButton;
+	}
+    
 }

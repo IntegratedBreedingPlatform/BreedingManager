@@ -223,13 +223,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				source.toggleBuildNewListComponent();
-				
-				if(toggleBuildNewListButton.getDirection() == ToggleDirection.LEFT){
-					toggleBuildNewListButton.setDirection(ToggleDirection.RIGHT);
-				}
-				else{
-					toggleBuildNewListButton.setDirection(ToggleDirection.LEFT);
-				}
 			}
 		});
 		

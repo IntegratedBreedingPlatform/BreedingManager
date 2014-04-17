@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -129,8 +130,10 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	protected void toggleListTreeComponent(){
 		if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
 			collapseLeft();
+			this.listTreeComponent.getToggleListTreeButton().setDirection(ToggleDirection.RIGHT);
 		} else {
 			expandLeft();
+			this.listTreeComponent.getToggleListTreeButton().setDirection(ToggleDirection.LEFT);
 		}
 	}
 
