@@ -185,7 +185,8 @@
 }
 
 .componenttree-parent > div > div {
-	background: #e6e6e6;
+/* 	background: #e6e6e6; */
+	background: #f6f6f6;
 	margin-left: 5px;
 	margin-right: 5px;
 	border-radius: 3px;
