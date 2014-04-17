@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -29,7 +30,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
-	private Button toggleLeftPaneButton;
+	private ToggleButton toggleLeftPaneButton;
 	
 	private SearchResultsComponent searchResultsComponent;
 	private ListManagerMain source;
@@ -64,7 +65,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
-		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table");
+		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table", ToggleDirection.LEFT);
 	}
 
 	@Override
@@ -81,8 +82,10 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 			public void buttonClick(ClickEvent event) {
 				if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
 					collapseLeft();
+					toggleLeftPaneButton.setDirection(ToggleDirection.RIGHT);
 				} else {
 					expandLeft();
+					toggleLeftPaneButton.setDirection(ToggleDirection.LEFT);
 				}
 			}
 		});

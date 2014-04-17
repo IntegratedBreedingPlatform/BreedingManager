@@ -51,6 +51,9 @@ public final class AppConstants {
 	    public static final ThemeResource ICON_LOCK = new ThemeResource("images/lock.png");
 	    public static final ThemeResource ICON_UNLOCK = new ThemeResource("images/unlock.png");
 	    public static final ThemeResource ICON_LIST_TYPES = new ThemeResource("images/list-types.png");
+	    public static final ThemeResource ICON_TOGGLE = new ThemeResource("images/toggle.png");
+	    public static final ThemeResource ICON_TOGGLE_LEFT = new ThemeResource("images/toggle-left.png");
+	    public static final ThemeResource ICON_TOGGLE_RIGHT = new ThemeResource("images/toggle-right.png");
 	}
 	
 	
