@@ -314,6 +314,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     
     @Override
     public void afterPropertiesSet() {
+    	
         setSpacing(true);
         setMargin(true);
         

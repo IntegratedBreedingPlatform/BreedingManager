@@ -296,3 +296,7 @@
 .headerLabelLayout .v-caption {
 	height: 0px;	
 }
+
+.min_width_340px {
+	min-width: 340px !important;
+}
