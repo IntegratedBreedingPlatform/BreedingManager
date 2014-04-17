@@ -56,7 +56,7 @@ public class ListManagerMain extends AbsoluteLayout implements
     private BuildNewListComponent buildNewListComponent;
     
 	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(68); //actual width in pixel 680 
-	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(96); //actual width in pixel 50
+	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(95); //actual width in pixel 50
 	private static Float MAX_EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50);
 	
 	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
