@@ -9,6 +9,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -110,8 +111,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     	
 		// if tree will include the toogle button to hide itself
 		if (doIncludeToggleButton()){
-			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
-			toggleListTreeButton.setHeight("25px");
+			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane", ToggleDirection.LEFT);
 		}
 		
 		// assumes that all tree will display control buttons
@@ -155,6 +155,12 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 				@Override
 				public void buttonClick(ClickEvent event) {
 					toogleListTreePane();
+					if(toggleListTreeButton.getDirection() == ToggleDirection.LEFT){
+						toggleListTreeButton.setDirection(ToggleDirection.RIGHT);
+					}
+					else{
+						toggleListTreeButton.setDirection(ToggleDirection.LEFT);
+					}
 				}
 			});
 			

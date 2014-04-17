@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -88,7 +89,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     
     //Components
-    private Button toggleBuildNewListButton;
+    private ToggleButton toggleBuildNewListButton;
     private Label buildNewListTitle;
     private Label buildNewListDesc;
     private Label dragInstructionLabel;
@@ -150,7 +151,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
 		
-		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane");
+		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane", ToggleDirection.LEFT);
 		
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
     	buildNewListTitle.setWidth("200px");
@@ -222,6 +223,13 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				source.toggleBuildNewListComponent();
+				
+				if(toggleBuildNewListButton.getDirection() == ToggleDirection.LEFT){
+					toggleBuildNewListButton.setDirection(ToggleDirection.RIGHT);
+				}
+				else{
+					toggleBuildNewListButton.setDirection(ToggleDirection.LEFT);
+				}
 			}
 		});
 		
