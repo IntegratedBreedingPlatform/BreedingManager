@@ -75,7 +75,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		makeCrossesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
 		
 		Label popupLabel = new Label(messageSource.getMessage(Message.CROSSING_MANAGER_TOOL_DESCRIPTION));
-		popupLabel.setWidth("600px");
+		popupLabel.setWidth("470px");
 		toolPopupView = new PopupView(AppConstants.Icons.POPUP_VIEW_ICON, 
 				popupLabel);
 		toolPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
