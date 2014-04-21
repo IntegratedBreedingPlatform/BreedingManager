@@ -227,10 +227,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
 				if(action.equals(ACTION_ADD_TO_FEMALE_LIST)){
-					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable());
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
 				} else if(action.equals(ACTION_ADD_TO_MALE_LIST)){
-					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable());
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
 				}
 			}

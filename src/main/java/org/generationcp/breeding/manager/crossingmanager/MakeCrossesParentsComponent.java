@@ -254,7 +254,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 							}
 	                	}
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, maleParents);
+                    	dropToFemaleOrMaleTable(sourceTable, maleParents, (Integer) transferable.getItemId());
                     }
                     
                     assignEntryNumber(maleParents);
@@ -339,7 +339,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                      	
 	                    }
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, femaleParents);
+                    	dropToFemaleOrMaleTable(sourceTable, femaleParents, (Integer) transferable.getItemId());
                     }
                     
                     assignEntryNumber(femaleParents);
@@ -447,9 +447,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
+	public void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable, Integer transferrableItemId){
 		List<Integer> selectedListEntries = new ArrayList<Integer>();
     	selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
+    	
+    	if(selectedListEntries.isEmpty() && transferrableItemId != null){
+    		selectedListEntries.add(transferrableItemId);
+    	}
+    	
     	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
     	entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
     	
