@@ -160,10 +160,10 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 		searchBarLayout.addStyleName("searchBarLayout");
 		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
         searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
-        searchBarLayout.addComponent(searchButton, "top:10px; left:265px;");
-        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 355px;");
-        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 505px;");
-        searchBarLayout.addComponent(popup, "top:12px; left:735px;");
+        searchBarLayout.addComponent(searchButton, "top:10px; left:285px;");
+        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 375px;");
+        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 525px;");
+        searchBarLayout.addComponent(popup, "top:12px; left:755px;");
 
         searchPanel.setLayout(searchBarLayout);
         

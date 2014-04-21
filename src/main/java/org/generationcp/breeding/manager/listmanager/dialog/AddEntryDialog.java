@@ -345,9 +345,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         searchFormLayout.addComponent(searchLabel, "top:15px; left:15px");
         searchFormLayout.addComponent(searchField, "top:12px; left:100px");
-        searchFormLayout.addComponent(searchButton, "top:12px; left:265px");
-        searchFormLayout.addComponent(likeOrEqualCheckBox, "top:15px; left:350px");
-        searchFormLayout.addComponent(popup, "top:13px; left:500px");
+        searchFormLayout.addComponent(searchButton, "top:12px; left:285px");
+        searchFormLayout.addComponent(likeOrEqualCheckBox, "top:15px; left:370px");
+        searchFormLayout.addComponent(popup, "top:13px; left:520px");
         
         searchFormLayout.addStyleName("searchBarLayout");
 
