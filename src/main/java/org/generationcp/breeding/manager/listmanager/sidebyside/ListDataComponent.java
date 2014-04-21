@@ -1137,13 +1137,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
             if (!fromUrl) {
                 // make GID as link only if the page wasn't directly accessed from the URL
                 String gidString = String.format("%s", gid.toString());
-                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,false));
+                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 gidObject = gidButton;
                 
                 String desigString = listData.getDesignation();
-                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,false));
+                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 desigObject = desigButton;
