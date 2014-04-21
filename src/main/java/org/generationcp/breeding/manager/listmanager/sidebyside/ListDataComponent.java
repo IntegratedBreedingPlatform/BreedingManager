@@ -407,7 +407,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		});
 		
 		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
-	        new FillWith(parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	        new FillWith(parentListDetailsComponent, parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
 		
 		makeTableEditable();
