@@ -55,6 +55,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Long count;
 	
 	private Label listEntriesLabel;
+	private Label totalListEntriesLabel;
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
@@ -99,6 +100,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL).toUpperCase());
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H5.styleName());
 		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		listEntriesLabel.setWidth("120px");
+		
+		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML);
+       	totalListEntriesLabel.setWidth("135px");
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
@@ -249,9 +255,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		headerLayout.addComponent(listEntriesLabel);
+		
+		HorizontalLayout headerSubLayout = new HorizontalLayout();
+		headerSubLayout.addComponent(listEntriesLabel);
+		headerSubLayout.addComponent(totalListEntriesLabel);
+		headerSubLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerSubLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		
+		headerLayout.addComponent(headerSubLayout);
 		headerLayout.addComponent(viewListHeaderButton);
-		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(headerSubLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
 		addComponent(headerLayout);
