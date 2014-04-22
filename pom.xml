@@ -261,6 +261,7 @@
 				</includes>
 			</resource>
 		</resources>
+		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -307,6 +308,7 @@
 					</executions>
 				</plugin>
 			</plugins>
+		</pluginManagement>
 	</build>
 
 	<repositories>
