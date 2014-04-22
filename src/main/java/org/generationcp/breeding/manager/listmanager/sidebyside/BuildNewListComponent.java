@@ -54,6 +54,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -366,6 +367,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
     	addBasicTableColumns(table);
         
+    	table.setDragMode(TableDragMode.ROW);
         table.setSelectable(true);
         table.setMultiSelect(true);
         table.setWidth("100%");

@@ -114,6 +114,7 @@ public class BuildNewListDropHandler implements DropHandler {
 				//Check first if item is dropped on top of itself
 				if(!transferable.getItemId().equals(droppedOverItemId)) {
 	                Item oldItem = sourceTable.getItem(transferable.getItemId());
+	                Object oldCheckBox = oldItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).getValue();
 	                Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 	                Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
 	                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
@@ -122,6 +123,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	                sourceTable.removeItem(transferable.getItemId());
 	                
 	                Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
+	                newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(oldCheckBox);
 	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
 	                newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
 	                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
