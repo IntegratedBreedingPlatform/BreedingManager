@@ -98,6 +98,11 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         return this.entryId - entry.getEntryId();
     }
 
+	public GermplasmListEntry copy(){
+		GermplasmListEntry theCopy = new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource);
+		return theCopy;
+	}
+	
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

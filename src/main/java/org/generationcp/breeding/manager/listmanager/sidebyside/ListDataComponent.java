@@ -888,6 +888,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	
     	renumberEntryIds();
         listDataTable.requestRepaint();
+        updateListEntriesCountLabel();
     }
 	
 	private ArrayList<Integer> getGidsToDeletedWithoutChildren(Collection<?> selectedIds) throws NumberFormatException, MiddlewareQueryException{
@@ -1387,27 +1388,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         }
 
         //Update counter
-		try{
-			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with retrieving count of list entries for list: " + germplasmList.getId(), ex);
-			listEntriesCount = 0;
-		}
-		
-		if(totalListEntriesLabel!=null){
-			if(listEntriesCount == 0) {
-				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-			} else {
-				totalListEntriesLabel.setValue("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " + listEntriesCount);
-			}        
-		} else if(noListDataLabel!=null) {
-			if(listEntriesCount == 0) {
-				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-			} else {
-				noListDataLabel.setContentMode(Label.CONTENT_XHTML);
-				noListDataLabel.setValue("<b>" + messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ":</b> " + listEntriesCount);
-			}   			
-		}
+		updateListEntriesCountLabel();
         
 		return true;
 		
@@ -1676,5 +1657,28 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
                     ,3000, Notification.POSITION_CENTERED);
 		}
+	}
+	
+	private void updateListEntriesCountLabel(){
+		int count = listDataTable.getItemIds().size();
+		if(count == 0) {
+			if(totalListEntriesLabel != null){
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+				totalListEntriesLabel.setWidth("250px");
+			} else if(noListDataLabel != null){
+				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+				noListDataLabel.setWidth("250px");
+			}
+		} else {
+			if(totalListEntriesLabel != null){
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+		        		 + "  <b>" + count + "</b>");
+		    } else if(noListDataLabel != null){
+	        	noListDataLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	        		 + "  <b>" + count + "</b>");
+	        	noListDataLabel.setContentMode(Label.CONTENT_XHTML);
+	        	noListDataLabel.setWidth("135px");
+			}
+        }
 	}
 }

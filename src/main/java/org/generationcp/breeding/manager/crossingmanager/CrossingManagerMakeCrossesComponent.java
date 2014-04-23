@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
@@ -308,9 +309,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         HorizontalLayout headerLayout = new HorizontalLayout();
         headerLayout.setWidth("730px");
-        headerLayout.addComponent(selectParentsLabel);
+        
+        HeaderLabelLayout selectParentsLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS,selectParentsLabel);
+        headerLayout.addComponent(selectParentsLayout);
         headerLayout.addComponent(closeAllTabsButton);
-        headerLayout.setComponentAlignment(selectParentsLabel,Alignment.MIDDLE_LEFT);
+        headerLayout.setComponentAlignment(selectParentsLayout,Alignment.MIDDLE_LEFT);
         headerLayout.setComponentAlignment(closeAllTabsButton,Alignment.MIDDLE_RIGHT);
         
         addComponent(headerLayout, "top:15px; left:250px;");

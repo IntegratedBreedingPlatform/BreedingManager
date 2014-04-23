@@ -22,7 +22,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected boolean doIncludeRefreshButton() {
-		return false;
+		return true;
 	}
 
 	@Override
