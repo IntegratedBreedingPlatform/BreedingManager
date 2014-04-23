@@ -55,16 +55,14 @@ public class CrossParents {
 		if (femaleParent == null) {
 			if (other.femaleParent != null)
 				return false;
-		} else if (!femaleParent.equals(other.femaleParent))
+		} else if (!femaleParent.hasEqualGidWith(other.femaleParent))
 			return false;
 		if (maleParent == null) {
 			if (other.maleParent != null)
 				return false;
-		} else if (!maleParent.equals(other.maleParent))
+		} else if (!maleParent.hasEqualGidWith(other.maleParent))
 			return false;
 		return true;
 	}
-	
-	
 
 }
