@@ -300,3 +300,14 @@
 .min_width_340px {
 	min-width: 340px !important;
 }
+
+/* colorpicker fix */
+.v-colorpicker-popup .v-colorpicker-history {
+  position: absolute !important;
+  top: 370px !important;
+}
+
+.v-colorpicker-popup .v-horizontallayout {
+  position: absolute !important;
+  top: 410px !important;
+}  
