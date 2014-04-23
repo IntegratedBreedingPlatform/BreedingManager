@@ -156,10 +156,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
             String maleDesig = maleParent.getDesignation();
 			String femaleSeedSource = listnameFemaleParent+":"+femaleParent.getEntryId();
 			String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
-			femaleParent.setSeedSource(femaleSeedSource);
-			maleParent.setSeedSource(maleSeedSource);
+			GermplasmListEntry femaleParentCopy = femaleParent.copy();
+			femaleParentCopy.setSeedSource(femaleSeedSource);
+			GermplasmListEntry maleParentCopy = maleParent.copy();
+			maleParentCopy.setSeedSource(maleSeedSource);
 			
-            CrossParents parents = new CrossParents(femaleParent, maleParent);
+            CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
             
             String seedSource = appendWithSeparator(femaleSeedSource, maleSeedSource);
             if (!crossAlreadyExists(parents)){
@@ -205,14 +207,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	for (GermplasmListEntry femaleParent : femaleParents){
             String femaleDesig = femaleParent.getDesignation();
             String femaleSource =listnameFemaleParent +":"+femaleParent.getEntryId();
-            femaleParent.setSeedSource(femaleSource);
+            GermplasmListEntry femaleParentCopy = femaleParent.copy();
+            femaleParentCopy.setSeedSource(femaleSource);
             
             for (GermplasmListEntry maleParent : maleParents){
                 String maleDesig = maleParent.getDesignation();
                 String maleSource =listnameMaleParent +":"+maleParent.getEntryId();
-                maleParent.setSeedSource(maleSource);
+                GermplasmListEntry maleParentCopy = maleParent.copy();
+                maleParentCopy.setSeedSource(maleSource);
                 
-                CrossParents parents = new CrossParents(femaleParent, maleParent);
+                CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
                 
                 if (!crossAlreadyExists(parents)){
 					String seedSource=appendWithSeparator(femaleSource,maleSource);
