@@ -314,6 +314,20 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     	this.requestRepaint();
     }
     
+    public void repaintTabsheet() {
+    	if(detailsTabSheet.isVisible()){
+    	    this.removeAllComponents();
+    	    this.addComponent(headingBar);
+    	    this.addComponent(detailsTabSheet);
+    	
+            headingBar.setVisible(true);
+            defaultLabel.setVisible(false);
+            detailsTabSheet.setVisible(true);
+        
+    	    this.requestRepaint();
+    	}
+    }    
+    
     public void renameTab(Integer listId, String newName){
         String tabDescription = generateTabDescription(listId);
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);

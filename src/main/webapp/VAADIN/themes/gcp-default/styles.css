@@ -497,3 +497,6 @@
 .tabsheet-white > .v-tabsheet-content {
 	border-color: #ffffff;
 }
+
+/* fix for 8270 */
+.v-scrollable { width:100% !important; }
