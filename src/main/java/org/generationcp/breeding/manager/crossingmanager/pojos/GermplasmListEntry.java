@@ -145,6 +145,22 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         return true;
     }
     
-    
+    public boolean hasEqualGidWith(GermplasmListEntry entry){
+    	if(this.gid == null){
+    		if(entry.gid != null){
+    			return false;
+    		}
+    	} else {
+    		if(entry.gid == null){
+    			return false;
+    		} else{
+    			if(!this.gid.equals(entry.gid)){
+    				return false;
+    			}
+    		}
+    	}
+    	
+    	return true;
+    }
 
 }
