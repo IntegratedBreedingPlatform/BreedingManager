@@ -225,6 +225,10 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 	
 	private void toggleSettingsFields(boolean enabled){
 		settingsComboBox.setEnabled(enabled);
+		
+		if(!enabled){
+			settingsComboBox.setValue(null);
+		}
 		deleteSettingButton.setEnabled(enabled);
 	}
 
