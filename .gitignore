@@ -2,3 +2,6 @@ src/main/resources/IBPDatasource.properties
 src/main/resources/workbench.properties
 target
 .settings/*
+.settings/com.vaadin.integration.eclipse.prefs
+.settings/org.eclipse.wst.common.component
+.settings/org.eclipse.wst.common.project.facet.core.xml

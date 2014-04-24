@@ -56,7 +56,7 @@ public class GenerateCrossNameAction {
         if (startNumber != null && startNumber > 0){
         	nextNumberInSequence = startNumber;
         } else {
-        	String nextSequenceNumberString = this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.trim());
+        	String nextSequenceNumberString = this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.toUpperCase().trim());
         	nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
         }
         

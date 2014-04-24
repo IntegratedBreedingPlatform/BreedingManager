@@ -339,6 +339,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	@Override
 	public void toggleListTreeComponent() {
 		this.browseListsComponent.toggleListTreeComponent();
+		browseListsComponent.getListDetailsLayout().repaintTabsheet();
 	}
 	
 	public void toggleBuildNewListComponent() {
@@ -350,6 +351,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 			collapseRight();
 			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
 		}
+		browseListsComponent.getListDetailsLayout().repaintTabsheet();
 	}
 	
 	
