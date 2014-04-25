@@ -285,7 +285,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout implements
 
         if(showOnlyFavorites){
         	try {
-				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, 
+				BreedingManagerUtil.populateWithFavoriteMethodsOfTypeGen(workbenchDataManager, germplasmDataManager, 
 						crossingMethodComboBox, mapMethods);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();

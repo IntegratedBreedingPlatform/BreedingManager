@@ -268,7 +268,7 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
         if(showOnlyFavorites){
         	try {
         		
-				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
+				BreedingManagerUtil.populateWithFavoriteBreedingLocations(workbenchDataManager, 
 						germplasmDataManager, harvestLocComboBox, mapLocation);
 				
 			} catch (MiddlewareQueryException e) {
