@@ -158,12 +158,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     	setStyleName(Runo.TABSHEET_SMALL);
         setMargin(false);
     	
-    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		detailsTabSheet.setHeight("395px");
-    	}
-    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-        	detailsTabSheet.setHeight("558px");
-    	}
+        setDetailsTabSheetHeight();
     	 
     	//Components
         headingBar.setWidth("98%");
@@ -184,7 +179,16 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         displayDefault();
     }
     
-    public void displayDefault(){
+    public void setDetailsTabSheetHeight() {
+    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
+    		detailsTabSheet.setHeight("395px");
+    	}
+    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
+        	detailsTabSheet.setHeight("558px");
+    	}
+	}
+
+	public void displayDefault(){
     	noListLabel.setVisible(false);        
         headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
@@ -361,6 +365,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     	int selectedTabIndex = detailsTabSheet.getTabPosition(selectedTab);
     	
     	detailsTabSheet = new TabSheet();
+    	setDetailsTabSheetHeight();
     	
     	for(Map.Entry<Integer,String> entry: tabIds.entrySet()){
     		Integer id = entry.getKey();
