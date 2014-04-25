@@ -298,6 +298,7 @@ public class ListManagerMain extends AbsoluteLayout implements
     	updateUIForDeletedList(list); // remove the list to be edited from the review list details tabsheet
 		buildNewListComponent.editList(list);
     	expandRight();
+    	browseListsComponent.getListDetailsLayout().repaintTabsheet();
     }
     
     @Override
@@ -354,7 +355,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 		browseListsComponent.getListDetailsLayout().repaintTabsheet();
 	}
 	
-	
 	/* SETTERS AND GETTERS */
 	public BuildNewListComponent getBuildNewListComponent() {
 		return buildNewListComponent;
@@ -363,6 +363,5 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public ListManagerBrowseListComponent getBrowseListsComponent(){
 		return browseListsComponent;
 	}
-
-
+	
 }

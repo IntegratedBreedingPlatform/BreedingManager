@@ -11,6 +11,10 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -323,10 +327,39 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
             headingBar.setVisible(true);
             defaultLabel.setVisible(false);
             detailsTabSheet.setVisible(true);
-        
+            
+            refreshListDetailsTabSheet();
+            
     	    this.requestRepaint();
     	}
-    }    
+    }
+    
+    public void refreshListDetailsTabSheet(){
+    	Map<Integer,String> tabIds = new HashMap<Integer,String>(); 
+        	
+    	Integer tabCount = detailsTabSheet.getComponentCount();
+    	for(int i = 0; i < tabCount; i++){
+    		String listCaption = detailsTabSheet.getTab(i).getDescription();
+    		listCaption = listCaption.replace(TAB_DESCRIPTION_PREFIX,"").trim();		
+    		int listId = Integer.valueOf(listCaption);
+    	
+    		tabIds.put(listId,"List");
+    	}
+    	
+    	detailsTabSheet = new TabSheet();
+    	
+    	for(Map.Entry<Integer,String> entry: tabIds.entrySet()){
+    		Integer id = entry.getKey();
+    		try {
+				createListDetailsTab(id);
+			} catch (MiddlewareQueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+    	detailsTabSheet.requestRepaintAll();
+    }
     
     public void renameTab(Integer listId, String newName){
         String tabDescription = generateTabDescription(listId);
