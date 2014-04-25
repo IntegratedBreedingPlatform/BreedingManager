@@ -299,6 +299,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		buildNewListComponent.editList(list);
     	expandRight();
     	browseListsComponent.getListDetailsLayout().repaintTabsheet();
+    	searchListsComponent.getListManagerDetailsLayout().repaintTabsheet();
     }
     
     @Override
@@ -352,7 +353,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 			collapseRight();
 			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
 		}
+		
 		browseListsComponent.getListDetailsLayout().repaintTabsheet();
+		searchListsComponent.getListManagerDetailsLayout().repaintTabsheet();
 	}
 	
 	/* SETTERS AND GETTERS */

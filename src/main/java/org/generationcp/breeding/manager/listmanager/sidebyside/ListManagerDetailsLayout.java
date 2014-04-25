@@ -13,6 +13,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -335,29 +336,51 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
     
     public void refreshListDetailsTabSheet(){
-    	Map<Integer,String> tabIds = new HashMap<Integer,String>(); 
+    	Map<Integer,String> tabIds = new LinkedHashMap<Integer,String>(); 
         	
     	Integer tabCount = detailsTabSheet.getComponentCount();
-    	for(int i = 0; i < tabCount; i++){
-    		String listCaption = detailsTabSheet.getTab(i).getDescription();
-    		listCaption = listCaption.replace(TAB_DESCRIPTION_PREFIX,"").trim();		
-    		int listId = Integer.valueOf(listCaption);
+    	for(int i = 0; i < tabCount ; i++){
+    		String listDescription = detailsTabSheet.getTab(i).getDescription();
+    		
+    		String tabCaption = detailsTabSheet.getTab(i).getCaption();
+    		int listId = 0;
+    		if(tabCaption.startsWith("Germplasm")){
+    			listId = Integer.valueOf(tabCaption.replace("Germplasm - ","").trim());
+    			tabIds.put(listId,"Germplasm");
+    		}
+    		else{
+    			listDescription = listDescription.replace(TAB_DESCRIPTION_PREFIX,"").trim();		
+        		listId = Integer.valueOf(listDescription);
+        		tabIds.put(listId,"List");
+    		}
     	
-    		tabIds.put(listId,"List");
     	}
+    	
+    	Tab selectedTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
+    	
+    	int selectedTabIndex = detailsTabSheet.getTabPosition(selectedTab);
     	
     	detailsTabSheet = new TabSheet();
     	
     	for(Map.Entry<Integer,String> entry: tabIds.entrySet()){
     		Integer id = entry.getKey();
+    		
     		try {
-				createListDetailsTab(id);
+    			
+	    		if(entry.getValue().equals("Germplasm")){
+	    			createGermplasmDetailsTab(id);
+	    		}
+	    		else{
+	    			createListDetailsTab(id);
+	    		}
+    		
 			} catch (MiddlewareQueryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
     	
+    	detailsTabSheet.setSelectedTab(selectedTabIndex);
     	detailsTabSheet.requestRepaintAll();
     }
     
