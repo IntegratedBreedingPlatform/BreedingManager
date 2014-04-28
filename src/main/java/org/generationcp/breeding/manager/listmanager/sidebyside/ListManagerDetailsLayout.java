@@ -116,6 +116,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
+    	detailsTabSheet.setWidth("100%");
+    	detailsTabSheet.addStyleName("listDetails");
     	
         noListLabel = new Label();
         noListLabel.setImmediate(true);
@@ -336,8 +338,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
             if(detailsTabSheet.getComponentCount() > 1){
             	btnCloseAllTabs.setVisible(true);
             }
-            
-            this.requestRepaint();
+            this.requestRepaintAll();
     	}
     }
     

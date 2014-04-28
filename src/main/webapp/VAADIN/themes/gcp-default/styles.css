@@ -499,4 +499,5 @@
 }
 
 /* fix for 8270 */
-.v-scrollable { width:100% !important; }
+.listDetails .v-scrollable, .v-tabsheet-tabsheetpanel { width:100% !important; }
+ 
