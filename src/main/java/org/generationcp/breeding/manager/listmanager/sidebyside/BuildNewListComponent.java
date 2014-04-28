@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -217,6 +218,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
 	@Override
 	public void addListeners() {
+		
+		new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
 		
 		toggleBuildNewListButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;

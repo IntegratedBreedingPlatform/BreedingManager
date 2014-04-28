@@ -88,6 +88,8 @@ public class FillWith implements InternationalizableComponent  {
     
     private ListDetailsComponent listDetailsComponent;
     
+    private org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent;
+    
     public FillWith(String GIDPropertyId, Table targetTable){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
@@ -159,6 +161,18 @@ public class FillWith implements InternationalizableComponent  {
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	this.listDetailsComponent = listDetailsComponent;
+    	
+    	setupContextMenu();
+    }
+    
+    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
+    		, final Table targetTable, String GIDPropertyId){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.parentLayout = buildListComponent;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.buildListComponent = buildListComponent;
     	
     	setupContextMenu();
     }
@@ -331,6 +345,10 @@ public class FillWith implements InternationalizableComponent  {
 	    	listDetailsComponent.setChanged(true);
 	    }
 	    
+	    if(buildListComponent != null){
+	    	buildListComponent.setChanged(true);
+	    }
+	    
 	    //To trigger TableFieldFactory (fix for truncated data)
 		if(table.isEditable()){
 			table.setEditable(false);
@@ -349,7 +367,8 @@ public class FillWith implements InternationalizableComponent  {
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent
+        		, buildListComponent);
         attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);
     }

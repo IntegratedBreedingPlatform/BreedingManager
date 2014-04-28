@@ -59,6 +59,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private List<UserDefinedField> attributeList;
     private BuildNewListComponent buildNewListComponent;
     private ListDetailsComponent listDetailsComponent;
+    private org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -73,13 +74,15 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     }
     
     public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent, ListDetailsComponent listDetailsComponent) {
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent, ListDetailsComponent listDetailsComponent
+            ,org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
         this.buildNewListComponent = buildNewListComponent;
         this.listDetailsComponent = listDetailsComponent;
+        this.buildListComponent = buildListComponent;
     }
     
     @Override
@@ -171,6 +174,10 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
 
         if(listDetailsComponent != null){
         	listDetailsComponent.setChanged(true);
+        }
+        
+        if(buildListComponent != null){
+        	buildListComponent.setChanged(true);
         }
      }
     
