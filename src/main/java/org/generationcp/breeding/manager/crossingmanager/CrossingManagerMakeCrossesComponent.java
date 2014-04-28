@@ -109,7 +109,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             if (CrossType.MULTIPLY.equals(type)){
                 crossesTableComponent.multiplyParents(femaleList, maleList,listnameFemaleParent, listnameMaleParent);
                 if (makeReciprocalCrosses){
-                    crossesTableComponent.multiplyParents(maleList, femaleList,listnameFemaleParent,listnameMaleParent);
+                    crossesTableComponent.multiplyParents(maleList, femaleList,listnameMaleParent,listnameFemaleParent);
                 }               
                 
             // Top to Bottom Crossing    
@@ -117,7 +117,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                 if (femaleList.size() == maleList.size()){
                     crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,listnameFemaleParent, listnameMaleParent);
                     if (makeReciprocalCrosses){
-                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,listnameFemaleParent, listnameMaleParent);
+                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,listnameMaleParent, listnameFemaleParent);
                     }
                 } else {
                     MessageNotifier.showError(getWindow(), "Error with selecting parents."
