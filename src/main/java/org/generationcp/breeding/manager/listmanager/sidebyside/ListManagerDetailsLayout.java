@@ -333,60 +333,12 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
             defaultLabel.setVisible(false);
             detailsTabSheet.setVisible(true);
             
-            refreshListDetailsTabSheet();
+            if(detailsTabSheet.getComponentCount() > 1){
+            	btnCloseAllTabs.setVisible(true);
+            }
             
-    	    this.requestRepaint();
+            this.requestRepaint();
     	}
-    }
-    
-    public void refreshListDetailsTabSheet(){
-    	Map<Integer,String> tabIds = new LinkedHashMap<Integer,String>(); 
-        	
-    	Integer tabCount = detailsTabSheet.getComponentCount();
-    	for(int i = 0; i < tabCount ; i++){
-    		String listDescription = detailsTabSheet.getTab(i).getDescription();
-    		
-    		String tabCaption = detailsTabSheet.getTab(i).getCaption();
-    		int listId = 0;
-    		if(tabCaption.startsWith("Germplasm")){
-    			listId = Integer.valueOf(tabCaption.replace("Germplasm - ","").trim());
-    			tabIds.put(listId,"Germplasm");
-    		}
-    		else{
-    			listDescription = listDescription.replace(TAB_DESCRIPTION_PREFIX,"").trim();		
-        		listId = Integer.valueOf(listDescription);
-        		tabIds.put(listId,"List");
-    		}
-    	
-    	}
-    	
-    	Tab selectedTab = detailsTabSheet.getTab(detailsTabSheet.getSelectedTab());
-    	
-    	int selectedTabIndex = detailsTabSheet.getTabPosition(selectedTab);
-    	
-    	detailsTabSheet = new TabSheet();
-    	setDetailsTabSheetHeight();
-    	
-    	for(Map.Entry<Integer,String> entry: tabIds.entrySet()){
-    		Integer id = entry.getKey();
-    		
-    		try {
-    			
-	    		if(entry.getValue().equals("Germplasm")){
-	    			createGermplasmDetailsTab(id);
-	    		}
-	    		else{
-	    			createListDetailsTab(id);
-	    		}
-    		
-			} catch (MiddlewareQueryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
-    	
-    	detailsTabSheet.setSelectedTab(selectedTabIndex);
-    	detailsTabSheet.requestRepaintAll();
     }
     
     public void renameTab(Integer listId, String newName){
