@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.customfields.BreedingManagerDateField;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -29,15 +28,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
@@ -46,7 +45,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
+public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		implements BreedingManagerLayout, InternationalizableComponent,
 		InitializingBean {
 
@@ -56,32 +55,29 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	private static final long serialVersionUID = -4119454332332114156L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsOtherDetailsComponent.class);
-	
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
-	private Label additionalDetailsSectionTitle;
-	private Label harvestDateLabel;
-    private Label harvestLocationLabel;
+	private Label harvestDetailsLabel;
 
-    private Label saveSettingsSectionTitle;
+	private ComboBox harvestLocations;
+	private CheckBox showFavouriteLocations;
+	private Button manageFavoriteLocations;
+
+	private DateField harvestDate;
+
     private Label saveSettingsLabel;
-    private Label saveAsLabel;
+
     private TextField settingsNameTextfield;
     private CheckBox setAsDefaultSettingCheckbox;
-    private OptionGroup saveSettingsOptionGroup;
-    
-    private DateField harvestDtDateField;
-    private ComboBox harvestLocComboBox;
-    private Button manageFavoriteLocationsLink; 
-    private CheckBox showFavoriteLocationsCheckBox;
-    
+
     private Map<String, Integer> mapLocation;
     private List<Location> locations;
 
@@ -98,72 +94,47 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
         super.attach();
         updateLabels();
     }
-        
+
     @Override
     public void updateLabels() {
-    	additionalDetailsSectionTitle.setValue(messageSource.getMessage(Message.ADDITIONAL_DETAILS).toUpperCase());
-    	saveSettingsSectionTitle.setValue(messageSource.getMessage(Message.SAVE_SETTINGS).toUpperCase());
-    	
-    	harvestDateLabel.setValue(messageSource.getMessage(Message.HARVEST_DATE) + ":");
-    	harvestLocationLabel.setValue(messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
-    	saveSettingsLabel.setValue(messageSource.getMessage(Message.SAVE_THIS_SETTING_TO_USE_AGAIN));
-    	saveAsLabel.setValue(messageSource.getMessage(Message.SAVE_AS) + ":");
-    	
-    	messageSource.setCaption(showFavoriteLocationsCheckBox, Message.SHOW_ONLY_FAVORITE_LOCATIONS);
-    	messageSource.setCaption(manageFavoriteLocationsLink, Message.MANAGE_LOCATIONS);
+    	harvestDetailsLabel.setValue(messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
+    	saveSettingsLabel.setValue(messageSource.getMessage(Message.SAVE_SETTINGS).toUpperCase());
+
+    	messageSource.setCaption(showFavouriteLocations, Message.SHOW_ONLY_FAVORITE_LOCATIONS);
+    	messageSource.setCaption(manageFavoriteLocations, Message.MANAGE_LOCATIONS);
     	messageSource.setCaption(setAsDefaultSettingCheckbox, Message.SET_AS_DEFAULT_FOR_THIS_PROGRAM_OVERRIDES_PREVIOUS_DEFAULTS);
-    	
     }
 
 	@Override
 	public void instantiateComponents() {
-		initializeAdditionalDetailsSection();
+		initializeHarvestDetailsSection();
 		initializeSaveSettingsSection();
-		
 	}
 
 	private void initializeSaveSettingsSection() {
-		saveSettingsSectionTitle = new Label();
-		saveSettingsSectionTitle.setStyleName(Bootstrap.Typography.H4.styleName());
-		
-		saveSettingsLabel = new Label();
-		saveAsLabel = new Label();
-		settingsNameTextfield = new TextField();
-		settingsNameTextfield.setWidth("240px");
-		
-		saveSettingsOptionGroup = new OptionGroup();
-		saveSettingsOptionGroup.setImmediate(true);
-		saveSettingsOptionGroup.addStyleName(AppConstants.CssStyles.HORIZONTAL_GROUP);
-		
+		saveSettingsLabel = new Label(messageSource.getMessage(Message.SAVE_SETTINGS));
+		saveSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
+		settingsNameTextfield = new TextField(messageSource.getMessage(Message.SAVE_AS));
 		setAsDefaultSettingCheckbox = new CheckBox();
 	}
 
-	private void initializeAdditionalDetailsSection() {
-		additionalDetailsSectionTitle = new Label();
-		additionalDetailsSectionTitle.setStyleName(Bootstrap.Typography.H4.styleName());
-		
-		harvestDateLabel = new Label();
-		harvestDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
-        
-        harvestDtDateField = new BreedingManagerDateField(
-        		messageSource.getMessage(Message.HARVEST_DATE));
-        harvestDtDateField.setWidth("240px");
-        
-        harvestLocationLabel = new Label();
-        harvestLocationLabel.addStyleName(AppConstants.CssStyles.BOLD);
-        
-        harvestLocComboBox = new ComboBox();
-        harvestLocComboBox.setWidth("240px");
-        harvestLocComboBox.setNullSelectionAllowed(true);
-        
-        showFavoriteLocationsCheckBox = new CheckBox();
-        showFavoriteLocationsCheckBox.setImmediate(true);
-        
-        manageFavoriteLocationsLink = new Button();
-        manageFavoriteLocationsLink.setStyleName(Reindeer.BUTTON_LINK);
+	private void initializeHarvestDetailsSection() {
+		harvestDetailsLabel = new Label(messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
+		harvestDetailsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
+
+		harvestLocations = new ComboBox(messageSource.getMessage(Message.HARVEST_LOCATION));
+        harvestLocations.setNullSelectionAllowed(true);
+
+        harvestDate = new BreedingManagerDateField();
+        harvestDate.setCaption(messageSource.getMessage(Message.HARVEST_DATE));
+
+        showFavouriteLocations = new CheckBox();
+        showFavouriteLocations.setImmediate(true);
+
+        manageFavoriteLocations = new Button();
+        manageFavoriteLocations.setStyleName(Reindeer.BUTTON_LINK);
 	}
 
-	
 	@Override
 	public void initializeValues() {
 		try {
@@ -171,33 +142,26 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error(e.getMessage());
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
 					"Error getting breeding locations!");
 		}
-        
-        saveSettingsOptionGroup.addItem(SaveSettingOption.NO);
-		saveSettingsOptionGroup.setItemCaption(SaveSettingOption.NO, messageSource.getMessage(Message.NO));
-		saveSettingsOptionGroup.addItem(SaveSettingOption.YES);
-		saveSettingsOptionGroup.setItemCaption(SaveSettingOption.YES, messageSource.getMessage(Message.YES));
-		
 		setFieldsDefaultValue();
 	}
 
 	@Override
 	public void addListeners() {
-		showFavoriteLocationsCheckBox.addListener(new Property.ValueChangeListener(){
+		showFavouriteLocations.addListener(new Property.ValueChangeListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
 			}
-			
+
 		});
-        
-		
-		manageFavoriteLocationsLink.addListener(new ClickListener(){
+
+		manageFavoriteLocations.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
-			
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
@@ -208,88 +172,69 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 						private static final long serialVersionUID = 1L;
 						@Override
 						public void windowClose(CloseEvent e) {
-							Object lastValue = harvestLocComboBox.getValue();
-							populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
-							harvestLocComboBox.setValue(lastValue);
+							Object lastValue = harvestLocations.getValue();
+							populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true));
+							harvestLocations.setValue(lastValue);
 						}
 					});
 				} catch (MiddlewareQueryException e){
 					LOG.error("Error on manageFavoriteLocations click", e);
 				}
-		
-			}
-			
-		});
-		
-		saveSettingsOptionGroup.addListener(new Property.ValueChangeListener() {
-			
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				toggleSaveSettingFields(SaveSettingOption.YES.equals(event.getProperty().getValue()));
 			}
 		});
 	}
-	
 
 	@Override
 	public void layoutComponents() {
-		// Additional Details Section
-		addComponent(additionalDetailsSectionTitle, "top:0px;left:0px");
-		
-		addComponent(harvestLocationLabel, "top:30px;left:0px");
-		addComponent(harvestLocComboBox, "top:30px;left:145px");
-		addComponent(showFavoriteLocationsCheckBox, "top:30px;left:410px");
-		addComponent(manageFavoriteLocationsLink,"top:48px;left:430px;");
 
-		addComponent(harvestDateLabel, "top:64px;left:0px");
-        addComponent(harvestDtDateField, "top:64px;left:145px");
-		
-		
-        // Save Settings section
-		addComponent(saveSettingsSectionTitle, "top:105px;left:0px");
-		addComponent(saveSettingsLabel, "top:130px; left:0px;");
-		addComponent(saveSettingsOptionGroup, "top:130px; left:190px");
-		addComponent(saveAsLabel, "top:130px; left:300px;");
-		addComponent(settingsNameTextfield, "top:130px; left:370px;");
-		addComponent(setAsDefaultSettingCheckbox, "top:160px; left:297px;");
-        
+		final CssLayout favMethodsLayout = new CssLayout();
+		favMethodsLayout.addComponent(showFavouriteLocations);
+		favMethodsLayout.addComponent(manageFavoriteLocations);
+
+		final FormLayout harvestFormFields = new FormLayout();
+		harvestFormFields.addComponent(harvestDate);
+		harvestFormFields.addComponent(harvestLocations);
+		harvestFormFields.addComponent(favMethodsLayout);
+
+		final FormLayout settingsFormFields = new FormLayout();
+		settingsFormFields.addComponent(settingsNameTextfield);
+		settingsFormFields.addComponent(setAsDefaultSettingCheckbox);
+
+		addComponent(harvestDetailsLabel);
+		addComponent(harvestFormFields);
+		addComponent(saveSettingsLabel);
+		addComponent(settingsFormFields);
 	}
 
 	private void populateHarvestLocation() {
-    	populateHarvestLocation(((Boolean) showFavoriteLocationsCheckBox.getValue()).equals(true));
+    	populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true));
     }
-	    
+
     private void populateHarvestLocation(boolean showOnlyFavorites) {
-        harvestLocComboBox.removeAllItems();
+        harvestLocations.removeAllItems();
         mapLocation = new HashMap<String, Integer>();
 
         if(showOnlyFavorites){
         	try {
-        		
-				BreedingManagerUtil.populateWithFavoriteBreedingLocations(workbenchDataManager, 
-						germplasmDataManager, harvestLocComboBox, mapLocation);
-				
+				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager,
+						germplasmDataManager, harvestLocations, mapLocation);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				LOG.error(e.getMessage());
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
 						"Error getting favorite locations!");
 			}
-			
         } else {
         	populateWithLocations();
         }
-
     }
-    
+
     private void populateWithLocations(){
-		harvestLocComboBox.removeAllItems();
-        
+		harvestLocations.removeAllItems();
+
         for (Location loc : locations) {
-        	harvestLocComboBox.addItem(loc.getLocid());
-    		harvestLocComboBox.setItemCaption(loc.getLocid(), loc.getLname());
+        	harvestLocations.addItem(loc.getLocid());
+    		harvestLocations.setItemCaption(loc.getLocid(), loc.getLname());
     		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
         }
     }
@@ -303,71 +248,48 @@ public class CrossingSettingsOtherDetailsComponent extends AbsoluteLayout
 	}
 
 	public DateField getHarvestDtDateField() {
-		return harvestDtDateField;
+		return harvestDate;
 	}
 
 	public ComboBox getHarvestLocComboBox() {
-		return harvestLocComboBox;
+		return harvestLocations;
 	}
-    
+
 	public boolean validateInputFields(){
-		
+
 		try {
-			harvestDtDateField.validate();
+			harvestDate.validate();
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage()
 					, Notification.POSITION_CENTERED);
 			return false;
 		}
-		
-		
-		String settingsName = (String) settingsNameTextfield.getValue();
-		
-		// validations only when setting will be saved
-		if (doSaveSetting()){
-			if(settingsName == null || settingsName.trim().length() == 0){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please specify a name for the setting."
-						, Notification.POSITION_CENTERED);
-				return false;
-			}
-		}
-
 		return true;
 	}
 
 	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
-		showFavoriteLocationsCheckBox.setValue(false);
+		showFavouriteLocations.setValue(false);
 		populateHarvestLocation();
-		
-		harvestLocComboBox.select(additionalDetailsSetting.getHarvestLocationId());
-		harvestDtDateField.setValue(additionalDetailsSetting.getHarvestDate());
-		
-		
-		saveSettingsOptionGroup.select(SaveSettingOption.YES);
+
+		harvestLocations.select(additionalDetailsSetting.getHarvestLocationId());
+		harvestDate.setValue(additionalDetailsSetting.getHarvestDate());
+
 		settingsNameTextfield.setValue(name);
-		
+
 		setAsDefaultSettingCheckbox.setValue(isDefault);
 	}
 
 	public void setFieldsDefaultValue() {
-		harvestLocComboBox.select(null);
-		harvestDtDateField.setValue(null);
+		harvestLocations.select(null);
+		harvestDate.setValue(null);
 		settingsNameTextfield.setValue("");
 		setAsDefaultSettingCheckbox.setValue(false);
-		showFavoriteLocationsCheckBox.setValue(false);
-		
-		saveSettingsOptionGroup.select(SaveSettingOption.NO);
-		toggleSaveSettingFields(false);
-		
+		showFavouriteLocations.setValue(false);
+
 		populateHarvestLocation();
 	}
-	
-	private void toggleSaveSettingFields(boolean enabled){
-		saveAsLabel.setEnabled(enabled);
-		settingsNameTextfield.setEnabled(enabled);
-	}
-	
-	public boolean doSaveSetting(){
-		return SaveSettingOption.YES.equals(saveSettingsOptionGroup.getValue());
+
+	public Boolean settingsFileNameProvided() {
+		return settingsNameTextfield.getValue() != null && (String) settingsNameTextfield.getValue() == "";
 	}
 }

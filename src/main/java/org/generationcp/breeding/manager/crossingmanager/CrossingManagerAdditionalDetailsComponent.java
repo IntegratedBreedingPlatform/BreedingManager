@@ -16,8 +16,8 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout 
@@ -30,14 +30,14 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     @SuppressWarnings("unused")
 	private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerAdditionalDetailsComponent.class);
     
-    private CrossingManagerMain source;
-    private Accordion accordion;
+    private final CrossingManagerMain source;
+    private final Accordion accordion;
     private CrossesMade crossesMade;
     
     //Used Form to make use of fieldset HTML element to render section border
-    private VerticalLayout crossingMethodForm;
-    private VerticalLayout crossNameForm;
-    private VerticalLayout crossInfoForm;
+    private CssLayout crossingMethodForm;
+    private CssLayout crossNameForm;
+    private CssLayout crossInfoForm;
     
     private AdditionalDetailsBreedingMethodComponent crossingMethodComponent;
     private AdditionalDetailsCrossNameComponent crossNameComponent;
@@ -46,7 +46,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
     private Button backButton;
     private Button nextButton;
 
-    private CrossesMadeContainerUpdateListener[] updateListeners = new CrossesMadeContainerUpdateListener[3];
+    private final CrossesMadeContainerUpdateListener[] updateListeners = new CrossesMadeContainerUpdateListener[3];
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -102,7 +102,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         crossingMethodLabel.setContentMode(Label.CONTENT_XHTML);
         
         crossingMethodComponent = new AdditionalDetailsBreedingMethodComponent();
-        crossingMethodForm = new VerticalLayout();
+        crossingMethodForm = new CssLayout();
         crossingMethodForm.addComponent(crossingMethodLabel);
         crossingMethodForm.addComponent(crossingMethodComponent);
 
@@ -110,7 +110,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         crossNameLabel.setContentMode(Label.CONTENT_XHTML);
 
         crossNameComponent = new AdditionalDetailsCrossNameComponent();
-        crossNameForm = new VerticalLayout();
+        crossNameForm = new CssLayout();
         crossNameForm.addComponent(crossNameLabel);
         crossNameForm.addComponent(crossNameComponent);
         
@@ -118,7 +118,7 @@ public class CrossingManagerAdditionalDetailsComponent extends AbsoluteLayout
         crossInfoLabel.setContentMode(Label.CONTENT_XHTML);
         
         crossInfoComponent = new AdditionalDetailsCrossInfoComponent();
-        crossInfoForm = new VerticalLayout();
+        crossInfoForm = new CssLayout();
         crossInfoForm.addComponent(crossInfoLabel);
         crossInfoForm.addComponent(crossInfoComponent);
         

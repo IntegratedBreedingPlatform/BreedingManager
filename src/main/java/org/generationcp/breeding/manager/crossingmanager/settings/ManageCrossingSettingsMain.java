@@ -46,9 +46,9 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	private TabSheet tabSheet;
 	
 	private CrossesMade crossesMade = new CrossesMade();
-	private ComponentContainer parent;
+	private final ComponentContainer parent;
 	
-	private String[] wizardStepNames = new String[NUMBER_OF_STEPS];
+	private final String[] wizardStepNames = new String[NUMBER_OF_STEPS];
 	
 	public ManageCrossingSettingsMain(ComponentContainer parent) {
 		this.parent = parent;
@@ -86,7 +86,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("810px");
+		tabSheet.setHeight("1000px");
 		tabSheet.setWidth("100%");
 		
 		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);

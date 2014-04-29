@@ -13,12 +13,10 @@ import javax.xml.bind.Unmarshaller;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent.CrossingMethodOption;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -38,14 +36,13 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class CrossingSettingsDetailComponent extends VerticalLayout 
+public class CrossingSettingsDetailComponent extends CssLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	private static final long serialVersionUID = -7733004867121978697L;
@@ -150,20 +147,21 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("900px");
-		setHeight("800px");
+		setHeight("990px");
 		
 		sectionPanel = new Panel();
 		sectionPanel.setWidth("100%");
-		sectionPanel.setHeight("730px");
+		sectionPanel.setHeight("940px");
 		sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 		
-		VerticalLayout sectionLayout = new VerticalLayout();
-		sectionLayout.setMargin(true);
+		CssLayout sectionLayout = new CssLayout();
+		sectionLayout.setMargin(false, true, true, true);
 		
-		defineSettingComponent.setHeight("90px");
-		methodComponent.setHeight("150px");
-		nameComponent.setHeight("250px");
-		additionalDetailsComponent.setHeight("200px");
+		// cs is our crossing settings namespace
+		sectionLayout.addStyleName("cs");
+		defineSettingComponent.addStyleName("cs-panel-section");
+		methodComponent.addStyleName("cs-panel-section");
+		nameComponent.addStyleName("cs-panel-section");
 		
 		sectionLayout.addComponent(defineSettingComponent);
 		sectionLayout.addComponent(methodComponent);
@@ -186,7 +184,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 		
 		addComponent(sectionPanel);
 		addComponent(buttonLayout);
-		
 	}
 	
 	
@@ -203,6 +200,7 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 		ConfirmDialog.show(getWindow(), "Reset Crossing Manage Setting",  message,
 				"Yes", "No", new ConfirmDialog.Listener() {	
 				private static final long serialVersionUID = 1L;	
+				@Override
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						if(currentSetting != null){
@@ -245,6 +243,7 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 			ConfirmDialog.show(getWindow(), "Delete Crossing Manage Setting",  message,
 					"Yes", "No", new ConfirmDialog.Listener() {	
 					private static final long serialVersionUID = 1L;	
+					@Override
 					public void onClose(ConfirmDialog dialog) {
 						if (dialog.isConfirmed()) {
 							try {
@@ -270,9 +269,6 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 	} // end of doDeleteAction
 
 	private void doNextAction(){
-		if(!methodComponent.validateInputFields()){
-			return;
-		}
 		
 		if(!nameComponent.validateInputFields()){
 			return;
@@ -282,7 +278,7 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
 			return;
 		}
 		
-		if (additionalDetailsComponent.doSaveSetting()){
+		if (additionalDetailsComponent.settingsFileNameProvided()){
 			saveSetting();	
 		}
 		
@@ -451,11 +447,9 @@ public class CrossingSettingsDetailComponent extends VerticalLayout
         AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 		
-		Integer methodId = (Integer) methodComponent.getCrossingMethodComboBox().getValue();
-		boolean isBasedOnStatusOfParentalLines = true;
-		if(methodComponent.getCrossingMethodOptionGroup().getValue().equals(CrossingMethodOption.SAME_FOR_ALL_CROSSES)){
-			isBasedOnStatusOfParentalLines = false;
-		}
+		final Integer methodId = methodComponent.getSelectedBreedingMethodId();
+		boolean isBasedOnStatusOfParentalLines = methodComponent.isBasedOnStatusOfParentalLines();
+		
 		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
 		toreturn.setBreedingMethodSetting(breedingMethodSetting);
 		

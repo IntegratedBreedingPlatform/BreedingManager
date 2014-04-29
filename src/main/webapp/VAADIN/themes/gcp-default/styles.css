@@ -18,14 +18,14 @@
 	text-transform: uppercase;
     font-size: 14px;
     font-weight: normal;
-    display: inline-block; 
+    display: inline-block;
 	color: #333333;
 }
 
 .gcp-window-title H2 {
     font-size: 12px;
     font-weight: normal;
-    display: inline-block; 
+    display: inline-block;
 	color: #333333;
 }
 
@@ -39,6 +39,11 @@
 	font-weight: bold;
 	font-size: 12px;
 	color: #333333;
+}
+
+.gcp-content-help-text {
+	font-style: italic;
+	padding-bottom: 10px;
 }
 
 
@@ -64,7 +69,7 @@
      margin: 2px 20px;
 	 margin-left: 2px;
      padding: 0px 5px;
-     text-decoration: none;	
+     text-decoration: none;
      border-radius: 50%;
 }
 
@@ -187,7 +192,7 @@
 	font-size: 12px;
 	padding-bottom:5px;
 }
-	
+
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
 	padding-left: 25px !important;
@@ -204,7 +209,7 @@
 	padding-bottom:3px;
 	padding-top:3px;
 }
-	
+
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
 	padding-left: 25px !important;
@@ -247,7 +252,7 @@
 
 .gray-rounded-border{
 	border:1px solid #e0e0e0;
-	border-radius: 3px;	
+	border-radius: 3px;
     -moz-border-radius: 3px;
 }
 
@@ -286,14 +291,14 @@
     background: url(images/plus_icon.png) no-repeat !important;
     padding-left: 22px !important;
     padding-top: 3px !important;
-    padding-bottom: 3px !important;	
+    padding-bottom: 3px !important;
 }
 
 .link_with_eye_icon {
     background: url(images/eye_icon.png) no-repeat !important;
     padding-left: 30px !important;
 /*     padding-top: 2px !important; */
-    padding-bottom: 7px !important;	
+    padding-bottom: 7px !important;
 }
 
 .overflow_x_auto {
@@ -355,7 +360,7 @@
 }
 
 .v-panel {
-	border-radius: 3px;	
+	border-radius: 3px;
 }
 
 .v-panel-content-dropHandlerPanel .v-absolutelayout  {
@@ -381,7 +386,7 @@
 /* Tabsheet formatting GCP-7370 */
 .v-tabsheet-content{
 	position:absolute;
-	border-bottom: 1px solid #dcdcdc; 
+	border-bottom: 1px solid #dcdcdc;
 }
 
 .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
@@ -410,7 +415,7 @@
 .v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
 .tabHeaderStyle div div .v-button:hover,
 .tabHeaderStyle div div .v-button:hover .v-button-wrap,
-.tabHeaderStyle div div .v-button:active, 
+.tabHeaderStyle div div .v-button:active,
 .tabHeaderStyle div div .v-button:active .v-button-wrap
 {
 	border-color: #f6f6f6;
@@ -426,21 +431,21 @@
 .tabHeaderStyle div div .v-button:focus,
 .tabHeaderStyle div div .v-button:focus .v-button-wrap,
 .tabHeaderStyle div div .v-pressed.v-button,
-.tabHeaderStyle div div .v-pressed.v-button .v-button-wrap 
+.tabHeaderStyle div div .v-pressed.v-button .v-button-wrap
 {
 	background: #ffffff;
 }
 
 .tabHeaderStyle div div .v-button:focus,
 .tabHeaderStyle div div .v-pressed.v-button{
-	border: 1px solid #e3e3e3;	
+	border: 1px solid #e3e3e3;
 }
 
-.v-button-tabHeaderSelectedStyle, 
+.v-button-tabHeaderSelectedStyle,
 .tabHeaderSelectedStyle .v-button-wrap,
 .tabHeaderSelectedStyle div div .v-button:hover,
 .tabHeaderSelectedStyle div div .v-button:hover .v-button-wrap,
-.tabHeaderSelectedStyle div div .v-button:active, 
+.tabHeaderSelectedStyle div div .v-button:active,
 .tabHeaderSelectedStyle div div .v-button:active .v-button-wrap
 {
 	background: #ffffff;
@@ -473,7 +478,7 @@
 }
 
 .searchPaneLayout, .white_bg_panel > div {
-	background-color: #ffffff !important; 
+	background-color: #ffffff !important;
 }
 
 .searchBarLayout > div {
@@ -481,7 +486,7 @@
 }
 
 .no-caption .v-caption {
-	height: 0px;	
+	height: 0px;
 }
 
 .v-verticallayout-no-caption > div {
@@ -504,4 +509,71 @@
 
 /* fix for 8270 */
 .listDetails .v-scrollable, .v-tabsheet-tabsheetpanel { width:100% !important; }
- 
+
+
+/* Crossing Manager Settings Screen: General Layout */
+
+.cs-panel-section {
+	padding-bottom: 15px;
+}
+
+/* Crossing Manager Settings Screen: Form Layout and Styling */
+.cs .v-caption,
+.cs-form-label {
+	font-weight: bold;
+	width: 300px;
+	text-align: right;
+	white-space: normal;
+}
+
+.cs .v-formlayout-contentcell,
+.cs .v-formlayout-contentcell .v-textfield-readonly {
+	width: 100%;
+}
+
+.cs .v-textfield,
+.cs .v-filterselect-input,
+.cs-form-input {
+	width: 150px;
+}
+
+.cs-form-input {
+	padding-right: 6px;
+}
+
+.cs .v-formlayout-captioncell,
+.cs .v-slot {
+	width: 300px;
+	max-width: 300px;
+}
+
+/* Crossing Manager Settings Screen: Inline Icons */
+.v-button.cs-inline-icon .v-button-wrap {
+	width: 31px;
+	margin-top: 4px;
+}
+
+.cs-form-label {
+	padding-right: 12px;
+}
+
+/* Crossing Manager Settings Screen: Mandatory Star */
+.cs .v-caption-mandatory-field:after {
+	color: #990000;
+	content: " *";
+}
+
+/* Crossing Manager Settings Screen: Horizontal Radiobutton and Left to Right Checkbox Display */
+.cs .v-formlayout .v-radiobutton {
+	display: inline;
+	padding-left: 0;
+}
+
+.cs .v-formlayout .v-radiobutton:last-child {
+	padding-left: 12px;
+}
+
+.cs-form-label input[type="checkbox"],
+.cs-form-label label {
+	float: right;
+}
