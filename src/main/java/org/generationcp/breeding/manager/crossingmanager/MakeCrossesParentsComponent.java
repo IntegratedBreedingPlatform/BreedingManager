@@ -36,7 +36,6 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
@@ -469,31 +468,29 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption()));
 	    		
-	    		if(!checkIfGIDisInTable(targetTable, gid)){
-		    		String seedSource = getSeedSource(sourceTable,entryId);
+	    		String seedSource = getSeedSource(sourceTable,entryId);
+	    		
+	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
+	    		Item item = targetTable.addItem(entryObject);
+	    		if(item != null){
+		    		if(targetTable.equals(femaleParents)){
+		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    			this.saveFemaleListButton.setEnabled(true);
+		    		} else{
+		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
+		    			this.saveMaleListButton.setEnabled(true);
+		    		}
 		    		
-		    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
-		    		Item item = targetTable.addItem(entryObject);
-		    		if(item != null){
-			    		if(targetTable.equals(femaleParents)){
-			    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
-			    			this.saveFemaleListButton.setEnabled(true);
-			    		} else{
-			    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
-			    			this.saveMaleListButton.setEnabled(true);
-			    		}
-			    		
-			    		CheckBox tag = new CheckBox();
-			    		if(targetTable.equals(femaleParents)){
-			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
-			    		} else{
-			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
-			    		}
-			            tag.setImmediate(true);
-			            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-			        }
-	    		}
-    		}
+		    		CheckBox tag = new CheckBox();
+		    		if(targetTable.equals(femaleParents)){
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+		    		} else{
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+		    		}
+		            tag.setImmediate(true);
+		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		        }
+	    	}
             
             targetTable.requestRepaint();
         }
