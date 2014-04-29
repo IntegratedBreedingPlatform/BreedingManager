@@ -65,7 +65,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
-		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table", ToggleDirection.LEFT);
+		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table");
 	}
 
 	@Override
@@ -82,10 +82,8 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 			public void buttonClick(ClickEvent event) {
 				if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
 					collapseLeft();
-					toggleLeftPaneButton.setDirection(ToggleDirection.RIGHT);
 				} else {
 					expandLeft();
-					toggleLeftPaneButton.setDirection(ToggleDirection.LEFT);
 				}
 			}
 		});

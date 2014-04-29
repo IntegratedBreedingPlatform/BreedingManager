@@ -153,7 +153,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
 		
-		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane", ToggleDirection.LEFT);
+		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane");
 		
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
     	buildNewListTitle.setWidth("200px");

@@ -226,21 +226,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 			}
 		});
 		
-		this.hSplitPanel.addListener(new SplitterClickListener() {
-			
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void splitterClick(SplitterClickEvent event) {				
-				if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() > EXPANDED_SPLIT_POSITION_RIGHT){
-					buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
-				}
-				else if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() <= EXPANDED_SPLIT_POSITION_RIGHT){
-					buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.RIGHT);
-				}
-			}
-		});
-		
 	}
 
 	protected void showSearchListPane() {
@@ -347,11 +332,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public void toggleBuildNewListComponent() {
 		if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() > EXPANDED_SPLIT_POSITION_RIGHT){
 			expandRight();
-			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.RIGHT);
 		}
 		else if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() <= EXPANDED_SPLIT_POSITION_RIGHT){
 			collapseRight();
-			buildNewListComponent.getToggleBuildNewListButton().setDirection(ToggleDirection.LEFT);
 		}
 		
 		browseListsComponent.getListDetailsLayout().repaintTabsheet();

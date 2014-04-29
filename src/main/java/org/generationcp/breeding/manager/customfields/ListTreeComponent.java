@@ -110,7 +110,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     	
 		// if tree will include the toogle button to hide itself
 		if (doIncludeToggleButton()){
-			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane", ToggleDirection.LEFT);
+			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
 		}
 		
 		// assumes that all tree will display control buttons

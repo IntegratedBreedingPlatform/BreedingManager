@@ -130,10 +130,8 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	protected void toggleListTreeComponent(){
 		if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
 			collapseLeft();
-			this.listTreeComponent.getToggleListTreeButton().setDirection(ToggleDirection.RIGHT);
 		} else {
 			expandLeft();
-			this.listTreeComponent.getToggleListTreeButton().setDirection(ToggleDirection.LEFT);
 		}
 	}
 
