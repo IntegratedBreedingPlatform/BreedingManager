@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -224,11 +225,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
-		editHeaderButton =new Button("<span class='glyphicon glyphicon-pencil' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
-		editHeaderButton.setHtmlContentAllowed(true);
-		editHeaderButton.setDescription("Edit List Header");
-		editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
-		editHeaderButton.setWidth("25px");
+		editHeaderButton =new IconButton("<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>","Edit List Header");
 		
 		toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
@@ -251,22 +248,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		 + "  <b>" + listEntriesCount + "</b>", Label.CONTENT_XHTML);
         	totalListEntriesLabel.setWidth("135px");
         }
-	
-	    unlockButton = new Button();
-        unlockButton.setData(UNLOCK_BUTTON_ID);
-        unlockButton.setIcon(AppConstants.Icons.ICON_LOCK);
-        unlockButton.setWidth("140px");
-        unlockButton.setDescription(LOCK_TOOLTIP);
-        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
-        
-
-        lockButton = new Button();
-        lockButton.setData(LOCK_BUTTON_ID);
-        lockButton.setIcon(AppConstants.Icons.ICON_UNLOCK);
-        lockButton.setWidth("140px");
-        lockButton.setDescription(LOCK_TOOLTIP);
-        lockButton.setStyleName(Reindeer.BUTTON_LINK);
 		
+	    unlockButton = new IconButton("<span class='bms-locked' style='left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        unlockButton.setData(UNLOCK_BUTTON_ID);
+	
+        lockButton = new IconButton("<span class='bms-lock-open' style='left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        lockButton.setData(LOCK_BUTTON_ID);
+        		
         menu = new ContextMenu();
 		menu.setWidth("295px");
 		

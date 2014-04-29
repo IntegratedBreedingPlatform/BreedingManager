@@ -9,8 +9,8 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
@@ -42,7 +42,6 @@ import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public abstract class ListTreeComponent extends VerticalLayout implements
@@ -239,12 +238,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	}
 	
 	protected void initializeButtonPanel() {
-		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
-        renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription("Rename Item");
-        renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
-        renameFolderBtn.setWidth("25px");
-        renameFolderBtn.setHeight("25px");
+		renameFolderBtn = new IconButton("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>","Rename Item");
         renameFolderBtn.setEnabled(false);
         renameFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -254,12 +248,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
             }
         });
         
-        addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>");
-        addFolderBtn.setHtmlContentAllowed(true);
-        addFolderBtn.setDescription("Add New Folder");
-        addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
-        addFolderBtn.setWidth("25px");
-        addFolderBtn.setHeight("25px");
+        addFolderBtn = new IconButton("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>","Add New Folder");
         addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
 			protected static final long serialVersionUID = 1L;
@@ -270,12 +259,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
         });
         
 
-        deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>");
-        deleteFolderBtn.setHtmlContentAllowed(true);
-        deleteFolderBtn.setDescription("Delete Selected List/Folder");
-        deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
-        deleteFolderBtn.setWidth("25px");
-        deleteFolderBtn.setHeight("25px");
+        deleteFolderBtn = new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>","Delete Selected List/Folder");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.setData(this);
         deleteFolderBtn.addListener(new Button.ClickListener() {
