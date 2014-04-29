@@ -185,7 +185,8 @@
 }
 
 .componenttree-parent > div > div {
-	background: #e6e6e6;
+/* 	background: #e6e6e6; */
+	background: #f6f6f6;
 	margin-left: 5px;
 	margin-right: 5px;
 	border-radius: 3px;
@@ -295,3 +296,18 @@
 .headerLabelLayout .v-caption {
 	height: 0px;	
 }
+
+.min_width_340px {
+	min-width: 340px !important;
+}
+
+/* colorpicker fix */
+.v-colorpicker-popup .v-colorpicker-history {
+  position: absolute !important;
+  top: 370px !important;
+}
+
+.v-colorpicker-popup .v-horizontallayout {
+  position: absolute !important;
+  top: 410px !important;
+}  
