@@ -31,11 +31,13 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
     private Integer entryId;
     private String designation;
     private String seedSource;
+    private boolean isFromFemaleTable;
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
         this.listDataId = listDataId;
         this.gid = gid;
-        this.entryId = entryId;        
+        this.entryId = entryId;  
+        this.isFromFemaleTable = false;
     }
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
@@ -43,6 +45,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         this.gid = gid;
         this.entryId = entryId;        
         this.designation = designation;
+        this.isFromFemaleTable = false;
     }
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource){
@@ -51,6 +54,16 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         this.entryId = entryId;        
         this.designation = designation;
         this.seedSource = seedSource;
+        this.isFromFemaleTable = false;
+    }
+    
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource, boolean isFromFemaleTable){
+        this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+        this.designation = designation;
+        this.seedSource = seedSource;
+        this.isFromFemaleTable = isFromFemaleTable;
     }
     
     public Integer getListDataId() {
@@ -92,6 +105,14 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	public void setSeedSource(String seedSource) {
 		this.seedSource = seedSource;
 	}
+	
+	public boolean isFromFemaleTable() {
+		return isFromFemaleTable;
+	}
+
+	public void setFromFemaleTable(boolean isFromFemaleTable) {
+		this.isFromFemaleTable = isFromFemaleTable;
+	}
 
 	@Override
     public int compareTo(GermplasmListEntry entry) {
@@ -99,7 +120,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
     }
 
 	public GermplasmListEntry copy(){
-		GermplasmListEntry theCopy = new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource);
+		GermplasmListEntry theCopy = new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource, this.isFromFemaleTable);
 		return theCopy;
 	}
 	

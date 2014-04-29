@@ -475,9 +475,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	    		if(item != null){
 		    		if(targetTable.equals(femaleParents)){
 		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    			entryObject.setFromFemaleTable(true);
 		    			this.saveFemaleListButton.setEnabled(true);
 		    		} else{
 		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
+		    			entryObject.setFromFemaleTable(false);
 		    			this.saveMaleListButton.setEnabled(true);
 		    		}
 		    		
