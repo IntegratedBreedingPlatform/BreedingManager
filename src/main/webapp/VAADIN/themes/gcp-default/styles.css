@@ -297,6 +297,10 @@
 	height: 0px;	
 }
 
+.v-verticallayout-no-caption > div {
+	background-color: #ffffff;
+}
+
 .min_width_340px {
 	min-width: 340px !important;
 }
