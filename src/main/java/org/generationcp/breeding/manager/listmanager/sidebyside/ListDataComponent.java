@@ -249,10 +249,10 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         	totalListEntriesLabel.setWidth("135px");
         }
 		
-	    unlockButton = new IconButton("<span class='bms-locked' style='left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+	    unlockButton = new IconButton("<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
         unlockButton.setData(UNLOCK_BUTTON_ID);
 	
-        lockButton = new IconButton("<span class='bms-lock-open' style='left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        lockButton = new IconButton("<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
         lockButton.setData(LOCK_BUTTON_ID);
         		
         menu = new ContextMenu();
