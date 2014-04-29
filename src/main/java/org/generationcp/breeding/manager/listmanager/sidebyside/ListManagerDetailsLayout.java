@@ -11,6 +11,11 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -111,6 +116,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
+    	detailsTabSheet.setWidth("100%");
+    	detailsTabSheet.addStyleName("listDetails");
     	
         noListLabel = new Label();
         noListLabel.setImmediate(true);
@@ -125,7 +132,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         heading = new Label();
         heading.setImmediate(true);
         heading.setWidth("300px");
-        heading.setStyleName(Bootstrap.Typography.H3.styleName());
+        heading.setStyleName(Bootstrap.Typography.H4.styleName());
+        heading.addStyleName(AppConstants.CssStyles.BOLD);
         
         defaultLabel = new Label();
         defaultLabel.setWidth("100%");
@@ -148,16 +156,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     @Override
     public void layoutComponents() {
-    	setWidth("98%");
+    	setWidth("100%");
     	setStyleName(Runo.TABSHEET_SMALL);
         setMargin(false);
     	
-    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		detailsTabSheet.setHeight("395px");
-    	}
-    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-        	detailsTabSheet.setHeight("558px");
-    	}
+        setDetailsTabSheetHeight();
     	 
     	//Components
         headingBar.setWidth("98%");
@@ -178,7 +181,16 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         displayDefault();
     }
     
-    public void displayDefault(){
+    public void setDetailsTabSheetHeight() {
+    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
+    		detailsTabSheet.setHeight("395px");
+    	}
+    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
+        	detailsTabSheet.setHeight("558px");
+    	}
+	}
+
+	public void displayDefault(){
     	noListLabel.setVisible(false);        
         headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
@@ -311,6 +323,23 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         detailsTabSheet.setVisible(false);
 
     	this.requestRepaint();
+    }
+    
+    public void repaintTabsheet() {
+    	if(detailsTabSheet.isVisible()){
+    	    this.removeAllComponents();
+    	    this.addComponent(headingBar);
+    	    this.addComponent(detailsTabSheet);
+    	
+            headingBar.setVisible(true);
+            defaultLabel.setVisible(false);
+            detailsTabSheet.setVisible(true);
+            
+            if(detailsTabSheet.getComponentCount() > 1){
+            	btnCloseAllTabs.setVisible(true);
+            }
+            this.requestRepaintAll();
+    	}
     }
     
     public void renameTab(Integer listId, String newName){

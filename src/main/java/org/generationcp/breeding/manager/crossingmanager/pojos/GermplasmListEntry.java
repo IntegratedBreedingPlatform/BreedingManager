@@ -98,6 +98,11 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         return this.entryId - entry.getEntryId();
     }
 
+	public GermplasmListEntry copy(){
+		GermplasmListEntry theCopy = new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource);
+		return theCopy;
+	}
+	
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -140,6 +145,22 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         return true;
     }
     
-    
+    public boolean hasEqualGidWith(GermplasmListEntry entry){
+    	if(this.gid == null){
+    		if(entry.gid != null){
+    			return false;
+    		}
+    	} else {
+    		if(entry.gid == null){
+    			return false;
+    		} else{
+    			if(!this.gid.equals(entry.gid)){
+    				return false;
+    			}
+    		}
+    	}
+    	
+    	return true;
+    }
 
 }

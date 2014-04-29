@@ -75,7 +75,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		makeCrossesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
 		
 		Label popupLabel = new Label(messageSource.getMessage(Message.CROSSING_MANAGER_TOOL_DESCRIPTION));
-		popupLabel.setWidth("600px");
+		popupLabel.setWidth("470px");
 		toolPopupView = new PopupView(AppConstants.Icons.POPUP_VIEW_ICON, 
 				popupLabel);
 		toolPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
@@ -101,7 +101,6 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		wizardStepNames[0] = messageSource.getMessage(Message.CHOOSE_SETTING);
 		wizardStepNames[1] = messageSource.getMessage(Message.CREATE_CROSSES);
 		wizardDisplay = new BreedingManagerWizardDisplay(wizardStepNames);
-		wizardDisplay.setWidth("50%");
 	}
 
 	@Override
@@ -188,8 +187,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     }
     
     public void reset(){
+    	this.parent.getWindow().setScrollTop(0);
         this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
-        getWindow().setScrollTop(0);
     }
 
 }

@@ -26,6 +26,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManag
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
@@ -155,10 +156,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
             String maleDesig = maleParent.getDesignation();
 			String femaleSeedSource = listnameFemaleParent+":"+femaleParent.getEntryId();
 			String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
-			femaleParent.setSeedSource(femaleSeedSource);
-			maleParent.setSeedSource(maleSeedSource);
+			GermplasmListEntry femaleParentCopy = femaleParent.copy();
+			femaleParentCopy.setSeedSource(femaleSeedSource);
+			GermplasmListEntry maleParentCopy = maleParent.copy();
+			maleParentCopy.setSeedSource(maleSeedSource);
 			
-            CrossParents parents = new CrossParents(femaleParent, maleParent);
+            CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
             
             String seedSource = appendWithSeparator(femaleSeedSource, maleSeedSource);
             if (!crossAlreadyExists(parents)){
@@ -204,14 +207,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	for (GermplasmListEntry femaleParent : femaleParents){
             String femaleDesig = femaleParent.getDesignation();
             String femaleSource =listnameFemaleParent +":"+femaleParent.getEntryId();
-            femaleParent.setSeedSource(femaleSource);
+            GermplasmListEntry femaleParentCopy = femaleParent.copy();
+            femaleParentCopy.setSeedSource(femaleSource);
             
             for (GermplasmListEntry maleParent : maleParents){
                 String maleDesig = maleParent.getDesignation();
                 String maleSource =listnameMaleParent +":"+maleParent.getEntryId();
-                maleParent.setSeedSource(maleSource);
+                GermplasmListEntry maleParentCopy = maleParent.copy();
+                maleParentCopy.setSeedSource(maleSource);
                 
-                CrossParents parents = new CrossParents(femaleParent, maleParent);
+                CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
                 
                 if (!crossAlreadyExists(parents)){
 					String seedSource=appendWithSeparator(femaleSource,maleSource);
@@ -329,10 +334,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		setSpacing(true);
 		
 		lblReviewCrosses = new Label(messageSource.getMessage(Message.REVIEW_CROSSES));
-		lblReviewCrosses.addStyleName(Bootstrap.Typography.H3.styleName());
+		lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
+		lblReviewCrosses.addStyleName(AppConstants.CssStyles.BOLD);
+		lblReviewCrosses.setWidth("150px");
 		
 		lblCrossMade = new Label();
-		lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
+		lblCrossMade.addStyleName(Bootstrap.Typography.H5.styleName());
 		lblCrossMade.addStyleName(AppConstants.CssStyles.BOLD);
 		lblCrossMade.setWidth("120px");
 		
@@ -421,7 +428,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
         makeCrossesPanel.setLayout(makeCrossesLayout);
         makeCrossesPanel.addStyleName("section_panel_layout");
 		
-        addComponent(lblReviewCrosses);
+        HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES,lblReviewCrosses);
+        addComponent(reviewCrossesLayout);
         addComponent(makeCrossesPanel);
 	}
 	

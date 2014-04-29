@@ -2,7 +2,8 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
-import org.generationcp.breeding.manager.customcomponent.ToogleButton;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
+import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -29,7 +30,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	
 	private HorizontalSplitPanel hSplitPanel;
 	private AbsoluteLayout leftLayout;
-	private Button toggleLeftPaneButton;
+	private ToggleButton toggleLeftPaneButton;
 	
 	private SearchResultsComponent searchResultsComponent;
 	private ListManagerMain source;
@@ -64,7 +65,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
 		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
-		toggleLeftPaneButton = new ToogleButton("Toggle Search Results Table");
+		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table");
 	}
 
 	@Override
@@ -94,8 +95,8 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		//left pane
 		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("390px");
-		leftLayout.addComponent(searchResultsComponent, "top:0px; left:30px");
-		leftLayout.addComponent(toggleLeftPaneButton,"top:0px; left:0px");
+		leftLayout.addComponent(searchResultsComponent, "top:7px; left:18px");
+		leftLayout.addComponent(toggleLeftPaneButton,"top:5px; left:18px");
 	
 		hSplitPanel.setFirstComponent(leftLayout);
 		hSplitPanel.setSecondComponent(listManagerDetailsLayout);

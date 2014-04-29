@@ -28,6 +28,11 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	protected String getTreeHeading() {
 		return messageSource.getMessage(Message.LIST_LOCATION);
 	}
+	
+	@Override
+	protected String getTreeHeadingStyleName() {
+		return Bootstrap.Typography.H4.styleName();
+	}
 
 	@Override
 	protected boolean doIncludeRefreshButton() {
@@ -50,13 +55,13 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	}
 	
 	@Override
-	protected String getTreeHeadingStyleName() {
-		return Bootstrap.Typography.H6.styleName();
+	public boolean usedInSubWindow() {
+		return true;
 	}
 	
 	@Override
-	public boolean usedInSubWindow() {
-		return true;
+	protected boolean doIncludeTreeHeadingIcon() {
+		return false;
 	}
 
 }

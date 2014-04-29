@@ -289,12 +289,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         synchronized (this) {
             HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
         }
-
+        
         try{
         	managerFactoryProvider.close();
         }catch(Exception e){
-        	e.printStackTrace();	 
+	        e.printStackTrace();	
         }
-    } 
+    }
 
 }

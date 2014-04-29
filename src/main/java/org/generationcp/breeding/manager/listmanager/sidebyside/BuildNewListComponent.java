@@ -9,16 +9,19 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -52,6 +55,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -87,6 +91,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     
     //Components
+    private ToggleButton toggleBuildNewListButton;
     private Label buildNewListTitle;
     private Label buildNewListDesc;
     private Label dragInstructionLabel;
@@ -147,13 +152,17 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     
 	@Override
 	public void instantiateComponents() {
+		
+		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane");
+		
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
     	buildNewListTitle.setWidth("200px");
-        buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
+        buildNewListTitle.setStyleName(Bootstrap.Typography.H4.styleName());
+        buildNewListTitle.addStyleName(AppConstants.CssStyles.BOLD);
         
         buildNewListDesc = new Label();
         buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
-        buildNewListDesc.setWidth("300px");
+        buildNewListDesc.setWidth("250px");
         
         dragInstructionLabel = new Label(messageSource.getMessage(Message.BUILD_LIST_DRAG_INSTRUCTIONS));
         
@@ -163,25 +172,25 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
+        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
+        createGermplasmTable(tableWithSelectAllLayout.getTable());
+        
         menu = new ContextMenu();
         menu.setWidth("300px");
-        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        
+        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
+        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
+        menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
-        menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetMenuOptions();
         
         toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
         toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
         toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-             
-        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        createGermplasmTable(tableWithSelectAllLayout.getTable());
-        
-        addColumnContextMenu = new AddColumnContextMenu(this, menu, 
-        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
@@ -209,6 +218,18 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
 	@Override
 	public void addListeners() {
+		
+		new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
+		
+		toggleBuildNewListButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				source.toggleBuildNewListComponent();
+			}
+		});
+		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2331333436994090161L;
 
@@ -277,12 +298,20 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	public void layoutComponents() {
 		this.setSpacing(true);
 		
+		//Build New List Header
+		HorizontalLayout buildNewListHeaderLayout = new HorizontalLayout();
+		buildNewListHeaderLayout.setHeight("30px");
+		buildNewListHeaderLayout.addComponent(toggleBuildNewListButton);
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,buildNewListTitle);
-        this.addComponent(headingLayout);
+		buildNewListHeaderLayout.addComponent(headingLayout);
+		buildNewListHeaderLayout.setComponentAlignment(toggleBuildNewListButton, Alignment.BOTTOM_LEFT);
+		
+		
+        this.addComponent(buildNewListHeaderLayout);
         
         HorizontalLayout instructionLayout = new HorizontalLayout();
         instructionLayout.setSpacing(true);
-        instructionLayout.setWidth("400px");
+        instructionLayout.setWidth("100%");
         instructionLayout.addComponent(buildNewListDesc);
         instructionLayout.addComponent(saveButton);
         instructionLayout.setComponentAlignment(buildNewListDesc, Alignment.MIDDLE_LEFT);
@@ -300,7 +329,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
         HorizontalLayout toolsAndEditHeaderLayout = new HorizontalLayout();
         toolsAndEditHeaderLayout.setSpacing(true);
-        toolsAndEditHeaderLayout.setWidth("365px");
+        toolsAndEditHeaderLayout.setWidth("100%");
         toolsAndEditHeaderLayout.addComponent(editHeaderButton);
         toolsAndEditHeaderLayout.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
         toolsAndEditHeaderLayout.addComponent(toolsButton);
@@ -341,9 +370,10 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         
     	addBasicTableColumns(table);
         
+    	table.setDragMode(TableDragMode.ROW);
         table.setSelectable(true);
         table.setMultiSelect(true);
-        table.setWidth("365px");
+        table.setWidth("100%");
         table.setHeight("280px");
         
         table.addActionHandler(new Action.Handler() {
@@ -512,7 +542,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		for(Object col: tableWithSelectAllLayout.getTable().getContainerPropertyIds().toArray())  {
 			tableWithSelectAllLayout.getTable().removeContainerProperty(col);
 		}
-		tableWithSelectAllLayout.getTable().setWidth("400px");
+		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 	}
 	
@@ -697,10 +727,15 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     }
 	
 	/* SETTERS AND GETTERS */
+
+	public ToggleButton getToggleBuildNewListButton() {
+		return toggleBuildNewListButton;
+	}
+	
 	public Label getBuildNewListTitle() {
 		return buildNewListTitle;
 	}
-
+	
 	public void setBuildNewListTitle(Label buildNewListTitle) {
 		this.buildNewListTitle = buildNewListTitle;
 	}

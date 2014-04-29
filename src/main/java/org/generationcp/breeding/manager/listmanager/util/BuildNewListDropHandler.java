@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
@@ -107,6 +108,30 @@ public class BuildNewListDropHandler implements DropHandler {
 				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListDataComponent)
 					addGermplasmFromList(((ListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
 
+			} else if(sourceTableData.equals(BuildNewListComponent.GERMPLASMS_TABLE_DATA)){
+				Object droppedOverItemId = dropData.getItemIdOver();
+				
+				//Check first if item is dropped on top of itself
+				if(!transferable.getItemId().equals(droppedOverItemId)) {
+	                Item oldItem = sourceTable.getItem(transferable.getItemId());
+	                Object oldCheckBox = oldItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).getValue();
+	                Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+	                Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+	                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+	                Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+	                Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+	                sourceTable.removeItem(transferable.getItemId());
+	                
+	                Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
+	                newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(oldCheckBox);
+	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
+	                newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
+	                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
+	                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
+	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
+	                
+	                assignSerializedEntryNumber();
+	            }
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
 			}
@@ -521,7 +546,7 @@ public class BuildNewListDropHandler implements DropHandler {
             targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             
             Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-           	if(entryCodeProperty==null || entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals(""))
+           	if(entryCodeProperty!=null || entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals(""))
            		targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
             id++;
         }

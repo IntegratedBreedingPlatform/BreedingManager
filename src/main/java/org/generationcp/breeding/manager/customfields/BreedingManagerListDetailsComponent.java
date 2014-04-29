@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -79,8 +80,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Override
 	public void instantiateComponents() {
-		headerListLabel = new Label(messageSource.getMessage(Message.LIST_DETAILS));
-		headerListLabel.setStyleName(Bootstrap.Typography.H6.styleName());
+		headerListLabel = new Label();
+		headerListLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS));
+		headerListLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		headerListLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		indicatesMandatoryLabel = new Label(messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		indicatesMandatoryLabel.addStyleName("italic");
@@ -143,9 +146,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		containerPanel.setHeight("315px");
 		containerPanel.setContent(containerLayout);
 		
-		setSpacing(true);
+		setSpacing(false);
 		
-		addComponent(this.headerListLabel);
+		headerListLabel.setHeight("26px");
+		addComponent(headerListLabel);
 		addComponent(containerPanel);
 	}
 	@Override

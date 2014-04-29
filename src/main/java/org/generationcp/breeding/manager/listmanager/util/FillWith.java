@@ -88,6 +88,8 @@ public class FillWith implements InternationalizableComponent  {
     
     private ListDetailsComponent listDetailsComponent;
     
+    private org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent;
+    
     public FillWith(String GIDPropertyId, Table targetTable){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
@@ -159,6 +161,18 @@ public class FillWith implements InternationalizableComponent  {
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	this.listDetailsComponent = listDetailsComponent;
+    	
+    	setupContextMenu();
+    }
+    
+    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
+    		, final Table targetTable, String GIDPropertyId){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.parentLayout = buildListComponent;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.buildListComponent = buildListComponent;
     	
     	setupContextMenu();
     }
@@ -331,6 +345,10 @@ public class FillWith implements InternationalizableComponent  {
 	    	listDetailsComponent.setChanged(true);
 	    }
 	    
+	    if(buildListComponent != null){
+	    	buildListComponent.setChanged(true);
+	    }
+	    
 	    //To trigger TableFieldFactory (fix for truncated data)
 		if(table.isEditable()){
 			table.setEditable(false);
@@ -349,7 +367,8 @@ public class FillWith implements InternationalizableComponent  {
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent
+        		, buildListComponent);
         attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);
     }
@@ -366,7 +385,7 @@ public class FillWith implements InternationalizableComponent  {
 		   Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
 			   } 
@@ -390,7 +409,7 @@ public class FillWith implements InternationalizableComponent  {
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
 			   } 
@@ -414,7 +433,7 @@ public class FillWith implements InternationalizableComponent  {
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
 			   }
@@ -439,7 +458,7 @@ public class FillWith implements InternationalizableComponent  {
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
 			   } 
@@ -463,7 +482,7 @@ public class FillWith implements InternationalizableComponent  {
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());			   
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
 			   } 
@@ -484,7 +503,7 @@ public class FillWith implements InternationalizableComponent  {
  	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   for(Integer itemId: itemIds){
-			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 				   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid1());
@@ -506,7 +525,7 @@ public class FillWith implements InternationalizableComponent  {
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
  		   for(Integer itemId: itemIds){
- 			  if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+ 			  if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
  				  Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
  				  Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
  				  List<Integer> parentGids = new ArrayList<Integer>();
@@ -531,7 +550,7 @@ public class FillWith implements InternationalizableComponent  {
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
  		   for(Integer itemId: itemIds){
- 			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+ 			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
  				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
  				   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
  				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid2());
@@ -554,7 +573,7 @@ public class FillWith implements InternationalizableComponent  {
    	   try {
   		   List<Integer> itemIds = getItemIds(table);
   		   for(Integer itemId: itemIds){
-  			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+  			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 	  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
 	  			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 	  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
@@ -579,7 +598,7 @@ public class FillWith implements InternationalizableComponent  {
     protected void fillWithPreferredName(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues) {
         for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             int listDataId = (Integer) i.next();
-        	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(listDataId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(listDataId).getItemProperty(propertyId).getValue().equals(""))){
+        	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(listDataId).getItemProperty(propertyId).getValue() == null || table.getItem(listDataId).getItemProperty(propertyId).getValue().equals(""))){
 	            //iterate through the table elements' IDs
 
 	            Item item = table.getItem(listDataId);
@@ -655,7 +674,7 @@ public class FillWith implements InternationalizableComponent  {
             
             List<Integer> itemIds = getItemIds(table);
             for (Integer itemId : itemIds) {
-            	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+            	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
             		Item item = table.getItem(itemId);
             		Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
             		Button b= (Button) gidObject;
@@ -685,7 +704,7 @@ public class FillWith implements InternationalizableComponent  {
     	List<Integer> itemIds = getItemIds(targetTable);
     	int number = startNumber;
         for (Integer itemId : itemIds) {
-        	if(!onlyFillWithThoseHavingEmptyValues || (targetTable.getItem(itemId).getItemProperty(propertyId).getValue().equals(null) || targetTable.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+        	if(!onlyFillWithThoseHavingEmptyValues || (targetTable.getItem(itemId).getItemProperty(propertyId).getValue() == null || targetTable.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
 	            Item item = targetTable.getItem(itemId);
 	            StringBuilder builder = new StringBuilder();
 	            builder.append(prefix);

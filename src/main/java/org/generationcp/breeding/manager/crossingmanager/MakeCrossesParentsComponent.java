@@ -8,10 +8,12 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -133,15 +135,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         setSpacing(true);
         
         parentListsLabel = new Label(messageSource.getMessage(Message.PARENTS_LISTS));
-        parentListsLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+        parentListsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        parentListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         lblFemaleParent= new Label(messageSource.getMessage(Message.FEMALE));
-        lblFemaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
+        lblFemaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
+        lblFemaleParent.addStyleName(AppConstants.CssStyles.BOLD);
         
         initializeFemaleParentsTable();
         
         crossingMethodLabel = new Label(messageSource.getMessage(Message.CROSSING_METHOD));
-        crossingMethodLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+        crossingMethodLabel.addStyleName(Bootstrap.Typography.H5.styleName());
+        crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         crossingMethodComboBox = new ComboBox();
         crossingMethodComboBox.setNewItemsAllowed(false);
@@ -155,7 +160,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 
         lblMaleParent=new Label(messageSource.getMessage(Message.MALE));
-        lblMaleParent.setStyleName(Bootstrap.Typography.H4.styleName());
+        lblMaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
+        lblMaleParent.addStyleName(AppConstants.CssStyles.BOLD);
         
         initializeMaleParentsTable();
         
@@ -249,7 +255,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 							}
 	                	}
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, maleParents);
+                    	dropToFemaleOrMaleTable(sourceTable, maleParents, (Integer) transferable.getItemId());
                     }
                     
                     assignEntryNumber(maleParents);
@@ -334,7 +340,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                      	
 	                    }
                     } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, femaleParents);
+                    	dropToFemaleOrMaleTable(sourceTable, femaleParents, (Integer) transferable.getItemId());
                     }
                     
                     assignEntryNumber(femaleParents);
@@ -437,14 +443,20 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         parentListsPanel.setLayout(parentListMainLayout);
         parentListsPanel.addStyleName("section_panel_layout");
         
-        addComponent(parentListsLabel);
+        HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES,parentListsLabel);
+        addComponent(parentLabelLayout);
         addComponent(parentListsPanel);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable){
+	public void dropToFemaleOrMaleTable(Table sourceTable, Table targetTable, Integer transferrableItemId){
 		List<Integer> selectedListEntries = new ArrayList<Integer>();
     	selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
+    	
+    	if(selectedListEntries.isEmpty() && transferrableItemId != null){
+    		selectedListEntries.add(transferrableItemId);
+    	}
+    	
     	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
     	entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
     	
@@ -456,31 +468,29 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption()));
 	    		
-	    		if(!checkIfGIDisInTable(targetTable, gid)){
-		    		String seedSource = getSeedSource(sourceTable,entryId);
+	    		String seedSource = getSeedSource(sourceTable,entryId);
+	    		
+	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
+	    		Item item = targetTable.addItem(entryObject);
+	    		if(item != null){
+		    		if(targetTable.equals(femaleParents)){
+		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    			this.saveFemaleListButton.setEnabled(true);
+		    		} else{
+		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
+		    			this.saveMaleListButton.setEnabled(true);
+		    		}
 		    		
-		    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
-		    		Item item = targetTable.addItem(entryObject);
-		    		if(item != null){
-			    		if(targetTable.equals(femaleParents)){
-			    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
-			    			this.saveFemaleListButton.setEnabled(true);
-			    		} else{
-			    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
-			    			this.saveMaleListButton.setEnabled(true);
-			    		}
-			    		
-			    		CheckBox tag = new CheckBox();
-			    		if(targetTable.equals(femaleParents)){
-			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
-			    		} else{
-			    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
-			    		}
-			            tag.setImmediate(true);
-			            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-			        }
-	    		}
-    		}
+		    		CheckBox tag = new CheckBox();
+		    		if(targetTable.equals(femaleParents)){
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+		    		} else{
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+		    		}
+		            tag.setImmediate(true);
+		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		        }
+	    	}
             
             targetTable.requestRepaint();
         }

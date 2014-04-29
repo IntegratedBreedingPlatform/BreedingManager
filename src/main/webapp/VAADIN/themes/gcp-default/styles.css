@@ -198,7 +198,7 @@
 
 .v-tree-node-listManagerTreeRegularParentNode {
 	padding-bottom:4px;
-	padding-top:4px;
+	margin-top:2px;
 }
 .v-tree-node-listManagerTreeRegularChildNode {
 	padding-bottom:3px;
@@ -393,7 +393,7 @@
 
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
-	width: 10px;
+	width: 15px;
 	background-image: none;
 }
 
@@ -497,3 +497,7 @@
 .tabsheet-white > .v-tabsheet-content {
 	border-color: #ffffff;
 }
+
+/* fix for 8270 */
+.listDetails .v-scrollable, .v-tabsheet-tabsheetpanel { width:100% !important; }
+ 

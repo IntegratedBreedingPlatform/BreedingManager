@@ -47,7 +47,15 @@ public final class AppConstants {
 	    public static final ThemeResource ICON_REVIEW_LIST_DETAILS = new ThemeResource("images/review-list-details.png");
 	    public static final ThemeResource ICON_MATCHING_GERMPLASMS = new ThemeResource("images/matching-germplasms.png");
 	    public static final ThemeResource ICON_MANAGE_SETTINGS = new ThemeResource("images/manage-settings.png");
-	    public static final ThemeResource ICON_ARROW = new ThemeResource("images/arrow_icon.png"); 
+	    public static final ThemeResource ICON_ARROW = new ThemeResource("images/arrow_icon.png");
+	    public static final ThemeResource ICON_LOCK = new ThemeResource("images/lock.png");
+	    public static final ThemeResource ICON_UNLOCK = new ThemeResource("images/unlock.png");
+	    public static final ThemeResource ICON_LIST_TYPES = new ThemeResource("images/list-types.png");
+	    public static final ThemeResource ICON_TOGGLE = new ThemeResource("images/toggle.png");
+	    public static final ThemeResource ICON_TOGGLE_LEFT = new ThemeResource("images/toggle-left.png");
+	    public static final ThemeResource ICON_TOGGLE_RIGHT = new ThemeResource("images/toggle-right.png");
+	    public static final ThemeResource ICON_SELECT_PARENTS = new ThemeResource("images/select-parents.png");
+	    public static final ThemeResource ICON_REVIEW_CROSSES = new ThemeResource("images/review-crosses.png");
 	}
 	
 	

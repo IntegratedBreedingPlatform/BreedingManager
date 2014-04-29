@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
@@ -54,6 +55,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Long count;
 	
 	private Label listEntriesLabel;
+	private Label totalListEntriesLabel;
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
@@ -95,8 +97,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public void instantiateComponents() {
 		retrieveListDetails();
 		
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL).toUpperCase());
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H5.styleName());
+		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		listEntriesLabel.setWidth("120px");
+		
+		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML);
+       	totalListEntriesLabel.setWidth("135px");
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
@@ -132,6 +140,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
+		
+		listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 25);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 25);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 130);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.PARENTAGE.getName(), 130);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 100);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 60);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 110);
 		
 		listDataTable.setVisibleColumns(new String[] { 
         		CHECKBOX_COLUMN_ID
@@ -217,10 +233,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
 				if(action.equals(ACTION_ADD_TO_FEMALE_LIST)){
-					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable());
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
 				} else if(action.equals(ACTION_ADD_TO_MALE_LIST)){
-					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable());
+					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
 				}
 			}
@@ -239,9 +255,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		headerLayout.addComponent(listEntriesLabel);
+		
+		HorizontalLayout headerSubLayout = new HorizontalLayout();
+		headerSubLayout.addComponent(listEntriesLabel);
+		headerSubLayout.addComponent(totalListEntriesLabel);
+		headerSubLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerSubLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		
+		headerLayout.addComponent(headerSubLayout);
 		headerLayout.addComponent(viewListHeaderButton);
-		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(headerSubLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
 		addComponent(headerLayout);

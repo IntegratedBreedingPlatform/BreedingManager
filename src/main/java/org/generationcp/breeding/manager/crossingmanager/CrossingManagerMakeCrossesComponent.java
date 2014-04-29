@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
@@ -107,7 +109,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
             if (CrossType.MULTIPLY.equals(type)){
                 crossesTableComponent.multiplyParents(femaleList, maleList,listnameFemaleParent, listnameMaleParent);
                 if (makeReciprocalCrosses){
-                    crossesTableComponent.multiplyParents(maleList, femaleList,listnameFemaleParent,listnameMaleParent);
+                    crossesTableComponent.multiplyParents(maleList, femaleList,listnameMaleParent,listnameFemaleParent);
                 }               
                 
             // Top to Bottom Crossing    
@@ -115,7 +117,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
                 if (femaleList.size() == maleList.size()){
                     crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,listnameFemaleParent, listnameMaleParent);
                     if (makeReciprocalCrosses){
-                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,listnameFemaleParent, listnameMaleParent);
+                        crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,listnameMaleParent, listnameFemaleParent);
                     }
                 } else {
                     MessageNotifier.showError(getWindow(), "Error with selecting parents."
@@ -243,6 +245,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         selectParentsLabel = new Label("Select Parents");
         selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
         
         instructionForSelectParents = new Label("To begin making crosses, open one or more lists from the left, then select entries and drag them into</br>"
         		+ "the male and female parent lists below.");
@@ -250,7 +253,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         listDetailsTabSheet = new TabSheet();
         listDetailsTabSheet.setWidth("730px");
-        listDetailsTabSheet.setHeight("390px");
+        listDetailsTabSheet.setHeight("400px");
         listDetailsTabSheet.setVisible(false);
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -306,9 +309,11 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         
         HorizontalLayout headerLayout = new HorizontalLayout();
         headerLayout.setWidth("730px");
-        headerLayout.addComponent(selectParentsLabel);
+        
+        HeaderLabelLayout selectParentsLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS,selectParentsLabel);
+        headerLayout.addComponent(selectParentsLayout);
         headerLayout.addComponent(closeAllTabsButton);
-        headerLayout.setComponentAlignment(selectParentsLabel,Alignment.MIDDLE_LEFT);
+        headerLayout.setComponentAlignment(selectParentsLayout,Alignment.MIDDLE_LEFT);
         headerLayout.setComponentAlignment(closeAllTabsButton,Alignment.MIDDLE_RIGHT);
         
         addComponent(headerLayout, "top:15px; left:250px;");
@@ -375,6 +380,12 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		if (doUpdateTable() && crossesTableComponent.getCrossList() == null){
 			crossesTableComponent.updateSeparatorForCrossesMade();
 		}
+		
+	}
+
+	@Override
+	public void toggleListTreeComponent() {
+		// TODO Auto-generated method stub
 		
 	}
 }

@@ -87,11 +87,14 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 			
 			Label label = new Label(i + "." + wizardSteps.get(i-1));
 			label.addStyleName(Bootstrap.Typography.H3.styleName());
-			label.setWidth("100%");
+			
+			label.setWidth("180px");
 			
 			HorizontalLayout layout = new HorizontalLayout();
 			layout.addComponent(label);
-			layout.setWidth("100%");
+			
+			layout.setWidth("180px");
+			
 			layout.setComponentAlignment(label, Alignment.TOP_LEFT);
 			
 			wizardLabels.add(label);

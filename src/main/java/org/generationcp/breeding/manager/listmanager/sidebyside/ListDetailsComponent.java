@@ -20,7 +20,6 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 	
 	private ListManagerMain source;
 	private ListManagerDetailsLayout detailsLayout;
-	private Label listEntriesLabel;
 	private ListDataComponent listDataComponent;
 	private GermplasmList germplasmList;
 	private boolean hasChanged = false;
@@ -45,9 +44,6 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void instantiateComponents() {
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
-		
 		listDataComponent = new ListDataComponent(source, this, germplasmList);
 	}
 
@@ -65,9 +61,8 @@ public class ListDetailsComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void layoutComponents() {
-		setMargin(false,true,false,true);
+		setMargin(true,true,false,true);
 		setSpacing(false);
-		addComponent(listEntriesLabel);
 		addComponent(listDataComponent);
 	}
 
