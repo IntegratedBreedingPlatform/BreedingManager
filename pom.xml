@@ -18,10 +18,8 @@
 	</licenses>
 
 	<properties>
-		<jetty.version>7.5.0.v20110901</jetty.version>
 		<vaadin.version>6.8.10</vaadin.version>
 		<gwt.version>2.3.0</gwt.version>
-		<middleware.version>2.1.0</middleware.version>
 	</properties>
 
 	<dependencies>
@@ -170,26 +168,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<!-- JETTY DEPENDENCIES FOR TESTING -->
-		<!-- <dependency> <groupId>org.eclipse.jetty.aggregate</groupId> <artifactId>jetty-all-server</artifactId> 
-			<version>${jetty.version}</version> <scope>provided</scope> </dependency> -->
-		<dependency>
-			<groupId>org.generationcp</groupId>
-			<artifactId>middleware</artifactId>
-			<version>${middleware.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-jdk14</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-
-
 		<dependency>
 			<groupId>c3p0</groupId>
 			<artifactId>c3p0</artifactId>
