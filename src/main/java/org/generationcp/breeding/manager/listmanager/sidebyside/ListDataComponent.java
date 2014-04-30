@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.ListInventoryComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
@@ -140,7 +141,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
     private String MENU_EDIT_LIST="Edit List";
     private String MENU_DELETE_LIST="Delete List";
-	
+    private String MENU_VIEW_INVENTORY = "View Inventory";
+    
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Tools";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -271,6 +273,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menu.addItem(MENU_SELECT_ALL);
+		menu.addItem(MENU_VIEW_INVENTORY);
 		
 	}
 	
@@ -510,7 +513,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			    	  editListButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_LIST)){
                       deleteListButtonClickAction();
-                  }		      
+                  } else if(clickedItem.getName().equals(MENU_VIEW_INVENTORY)){
+                	  viewInventoryAction();
+                  }
 			      
 		   }
 		});
@@ -1668,5 +1673,25 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	        	noListDataLabel.setWidth("135px");
 			}
         }
+	}
+	
+	private void viewInventoryAction(){
+		ListInventoryComponent listInventoryComponent = new ListInventoryComponent(this.germplasmList.getId());
+		
+		if(listInventoryComponent.isThereNoInventoryInfo()){
+			MessageNotifier.showWarning(getWindow(), "No Data", messageSource.getMessage(Message.NO_LISTDATA_INVENTORY_RETRIEVED_LABEL), Notification.POSITION_CENTERED);
+		} else{
+			Window inventoryWindow = new Window("Inventory Information");
+			inventoryWindow.setModal(true);
+	        inventoryWindow.setWidth("800px");
+	        inventoryWindow.setHeight("350px");
+	        inventoryWindow.setResizable(false);
+	        inventoryWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+	        
+	        inventoryWindow.setContent(listInventoryComponent);
+	        
+	        this.parentListDetailsComponent.getWindow().addWindow(inventoryWindow);
+	        inventoryWindow.center();
+		}
 	}
 }
