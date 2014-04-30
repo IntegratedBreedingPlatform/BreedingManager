@@ -484,6 +484,10 @@
 	height: 0px;	
 }
 
+.v-verticallayout-no-caption > div {
+	background-color: #ffffff;
+}
+
 .v-panel-content-section_panel_layout > div {
 	background-color: #f6f6f6;
 }
