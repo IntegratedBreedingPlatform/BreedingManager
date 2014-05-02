@@ -8,7 +8,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -43,14 +43,14 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SaveListButtonClickListener.class);
 
-	private BuildNewListComponent source;
+	private ListBuilderComponent source;
 	private GermplasmListManager dataManager;
 	private WorkbenchDataManager workbenchDataManager;
 	private Table listDataTable;
 	
 	private SimpleResourceBundleMessageSource messageSource;
 	
-	public SaveListButtonClickListener(BuildNewListComponent source, GermplasmListManager dataManager, Table listDataTable
+	public SaveListButtonClickListener(ListBuilderComponent source, GermplasmListManager dataManager, Table listDataTable
 			, SimpleResourceBundleMessageSource messageSource, WorkbenchDataManager workbenchDataManager){
 		this.source = source;
 		this.dataManager = dataManager;
@@ -215,7 +215,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
 				, 3000, Notification.POSITION_CENTERED);
 		
-		((ListManagerMain) this.source.getSource()).removeListTab(currentlySavedList);
+		((ListManagerMain) this.source.getSource()).closeList(currentlySavedList);
 	}
 	
 	private void saveListDataColumns(GermplasmList listToSave) {

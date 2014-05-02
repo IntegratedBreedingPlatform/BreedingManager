@@ -2,7 +2,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.slf4j.Logger;
@@ -18,9 +18,9 @@ public class SearchResultsItemClickListener implements ItemClickListener {
 	private static final long serialVersionUID = 1267325300705610720L;
 
 	private String resultType;
-	private ListManagerDetailsLayout detailsLayout;
+	private ListSelectionLayout detailsLayout;
 
-    public SearchResultsItemClickListener(String resultType, ListManagerDetailsLayout detailsLayout) {
+    public SearchResultsItemClickListener(String resultType, ListSelectionLayout detailsLayout) {
         this.resultType = resultType;
         this.detailsLayout = detailsLayout;
     }

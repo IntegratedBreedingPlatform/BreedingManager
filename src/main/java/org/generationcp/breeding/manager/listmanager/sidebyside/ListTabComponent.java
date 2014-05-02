@@ -11,23 +11,23 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.CssLayout;
 
 @Configurable 
-public class ListDetailsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListTabComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
 	private final ListManagerMain source;
-	private final ListManagerDetailsLayout detailsLayout;
-	private ListDataComponent listDataComponent;
+	private final ListSelectionLayout listSelectionLayout;
+	private ListComponent listComponent;
 	private final GermplasmList germplasmList;
 	private boolean hasChanged = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListDetailsComponent(ListManagerMain source, ListManagerDetailsLayout detailsLayout, GermplasmList germplasmList){
+	public ListTabComponent(ListManagerMain source, ListSelectionLayout detailsLayout, GermplasmList germplasmList){
 		super();
 		this.source = source;
-		this.detailsLayout = detailsLayout;
+		this.listSelectionLayout = detailsLayout;
 		this.germplasmList = germplasmList;
 	}
 	
@@ -41,7 +41,7 @@ public class ListDetailsComponent extends CssLayout implements InitializingBean,
 
 	@Override
 	public void instantiateComponents() {
-		listDataComponent = new ListDataComponent(source, this, germplasmList);
+		listComponent = new ListComponent(source, this, germplasmList);
 	}
 
 	@Override
@@ -58,9 +58,9 @@ public class ListDetailsComponent extends CssLayout implements InitializingBean,
 
 	@Override
 	public void layoutComponents() {
-		setMargin(true,true,false,true);
+		setMargin(true);
 		setSizeFull();
-		addComponent(listDataComponent);
+		addComponent(listComponent);
 	}
 
 	@Override
@@ -82,12 +82,12 @@ public class ListDetailsComponent extends CssLayout implements InitializingBean,
         //lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
     }
 	
-	public ListManagerDetailsLayout getDetailsLayout() {
-	    return this.detailsLayout;
+	public ListSelectionLayout getListSelectionLayout() {
+	    return this.listSelectionLayout;
 	}
 	
-	public ListDataComponent getListDataComponent() {
-        return this.listDataComponent;
+	public ListComponent getListDataComponent() {
+        return this.listComponent;
     }
 
 }

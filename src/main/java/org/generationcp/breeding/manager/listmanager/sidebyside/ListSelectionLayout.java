@@ -14,7 +14,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
@@ -40,21 +39,16 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
-
 /**
  * @author Mark Agarrado
- *
  */
 @Configurable
-public class ListManagerDetailsLayout extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSelectionLayout extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ListManagerDetailsLayout.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
     private static final long serialVersionUID = -6583178887344009055L;
     
     public static final String CLOSE_ALL_TABS_ID = "ListManagerDetailsLayout Close All Tabs ID";
@@ -67,31 +61,23 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     private SimpleResourceBundleMessageSource messageSource;
     
     private final ListManagerMain listManagerMain;
-    private final ListManagerDetailsTabSource detailSource;
+    
+    private Label headingLabel;
     private Label noListLabel;
-    private TabSheet detailsTabSheet;
-    private Label heading;
-    private HorizontalLayout headingBar;
-    private Button btnCloseAllTabs;
     private Label defaultLabel;
     
-	
-    private ListManagerTreeComponent listTreeComponent;
+    private Button btnCloseAllTabs;
     private Button openListSelection;
+
+    private HorizontalLayout headingBar;
+
+    private TabSheet detailsTabSheet;
     
     private final Integer listId;
     
-    public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource) {
+    public ListSelectionLayout(final ListManagerMain listManagerMain, final Integer listId) {
     	super();
         this.listManagerMain = listManagerMain;
-        this.detailSource = detailSource;
-        this.listId = null;
-    }
-    
-    public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource, Integer listId) {
-    	super();
-        this.listManagerMain = listManagerMain;
-        this.detailSource = detailSource;
         this.listId = listId;
     }
     
@@ -116,29 +102,27 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     
     @Override
     public void instantiateComponents() {
+    	noListLabel = new Label();
+    	noListLabel.setImmediate(true);
+    	
+    	headingLabel = new Label();
+    	headingLabel.setImmediate(true);
+    	headingLabel.setWidth("300px");
+    	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+    	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+    	
+    	defaultLabel = new Label();
+    	
+    	headingBar = new HorizontalLayout();
+    	
     	detailsTabSheet = new TabSheet();
     	detailsTabSheet.setWidth("95%");
     	detailsTabSheet.addStyleName("listDetails");
     	
-        noListLabel = new Label();
-        noListLabel.setImmediate(true);
-        
         btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-        
-        headingBar = new HorizontalLayout();
-        
-        heading = new Label();
-        heading.setImmediate(true);
-        heading.setWidth("300px");
-        heading.setStyleName(Bootstrap.Typography.H4.styleName());
-        heading.addStyleName(AppConstants.CssStyles.BOLD);
-        
-        defaultLabel = new Label();
-        
-        listTreeComponent = new ListManagerTreeComponent(this.listManagerMain, this.listId);
         
         openListSelection = new Button();
         openListSelection.setImmediate(true);
@@ -149,18 +133,9 @@ public class ListManagerDetailsLayout extends CssLayout implements International
 
     @Override
     public void initializeValues() {
-        String headingLabel = "";
-        String defaultLabel = "";
-        if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
-            headingLabel = messageSource.getMessage(Message.REVIEW_LIST_DETAILS);
-            defaultLabel = messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE);
-        } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
-            headingLabel = messageSource.getMessage(Message.REVIEW_DETAILS);
-            defaultLabel = messageSource.getMessage(Message.SEARCH_LIST_DEFAULT_MESSAGE);
-        }
+        headingLabel.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS));
+        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
         openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
-        heading.setValue(headingLabel);
-        this.defaultLabel.setValue(defaultLabel); 
     }
     
     @Override
@@ -175,7 +150,7 @@ public class ListManagerDetailsLayout extends CssLayout implements International
         headingBar.setWidth("98%");
         headingBar.setHeight("48px");
         
-        final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
+        final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
         headingLayout.addStyleName("lm-browse-lists-title");
         
         headingBar.addComponent(headingLayout);
@@ -186,13 +161,8 @@ public class ListManagerDetailsLayout extends CssLayout implements International
         final CssLayout innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headingBar);
-        
-        if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
-        	innerLayout.addComponent(openListSelection);
-        	openListSelection.addStyleName("lm-selection-help");
-        } else {
-        	innerLayout.addComponent(defaultLabel);
-        }
+        innerLayout.addComponent(openListSelection);
+        openListSelection.addStyleName("lm-selection-help");
         
         innerLayout.addComponent(detailsTabSheet);
         
@@ -202,12 +172,7 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     }
     
     public void setDetailsTabSheetHeight() {
-    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		detailsTabSheet.setHeight("569px");
-    	}
-    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-        	detailsTabSheet.setHeight("550px");
-    	}
+    	detailsTabSheet.setHeight("534px");
 	}
 
 	public void displayDefault(){
@@ -239,30 +204,20 @@ public class ListManagerDetailsLayout extends CssLayout implements International
         
         openListSelection.addListener(new Button.ClickListener() {
 
-			private static final long serialVersionUID = 6385074843600086746L;
+        	private static final long serialVersionUID = 6385074843600086746L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
-				
-				final Window listSelectionWindow = launchListSelectionWindow(getWindow(), "Select a List to Work With");
-
-				listSelectionWindow.addListener(new CloseListener(){
-
-					private static final long serialVersionUID = -6640142955707337542L;
-					
-					@Override
-					public void windowClose(CloseEvent e) {
-						// Do something with the selected list
-					}
-				});
+			public void buttonClick(final ClickEvent event) {
+				listManagerMain.getListSelectionComponent().openListSearchDialog();
 			}
         });
     }
 
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
-
+    	headingLabel.setValue(headingLabel);
+        defaultLabel.setValue(defaultLabel); 
+        openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
     }
 
     public void createGermplasmDetailsTab(Integer gid){
@@ -273,58 +228,40 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     
     public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
         GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-        if(germplasmList == null){
+        if (germplasmList == null) {
             hideDetailsTabsheet();
-            noListLabel.setCaption("There is no list in the database with id: " + listId);
-            noListLabel.setVisible(true);
+            this.noListLabel.setCaption("There is no list in the database with id: " + listId);
+            this.noListLabel.setVisible(true);
         } else {
             noListLabel.setVisible(false);
-            String tabName = "";            
-            if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)) {
-                tabName = germplasmList.getName();
-            } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
-                tabName = "List - " + germplasmList.getName();
-            }
-            createTab(listId, germplasmList, tabName);
-            showDetailsTabsheet();
+            final String tabName = germplasmList.getName();
+            this.createTab(listId, germplasmList, tabName);
+            this.showDetailsTabsheet();
         }
     }
     
     private void createTab(int id, GermplasmList germplasmList, String tabName) {
-        boolean tabExists = false;
-        //workaround since Browse Lists and Search Lists have different tab name formats
-        if (germplasmList != null){
-            tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
-        } else { 
-            tabExists = Util.isTabExist(detailsTabSheet, tabName);
-        }
+        
+    	final boolean tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
         
         if (!tabExists) {
-            Component tabContent = createTabContent(id, germplasmList, tabName);
-            Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
+            
+        	final Component tabContent = new ListTabComponent(listManagerMain, this, germplasmList);
+            final Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
+            
             if (germplasmList != null){
                 tab.setDescription(generateTabDescription(germplasmList.getId()));
             }
+            
             tab.setClosable(true);
             detailsTabSheet.setSelectedTab(tabContent);
+            
         } else {
-            Tab tab;
-            if (germplasmList != null) {
-                tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
-            } else {
-                tab = Util.getTabToFocus(detailsTabSheet, tabName);
-            }
+            final Tab tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
+
             if (tab != null){
                 detailsTabSheet.setSelectedTab(tab.getComponent());
             }
-        }
-    }
-    
-    private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
-        if (germplasmList != null){
-            return new ListDetailsComponent(listManagerMain, this, germplasmList);
-        } else {
-            return new GermplasmDetailsComponent(listManagerMain, id);
         }
     }
     
@@ -334,10 +271,6 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     
     public TabSheet getDetailsTabsheet() {
         return this.detailsTabSheet;
-    }
-    
-    public ListManagerDetailsTabSource getDetailsSource() {
-        return this.detailSource;
     }
     
     public void showDetailsTabsheet() {
@@ -371,7 +304,7 @@ public class ListManagerDetailsLayout extends CssLayout implements International
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){
             tab.setCaption(newName);
-            ListDetailsComponent listDetails = (ListDetailsComponent) tab.getComponent();
+            ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
             listDetails.setListNameLabel(newName);
         }
     }
@@ -391,27 +324,5 @@ public class ListManagerDetailsLayout extends CssLayout implements International
     /*public void closeAllTab(String tabName){
     	// TODO method stub
     }*/
-    
-    private Window launchListSelectionWindow (final Window window, final String caption) {
-
-        final CssLayout layout = new CssLayout();
-        layout.setMargin(true);
-
-        layout.addComponent(listTreeComponent);
-        
-        final Window popupWindow = new Window();
-        popupWindow.setWidth("900px");
-        popupWindow.setHeight("600px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(caption);
-        popupWindow.setContent(layout);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        
-        window.addWindow(popupWindow);
-        
-        return popupWindow;
-	}
 
 }

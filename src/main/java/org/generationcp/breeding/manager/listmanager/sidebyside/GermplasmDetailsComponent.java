@@ -233,7 +233,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 	}
 	
 	public void saveToList(){
-		listManagerMain.addGemplasmToBuildList(germplasmId);
+		listManagerMain.addPlantToList(germplasmId);
 	}
 	
 	// SETTERS and GETTERS

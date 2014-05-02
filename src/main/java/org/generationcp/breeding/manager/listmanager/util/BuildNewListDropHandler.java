@@ -11,8 +11,8 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -46,7 +46,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	
 	private String MATCHING_GERMPLASMS_TABLE_DATA = SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
 	private String MATCHING_LISTS_TABLE_DATA = SearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
-	private String LIST_DATA_TABLE_DATA = ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+	private String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
 	
 	private GermplasmDataManager germplasmDataManager;
 	private GermplasmListManager germplasmListManager;
@@ -105,10 +105,10 @@ public class BuildNewListDropHandler implements DropHandler {
 				if(hasSelectedItems(sourceTable))
 					addFromListDataTable(sourceTable);
 				//If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListDataComponent)
-					addGermplasmFromList(((ListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
+				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent)
+					addGermplasmFromList(((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
 
-			} else if(sourceTableData.equals(BuildNewListComponent.GERMPLASMS_TABLE_DATA)){
+			} else if(sourceTableData.equals(ListBuilderComponent.GERMPLASMS_TABLE_DATA)){
 				Object droppedOverItemId = dropData.getItemIdOver();
 				
 				//Check first if item is dropped on top of itself
@@ -419,8 +419,8 @@ public class BuildNewListDropHandler implements DropHandler {
 		List<Integer> itemIds = getSelectedItemIds(sourceTable);
 		
 		Integer listId = null;
-		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListDataComponent)
-			listId = ((ListDataComponent) sourceTable.getParent().getParent()).getGermplasmListId();
+		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListComponent)
+			listId = ((ListComponent) sourceTable.getParent().getParent()).getGermplasmListId();
 
 		GermplasmList germplasmList = null;
 		try {

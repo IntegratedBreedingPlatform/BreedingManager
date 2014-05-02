@@ -60,9 +60,9 @@ import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class BuildNewListComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
+public class ListBuilderComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
     
     private static final long serialVersionUID = -7736422783255724272L;
     
@@ -123,11 +123,11 @@ public class BuildNewListComponent extends CssLayout implements InitializingBean
     //Listener
     SaveListButtonClickListener saveListButtonListener;
     
-    public BuildNewListComponent() {
+    public ListBuilderComponent() {
         super();
     }
     
-    public BuildNewListComponent(ListManagerMain source) {
+    public ListBuilderComponent(ListManagerMain source) {
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
@@ -163,13 +163,13 @@ public class BuildNewListComponent extends CssLayout implements InitializingBean
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        tableWithSelectAllLayout.setHeight("450px");
+        tableWithSelectAllLayout.setHeight("390px");
         
         final Table listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
         
         listDataTable.setWidth("100%");
-		listDataTable.setHeight("420px");
+		listDataTable.setHeight("340px");
         
         menu = new ContextMenu();
         menu.setWidth("300px");
@@ -328,7 +328,7 @@ public class BuildNewListComponent extends CssLayout implements InitializingBean
         final CssLayout listDataTableLayout = new CssLayout();
         listDataTableLayout.setMargin(true);
         listDataTableLayout.setWidth("100%");
-        listDataTableLayout.setHeight("530px");
+        listDataTableLayout.setHeight("462px");
         listDataTableLayout.addStyleName("listDataTableLayout");
         
         listDataTablePanel.setContent(listDataTableLayout);

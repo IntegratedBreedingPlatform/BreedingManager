@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -18,7 +17,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class ListManagerSearchListComponent extends VerticalLayout implements
+public class PlantSelectionComponent extends VerticalLayout implements
 			InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
@@ -30,14 +29,15 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	private AbsoluteLayout leftLayout;
 	private ToggleButton toggleLeftPaneButton;
 	
-	private SearchResultsComponent searchResultsComponent;
-	private ListManagerMain source;
-	private ListManagerDetailsLayout listManagerDetailsLayout;
+	//private SearchResultsComponent searchResultsComponent;
+	private final ListManagerMain source;
+
+	private ListManagerSearchListBarComponent searchBarComponent;
 	
 	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("390");
 	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("60");
 	
-	public ListManagerSearchListComponent(ListManagerMain source) {
+	public PlantSelectionComponent(ListManagerMain source) {
 		super();
 		this.source = source; 
 	}
@@ -52,7 +52,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 
 	@Override
 	public void instantiateComponents() {
-		//setSizeFull();
+		
 		setWidth("100%");
 		setHeight("800px");
 		
@@ -61,8 +61,8 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
 		
-		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.SEARCH);
-		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
+//		searchBarComponent = new ListManagerSearchListBarComponent(searchListsComponent.getSearchResultsComponent());
+//		searchResultsComponent = new SearchResultsComponent(source, listManagerDetailsLayout);
 		toggleLeftPaneButton = new ToggleButton("Toggle Search Results Table");
 	}
 
@@ -93,11 +93,10 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 		//left pane
 		leftLayout = new AbsoluteLayout();
 		leftLayout.setWidth("390px");
-		leftLayout.addComponent(searchResultsComponent, "top:7px; left:18px");
+		//leftLayout.addComponent(searchResultsComponent, "top:7px; left:18px");
 		leftLayout.addComponent(toggleLeftPaneButton,"top:5px; left:18px");
 	
 		hSplitPanel.setFirstComponent(leftLayout);
-		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
 		
 		addComponent(hSplitPanel);
 	}
@@ -113,17 +112,13 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
     }
     
     public SearchResultsComponent getSearchResultsComponent(){
-    	return searchResultsComponent;
+    	return null;
+    	//return searchResultsComponent;
     }
 
 	@Override
 	public void updateLabels() {
 		
 	}
-
-	public ListManagerDetailsLayout getListManagerDetailsLayout() {
-		return listManagerDetailsLayout;
-	}
-	
 }
 

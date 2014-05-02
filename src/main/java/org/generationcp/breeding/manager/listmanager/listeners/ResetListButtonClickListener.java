@@ -1,7 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
@@ -12,11 +12,11 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 
 	private static final long serialVersionUID = -2641642996209640461L;
 	
-	private BuildNewListComponent source;
+	private ListBuilderComponent source;
 	
 	private SimpleResourceBundleMessageSource messageSource;
 	
-	public ResetListButtonClickListener(BuildNewListComponent source, SimpleResourceBundleMessageSource messageSource){
+	public ResetListButtonClickListener(ListBuilderComponent source, SimpleResourceBundleMessageSource messageSource){
 		this.source = source;
 		this.messageSource = messageSource;
 	}

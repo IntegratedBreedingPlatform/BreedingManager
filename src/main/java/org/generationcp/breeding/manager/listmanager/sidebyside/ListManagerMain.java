@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -21,42 +20,37 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalSplitPanel;
 
 @Configurable
-public class ListManagerMain extends AbsoluteLayout implements
-		InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
+public class ListManagerMain extends AbsoluteLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = 5976245899964745758L;
-    private static final String VERSION = "1.0.0";
+    
+    private static final String VERSION_STRING = "<h2>1.0.0</h2>";
     
     private AbsoluteLayout titleLayout;
     private Label mainTitle;
     private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
-    //For Main Tab 
+    // Tabs
     private HorizontalLayout tabHeaderLayout;
-    private Button showBrowseListsButton;
-    private Button showSearchListsButton;
+    private Button listSelectionTabButton;
+    private Button plantSelectionTabButton;
+
+    // The tab content will be split between a plant finder component and a list builder component
+    private HorizontalSplitPanel splitPanel;
     
-    private HorizontalSplitPanel hSplitPanel;
-    private VerticalSplitPanel vSplitPanel;
+    private AbsoluteLayout plantFinderContent;
+    private ListBuilderComponent listBuilderComponent;
     
-    //Layouts on every pane
-    private AbsoluteLayout browserSearchLayout;
+    // You can toggle the plant selection content to display a list view, or a germplasm view
+    private ListSelectionComponent listSelectionComponent;
+    private PlantSelectionComponent plantSelectionComponent;
     
-    //Components on every pane
-    private ListManagerSearchListBarComponent searchListsBarComponent;
-    private ListManagerBrowseListComponent browseListsComponent;
-    private ListManagerSearchListComponent searchListsComponent;
-    private BuildNewListComponent buildNewListComponent;
-     
+    // The split pane can be expanded and collapsed
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(94); //actual width in pixel 50
 	private static Float MAX_EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50);
-	
-	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
-	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
 	private final Integer selectedListId;
 	
@@ -68,50 +62,158 @@ public class ListManagerMain extends AbsoluteLayout implements
     	this.selectedListId = null;
     }
     
-    public ListManagerMain(Integer selectedListId){
+    public ListManagerMain(final Integer selectedListId){
     	super();
     	this.selectedListId = selectedListId;
     }
 	
     @Override
     public void afterPropertiesSet() throws Exception {
-    	
         instantiateComponents();
 		initializeValues();
 		addListeners();
 		layoutComponents();
-		
-		collapseTop();
     }
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
+		mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
 	}
 
 	@Override
 	public void instantiateComponents() {
 		setSizeFull(); 
-		
-		//title
-		titleLayout = new AbsoluteLayout();
-		
-        setTitleContent("");
+        setTitleContent();
         setTabHeader();
-        setContent();		
+        setTabContent();	
 	}
 
-	private void setTitleContent(String string) {
-		titleLayout.removeAllComponents();
+	@Override
+	public void initializeValues() {
+		plantFinderContent.setWidth("100%");
+		
+		// By default, the list selection component will be opened first
+        plantSelectionComponent.setVisible(false);
+	}
+
+	@Override
+	public void addListeners() {
+		
+		listSelectionTabButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showListSelection();
+				selectTab(listSelectionTabButton);
+				deselectTab(plantSelectionTabButton);
+			}
+
+		});
+		
+		plantSelectionTabButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showPlantSelection();
+				selectTab(plantSelectionTabButton);
+				deselectTab(listSelectionTabButton);
+			}
+		});
+	}
+
+	@Override
+	public void layoutComponents() {
+		addComponent(titleLayout,"top:0px; left:10px");
+		addComponent(tabHeaderLayout,"top:40px;left:10px;");
+		addComponent(splitPanel,"top:65px;left:10px;");
+	}
+
+	/**
+	 * Loads the specified list in the list builder. Ensures the list is not currently open anywhere else.
+	 * 
+	 * @param list the list to load for editing
+	 */
+    public void loadListForEditing(final GermplasmList list){
+    	listSelectionComponent.updateUIForDeletedList(list);
+    	listSelectionComponent.getListDetailsLayout().repaintTabsheet();
+		
+    	listBuilderComponent.editList(list);
+    }
+
+	/**
+	 * Closes the specified list from any open views.
+	 * 
+	 * @param list the list to close
+	 */
+	public void closeList(final GermplasmList list) {
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+	}
+
+	/**
+	 * Add selected plants to the list open in the list builder.
+	 * @param sourceTable the table to retrieve the selected plants from
+	 */
+	public void addSelectedPlantsToList(Table sourceTable){
+		listBuilderComponent.addFromListDataTable(sourceTable);
+	}
+	
+	/**
+	 * Add a plant to the list open in the list builder.
+	 * @param gid ID of the germplasm to add
+	 */
+	public void addPlantToList(final Integer gid) {
+		listBuilderComponent.addGermplasm(gid);
+	}
+	
+	// TODO Helen ??
+	public void showNodeOnTree(Integer listId){
+		listSelectionComponent.getListTreeComponent().setListId(listId);
+		listSelectionComponent.getListTreeComponent().createTree();
+	}
+
+	public ListBuilderComponent getBuildNewListComponent() {
+		return listBuilderComponent;
+	}
+	
+	public ListSelectionComponent getListSelectionComponent(){
+		return listSelectionComponent;
+	}
+	
+	protected void showPlantSelection() {
+		plantFinderContent.setCaption("100%");
+		
+		plantFinderContent.removeAllComponents();
+		plantFinderContent.addComponent(plantSelectionComponent);
+		
+		listSelectionComponent.setVisible(false);
+		plantSelectionComponent.setVisible(true);
+		
+		plantFinderContent.requestRepaint();
+	}
+
+	protected void showListSelection() {
+		plantFinderContent.setCaption("100%");
+		
+		plantFinderContent.removeAllComponents();
+		plantFinderContent.addComponent(listSelectionComponent);
+		
+		listSelectionComponent.setVisible(true);
+		plantSelectionComponent.setVisible(false);
+		
+		plantFinderContent.requestRepaint();
+	}
+	
+	private void setTitleContent() {
+		titleLayout = new AbsoluteLayout();
         titleLayout.setWidth("100%");
         titleLayout.setHeight("40px");
         
-        //TODO put software version in title
-        String title =  messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL)+ "  <h2>" + VERSION + "</h2>";
         mainTitle = new Label();
         mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         mainTitle.setContentMode(Label.CONTENT_XHTML);
-        mainTitle.setValue(title);
+        mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
         
         buildNewListButton = new Button();
         buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
@@ -124,192 +226,59 @@ public class ListManagerMain extends AbsoluteLayout implements
 	}
 	
 	private void setTabHeader(){
-        showBrowseListsButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
-        showSearchListsButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
-        showBrowseListsButton.addStyleName("tabHeaderSelectedStyle");
-        showBrowseListsButton.addStyleName("tabStyleButton");
-        showSearchListsButton.addStyleName("tabStyleButton");
-        showBrowseListsButton.setImmediate(true);
-        showSearchListsButton.setImmediate(true);
+        listSelectionTabButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
+        plantSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
+        listSelectionTabButton.addStyleName("tabStyleButton");
+        plantSelectionTabButton.addStyleName("tabStyleButton");
+        listSelectionTabButton.setImmediate(true);
+        plantSelectionTabButton.setImmediate(true);
         
         tabHeaderLayout = new HorizontalLayout();
         tabHeaderLayout.addStyleName("tabHeaderStyle");
         tabHeaderLayout.setSpacing(true);
-        tabHeaderLayout.addComponent(showBrowseListsButton);
-        tabHeaderLayout.addComponent(showSearchListsButton);
+        tabHeaderLayout.addComponent(listSelectionTabButton);
+        tabHeaderLayout.addComponent(plantSelectionTabButton);
 	}
 	
-	private void setContent(){
+	private void setTabContent(){
+		splitPanel = new HorizontalSplitPanel();
+		splitPanel.setMargin(false);
+		splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setMinSplitPosition(MAX_EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setImmediate(true);
+		splitPanel.setWidth("100%");
+		splitPanel.addStyleName("tabContainerStyle");
 		
-		vSplitPanel = new VerticalSplitPanel();
-		vSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
-		vSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
-		vSplitPanel.setImmediate(true);
-		vSplitPanel.addStyleName("tabContainerStyle");
+		listSelectionComponent = new ListSelectionComponent(this, selectedListId);
+		plantSelectionComponent = new PlantSelectionComponent(this);
 		
-		hSplitPanel = new HorizontalSplitPanel();
-		hSplitPanel.setMargin(false);
-		hSplitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		hSplitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-		hSplitPanel.setMinSplitPosition(MAX_EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-		hSplitPanel.setImmediate(true);
-		hSplitPanel.setWidth("99%");
-		
-		searchListsComponent = new ListManagerSearchListComponent(this);
-		searchListsBarComponent = new ListManagerSearchListBarComponent(searchListsComponent.getSearchResultsComponent());
-		
-		browseListsComponent = new ListManagerBrowseListComponent(this, selectedListId);
-        browserSearchLayout = new AbsoluteLayout();
-        browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
-        browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
-        browserSearchLayout.setHeight("660px");
+        plantFinderContent = new AbsoluteLayout();
+        plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
+        plantFinderContent.addComponent(plantSelectionComponent,"top:0px;left:0px");
         
-        buildNewListComponent = new BuildNewListComponent(this);
-        buildNewListComponent.setHeight("660px");
-
-		hSplitPanel.setFirstComponent(browserSearchLayout);
-		hSplitPanel.setSecondComponent(buildNewListComponent);
+        listBuilderComponent = new ListBuilderComponent(this);
+        
+		splitPanel.setFirstComponent(plantFinderContent);
+		splitPanel.setSecondComponent(listBuilderComponent);
 		
-		vSplitPanel.setFirstComponent(searchListsBarComponent);
-		vSplitPanel.setSecondComponent(hSplitPanel);
+		splitPanel.setHeight("610px");
+		plantFinderContent.setHeight("98%");
+		splitPanel.addStyleName("splitPanel");
+		plantFinderContent.addStyleName("plantFinderContent");
+		listBuilderComponent.setHeight("98%");
 		
 		addStyleName("lm-list-manager-main");
-		
-	}
-
-	@Override
-	public void initializeValues() {
-		browserSearchLayout.setWidth("100%");
-        searchListsComponent.setVisible(false);
-	}
-
-	@Override
-	public void addListeners() {
-		
-		showBrowseListsButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				showBrowseListPane();
-				collapseTop();
-				showBrowseListsButton.removeStyleName("tabHeaderStyle");
-				showBrowseListsButton.addStyleName("tabHeaderSelectedStyle");
-				
-				showSearchListsButton.removeStyleName("tabHeaderSelectedStyle");
-		        showSearchListsButton.addStyleName("tabHeaderStyle");
-			}
-
-		});
-		
-		showSearchListsButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				expandTop();
-				showSearchListPane();
-				showBrowseListsButton.removeStyleName("tabHeaderSelectedStyle");
-				showBrowseListsButton.addStyleName("tabHeaderStyle");
-				
-				showSearchListsButton.removeStyleName("tabHeaderStyle");
-		        showSearchListsButton.addStyleName("tabHeaderSelectedStyle");
-			}
-		});
-	}
-
-	protected void showSearchListPane() {
-		browserSearchLayout.setHeight("100%");
-		
-		browserSearchLayout.removeAllComponents();
-		browserSearchLayout.addComponent(searchListsComponent);
-		
-		browseListsComponent.setVisible(false);
-		searchListsComponent.setVisible(true);
-		
-		browserSearchLayout.requestRepaint();
-	}
-
-	protected void showBrowseListPane() {
-		browserSearchLayout.setHeight("100%");
-		
-		browserSearchLayout.removeAllComponents();
-		browserSearchLayout.addComponent(browseListsComponent);
-		
-		browseListsComponent.setVisible(true);
-		searchListsComponent.setVisible(false);
-		
-		browserSearchLayout.requestRepaint();
-	}
-
-	@Override
-	public void layoutComponents() {
-		addComponent(titleLayout,"top:0px; left:10px");
-		addComponent(tabHeaderLayout,"top:40px;left:10px;");
-		addComponent(vSplitPanel,"top:65px;left:10px;");
 	}
 	
-    private void collapseTop(){
-    	vSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
-    }
-    
-    private void expandTop(){
-    	vSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
-    }
-    
-    public void showBuildNewListComponent(GermplasmList list){
-    	updateUIForDeletedList(list); // remove the list to be edited from the review list details tabsheet
-		buildNewListComponent.editList(list);
-    	browseListsComponent.getListDetailsLayout().repaintTabsheet();
-    	searchListsComponent.getListManagerDetailsLayout().repaintTabsheet();
-    }
-    
-    @Override
-	public void updateUIForDeletedList(GermplasmList list) {
-		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
-		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());
-	}
-
-	@Override
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		browseListsComponent.getListDetailsLayout().renameTab(list.getId(), newName);
-		searchListsComponent.getListManagerDetailsLayout().renameTab(list.getId(), newName);
+	private void selectTab(final Button tabToSelect) {
+		tabToSelect.removeStyleName("tabHeaderStyle");
+		tabToSelect.addStyleName("tabHeaderSelectedStyle");
 	}
 	
-	public void removeListTab(GermplasmList list) {
-		browseListsComponent.getListDetailsLayout().removeTab(list.getId());
-		searchListsComponent.getListManagerDetailsLayout().removeTab(list.getId());
-	}
-
-	@Override
-	public void openListDetails(GermplasmList list) {
-		browseListsComponent.openListDetails(list);
-	}
-	
-	public void addFromListDataTable(Table sourceTable){
-		buildNewListComponent.addFromListDataTable(sourceTable);
-	}	
-	
-	public void showNodeOnTree(Integer listId){
-		browseListsComponent.getListTreeComponent().setListId(listId);
-		browseListsComponent.getListTreeComponent().createTree();
-	}
-	
-	public void addGemplasmToBuildList(Integer gid) {
-		buildNewListComponent.addGermplasm(gid);
-	}
-
-	/* SETTERS AND GETTERS */
-	public BuildNewListComponent getBuildNewListComponent() {
-		return buildNewListComponent;
-	}
-	
-	public ListManagerBrowseListComponent getBrowseListsComponent(){
-		return browseListsComponent;
-	}
-
-	@Override
-	public void toggleListTreeComponent() {
-		// TODO Auto-generated method stub
+	private void deselectTab(final Button tabToUnselect) {
+		tabToUnselect.removeStyleName("tabHeaderSelectedStyle");
+		tabToUnselect.addStyleName("tabHeaderStyle");
 	}
 }

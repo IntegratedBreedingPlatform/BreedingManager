@@ -11,7 +11,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -63,7 +63,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
-	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout;
+	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout displayDetailsLayout;
 	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
 	@Autowired
@@ -72,7 +72,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 	
-	public SearchResultsComponent(ListManagerMain listManagerMain, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout){
+	public SearchResultsComponent(ListManagerMain listManagerMain, org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout displayDetailsLayout){
 		this.listManagerMain = listManagerMain;
 		this.displayDetailsLayout = displayDetailsLayout;
 	}
@@ -177,7 +177,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 	             		List<Integer> gids = new ArrayList<Integer>();
 	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
 	             		for(Integer gid : gids){
-	             			listManagerMain.addGemplasmToBuildList(gid);
+	             			listManagerMain.addPlantToList(gid);
 	             		}
 	             	}
 				}
@@ -321,7 +321,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     	return matchingListsTable;
     }    
     
-    public ListManagerDetailsLayout getListManagerDetailsLayout(){
+    public ListSelectionLayout getListManagerDetailsLayout(){
     	return this.displayDetailsLayout;
     }
 	

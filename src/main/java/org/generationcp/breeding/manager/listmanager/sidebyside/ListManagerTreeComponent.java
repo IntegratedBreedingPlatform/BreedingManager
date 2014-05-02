@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class ListManagerTreeComponent extends ListTreeComponent implements InitializingBean{
 
 	private static final long serialVersionUID = -1013380483927558222L;
-
 	
-	public ListManagerTreeComponent(ListTreeActionsListener treeActionsListener) {
+	public ListManagerTreeComponent(final ListTreeActionsListener treeActionsListener) {
 		super(treeActionsListener);
 	}
 	
-	public ListManagerTreeComponent(ListTreeActionsListener treeActionListener, Integer listId){
+	public ListManagerTreeComponent(final ListTreeActionsListener treeActionListener, Integer listId){
 		super(treeActionListener, listId);
 	}
 	
@@ -43,10 +42,4 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}
-
-	@Override
-	protected boolean doIncludeToggleButton() {
-		return false;
-	}
-
 }

@@ -35,7 +35,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    private ListDetailsComponent listDetailsComponent = null;
+    private ListTabComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
     private CssLayout cssLayoutSource;
     private final String GIDPropertyId;
@@ -127,7 +127,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
     
     private boolean fromBuildNewList;
-    private BuildNewListComponent buildNewListComponent;
+    private ListBuilderComponent buildNewListComponent;
     
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID
         , PREFERRED_NAME
@@ -150,7 +150,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(ListDetailsComponent listDetailsComponent, 
+    public AddColumnContextMenu(ListTabComponent listDetailsComponent, 
             ContextMenu sourceContextMenu, Table targetTable, String gid){
         this.listDetailsComponent = listDetailsComponent;
         this.GIDPropertyId = gid;
@@ -178,7 +178,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         this.fromBuildNewList = fromBuildNewList;
         
         if(fromBuildNewList){
-            buildNewListComponent = ((BuildNewListComponent) cssLayoutSource);
+            buildNewListComponent = ((ListBuilderComponent) cssLayoutSource);
         }
         
         setupContextMenu();
