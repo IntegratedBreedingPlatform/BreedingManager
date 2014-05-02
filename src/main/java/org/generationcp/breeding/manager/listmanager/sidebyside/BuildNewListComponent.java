@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -183,7 +181,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
-        menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
+        //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetMenuOptions();
@@ -206,7 +204,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     public void resetMenuOptions(){
         //initially disabled when the current list building is not yet save or being reset
         menuExportList.setEnabled(false);
-        menuExportForGenotypingOrder.setEnabled(false);
+        //menuExportForGenotypingOrder.setEnabled(false);
         menuCopyToList.setEnabled(false);
     }
 
@@ -486,7 +484,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
     public void enableMenuOptionsAfterSave(){
         menuExportList.setEnabled(true);
-        menuExportForGenotypingOrder.setEnabled(true);
+        //menuExportForGenotypingOrder.setEnabled(true);
         menuCopyToList.setEnabled(true);
     }
     
