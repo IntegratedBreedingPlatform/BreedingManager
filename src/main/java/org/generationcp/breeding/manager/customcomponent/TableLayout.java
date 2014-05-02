@@ -5,18 +5,18 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class TableLayout extends VerticalLayout implements
+public class TableLayout extends CssLayout implements
 		BreedingManagerLayout, InitializingBean {
 
 	private static final long serialVersionUID = -6261586644242232751L;
 
 	protected BreedingManagerTable table;
-	private Label emptyTableLabel = new Label("No information retrieved.");
+	private final Label emptyTableLabel = new Label("No information retrieved.");
 	
 	private int recordCount = 0;
 	private int maxRecords = 0;
@@ -60,7 +60,7 @@ public class TableLayout extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
+		setSizeFull();
 		if (!(doHideEmptyTable() && this.recordCount == 0)){
 			addComponent(table);
 		} else {

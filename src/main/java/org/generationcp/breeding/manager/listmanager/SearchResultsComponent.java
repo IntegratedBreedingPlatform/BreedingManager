@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SearchResultsItemClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
@@ -63,8 +63,8 @@ public class SearchResultsComponent extends AbsoluteLayout implements
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
-	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout;
-	private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
+	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout displayDetailsLayout;
+	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -140,6 +140,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public String generateDescription(Component source, Object itemId,
 					Object propertyId) {
 				if(propertyId=="NAMES"){
@@ -164,6 +165,7 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 		matchingGermplasmsTable.addActionHandler(new Action.Handler() {
 	       	 private static final long serialVersionUID = -897257270314381555L;
 
+				@Override
 				public Action[] getActions(Object target, Object sender) {
 					return GERMPLASMS_TABLE_CONTEXT_MENU;
 	            }
@@ -172,7 +174,6 @@ public class SearchResultsComponent extends AbsoluteLayout implements
 				@Override
 				public void handleAction(Action action, Object sender, Object target) {
 	             	if (ACTION_COPY_TO_NEW_LIST == action) {
-	             		listManagerMain.showBuildNewListComponent();
 	             		List<Integer> gids = new ArrayList<Integer>();
 	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
 	             		for(Integer gid : gids){

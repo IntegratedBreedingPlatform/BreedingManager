@@ -46,7 +46,7 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 
 	@Override
 	protected boolean doIncludeToggleButton() {
-		return true;
+		return false;
 	}
 
 }

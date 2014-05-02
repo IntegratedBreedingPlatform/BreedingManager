@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,8 +14,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.AbstractSplitPanel.SplitterClickEvent;
-import com.vaadin.ui.AbstractSplitPanel.SplitterClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -54,15 +51,14 @@ public class ListManagerMain extends AbsoluteLayout implements
     private ListManagerBrowseListComponent browseListsComponent;
     private ListManagerSearchListComponent searchListsComponent;
     private BuildNewListComponent buildNewListComponent;
-    
-	private static Float EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(65); //actual width in pixel 680 
+     
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(94); //actual width in pixel 50
 	private static Float MAX_EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50);
 	
 	private static Float EXPANDED_SPLIT_POSITION_TOP = Float.valueOf(65); //actual width in pixel
 	private static Float COLLAPSED_SPLIT_POSITION_TOP = Float.valueOf(0); //actual width in pixel
 	
-	private Integer selectedListId;
+	private final Integer selectedListId;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -86,7 +82,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 		layoutComponents();
 		
 		collapseTop();
-		collapseRight();
     }
 
 	@Override
@@ -154,6 +149,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 		
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMargin(false);
+		hSplitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setMinSplitPosition(MAX_EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		hSplitPanel.setImmediate(true);
@@ -166,15 +162,18 @@ public class ListManagerMain extends AbsoluteLayout implements
         browserSearchLayout = new AbsoluteLayout();
         browserSearchLayout.addComponent(browseListsComponent,"top:0px;left:0px");
         browserSearchLayout.addComponent(searchListsComponent,"top:0px;left:0px");
-        browserSearchLayout.setHeight("425px");
+        browserSearchLayout.setHeight("660px");
         
         buildNewListComponent = new BuildNewListComponent(this);
-        
+        buildNewListComponent.setHeight("660px");
+
 		hSplitPanel.setFirstComponent(browserSearchLayout);
 		hSplitPanel.setSecondComponent(buildNewListComponent);
 		
 		vSplitPanel.setFirstComponent(searchListsBarComponent);
 		vSplitPanel.setSecondComponent(hSplitPanel);
+		
+		addStyleName("lm-list-manager-main");
 		
 	}
 
@@ -217,19 +216,10 @@ public class ListManagerMain extends AbsoluteLayout implements
 		        showSearchListsButton.addStyleName("tabHeaderSelectedStyle");
 			}
 		});
-		
-		buildNewListButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			public void buttonClick(ClickEvent event) {
-				expandRight();
-			}
-		});
-		
 	}
 
 	protected void showSearchListPane() {
-		browserSearchLayout.setHeight("630px");
+		browserSearchLayout.setHeight("100%");
 		
 		browserSearchLayout.removeAllComponents();
 		browserSearchLayout.addComponent(searchListsComponent);
@@ -241,7 +231,7 @@ public class ListManagerMain extends AbsoluteLayout implements
 	}
 
 	protected void showBrowseListPane() {
-		browserSearchLayout.setHeight("425px");
+		browserSearchLayout.setHeight("100%");
 		
 		browserSearchLayout.removeAllComponents();
 		browserSearchLayout.addComponent(browseListsComponent);
@@ -259,14 +249,6 @@ public class ListManagerMain extends AbsoluteLayout implements
 		addComponent(vSplitPanel,"top:65px;left:10px;");
 	}
 	
-    private void expandRight(){
-    	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-    }
-
-    private void collapseRight(){
-    	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-    }
-    
     private void collapseTop(){
     	vSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
     }
@@ -275,14 +257,9 @@ public class ListManagerMain extends AbsoluteLayout implements
     	vSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_TOP, Sizeable.UNITS_PIXELS);
     }
     
-    public void showBuildNewListComponent(){
-    	expandRight();
-    }
-    
     public void showBuildNewListComponent(GermplasmList list){
     	updateUIForDeletedList(list); // remove the list to be edited from the review list details tabsheet
 		buildNewListComponent.editList(list);
-    	expandRight();
     	browseListsComponent.getListDetailsLayout().repaintTabsheet();
     	searchListsComponent.getListManagerDetailsLayout().repaintTabsheet();
     }
@@ -320,27 +297,8 @@ public class ListManagerMain extends AbsoluteLayout implements
 	
 	public void addGemplasmToBuildList(Integer gid) {
 		buildNewListComponent.addGermplasm(gid);
-		expandRight();
 	}
 
-	@Override
-	public void toggleListTreeComponent() {
-		this.browseListsComponent.toggleListTreeComponent();
-		browseListsComponent.getListDetailsLayout().repaintTabsheet();
-	}
-	
-	public void toggleBuildNewListComponent() {
-		if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() > EXPANDED_SPLIT_POSITION_RIGHT){
-			expandRight();
-		}
-		else if(hSplitPanel.getSplitPosition() <= hSplitPanel.getMaxSplitPosition() && hSplitPanel.getSplitPosition() <= EXPANDED_SPLIT_POSITION_RIGHT){
-			collapseRight();
-		}
-		
-		browseListsComponent.getListDetailsLayout().repaintTabsheet();
-		searchListsComponent.getListManagerDetailsLayout().repaintTabsheet();
-	}
-	
 	/* SETTERS AND GETTERS */
 	public BuildNewListComponent getBuildNewListComponent() {
 		return buildNewListComponent;
@@ -349,5 +307,9 @@ public class ListManagerMain extends AbsoluteLayout implements
 	public ListManagerBrowseListComponent getBrowseListsComponent(){
 		return browseListsComponent;
 	}
-	
+
+	@Override
+	public void toggleListTreeComponent() {
+		// TODO Auto-generated method stub
+	}
 }

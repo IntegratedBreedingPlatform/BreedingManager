@@ -11,11 +11,6 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -37,13 +32,17 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
@@ -53,7 +52,7 @@ import com.vaadin.ui.themes.Runo;
  *
  */
 @Configurable
-public class ListManagerDetailsLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListManagerDetailsLayout extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ListManagerDetailsLayout.class);
     private static final long serialVersionUID = -6583178887344009055L;
@@ -67,8 +66,8 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private ListManagerMain listManagerMain;
-    private ListManagerDetailsTabSource detailSource;
+    private final ListManagerMain listManagerMain;
+    private final ListManagerDetailsTabSource detailSource;
     private Label noListLabel;
     private TabSheet detailsTabSheet;
     private Label heading;
@@ -76,9 +75,11 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     private Button btnCloseAllTabs;
     private Label defaultLabel;
     
-    private Integer listId;
+	
+    private ListManagerTreeComponent listTreeComponent;
+    private Button openListSelection;
     
-    private VerticalLayout innerLayout;
+    private final Integer listId;
     
     public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource) {
     	super();
@@ -116,7 +117,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Override
     public void instantiateComponents() {
     	detailsTabSheet = new TabSheet();
-    	detailsTabSheet.setWidth("100%");
+    	detailsTabSheet.setWidth("95%");
     	detailsTabSheet.addStyleName("listDetails");
     	
         noListLabel = new Label();
@@ -136,7 +137,14 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         heading.addStyleName(AppConstants.CssStyles.BOLD);
         
         defaultLabel = new Label();
-        defaultLabel.setWidth("100%");
+        
+        listTreeComponent = new ListManagerTreeComponent(this.listManagerMain, this.listId);
+        
+        openListSelection = new Button();
+        openListSelection.setImmediate(true);
+        openListSelection.setStyleName(Reindeer.BUTTON_LINK);
+        
+        setSizeFull();
     }
 
     @Override
@@ -150,6 +158,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
             headingLabel = messageSource.getMessage(Message.REVIEW_DETAILS);
             defaultLabel = messageSource.getMessage(Message.SEARCH_LIST_DEFAULT_MESSAGE);
         }
+        openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
         heading.setValue(headingLabel);
         this.defaultLabel.setValue(defaultLabel); 
     }
@@ -164,37 +173,47 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     	 
     	//Components
         headingBar.setWidth("98%");
-        headingBar.setHeight("27px");
+        headingBar.setHeight("48px");
         
-        HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
+        final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
+        headingLayout.addStyleName("lm-browse-lists-title");
+        
         headingBar.addComponent(headingLayout);
         headingBar.addComponent(btnCloseAllTabs);
         headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
+        btnCloseAllTabs.addStyleName("lm-browse-lists-close-tabs");
         
-        VerticalLayout innerLayout = new VerticalLayout();
+        final CssLayout innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headingBar);
-        innerLayout.addComponent(defaultLabel);
+        
+        if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
+        	innerLayout.addComponent(openListSelection);
+        	openListSelection.addStyleName("lm-selection-help");
+        } else {
+        	innerLayout.addComponent(defaultLabel);
+        }
+        
         innerLayout.addComponent(detailsTabSheet);
         
+        innerLayout.setWidth("100%");
         addComponent(innerLayout);
         displayDefault();
     }
     
     public void setDetailsTabSheetHeight() {
     	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		detailsTabSheet.setHeight("395px");
+    		detailsTabSheet.setHeight("569px");
     	}
     	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-        	detailsTabSheet.setHeight("558px");
+        	detailsTabSheet.setHeight("550px");
     	}
 	}
 
 	public void displayDefault(){
-    	noListLabel.setVisible(false);        
+    	noListLabel.setVisible(false);
         headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
-        defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
     }
 
@@ -216,6 +235,27 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
                     btnCloseAllTabs.setVisible(true);
                 }
             }
+        });
+        
+        openListSelection.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+				final Window listSelectionWindow = launchListSelectionWindow(getWindow(), "Select a List to Work With");
+
+				listSelectionWindow.addListener(new CloseListener(){
+
+					private static final long serialVersionUID = -6640142955707337542L;
+					
+					@Override
+					public void windowClose(CloseEvent e) {
+						// Do something with the selected list
+					}
+				});
+			}
         });
     }
 
@@ -301,28 +341,12 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     }
     
     public void showDetailsTabsheet() {
-    	this.removeAllComponents();
-    	this.addComponent(headingBar);
-    	this.addComponent(detailsTabSheet);
-    	
-        headingBar.setVisible(true);
-        defaultLabel.setVisible(false);
         detailsTabSheet.setVisible(true);
-        
-    	this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
-        this.removeAllComponents();
-    	this.addComponent(headingBar);
-    	this.addComponent(defaultLabel);
-    	
-        headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
-        defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
-
-    	this.requestRepaint();
     }
     
     public void repaintTabsheet() {
@@ -367,5 +391,27 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     /*public void closeAllTab(String tabName){
     	// TODO method stub
     }*/
+    
+    private Window launchListSelectionWindow (final Window window, final String caption) {
+
+        final CssLayout layout = new CssLayout();
+        layout.setMargin(true);
+
+        layout.addComponent(listTreeComponent);
+        
+        final Window popupWindow = new Window();
+        popupWindow.setWidth("900px");
+        popupWindow.setHeight("600px");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setCaption(caption);
+        popupWindow.setContent(layout);
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        
+        window.addWindow(popupWindow);
+        
+        return popupWindow;
+	}
 
 }

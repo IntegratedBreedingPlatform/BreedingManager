@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
-import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,13 +14,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.CssLayout;
 
 @Configurable
-public class ListManagerBrowseListComponent extends VerticalLayout implements
+public class ListManagerBrowseListComponent extends CssLayout implements
 	InternationalizableComponent, InitializingBean, BreedingManagerLayout{
     
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerBrowseListComponent.class);
@@ -31,19 +27,11 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	private ListManagerTreeComponent listTreeComponent;
-	
-	private HorizontalSplitPanel hSplitPanel;
-	private AbsoluteLayout leftLayout;
-	
 	private ListManagerDetailsLayout listManagerDetailsLayout;
 	
-	private static Float EXPANDED_SPLIT_POSITION_LEFT = Float.valueOf("235");
-	private static Float COLLAPSED_SPLIT_POSITION_LEFT = Float.valueOf("50");
+	private final ListManagerMain source;
 	
-	private ListManagerMain source;
-	
-	private Integer selectedListId;
+	private final Integer selectedListId;
 		
 	public ListManagerBrowseListComponent(ListManagerMain source) {
 		super();
@@ -63,7 +51,6 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
-		expandLeft();
 	}
 	
 	@Override
@@ -74,12 +61,6 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 	@Override
 	public void instantiateComponents() {
 		setSizeFull();
-		
-		hSplitPanel = new HorizontalSplitPanel();
-		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-		hSplitPanel.setMinSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-		
-		listTreeComponent = new ListManagerTreeComponent(source, selectedListId);
 		listManagerDetailsLayout = new ListManagerDetailsLayout(source, ListManagerDetailsTabSource.BROWSE, selectedListId);
 	}
 
@@ -95,27 +76,8 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
 
 	@Override
 	public void layoutComponents() {
-		
-		//left pane
-		leftLayout = new AbsoluteLayout();
-		leftLayout.setWidth("235px");
-		leftLayout.addComponent(listTreeComponent,"top:0px;left:15px");
-		
-		
-		hSplitPanel.setFirstComponent(leftLayout);
-		hSplitPanel.setSecondComponent(listManagerDetailsLayout);
-		addComponent(hSplitPanel);
+		addComponent(listManagerDetailsLayout);
 	}
-	
-    private void expandLeft(){
-    	leftLayout.setWidth("235px");
-    	hSplitPanel.setSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    }
-
-    private void collapseLeft(){
-    	leftLayout.setWidth("100%");
-    	hSplitPanel.setSplitPosition(COLLAPSED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);
-    }
 
     public void openListDetails(GermplasmList list) {
         try{
@@ -126,21 +88,13 @@ public class ListManagerBrowseListComponent extends VerticalLayout implements
                     Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
         }
 	}
-    
-	protected void toggleListTreeComponent(){
-		if(hSplitPanel.getSplitPosition() == hSplitPanel.getMaxSplitPosition()){
-			collapseLeft();
-		} else {
-			expandLeft();
-		}
-	}
 
 	public ListManagerDetailsLayout getListDetailsLayout() {
 		return listManagerDetailsLayout;
 	}
     
+	// TODO eeek
 	public ListManagerTreeComponent getListTreeComponent(){
-		return listTreeComponent;
+		return null;
 	}
-	
 }

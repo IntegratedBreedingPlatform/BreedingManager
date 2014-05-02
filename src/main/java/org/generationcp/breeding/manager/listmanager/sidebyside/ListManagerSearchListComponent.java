@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
-import org.generationcp.breeding.manager.constants.ToggleDirection;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -56,7 +54,7 @@ public class ListManagerSearchListComponent extends VerticalLayout implements
 	public void instantiateComponents() {
 		//setSizeFull();
 		setWidth("100%");
-		setHeight("630px");
+		setHeight("800px");
 		
 		hSplitPanel = new HorizontalSplitPanel();
 		hSplitPanel.setMaxSplitPosition(EXPANDED_SPLIT_POSITION_LEFT, Sizeable.UNITS_PIXELS);

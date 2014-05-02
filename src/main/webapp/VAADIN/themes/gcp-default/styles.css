@@ -171,13 +171,9 @@
 	padding: 10px;
 	border: 1px solid e3e3e3;
 	background: #e3e3e3;
-	width: 200px;
-	height: 220px;
+	width: 850px;
+	height: 400px;
 	overflow: scroll;
-	border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    color: #33333;
 }
 
 .listManagerTree-long {
@@ -575,4 +571,81 @@
 .cs-form-label input[type="checkbox"],
 .cs-form-label label {
 	float: right;
+}
+
+.lm-browse-lists-title {
+	padding: 7px 0 4px 12px;
+}
+
+.lm-build-new-list-title {
+	padding-top: 7px;
+	padding-bottom: 3px;
+}
+
+.lm-selection-help {
+	margin-top: -8px;
+}
+
+.lm-list-desc {
+	padding-top: 5px;
+	padding-bottom: 8px;
+}
+
+.lm-build-list-desc {
+	padding-bottom: 36px;
+}
+
+.lm-list-manager-main .v-button .v-button-caption {
+	font-size: 13px;
+}
+
+.v-button.lm-selection-help .v-button-caption {
+	padding-left: 14px;
+}
+
+.listDetails {
+	/* Using padding here causes issues with the tab header */
+	margin-left: 12px;
+}
+
+.lm-table-select-all {
+	padding-top: 10px;
+}
+
+.lm-list-total {
+	padding-left: 4px;
+}
+
+.lm-list-edit-list-details {
+	padding-top: 7px;
+}
+
+.lm-new-list-buttons {
+	padding-top: 7px;
+}
+
+.lm-build-new-list .v-panel {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-radius: none;
+}
+
+.lm-build-new-list .v-panel-captionwrap,
+.lm-build-new-list .v-panel-deco {
+	display: none;
+}
+
+.lm-tools-button  .v-button-info {
+	padding-left: 0;
+}
+
+.lm-tools-button .v-button-wrap {
+	padding-top: 2px;
+	padding-left: 9px;
+}
+
+.lm-build-new-list .v-panel-content {
+	border: 1px solid rgb(228, 228, 228);
 }

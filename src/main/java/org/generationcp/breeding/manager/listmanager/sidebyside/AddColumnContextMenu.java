@@ -25,8 +25,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -37,10 +37,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 
     private ListDetailsComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
-    private VerticalLayout verticalLayoutSource;
-    private String GIDPropertyId;
+    private CssLayout cssLayoutSource;
+    private final String GIDPropertyId;
     //private Button addColumnButton;
-    private Table targetTable;
+    private final Table targetTable;
     
     //private ContextMenu menu;
     private ContextMenu sourceContextMenu;
@@ -164,21 +164,21 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     /**
      * Add "Add column" context menu to a table
-     * @param verticalLayoutSource - context menu will attach to this
+     * @param cssLayoutSource - context menu will attach to this
      * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(VerticalLayout verticalLayoutSource, 
+    public AddColumnContextMenu(CssLayout cssLayoutSource, 
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
-        this.verticalLayoutSource = verticalLayoutSource;
+        this.cssLayoutSource = cssLayoutSource;
         this.fromBuildNewList = fromBuildNewList;
         
         if(fromBuildNewList){
-            buildNewListComponent = ((BuildNewListComponent) verticalLayoutSource);
+            buildNewListComponent = ((BuildNewListComponent) cssLayoutSource);
         }
         
         setupContextMenu();
