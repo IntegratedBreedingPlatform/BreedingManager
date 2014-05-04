@@ -74,8 +74,8 @@ public class ListManagerMain extends VerticalLayout implements
         buildNewListComponent = new BuildNewListComponent(this);
         
         tabSheet = new TabSheet();
-        tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
-        tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.SEARCH_LISTS));
+        tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_GERMPLASM));
         tabSheet.setHeight("580px");
         tabSheet.addListener(new ListManagerTabChangeListener(this));
         

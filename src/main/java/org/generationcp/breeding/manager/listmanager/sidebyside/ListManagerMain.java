@@ -226,8 +226,8 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	}
 	
 	private void setTabHeader(){
-        listSelectionTabButton = new Button(messageSource.getMessage(Message.BROWSE_LISTS));
-        plantSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        listSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS));
+        plantSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_GERMPLASM));
         listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
         listSelectionTabButton.addStyleName("tabStyleButton");
         plantSelectionTabButton.addStyleName("tabStyleButton");
