@@ -118,6 +118,7 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
         popup.setStyleName("gcp-popup-view");
         
         likeOrEqualCheckBox = new CheckBox();
+        likeOrEqualCheckBox.setValue(true);
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
         includeParentsCheckBox = new CheckBox();

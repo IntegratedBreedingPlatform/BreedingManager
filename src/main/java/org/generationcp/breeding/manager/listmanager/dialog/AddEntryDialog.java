@@ -341,6 +341,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         popup.setStyleName("gcp-popup-view");
         
         likeOrEqualCheckBox = new CheckBox();
+        likeOrEqualCheckBox.setValue(true);
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
         searchFormLayout.addComponent(searchLabel, "top:15px; left:15px");

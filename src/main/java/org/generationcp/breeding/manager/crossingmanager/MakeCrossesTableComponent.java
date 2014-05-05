@@ -509,8 +509,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 //    			String[] femaleSourceArray = femaleSource.split(":");
 //    			String[] maleSourceArray =maleSource.split(":");
 
-    			String newFemaleSource = femaleListName + ":" + femaleParent.getEntryId(); //femaleSourceArray[1].trim();
-    			String newMaleSource = maleListName + ":" + maleParent.getEntryId();// maleSourceArray[1].trim();
+    			String newFemaleSource = "";
+    			String newMaleSource = "";
+    			if(femaleParent.isFromFemaleTable()){
+    				newFemaleSource = femaleListName + ":" + femaleParent.getEntryId();
+    				newMaleSource = maleListName + ":" + maleParent.getEntryId();// maleSourceArray[1].trim();
+    			} else{
+    				newFemaleSource = maleListName + ":" + femaleParent.getEntryId();
+    				newMaleSource = femaleListName + ":" + maleParent.getEntryId();// maleSourceArray[1].trim();
+    			}
+    			
     			femaleParent.setSeedSource(newFemaleSource);
     			maleParent.setSeedSource(newMaleSource);
     			

@@ -14,11 +14,13 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.ListInventoryComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
@@ -139,7 +141,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
     private String MENU_EDIT_LIST="Edit List";
     private String MENU_DELETE_LIST="Delete List";
-	
+    private String MENU_VIEW_INVENTORY = "View Inventory";
+    
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Tools";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -224,11 +227,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
-		editHeaderButton =new Button("<span class='glyphicon glyphicon-pencil' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
-		editHeaderButton.setHtmlContentAllowed(true);
-		editHeaderButton.setDescription("Edit List Header");
-		editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
-		editHeaderButton.setWidth("25px");
+		editHeaderButton =new IconButton("<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>","Edit List Header");
 		
 		toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
@@ -251,22 +250,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         		 + "  <b>" + listEntriesCount + "</b>", Label.CONTENT_XHTML);
         	totalListEntriesLabel.setWidth("135px");
         }
-	
-	    unlockButton = new Button();
-        unlockButton.setData(UNLOCK_BUTTON_ID);
-        unlockButton.setIcon(AppConstants.Icons.ICON_LOCK);
-        unlockButton.setWidth("140px");
-        unlockButton.setDescription(LOCK_TOOLTIP);
-        unlockButton.setStyleName(Reindeer.BUTTON_LINK);
-        
-
-        lockButton = new Button();
-        lockButton.setData(LOCK_BUTTON_ID);
-        lockButton.setIcon(AppConstants.Icons.ICON_UNLOCK);
-        lockButton.setWidth("140px");
-        lockButton.setDescription(LOCK_TOOLTIP);
-        lockButton.setStyleName(Reindeer.BUTTON_LINK);
 		
+	    unlockButton = new IconButton("<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        unlockButton.setData(UNLOCK_BUTTON_ID);
+	
+        lockButton = new IconButton("<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        lockButton.setData(LOCK_BUTTON_ID);
+        		
         menu = new ContextMenu();
 		menu.setWidth("295px");
 		
@@ -283,6 +273,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menu.addItem(MENU_SELECT_ALL);
+		menu.addItem(MENU_VIEW_INVENTORY);
 		
 	}
 	
@@ -522,7 +513,9 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			    	  editListButtonClickAction();
 			      }else if(clickedItem.getName().equals(MENU_DELETE_LIST)){
                       deleteListButtonClickAction();
-                  }		      
+                  } else if(clickedItem.getName().equals(MENU_VIEW_INVENTORY)){
+                	  viewInventoryAction();
+                  }
 			      
 		   }
 		});
@@ -1680,5 +1673,25 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	        	noListDataLabel.setWidth("135px");
 			}
         }
+	}
+	
+	private void viewInventoryAction(){
+		ListInventoryComponent listInventoryComponent = new ListInventoryComponent(this.germplasmList.getId());
+		
+		if(listInventoryComponent.isThereNoInventoryInfo()){
+			MessageNotifier.showWarning(getWindow(), "No Data", messageSource.getMessage(Message.NO_LISTDATA_INVENTORY_RETRIEVED_LABEL), Notification.POSITION_CENTERED);
+		} else{
+			Window inventoryWindow = new Window("Inventory Information");
+			inventoryWindow.setModal(true);
+	        inventoryWindow.setWidth("800px");
+	        inventoryWindow.setHeight("350px");
+	        inventoryWindow.setResizable(false);
+	        inventoryWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+	        
+	        inventoryWindow.setContent(listInventoryComponent);
+	        
+	        this.parentListDetailsComponent.getWindow().addWindow(inventoryWindow);
+	        inventoryWindow.center();
+		}
 	}
 }

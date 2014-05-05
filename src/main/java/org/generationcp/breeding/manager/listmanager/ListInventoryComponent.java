@@ -44,6 +44,8 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
     private static final String GERMPLASM_INVENTORY_LOCATION_NAME = "location";
     private static final String GERMPLASM_INVENTORY_SCALE_NAME = "scale";
     private static final String GERMPLASM_INVENTORY_LOT_COMMENT = "lotcomment";
+    
+    private boolean isThereNoInventoryInfo;
 
     public ListInventoryComponent(int germplasmListId){
     	this.germplasmListId = germplasmListId;
@@ -54,14 +56,21 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean isThereNoInventoryInfo() {
+		return isThereNoInventoryInfo;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		setMargin(false, true, false, true);
+		
 		List<GermplasmListData> listData = new ArrayList<GermplasmListData>();
         List<Integer> EntityIdList=new ArrayList<Integer>();
         long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(germplasmListId);
         if (listDataCount == 0) {
-            addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_INVENTORY_RETRIEVED_LABEL))); // "No Germplasm List Data retrieved."
+            addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_INVENTORY_RETRIEVED_LABEL)));
+            isThereNoInventoryInfo = true;
         } else {
 
             listData = this.germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, (int) listDataCount);
@@ -74,16 +83,13 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
             
             if(lotReportRowData.size()==0){
                 addComponent(new Label(messageSource.getMessage(Message.NO_LISTDATA_INVENTORY_RETRIEVED_LABEL)));
+                isThereNoInventoryInfo = true;
             }else{
-
+            	isThereNoInventoryInfo = false;
                 listDataInventoryTable = new Table("");
                 listDataInventoryTable.setColumnCollapsingAllowed(true);
                 listDataInventoryTable.setColumnReorderingAllowed(true);
-                listDataInventoryTable.setPageLength(15); // number of rows to display in the Table
-                listDataInventoryTable.setSizeFull(); // to make scrollbars appear on the Table component
-                listDataInventoryTable.setWidth("95%");
-                listDataInventoryTable.setHeight("95%");
-
+                
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ENTITY_ID, Integer.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, Long.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_LOCATION_NAME, String.class, "");
@@ -112,6 +118,11 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
                     }
                 }
                 
+                if(inventoryMap.values().size() < 10){
+                	listDataInventoryTable.setPageLength(inventoryMap.values().size());
+                } else{
+                	listDataInventoryTable.setPageLength(10);
+                }
                 for (GermplasmInventory germplasmInventory : inventoryMap.values()){
 					listDataInventoryTable.addItem(new Object[] {germplasmInventory.getGid(), 
 							germplasmInventory.getBalance(), germplasmInventory.getLocation(),
@@ -130,6 +141,5 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
         super.attach();
         updateLabels();
     }
-
 	
 }
