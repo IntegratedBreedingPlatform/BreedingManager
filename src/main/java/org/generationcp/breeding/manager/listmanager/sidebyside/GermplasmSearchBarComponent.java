@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,7 +15,6 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -32,22 +31,15 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class ListManagerSearchListBarComponent extends HorizontalLayout implements
-	InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class GermplasmSearchBarComponent extends HorizontalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String SEARCH_BUTTON = "List Manager Search Button";
+	public static final String SEARCH_BUTTON = "List Manager Germplasm Search Button";
 	private static final String GUIDE = 
-	        "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full)" +
-	        " <br/><br/><b>Matching lists would contain</b> <br/>" +
-	        "  - Lists with names containing the search query <br/>" +
-	        "  - Lists containing germplasms given a GID <br/>" +
-	        "  - Lists containing germplasms with names <br/>" +
-	        " containing the search query" +
+	        "You may search for germplasms and germplasm lists using GID's or germplasm names (partial/full)" +
 	        " <br/><br/><b>Matching germplasms would contain</b> <br/>" +
 	        "  - Germplasms with matching GID's <br/>" +
 	        "  - Germplasms with name containing search query <br/>" +
@@ -58,7 +50,7 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	private AbsoluteLayout searchBarLayout;
 	private Label searchLabel;
 	private TextField searchField;
-	private SearchResultsComponent searchResultsComponent;
+	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
@@ -75,7 +67,7 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 		
-	public ListManagerSearchListBarComponent(SearchResultsComponent searchResultsComponent) {
+	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
 	}
@@ -95,8 +87,6 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 		searchPanel = new Panel();
 		searchPanel.setWidth("100%");
 		searchPanel.setHeight("45px");
-        
-        //searchPanel.setScrollable(false);
         
         searchLabel = new Label();
         searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
@@ -189,34 +179,23 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	public void doSearch(String q){
 		try {
 			
-			List<GermplasmList> germplasmLists;
 			List<Germplasm> germplasms;
 			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
 			if((Boolean) likeOrEqualCheckBox.getValue() == true){
-				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
 				germplasms = doGermplasmSearch(q, Operation.EQUAL, includeParents);
 			} else {
-				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
 				germplasms = doGermplasmSearch(q, Operation.LIKE, includeParents);
 			}
 			
-			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
-					(germplasms == null || germplasms.isEmpty())){
+			if (germplasms == null || germplasms.isEmpty()) {
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
 						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
 			} 
-			searchResultsComponent.applyGermplasmListResults(germplasmLists);
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
-		
-		
-	}
-	
-	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
-		return germplasmListManager.searchForGermplasmList(q, o);
 	}
 	
 	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{

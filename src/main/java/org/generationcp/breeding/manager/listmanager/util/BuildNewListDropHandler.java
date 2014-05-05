@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
@@ -44,12 +45,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 	
-	private String MATCHING_GERMPLASMS_TABLE_DATA = SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
-	private String MATCHING_LISTS_TABLE_DATA = SearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
-	private String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+	private final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
+	private final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
+	private final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
 	
-	private GermplasmDataManager germplasmDataManager;
-	private GermplasmListManager germplasmListManager;
+	private final GermplasmDataManager germplasmDataManager;
+	private final GermplasmListManager germplasmListManager;
 	
 	private Table targetTable;
 	
@@ -73,7 +74,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		if(event.getTransferable() instanceof TableTransferable){
 			
 			TableTransferable transferable = (TableTransferable) event.getTransferable();
-	        Table sourceTable = (Table) transferable.getSourceComponent();
+	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
 	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
 	        targetTable = (Table) dropData.getTarget();
@@ -138,7 +139,7 @@ public class BuildNewListDropHandler implements DropHandler {
 					
 		//If source is from tree
 		} else {
-			Transferable transferable = (Transferable) event.getTransferable();
+			Transferable transferable = event.getTransferable();
 			addGermplasmList((Integer) transferable.getData("itemId"));
 		}
 	}
