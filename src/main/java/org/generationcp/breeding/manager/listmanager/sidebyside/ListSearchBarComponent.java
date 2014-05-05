@@ -48,7 +48,6 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 			+ " or to only return results which match the query exactly (when checked).";
 
 	private AbsoluteLayout searchBarLayout;
-	private Label searchLabel;
 	private TextField searchField;
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -86,12 +85,6 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 		searchPanel.setHeight("45px");
 
 		// searchPanel.setScrollable(false);
-
-		searchLabel = new Label();
-		searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)
-				+ ": ");
-		searchLabel.setWidth("200px");
-		searchLabel.addStyleName("bold");
 
 		searchField = new TextField();
 		searchField.setImmediate(true);
@@ -148,7 +141,6 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 		searchBarLayout = new AbsoluteLayout();
 		searchBarLayout.setHeight("40px");
 		searchBarLayout.addStyleName("searchBarLayout");
-		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
 		searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
 		searchBarLayout.addComponent(searchButton, "top:10px; left:285px;");
 		searchBarLayout.addComponent(likeOrEqualCheckBox,

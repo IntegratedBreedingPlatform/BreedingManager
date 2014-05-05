@@ -21,10 +21,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -33,7 +34,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class GermplasmSearchBarComponent extends HorizontalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class GermplasmSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -47,8 +48,7 @@ public class GermplasmSearchBarComponent extends HorizontalLayout implements Int
 	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
 	        " or to only return results which match the query exactly (when checked).";
 	
-	private AbsoluteLayout searchBarLayout;
-	private Label searchLabel;
+	private HorizontalLayout searchBarLayout;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -56,8 +56,6 @@ public class GermplasmSearchBarComponent extends HorizontalLayout implements Int
     private CheckBox includeParentsCheckBox;
     private PopupView popup;
 
-    private Panel searchPanel;
-    
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
 	
@@ -84,14 +82,8 @@ public class GermplasmSearchBarComponent extends HorizontalLayout implements Int
 	public void instantiateComponents() {
 		addStyleName("searchPaneLayout");
 		
-		searchPanel = new Panel();
-		searchPanel.setWidth("100%");
-		searchPanel.setHeight("45px");
-        
-        searchLabel = new Label();
-        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
-        searchLabel.setWidth("200px");
-        searchLabel.addStyleName("bold");
+		setWidth("100%");
+		setHeight("48px");
         
         searchField = new TextField();
         searchField.setImmediate(true);
@@ -132,7 +124,7 @@ public class GermplasmSearchBarComponent extends HorizontalLayout implements Int
 			}
 		});
 		
-		searchPanel.addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+		addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
             private static final long serialVersionUID = 288627665348761948L;
 
             @Override
@@ -143,26 +135,32 @@ public class GermplasmSearchBarComponent extends HorizontalLayout implements Int
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		searchBarLayout = new AbsoluteLayout();
-		searchBarLayout.setHeight("40px");
+		final CssLayout panelLayout = new CssLayout();
+		panelLayout.setMargin(true);
+		panelLayout.addStyleName("lm-search-bar");
+		
+		searchBarLayout = new HorizontalLayout();
+		searchBarLayout.setWidth("100%");
+		searchBarLayout.setHeight("24px");
+		
+		searchBarLayout.setSpacing(true);
+		
 		searchBarLayout.addStyleName("searchBarLayout");
-		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
-        searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
-        searchBarLayout.addComponent(searchButton, "top:10px; left:285px;");
-        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 375px;");
-        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 525px;");
-        searchBarLayout.addComponent(popup, "top:12px; left:755px;");
-
-        searchPanel.setLayout(searchBarLayout);
+        searchBarLayout.addComponent(searchField);
+        searchBarLayout.addComponent(searchButton);
+        searchBarLayout.addComponent(likeOrEqualCheckBox);
+        searchBarLayout.addComponent(includeParentsCheckBox);
+        searchBarLayout.addComponent(popup);
         
-        addStyleName("overflow-hidden");
-        setWidth("99%");
-        setHeight("58px");
-        setMargin(true, true, false, true);
-		addComponent(searchPanel);
+        searchBarLayout.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
+
+        panelLayout.addComponent(searchBarLayout);
+        setContent(panelLayout);
+        
 	}
 
 	@Override

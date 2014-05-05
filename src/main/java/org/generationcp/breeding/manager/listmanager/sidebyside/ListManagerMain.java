@@ -94,6 +94,8 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		
 		// By default, the list selection component will be opened first
         plantSelectionComponent.setVisible(false);
+        
+        addStyleName("lm-manage-list");
 	}
 
 	@Override
@@ -182,6 +184,10 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	}
 	
 	protected void showPlantSelection() {
+		
+		addStyleName("lm-manage-germplasm");
+		removeStyleName("lm-manage-list");
+		
 		plantFinderContent.setCaption("100%");
 		
 		plantFinderContent.removeAllComponents();
@@ -194,6 +200,10 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	}
 
 	protected void showListSelection() {
+		
+		addStyleName("lm-manage-list");
+		removeStyleName("lm-manage-germplasm");
+		
 		plantFinderContent.setCaption("100%");
 		
 		plantFinderContent.removeAllComponents();
@@ -226,8 +236,8 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	}
 	
 	private void setTabHeader(){
-        listSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_LISTS));
-        plantSelectionTabButton = new Button(messageSource.getMessage(Message.SEARCH_GERMPLASM));
+        listSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_LISTS));
+        plantSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_GERMPLASM));
         listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
         listSelectionTabButton.addStyleName("tabStyleButton");
         plantSelectionTabButton.addStyleName("tabStyleButton");

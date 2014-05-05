@@ -133,7 +133,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
 
     @Override
     public void initializeValues() {
-        headingLabel.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS));
+        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
         defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
         openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
     }
@@ -151,7 +151,9 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         headingBar.setHeight("48px");
         
         final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-        headingLayout.addStyleName("lm-browse-lists-title");
+        headingLayout.addStyleName("lm-title");
+        headingLayout.addStyleName("lm-left-content");
+        headingLayout.setHeight("30px");
         
         headingBar.addComponent(headingLayout);
         headingBar.addComponent(btnCloseAllTabs);
@@ -162,7 +164,8 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headingBar);
         innerLayout.addComponent(openListSelection);
-        openListSelection.addStyleName("lm-selection-help");
+        openListSelection.addStyleName("lm-left-content");
+        openListSelection.addStyleName("lm-subtitle-link");
         
         innerLayout.addComponent(detailsTabSheet);
         

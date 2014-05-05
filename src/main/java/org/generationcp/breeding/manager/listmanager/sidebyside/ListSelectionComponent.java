@@ -130,6 +130,6 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 	}
 
 	public void openListSearchDialog() {
-		launchListSelectionWindow(getWindow(), messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
+		launchListSelectionWindow(getWindow(), messageSource.getMessage(Message.BROWSE_OR_SEARCH_FOR_LISTS));
 	}
 }

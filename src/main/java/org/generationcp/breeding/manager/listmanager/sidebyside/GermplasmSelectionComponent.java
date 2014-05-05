@@ -1,26 +1,32 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 
 @Configurable
-public class GermplasmSelectionComponent extends VerticalLayout implements
-			InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmSelectionComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
 	
-	private CssLayout layout;
+	private Label headingLabel;
+	private Label searchDescription;
 	
 	private GermplasmSearchBarComponent searchBarComponent;
 	private GermplasmSearchResultsComponent searchResultsComponent;
@@ -46,13 +52,22 @@ public class GermplasmSelectionComponent extends VerticalLayout implements
 		setWidth("100%");
 		setHeight("800px");
 		
+		headingLabel = new Label();
+    	headingLabel.setImmediate(true);
+    	headingLabel.setWidth("300px");
+    	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+    	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		
+		searchDescription = new Label();
+		
 		searchResultsComponent = new GermplasmSearchResultsComponent(source);
 		searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
 	}
 
 	@Override
 	public void initializeValues() {
-		
+		headingLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR_GERMPLASM));
+		searchDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 	}
 
 	@Override
@@ -62,12 +77,40 @@ public class GermplasmSelectionComponent extends VerticalLayout implements
 	@Override
 	public void layoutComponents() {
 		
-		layout = new CssLayout();
-		layout.setWidth("100%");
-		layout.addComponent(searchBarComponent);
-		layout.addComponent(searchResultsComponent);
+		final HorizontalLayout headerLayout = new HorizontalLayout();
+		final HorizontalLayout instructionLayout = new HorizontalLayout();
+		
+		headerLayout.setWidth("100%");
+		instructionLayout.setWidth("100%");
+
+		final HeaderLabelLayout labelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
+		labelLayout.addStyleName("lm-title");
+		labelLayout.addStyleName("lm-left-content");
+        labelLayout.setHeight("30px");
+        
+		headerLayout.addComponent(labelLayout);
+
+		instructionLayout.addComponent(searchDescription);
+		instructionLayout.addStyleName("lm-left-content");
+		instructionLayout.addStyleName("lm-subtitle");
+		
+		final Panel listDataTablePanel = new Panel();
+        listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+        
+        final CssLayout listDataTableLayout = new CssLayout();
+        listDataTableLayout.setMargin(true);
+        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.setHeight("462px");
+        listDataTableLayout.addStyleName("listDataTableLayout");
+        
+        listDataTableLayout.addComponent(searchBarComponent);
+        listDataTableLayout.addComponent(searchResultsComponent);
 	
-		addComponent(layout);
+        listDataTablePanel.setContent(listDataTableLayout);
+        
+		addComponent(headerLayout);
+		addComponent(instructionLayout);
+		addComponent(listDataTablePanel);
 	}
 	
     public GermplasmSearchResultsComponent getSearchResultsComponent(){

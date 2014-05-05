@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,5 +42,10 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	@Override
 	protected boolean doShowFoldersOnly() {
 		return false;
+	}
+	
+	@Override
+	protected String getTreeHeading() {
+		return messageSource.getMessage(Message.ALL_LISTS);
 	}
 }

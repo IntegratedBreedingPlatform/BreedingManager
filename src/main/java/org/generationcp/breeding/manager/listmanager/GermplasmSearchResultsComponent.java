@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmDetailsComponent;
@@ -15,7 +13,6 @@ import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -46,8 +43,6 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
-	private Label searchDescription;
-	
 	private Label matchingGermplasmsLabel;
 	private Table matchingGermplasmsTable;
 	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
@@ -86,31 +81,30 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	@Override
 	public void instantiateComponents() {
 		
-		setWidth("375px");
+		setWidth("100%");
 		setHeight("500px");
 		
-		searchDescription = new Label();
-		searchDescription.setValue(messageSource.getMessage(Message.SELECT_A_MATCHING_LIST_OR_GERMPLASM_TO_VIEW_THE_DETAILS));
-		searchDescription.setWidth("375px");
-		
 		matchingGermplasmsLabel = new Label();
-		matchingGermplasmsLabel.setWidth("300px");
-		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": 0");
-		matchingGermplasmsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-		matchingGermplasmsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		matchingGermplasmsLabel.setWidth("100%");
 		
+		matchingGermplasmsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+       	
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
+		matchingGermplasmsTableWithSelectAll.setHeight("390px");
+		
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
-		matchingGermplasmsTable.setWidth("350px");
+		matchingGermplasmsTable.setWidth("100%");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
 		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
+		matchingGermplasmsTable.setHeight("340px");
 		
 		matchingGermplasmsTable.addListener(new ItemClickListener(){
 			private static final long serialVersionUID = 1L;
@@ -172,14 +166,12 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 
 	@Override
 	public void layoutComponents() {
-		addComponent(searchDescription);
-		final HeaderLabelLayout matchingGermplasmsHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MATCHING_GERMPLASMS,matchingGermplasmsLabel);
-		addComponent(matchingGermplasmsHeader);
+		addComponent(matchingGermplasmsLabel);
 		addComponent(matchingGermplasmsTableWithSelectAll);
 	}
 		
 	public void applyGermplasmResults(List<Germplasm> germplasms){
-		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.MATCHING_GERMPLASM)+": "+String.valueOf(germplasms.size()));
+		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS)+": "+String.valueOf(germplasms.size()));
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
@@ -218,6 +210,10 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
             matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, gidButton, shortenedNames, crossExpansion},germplasm.getGid());
 		}
 		
+		// Update total count
+		final int count = matchingGermplasmsTable.getItemIds().size();
+		matchingGermplasmsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
 	}
 
     private String getGermplasmNames(int gid) throws InternationalizableException {

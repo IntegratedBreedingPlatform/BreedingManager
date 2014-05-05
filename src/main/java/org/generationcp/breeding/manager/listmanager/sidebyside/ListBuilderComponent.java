@@ -89,6 +89,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     //Components
     private Label buildNewListTitle;
     private Label buildNewListDesc;
+    private Label listEntriesLabel;
+    private Label totalListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
     private Button editHeaderButton;
@@ -155,6 +157,13 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         buildNewListDesc.setValue("Build your new list by selecting and dragging in entries from the lists to the left.");
         buildNewListDesc.setWidth("500px");
         buildNewListDesc.addStyleName("lm-list-total");
+        
+        listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		//listEntriesLabel.setWidth("120px");
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+
         
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
@@ -289,7 +298,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 	@Override
 	public void layoutComponents() {
 		this.setSizeFull();
-		this.addStyleName("lm-build-new-list");
 		
 		final HorizontalLayout headerLayout = new HorizontalLayout();
 		final HorizontalLayout instructionLayout = new HorizontalLayout();
@@ -299,11 +307,11 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, buildNewListTitle);
 		headingLayout.setHeight("30px");
-		headingLayout.addStyleName("lm-build-new-list-title");
+		headingLayout.addStyleName("lm-title");
 		headerLayout.addComponent(headingLayout);
 
 		instructionLayout.addComponent(buildNewListDesc);
-		instructionLayout.addStyleName("lm-build-list-desc");
+		instructionLayout.addStyleName("lm-subtitle");
 
 		this.addComponent(headerLayout);
 		this.addComponent(instructionLayout);
@@ -314,10 +322,14 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		editDetails.setWidth("100%");
 		toolsLayout.setWidth("100%");
 
+		editDetails.addComponent(new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel));
+		
 		editDetails.addComponent(editHeaderButton);
 		editDetails.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
-		editDetails.addStyleName("lm-list-edit-list-details");
 		
+		totalListEntriesLabel.addStyleName("lm-list-total");
+		
+		toolsLayout.addComponent(totalListEntriesLabel);
 		toolsLayout.addComponent(toolsButton);
 		toolsLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		toolsLayout.addStyleName("lm-list-desc");
@@ -444,9 +456,18 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
             MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
+        
+        updateListTotal();
     }
     
-    /**
+    private void updateListTotal() {
+    	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
+		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+		
+	}
+
+	/**
      * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
      */
     private void assignSerializedEntryNumber(){
@@ -474,6 +495,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     
     public void addFromListDataTable(Table sourceTable){
     	dropHandler.addFromListDataTable(sourceTable);
+    	updateListTotal();
     }
     
     public boolean isCurrentListSaved(){
@@ -506,6 +528,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
+        updateListTotal();
     }
 	
 	public void resetList(){
@@ -537,7 +560,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		saveButton.removeListener(saveListButtonListener);
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
-		
 	}
 	
 	public void resetGermplasmTable(){		
@@ -547,6 +569,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		}
 		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
+		
+		updateListTotal();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -568,6 +592,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     public void addGermplasm(Integer gid){
     	dropHandler.addGermplasm(gid);
     	changed = true;
+    	
+    	updateListTotal();
     }
     
     public List<GermplasmListData> getListEntriesFromTable(){

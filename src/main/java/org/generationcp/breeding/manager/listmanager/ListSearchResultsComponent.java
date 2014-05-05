@@ -75,7 +75,7 @@ public class ListSearchResultsComponent extends AbsoluteLayout implements
 		searchDescription = new Label();
 		searchDescription
 				.setValue(messageSource
-						.getMessage(Message.SELECT_A_MATCHING_LIST_OR_GERMPLASM_TO_VIEW_THE_DETAILS));
+						.getMessage(Message.SELECT_A_MATCHING_LIST_TO_VIEW_THE_DETAILS));
 		searchDescription.setWidth("375px");
 
 		matchingListsLabel = new Label();
