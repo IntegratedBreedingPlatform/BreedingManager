@@ -14,7 +14,7 @@ import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExp
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -193,7 +193,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 
 	
 	private Button generateLaunchGermplasmDetailsButton(String caption, String gid, String description) {
-		Button gidButton = new Button(caption, new GidLinkButtonClickListener(gid,true));
+		Button gidButton = new Button(caption, new GidLinkClickListener(gid,true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription(description);
 		return gidButton;

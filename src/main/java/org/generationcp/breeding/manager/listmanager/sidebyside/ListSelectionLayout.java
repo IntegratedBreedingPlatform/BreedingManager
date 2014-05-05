@@ -220,12 +220,6 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
     }
 
-    public void createGermplasmDetailsTab(Integer gid){
-        String tabName = "Germplasm - " + gid;
-        createTab(gid, null, tabName);
-        showDetailsTabsheet();
-    }
-    
     public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
         GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
         if (germplasmList == null) {
@@ -240,7 +234,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         }
     }
     
-    private void createTab(int id, GermplasmList germplasmList, String tabName) {
+    private void createTab(final int id, final GermplasmList germplasmList, final String tabName) {
         
     	final boolean tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
         

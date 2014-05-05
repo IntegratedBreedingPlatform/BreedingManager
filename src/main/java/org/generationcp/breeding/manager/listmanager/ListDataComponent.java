@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -835,7 +835,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             if (!fromUrl) {
                 // make GID as link only if the page wasn't directly accessed from the URL
                 String gid = String.format("%s", data.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid,true));
+                Button gidButton = new Button(gid, new GidLinkClickListener(gid,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 gidObject = gidButton;
@@ -1386,7 +1386,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             if (!fromUrl) {
                     // make GID as link only if the page wasn't directly accessed from the URL
                     String gidString = String.format("%s", gid.toString());
-                    Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,false));
+                    Button gidButton = new Button(gidString, new GidLinkClickListener(gidString,false));
                     gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                     gidButton.setDescription("Click to view Germplasm information");
                     gidObject = gidButton;

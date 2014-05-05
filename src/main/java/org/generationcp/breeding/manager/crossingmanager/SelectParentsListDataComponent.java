@@ -7,7 +7,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -181,11 +181,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			List<GermplasmListData> listEntries = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, Integer.MAX_VALUE);
 			for(GermplasmListData entry : listEntries){
 				String gid = String.format("%s", entry.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid,true));
+                Button gidButton = new Button(gid, new GidLinkClickListener(gid,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 
-                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(gid,true));
+                Button desigButton = new Button(entry.getDesignation(), new GidLinkClickListener(gid,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 

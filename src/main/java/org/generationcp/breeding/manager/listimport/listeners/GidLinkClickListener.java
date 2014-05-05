@@ -25,19 +25,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class GidLinkButtonClickListener implements Button.ClickListener {
+public class GidLinkClickListener implements Button.ClickListener, ItemClickListener {
 
     private static final long serialVersionUID = -6751894969990825730L;
-    private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GidLinkClickListener.class);
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
 	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
     
@@ -51,21 +54,36 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     private TomcatUtil tomcatUtil;
     
     private String gid;
-    private Boolean viaToolURL;
+    private final Boolean viaToolURL;
+    
+    public GidLinkClickListener() {
+    	this.gid = null;
+    	this.viaToolURL = false;
+    }
 
-    public GidLinkButtonClickListener(String gid, Boolean viaToolURL) {
+    public GidLinkClickListener(final String gid, final Boolean viaToolURL) {
         this.gid = gid;
         this.viaToolURL = viaToolURL;
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
-        
-    	Window mainWindow;
+    public void buttonClick(final ClickEvent event) {
+    	openDetailsWindow(event.getComponent());
+    }
+    
+	@Override
+	public void itemClick(final ItemClickEvent event) {
+		this.gid = ((Integer) event.getItemId()).toString();
+		openDetailsWindow(event.getComponent());
+		
+	}
+
+	private void openDetailsWindow (final Component component) {
+		Window mainWindow;
     	if(viaToolURL)
-    		mainWindow = event.getComponent().getWindow();
+    		mainWindow = component.getWindow();
     	else
-    		mainWindow = event.getComponent().getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
+    		mainWindow = component.getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
         
     	launchWebTool();
     	
@@ -122,7 +140,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         
         mainWindow.addWindow(germplasmWindow);
-    }
+	}
     
     
     private void launchWebTool(){
@@ -170,8 +188,5 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 			// TODO Auto-generated catch block
 			//e2.printStackTrace();
 		}
-    	
-    	        
     }
-
 }

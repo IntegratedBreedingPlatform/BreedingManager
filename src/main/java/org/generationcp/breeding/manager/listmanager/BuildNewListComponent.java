@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
@@ -743,7 +743,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem = germplasmsTable.addItem(data.getId());
             }
 
-            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
+            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkClickListener(data.getGid().toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -823,7 +823,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
             Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
             
@@ -915,7 +915,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 
                 Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
                 
-                Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+                Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
@@ -1007,7 +1007,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem = germplasmsTable.addItem(getNextListEntryId());
             }
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";

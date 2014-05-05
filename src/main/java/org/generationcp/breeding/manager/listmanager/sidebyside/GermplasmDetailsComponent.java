@@ -5,7 +5,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmAttributesComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmHeaderInfoComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
@@ -13,7 +13,6 @@ import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -47,7 +46,6 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 	public static final String SAVE_TO_LIST = "Germplasm Details - Save to List";
 	public static final String MORE_DETAILS = "Germplasm Details - More Details";
 
-	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmDetailsComponent.class);
 	private static final long serialVersionUID = -6789065165873336884L;
 	
@@ -59,12 +57,12 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     private GermplasmHeaderInfoComponent basicDetailsComponent;
     private GermplasmPedigreeComponent pedigreeComponent;
     private GermplasmAttributesComponent germplasmAttributesComponent;
-    private ListManagerMain listManagerMain;
+    private final ListManagerMain listManagerMain;
     
     private Button saveToListLink;
     private Button moreDetailsLink;
     
-    private Integer germplasmId;
+    private final Integer germplasmId;
     
     private ComponentTreeItem basicDetails;
     private ComponentTreeItem attributesDetails;
@@ -73,7 +71,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    public GermplasmDetailsComponent(ListManagerMain listManagerMain, Integer germplasmId){
+    public GermplasmDetailsComponent(final ListManagerMain listManagerMain, final Integer germplasmId){
     	this.listManagerMain = listManagerMain;
     	this.germplasmId = germplasmId;
     }
@@ -167,7 +165,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 			}
         });
         
-        moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
+        moreDetailsLink.addListener(new GidLinkClickListener(this.germplasmId.toString(), true));
     }
     
     private VerticalLayout createGermplasmAttribute(){

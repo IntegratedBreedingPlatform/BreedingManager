@@ -9,7 +9,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -111,15 +112,14 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.setImmediate(true);
 		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
 		
-		matchingGermplasmsTable.addListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1278836501714148464L;
-
+		matchingGermplasmsTable.addListener(new ItemClickListener(){
+			private static final long serialVersionUID = 1L;
 			@Override
-			public void itemClick(ItemClickEvent event) {
-				// TODO Helen fix up message
-				launchGermplasmDetailsWindow (getWindow(), messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
+			public void itemClick(final ItemClickEvent event) {
+				final Integer itemId = (Integer) event.getItemId(); 
+				launchGermplasmDetailsWindow(getWindow(), "Germplasm " + itemId.toString() , itemId);
 			}
-        });
+		});
 		
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		
@@ -268,13 +268,12 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     	return matchingGermplasmsTable;
     }
     
-    private Window launchGermplasmDetailsWindow (final Window window, final String caption) {
+    private Window launchGermplasmDetailsWindow (final Window window, final String caption, final Integer gid) {
 
         final CssLayout layout = new CssLayout();
         layout.setMargin(true);
 
-        // TODO Helen detailsLayout.createGermplasmDetailsTab(itemId);
-        //layout.addComponent(listTreeComponent);
+        layout.addComponent(new GermplasmDetailsComponent(listManagerMain, gid));
         
         final Window popupWindow = new Window();
         popupWindow.setWidth("900px");
@@ -290,5 +289,4 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
         
         return popupWindow;
 	}
-
 }

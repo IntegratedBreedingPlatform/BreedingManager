@@ -16,7 +16,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -148,7 +148,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
                 Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
 
-            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
+            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), viaToolURL));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
                 
                 String crossExpansion = "";

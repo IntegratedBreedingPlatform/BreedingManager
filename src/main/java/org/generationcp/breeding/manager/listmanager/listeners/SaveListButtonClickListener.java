@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -311,7 +311,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			for(GermplasmListData entry : savedListEntries){
 				Item item = this.listDataTable.addItem(entry.getId());
 				
-				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkButtonClickListener(entry.getGid().toString(), true));
+				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				
 	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);

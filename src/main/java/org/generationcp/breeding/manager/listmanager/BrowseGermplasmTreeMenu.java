@@ -1,7 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmIndexContainer;
 import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmQueries;
@@ -151,7 +151,7 @@ public class BrowseGermplasmTreeMenu extends VerticalLayout implements
 		moreDetailsLink.setData(MORE_DETAILS);
 		moreDetailsLink.setImmediate(true);
 		moreDetailsLink.setStyleName(BaseTheme.BUTTON_LINK);
-		moreDetailsLink.addListener(new GidLinkButtonClickListener(this.germplasmId.toString(), true));
+		moreDetailsLink.addListener(new GidLinkClickListener(this.germplasmId.toString(), true));
         
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.addComponent(layout);

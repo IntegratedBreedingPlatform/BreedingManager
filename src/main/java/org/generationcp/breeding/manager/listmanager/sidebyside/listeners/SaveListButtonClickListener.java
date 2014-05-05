@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
@@ -312,7 +312,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			for(final GermplasmListData entry : savedListEntries){
 				final Item item = this.listDataTable.addItem(entry.getId());
 				
-				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkButtonClickListener(entry.getGid().toString(), true));
+				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				
 	            CheckBox tagCheckBox = new CheckBox();
@@ -332,7 +332,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
     	 			 
     	 		});
 	            
-	            Button designationButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(entry.getGid().toString(), true));
+	            Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            designationButton.setDescription("Click to view Germplasm information");
 	            
