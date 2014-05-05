@@ -12,7 +12,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class PlantSelectionComponent extends VerticalLayout implements
+public class GermplasmSelectionComponent extends VerticalLayout implements
 			InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
@@ -27,7 +27,7 @@ public class PlantSelectionComponent extends VerticalLayout implements
 
 	private final ListManagerMain source;
 	
-	public PlantSelectionComponent(final ListManagerMain source) {
+	public GermplasmSelectionComponent(final ListManagerMain source) {
 		super();
 		this.source = source; 
 	}

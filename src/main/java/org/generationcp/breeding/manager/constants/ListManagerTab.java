@@ -18,5 +18,5 @@ package org.generationcp.breeding.manager.constants;
  */
 public enum ListManagerTab {
     LIST
-    , PLANT
+    , GERMPLASM
 }

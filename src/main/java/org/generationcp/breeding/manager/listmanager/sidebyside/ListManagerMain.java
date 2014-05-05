@@ -46,7 +46,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
     
     // You can toggle the plant selection content to display a list view, or a germplasm view
     private ListSelectionComponent listSelectionComponent;
-    private PlantSelectionComponent plantSelectionComponent;
+    private GermplasmSelectionComponent plantSelectionComponent;
     
     // The split pane can be expanded and collapsed
 	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(94); //actual width in pixel 50
@@ -252,7 +252,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		splitPanel.addStyleName("tabContainerStyle");
 		
 		listSelectionComponent = new ListSelectionComponent(this, selectedListId);
-		plantSelectionComponent = new PlantSelectionComponent(this);
+		plantSelectionComponent = new GermplasmSelectionComponent(this);
 		
         plantFinderContent = new AbsoluteLayout();
         plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
