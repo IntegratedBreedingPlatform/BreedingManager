@@ -476,12 +476,12 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         buttonLayout.setHeight("50px");
         buttonLayout.setSpacing(true);
         
-        cancelButton = new Button("Cancel");
+        cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
         cancelButton.setData(CANCEL_BUTTON_ID);
         cancelButton.addListener(new CloseWindowAction());
         buttonLayout.addComponent(cancelButton);
         
-        doneButton = new Button("Done");
+        doneButton = new Button(messageSource.getMessage(Message.DONE));
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(new GermplasmListButtonClickListener(this));
         doneButton.setEnabled(false);

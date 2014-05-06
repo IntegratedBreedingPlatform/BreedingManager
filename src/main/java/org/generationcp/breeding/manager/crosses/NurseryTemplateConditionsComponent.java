@@ -564,7 +564,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
         String confirmDialogMessage=messageSource.getMessage(Message.CONFIRM_DIALOG_MESSAGE_EXPORT_NURSERY_FILE);
     
         ConfirmDialog.show(this.getWindow(),confirmDialogCaption ,confirmDialogMessage ,
-            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), new ConfirmDialog.Listener() {
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
             private static final long serialVersionUID = 1L;
     
             public void onClose(ConfirmDialog dialog) {

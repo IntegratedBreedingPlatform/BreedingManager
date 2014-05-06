@@ -253,7 +253,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         selectGermplasmLabel.setCaption("Multiple Germplasm Records found with the name " + this.germplasmName);
         messageSource.setCaption(this, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
         messageSource.setCaption(doneButton, Message.SELECT_HIGHLIGHTED_GERMPLASM);
-        messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
+        messageSource.setCaption(cancelButton, Message.CANCEL);
     }
 
     private String getGermplasmNames(int gid) throws InternationalizableException {

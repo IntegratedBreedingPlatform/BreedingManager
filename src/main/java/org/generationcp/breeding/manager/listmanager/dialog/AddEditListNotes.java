@@ -132,7 +132,7 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 		saveButton.addListener(new CloseWindowAction());
 		mainLayout.addComponent(saveButton,"top:360px; right:130px");
 		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
+		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
 		cancelButton.setWidth("80px");
 		cancelButton.addListener(new CloseWindowAction());
 		mainLayout.addComponent(cancelButton,"top:360px; right:40px");

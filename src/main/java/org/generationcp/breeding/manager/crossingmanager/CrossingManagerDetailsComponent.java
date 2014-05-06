@@ -236,7 +236,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
             //Bypass prompt
             //ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
             //    messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
-            //    messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            //    messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             //    new ConfirmDialog.Listener() {
             //        public void onClose(ConfirmDialog dialog) {
             //            if (dialog.isConfirmed()) {

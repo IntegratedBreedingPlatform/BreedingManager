@@ -157,7 +157,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     public void makeNewCrossesButtonClickAction(){
         ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
             messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
-            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             new ConfirmDialog.Listener() {
                 
                 public void onClose(ConfirmDialog dialog) {

@@ -173,7 +173,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         btnSave.addListener(new GermplasmListButtonClickListener(this));
         btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
-        btnCancel = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
+        btnCancel = new Button(messageSource.getMessage(Message.CANCEL));
         btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving New Germplasm List");

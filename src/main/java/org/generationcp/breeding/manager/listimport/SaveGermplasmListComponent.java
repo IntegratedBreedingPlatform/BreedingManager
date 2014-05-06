@@ -259,7 +259,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
         
 //                    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_GERMPLASM_LIST),
 //                            messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_GERMPLASM),
-//                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL),
+//                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL),
 //                            new ConfirmDialog.Listener() {
 //
 //                                public void onClose(ConfirmDialog dialog) {

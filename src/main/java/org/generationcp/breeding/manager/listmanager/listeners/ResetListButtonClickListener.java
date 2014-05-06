@@ -26,7 +26,7 @@ public class ResetListButtonClickListener implements Button.ClickListener{
 
 		ConfirmDialog.show(source.getWindow(), "Reset List Builder", 
             messageSource.getMessage(Message.CONFIRM_RESET_LIST_BUILDER_FIELDS), 
-            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = 1L;
 				public void onClose(ConfirmDialog dialog) {

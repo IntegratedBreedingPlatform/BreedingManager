@@ -99,7 +99,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		
 		listDetailsComponent = new BreedingManagerListDetailsComponent(germplasmList);
 		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL_LABEL));
+		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
 		cancelButton.setWidth("80px");
 		
 		saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
