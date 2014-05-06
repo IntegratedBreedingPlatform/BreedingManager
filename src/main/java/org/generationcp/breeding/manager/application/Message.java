@@ -4,12 +4,14 @@ package org.generationcp.breeding.manager.application;
 public enum Message{
     MAIN_WINDOW_CAPTION
     ,BACK
+    ,NEXT
     ,DONE
     ,OK
     ,SUCCESS
     ,QUERY_EXCEPTION
     ,UNKNOWN
     ,CANCEL
+    ,DISPLAY
     
     //Validation Messages
     ,VALIDATION_DATE_FORMAT
@@ -34,7 +36,6 @@ public enum Message{
     ,LIST_DESCRIPTION_LABEL
     ,LIST_NAME_LABEL
     ,LIST_TYPE_LABEL
-    ,NEXT
     ,OPEN_GERMPLASM_IMPORT_FILE
     ,PEDIGREE_OPTIONS_LABEL
     ,SAVE_GERMPLASM_LIST
@@ -243,6 +244,8 @@ public enum Message{
     ,VIEW_HEADER
     ,EDIT_LIST
     ,SELECT_A_MATCHING_LIST_OR_GERMPLASM_TO_VIEW_THE_DETAILS
+    ,CLICK_TO_OPEN_LIST
+    ,CLICK_TO_LOCK_LIST
     
     //List Manager Screen: Data
     ,NO_LISTDATA_RETRIEVED_LABEL
@@ -454,6 +457,7 @@ public enum Message{
     ,SUCCESS_SAVE_FOR_FEMALE_LIST
     ,SUCCESS_SAVE_FOR_MALE_LIST
     ,PARENTS_LISTS
+    ,VIEW_LIST_HEADERS
     
     //Crossing Manager-Summary page
     ,SUMMARY

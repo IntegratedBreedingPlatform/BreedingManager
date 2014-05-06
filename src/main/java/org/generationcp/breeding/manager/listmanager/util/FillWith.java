@@ -754,7 +754,7 @@ public class FillWith implements InternationalizableComponent  {
     	levelComboBox.setNullSelectionAllowed(false);
     	layout.addComponent(levelComboBox, "top:10px;left:10px");
     	
-    	Button okButton = new Button("OK");
+    	Button okButton = new Button(messageSource.getMessage(Message.OK));
     	okButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -3519880320817778816L;
 
@@ -767,7 +767,7 @@ public class FillWith implements InternationalizableComponent  {
 		});
     	layout.addComponent(okButton, "top:50px;left:10px"); 
     	
-    	Button cancelButton = new Button("Cancel");
+    	Button cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
     	cancelButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -3519880320817778816L;
 

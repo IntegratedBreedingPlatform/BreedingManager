@@ -341,7 +341,7 @@ public class GermplasmListTreeUtil implements Serializable {
             }
         });
 
-        Button cancel = new Button("Cancel");
+        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
         cancel.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = -971341450278698928L;
 
@@ -432,7 +432,7 @@ public class GermplasmListTreeUtil implements Serializable {
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new RenameListTreeItemListener(listener, listId, name));
 
-        Button cancel = new Button("Cancel");
+        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
         cancel.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -5337463407790224943L;
 

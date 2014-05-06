@@ -238,7 +238,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 			// local list
             if(userIsListOwner() && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
-                    unlockButton = new Button("Click to Open List");
+                    unlockButton = new Button(messageSource.getMessage(Message.CLICK_TO_OPEN_LIST));
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.setIcon(ICON_LOCK);
                     unlockButton.setWidth("140px");
@@ -248,7 +248,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     layout.addComponent(unlockButton);
                     
                 } else if(isUnlockedList()) {
-                    lockButton = new Button("Click to Lock List");
+                    lockButton = new Button(messageSource.getMessage(Message.CLICK_TO_LOCK_LIST));
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
                     lockButton.setWidth("140px");
@@ -474,7 +474,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         
         // delete button only for local unlocked lists - only list owner can delete
         if (this.germplasmList.getId() < 0 && isUnlockedList() && userIsListOwner()){
-        	deleteButton = new Button("Delete");
+        	deleteButton = new Button(messageSource.getMessage(Message.DELETE));
         	deleteButton.setData(DELETE_BUTTON_ID);
         	deleteButton.setWidth("80px");
         	deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());

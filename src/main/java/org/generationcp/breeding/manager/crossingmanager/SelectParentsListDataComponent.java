@@ -161,7 +161,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		selectAllCheckBox = new CheckBox(messageSource.getMessage(Message.SELECT_ALL));
 		selectAllCheckBox.setImmediate(true);
 		
-		viewListHeaderButton = new Button("View List Header");
+		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_LIST_HEADERS));
 		viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 	}
 

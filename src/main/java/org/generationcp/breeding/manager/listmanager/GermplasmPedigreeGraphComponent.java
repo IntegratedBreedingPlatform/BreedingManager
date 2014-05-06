@@ -73,7 +73,7 @@ public class GermplasmPedigreeGraphComponent extends VerticalLayout implements I
         
         pedigreeDerivativeCheckbox = new CheckBox();
         
-        btnDisplay = new Button("Display");
+        btnDisplay = new Button(messageSource.getMessage(Message.DISPLAY));
         btnDisplay.setData(UPDATE_PEDIGREE_GRAPH_BUTTON_ID);
         btnDisplay.setWidth("80px");
         btnDisplay.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
