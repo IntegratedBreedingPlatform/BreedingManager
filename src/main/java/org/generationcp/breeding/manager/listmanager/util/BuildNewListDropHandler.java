@@ -45,6 +45,25 @@ public class BuildNewListDropHandler implements DropHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 	
+	 public interface ListUpdatedListener {
+        public void listUpdated(final ListUpdatedEvent event);
+    }
+
+    public class ListUpdatedEvent {
+
+        private final int listCount;
+
+		public ListUpdatedEvent(final int listCount) {
+			this.listCount = listCount;
+        }
+
+        public int getListCount() {
+            return listCount;
+        }
+    }
+
+    private List<ListUpdatedListener> listeners = null;
+	
 	private final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
 	private final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
 	private final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
@@ -132,6 +151,8 @@ public class BuildNewListDropHandler implements DropHandler {
 	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
 	                
 	                assignSerializedEntryNumber();
+	                
+	                fireListUpdatedEvent();
 	            }
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
@@ -163,10 +184,10 @@ public class BuildNewListDropHandler implements DropHandler {
 		List<Integer> selectedGermplasmListIds = getSelectedItemIds(sourceTable);
 		for(Integer listId : selectedGermplasmListIds){
 			addGermplasmList(listId);
-		}		
+		}
 	}
 
-	public void addGermplasmList(Integer listId){
+	private void addGermplasmList(Integer listId){
 		addGermplasmList(listId, false);
 	}
 	
@@ -203,6 +224,8 @@ public class BuildNewListDropHandler implements DropHandler {
 		
 		currentColumnsInfo = null;
 		currentListId = null;
+		
+		fireListUpdatedEvent();
 		
 	}
 	
@@ -275,6 +298,8 @@ public class BuildNewListDropHandler implements DropHandler {
 				FW.fillWith(targetTable, column, true);
         	}
             
+        	fireListUpdatedEvent();
+        	
             return newItemId;
             
         } catch (MiddlewareQueryException e) {
@@ -282,7 +307,7 @@ public class BuildNewListDropHandler implements DropHandler {
             e.printStackTrace();
             return null;
         }
-		
+        
 	}
 	
 	
@@ -300,7 +325,6 @@ public class BuildNewListDropHandler implements DropHandler {
 		currentListId = listId;
 		
         try {
-            
         	//Load currentColumnsInfo if cached list info is null or not matching the needed list id
         	if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId))
 				currentColumnsInfo = germplasmListManager.getAdditionalColumnsForList(listId);
@@ -399,9 +423,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	        	}
 	            
 	            currentListId = null;
+	            
+	            fireListUpdatedEvent();
 	            return newItemId;
         	}
         	
+        	fireListUpdatedEvent();
         	return null;
         	
         } catch (MiddlewareQueryException e) {
@@ -512,9 +539,11 @@ public class BuildNewListDropHandler implements DropHandler {
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 			FW.fillWith(targetTable, column, true);
     	}
+    	fireListUpdatedEvent();
 	}
-	
-    /**
+
+
+	/**
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */
     private void assignSerializedEntryCode(){
@@ -646,4 +675,27 @@ public class BuildNewListDropHandler implements DropHandler {
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
+	
+	private void fireListUpdatedEvent() {
+        if (listeners != null) {
+        	final ListUpdatedEvent event = new ListUpdatedEvent(targetTable.size());
+            for (ListUpdatedListener listener : listeners) {
+                listener.listUpdated(event);
+            }
+        }
+    }
+	
+	public void addListener(final ListUpdatedListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<ListUpdatedListener>();
+        }
+        listeners.add(listener);
+    }
+
+    public void removeListener(final ListUpdatedListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<ListUpdatedListener>();
+        }
+        listeners.remove(listener);
+    }
 }

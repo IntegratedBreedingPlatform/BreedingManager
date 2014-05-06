@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -298,6 +299,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 	@Override
 	public void layoutComponents() {
 		this.setSizeFull();
+		addStyleName("lm-list-builder");
 		
 		final HorizontalLayout headerLayout = new HorizontalLayout();
 		final HorizontalLayout instructionLayout = new HorizontalLayout();
@@ -361,7 +363,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         this.addComponent(menu);
 	}
     
-	public void addBasicTableColumns(Table table){
+	private void addBasicTableColumns(Table table){
     	table.setData(GERMPLASMS_TABLE_DATA);
     	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
@@ -380,7 +382,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
 	}
 	
-    public void createGermplasmTable(final Table table){
+    private void createGermplasmTable(final Table table){
         
     	addBasicTableColumns(table);
         
@@ -408,11 +410,18 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
                 }
             }
         });
-        
-        initializeHandlers();
     }
     
     private void initializeHandlers() {
+		
+    	dropHandler.addListener(new BuildNewListDropHandler.ListUpdatedListener() {
+			@Override
+			public void listUpdated(final ListUpdatedEvent event) {
+				updateListTotal();
+			}
+			
+		});
+		
     	tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
     }
     
@@ -495,7 +504,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     
     public void addFromListDataTable(Table sourceTable){
     	dropHandler.addFromListDataTable(sourceTable);
-    	updateListTotal();
     }
     
     public boolean isCurrentListSaved(){
@@ -528,7 +536,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
-        updateListTotal();
     }
 	
 	public void resetList(){
@@ -560,6 +567,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		saveButton.removeListener(saveListButtonListener);
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
+		
+		updateListTotal();
 	}
 	
 	public void resetGermplasmTable(){		
@@ -592,8 +601,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     public void addGermplasm(Integer gid){
     	dropHandler.addGermplasm(gid);
     	changed = true;
-    	
-    	updateListTotal();
     }
     
     public List<GermplasmListData> getListEntriesFromTable(){
@@ -840,5 +847,4 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		currentlySetGermplasmInfo = list;
 		saveListButtonListener.doSaveAction();
 	}
-    
 }

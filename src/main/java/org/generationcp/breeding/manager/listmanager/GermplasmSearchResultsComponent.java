@@ -89,6 +89,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		
 		matchingGermplasmsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+		
+		matchingGermplasmsLabel.setStyleName("lm-search-results-label");
        	
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTableWithSelectAll.setHeight("390px");

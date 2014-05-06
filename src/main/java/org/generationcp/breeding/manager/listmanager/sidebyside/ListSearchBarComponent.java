@@ -20,10 +20,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -32,8 +33,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class ListSearchBarComponent extends HorizontalLayout implements
-		InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,14 +47,12 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 			+ " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)"
 			+ " or to only return results which match the query exactly (when checked).";
 
-	private AbsoluteLayout searchBarLayout;
+	private HorizontalLayout searchBarLayout;
 	private TextField searchField;
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
 	private CheckBox likeOrEqualCheckBox;
 	private PopupView popup;
-
-	private Panel searchPanel;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -62,8 +60,7 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-	public ListSearchBarComponent(
-			final ListSearchResultsComponent searchResultsComponent) {
+	public ListSearchBarComponent(final ListSearchResultsComponent searchResultsComponent) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
 	}
@@ -78,32 +75,25 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 
 	@Override
 	public void instantiateComponents() {
-		addStyleName("searchPaneLayout");
+		
+		setWidth("100%");
+        
+        searchField = new TextField();
+        searchField.setImmediate(true);
+        
+        searchButton = new Button(messageSource.getMessage(Message.SEARCH));
+        searchButton.setHeight("24px");
+        searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+        searchButton.setData(SEARCH_BUTTON);
+        searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
 
-		searchPanel = new Panel();
-		searchPanel.setWidth("100%");
-		searchPanel.setHeight("45px");
-
-		// searchPanel.setScrollable(false);
-
-		searchField = new TextField();
-		searchField.setImmediate(true);
-
-		searchButton = new Button(messageSource.getMessage(Message.SEARCH));
-		searchButton.setHeight("24px");
-		searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		searchButton.setData(SEARCH_BUTTON);
-		searchButton.addListener(new GermplasmListManagerButtonClickListener(
-				this));
-
-		Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
-		descLbl.setWidth("300px");
-		popup = new PopupView(" ? ", descLbl);
-		popup.setStyleName("gcp-popup-view");
-
-		likeOrEqualCheckBox = new CheckBox();
-		likeOrEqualCheckBox.setCaption(messageSource
-				.getMessage(Message.EXACT_MATCHES_ONLY));
+        Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
+        descLbl.setWidth("300px");
+        popup = new PopupView(" ? ",descLbl);
+        popup.setStyleName("gcp-popup-view");
+        
+        likeOrEqualCheckBox = new CheckBox();
+        likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
 	}
 
 	@Override
@@ -123,7 +113,7 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 			}
 		});
 
-		searchPanel.addAction(new ShortcutListener("Next field", KeyCode.ENTER,
+		addAction(new ShortcutListener("Next field", KeyCode.ENTER,
 				null) {
 			private static final long serialVersionUID = 288627665348761948L;
 
@@ -135,25 +125,28 @@ public class ListSearchBarComponent extends HorizontalLayout implements
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		searchBarLayout = new AbsoluteLayout();
-		searchBarLayout.setHeight("40px");
-		searchBarLayout.addStyleName("searchBarLayout");
-		searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
-		searchBarLayout.addComponent(searchButton, "top:10px; left:285px;");
-		searchBarLayout.addComponent(likeOrEqualCheckBox,
-				"top:13px; left: 375px;");
-		searchBarLayout.addComponent(popup, "top:12px; left:755px;");
+		final CssLayout panelLayout = new CssLayout();
+		panelLayout.setMargin(true);
+		panelLayout.addStyleName("lm-search-bar");
+		
+		searchBarLayout = new HorizontalLayout();
+		searchBarLayout.setWidth("55%");
+		searchBarLayout.setHeight("24px");
+		
+		searchBarLayout.setSpacing(true);
+		
+        searchBarLayout.addComponent(searchField);
+        searchBarLayout.addComponent(searchButton);
+        searchBarLayout.addComponent(likeOrEqualCheckBox);
+        searchBarLayout.addComponent(popup);
+        
+        searchBarLayout.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 
-		searchPanel.setLayout(searchBarLayout);
-
-		addStyleName("overflow-hidden");
-		setWidth("99%");
-		setHeight("58px");
-		setMargin(true, true, false, true);
-		addComponent(searchPanel);
+        panelLayout.addComponent(searchBarLayout);
+        setContent(panelLayout);
 	}
 
 	@Override

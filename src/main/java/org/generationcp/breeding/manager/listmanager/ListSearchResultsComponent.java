@@ -4,14 +4,11 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,20 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.Action;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 
 @Configurable
-public class ListSearchResultsComponent extends AbsoluteLayout implements
-		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListSearchResultsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
-
-	private Label searchDescription;
 
 	private Label matchingListsLabel;
 	private Table matchingListsTable;
@@ -71,22 +65,21 @@ public class ListSearchResultsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void instantiateComponents() {
-
-		searchDescription = new Label();
-		searchDescription
-				.setValue(messageSource
-						.getMessage(Message.SELECT_A_MATCHING_LIST_TO_VIEW_THE_DETAILS));
-		searchDescription.setWidth("375px");
+		
+		setWidth("100%");
+		setHeight("330px");
 
 		matchingListsLabel = new Label();
-		matchingListsLabel.setWidth("300px");
-		matchingListsLabel.setValue(messageSource
-				.getMessage(Message.MATCHING_LISTS) + ": 0");
-		matchingListsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-		matchingListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		matchingListsLabel.setWidth("100%");
+		
+		matchingListsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+	       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+			
+		matchingListsLabel.setStyleName("lm-search-results-label");
 
 		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5,
 				CHECKBOX_COLUMN_ID);
+		matchingListsTableWithSelectAll.setHeight("100%");
 		matchingListsTable = matchingListsTableWithSelectAll.getTable();
 		matchingListsTable.setData(MATCHING_LISTS_TABLE_DATA);
 		matchingListsTable.addContainerProperty(CHECKBOX_COLUMN_ID,
@@ -94,7 +87,8 @@ public class ListSearchResultsComponent extends AbsoluteLayout implements
 		matchingListsTable.addContainerProperty("NAME", String.class, null);
 		matchingListsTable.addContainerProperty("DESCRIPTION", String.class,
 				null);
-		matchingListsTable.setWidth("350px");
+		matchingListsTable.setHeight("260px");
+		matchingListsTable.setWidth("100%");
 		matchingListsTable.setMultiSelect(true);
 		matchingListsTable.setSelectable(true);
 		matchingListsTable.setImmediate(true);
@@ -115,19 +109,16 @@ public class ListSearchResultsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void layoutComponents() {
-		HeaderLabelLayout matchingListsHeader = new HeaderLabelLayout(
-				AppConstants.Icons.ICON_BUILD_NEW_LIST, matchingListsLabel);
-		addComponent(searchDescription, "top:0px; left:30px;");
+		
+		setWidth("100%");
 
-		addComponent(matchingListsHeader, "top:20px; left:0px;");
-		addComponent(matchingListsTableWithSelectAll, "top:55px; left:0px;");
+		addComponent(matchingListsLabel);
+		addComponent(matchingListsTableWithSelectAll);
 	}
 
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists) {
-		matchingListsLabel.setValue(messageSource
-				.getMessage(Message.MATCHING_LISTS)
-				+ ": "
-				+ String.valueOf(germplasmLists.size()));
+		matchingListsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+	       		 + "  <b>" + String.valueOf(germplasmLists.size()) + "</b>", Label.CONTENT_XHTML));
 		matchingListsTable.removeAllItems();
 		for (GermplasmList germplasmList : germplasmLists) {
 

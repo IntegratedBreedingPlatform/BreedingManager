@@ -80,10 +80,8 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 	
 	@Override
 	public void instantiateComponents() {
-		addStyleName("searchPaneLayout");
 		
 		setWidth("100%");
-		setHeight("48px");
         
         searchField = new TextField();
         searchField.setImmediate(true);
@@ -147,7 +145,6 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 		
 		searchBarLayout.setSpacing(true);
 		
-		searchBarLayout.addStyleName("searchBarLayout");
         searchBarLayout.addComponent(searchField);
         searchBarLayout.addComponent(searchButton);
         searchBarLayout.addComponent(likeOrEqualCheckBox);
@@ -160,7 +157,6 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 
         panelLayout.addComponent(searchBarLayout);
         setContent(panelLayout);
-        
 	}
 
 	@Override

@@ -67,7 +67,10 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     private Label defaultLabel;
     
     private Button btnCloseAllTabs;
-    private Button openListSelection;
+    private Button browseForLists;
+    private Button searchForLists;
+    private Label or;
+    private Label toWorkWith;
 
     private HorizontalLayout headingBar;
 
@@ -124,10 +127,20 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
         
-        openListSelection = new Button();
-        openListSelection.setImmediate(true);
-        openListSelection.setStyleName(Reindeer.BUTTON_LINK);
+        browseForLists = new Button();
+        browseForLists.setImmediate(true);
+        browseForLists.setStyleName(Reindeer.BUTTON_LINK);
         
+        searchForLists = new Button();
+        searchForLists.setImmediate(true);
+        searchForLists.setStyleName(Reindeer.BUTTON_LINK);
+        
+        or = new Label();
+        or.setImmediate(true);
+        
+        toWorkWith = new Label();
+        toWorkWith.setImmediate(true);
+
         setSizeFull();
     }
 
@@ -135,7 +148,10 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     public void initializeValues() {
         headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
         defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
-        openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
+        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        or.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
     }
     
     @Override
@@ -163,9 +179,22 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         final CssLayout innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headingBar);
-        innerLayout.addComponent(openListSelection);
-        openListSelection.addStyleName("lm-left-content");
-        openListSelection.addStyleName("lm-subtitle-link");
+        
+        final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+        
+        searchOrBrowseLayout.addComponent(searchForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(toWorkWith);
+        
+        // Ugh, bit of a hack - can't figure out how to space these nicely
+        searchForLists.setWidth("43px");
+        or.setWidth("16px");
+        browseForLists.setWidth("48px");
+        
+        innerLayout.addComponent(searchOrBrowseLayout);
+        searchOrBrowseLayout.addStyleName("lm-left-content");
+        searchOrBrowseLayout.addStyleName("lm-subtitle-link");
         
         innerLayout.addComponent(detailsTabSheet);
         
@@ -205,7 +234,17 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
             }
         });
         
-        openListSelection.addListener(new Button.ClickListener() {
+        browseForLists.addListener(new Button.ClickListener() {
+
+        	private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				listManagerMain.getListSelectionComponent().openListBrowseDialog();
+			}
+        });
+        
+        searchForLists.addListener(new Button.ClickListener() {
 
         	private static final long serialVersionUID = 6385074843600086746L;
 
@@ -218,9 +257,12 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
 
     @Override
     public void updateLabels() {
-    	headingLabel.setValue(headingLabel);
-        defaultLabel.setValue(defaultLabel); 
-        openListSelection.setCaption(messageSource.getMessage(Message.SELECT_A_LIST_TO_WORK_WITH));
+        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
+        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
+        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        or.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
     }
 
     public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
