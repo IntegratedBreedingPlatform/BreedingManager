@@ -505,3 +505,7 @@
 /* fix for 8270 */
 .listDetails .v-scrollable, .v-tabsheet-tabsheetpanel { width:100% !important; }
  
+.gwt-FileUpload {
+	display: inline !important;
+} 
+ 
