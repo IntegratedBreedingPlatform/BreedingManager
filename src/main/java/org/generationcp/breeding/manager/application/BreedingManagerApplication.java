@@ -174,7 +174,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                     return emptyGermplasmListDetailsWindow;
             	}
             } else if (name.equals(LIST_MANAGER_SIDEBYSIDE)){
-                Window listManagerSideBySideWindow = new Window("List Manager (Side-by-side)");
+                Window listManagerSideBySideWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_WINDOW_LABEL));
                 listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
                 listManagerSideBySideWindow.setSizeFull();
                 listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());

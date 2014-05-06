@@ -150,7 +150,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         setWidth("800px");
         setHeight("650px");
         setResizable(false);
-        setCaption("Add List Entries");
+        setCaption(messageSource.getMessage(Message.ADD_LIST_ENTRIES));
         // center window within the browser
         center();
         
@@ -165,7 +165,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void searchButtonClickAction() throws InternationalizableException {
     	String searchQuery = searchField.getValue().toString();
     	if(searchQuery==null || searchQuery.equals("")){
-    		MessageNotifier.showError(getWindow(), "Error", "You must type in a search query before doing a search" , Notification.POSITION_CENTERED);
+    		MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.ERROR_NO_ENTRY_ON_SEARCH_FIELD) , Notification.POSITION_CENTERED);
     		return;
     	}
     	try {
@@ -232,8 +232,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             setGermplasmCount(germplasms.size());
             
     	} catch (MiddlewareQueryException e) {
-    		MessageNotifier.showError(getWindow(), "Database Error", "Error while performing search" , Notification.POSITION_CENTERED);
-    		LOG.error("Error while performing search on add entry: q="+searchQuery, e);
+    		MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SEARCH) , Notification.POSITION_CENTERED);
+    		LOG.error(messageSource.getMessage(Message.ERROR_SEARCH_ON_ADD_ENTRY)+searchQuery, e);
     	}
     }
     
@@ -267,7 +267,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         try {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
-            LOG.error("QueryException", qe);
+            LOG.error(messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
         }
         
         ExternalResource germplasmBrowserLink = null;
@@ -277,7 +277,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
         }
         
-        Window germplasmWindow = new Window("Germplasm Information - " + gid);
+        Window germplasmWindow = new Window(messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
@@ -398,11 +398,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         optionGroup = new OptionGroup();
         optionGroup.addItem(OPTION_1_ID);
-        optionGroup.setItemCaption(OPTION_1_ID, "Use the selected germplasm for the list entry.");
+        optionGroup.setItemCaption(OPTION_1_ID, messageSource.getMessage(Message.USE_SELECTED_GERMPLASM_FOR_THE_LIST_ENTRY));
         optionGroup.addItem(OPTION_2_ID);
-        optionGroup.setItemCaption(OPTION_2_ID, "Create a new germplasm record for the list entry and assign the selected germplasm as its source.");
+        optionGroup.setItemCaption(OPTION_2_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY_AND_ASSIGN_THE_SELECTED_GERMPLASM_AS_ITS_SOURCE));
         optionGroup.addItem(OPTION_3_ID);
-        optionGroup.setItemCaption(OPTION_3_ID, "Create a new germplasm record for the list entry.");
+        optionGroup.setItemCaption(OPTION_3_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY));
         optionGroup.select(OPTION_1_ID);
         optionGroup.setImmediate(true);
         optionGroup.addListener(new Property.ValueChangeListener() {
@@ -503,41 +503,41 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 Window window = event.getButton().getWindow();
                 window.getParent().removeWindow(window);
             } else {
-                MessageNotifier.showWarning(this, "Warning!", 
-                        "You must select a germplasm/germplasms from the search results.", Notification.POSITION_CENTERED);
+                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showError(this, "Error", 
-                        "You must select a method for the germplasm.", Notification.POSITION_CENTERED);
+        		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
+                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-            		MessageNotifier.showError(this, "Error", 
-                            "You must select a location for the germplasm.", Notification.POSITION_CENTERED);
+            		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
+                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
         	}else if(this.selectedGids.size()>0){
             	if(doneAction()){
             		Window window = event.getButton().getWindow();
             		window.getParent().removeWindow(window);
             	}
             } else{
-                MessageNotifier.showWarning(this, "Warning!", 
-                        "You must select a germplasm from the search results.", Notification.POSITION_CENTERED);
+                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
             }
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = this.searchField.getValue().toString();
             
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showError(this, "Error", 
-                        "You must select a method for the germplasm.", Notification.POSITION_CENTERED);
+        		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
+        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-            		MessageNotifier.showError(this, "Error", 
-                            "You must select a location for the germplasm.", Notification.POSITION_CENTERED);
+            		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
+            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
         	} else if(searchValue != null && searchValue.length() != 0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
             } else {
-                MessageNotifier.showWarning(this, "Warning!", 
-                        "You must enter a germplasm name in the textbox.",
+                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX),
                         Notification.POSITION_CENTERED);
             }
         }
@@ -558,13 +558,13 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        
 	        if(dateOfCreation==null){
 	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
-	            MessageNotifier.showError(getWindow(), "Error!", "Please enter date in this format YYYY-MM-DD", Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
 	            return false;
 	        }
 	        String parsedDate = formatter.format(dateOfCreation);
 	        if(parsedDate==null){
 	            LOG.error("Invalid date on add list entries! - " + parsedDate);
-	            MessageNotifier.showError(getWindow(), "Error!", "Please enter date in this format YYYY-MM-DD", Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
 	            return false;
 	        }
 	        
@@ -586,7 +586,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	                    }
 	                } catch(MiddlewareQueryException mex){
 	                    LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
-	                    MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + selectedGid 
+	                    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
 	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO)
 	                            , Notification.POSITION_CENTERED);
 	                }
@@ -629,7 +629,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
-			            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
+			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
 			                    , Notification.POSITION_CENTERED);
 			            return false;
 			        }
@@ -670,7 +670,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 		            return true;
 		        } catch(MiddlewareQueryException ex){
 		            LOG.error("Error with saving germplasm and name records!", ex);
-		            MessageNotifier.showError(getWindow(), "Database Error!", "Error with saving germplasm and name records. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
+		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
 		                    , Notification.POSITION_CENTERED);
 		            return false;
 		        }
@@ -696,11 +696,11 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm name types!", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm name types. "+messageSource.getMessage(Message.ERROR_REPORT_TO)
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES) + messageSource.getMessage(Message.ERROR_REPORT_TO)
                     , Notification.POSITION_CENTERED);
             Integer unknownId = Integer.valueOf(0);
             this.nameTypeComboBox.addItem(unknownId);
-            this.nameTypeComboBox.setItemCaption(unknownId, "Unknown");
+            this.nameTypeComboBox.setItemCaption(unknownId, messageSource.getMessage(Message.UNKNOWN));
         }
         this.nameTypeComboBox.setNullSelectionAllowed(false);
     }
