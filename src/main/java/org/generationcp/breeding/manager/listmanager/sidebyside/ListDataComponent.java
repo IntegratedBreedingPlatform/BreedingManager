@@ -1683,11 +1683,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		} else{
 			Window inventoryWindow = new Window("Inventory Information");
 			inventoryWindow.setModal(true);
-	        inventoryWindow.setWidth("800px");
+	        inventoryWindow.setWidth("810px");
 	        inventoryWindow.setHeight("350px");
 	        inventoryWindow.setResizable(false);
 	        inventoryWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-	        
+
+	        listInventoryComponent.setSizeFull();
+	        listInventoryComponent.getTable().setWidth("100%");
 	        inventoryWindow.setContent(listInventoryComponent);
 	        
 	        this.parentListDetailsComponent.getWindow().addWindow(inventoryWindow);
