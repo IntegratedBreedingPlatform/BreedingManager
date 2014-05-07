@@ -1,10 +1,9 @@
-package org.generationcp.browser.cross.study.adapted.main;
+package org.generationcp.browser.cross.study.traitdonors.main;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.adapted.main.listeners.AdaptedGermplasmButtonClickListener;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CategoricalTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.pojos.CharacterTraitFilter;
 import org.generationcp.browser.cross.study.adapted.main.pojos.NumericTraitFilter;
@@ -33,13 +32,13 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
+public class SetUpTraitDonorFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 	
 	public static final String NEXT_BUTTON_ID = "SetUpTraitFilter Next Button ID";
 	   
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("unused")
-	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitFilter.class);
+	private final static Logger LOG = LoggerFactory.getLogger(SetUpTraitDonorFilter.class);
 
 	private static final int NUM_OF_SECTIONS = 3;
 	private static final Message[] tabLabels = {Message.NUMERIC_TRAITS, Message.CHARACTER_TRAIT_FILTER_TAB_TITLE, Message.CATEGORICAL_VARIATES};
@@ -47,8 +46,8 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	private QueryForAdaptedGermplasmMain mainScreen;
-	private DisplayResults nextScreen;
+	private TraitDonorsQueryMain mainScreen;
+	private TraitDisplayResults nextScreen;
 	private CharacterTraitsSection characterSection;
 	private NumericTraitsSection numericSection;
 	private CategoricalVariatesSection categoricalVariatesSection;
@@ -60,11 +59,9 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 	private List<Integer> environmentIds;
 	
 	
-	public SetUpTraitFilter(
-			QueryForAdaptedGermplasmMain queryForAdaptedGermplasmMain,
-			DisplayResults screenThree) {
-		this.mainScreen = queryForAdaptedGermplasmMain;
-		this.nextScreen = screenThree;
+	public SetUpTraitDonorFilter(TraitDonorsQueryMain traitDonorsQueryMain, TraitDisplayResults nextScreen) {
+		this.mainScreen = traitDonorsQueryMain;
+		this.nextScreen = nextScreen;
 	}
 
 	@Override
@@ -84,7 +81,6 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		mainTabSheet = new TabSheet();
 		mainTabSheet.setHeight("470px");
 		
-		
         for (int i = 0; i < NUM_OF_SECTIONS; i++){
         	VerticalLayout layout = new VerticalLayout();
         	
@@ -103,7 +99,8 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 				case 2:
 					categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.getWindow());
 					layout = categoricalVariatesSection;
-					break;					
+					break;
+					
 					
 			}
 
@@ -128,7 +125,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
                 } else if(tab!=null && tab.getCaption().equals(
                 		messageSource.getMessage(tabLabels[2]))){
                 	categoricalVariatesSection.showEmptyTraitsMessage();
-                }
+                } 
             }
         });
         
@@ -180,9 +177,9 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 					messageSource.getMessage(Message.ALL_TRAITS_DROPPED_WARNING));
 			
 		} else {
-			this.mainScreen.selectThirdTab();
-			this.nextScreen.populateResultsTable(environmentsForComparisonList,numericFilters,
-					characterFilters,categoricalFilters);
+			this.mainScreen.selectFourthTab();
+			this.nextScreen.populateResultsTable(environmentsForComparisonList,numericFilters,characterFilters,categoricalFilters);
+			//this.nextScreen.populateEnvironmentsTable();
 		}
 	}
 	

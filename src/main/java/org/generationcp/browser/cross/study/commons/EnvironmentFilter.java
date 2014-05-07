@@ -1,6 +1,7 @@
 package org.generationcp.browser.cross.study.commons;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +27,8 @@ import org.generationcp.browser.cross.study.h2h.main.pojos.FilterByLocation;
 import org.generationcp.browser.cross.study.h2h.main.pojos.FilterLocationDto;
 import org.generationcp.browser.cross.study.h2h.main.pojos.ObservationList;
 import org.generationcp.browser.cross.study.h2h.main.pojos.TraitForComparison;
+import org.generationcp.browser.cross.study.traitdonors.main.SetUpTraitDonorFilter;
+import org.generationcp.browser.cross.study.traitdonors.main.TraitDonorsQueryMain;
 import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -158,6 +161,12 @@ private static final long serialVersionUID = -3667517088395779496L;
     private Panel tablePanel;
     private AbsoluteLayout tableLayout;
     
+    // TODO - check if Trait Donor Filter is reqlly required
+	private TraitDonorsQueryMain mainScreen3;
+	private SetUpTraitDonorFilter nextScreen3;
+
+	private List<Integer> traitsList;
+    
     /*Constructors*/
     public EnvironmentFilter(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen1 = mainScreen;
@@ -171,6 +180,13 @@ private static final long serialVersionUID = -3667517088395779496L;
 		 this.nextScreen2 = nextScreen;
 		 
 		 this.crossStudyToolType = CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM;  
+	}
+	
+	public EnvironmentFilter(TraitDonorsQueryMain mainScreen, SetUpTraitDonorFilter nextScreen) {
+		 this.mainScreen3 = mainScreen;
+		 this.nextScreen3 = nextScreen;
+		 
+		 this.crossStudyToolType = CrossStudyToolType.TRAIT_DONORS_QUERY;  
 	}
     
 	@Override
@@ -274,7 +290,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    	   Set<TraitInfo> traitInfos = new HashSet<TraitInfo>();
 	    	   createEnvironmentsTable(traitInfos);
 	       }
-	       else if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
+	       else if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM || 
+	    		   this.crossStudyToolType == CrossStudyToolType.TRAIT_DONORS_QUERY){
 	    	   createEnvironmentsTable();
 //		       populateEnvironmentsTable();
 	       }
@@ -636,8 +653,100 @@ private static final long serialVersionUID = -3667517088395779496L;
     		    			 
     		    		 }
     				}//end of if
+
+    			}
+    			
+    			//numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
+    			
+    		} catch(MiddlewareQueryException ex){
+    	   		 ex.printStackTrace();
+    	         LOG.error("Database error!", ex);
+    	         MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
+    		}
+    	}
+    	else if(this.crossStudyToolType == CrossStudyToolType.TRAIT_DONORS_QUERY){
+    		try {
+    			//environments = crossStudyDataManager.getAllTrialEnvironments();
+    			
+    			// FIXME : Rebecca Hacking AGAIN
+    			Integer[] traitIds = {new Integer(22564), new Integer(22574), new Integer(21730)};
+    			traitsList = new ArrayList<Integer>(Arrays.asList(traitIds));
+    			
+    			// FIXME : hit a view for this query - too heavy
+    			environments = crossStudyDataManager.getEnvironmentsForTraits(traitsList);
+    			
+    			Set<TrialEnvironment> trialEnvSet = environments.getTrialEnvironments();
+    			Iterator<TrialEnvironment> trialEnvIter = trialEnvSet.iterator();
+    			while(trialEnvIter.hasNext()){
+
+    				TrialEnvironment trialEnv = trialEnvIter.next();
     				
+    				String trialEnvIdString = String.valueOf(trialEnv.getId());
     				
+    				if(!trialEnvIdTableMap.containsKey(trialEnvIdString)){
+    					final String tableKey = trialEnv.getId() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getCountryName() + FilterLocationDialog.DELIMITER + trialEnv.getLocation().getProvinceName()  + FilterLocationDialog.DELIMITER  +trialEnv.getLocation().getLocationName() + FilterLocationDialog.DELIMITER + trialEnv.getStudy().getName();
+    					environmentIds.add(trialEnv.getId());
+    					boolean isValidEntryAdd = true;
+    					if(isAppliedClick){
+    						isValidEntryAdd = isValidEntry(trialEnv); 
+    					}
+    		    		 
+    		    		 if(isValidEntryAdd){
+    		    			 Object[] objItem = new Object[tableColumnSize];
+    		    			 
+    		    			 if(tableEntriesMap.containsKey(tableKey)){
+    		    				 objItem = tableEntriesMap.get(tableKey);
+    		    				 environmentsTable.addItem(objItem, tableKey);
+    		    				 
+    		    				 if(isAppliedClick){	 
+    		    					 //we simulate the checkbox
+    		    					 ((CheckBox)objItem[0]).setValue(true);
+    								 clickCheckBox(tableKey, (ComboBox)objItem[objItem.length-1], true);
+    		    				 }
+    		    			 }else{
+    		    				 CheckBox box = new CheckBox();
+    		    				 
+    		    				 box.setImmediate(true);
+    				             final ComboBox comboBox = getWeightComboBox();
+    				             
+    				             int counterTrait = 0;
+    				             objItem[counterTrait++] = box;
+    				             objItem[counterTrait++] = trialEnv.getId();
+    				             objItem[counterTrait++] = trialEnv.getLocation().getLocationName();
+    				             objItem[counterTrait++] = trialEnv.getLocation().getCountryName();
+    				             objItem[counterTrait++] = trialEnv.getStudy().getName();
+    				             
+    				             
+    				             if(recreateFilterLocationMap){
+    				            	 setupLocationMappings(trialEnv);
+    				            	 tableEntriesMap.put(tableKey, objItem);
+    				             }
+    				             
+    				             //insert environment condition here
+    				             EnvironmentForComparison compare = new EnvironmentForComparison(trialEnv.getId(), trialEnv.getLocation().getLocationName(), trialEnv.getLocation().getCountryName(), trialEnv.getStudy().getName(), comboBox);
+    				             
+    				             objItem[counterTrait++] = comboBox;
+    				            
+    				             environmentsTable.addItem(objItem, tableKey);
+    				             Item item = environmentsTable.getItem(tableKey);
+    				             box.addListener(new ValueChangeListener(){
+    								private static final long serialVersionUID = -4759863142479248292L;
+
+									@Override
+    								public void valueChange(ValueChangeEvent event) {
+    									clickCheckBox(tableKey, comboBox, (Boolean)event.getProperty().getValue());
+    								}
+    				             });
+    				            		 	
+    					         
+    				             environmentCheckBoxMap.put(box, item);
+    				             environmentCheckBoxComparisonMap.put(tableKey, compare);
+    				             trialEnvIdTableMap.put(trialEnvIdString, item);
+    		    			 }
+    		    			 
+    		    		 }
+    				}//end of if
+
     			}
     			
     			//numberOfEnvironmentSelectedLabel.setValue(Integer.toString(environmentForComparison.size()));
@@ -973,6 +1082,13 @@ private static final long serialVersionUID = -3667517088395779496L;
 	    	}
 	        this.mainScreen2.selectSecondTab();
 		}
+		else if(crossStudyToolType == CrossStudyToolType.TRAIT_DONORS_QUERY) {
+			if (this.nextScreen3 != null){
+	    		this.nextScreen3.populateTraitsTables(toBeCompared);
+	    	}
+	        this.mainScreen3.selectThirdTab();
+		}
+
 	}
 	
     public void backButtonClickAction(){
@@ -1153,7 +1269,8 @@ private static final long serialVersionUID = -3667517088395779496L;
 	
 	private enum CrossStudyToolType {
 		HEAD_TO_HEAD_QUERY(org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain.class, "Head to Head Query"),
-		QUERY_FOR_ADAPTED_GERMPLASM(org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain.class,"Query for Adapted Germplasm");
+		QUERY_FOR_ADAPTED_GERMPLASM(org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain.class,"Query for Adapted Germplasm"),
+		TRAIT_DONORS_QUERY(org.generationcp.browser.cross.study.traitdonors.main.TraitDonorsQueryMain.class, "Trait Donors Query");
 		
 		private Class<?> mainClass;
 		private String className;

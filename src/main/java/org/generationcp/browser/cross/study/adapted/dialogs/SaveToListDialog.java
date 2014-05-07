@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
+import org.generationcp.browser.cross.study.traitdonors.main.TraitDonorsQueryMain;
 import org.generationcp.browser.germplasmlist.dialogs.SelectLocationFolderDialog;
 import org.generationcp.browser.germplasmlist.dialogs.SelectLocationFolderDialogSource;
 import org.generationcp.browser.germplasmlist.listeners.CloseWindowAction;
@@ -90,11 +91,18 @@ public class SaveToListDialog extends Window implements InitializingBean, Intern
     private Map<String, Integer> mapExistingList;
     
     private QueryForAdaptedGermplasmMain mainScreen;
+    private TraitDonorsQueryMain mainScreen2;
     
     private GermplasmList lastSelectedFolder;
 	
 	public SaveToListDialog(QueryForAdaptedGermplasmMain mainScreen, Component source, Window parentWindow, Map<Integer,String> germplasmsMap){
 		this.mainScreen = mainScreen;
+        this.parentWindow = parentWindow;
+        this.germplasmsMap = germplasmsMap;
+    }
+	
+	public SaveToListDialog(TraitDonorsQueryMain mainScreen2, Component source, Window parentWindow, Map<Integer,String> germplasmsMap){
+		this.mainScreen2 = mainScreen2;
         this.parentWindow = parentWindow;
         this.germplasmsMap = germplasmsMap;
     }

@@ -19,6 +19,7 @@ import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.browser.cross.study.adapted.main.QueryForAdaptedGermplasmMain;
 import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
+import org.generationcp.browser.cross.study.traitdonors.main.TraitDonorsQueryMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmDetailsComponentTree;
@@ -81,6 +82,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     public static final String HEAD_TO_HEAD_CROSS_STUDY_QUERY_WINDOW_NAME = "h2h-query";
     public static final String HEAD_TO_HEAD_COMPARISON_WINDOW_NAME = "Head_to_head_comparison";
     public static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME = "Query_For_Adapted_Germplasm";
+    public static final String TRAIT_DONORS_QUERY_NAME = "Trait_Donors_Query";
     public static final String AWHERE_WINDOW_NAME = "awheretool";
 
     private Window window;
@@ -366,14 +368,22 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                   headToHeadQueryToolWindow.addComponent(new HeadToHeadCrossStudyMain());
                   this.addWindow(headToHeadQueryToolWindow);
                   return headToHeadQueryToolWindow;
-              } else if(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME.equals(name)) {
-                  Window queryForAdaptedGermplasmToolWindow = new Window("Cross Study: Query-for-Adapted Germplasm");
-                  // Browser
-                  queryForAdaptedGermplasmToolWindow.setName(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME);
-                  queryForAdaptedGermplasmToolWindow.setSizeUndefined();
-                  queryForAdaptedGermplasmToolWindow.addComponent(new QueryForAdaptedGermplasmMain());
-                  this.addWindow(queryForAdaptedGermplasmToolWindow);
-                  return queryForAdaptedGermplasmToolWindow;
+             } else if(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME.equals(name)) {
+                 Window queryForAdaptedGermplasmToolWindow = new Window("Cross Study: Query-for-Adapted Germplasm");
+                 // Browser
+                 queryForAdaptedGermplasmToolWindow.setName(QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME);
+                 queryForAdaptedGermplasmToolWindow.setSizeUndefined();
+                 queryForAdaptedGermplasmToolWindow.addComponent(new QueryForAdaptedGermplasmMain());
+                 this.addWindow(queryForAdaptedGermplasmToolWindow);
+                 return queryForAdaptedGermplasmToolWindow;
+             } else if(TRAIT_DONORS_QUERY_NAME.equals(name)) {
+                 Window traitDonorsQueryToolWindow = new Window("Cross Study: Trait-Donors-Query");
+                 // Browser
+                 traitDonorsQueryToolWindow.setName(TRAIT_DONORS_QUERY_NAME);
+                 traitDonorsQueryToolWindow.setSizeUndefined();
+                 traitDonorsQueryToolWindow.addComponent(new TraitDonorsQueryMain());
+                 this.addWindow(traitDonorsQueryToolWindow);
+                 return traitDonorsQueryToolWindow;
               } else if(AWHERE_WINDOW_NAME.equals(name)){
             	  Window awhereWindow = new Window("AWhere Test Tool");
             	  awhereWindow.setName(AWHERE_WINDOW_NAME);
