@@ -72,7 +72,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     private Label or;
     private Label toWorkWith;
 
-    private HorizontalLayout headingBar;
+    private HorizontalLayout headerLayout;
 
     private TabSheet detailsTabSheet;
     
@@ -116,10 +116,10 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     	
     	defaultLabel = new Label();
     	
-    	headingBar = new HorizontalLayout();
+    	headerLayout = new HorizontalLayout();
     	
     	detailsTabSheet = new TabSheet();
-    	detailsTabSheet.setWidth("95%");
+    	detailsTabSheet.setWidth("100%");
     	detailsTabSheet.addStyleName("listDetails");
     	
         btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -163,22 +163,19 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         setDetailsTabSheetHeight();
     	 
     	//Components
-        headingBar.setWidth("98%");
-        headingBar.setHeight("48px");
+        headerLayout.setWidth("100%");
         
         final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
         headingLayout.addStyleName("lm-title");
-        headingLayout.addStyleName("lm-left-content");
         headingLayout.setHeight("30px");
         
-        headingBar.addComponent(headingLayout);
-        headingBar.addComponent(btnCloseAllTabs);
-        headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
-        btnCloseAllTabs.addStyleName("lm-browse-lists-close-tabs");
+        headerLayout.addComponent(headingLayout);
+        headerLayout.addComponent(btnCloseAllTabs);
+        headerLayout.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
         
         final CssLayout innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
-        innerLayout.addComponent(headingBar);
+        innerLayout.addComponent(headerLayout);
         
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
         
@@ -193,8 +190,6 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         browseForLists.setWidth("48px");
         
         innerLayout.addComponent(searchOrBrowseLayout);
-        searchOrBrowseLayout.addStyleName("lm-left-content");
-        searchOrBrowseLayout.addStyleName("lm-subtitle-link");
         
         innerLayout.addComponent(detailsTabSheet);
         
@@ -209,7 +204,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
 
 	public void displayDefault(){
     	noListLabel.setVisible(false);
-        headingBar.setVisible(true);
+        headerLayout.setVisible(true);
         btnCloseAllTabs.setVisible(false);
         detailsTabSheet.setVisible(false);
     }
@@ -324,10 +319,10 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     public void repaintTabsheet() {
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
-    	    this.addComponent(headingBar);
+    	    this.addComponent(headerLayout);
     	    this.addComponent(detailsTabSheet);
     	
-            headingBar.setVisible(true);
+            headerLayout.setVisible(true);
             defaultLabel.setVisible(false);
             detailsTabSheet.setVisible(true);
             

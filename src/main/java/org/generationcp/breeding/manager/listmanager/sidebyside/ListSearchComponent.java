@@ -42,7 +42,6 @@ public class ListSearchComponent extends CssLayout implements Internationalizabl
 		searchDescription.setWidth("375px");
 		searchResultsComponent = new ListSearchResultsComponent(listSelectionLayout);
 		searchBar = new ListSearchBarComponent(searchResultsComponent);
-		
 	}
 
 	@Override
@@ -68,7 +67,6 @@ public class ListSearchComponent extends CssLayout implements Internationalizabl
 		instructionLayout.setWidth("100%");
 
 		instructionLayout.addComponent(searchDescription);
-		instructionLayout.addStyleName("lm-left-content");
 		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();

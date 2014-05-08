@@ -58,7 +58,9 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 
 	@Override
 	public void instantiateComponents() {
+		
 		setSizeFull();
+		
 		listSelectionLayout = new ListSelectionLayout(source, selectedListId);
 		listTreeComponent = new ListManagerTreeComponent(this, selectedListId);
 		listSearchComponent = new ListSearchComponent(listSelectionLayout);
@@ -76,6 +78,9 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 
 	@Override
 	public void layoutComponents() {
+		
+		setMargin(true);
+		
 		addComponent(listSelectionLayout);
 		this.addStyleName("list-selection-component");
 		listSelectionLayout.addStyleName("list-selection-layout");

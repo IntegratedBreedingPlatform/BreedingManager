@@ -100,6 +100,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     private Button resetButton;
     
     //Layout Component
+    private HorizontalLayout headerLayout;
+	private HorizontalLayout instructionLayout;
     Panel listDataTablePanel;
     
     private BuildNewListDropHandler dropHandler;
@@ -107,7 +109,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
     //Tools Button Context Menu
     private ContextMenu menu;
     private ContextMenuItem menuExportList;
-    private ContextMenuItem menuExportForGenotypingOrder;
     private ContextMenuItem menuCopyToList;
     
     private static final String USER_HOME = "user.home";
@@ -157,15 +158,12 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         buildNewListDesc = new Label();
         buildNewListDesc.setValue("Build your new list by selecting and dragging in entries from the lists to the left.");
         buildNewListDesc.setWidth("500px");
-        buildNewListDesc.addStyleName("lm-list-total");
         
         listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		//listEntriesLabel.setWidth("120px");
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
 
-        
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
@@ -174,6 +172,9 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
         tableWithSelectAllLayout.setHeight("390px");
+        
+        headerLayout = new HorizontalLayout();
+		instructionLayout = new HorizontalLayout();
         
         final Table listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
@@ -298,18 +299,18 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 
 	@Override
 	public void layoutComponents() {
+		
+		setMargin(true);
+		
 		this.setSizeFull();
 		addStyleName("lm-list-builder");
-		
-		final HorizontalLayout headerLayout = new HorizontalLayout();
-		final HorizontalLayout instructionLayout = new HorizontalLayout();
 		
 		headerLayout.setWidth("100%");
 		instructionLayout.setWidth("100%");
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, buildNewListTitle);
-		headingLayout.setHeight("30px");
 		headingLayout.addStyleName("lm-title");
+		headingLayout.setHeight("30px");
 		headerLayout.addComponent(headingLayout);
 
 		instructionLayout.addComponent(buildNewListDesc);
@@ -328,8 +329,6 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		
 		editDetails.addComponent(editHeaderButton);
 		editDetails.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
-		
-		totalListEntriesLabel.addStyleName("lm-list-total");
 		
 		toolsLayout.addComponent(totalListEntriesLabel);
 		toolsLayout.addComponent(toolsButton);

@@ -146,19 +146,6 @@ public abstract class ListTreeComponent extends CssLayout implements
 				}
 			});
 		}
-		
-		if (doIncludeToggleButton()){
-			toggleListTreeButton.addListener(new Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void buttonClick(ClickEvent event) {
-					toogleListTreePane();
-				}
-			});
-			
-		}
-		
-
 	}
 
 	@Override
@@ -190,10 +177,6 @@ public abstract class ListTreeComponent extends CssLayout implements
 	 */
 	protected abstract boolean doIncludeActionsButtons();
 
-	protected void toogleListTreePane(){
-    	this.treeActionsListener.toggleListTreeComponent();
-    }
-	
 	protected String getTreeHeading(){
 		return messageSource.getMessage(Message.LISTS);
 	}

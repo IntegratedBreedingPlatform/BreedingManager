@@ -93,7 +93,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsLabel.setStyleName("lm-search-results-label");
        	
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
-		matchingGermplasmsTableWithSelectAll.setHeight("390px");
+		matchingGermplasmsTableWithSelectAll.setHeight("410px");
 		
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
@@ -106,7 +106,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
 		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
-		matchingGermplasmsTable.setHeight("340px");
+		matchingGermplasmsTable.setHeight("360px");
 		
 		matchingGermplasmsTable.addListener(new ItemClickListener(){
 			private static final long serialVersionUID = 1L;

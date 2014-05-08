@@ -28,6 +28,9 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 	private Label headingLabel;
 	private Label searchDescription;
 	
+	private HorizontalLayout headerLayout;
+	private HorizontalLayout instructionLayout;
+	
 	private GermplasmSearchBarComponent searchBarComponent;
 	private GermplasmSearchResultsComponent searchResultsComponent;
 
@@ -51,6 +54,11 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 		
 		setWidth("100%");
 		setHeight("800px");
+		
+		addStyleName("pink");
+		
+		headerLayout = new HorizontalLayout();
+		instructionLayout = new HorizontalLayout();
 		
 		headingLabel = new Label();
     	headingLabel.setImmediate(true);
@@ -77,21 +85,18 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 	@Override
 	public void layoutComponents() {
 		
-		final HorizontalLayout headerLayout = new HorizontalLayout();
-		final HorizontalLayout instructionLayout = new HorizontalLayout();
+		setMargin(true);
 		
 		headerLayout.setWidth("100%");
 		instructionLayout.setWidth("100%");
 
-		final HeaderLabelLayout labelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-		labelLayout.addStyleName("lm-title");
-		labelLayout.addStyleName("lm-left-content");
-        labelLayout.setHeight("30px");
+		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
+		headingLayout.addStyleName("lm-title");
+        headingLayout.setHeight("30px");
         
-		headerLayout.addComponent(labelLayout);
+		headerLayout.addComponent(headingLayout);
 
 		instructionLayout.addComponent(searchDescription);
-		instructionLayout.addStyleName("lm-left-content");
 		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();

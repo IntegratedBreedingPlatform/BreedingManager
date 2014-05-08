@@ -477,10 +477,6 @@
 	background-color: #ffffff !important;
 }
 
-.searchBarLayout > div {
-	background-color: #e3e3e3;
-}
-
 .no-caption .v-caption {
 	height: 0px;
 }
@@ -573,13 +569,17 @@
 	float: right;
 }
 
-.lm-browse-lists-title {
-	padding: 7px 0 4px 12px;
+.lm-title {
+	/* padding-top: 7px; */
+	padding-bottom: 4px;
 }
 
-.lm-build-new-list-title {
-	padding-top: 7px;
-	padding-bottom: 3px;
+.lm-subtitle {
+	padding-bottom: 36px;
+}
+
+.lm-list-manager-popup .lm-subtitle {
+	padding-bottom: 10px;
 }
 
 .lm-selection-help {
@@ -603,17 +603,8 @@
 	padding-left: 14px;
 }
 
-.listDetails {
-	/* Using padding here causes issues with the tab header */
-	margin-left: 12px;
-}
-
 .lm-table-select-all {
 	padding-top: 10px;
-}
-
-.lm-list-total {
-	padding-left: 4px;
 }
 
 .lm-list-edit-list-details {
@@ -624,7 +615,8 @@
 	padding-top: 7px;
 }
 
-.lm-build-new-list .v-panel {
+.lm-list-manager-main .v-panel,
+.lm-list-manager-popup .v-panel {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	border-top-right-radius: 0;
@@ -632,8 +624,10 @@
 	border-radius: none;
 }
 
-.lm-build-new-list .v-panel-captionwrap,
-.lm-build-new-list .v-panel-deco {
+.lm-list-manager-main .v-panel-captionwrap,
+.lm-list-manager-main .v-panel-deco,
+.lm-list-manager-popup .v-panel-captionwrap,
+.lm-list-manager-popup .v-panel-deco {
 	display: none;
 }
 
@@ -646,6 +640,19 @@
 	padding-left: 9px;
 }
 
-.lm-build-new-list .v-panel-content {
+.lm-list-manager-main .v-panel-content,
+.lm-list-manager-popup .v-panel-content {
 	border: 1px solid rgb(228, 228, 228);
+}
+
+.lm-search-results-label {
+	padding: 4px 0;
+}
+
+.lm-search-bar > div {
+	background-color: #e3e3e3;
+}
+
+.lm-search-bar .lm-subtitle {
+	padding-bottom: 12px;
 }

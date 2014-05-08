@@ -19,12 +19,12 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListInventoryComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -78,6 +78,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -85,24 +86,23 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, 
+public class ListComponent extends CssLayout implements InitializingBean, InternationalizableComponent, 
         BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(ListDataComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
 	
 	private static final int MINIMUM_WIDTH = 10;
 	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
 
-	private ListManagerMain source;
-	private ListDetailsComponent parentListDetailsComponent;
+	private final ListManagerMain source;
+	private final ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> listEntries;
 	private long listEntriesCount;
@@ -132,21 +132,21 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private AddColumnContextMenu addColumnContextMenu;
 	
 	//Tools Menu Options
-	private String MENU_SELECT_ALL="Select All"; 
-    private String MENU_EXPORT_LIST="Export List"; 
-    private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
-    private String MENU_COPY_TO_NEW_LIST="Copy List Entries"; 
-    private String MENU_ADD_ENTRY="Add Entries"; 
-    private String MENU_SAVE_CHANGES="Save Changes"; 
-    private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
-    private String MENU_EDIT_LIST="Edit List";
-    private String MENU_DELETE_LIST="Delete List";
-    private String MENU_VIEW_INVENTORY = "View Inventory";
+	private final String MENU_SELECT_ALL="Select All"; 
+    private final String MENU_EXPORT_LIST="Export List"; 
+    private final String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
+    private final String MENU_COPY_TO_NEW_LIST="Copy List Entries"; 
+    private final String MENU_ADD_ENTRY="Add Entries"; 
+    private final String MENU_SAVE_CHANGES="Save Changes"; 
+    private final String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
+    private final String MENU_EDIT_LIST="Edit List";
+    private final String MENU_DELETE_LIST="Delete List";
+    private final String MENU_VIEW_INVENTORY = "View Inventory";
     
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Tools";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
-  	private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
+  	private final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
   	
   	//TODO must i18nalize right click context menu options
   	private static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -167,8 +167,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
-	private List<Integer> gidsWithoutChildrenToDelete;
-	private Map<Object, String> itemsToDelete;
+	private final List<Integer> gidsWithoutChildrenToDelete;
+	private final Map<Object, String> itemsToDelete;
 
     private Button lockButton;
     private Button unlockButton;
@@ -198,7 +198,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	private Integer localUserId = null;
 	
-	public ListDataComponent(ListManagerMain source, ListDetailsComponent parentListDetailsComponent, GermplasmList germplasmList) {
+	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
@@ -219,7 +219,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public void instantiateComponents() {
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setWidth("120px");
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
@@ -311,7 +311,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	public int getNoOfEntries(){
 		// browse list component is null at this point when tool launched from Workbench dashboard
-		ListManagerBrowseListComponent browseListsComponent = source.getBrowseListsComponent();
+		ListSelectionComponent browseListsComponent = source.getListSelectionComponent();
 		if(browseListsComponent== null || browseListsComponent.isVisible()){
 			return 8; 
 		}
@@ -407,6 +407,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			listDataTable.addActionHandler(new Action.Handler() {
 				private static final long serialVersionUID = -897257270314381555L;
 
+				@Override
 				public Action[] getActions(Object target, Object sender) {
 					if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
 						if(selectedColumn == null){
@@ -424,6 +425,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 					}
 				}
   
+				@Override
 				public void handleAction(Action action, Object sender, Object target) {
 					if (ACTION_DELETE_ENTRIES == action) {
 						deleteEntriesButtonClickAction();
@@ -447,8 +449,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	                
 		                listDataTable.select(selectedItemId);
 					}else if(ACTION_COPY_TO_NEW_LIST == action){
-						source.showBuildNewListComponent();
-						source.addFromListDataTable(listDataTable);
+						source.addSelectedPlantsToList(listDataTable);
 					}
 	         	}
 			});
@@ -492,6 +493,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2343109406180457070L;
 	
+			@Override
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
@@ -551,7 +553,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
 		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setSpacing(true);
@@ -590,10 +591,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		subHeaderLayout.addComponent(toolsButton);
 		subHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
-		
+		subHeaderLayout.addStyleName("lm-list-desc");
 		
 		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
+		
+		listDataTableWithSelectAll.setHeight("410px");
+		listDataTable.setHeight("360px");
 		
 		addComponent(listDataTableWithSelectAll);
 		
@@ -612,6 +616,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	public void makeTableEditable(){
     	listDataTable.addListener(new ItemClickListener(){
 			private static final long serialVersionUID = 1L;
+			@Override
 			public void itemClick(ItemClickEvent event) {
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
@@ -621,6 +626,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     	listDataTable.setTableFieldFactory(new TableFieldFactory() {
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public Field createField(Container container, final Object itemId,
 		            final Object propertyId, Component uiContext) {
 		    	
@@ -652,6 +658,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		        tf.addListener(new FocusListener() {
 					private static final long serialVersionUID = 1L;
 
+					@Override
 					public void focus(FocusEvent event) {
 						listDataTable.select(itemId);
 		            }
@@ -660,6 +667,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		        tf.addListener(new BlurListener() {
 					private static final long serialVersionUID = 1L;
 
+					@Override
 					public void blur(BlurEvent event) {
 						HashMap<Object,Field> itemMap = fields.get(itemId);
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
@@ -697,6 +705,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 										+ "Are you sure you want to update Designation with new value?"
 										, "Yes", "No", new ConfirmDialog.Listener() {	
 											private static final long serialVersionUID = 1L;	
+											@Override
 											public void onClose(ConfirmDialog dialog) {
 												if (!dialog.isConfirmed()) {
 													tf.setReadOnly(false);
@@ -826,7 +835,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                         messageSource.getMessage(Message.NO),
                         new ConfirmDialog.Listener() {
 	        		private static final long serialVersionUID = 1L;
-	        		public void onClose(ConfirmDialog dialog) {
+	        		@Override
+					public void onClose(ConfirmDialog dialog) {
 	        			if (dialog.isConfirmed()) {
 	        				removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
 	        			}
@@ -855,7 +865,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database", "Would you like to delete the germplasm(s) from the database also?",
 	        			"Yes", "No", new ConfirmDialog.Listener() {
 	        		private static final long serialVersionUID = 1L;
-	        		public void onClose(ConfirmDialog dialog) {
+	        		@Override
+					public void onClose(ConfirmDialog dialog) {
 	        			if (dialog.isConfirmed()) {
 	        				gidsWithoutChildrenToDelete.addAll(gidsWithoutChildren);
 	        			}
@@ -914,12 +925,12 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	
 	/* MENU ACTIONS */ 
 	private void editListButtonClickAction() {
-		final BuildNewListComponent buildNewListComponent = source.getBuildNewListComponent();
+		final ListBuilderComponent ListBuilderComponent = source.getListBuilderComponent();
 		
-    	if(buildNewListComponent.isChanged()){
+    	if(ListBuilderComponent.isChanged()){
     		String message = "";
     		
-    		String buildNewListTitle = buildNewListComponent.getBuildNewListTitle().getValue().toString();
+    		String buildNewListTitle = ListBuilderComponent.getBuildNewListTitle().getValue().toString();
     		if(buildNewListTitle.equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
         		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
         	}
@@ -930,17 +941,18 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
 				private static final long serialVersionUID = 1L;	
+				@Override
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
-						buildNewListComponent.getSaveButton().click(); // save the existing list	
+						ListBuilderComponent.getSaveButton().click(); // save the existing list	
 					}
 					
-					source.showBuildNewListComponent(getGermplasmList());
+					source.loadListForEditing(getGermplasmList());
 				}
 			});
     	}
     	else{
-    		source.showBuildNewListComponent(getGermplasmList());
+    		source.loadListForEditing(getGermplasmList());
     	}
 	}
 	
@@ -972,8 +984,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
     
     private void recreateTab() throws MiddlewareQueryException {
-        parentListDetailsComponent.getDetailsLayout().removeTab(germplasmList.getId());
-        parentListDetailsComponent.getDetailsLayout().createListDetailsTab(germplasmList.getId());
+        parentListDetailsComponent.getListSelectionLayout().removeTab(germplasmList.getId());
+        parentListDetailsComponent.getListSelectionLayout().createListDetailsTab(germplasmList.getId());
     }
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -1245,7 +1257,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                     "Successful in adding list entries.", 3000, Notification.POSITION_CENTERED);
             }
             
-            User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+            User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
             ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                             workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
@@ -1466,7 +1478,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
     }
     
     private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
-        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
         ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
                 workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
@@ -1492,7 +1504,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 , new ConfirmDialog.Listener() {
             private static final long serialVersionUID = -6641772458404494412L;
 
-            public void onClose(ConfirmDialog dialog) {
+            @Override
+			public void onClose(ConfirmDialog dialog) {
                 if (dialog.isConfirmed()) {
                     deleteGermplasmListConfirmed();
                 }
@@ -1506,8 +1519,8 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, 
                         germplasmList, workbenchDataManager, getWindow(), messageSource, "list");
                
-                source.getBrowseListsComponent().getListTreeComponent().removeListFromTree(germplasmList);
-                source.updateUIForDeletedList(germplasmList);
+                source.getListSelectionComponent().getListTreeComponent().removeListFromTree(germplasmList);
+                source.getListSelectionComponent().updateUIForDeletedList(germplasmList);
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
                 e.printStackTrace();
@@ -1530,7 +1543,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
 		
-		        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
 		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
 		                "Locked a germplasm list.",
@@ -1568,7 +1581,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		        recreateTab();
 		
-		        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
 		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
 		                "Unlocked a germplasm list.",
@@ -1615,7 +1628,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 				germplasmList = listFromDB;
 				
 				if(!oldName.equals(list.getName())){
-					source.updateUIForRenamedList(germplasmList, list.getName());
+					source.getListSelectionComponent().updateUIForRenamedList(germplasmList, list.getName());
 				}
 				
 				source.showNodeOnTree(listFromDB.getId());

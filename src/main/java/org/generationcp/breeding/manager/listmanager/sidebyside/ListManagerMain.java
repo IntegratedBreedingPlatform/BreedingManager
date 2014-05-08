@@ -125,6 +125,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 
 	@Override
 	public void layoutComponents() {
+		
 		addComponent(titleLayout,"top:0px; left:10px");
 		addComponent(tabHeaderLayout,"top:40px;left:10px;");
 		addComponent(splitPanel,"top:65px;left:10px;");
@@ -173,7 +174,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		listSelectionComponent.getListTreeComponent().createTree();
 	}
 
-	public ListBuilderComponent getBuildNewListComponent() {
+	public ListBuilderComponent getListBuilderComponent() {
 		return listBuilderComponent;
 	}
 	
@@ -265,11 +266,12 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		splitPanel.setFirstComponent(plantFinderContent);
 		splitPanel.setSecondComponent(listBuilderComponent);
 		
-		splitPanel.setHeight("610px");
-		plantFinderContent.setHeight("98%");
+		splitPanel.setSizeFull();
 		splitPanel.addStyleName("splitPanel");
 		plantFinderContent.addStyleName("plantFinderContent");
-		listBuilderComponent.setHeight("98%");
+
+		plantFinderContent.setHeight("610px");
+		listBuilderComponent.setHeight("610px");
 		
 		addStyleName("lm-list-manager-main");
 	}
