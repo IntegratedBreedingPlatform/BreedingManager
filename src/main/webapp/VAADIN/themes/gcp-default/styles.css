@@ -656,3 +656,7 @@
 .lm-search-bar .lm-subtitle {
 	padding-bottom: 12px;
 }
+
+.lm-list-manager-popup .componenttree-expander {
+	margin-left: none;
+}

@@ -5,7 +5,6 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmAttributesComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmHeaderInfoComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmPedigreeComponent;
@@ -37,11 +36,9 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class GermplasmDetailsComponent extends VerticalLayout implements
-		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmDetailsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	
 	public static final String SAVE_TO_LIST = "Germplasm Details - Save to List";
 	public static final String MORE_DETAILS = "Germplasm Details - More Details";
@@ -60,7 +57,6 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     private final ListManagerMain listManagerMain;
     
     private Button saveToListLink;
-    private Button moreDetailsLink;
     
     private final Integer germplasmId;
     
@@ -108,7 +104,7 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
     @Override
     public void layoutComponents() {    	
         ComponentTree content = new ComponentTree();
-        content.setWidth("95%");
+        content.setWidth("100%");
         
         basicDetails = content.addChild(createBasicDetailsHeader(messageSource.getMessage(Message.BASIC_DETAILS)));
         basicDetails.showChild();
@@ -165,7 +161,6 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 			}
         });
         
-        moreDetailsLink.addListener(new GidLinkClickListener(this.germplasmId.toString(), true));
     }
     
     private VerticalLayout createGermplasmAttribute(){
@@ -206,19 +201,12 @@ public class GermplasmDetailsComponent extends VerticalLayout implements
 		saveToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
 		saveToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
 		
-		moreDetailsLink = new Button(messageSource.getMessage(Message.MORE_DETAILS));
-		moreDetailsLink.setData(MORE_DETAILS);
-		moreDetailsLink.setImmediate(true);
-		moreDetailsLink.setStyleName(BaseTheme.BUTTON_LINK);
-		
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.setSpacing(true);
 		leftLayout.addComponent(sectionLabel);
-		leftLayout.addComponent(moreDetailsLink);
-		leftLayout.setComponentAlignment(moreDetailsLink, Alignment.MIDDLE_LEFT);
 		
 		HorizontalLayout mainLayout = new HorizontalLayout();
-		mainLayout.setWidth("100%");
+		mainLayout.setWidth("95%");
 		mainLayout.setHeight("30px");
         mainLayout.addComponent(leftLayout);
         mainLayout.addComponent(saveToListLink);

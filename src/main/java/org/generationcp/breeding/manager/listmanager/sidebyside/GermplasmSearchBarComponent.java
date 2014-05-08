@@ -98,7 +98,6 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
         popup.setStyleName("gcp-popup-view");
         
         likeOrEqualCheckBox = new CheckBox();
-        likeOrEqualCheckBox.setValue(true);
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
         includeParentsCheckBox = new CheckBox();
@@ -144,6 +143,9 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 		searchBarLayout.setHeight("24px");
 		
 		searchBarLayout.setSpacing(true);
+		
+		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
+		searchField.setWidth("120px");
 		
         searchBarLayout.addComponent(searchField);
         searchBarLayout.addComponent(searchButton);

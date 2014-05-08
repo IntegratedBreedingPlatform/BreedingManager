@@ -168,7 +168,6 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		listBuilderComponent.addGermplasm(gid);
 	}
 	
-	// TODO Helen ??
 	public void showNodeOnTree(Integer listId){
 		listSelectionComponent.getListTreeComponent().setListId(listId);
 		listSelectionComponent.getListTreeComponent().createTree();
@@ -251,7 +250,11 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		splitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		splitPanel.setMinSplitPosition(MAX_EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
 		splitPanel.setImmediate(true);
-		splitPanel.setWidth("100%");
+		
+		// Leave some room for the border
+		splitPanel.setWidth("98%");
+		splitPanel.setHeight("98%");
+		
 		splitPanel.addStyleName("tabContainerStyle");
 		
 		listSelectionComponent = new ListSelectionComponent(this, selectedListId);
@@ -266,10 +269,6 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		splitPanel.setFirstComponent(plantFinderContent);
 		splitPanel.setSecondComponent(listBuilderComponent);
 		
-		splitPanel.setSizeFull();
-		splitPanel.addStyleName("splitPanel");
-		plantFinderContent.addStyleName("plantFinderContent");
-
 		plantFinderContent.setHeight("610px");
 		listBuilderComponent.setHeight("610px");
 		

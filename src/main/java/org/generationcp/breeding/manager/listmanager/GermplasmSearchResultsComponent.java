@@ -282,7 +282,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
         popupWindow.setCaption(caption);
         popupWindow.setContent(layout);
         popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        
+        popupWindow.addStyleName("lm-list-manager-popup");
+
         window.addWindow(popupWindow);
         
         return popupWindow;
