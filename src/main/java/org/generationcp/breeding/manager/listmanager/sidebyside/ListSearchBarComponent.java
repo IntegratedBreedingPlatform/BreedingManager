@@ -93,6 +93,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         popup.setStyleName("gcp-popup-view");
         
         likeOrEqualCheckBox = new CheckBox();
+        likeOrEqualCheckBox.setValue(true);
         likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
 	}
 
