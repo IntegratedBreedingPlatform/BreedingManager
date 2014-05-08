@@ -555,6 +555,7 @@ public class ListComponent extends CssLayout implements InitializingBean, Intern
 	public void layoutComponents() {
 		
 		headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
