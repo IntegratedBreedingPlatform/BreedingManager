@@ -660,3 +660,7 @@
 .lm-list-manager-popup .componenttree-expander {
 	margin-left: none;
 }
+
+.gwt-FileUpload {
+	display: inline !important;
+} 
