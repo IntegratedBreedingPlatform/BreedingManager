@@ -12,13 +12,13 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -49,21 +49,21 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class BuildNewListComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
+public class ListBuilderComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BuildNewListComponent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
     
     private static final long serialVersionUID = -7736422783255724272L;
     
@@ -78,7 +78,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
-        
     
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -89,10 +88,10 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     
     //Components
-    private ToggleButton toggleBuildNewListButton;
     private Label buildNewListTitle;
     private Label buildNewListDesc;
-    private Label dragInstructionLabel;
+    private Label listEntriesLabel;
+    private Label totalListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
     private Button editHeaderButton;
@@ -101,6 +100,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     private Button resetButton;
     
     //Layout Component
+    private HorizontalLayout headerLayout;
+	private HorizontalLayout instructionLayout;
     Panel listDataTablePanel;
     
     private BuildNewListDropHandler dropHandler;
@@ -108,9 +109,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     //Tools Button Context Menu
     private ContextMenu menu;
     private ContextMenuItem menuExportList;
-    private ContextMenuItem menuExportForGenotypingOrder;
     private ContextMenuItem menuCopyToList;
-    private ContextMenuItem menuAddColumn;
     
     private static final String USER_HOME = "user.home";
     private Window listManagerCopyToNewListDialog;
@@ -128,11 +127,11 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
     //Listener
     SaveListButtonClickListener saveListButtonListener;
     
-    public BuildNewListComponent() {
+    public ListBuilderComponent() {
         super();
     }
     
-    public BuildNewListComponent(ListManagerMain source) {
+    public ListBuilderComponent(ListManagerMain source) {
         super();
         this.source = source;
         this.currentlySavedGermplasmList = null;
@@ -151,19 +150,20 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
 		
-		toggleBuildNewListButton = new ToggleButton("Toggle Build New List Pane");
-		
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
     	buildNewListTitle.setWidth("200px");
         buildNewListTitle.setStyleName(Bootstrap.Typography.H4.styleName());
         buildNewListTitle.addStyleName(AppConstants.CssStyles.BOLD);
         
         buildNewListDesc = new Label();
-        buildNewListDesc.setValue(messageSource.getMessage(Message.CLICK_AND_DRAG_ON_PANEL_EDGES_TO_RESIZE));
-        buildNewListDesc.setWidth("250px");
+        buildNewListDesc.setValue("Build your new list by selecting and dragging in entries from the lists to the left.");
+        buildNewListDesc.setWidth("500px");
         
-        dragInstructionLabel = new Label(messageSource.getMessage(Message.BUILD_LIST_DRAG_INSTRUCTIONS));
-        
+        listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
@@ -171,7 +171,16 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        createGermplasmTable(tableWithSelectAllLayout.getTable());
+        tableWithSelectAllLayout.setHeight("390px");
+        
+        headerLayout = new HorizontalLayout();
+		instructionLayout = new HorizontalLayout();
+        
+        final Table listDataTable = tableWithSelectAllLayout.getTable();
+        createGermplasmTable(listDataTable);
+        
+        listDataTable.setWidth("100%");
+		listDataTable.setHeight("340px");
         
         menu = new ContextMenu();
         menu.setWidth("300px");
@@ -187,17 +196,22 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         resetMenuOptions();
         
         toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
-        toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-        toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
+		toolsButton.setData(TOOLS_BUTTON_ID);
+		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
+		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		toolsButton.setWidth("100px");
+        toolsButton.addStyleName("lm-tools-button");
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
         saveButton = new Button();
         saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
+        saveButton.setWidth("80px");
         saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         
         resetButton = new Button();
-        resetButton.setCaption(messageSource.getMessage(Message.RESET_LIST));
+        resetButton.setCaption(messageSource.getMessage(Message.RESET));
+        resetButton.setWidth("80px");
         resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 	}
 	
@@ -218,15 +232,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	public void addListeners() {
 		
 		new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
-		
-		toggleBuildNewListButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				source.toggleBuildNewListComponent();
-			}
-		});
 		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2331333436994090161L;
@@ -294,58 +299,70 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
 	@Override
 	public void layoutComponents() {
-		this.setSpacing(true);
 		
-		//Build New List Header
-		HorizontalLayout buildNewListHeaderLayout = new HorizontalLayout();
-		buildNewListHeaderLayout.setHeight("30px");
-		buildNewListHeaderLayout.addComponent(toggleBuildNewListButton);
-		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST,buildNewListTitle);
-		buildNewListHeaderLayout.addComponent(headingLayout);
-		buildNewListHeaderLayout.setComponentAlignment(toggleBuildNewListButton, Alignment.BOTTOM_LEFT);
+		setMargin(true);
 		
+		this.setSizeFull();
+		addStyleName("lm-list-builder");
 		
-        this.addComponent(buildNewListHeaderLayout);
-        
-        HorizontalLayout instructionLayout = new HorizontalLayout();
-        instructionLayout.setSpacing(true);
-        instructionLayout.setWidth("100%");
-        instructionLayout.addComponent(buildNewListDesc);
-        instructionLayout.addComponent(saveButton);
-        instructionLayout.setComponentAlignment(buildNewListDesc, Alignment.MIDDLE_LEFT);
-        instructionLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
-        
-        this.addComponent(instructionLayout);
-        
+		headerLayout.setWidth("100%");
+		instructionLayout.setWidth("100%");
+
+		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, buildNewListTitle);
+		headingLayout.addStyleName("lm-title");
+		headingLayout.setHeight("30px");
+		headerLayout.addComponent(headingLayout);
+
+		instructionLayout.addComponent(buildNewListDesc);
+		instructionLayout.addStyleName("lm-subtitle");
+
+		this.addComponent(headerLayout);
+		this.addComponent(instructionLayout);
+
+		final HorizontalLayout editDetails = new HorizontalLayout();
+		final HorizontalLayout toolsLayout = new HorizontalLayout();
+		
+		editDetails.setWidth("100%");
+		toolsLayout.setWidth("100%");
+
+		editDetails.addComponent(new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel));
+		
+		editDetails.addComponent(editHeaderButton);
+		editDetails.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
+		
+		toolsLayout.addComponent(totalListEntriesLabel);
+		toolsLayout.addComponent(toolsButton);
+		toolsLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+		toolsLayout.addStyleName("lm-list-desc");
+
         listDataTablePanel = new Panel();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
-        VerticalLayout listDataTableLayout = new VerticalLayout();
+        
+        final CssLayout listDataTableLayout = new CssLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setSpacing(true);
         listDataTableLayout.setWidth("100%");
-        listDataTableLayout.addComponent(dragInstructionLabel);
+        listDataTableLayout.setHeight("462px");
+        listDataTableLayout.addStyleName("listDataTableLayout");
         
-        HorizontalLayout toolsAndEditHeaderLayout = new HorizontalLayout();
-        toolsAndEditHeaderLayout.setSpacing(true);
-        toolsAndEditHeaderLayout.setWidth("100%");
-        toolsAndEditHeaderLayout.addComponent(editHeaderButton);
-        toolsAndEditHeaderLayout.setComponentAlignment(editHeaderButton, Alignment.MIDDLE_LEFT);
-        toolsAndEditHeaderLayout.addComponent(toolsButton);
-        toolsAndEditHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
-        
-        listDataTableLayout.addComponent(toolsAndEditHeaderLayout);
-        
+        listDataTablePanel.setContent(listDataTableLayout);
+       
+        final HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setWidth("170px");
+        buttons.addComponent(saveButton);
+        buttons.addComponent(resetButton);
+        buttons.setSpacing(true);
+        buttons.addStyleName("lm-new-list-buttons");
+
+        listDataTablePanel.addComponent(editDetails);
+        listDataTablePanel.addComponent(toolsLayout);
         listDataTableLayout.addComponent(tableWithSelectAllLayout);
         
-        listDataTablePanel.setLayout(listDataTableLayout);
         this.addComponent(listDataTablePanel);
-        
-        this.addComponent(resetButton);
-        
+        this.addComponent(buttons);
         this.addComponent(menu);
 	}
     
-	public void addBasicTableColumns(Table table){
+	private void addBasicTableColumns(Table table){
     	table.setData(GERMPLASMS_TABLE_DATA);
     	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
@@ -364,7 +381,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
         messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
 	}
 	
-    public void createGermplasmTable(final Table table){
+    private void createGermplasmTable(final Table table){
         
     	addBasicTableColumns(table);
         
@@ -378,7 +395,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 
             private static final long serialVersionUID = 1884343225476178686L;
 
-            public Action[] getActions(Object target, Object sender) {
+            @Override
+			public Action[] getActions(Object target, Object sender) {
                 return GERMPLASMS_TABLE_CONTEXT_MENU;
             }
 
@@ -391,11 +409,18 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
                 }
             }
         });
-        
-        initializeHandlers();
     }
     
     private void initializeHandlers() {
+		
+    	dropHandler.addListener(new BuildNewListDropHandler.ListUpdatedListener() {
+			@Override
+			public void listUpdated(final ListUpdatedEvent event) {
+				updateListTotal();
+			}
+			
+		});
+		
     	tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
     }
     
@@ -439,9 +464,18 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
             MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
         }
+        
+        updateListTotal();
     }
     
-    /**
+    private void updateListTotal() {
+    	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
+		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+		
+	}
+
+	/**
      * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
      */
     private void assignSerializedEntryNumber(){
@@ -533,6 +567,7 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
+		updateListTotal();
 	}
 	
 	public void resetGermplasmTable(){		
@@ -542,6 +577,8 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		}
 		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
+		
+		updateListTotal();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -726,10 +763,6 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 	
 	/* SETTERS AND GETTERS */
 
-	public ToggleButton getToggleBuildNewListButton() {
-		return toggleBuildNewListButton;
-	}
-	
 	public Label getBuildNewListTitle() {
 		return buildNewListTitle;
 	}
@@ -813,5 +846,4 @@ public class BuildNewListComponent extends VerticalLayout implements Initializin
 		currentlySetGermplasmInfo = list;
 		saveListButtonListener.doSaveAction();
 	}
-    
 }

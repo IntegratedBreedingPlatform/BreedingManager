@@ -76,7 +76,7 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 	private void initializeAdditionalDetailsComponent() {
 		additionalDetailsComponent = new VerticalLayout();
 		
-		Label additionalDetailsTitle = new Label(messageSource.getMessage(Message.ADDITIONAL_DETAILS).toUpperCase());
+		Label additionalDetailsTitle = new Label(messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
 		additionalDetailsTitle.addStyleName(Bootstrap.Typography.H4.styleName());
 		additionalDetailsTitle.addStyleName(AppConstants.CssStyles.BOLD);
 		

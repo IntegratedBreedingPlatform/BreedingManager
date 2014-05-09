@@ -19,7 +19,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	private static final long serialVersionUID = 5246715520145983375L;
 
 	private CheckBox selectAllCheckBox;
-	private Object checkboxColumnId;
+	private final Object checkboxColumnId;
 	private Label dummyLabel;
 	
 	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId){
@@ -60,6 +60,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		}
     }
 	
+	@Override
 	public Table getTable(){
 		return this.table;
 	}
@@ -90,6 +91,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		
 		table.addListener(new Table.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
+			@Override
 			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
 				syncItemCheckBoxes();
              }
@@ -124,6 +126,8 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addComponent(dummyLabel);
 		layout.addComponent(selectAllCheckBox);
+		
+		selectAllCheckBox.addStyleName("lm-table-select-all");
 		
 		addComponent(layout);
 	}

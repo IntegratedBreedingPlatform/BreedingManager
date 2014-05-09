@@ -12,7 +12,7 @@ import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDetailsComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -86,9 +86,9 @@ public class FillWith implements InternationalizableComponent  {
     
     private BuildNewListComponent buildNewListComponent;
     
-    private ListDetailsComponent listDetailsComponent;
+    private ListTabComponent listDetailsComponent;
     
-    private org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent;
+    private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
     
     public FillWith(String GIDPropertyId, Table targetTable){
     	this.GIDPropertyId = GIDPropertyId;
@@ -153,7 +153,7 @@ public class FillWith implements InternationalizableComponent  {
     	setupContextMenu();
     }
     
-    public FillWith(ListDetailsComponent listDetailsComponent, AbstractLayout parentLayout
+    public FillWith(ListTabComponent listDetailsComponent, AbstractLayout parentLayout
     		,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
@@ -165,7 +165,7 @@ public class FillWith implements InternationalizableComponent  {
     	setupContextMenu();
     }
     
-    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
+    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
     		, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;

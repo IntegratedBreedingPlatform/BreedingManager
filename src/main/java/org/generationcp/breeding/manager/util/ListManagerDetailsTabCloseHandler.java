@@ -1,9 +1,9 @@
 package org.generationcp.breeding.manager.util;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDetailsComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerDetailsLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +23,16 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private ListManagerDetailsLayout detailsLayout;
+    private ListSelectionLayout detailsLayout;
     
-    public ListManagerDetailsTabCloseHandler(ListManagerDetailsLayout detailsLayout) {
+    public ListManagerDetailsTabCloseHandler(ListSelectionLayout detailsLayout) {
         this.detailsLayout = detailsLayout;
     }
     
     @Override
     public void onTabClose(final TabSheet tabsheet, final Component tabContent) {
         // if tab to be closed is a Germplasm List
-        if (tabContent instanceof ListDetailsComponent) {
+        if (tabContent instanceof ListTabComponent) {
             confirmTabClose(tabsheet, tabContent);
         } else {
             // directly proceed to close tab if contents is not a germplasm list 
@@ -44,13 +44,13 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
     @Override
     public void buttonClick(ClickEvent event) {
         // "Close" All Tabs
-        if (event.getButton().getData().equals(ListManagerDetailsLayout.CLOSE_ALL_TABS_ID)) {
+        if (event.getButton().getData().equals(ListSelectionLayout.CLOSE_ALL_TABS_ID)) {
             TabSheet detailsTabSheet = detailsLayout.getDetailsTabsheet();
             for (int i=detailsTabSheet.getComponentCount()-1; i>=0; i--) {
                 Tab detailsTab = detailsTabSheet.getTab(i);
                 Component detailsTabComponent = detailsTab.getComponent();
                 
-                if (detailsTabComponent instanceof ListDetailsComponent) {
+                if (detailsTabComponent instanceof ListTabComponent) {
                     confirmTabClose(detailsTabSheet, detailsTabComponent);
                 } else {
                     closeTab(detailsTabSheet, detailsTabComponent);
@@ -60,7 +60,7 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
     }
     
     private void confirmTabClose(final TabSheet tabsheet, final Component tabContent) {
-        final ListDetailsComponent listDetails = (ListDetailsComponent) tabContent;
+        final ListTabComponent listDetails = (ListTabComponent) tabContent;
         boolean valuesModified = listDetails.hasChanged();
         
         // check if the list in the tab to be closed has values that were modified
@@ -82,7 +82,7 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
                     
                     if (dialog.isConfirmed()) {
                         //FIXME sidebyside: call saveChanges if dialog is confirmed
-                        ListDataComponent listDataComponent = listDetails.getListDataComponent();
+                        ListComponent listDataComponent = listDetails.getListDataComponent();
                         listDataComponent.saveChangesAction(tabsheet.getWindow());
                     }
                     

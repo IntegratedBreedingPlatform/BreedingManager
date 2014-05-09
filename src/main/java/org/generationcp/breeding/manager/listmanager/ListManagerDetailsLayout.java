@@ -197,7 +197,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements
     	heading = new Label();
     	heading.setWidth("300px");
     	if (this.treeComponent != null){
-    		heading.setValue(messageSource.getMessage(Message.REVIEW_LIST_DETAILS)); //Browse Lists screen
+    		heading.setValue(messageSource.getMessage(Message.MANAGE_LISTS)); //Browse Lists screen
     	} else {
     		heading.setValue(messageSource.getMessage(Message.DETAILS));
     	}

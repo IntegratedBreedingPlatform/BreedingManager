@@ -8,11 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.BuildNewListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListDataComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -44,12 +45,31 @@ public class BuildNewListDropHandler implements DropHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 	
-	private String MATCHING_GERMPLASMS_TABLE_DATA = SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
-	private String MATCHING_LISTS_TABLE_DATA = SearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
-	private String LIST_DATA_TABLE_DATA = ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+	 public interface ListUpdatedListener {
+        public void listUpdated(final ListUpdatedEvent event);
+    }
+
+    public class ListUpdatedEvent {
+
+        private final int listCount;
+
+		public ListUpdatedEvent(final int listCount) {
+			this.listCount = listCount;
+        }
+
+        public int getListCount() {
+            return listCount;
+        }
+    }
+
+    private List<ListUpdatedListener> listeners = null;
 	
-	private GermplasmDataManager germplasmDataManager;
-	private GermplasmListManager germplasmListManager;
+	private final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
+	private final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
+	private final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+	
+	private final GermplasmDataManager germplasmDataManager;
+	private final GermplasmListManager germplasmListManager;
 	
 	private Table targetTable;
 	
@@ -73,7 +93,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		if(event.getTransferable() instanceof TableTransferable){
 			
 			TableTransferable transferable = (TableTransferable) event.getTransferable();
-	        Table sourceTable = (Table) transferable.getSourceComponent();
+	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
 	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
 	        targetTable = (Table) dropData.getTarget();
@@ -105,10 +125,10 @@ public class BuildNewListDropHandler implements DropHandler {
 				if(hasSelectedItems(sourceTable))
 					addFromListDataTable(sourceTable);
 				//If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListDataComponent)
-					addGermplasmFromList(((ListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
+				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent)
+					addGermplasmFromList(((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
 
-			} else if(sourceTableData.equals(BuildNewListComponent.GERMPLASMS_TABLE_DATA)){
+			} else if(sourceTableData.equals(ListBuilderComponent.GERMPLASMS_TABLE_DATA)){
 				Object droppedOverItemId = dropData.getItemIdOver();
 				
 				//Check first if item is dropped on top of itself
@@ -131,6 +151,8 @@ public class BuildNewListDropHandler implements DropHandler {
 	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
 	                
 	                assignSerializedEntryNumber();
+	                
+	                fireListUpdatedEvent();
 	            }
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
@@ -138,7 +160,7 @@ public class BuildNewListDropHandler implements DropHandler {
 					
 		//If source is from tree
 		} else {
-			Transferable transferable = (Transferable) event.getTransferable();
+			Transferable transferable = event.getTransferable();
 			addGermplasmList((Integer) transferable.getData("itemId"));
 		}
 	}
@@ -162,10 +184,10 @@ public class BuildNewListDropHandler implements DropHandler {
 		List<Integer> selectedGermplasmListIds = getSelectedItemIds(sourceTable);
 		for(Integer listId : selectedGermplasmListIds){
 			addGermplasmList(listId);
-		}		
+		}
 	}
 
-	public void addGermplasmList(Integer listId){
+	private void addGermplasmList(Integer listId){
 		addGermplasmList(listId, false);
 	}
 	
@@ -203,6 +225,8 @@ public class BuildNewListDropHandler implements DropHandler {
 		currentColumnsInfo = null;
 		currentListId = null;
 		
+		fireListUpdatedEvent();
+		
 	}
 	
 	private void addSelectedGermplasmsFromTable(Table sourceTable) {
@@ -220,7 +244,7 @@ public class BuildNewListDropHandler implements DropHandler {
             final Integer newItemId = getNextListEntryId();
             Item newItem = targetTable.addItem(newItemId);
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -238,7 +262,7 @@ public class BuildNewListDropHandler implements DropHandler {
             importedGermplasmGids.add(gid);
             Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
             String preferredName = preferredNames.get(gid);
-            Button designationButton = new Button(preferredName, new GidLinkButtonClickListener(gid.toString(), true));
+            Button designationButton = new Button(preferredName, new GidLinkClickListener(gid.toString(), true));
             designationButton.setStyleName(BaseTheme.BUTTON_LINK);
             designationButton.setDescription("Click to view Germplasm information");
             
@@ -274,6 +298,8 @@ public class BuildNewListDropHandler implements DropHandler {
 				FW.fillWith(targetTable, column, true);
         	}
             
+        	fireListUpdatedEvent();
+        	
             return newItemId;
             
         } catch (MiddlewareQueryException e) {
@@ -281,7 +307,7 @@ public class BuildNewListDropHandler implements DropHandler {
             e.printStackTrace();
             return null;
         }
-		
+        
 	}
 	
 	
@@ -299,7 +325,6 @@ public class BuildNewListDropHandler implements DropHandler {
 		currentListId = listId;
 		
         try {
-            
         	//Load currentColumnsInfo if cached list info is null or not matching the needed list id
         	if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId))
 				currentColumnsInfo = germplasmListManager.getAdditionalColumnsForList(listId);
@@ -344,7 +369,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	            
 	            Item newItem = targetTable.addItem(newItemId);
 	            
-	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+	            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            
 	            CheckBox tagCheckBox = new CheckBox();
@@ -363,7 +388,7 @@ public class BuildNewListDropHandler implements DropHandler {
     	 			 
     	 		});
 	            
-	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(gid.toString(), true));
+	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(gid.toString(), true));
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            designationButton.setDescription("Click to view Germplasm information");
 	            
@@ -398,9 +423,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	        	}
 	            
 	            currentListId = null;
+	            
+	            fireListUpdatedEvent();
 	            return newItemId;
         	}
         	
+        	fireListUpdatedEvent();
         	return null;
         	
         } catch (MiddlewareQueryException e) {
@@ -419,8 +447,8 @@ public class BuildNewListDropHandler implements DropHandler {
 		List<Integer> itemIds = getSelectedItemIds(sourceTable);
 		
 		Integer listId = null;
-		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListDataComponent)
-			listId = ((ListDataComponent) sourceTable.getParent().getParent()).getGermplasmListId();
+		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListComponent)
+			listId = ((ListComponent) sourceTable.getParent().getParent()).getGermplasmListId();
 
 		GermplasmList germplasmList = null;
 		try {
@@ -453,7 +481,7 @@ public class BuildNewListDropHandler implements DropHandler {
 			Item newItem = targetTable.addItem(newItemId);
 			
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
-			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+			Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             gidButton.setDescription("Click to view Germplasm information");
             
@@ -477,7 +505,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
 	   		
 	   		String designation = getDesignationFromButtonCaption(sourceTable,itemId);
-	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(gid.toString(), true));
+	   		Button designationButton = new Button(designation, new GidLinkClickListener(gid.toString(), true));
 	   		designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		designationButton.setDescription("Click to view Germplasm information");
 	   		
@@ -511,9 +539,11 @@ public class BuildNewListDropHandler implements DropHandler {
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 			FW.fillWith(targetTable, column, true);
     	}
+    	fireListUpdatedEvent();
 	}
-	
-    /**
+
+
+	/**
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */
     private void assignSerializedEntryCode(){
@@ -645,4 +675,27 @@ public class BuildNewListDropHandler implements DropHandler {
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
+	
+	private void fireListUpdatedEvent() {
+        if (listeners != null) {
+        	final ListUpdatedEvent event = new ListUpdatedEvent(targetTable.size());
+            for (ListUpdatedListener listener : listeners) {
+                listener.listUpdated(event);
+            }
+        }
+    }
+	
+	public void addListener(final ListUpdatedListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<ListUpdatedListener>();
+        }
+        listeners.add(listener);
+    }
+
+    public void removeListener(final ListUpdatedListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<ListUpdatedListener>();
+        }
+        listeners.remove(listener);
+    }
 }

@@ -283,11 +283,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         try{
                             GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
                             addGermplasmListData(germList,1);
-                            listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                             //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                            listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
                             //TODO must accommodate opening in the search screen also
-                            listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(newListid);
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().listManagerTreeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
                             germplasmListManager.deleteGermplasmListByListId(newListid);
                             LOG.error("Error with copying list entries", e);
@@ -314,12 +314,12 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         addGermplasmListData(germList,countOfExistingList+1);
                         this.mainWindow.removeWindow(dialogWindow);
                         
-                        listManagerMain.getBrowseListsComponent().getListTreeComponent().createTree();
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                         //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                        listManagerMain.getBrowseListsComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
                         //TODO must accommodate opening in the search screen also
-                        listManagerMain.getBrowseListsComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
-                        listManagerMain.getBrowseListsComponent().getListTreeComponent().listManagerTreeItemClickAction(Integer.valueOf(listId));
+                        listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().listManagerTreeItemClickAction(Integer.valueOf(listId));
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
                             e.printStackTrace();

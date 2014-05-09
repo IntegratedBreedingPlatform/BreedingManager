@@ -11,15 +11,9 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ListManagerDetailsTabSource;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
@@ -37,25 +31,24 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
-
 /**
  * @author Mark Agarrado
- *
  */
 @Configurable
-public class ListManagerDetailsLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSelectionLayout extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ListManagerDetailsLayout.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
     private static final long serialVersionUID = -6583178887344009055L;
     
     public static final String CLOSE_ALL_TABS_ID = "ListManagerDetailsLayout Close All Tabs ID";
@@ -67,30 +60,27 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private ListManagerMain listManagerMain;
-    private ListManagerDetailsTabSource detailSource;
+    private final ListManagerMain listManagerMain;
+    
+    private Label headingLabel;
     private Label noListLabel;
-    private TabSheet detailsTabSheet;
-    private Label heading;
-    private HorizontalLayout headingBar;
-    private Button btnCloseAllTabs;
     private Label defaultLabel;
     
-    private Integer listId;
+    private Button btnCloseAllTabs;
+    private Button browseForLists;
+    private Button searchForLists;
+    private Label or;
+    private Label toWorkWith;
+
+    private HorizontalLayout headerLayout;
+
+    private TabSheet detailsTabSheet;
     
-    private VerticalLayout innerLayout;
+    private final Integer listId;
     
-    public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource) {
+    public ListSelectionLayout(final ListManagerMain listManagerMain, final Integer listId) {
     	super();
         this.listManagerMain = listManagerMain;
-        this.detailSource = detailSource;
-        this.listId = null;
-    }
-    
-    public ListManagerDetailsLayout(ListManagerMain listManagerMain, ListManagerDetailsTabSource detailSource, Integer listId) {
-    	super();
-        this.listManagerMain = listManagerMain;
-        this.detailSource = detailSource;
         this.listId = listId;
     }
     
@@ -115,43 +105,53 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
     
     @Override
     public void instantiateComponents() {
+    	noListLabel = new Label();
+    	noListLabel.setImmediate(true);
+    	
+    	headingLabel = new Label();
+    	headingLabel.setImmediate(true);
+    	headingLabel.setWidth("300px");
+    	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+    	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+    	
+    	defaultLabel = new Label();
+    	
+    	headerLayout = new HorizontalLayout();
+    	
     	detailsTabSheet = new TabSheet();
     	detailsTabSheet.setWidth("100%");
     	detailsTabSheet.addStyleName("listDetails");
     	
-        noListLabel = new Label();
-        noListLabel.setImmediate(true);
-        
         btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
         
-        headingBar = new HorizontalLayout();
+        browseForLists = new Button();
+        browseForLists.setImmediate(true);
+        browseForLists.setStyleName(Reindeer.BUTTON_LINK);
         
-        heading = new Label();
-        heading.setImmediate(true);
-        heading.setWidth("300px");
-        heading.setStyleName(Bootstrap.Typography.H4.styleName());
-        heading.addStyleName(AppConstants.CssStyles.BOLD);
+        searchForLists = new Button();
+        searchForLists.setImmediate(true);
+        searchForLists.setStyleName(Reindeer.BUTTON_LINK);
         
-        defaultLabel = new Label();
-        defaultLabel.setWidth("100%");
+        or = new Label();
+        or.setImmediate(true);
+        
+        toWorkWith = new Label();
+        toWorkWith.setImmediate(true);
+
+        setSizeFull();
     }
 
     @Override
     public void initializeValues() {
-        String headingLabel = "";
-        String defaultLabel = "";
-        if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)){
-            headingLabel = messageSource.getMessage(Message.REVIEW_LIST_DETAILS);
-            defaultLabel = messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE);
-        } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
-            headingLabel = messageSource.getMessage(Message.REVIEW_DETAILS);
-            defaultLabel = messageSource.getMessage(Message.SEARCH_LIST_DEFAULT_MESSAGE);
-        }
-        heading.setValue(headingLabel);
-        this.defaultLabel.setValue(defaultLabel); 
+        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
+        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
+        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        or.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
     }
     
     @Override
@@ -163,38 +163,49 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         setDetailsTabSheetHeight();
     	 
     	//Components
-        headingBar.setWidth("98%");
-        headingBar.setHeight("27px");
+        headerLayout.setWidth("100%");
         
-        HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, heading);
-        headingBar.addComponent(headingLayout);
-        headingBar.addComponent(btnCloseAllTabs);
-        headingBar.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
+        final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
+        headingLayout.addStyleName("lm-title");
+        headingLayout.setHeight("30px");
         
-        VerticalLayout innerLayout = new VerticalLayout();
+        headerLayout.addComponent(headingLayout);
+        headerLayout.addComponent(btnCloseAllTabs);
+        headerLayout.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
+        
+        final CssLayout innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
-        innerLayout.addComponent(headingBar);
-        innerLayout.addComponent(defaultLabel);
+        innerLayout.addComponent(headerLayout);
+        
+        final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+        
+        searchOrBrowseLayout.addComponent(searchForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(toWorkWith);
+        
+        // Ugh, bit of a hack - can't figure out how to space these nicely
+        searchForLists.setWidth("43px");
+        or.setWidth("16px");
+        browseForLists.setWidth("48px");
+        
+        innerLayout.addComponent(searchOrBrowseLayout);
+        
         innerLayout.addComponent(detailsTabSheet);
         
+        innerLayout.setWidth("100%");
         addComponent(innerLayout);
         displayDefault();
     }
     
     public void setDetailsTabSheetHeight() {
-    	if(detailSource == ListManagerDetailsTabSource.BROWSE){
-    		detailsTabSheet.setHeight("395px");
-    	}
-    	else if(detailSource == ListManagerDetailsTabSource.SEARCH){
-        	detailsTabSheet.setHeight("558px");
-    	}
+    	detailsTabSheet.setHeight("534px");
 	}
 
 	public void displayDefault(){
-    	noListLabel.setVisible(false);        
-        headingBar.setVisible(true);
+    	noListLabel.setVisible(false);
+        headerLayout.setVisible(true);
         btnCloseAllTabs.setVisible(false);
-        defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
     }
 
@@ -217,74 +228,74 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
                 }
             }
         });
+        
+        browseForLists.addListener(new Button.ClickListener() {
+
+        	private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				listManagerMain.getListSelectionComponent().openListBrowseDialog();
+			}
+        });
+        
+        searchForLists.addListener(new Button.ClickListener() {
+
+        	private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				listManagerMain.getListSelectionComponent().openListSearchDialog();
+			}
+        });
     }
 
     @Override
     public void updateLabels() {
-        // TODO Auto-generated method stub
-
+        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
+        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
+        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        or.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
     }
 
-    public void createGermplasmDetailsTab(Integer gid){
-        String tabName = "Germplasm - " + gid;
-        createTab(gid, null, tabName);
-        showDetailsTabsheet();
-    }
-    
     public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
         GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-        if(germplasmList == null){
+        if (germplasmList == null) {
             hideDetailsTabsheet();
-            noListLabel.setCaption("There is no list in the database with id: " + listId);
-            noListLabel.setVisible(true);
+            this.noListLabel.setCaption("There is no list in the database with id: " + listId);
+            this.noListLabel.setVisible(true);
         } else {
             noListLabel.setVisible(false);
-            String tabName = "";            
-            if (detailSource.equals(ListManagerDetailsTabSource.BROWSE)) {
-                tabName = germplasmList.getName();
-            } else if (detailSource.equals(ListManagerDetailsTabSource.SEARCH)) {
-                tabName = "List - " + germplasmList.getName();
-            }
-            createTab(listId, germplasmList, tabName);
-            showDetailsTabsheet();
+            final String tabName = germplasmList.getName();
+            this.createTab(listId, germplasmList, tabName);
+            this.showDetailsTabsheet();
         }
     }
     
-    private void createTab(int id, GermplasmList germplasmList, String tabName) {
-        boolean tabExists = false;
-        //workaround since Browse Lists and Search Lists have different tab name formats
-        if (germplasmList != null){
-            tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
-        } else { 
-            tabExists = Util.isTabExist(detailsTabSheet, tabName);
-        }
+    private void createTab(final int id, final GermplasmList germplasmList, final String tabName) {
+        
+    	final boolean tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
         
         if (!tabExists) {
-            Component tabContent = createTabContent(id, germplasmList, tabName);
-            Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
+            
+        	final Component tabContent = new ListTabComponent(listManagerMain, this, germplasmList);
+            final Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
+            
             if (germplasmList != null){
                 tab.setDescription(generateTabDescription(germplasmList.getId()));
             }
+            
             tab.setClosable(true);
             detailsTabSheet.setSelectedTab(tabContent);
+            
         } else {
-            Tab tab;
-            if (germplasmList != null) {
-                tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
-            } else {
-                tab = Util.getTabToFocus(detailsTabSheet, tabName);
-            }
+            final Tab tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
+
             if (tab != null){
                 detailsTabSheet.setSelectedTab(tab.getComponent());
             }
-        }
-    }
-    
-    private Component createTabContent(int id, GermplasmList germplasmList, String tabName) {
-        if (germplasmList != null){
-            return new ListDetailsComponent(listManagerMain, this, germplasmList);
-        } else {
-            return new GermplasmDetailsComponent(listManagerMain, id);
         }
     }
     
@@ -296,42 +307,22 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         return this.detailsTabSheet;
     }
     
-    public ListManagerDetailsTabSource getDetailsSource() {
-        return this.detailSource;
-    }
-    
     public void showDetailsTabsheet() {
-    	this.removeAllComponents();
-    	this.addComponent(headingBar);
-    	this.addComponent(detailsTabSheet);
-    	
-        headingBar.setVisible(true);
-        defaultLabel.setVisible(false);
         detailsTabSheet.setVisible(true);
-        
-    	this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
-        this.removeAllComponents();
-    	this.addComponent(headingBar);
-    	this.addComponent(defaultLabel);
-    	
-        headingBar.setVisible(true);
         btnCloseAllTabs.setVisible(false);
-        defaultLabel.setVisible(true);
         detailsTabSheet.setVisible(false);
-
-    	this.requestRepaint();
     }
     
     public void repaintTabsheet() {
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
-    	    this.addComponent(headingBar);
+    	    this.addComponent(headerLayout);
     	    this.addComponent(detailsTabSheet);
     	
-            headingBar.setVisible(true);
+            headerLayout.setVisible(true);
             defaultLabel.setVisible(false);
             detailsTabSheet.setVisible(true);
             
@@ -347,7 +338,7 @@ public class ListManagerDetailsLayout extends VerticalLayout implements Internat
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){
             tab.setCaption(newName);
-            ListDetailsComponent listDetails = (ListDetailsComponent) tab.getComponent();
+            ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
             listDetails.setListNameLabel(newName);
         }
     }

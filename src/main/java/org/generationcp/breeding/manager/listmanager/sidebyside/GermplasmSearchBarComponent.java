@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.SearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -15,39 +15,32 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class ListManagerSearchListBarComponent extends HorizontalLayout implements
-	InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class GermplasmSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String SEARCH_BUTTON = "List Manager Search Button";
+	public static final String SEARCH_BUTTON = "List Manager Germplasm Search Button";
 	private static final String GUIDE = 
-	        "You may search for germplasms and germplasm lists using GID's, germplasm names (partial/full), or list names (partial/full)" +
-	        " <br/><br/><b>Matching lists would contain</b> <br/>" +
-	        "  - Lists with names containing the search query <br/>" +
-	        "  - Lists containing germplasms given a GID <br/>" +
-	        "  - Lists containing germplasms with names <br/>" +
-	        " containing the search query" +
+	        "You may search for germplasms and germplasm lists using GID's or germplasm names (partial/full)" +
 	        " <br/><br/><b>Matching germplasms would contain</b> <br/>" +
 	        "  - Germplasms with matching GID's <br/>" +
 	        "  - Germplasms with name containing search query <br/>" +
@@ -55,17 +48,14 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
 	        " or to only return results which match the query exactly (when checked).";
 	
-	private AbsoluteLayout searchBarLayout;
-	private Label searchLabel;
+	private HorizontalLayout searchBarLayout;
 	private TextField searchField;
-	private SearchResultsComponent searchResultsComponent;
+	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
     private PopupView popup;
 
-    private Panel searchPanel;
-    
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;	
 	
@@ -75,7 +65,7 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 		
-	public ListManagerSearchListBarComponent(SearchResultsComponent searchResultsComponent) {
+	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
 	}
@@ -90,18 +80,8 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	
 	@Override
 	public void instantiateComponents() {
-		addStyleName("searchPaneLayout");
 		
-		searchPanel = new Panel();
-		searchPanel.setWidth("100%");
-		searchPanel.setHeight("45px");
-        
-        //searchPanel.setScrollable(false);
-        
-        searchLabel = new Label();
-        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
-        searchLabel.setWidth("200px");
-        searchLabel.addStyleName("bold");
+		setWidth("100%");
         
         searchField = new TextField();
         searchField.setImmediate(true);
@@ -142,7 +122,7 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 			}
 		});
 		
-		searchPanel.addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+		addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
             private static final long serialVersionUID = 288627665348761948L;
 
             @Override
@@ -153,26 +133,33 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		searchBarLayout = new AbsoluteLayout();
-		searchBarLayout.setHeight("40px");
-		searchBarLayout.addStyleName("searchBarLayout");
-		searchBarLayout.addComponent(searchLabel, "top:13px; left:20px;");
-        searchBarLayout.addComponent(searchField, "top:10px; left:100px;");
-        searchBarLayout.addComponent(searchButton, "top:10px; left:285px;");
-        searchBarLayout.addComponent(likeOrEqualCheckBox, "top:13px; left: 375px;");
-        searchBarLayout.addComponent(includeParentsCheckBox, "top:13px; left: 525px;");
-        searchBarLayout.addComponent(popup, "top:12px; left:755px;");
-
-        searchPanel.setLayout(searchBarLayout);
+		final CssLayout panelLayout = new CssLayout();
+		panelLayout.setMargin(true);
+		panelLayout.addStyleName("lm-search-bar");
+		
+		searchBarLayout = new HorizontalLayout();
+		searchBarLayout.setWidth("100%");
+		searchBarLayout.setHeight("24px");
+		
+		searchBarLayout.setSpacing(true);
+		
+		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
+		searchField.setWidth("120px");
+		
+        searchBarLayout.addComponent(searchField);
+        searchBarLayout.addComponent(searchButton);
+        searchBarLayout.addComponent(likeOrEqualCheckBox);
+        searchBarLayout.addComponent(includeParentsCheckBox);
+        searchBarLayout.addComponent(popup);
         
-        addStyleName("overflow-hidden");
-        setWidth("99%");
-        setHeight("58px");
-        setMargin(true, true, false, true);
-		addComponent(searchPanel);
+        searchBarLayout.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
+
+        panelLayout.addComponent(searchBarLayout);
+        setContent(panelLayout);
 	}
 
 	@Override
@@ -189,34 +176,23 @@ public class ListManagerSearchListBarComponent extends HorizontalLayout implemen
 	public void doSearch(String q){
 		try {
 			
-			List<GermplasmList> germplasmLists;
 			List<Germplasm> germplasms;
 			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
 			if((Boolean) likeOrEqualCheckBox.getValue() == true){
-				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
 				germplasms = doGermplasmSearch(q, Operation.EQUAL, includeParents);
 			} else {
-				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
 				germplasms = doGermplasmSearch(q, Operation.LIKE, includeParents);
 			}
 			
-			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
-					(germplasms == null || germplasms.isEmpty())){
+			if (germplasms == null || germplasms.isEmpty()) {
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
 						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
 			} 
-			searchResultsComponent.applyGermplasmListResults(germplasmLists);
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
-		
-		
-	}
-	
-	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
-		return germplasmListManager.searchForGermplasmList(q, o);
 	}
 	
 	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{

@@ -10,8 +10,8 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
@@ -211,6 +211,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     }
 	
 	//@Override
+	@Override
 	public void updateUIForDeletedList(GermplasmList list){
 		String listName = list.getName();
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
@@ -223,6 +224,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	}
 	
 	//@Override
+	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName){
 		Integer listId = list.getId();
 		String description = ListManagerDetailsLayout.generateTabDescription(listId);
@@ -380,12 +382,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		if (doUpdateTable() && crossesTableComponent.getCrossList() == null){
 			crossesTableComponent.updateSeparatorForCrossesMade();
 		}
-		
-	}
-
-	@Override
-	public void toggleListTreeComponent() {
-		// TODO Auto-generated method stub
 		
 	}
 }

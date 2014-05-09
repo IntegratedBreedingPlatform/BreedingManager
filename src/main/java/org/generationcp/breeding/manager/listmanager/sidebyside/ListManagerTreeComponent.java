@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,13 +10,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class ListManagerTreeComponent extends ListTreeComponent implements InitializingBean{
 
 	private static final long serialVersionUID = -1013380483927558222L;
-
 	
-	public ListManagerTreeComponent(ListTreeActionsListener treeActionsListener) {
+	public ListManagerTreeComponent(final ListTreeActionsListener treeActionsListener) {
 		super(treeActionsListener);
 	}
 	
-	public ListManagerTreeComponent(ListTreeActionsListener treeActionListener, Integer listId){
+	public ListManagerTreeComponent(final ListTreeActionsListener treeActionListener, Integer listId){
 		super(treeActionListener, listId);
 	}
 	
@@ -43,10 +43,9 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}
-
+	
 	@Override
-	protected boolean doIncludeToggleButton() {
-		return true;
+	protected String getTreeHeading() {
+		return messageSource.getMessage(Message.ALL_LISTS);
 	}
-
 }

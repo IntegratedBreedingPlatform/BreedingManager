@@ -25,8 +25,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -35,12 +35,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    private ListDetailsComponent listDetailsComponent = null;
+    private ListTabComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
-    private VerticalLayout verticalLayoutSource;
-    private String GIDPropertyId;
+    private CssLayout cssLayoutSource;
+    private final String GIDPropertyId;
     //private Button addColumnButton;
-    private Table targetTable;
+    private final Table targetTable;
     
     //private ContextMenu menu;
     private ContextMenu sourceContextMenu;
@@ -127,7 +127,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
     
     private boolean fromBuildNewList;
-    private BuildNewListComponent buildNewListComponent;
+    private ListBuilderComponent buildNewListComponent;
     
     public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID
         , PREFERRED_NAME
@@ -150,7 +150,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(ListDetailsComponent listDetailsComponent, 
+    public AddColumnContextMenu(ListTabComponent listDetailsComponent, 
             ContextMenu sourceContextMenu, Table targetTable, String gid){
         this.listDetailsComponent = listDetailsComponent;
         this.GIDPropertyId = gid;
@@ -164,21 +164,21 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     /**
      * Add "Add column" context menu to a table
-     * @param verticalLayoutSource - context menu will attach to this
+     * @param cssLayoutSource - context menu will attach to this
      * @param sourceContextMenu - util will attach event listener to this
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(VerticalLayout verticalLayoutSource, 
+    public AddColumnContextMenu(CssLayout cssLayoutSource, 
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
-        this.verticalLayoutSource = verticalLayoutSource;
+        this.cssLayoutSource = cssLayoutSource;
         this.fromBuildNewList = fromBuildNewList;
         
         if(fromBuildNewList){
-            buildNewListComponent = ((BuildNewListComponent) verticalLayoutSource);
+            buildNewListComponent = ((ListBuilderComponent) cssLayoutSource);
         }
         
         setupContextMenu();

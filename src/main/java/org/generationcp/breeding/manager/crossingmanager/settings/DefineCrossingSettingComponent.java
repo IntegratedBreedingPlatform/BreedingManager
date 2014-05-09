@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -25,52 +23,48 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class DefineCrossingSettingComponent extends VerticalLayout implements BreedingManagerLayout,
+public class DefineCrossingSettingComponent extends CssLayout implements BreedingManagerLayout,
 		InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 8015092540102625727L;
 	private static final Logger LOG = LoggerFactory.getLogger(DefineCrossingSettingComponent.class);
-	
-	public enum UsePreviousSettingOption {
-		YES, NO
-	}
-	
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
-	
-	private CrossingSettingsDetailComponent settingsParentComponent;
-	
+
+	private final CrossingSettingsDetailComponent settingsParentComponent;
+
 	private Label defineCrossingSettingsLabel;
-	private Label mandatoryFieldLabel;
-	private Label usePreviouslySavedSettingLabel;
-	
-	private OptionGroup usePreviousSettingOptionGroup;
+	private Label crossingSettingsHelp;
+	private Label settingsComboLabel;
+
 	private ComboBox settingsComboBox;
 	private Button deleteSettingButton;
-	
+
 	public DefineCrossingSettingComponent(CrossingSettingsDetailComponent settingsParentComponent){
 		this.settingsParentComponent = settingsParentComponent;
 	}
-	
+
 	@Override
 	public void attach() {
 		super.attach();
 		updateLabels();
 	}
-	
+
 	@Override
 	public void updateLabels() {
-		usePreviouslySavedSettingLabel.setValue(messageSource.getMessage(Message.USE_PREVIOUSLY_SAVED_SETTING));
+		defineCrossingSettingsLabel.setValue(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
+		crossingSettingsHelp.setValue(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP));
+		settingsComboLabel.setValue(messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING));
 	}
 
 	@Override
@@ -83,66 +77,32 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 
 	@Override
 	public void instantiateComponents() {
-		
-		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS));
-		defineCrossingSettingsLabel.setWidth("250px");
-		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		
-		mandatoryFieldLabel =  new Label("<i>" +messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD) 
-				+ "</i>", Label.CONTENT_XHTML);
-		
-		usePreviouslySavedSettingLabel = new Label();
-		usePreviouslySavedSettingLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		usePreviouslySavedSettingLabel.setWidth("210px");
-		
-		usePreviousSettingOptionGroup = new OptionGroup();
-		usePreviousSettingOptionGroup.setImmediate(true);
-		usePreviousSettingOptionGroup.setWidth("100px");
-		usePreviousSettingOptionGroup.addStyleName(AppConstants.CssStyles.HORIZONTAL_GROUP);
-		
+
+		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
+		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
+
+		crossingSettingsHelp =  new Label(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP), Label.CONTENT_XHTML);
+		crossingSettingsHelp.addStyleName("gcp-content-help-text");
+
+		settingsComboLabel = new Label(messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING));
 		settingsComboBox = new ComboBox();
-		settingsComboBox.setWidth("260px");
 		settingsComboBox.setImmediate(true);
 		settingsComboBox.setNullSelectionAllowed(true);
 		settingsComboBox.setTextInputAllowed(false);
-			
-		deleteSettingButton = new Button("<span class='glyphicon glyphicon-trash' style='left: 2px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+
+		deleteSettingButton = new Button("<span class='glyphicon glyphicon-trash' style='color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
 		deleteSettingButton.setHtmlContentAllowed(true);
 		deleteSettingButton.setDescription("Delete Setting");
 		deleteSettingButton.setStyleName(Reindeer.BUTTON_LINK);
-		deleteSettingButton.setWidth("25px");
 	}
 
 	@Override
 	public void initializeValues() {
-		usePreviousSettingOptionGroup.addItem(UsePreviousSettingOption.NO);
-		usePreviousSettingOptionGroup.setItemCaption(UsePreviousSettingOption.NO, messageSource.getMessage(Message.NO));
-		usePreviousSettingOptionGroup.addItem(UsePreviousSettingOption.YES);
-		usePreviousSettingOptionGroup.setItemCaption(UsePreviousSettingOption.YES, messageSource.getMessage(Message.YES));
-		usePreviousSettingOptionGroup.select(UsePreviousSettingOption.NO);
-		
-		settingsComboBox.setInputPrompt(messageSource.getMessage(Message.CHOOSE_SAVED_SETTINGS));
 		setSettingsComboBox(null);
-		toggleSettingsFields(false);
 	}
 
 	@Override
 	public void addListeners() {
-		// enable / disable settings combobox
-		usePreviousSettingOptionGroup.addListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				boolean doUsePreviousSetting = UsePreviousSettingOption.YES.equals(
-						usePreviousSettingOptionGroup.getValue());
-				toggleSettingsFields(doUsePreviousSetting);
-				if (!doUsePreviousSetting){
-					revertScreenToDefaultValues();
-				}
-			}
-		});
-		
 		settingsComboBox.addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -158,7 +118,7 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 			}
 
 		});
-		
+
 		deleteSettingButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -432280582291837428L;
 
@@ -172,64 +132,54 @@ public class DefineCrossingSettingComponent extends VerticalLayout implements Br
 	@Override
 	public void layoutComponents() {
 
-		HeaderLabelLayout defineCrossingHeader = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, defineCrossingSettingsLabel);
-		addComponent(defineCrossingHeader);
-		
-		addComponent(mandatoryFieldLabel);
-		
-		HorizontalLayout previousSettingLayout = new HorizontalLayout();
-		previousSettingLayout.setSpacing(true);
-		previousSettingLayout.addComponent(usePreviouslySavedSettingLabel);
-		previousSettingLayout.addComponent(usePreviousSettingOptionGroup);
-		previousSettingLayout.addComponent(settingsComboBox);
-		previousSettingLayout.addComponent(deleteSettingButton);
-		
-		addComponent(previousSettingLayout);
+		final HorizontalLayout crossingForm = new HorizontalLayout();
+
+		crossingForm.addComponent(settingsComboLabel);
+		crossingForm.addComponent(settingsComboBox);
+		crossingForm.addComponent(deleteSettingButton);
+
+		settingsComboLabel.addStyleName("cs-form-label");
+		settingsComboBox.addStyleName("cs-form-input");
+		deleteSettingButton.addStyleName("cs-inline-icon");
+
+		addComponent(defineCrossingSettingsLabel);
+		addComponent(crossingSettingsHelp);
+		addComponent(crossingForm);
 	}
-	
+
 	public void setSettingsComboBox(TemplateSetting currentSetting){
 		settingsComboBox.removeAllItems();
 		try {
 			Tool crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
-			
+
 			TemplateSetting templateSettingFilter = new TemplateSetting();
 			templateSettingFilter.setTool(crossingManagerTool);
-			
+
 			List<TemplateSetting> templateSettings = workbenchDataManager.getTemplateSettings(templateSettingFilter);
-			
+
 			for(TemplateSetting ts : templateSettings){
 				settingsComboBox.addItem(ts);
 				settingsComboBox.setItemCaption(ts, ts.getName());
 			}
-			
+
 			if(currentSetting != null){
-				usePreviousSettingOptionGroup.select(UsePreviousSettingOption.YES);
 				settingsComboBox.select(currentSetting);
 			}
-			
+
 		} catch (MiddlewareQueryException e) {
 			//commenting out code for showing error notification because at this point this component is not yet attached to a window and so getWindow() returns null
 			//MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), "Error getting crossing templates!");
 			LOG.error("Error with retrieving Workbench template settings for Crossing Manager tool.", e);
 		}
 	}
-	
+
 	public TemplateSetting getSelectedTemplateSetting(){
 		return (TemplateSetting) settingsComboBox.getValue();
 	}
-	
+
 	private void revertScreenToDefaultValues() {
 		settingsParentComponent.setCurrentSetting(null);
 		settingsParentComponent.setDefaultManageCrossingSettingsFields();
-	}
-	
-	private void toggleSettingsFields(boolean enabled){
-		settingsComboBox.setEnabled(enabled);
-		
-		if(!enabled){
-			settingsComboBox.setValue(null);
-		}
-		deleteSettingButton.setEnabled(enabled);
 	}
 
 }

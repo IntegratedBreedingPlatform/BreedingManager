@@ -16,7 +16,7 @@ package org.generationcp.breeding.manager.constants;
  * @author Mark Agarrado
  *
  */
-public enum ListManagerDetailsTabSource {
-    BROWSE
-    , SEARCH
+public enum ListManagerTab {
+    LIST
+    , GERMPLASM
 }

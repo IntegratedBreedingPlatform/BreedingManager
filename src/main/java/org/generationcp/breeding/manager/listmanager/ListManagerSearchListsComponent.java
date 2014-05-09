@@ -53,8 +53,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	private AbsoluteLayout searchBar;
 	private Label searchLabel;
 	private TextField searchField;
-	private SearchResultsComponent searchResultsComponent;
-	private ListManagerMain listManagerMain;
+	private GermplasmSearchResultsComponent searchResultsComponent;
+	private final ListManagerMain listManagerMain;
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
@@ -187,7 +187,6 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
 						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
 			} 
-			searchResultsComponent.applyGermplasmListResults(germplasmLists);
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			
 		} catch (MiddlewareQueryException e) {
@@ -205,7 +204,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
 	}	
 	
-	public SearchResultsComponent getSearchResultsComponent(){
+	public GermplasmSearchResultsComponent getSearchResultsComponent(){
 		return searchResultsComponent;
 	}
 	

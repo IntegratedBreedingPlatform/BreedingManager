@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
@@ -93,7 +93,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     public static final String SEED_SOURCE_DEFAULT = "";
 
-    private Object source;
+    private final Object source;
     
     public String DEFAULT_LIST_TYPE = "LST";
     
@@ -299,7 +299,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             private static final long serialVersionUID = 2323698194362809907L;
 
-            public void valueChange(ValueChangeEvent event) {
+            @Override
+			public void valueChange(ValueChangeEvent event) {
                 hasChanges = true;
             }
             
@@ -547,7 +548,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
             private static final long serialVersionUID = 1884343225476178686L;
 
-            public Action[] getActions(Object target, Object sender) {
+            @Override
+			public Action[] getActions(Object target, Object sender) {
                 return GERMPLASMS_TABLE_CONTEXT_MENU;
             }
 
@@ -565,7 +567,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
             private static final long serialVersionUID = 4275895057961980107L;
 
-            public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+            @Override
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
                  hasChanges = true;
              }
         });
@@ -587,10 +590,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             //Search Lists and Germplasms tab
             Table matchingGermplasmsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingGermplasmsTable();
-            Table matchingListsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingListsTable();
+            //Table matchingListsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingListsTable();
             
             matchingGermplasmsTable.setDragMode(TableDragMode.ROW); 
-            matchingListsTable.setDragMode(TableDragMode.ROW);
+            //matchingListsTable.setDragMode(TableDragMode.ROW);
             germplasmsTable.setDragMode(TableDragMode.ROW);
             fromDropHandler = false;
         }
@@ -604,10 +607,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         germplasmsTable.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -6676297159926786216L;
 
-            public void drop(DragAndDropEvent dropEvent) {
+            @Override
+			public void drop(DragAndDropEvent dropEvent) {
                 TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                 
-                Table sourceTable = (Table) transferable.getSourceComponent();
+                Table sourceTable = transferable.getSourceComponent();
                 AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 setFromDropHandler(false);
                 handleDrop(sourceTable, transferable, dropData);                
@@ -637,7 +641,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 //        }
         
         //Handle drops from MATCHING GERMPLASMS TABLE
-        if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
+        if(sourceTable.getData().equals(GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
             List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
             
             //If table has value (item/s is/are highlighted in the source table, add that)
@@ -652,24 +656,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             } else {
                 addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
             }
-            
-        //Handle drops from MATCHING LISTS TABLE
-        } else if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-            List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
-            
-            //If table has value (item/s is/are highlighted in the source table, add that)
-            if(selectedItemIds.size()>0){
-                for(int i=0;i<selectedItemIds.size();i++){
-                    if(i==0)
-                        addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
-                    else
-                        addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
-                }
-            //Add dragged item itself
-            } else {
-                addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
-            }
-            
+       
         //Handle drops from LIST DATA COMPONENT
         } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
                 
@@ -756,7 +743,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem = germplasmsTable.addItem(data.getId());
             }
 
-            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
+            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkClickListener(data.getGid().toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -810,7 +797,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
      */
     private void addGermplasmToGermplasmTable(TableTransferable transferable, Object droppedOnItemIdObject){
         Integer itemId = (Integer) transferable.getItemId();
-        Table sourceTable = (Table) transferable.getSourceComponent();
+        Table sourceTable = transferable.getSourceComponent();
         
         List<Integer> itemIds = getSelectedItemIds(sourceTable);
 
@@ -836,7 +823,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
             Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
             
@@ -928,7 +915,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 
                 Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
                 
-                Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+                Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
@@ -1020,7 +1007,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem = germplasmsTable.addItem(getNextListEntryId());
             }
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";

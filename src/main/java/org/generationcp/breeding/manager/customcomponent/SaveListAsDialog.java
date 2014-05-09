@@ -21,8 +21,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -32,11 +32,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(SaveListAsDialog.class);
 	
-	private VerticalLayout mainLayout;
+	private CssLayout mainLayout;
 	private HorizontalLayout contentLayout;
 	private HorizontalLayout buttonLayout;
 	
-	private SaveListAsDialogSource source;
+	private final SaveListAsDialogSource source;
 	
 //	private Label listLocationLabel;
 	private LocalListFoldersTreeComponent germplasmListTree;
@@ -47,7 +47,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private Button cancelButton;
 	private Button saveButton;
 	
-	private String windowCaption;
+	private final String windowCaption;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -145,29 +145,40 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
-		setWidth("625px");
+		setWidth("725px");
 		setHeight("493px");
 		
 		contentLayout = new HorizontalLayout();
 		contentLayout.setSpacing(true);
 		contentLayout.addComponent(germplasmListTree);
 		contentLayout.addComponent(listDetailsComponent);
+		contentLayout.addStyleName("contentLayout");
+
+		contentLayout.setWidth("689px");
+		contentLayout.setHeight("344px");
+		
+		germplasmListTree.addStyleName("germplasmListTree");
+		listDetailsComponent.addStyleName("listDetailsComponent");
 		
 		buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
 		buttonLayout.setMargin(true);
 		buttonLayout.addComponent(cancelButton);
 		buttonLayout.addComponent(saveButton);
+		buttonLayout.addStyleName("buttonLayout");
 		
 		HorizontalLayout buttonLayoutMain = new HorizontalLayout();
-		buttonLayoutMain.setWidth("100%");
 		buttonLayoutMain.addComponent(buttonLayout);
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
+		buttonLayoutMain.setWidth("100%");
+		buttonLayoutMain.setHeight("60px");
+		buttonLayoutMain.addStyleName("buttonLayoutMain");
 		
-		mainLayout = new VerticalLayout();
-		mainLayout.setHeight("396px");
+		mainLayout = new CssLayout();
+		mainLayout.setSizeFull();
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
+		mainLayout.addStyleName("mainlayout");
 		
 		addComponent(mainLayout);
 	}

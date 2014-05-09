@@ -35,16 +35,16 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public abstract class ListTreeComponent extends VerticalLayout implements
+public abstract class ListTreeComponent extends CssLayout implements
 		InitializingBean, BreedingManagerLayout {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ListTreeComponent.class);
@@ -64,7 +64,7 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     protected HorizontalLayout controlButtonsLayout;
     protected HorizontalLayout ctrlBtnsLeftSubLayout;
     protected HorizontalLayout ctrlBtnsRightSubLayout;
-    protected VerticalLayout treeContainerLayout;
+    protected CssLayout treeContainerLayout;
     
     protected Integer listId;
     protected GermplasmListTreeUtil germplasmListTreeUtil;
@@ -98,7 +98,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
     
 	@Override
 	public void instantiateComponents() {
-		setSpacing(true);
+		setHeight("580px");
+		setWidth("880px");
     	
     	heading = new Label();
 		heading.setValue(getTreeHeading());
@@ -117,7 +118,8 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 			initializeButtonPanel();
 		}
 		
-		treeContainerLayout = new VerticalLayout();
+		treeContainerLayout = new CssLayout();
+		treeContainerLayout.setSizeFull();
 		germplasmListTree = new Tree();
 		if (doIncludeRefreshButton()){
 			initializeRefreshButton();
@@ -126,8 +128,6 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 		createTree();
 		
 		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
-
-
 	}
 
 	@Override
@@ -146,24 +146,11 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 				}
 			});
 		}
-		
-		if (doIncludeToggleButton()){
-			toggleListTreeButton.addListener(new Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void buttonClick(ClickEvent event) {
-					toogleListTreePane();
-				}
-			});
-			
-		}
-		
-
 	}
 
 	@Override
 	public void layoutComponents() {
-		setWidth("225px");
+		setWidth("100%");
 		if (doIncludeActionsButtons()){
 			addComponent(controlButtonsLayout);
 		}
@@ -190,10 +177,6 @@ public abstract class ListTreeComponent extends VerticalLayout implements
 	 */
 	protected abstract boolean doIncludeActionsButtons();
 
-	protected void toogleListTreePane(){
-    	this.treeActionsListener.toggleListTreeComponent();
-    }
-	
 	protected String getTreeHeading(){
 		return messageSource.getMessage(Message.LISTS);
 	}
