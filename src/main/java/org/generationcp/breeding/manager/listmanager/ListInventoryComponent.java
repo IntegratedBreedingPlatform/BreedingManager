@@ -142,4 +142,8 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
         updateLabels();
     }
 	
+	public Table getTable(){
+		return listDataInventoryTable;
+	}
+	
 }
