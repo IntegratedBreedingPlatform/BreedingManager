@@ -63,7 +63,6 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
@@ -135,11 +134,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 	private String MENU_SELECT_ALL="Select All"; 
     private String MENU_EXPORT_LIST="Export List"; 
     private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order"; 
-    private String MENU_COPY_TO_NEW_LIST="Copy List Entries"; 
+    private String MENU_COPY_LIST_ENTRIES="Copy List Entries"; 
+    private String MENU_COPY_TO_NEW_LIST="Copy to new list";
     private String MENU_ADD_ENTRY="Add Entries"; 
     private String MENU_SAVE_CHANGES="Save Changes"; 
     private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
     private String MENU_EDIT_LIST="Edit List";
+    private String MENU_EDIT_VALUE="Edit Value";
     private String MENU_DELETE_LIST="Delete List";
     private String MENU_VIEW_INVENTORY = "View Inventory";
     
@@ -148,15 +149,17 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
   	private String CHECKBOX_COLUMN_ID="Checkbox Column ID";
   	
-  	//TODO must i18nalize right click context menu options
-  	private static final Action ACTION_SELECT_ALL = new Action("Select All");
-  	private static final Action ACTION_DELETE_ENTRIES = new Action("Delete selected entries");
-  	private static final Action ACTION_EDIT_CELL = new Action("Edit Value");
-  	private static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
-  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_ENTRIES, ACTION_EDIT_CELL, ACTION_COPY_TO_NEW_LIST };
-  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_ENTRIES, ACTION_COPY_TO_NEW_LIST };
-  	private static final Action[] ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE = new Action[] { ACTION_SELECT_ALL, ACTION_COPY_TO_NEW_LIST };
-    
+  	private ContextMenu tableContextMenu; 
+  	
+  	@SuppressWarnings("unused")
+	private ContextMenuItem tableContextMenu_SelectAll;
+  	@SuppressWarnings("unused")
+  	private ContextMenuItem tableContextMenu_CopyToNewList;
+  	private ContextMenuItem tableContextMenu_DeleteEntries;
+  	private ContextMenuItem tableContextMenu_EditCell;
+  	
+
+  	
   	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
   	
 	//Theme Resource
@@ -215,6 +218,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		layoutComponents();
 	}
 	
+	
 	@Override
 	public void instantiateComponents() {
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
@@ -265,7 +269,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
         
 		// Generate main level items
 		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
-		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
+		menuCopyToList = menu.addItem(MENU_COPY_LIST_ENTRIES);
 		menuDeleteList = menu.addItem(MENU_DELETE_LIST);
 		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
 		menuEditList = menu.addItem(MENU_EDIT_LIST);
@@ -274,6 +278,14 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menu.addItem(MENU_SELECT_ALL);
 		menu.addItem(MENU_VIEW_INVENTORY);
+		
+		tableContextMenu = new ContextMenu();
+		tableContextMenu.setWidth("295px");
+
+	  	tableContextMenu_SelectAll = tableContextMenu.addItem(MENU_SELECT_ALL);
+	  	tableContextMenu_DeleteEntries = tableContextMenu.addItem(MENU_DELETE_SELECTED_ENTRIES);
+	  	tableContextMenu_EditCell = tableContextMenu.addItem(MENU_EDIT_VALUE);
+	  	tableContextMenu_CopyToNewList = tableContextMenu.addItem(MENU_COPY_TO_NEW_LIST);
 		
 	}
 	
@@ -403,57 +415,6 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		
 		makeTableEditable();
 		
-		if(!fromUrl){
-			listDataTable.addActionHandler(new Action.Handler() {
-				private static final long serialVersionUID = -897257270314381555L;
-
-				public Action[] getActions(Object target, Object sender) {
-					if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
-						if(selectedColumn == null){
-							return ACTIONS_TABLE_CONTEXT_MENU;
-						} else {
-							if(selectedColumn.equals(ListDataTablePropertyID.GID.getName()) 
-									|| selectedColumn.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
-								return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_EDIT;
-							} else{
-								return ACTIONS_TABLE_CONTEXT_MENU;
-							} 
-						}
-					}else{
-						return ACTIONS_TABLE_CONTEXT_MENU_WITHOUT_DELETE;
-					}
-				}
-  
-				public void handleAction(Action action, Object sender, Object target) {
-					if (ACTION_DELETE_ENTRIES == action) {
-						deleteEntriesButtonClickAction();
-					}else if(ACTION_SELECT_ALL == action) {
-						listDataTable.setValue(listDataTable.getItemIds());
-					}else if(ACTION_EDIT_CELL == action){
-						// Make the entire item editable
-						HashMap<Object,Field> itemMap = fields.get(selectedItemId);
-		                if(itemMap != null){
-			                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-			        			Object column = entry.getKey();
-			        			if(column.equals(selectedColumn)){
-			        				Field f = entry.getValue();
-			        				Object fieldValue = f.getValue();
-									lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
-				                	f.setReadOnly(false);
-				                	f.focus();
-			        			}
-			                }
-		                }
-	                
-		                listDataTable.select(selectedItemId);
-					}else if(ACTION_COPY_TO_NEW_LIST == action){
-						source.showBuildNewListComponent();
-						source.addFromListDataTable(listDataTable);
-					}
-	         	}
-			});
-		}
-	
 		toolsButton.addListener(new ClickListener() {
 	   		 private static final long serialVersionUID = 272707576878821700L;
 	
@@ -501,7 +462,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			    	  exportListAction();
 			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
 			    	  exportListForGenotypingOrderAction();
-			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			      }else if(clickedItem.getName().equals(MENU_COPY_LIST_ENTRIES)){
 			    	  copyToNewListAction();
 			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
 			    	  addEntryButtonClickAction();
@@ -546,6 +507,40 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
                 unlockGermplasmList();
             }
         });
+        
+        
+        tableContextMenu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+			public void contextItemClick(ClickEvent event) {
+				String action = event.getClickedItem().getName();
+				if (action.equals(MENU_DELETE_SELECTED_ENTRIES)) {
+					deleteEntriesButtonClickAction();
+				}else if(action.equals(MENU_SELECT_ALL)) {
+					listDataTable.setValue(listDataTable.getItemIds());
+				}else if(action.equals(MENU_EDIT_VALUE)){
+					// Make the entire item editable
+					HashMap<Object,Field> itemMap = fields.get(selectedItemId);
+	                if(itemMap != null){
+		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+		        			Object column = entry.getKey();
+		        			if(column.equals(selectedColumn)){
+		        				Field f = entry.getValue();
+		        				Object fieldValue = f.getValue();
+								lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
+			                	f.setReadOnly(false);
+			                	f.focus();
+		        			}
+		                }
+	                }
+	            
+	                listDataTable.select(selectedItemId);
+				}else if(action.equals(MENU_COPY_TO_NEW_LIST)){
+					source.showBuildNewListComponent();
+					source.addFromListDataTable(listDataTable);
+				}
+			}
+		});
+        
 
 	}//end of addListeners
 
@@ -596,6 +591,7 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		addComponent(subHeaderLayout);
 		
 		addComponent(listDataTableWithSelectAll);
+		addComponent(tableContextMenu);
 		
 		parentListDetailsComponent.addComponent(menu);
 	}
@@ -615,6 +611,22 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 			public void itemClick(ItemClickEvent event) {
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
+				
+				if(event.getButton()==ItemClickEvent.BUTTON_RIGHT){
+					
+					tableContextMenu.show(event.getClientX(), event.getClientY());
+					
+					if(selectedColumn.equals(CHECKBOX_COLUMN_ID) || selectedColumn.equals(ListDataTablePropertyID.GID.getName()) || selectedColumn.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
+						tableContextMenu_DeleteEntries.setVisible(true);
+						tableContextMenu_EditCell.setVisible(false);
+					} else if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
+						tableContextMenu_DeleteEntries.setVisible(true);
+						tableContextMenu_EditCell.setVisible(true);
+					} else {
+						tableContextMenu_DeleteEntries.setVisible(false);
+						tableContextMenu_EditCell.setVisible(false);
+					}
+				}
 			}
 		});
     	
@@ -1683,11 +1695,13 @@ public class ListDataComponent extends VerticalLayout implements InitializingBea
 		} else{
 			Window inventoryWindow = new Window("Inventory Information");
 			inventoryWindow.setModal(true);
-	        inventoryWindow.setWidth("800px");
+	        inventoryWindow.setWidth("810px");
 	        inventoryWindow.setHeight("350px");
 	        inventoryWindow.setResizable(false);
 	        inventoryWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-	        
+
+	        listInventoryComponent.setSizeFull();
+	        listInventoryComponent.getTable().setWidth("100%");
 	        inventoryWindow.setContent(listInventoryComponent);
 	        
 	        this.parentListDetailsComponent.getWindow().addWindow(inventoryWindow);
