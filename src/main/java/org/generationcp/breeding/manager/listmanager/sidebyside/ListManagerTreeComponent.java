@@ -53,4 +53,10 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	protected String getTreeHeading() {
 		return messageSource.getMessage(Message.ALL_LISTS);
 	}
+	
+	@Override
+	protected String getTreeStyleName() {
+		return "listManagerTree";
+	}
+	
 }

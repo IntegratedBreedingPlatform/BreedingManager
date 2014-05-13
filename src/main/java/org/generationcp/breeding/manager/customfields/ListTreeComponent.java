@@ -119,7 +119,6 @@ public abstract class ListTreeComponent extends CssLayout implements
 		}
 		
 		treeContainerLayout = new CssLayout();
-		treeContainerLayout.setSizeFull();
 		germplasmListTree = new Tree();
 		if (doIncludeRefreshButton()){
 			initializeRefreshButton();
@@ -185,7 +184,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 		return Bootstrap.Typography.H4.styleName();
 	}
 	protected String getTreeStyleName(){
-		return "listManagerTree";
+		return "listTree";
 	}
 	
 	public boolean usedInSubWindow(){
@@ -328,6 +327,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 		}
 		germplasmListTree.removeAllItems();
 		createGermplasmListTree();
+		germplasmListTree.setStyleName("listTree");
 	    germplasmListTree.addStyleName(getTreeStyleName());
 
 

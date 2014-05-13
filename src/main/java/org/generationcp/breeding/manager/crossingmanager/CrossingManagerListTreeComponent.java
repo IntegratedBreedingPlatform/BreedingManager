@@ -39,5 +39,10 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}
+	
+	@Override
+	protected String getTreeStyleName() {
+		return "crossingManagerTree";
+	}
 
 }

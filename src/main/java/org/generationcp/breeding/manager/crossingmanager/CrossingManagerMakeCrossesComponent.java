@@ -244,6 +244,7 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
         this.setMargin(true, true, true, true);
 
         listTree = new CrossingManagerListTreeComponent(this);
+        listTree.setWidth("230px");
         
         selectParentsLabel = new Label("Select Parents");
         selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
