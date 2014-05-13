@@ -23,6 +23,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -73,6 +76,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
     
     private Panel parentListsPanel;
     private Label parentListsLabel;
@@ -224,41 +230,80 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 				@SuppressWarnings("unchecked")
 				public void drop(DragAndDropEvent dropEvent) {
-                    TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
-                        
-                    Table sourceTable = (Table) transferable.getSourceComponent();
-                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
-                    
-                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
-                    Object targetItemId = dropData.getItemIdOver();
 
-                    if(sourceTable.equals(maleParents)){
-                    	Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
-                        
-	                    //Check first if item is dropped on top of itself
-	                    if(!transferable.getItemId().equals(targetItemId)){
-	                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(MALE_PARENTS_LABEL).getValue();
-	                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
-	                        CheckBox tag = (CheckBox) sourceTable.getItem(maleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
-	                        	
-	                        sourceTable.removeItem(transferable.getItemId());
+					//Dragged from a table
+					if(dropEvent.getTransferable() instanceof TableTransferable){
+					
+	                    TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
 	                        
-							Item item = targetTable.addItemAfter(targetItemId, maleItemId);
-	                      	item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
-	                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-	                      	
-	                      	if(selectedEntries.contains(maleItemId)){
-								tag.setValue(true);
-								tag.addListener(new ParentsTableCheckboxListener(targetTable, maleItemId, maleParentsTagAll));
-					            tag.setImmediate(true);
-					            targetTable.select(transferable.getItemId());
-							}
-	                	}
-                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, maleParents, (Integer) transferable.getItemId());
-                    }
-                    
-                    assignEntryNumber(maleParents);
+	                    Table sourceTable = (Table) transferable.getSourceComponent();
+	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+	                    
+	                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+	                    Object targetItemId = dropData.getItemIdOver();
+	
+	                    if(sourceTable.equals(maleParents)){
+	                    	Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
+	                        
+		                    //Check first if item is dropped on top of itself
+		                    if(!transferable.getItemId().equals(targetItemId)){
+		                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(MALE_PARENTS_LABEL).getValue();
+		                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
+		                        CheckBox tag = (CheckBox) sourceTable.getItem(maleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+		                        	
+		                        sourceTable.removeItem(transferable.getItemId());
+		                        
+								Item item = targetTable.addItemAfter(targetItemId, maleItemId);
+		                      	item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
+		                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		                      	
+		                      	if(selectedEntries.contains(maleItemId)){
+									tag.setValue(true);
+									tag.addListener(new ParentsTableCheckboxListener(targetTable, maleItemId, maleParentsTagAll));
+						            tag.setImmediate(true);
+						            targetTable.select(transferable.getItemId());
+								}
+		                	}
+	                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
+	                    	dropToFemaleOrMaleTable(sourceTable, maleParents, (Integer) transferable.getItemId());
+	                    }
+	                    
+	                //Dragged from the tree
+					} else {
+						Transferable transferable = dropEvent.getTransferable();
+						//addGermplasmList((Integer) transferable.getData("itemId"));
+						
+	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+	                    
+	                    try {
+	                    	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
+	                    	if(draggedListFromTree!=null){
+	                    		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
+	                    			if(listData.getStatus()!=9){
+	                    				String maleParentValue = listData.getDesignation();
+	                    				//GermplasmListEntry maleItemId = ;
+	                    				CheckBox tag = new CheckBox();
+			                        	
+	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+	                    				
+	                		    		if(targetTable.equals(maleParents)){
+	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+	                		    		}
+	                		            tag.setImmediate(true);
+	                    				
+	                    				Item item = targetTable.addItem(entryObject);
+	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
+	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                    			} 
+			                	}
+	                    	}
+	                    } catch(MiddlewareQueryException e) {
+	                    	LOG.error("Error in getting list by GID",e);	
+	                    }
+					}
+					
+					assignEntryNumber(maleParents);
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
@@ -308,41 +353,78 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 				@SuppressWarnings("unchecked")
 				public void drop(DragAndDropEvent dropEvent) {
-					TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
-                       
-                    Table sourceTable = (Table) transferable.getSourceComponent();
-                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
-                        
-                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
-                    Object targetItemId = dropData.getItemIdOver();
-                    
-                    if(sourceTable.equals(femaleParents)){
-	                    Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
-	
-	                    //Check first if item is dropped on top of itself
-	                    if(!transferable.getItemId().equals(targetItemId)){
-	                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(FEMALE_PARENTS_LABEL).getValue();
-	                		GermplasmListEntry femaleItemId = (GermplasmListEntry) transferable.getItemId();
-	                		CheckBox tag = (CheckBox) sourceTable.getItem(femaleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
-							
-	                		sourceTable.removeItem(transferable.getItemId());
-	                		
-							Item item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
-	                    	item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
-	                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-	                      	
-	                      	if(selectedEntries.contains(femaleItemId)){
-	                      		tag.setValue(true);
-								tag.addListener(new ParentsTableCheckboxListener(targetTable, femaleItemId, femaleParentsTagAll));
-					            tag.setImmediate(true);
-					            targetTable.select(transferable.getItemId());
-							} 	
-	                      	
+					
+					//Dragged from a table
+					if(dropEvent.getTransferable() instanceof TableTransferable){
+						
+						TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
+	                       
+	                    Table sourceTable = (Table) transferable.getSourceComponent();
+	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+	                        
+	                    AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+	                    Object targetItemId = dropData.getItemIdOver();
+	                    
+	                    if(sourceTable.equals(femaleParents)){
+		                    Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) sourceTable.getValue();
+		
+		                    //Check first if item is dropped on top of itself
+		                    if(!transferable.getItemId().equals(targetItemId)){
+		                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(FEMALE_PARENTS_LABEL).getValue();
+		                		GermplasmListEntry femaleItemId = (GermplasmListEntry) transferable.getItemId();
+		                		CheckBox tag = (CheckBox) sourceTable.getItem(femaleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
+								
+		                		sourceTable.removeItem(transferable.getItemId());
+		                		
+								Item item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
+		                    	item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
+		                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		                      	
+		                      	if(selectedEntries.contains(femaleItemId)){
+		                      		tag.setValue(true);
+									tag.addListener(new ParentsTableCheckboxListener(targetTable, femaleItemId, femaleParentsTagAll));
+						            tag.setImmediate(true);
+						            targetTable.select(transferable.getItemId());
+								} 	
+		                      	
+		                    }
+	                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
+	                    	dropToFemaleOrMaleTable(sourceTable, femaleParents, (Integer) transferable.getItemId());
 	                    }
-                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
-                    	dropToFemaleOrMaleTable(sourceTable, femaleParents, (Integer) transferable.getItemId());
-                    }
-                    
+
+	                //Dragged from the tree
+					} else {
+						Transferable transferable = dropEvent.getTransferable();
+						//addGermplasmList((Integer) transferable.getData("itemId"));
+						
+	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
+						
+	                    try {
+	                    	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
+	                    	if(draggedListFromTree!=null){
+	                    		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
+	                    			if(listData.getStatus()!=9){
+	                    				String femaleParentValue = listData.getDesignation();
+	                    				//GermplasmListEntry maleItemId = ;
+	                    				CheckBox tag = new CheckBox();
+			                        	
+	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+	                    				
+	                		    		if(targetTable.equals(femaleParents))
+	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+	                		            tag.setImmediate(true);
+	                    				
+	                    				Item item = targetTable.addItem(entryObject);
+	                    				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
+	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                    			} 
+			                	}
+	                    	}
+	                    } catch(MiddlewareQueryException e) {
+	                    	LOG.error("Error in getting list by GID",e);	
+	                    }
+					}
                     assignEntryNumber(femaleParents);
                 }
 
@@ -510,6 +592,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	
 	@SuppressWarnings("unchecked")
 	public void assignEntryNumber(Table parentsTable){
+		
+		System.out.println("Invoked assignEntryNumber("+parentsTable.getClass()+")");
 		int entryNumber = 1;
 		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
 		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
