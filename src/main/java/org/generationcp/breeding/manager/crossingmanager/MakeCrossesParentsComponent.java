@@ -109,7 +109,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     private SaveListAsDialog saveListAsWindow;
     
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
-    
+        
     public MakeCrossesParentsComponent(CrossingManagerMakeCrossesComponent parentComponent){
     	this.makeCrossesMain = parentComponent;
 	}
@@ -183,6 +183,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         		MALE_PARENTS_LABEL, Message.SUCCESS_SAVE_FOR_MALE_LIST);
         femaleParentContainer = new ParentContainer(saveFemaleListButton, femaleTableWithSelectAll, 
         		FEMALE_PARENTS_LABEL, Message.SUCCESS_SAVE_FOR_FEMALE_LIST);
+        
 	}
 
 	
@@ -270,18 +271,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                //Dragged from the tree
 					} else {
 						Transferable transferable = dropEvent.getTransferable();
-						//addGermplasmList((Integer) transferable.getData("itemId"));
-						
 	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
 	                    
 	                    try {
 	                    	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
 	                    	if(draggedListFromTree!=null){
 	                    		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+	                    		
+	                    		Integer addedCount = 0;
+	                    		
 	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
 	                    			if(listData.getStatus()!=9){
 	                    				String maleParentValue = listData.getDesignation();
-	                    				//GermplasmListEntry maleItemId = ;
 	                    				CheckBox tag = new CheckBox();
 			                        	
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
@@ -294,8 +295,20 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    				Item item = targetTable.addItem(entryObject);
 	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                    				
+	                    				addedCount++;
 	                    			} 
 			                	}
+	                    		
+	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save button
+	                    		List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
+	                    		itemsLeftAfterAdding.addAll((Collection<? extends Integer>) targetTable.getItemIds());
+        
+	                    		if(addedCount==itemsLeftAfterAdding.size()){
+	                    			saveMaleListButton.setEnabled(false);
+	                    		} else {
+	                    			saveMaleListButton.setEnabled(true);
+	                    		}
 	                    	}
 	                    } catch(MiddlewareQueryException e) {
 	                    	LOG.error("Error in getting list by GID",e);	
@@ -394,18 +407,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                //Dragged from the tree
 					} else {
 						Transferable transferable = dropEvent.getTransferable();
-						//addGermplasmList((Integer) transferable.getData("itemId"));
-						
 	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
 						
 	                    try {
 	                    	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
 	                    	if(draggedListFromTree!=null){
 	                    		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+	                    		
+	                    		Integer addedCount = 0;
+	                    		
 	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
 	                    			if(listData.getStatus()!=9){
 	                    				String femaleParentValue = listData.getDesignation();
-	                    				//GermplasmListEntry maleItemId = ;
 	                    				CheckBox tag = new CheckBox();
 			                        	
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
@@ -417,8 +430,20 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    				Item item = targetTable.addItem(entryObject);
 	                    				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	                    				
+	                    				addedCount++;
 	                    			} 
 			                	}
+	                    		
+	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save button
+	                    		List<Object> itemsAfterAdding = new ArrayList<Object>();
+	                    		itemsAfterAdding.addAll((Collection<? extends Integer>) targetTable.getItemIds());
+	                    		
+	                    		if(addedCount==itemsAfterAdding.size()){
+	                    			saveFemaleListButton.setEnabled(false);
+	                    		} else {
+	                    			saveFemaleListButton.setEnabled(true);
+	                    		}
 	                    	}
 	                    } catch(MiddlewareQueryException e) {
 	                    	LOG.error("Error in getting list by GID",e);	
@@ -794,6 +819,15 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		table.requestRepaint();
 	}
 	
+    public Button getSaveFemaleListButton(){
+    	return saveFemaleListButton;
+    }
+    
+    public Button getSaveMaleListButton(){
+    	return saveMaleListButton;
+    }
+
+    
 	private class ParentContainer {
 		private Button button;
 		private TableWithSelectAllLayout tableWithSelectAll;
