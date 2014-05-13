@@ -340,7 +340,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         
         final CssLayout listDataTableLayout = new CssLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.setWidth("587px");
         listDataTableLayout.setHeight("462px");
         listDataTableLayout.addStyleName("listDataTableLayout");
         

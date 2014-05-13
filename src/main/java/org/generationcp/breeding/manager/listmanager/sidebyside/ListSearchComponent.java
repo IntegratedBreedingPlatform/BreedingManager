@@ -74,7 +74,7 @@ public class ListSearchComponent extends CssLayout implements Internationalizabl
         
         final CssLayout listDataTableLayout = new CssLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.setWidth("878px");
         listDataTableLayout.setHeight("400px");
         
         listDataTableLayout.addComponent(searchBar);

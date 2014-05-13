@@ -104,7 +104,7 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
         
         final CssLayout listDataTableLayout = new CssLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("100%");
+        listDataTableLayout.setWidth("605px");
         listDataTableLayout.setHeight("488px");
         
         listDataTableLayout.addComponent(searchBarComponent);
