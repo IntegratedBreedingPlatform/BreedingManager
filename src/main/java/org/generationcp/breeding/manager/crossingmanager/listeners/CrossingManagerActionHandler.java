@@ -1,6 +1,8 @@
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesTableComponent;
@@ -20,8 +22,9 @@ public class CrossingManagerActionHandler implements Handler {
 	private static final long serialVersionUID = 5470824414143199719L;
 	
 	private static final Action ACTION_SELECT_ALL = new Action("Select All");
+	private static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete selected entries");
 	private static final Action ACTION_DELETE_CROSSES = new Action("Delete selected crosses");
-	private static final Action[] SELECT_LIST_ENTRIES = new Action[] {ACTION_SELECT_ALL};
+	private static final Action[] SELECT_LIST_ENTRIES = new Action[] {ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES};
 	private static final Action[] MAKE_CROSSES_ACTIONS = new Action[] {ACTION_SELECT_ALL, ACTION_DELETE_CROSSES};
 
 	private Object source;
@@ -46,7 +49,10 @@ public class CrossingManagerActionHandler implements Handler {
 	public void handleAction(Action action, Object sender, Object target) {
 		if (ACTION_SELECT_ALL.equals(action) && sender instanceof Table){
 			selectAllAction((Table) sender);
-            
+		} else if (ACTION_DELETE_SELECTED_ENTRIES.equals(action) && sender instanceof Table){
+				deleteSelectedEntriesAction((Table) sender);     
+				if(this.source instanceof MakeCrossesParentsComponent)
+					((MakeCrossesParentsComponent) source).assignEntryNumber((Table) sender);
 		} else if (ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) source).deleteCrossAction();
 		}
@@ -62,4 +68,13 @@ public class CrossingManagerActionHandler implements Handler {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private void deleteSelectedEntriesAction(Table table) {
+        List<Object> selectedItemIds = new ArrayList<Object>();
+        selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
+        for(Object selectedItemId:selectedItemIds){
+            table.removeItem(selectedItemId);
+        }
+	}
+	
 }
