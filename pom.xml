@@ -288,7 +288,7 @@
 					<executions>
 						<execution>
 							<id>default-cli</id>
-							<phase>compile</phase>
+							<phase>generate-resources</phase>
 							<configuration>
 								<tasks>
 									<copy todir="src/main/resources" overwrite="true">
