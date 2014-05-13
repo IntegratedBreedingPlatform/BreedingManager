@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
@@ -290,6 +291,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	}
 
 	public Boolean settingsFileNameProvided() {
-		return settingsNameTextfield.getValue() != null && (String) settingsNameTextfield.getValue() == "";
+		return settingsNameTextfield.getValue() != null && 
+			!StringUtils.isEmpty((String) settingsNameTextfield.getValue());
 	}
 }
