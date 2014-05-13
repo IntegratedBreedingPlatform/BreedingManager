@@ -45,6 +45,11 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	}
 	
 	@Override
+	public boolean usedInSubWindow() {
+		return true;
+	}
+	
+	@Override
 	protected String getTreeHeading() {
 		return messageSource.getMessage(Message.ALL_LISTS);
 	}
