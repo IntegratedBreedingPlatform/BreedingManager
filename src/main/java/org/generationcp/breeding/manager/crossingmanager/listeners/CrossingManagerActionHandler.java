@@ -75,6 +75,18 @@ public class CrossingManagerActionHandler implements Handler {
         for(Object selectedItemId:selectedItemIds){
             table.removeItem(selectedItemId);
         }
+        
+        List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
+        itemsLeftAfterDelete.addAll((Collection<? extends Integer>) table.getValue());
+        
+        //Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
+        if(this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size()==0){
+        	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
+        		((MakeCrossesParentsComponent) source).getSaveFemaleListButton().setEnabled(false);
+        	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
+        		((MakeCrossesParentsComponent) source).getSaveMaleListButton().setEnabled(false);
+        	}
+        }
 	}
 	
 }
