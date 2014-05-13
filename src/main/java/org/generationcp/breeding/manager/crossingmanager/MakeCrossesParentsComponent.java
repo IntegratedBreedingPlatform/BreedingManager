@@ -24,7 +24,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -593,7 +592,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	@SuppressWarnings("unchecked")
 	public void assignEntryNumber(Table parentsTable){
 		
-		System.out.println("Invoked assignEntryNumber("+parentsTable.getClass()+")");
 		int entryNumber = 1;
 		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
 		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
