@@ -348,11 +348,11 @@ public class ListComponent extends CssLayout implements InitializingBean, Intern
 			
 			for(GermplasmListData entry : listEntries){
 				String gid = String.format("%s", entry.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid,true));
+                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid,true,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 
-                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(gid,true));
+                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(gid,true,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 
@@ -1153,13 +1153,13 @@ public class ListComponent extends CssLayout implements InitializingBean, Intern
             if (!fromUrl) {
                 // make GID as link only if the page wasn't directly accessed from the URL
                 String gidString = String.format("%s", gid.toString());
-                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,true));
+                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,true,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 gidObject = gidButton;
                 
                 String desigString = listData.getDesignation();
-                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,true));
+                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,true,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 desigObject = desigButton;
