@@ -846,4 +846,8 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		currentlySetGermplasmInfo = list;
 		saveListButtonListener.doSaveAction();
 	}
+	
+	public BuildNewListDropHandler getBuildNewListDropHandler(){
+		return dropHandler;
+	}
 }
