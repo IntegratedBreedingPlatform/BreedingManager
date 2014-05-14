@@ -158,7 +158,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		}
 		
 		if(step == 0){
-			tabSheet.setHeight("810px");
+			tabSheet.setHeight("1200px");
 		}
 		else if(step == 1){
 			tabSheet.setHeight("1100px");
