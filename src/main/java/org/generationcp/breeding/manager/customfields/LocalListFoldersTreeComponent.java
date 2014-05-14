@@ -63,5 +63,11 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	protected boolean doIncludeTreeHeadingIcon() {
 		return false;
 	}
+	
+	
+	@Override
+	protected String getTreeStyleName() {
+		return "saveListTree";
+	}
 
 }

@@ -167,13 +167,33 @@
 }
 
 
-.listManagerTree {
+.listTree {
 	padding: 10px;
 	border: 1px solid e3e3e3;
 	background: #e3e3e3;
+	overflow: scroll;
+}
+
+.listTree {
+	padding: 10px;
+	border: 1px solid e3e3e3;
+	background: #e3e3e3;
+	overflow: scroll;
+}
+
+.listManagerTree {
 	width: 850px;
 	height: 400px;
-	overflow: scroll;
+}
+
+.crossingManagerTree {
+	width: 200px;
+	height: 300px;
+}
+
+.saveListTree {
+	width: 315px;
+	height: 290px;
 }
 
 .listManagerTree-long {
