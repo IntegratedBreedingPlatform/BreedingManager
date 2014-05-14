@@ -282,7 +282,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public void setFieldsDefaultValue() {
 		harvestLocations.select(null);
-		harvestDateField.setValue(null);
+		harvestDateField.setValue(20140000L);//default value year - 2014
 		settingsNameTextfield.setValue("");
 		setAsDefaultSettingCheckbox.setValue(false);
 		showFavouriteLocations.setValue(false);

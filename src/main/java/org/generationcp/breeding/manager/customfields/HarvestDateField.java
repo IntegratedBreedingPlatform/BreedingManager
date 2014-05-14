@@ -50,11 +50,32 @@ public class HarvestDateField extends HorizontalLayout {
 		else{
 			//set Month
 			int month = Integer.valueOf(harvestDateStr.substring(4, 6));
-			String monthString = new DateFormatSymbols().getMonths()[month - 1];
-			harvestMonth.setValue(monthString);
+			if(month >= 1 && month <= 12){
+				String monthString = new DateFormatSymbols().getMonths()[month-1];
+				harvestMonth.setValue(monthString);
+			}
+			else{
+				harvestMonth.setValue("Month"); //default
+			}
 			
 			//set Year
 			int year = Integer.valueOf(harvestDateStr.substring(0, 4));
+			harvestYear.setValue(year);
+		}
+	}
+	
+	public void setValue(Date harvestDate){
+		if(harvestDate ==  null){
+			reset();
+		}
+		else{
+			//set Month
+			int month = harvestDate.getMonth();
+			String monthString = new DateFormatSymbols().getMonths()[month];
+			harvestMonth.setValue(monthString);
+			
+			//set Year
+			int year = harvestDate.getYear() + 1900;
 			harvestYear.setValue(year);
 		}
 	}
