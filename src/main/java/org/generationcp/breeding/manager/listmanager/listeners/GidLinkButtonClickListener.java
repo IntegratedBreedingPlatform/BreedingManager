@@ -135,7 +135,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 			addToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
 			addToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
 	        layoutForGermplasm.addComponent(addToListLink, "top:15px; right:15px;");
-	        layoutForGermplasm.addComponent(germplasmInfo, "top:40px; left:0;");
+	        layoutForGermplasm.addComponent(germplasmInfo, "top:44px; left:0;");
 	        
 	        addToListLink.addListener(new ClickListener(){
 				private static final long serialVersionUID = 1L;
