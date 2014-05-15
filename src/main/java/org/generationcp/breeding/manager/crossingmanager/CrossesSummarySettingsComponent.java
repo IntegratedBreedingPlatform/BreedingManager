@@ -6,6 +6,7 @@ import java.util.Date;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -122,11 +123,8 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 
 	private Label initializeHarvestDateValue() {
 		Label harvestDateValue = new Label("-");
-		Date harvestDate = setting.getAdditionalDetailsSetting().getHarvestDate();
-		if (harvestDate != null){
-			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-			harvestDateValue = new Label(format.format(harvestDate)); 
-		}
+		AdditionalDetailsSetting addSetting = setting.getAdditionalDetailsSetting();
+		harvestDateValue.setValue(addSetting.getHarvestYear() + " " + addSetting.getHarvestMonth());
 		return harvestDateValue;
 	}
 

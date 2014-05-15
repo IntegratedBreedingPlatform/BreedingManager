@@ -500,6 +500,7 @@ public enum Message{
     ,MATCHING_GERMPLASM_ENTRIES
     
     //Add List Entries
+    ,ADD_TO_LIST
     ,ADD_LIST_ENTRIES
     ,ERROR_NO_ENTRY_ON_SEARCH_FIELD
     ,ERROR_SEARCH

@@ -195,7 +195,7 @@ public class GermplasmDetailsComponent extends CssLayout implements Initializing
         Label sectionLabel = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
         sectionLabel.setStyleName(Bootstrap.Typography.H4.styleName());
         
-        saveToListLink = new Button(messageSource.getMessage(Message.SAVE_TO_LIST));
+        saveToListLink = new Button(messageSource.getMessage(Message.ADD_TO_LIST));
 		saveToListLink.setData(SAVE_TO_LIST);
 		saveToListLink.setImmediate(true);
 		saveToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());

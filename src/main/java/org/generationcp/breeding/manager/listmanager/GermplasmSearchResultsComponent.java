@@ -177,7 +177,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
-        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), true));
+        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
 			String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
