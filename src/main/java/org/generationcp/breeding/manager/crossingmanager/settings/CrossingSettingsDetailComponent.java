@@ -420,7 +420,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 			List<TemplateSetting> settings = workbenchDataManager.getTemplateSettings(filter);
 			if(!settings.isEmpty()){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, "There is an existing setting with the same name you have sprcified. Please specify a different name.", Notification.POSITION_CENTERED);
+						, "There is an existing setting with the same name you have specified. Please specify a different name.", Notification.POSITION_CENTERED);
 				return true;
 			}
 		} catch(MiddlewareQueryException ex){
