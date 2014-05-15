@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
-import org.generationcp.breeding.manager.customfields.BreedingManagerDateField;
+import org.generationcp.breeding.manager.customfields.HarvestDateField;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -35,7 +35,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -72,7 +71,9 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	private CheckBox showFavouriteLocations;
 	private Button manageFavoriteLocations;
 
-	private DateField harvestDate;
+	//private DateField harvestDate;
+	
+	private HarvestDateField harvestDateField;
 
     private Label saveSettingsLabel;
 
@@ -126,9 +127,8 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		harvestLocations = new ComboBox(messageSource.getMessage(Message.HARVEST_LOCATION));
         harvestLocations.setNullSelectionAllowed(true);
 
-        harvestDate = new BreedingManagerDateField();
-        harvestDate.setCaption(messageSource.getMessage(Message.HARVEST_DATE));
-
+        harvestDateField = new HarvestDateField(2014,messageSource.getMessage(Message.HARVEST_DATE));
+        
         showFavouriteLocations = new CheckBox();
         showFavouriteLocations.setImmediate(true);
 
@@ -193,7 +193,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		favMethodsLayout.addComponent(manageFavoriteLocations);
 
 		final FormLayout harvestFormFields = new FormLayout();
-		harvestFormFields.addComponent(harvestDate);
+		harvestFormFields.addComponent(harvestDateField);
 		harvestFormFields.addComponent(harvestLocations);
 		harvestFormFields.addComponent(favMethodsLayout);
 
@@ -248,8 +248,8 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		return setAsDefaultSettingCheckbox;
 	}
 
-	public DateField getHarvestDtDateField() {
-		return harvestDate;
+	public HarvestDateField getHarvestDtDateField() {
+		return harvestDateField;
 	}
 
 	public ComboBox getHarvestLocComboBox() {
@@ -259,7 +259,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	public boolean validateInputFields(){
 
 		try {
-			harvestDate.validate();
+			harvestDateField.validate();
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage()
 					, Notification.POSITION_CENTERED);
@@ -273,7 +273,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		populateHarvestLocation();
 
 		harvestLocations.select(additionalDetailsSetting.getHarvestLocationId());
-		harvestDate.setValue(additionalDetailsSetting.getHarvestDate());
+		harvestDateField.setValue(additionalDetailsSetting.getHarvestDate());
 
 		settingsNameTextfield.setValue(name);
 
@@ -282,7 +282,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public void setFieldsDefaultValue() {
 		harvestLocations.select(null);
-		harvestDate.setValue(null);
+		harvestDateField.setValue(20140000L);//default value year - 2014
 		settingsNameTextfield.setValue("");
 		setAsDefaultSettingCheckbox.setValue(false);
 		showFavouriteLocations.setValue(false);

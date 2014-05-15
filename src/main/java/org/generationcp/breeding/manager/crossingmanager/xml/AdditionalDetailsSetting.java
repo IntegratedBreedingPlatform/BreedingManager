@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager.xml;
 
 import java.io.Serializable;
+import java.text.DateFormatSymbols;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -12,13 +13,13 @@ public class AdditionalDetailsSetting implements Serializable {
 	private static final long serialVersionUID = -5167579512310794528L;
 	
 	private Integer harvestLocationId;
-	private Date harvestDate;
+	private Long harvestDate;
 
 	public AdditionalDetailsSetting(){
 		
 	}
 	
-	public AdditionalDetailsSetting(Integer harvestLocationId, Date harvestDate) {
+	public AdditionalDetailsSetting(Integer harvestLocationId, Long harvestDate) {
 		super();
 		this.harvestLocationId = harvestLocationId;
 		this.harvestDate = harvestDate;
@@ -34,12 +35,23 @@ public class AdditionalDetailsSetting implements Serializable {
 	}
 
 	@XmlAttribute
-	public Date getHarvestDate() {
+	public Long getHarvestDate() {
 		return harvestDate;
 	}
 
-	public void setHarvestDate(Date harvestDate) {
+	public void setHarvestDate(Long harvestDate) {
 		this.harvestDate = harvestDate;
+	}
+	
+	public String getHarvestMonth(){
+		int month = Integer.valueOf(String.valueOf(harvestDate).substring(4,6));
+		String monthString = new DateFormatSymbols().getMonths()[month - 1];
+		return monthString;
+	}
+	
+	public String getHarvestYear(){
+		String harvestDateStr = String.valueOf(harvestDate); 
+		return harvestDateStr.substring(0,4);
 	}
 	
 	@Override

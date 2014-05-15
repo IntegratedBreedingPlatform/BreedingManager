@@ -22,7 +22,7 @@ public class TestCrossingManagerSettingXml {
 	public void test() throws Exception {
 		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(Integer.valueOf(104), false);
 		CrossNameSetting crossNameSetting = new CrossNameSetting("IR", "M", true, Integer.valueOf(5), CrossNameSetting.DEFAULT_SEPARATOR);
-		AdditionalDetailsSetting additionalDetailsSetting = new AdditionalDetailsSetting(Integer.valueOf(1000), new Date(1000000000));
+		AdditionalDetailsSetting additionalDetailsSetting = new AdditionalDetailsSetting(Integer.valueOf(1000), 20140500L);
 		CrossingManagerSetting crossingManagerSetting = new CrossingManagerSetting("sample", breedingMethodSetting, crossNameSetting, additionalDetailsSetting);
 		
 		JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
@@ -31,7 +31,7 @@ public class TestCrossingManagerSettingXml {
         marshaller.marshal(crossingManagerSetting, writer);
         
         String xmlToRead = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossingManagerSetting name=\"sample\"><additionalDetailsSetting " +
-        		"harvestLocationId=\"1000\" harvestDate=\"1970-01-12T21:46:40+08:00\"/><breedingMethodSetting methodId=\"104\" " +
+        		"harvestLocationId=\"1000\" harvestDate=\"20140500\"/><breedingMethodSetting methodId=\"104\" " +
         		"basedOnStatusOfParentalLines=\"false\"/><crossNameSetting prefix=\"IR\" suffix=\"M\" numOfDigits=\"5\" addSpaceBetweenPrefixAndCode=\"true\" separator=\"/\"/></crossingManagerSetting>";
         Unmarshaller unmarshaller = context.createUnmarshaller();
         CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlToRead));
