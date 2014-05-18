@@ -385,4 +385,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		}
 		
 	}
+	
+	public TabSheet getListDetailsTabSheet(){
+		return listDetailsTabSheet;
+	}
 }

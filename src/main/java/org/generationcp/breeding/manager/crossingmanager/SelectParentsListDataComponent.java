@@ -282,4 +282,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public String getListName() {
 		return this.listName;
 	}
+	
+	public GermplasmList getGermplasmList(){
+		return germplasmList;
+	}
 }

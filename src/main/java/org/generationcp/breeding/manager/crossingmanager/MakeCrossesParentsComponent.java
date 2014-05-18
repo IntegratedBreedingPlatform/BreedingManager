@@ -289,7 +289,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    				
 	                		    		if(targetTable.equals(maleParents)){
 	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+	                		    			maleListNameForCrosses = draggedListFromTree.getName();
+	                		    	    	updateCrossesSeedSource(maleParentContainer, draggedListFromTree);
 	                		    		}
+	                		    		
 	                		            tag.setImmediate(true);
 	                    				
 	                    				Item item = targetTable.addItem(entryObject);
@@ -423,8 +426,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			                        	
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
 	                    				
-	                		    		if(targetTable.equals(femaleParents))
+	                		    		if(targetTable.equals(femaleParents)){
 	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+	                		    			femaleListNameForCrosses = draggedListFromTree.getName();
+	                		    	    	updateCrossesSeedSource(femaleParentContainer, draggedListFromTree);
+	                		    		}
+	                		    		
 	                		            tag.setImmediate(true);
 	                    				
 	                    				Item item = targetTable.addItem(entryObject);
@@ -566,6 +573,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
     	entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
     	
+    	List<Integer> initialEntryIdsInDestinationTable = new ArrayList<Integer>();
+    	initialEntryIdsInDestinationTable.addAll((Collection<Integer>) targetTable.getItemIds());    	
+    	
     	for(Integer itemId : entryIdsInSourceTable){
     		if(selectedListEntries.contains(itemId)){
 	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
@@ -599,9 +609,35 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 		        }
 	    	}
-            
             targetTable.requestRepaint();
         }
+    	
+    	List<Integer> entryIdsInDestinationTable = new ArrayList<Integer>();
+    	entryIdsInDestinationTable.addAll((Collection<Integer>) targetTable.getItemIds());
+    	
+    	System.out.println("Initial Entry IDs: "+initialEntryIdsInDestinationTable.size());
+    	System.out.println(entryIdsInSourceTable.size() + " vs " + entryIdsInDestinationTable.size());
+    	
+    	if(initialEntryIdsInDestinationTable.size()==0 && entryIdsInSourceTable.size()==entryIdsInDestinationTable.size()){
+    		if(targetTable.equals(femaleParents)){
+    			this.saveFemaleListButton.setEnabled(false);
+    			femaleListNameForCrosses = makeCrossesMain.getListDetailsTabSheet().getSelectedTab().getCaption();
+    	    	updateCrossesSeedSource(femaleParentContainer, ((SelectParentsListDataComponent) makeCrossesMain.getListDetailsTabSheet().getSelectedTab()).getGermplasmList());
+    		} else{
+    			this.saveMaleListButton.setEnabled(false);
+    			maleListNameForCrosses = makeCrossesMain.getListDetailsTabSheet().getSelectedTab().getCaption();
+    	    	updateCrossesSeedSource(maleParentContainer, ((SelectParentsListDataComponent) makeCrossesMain.getListDetailsTabSheet().getSelectedTab()).getGermplasmList());
+    		}        		
+    	} else {
+    		if(targetTable.equals(femaleParents)){
+    			this.saveFemaleListButton.setEnabled(true);
+    			femaleListNameForCrosses = "";
+    		} else{
+    			this.saveMaleListButton.setEnabled(true);
+    			maleListNameForCrosses = "";
+    		}
+    	}
+    	
 	}
 	
 	private boolean checkIfGIDisInTable(Table targetTable, Integer gid){
