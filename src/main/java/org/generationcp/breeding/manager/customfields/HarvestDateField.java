@@ -40,47 +40,53 @@ public class HarvestDateField extends HorizontalLayout {
 		addComponent(harvestMonth);
 	}
 	
-	public void setValue(Long harvestDate){
-		
-		String harvestDateStr = String.valueOf(harvestDate);
-		
-		if(harvestDate ==  null){
+	public void setValue(String harvestDate){
+				
+		if(harvestDate ==  null || harvestDate.length() == 0){
 			reset();
 		}
 		else{
-			//set Month
-			int month = Integer.valueOf(harvestDateStr.substring(4, 6));
-			if(month >= 1 && month <= 12){
-				String monthString = new DateFormatSymbols().getMonths()[month-1];
-				harvestMonth.setValue(monthString);
+			if(harvestDate.length() > 8){//is in the date format
+				setValueUsingDateString(harvestDate);
 			}
 			else{
-				harvestMonth.setValue("Month"); //default
+				//set Month
+				int month = Integer.valueOf(harvestDate.substring(4, 6));
+				if(month >= 1 && month <= 12){
+					String monthString = new DateFormatSymbols().getMonths()[month-1];
+					harvestMonth.setValue(monthString);
+				}
+				else{
+					harvestMonth.setValue("Month"); //default
+				}
+				
+				//set Year
+				int year = Integer.valueOf(harvestDate.substring(0, 4));
+				harvestYear.setValue(year);
 			}
-			
-			//set Year
-			int year = Integer.valueOf(harvestDateStr.substring(0, 4));
-			harvestYear.setValue(year);
 		}
 	}
 	
-	public void setValue(Date harvestDate){
+	public void setValueUsingDateString(String harvestDate){
+
 		if(harvestDate ==  null){
 			reset();
 		}
 		else{
+			//Date String to parse: 2016-02-01T07:52:14.109+08:00
+			
 			//set Month
-			int month = harvestDate.getMonth();
-			String monthString = new DateFormatSymbols().getMonths()[month];
+			int month = Integer.valueOf(harvestDate.substring(5, 7));
+			String monthString = new DateFormatSymbols().getMonths()[month - 1];
 			harvestMonth.setValue(monthString);
 			
 			//set Year
-			int year = harvestDate.getYear() + 1900;
+			int year = Integer.valueOf(harvestDate.substring(0, 4));
 			harvestYear.setValue(year);
 		}
 	}
 	
-	public Long getValue(){
+	public String getValue(){
 		int year = Integer.valueOf(harvestYear.getValue().toString());
 		
 		String month = String.valueOf(harvestMonth.getMonthNo());
@@ -90,7 +96,7 @@ public class HarvestDateField extends HorizontalLayout {
 		
 		String dateValue = year+month+"00";
 				
-		return Long.valueOf(dateValue);
+		return dateValue;
 	}
 	
 	public void reset(){

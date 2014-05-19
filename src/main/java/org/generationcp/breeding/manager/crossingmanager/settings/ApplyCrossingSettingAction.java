@@ -178,7 +178,7 @@ public class ApplyCrossingSettingAction implements
             
             if(detailsSetting.getHarvestDate() != null){
                 SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-                        dateIntValue = Integer.parseInt(formatter.format(detailsSetting.getHarvestDate()));
+                        dateIntValue = Integer.parseInt(formatter.format(Long.valueOf(detailsSetting.getHarvestDate())));
             }
         
             Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();
