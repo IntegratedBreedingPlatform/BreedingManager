@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.crossingmanager.xml;
 
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -13,13 +12,13 @@ public class AdditionalDetailsSetting implements Serializable {
 	private static final long serialVersionUID = -5167579512310794528L;
 	
 	private Integer harvestLocationId;
-	private Long harvestDate;
+	private String harvestDate;
 
 	public AdditionalDetailsSetting(){
 		
 	}
 	
-	public AdditionalDetailsSetting(Integer harvestLocationId, Long harvestDate) {
+	public AdditionalDetailsSetting(Integer harvestLocationId, String harvestDate) {
 		super();
 		this.harvestLocationId = harvestLocationId;
 		this.harvestDate = harvestDate;
@@ -35,23 +34,28 @@ public class AdditionalDetailsSetting implements Serializable {
 	}
 
 	@XmlAttribute
-	public Long getHarvestDate() {
+	public String getHarvestDate() {
 		return harvestDate;
 	}
 
-	public void setHarvestDate(Long harvestDate) {
+	public void setHarvestDate(String harvestDate) {
 		this.harvestDate = harvestDate;
 	}
 	
 	public String getHarvestMonth(){
-		int month = Integer.valueOf(String.valueOf(harvestDate).substring(4,6));
-		String monthString = new DateFormatSymbols().getMonths()[month - 1];
-		return monthString;
+		int month = Integer.valueOf(harvestDate.substring(4,6));
+		
+		if(month == 0){
+			return "";
+		}
+		else{
+			String monthString = new DateFormatSymbols().getMonths()[month - 1];
+			return monthString;
+		}
 	}
 	
-	public String getHarvestYear(){
-		String harvestDateStr = String.valueOf(harvestDate); 
-		return harvestDateStr.substring(0,4);
+	public String getHarvestYear(){ 
+		return harvestDate.substring(0,4);
 	}
 	
 	@Override

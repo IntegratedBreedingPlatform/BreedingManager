@@ -443,7 +443,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 		
 		Integer locId = (Integer) additionalDetailsComponent.getHarvestLocComboBox().getValue();
-		Long harvestDate = additionalDetailsComponent.getHarvestDtDateField().getValue();
+		String harvestDate = additionalDetailsComponent.getHarvestDtDateField().getValue();
         AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 		
