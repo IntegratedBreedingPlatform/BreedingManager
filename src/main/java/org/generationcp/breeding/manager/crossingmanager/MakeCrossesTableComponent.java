@@ -575,5 +575,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
     public String getSeparator(){
     	return this.separator;
     }
+    
+	@Override
+	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	}
 
 }

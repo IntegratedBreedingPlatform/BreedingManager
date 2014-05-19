@@ -1,13 +1,18 @@
 package org.generationcp.breeding.manager.customcomponent;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -55,18 +60,21 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	@Autowired
     private GermplasmListManager germplasmListManager;
 	
+	private GermplasmList originalGermplasmList;
 	private GermplasmList germplasmList;
 	
 	public static final Integer LIST_NAMES_STATUS = 1;
 	
 	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList){
 		this.source = source;
+		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
 		this.windowCaption = null;
 	}
 	
 	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList, String windowCaption){
 		this.source = source;
+		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
 		this.windowCaption = windowCaption;
 	}
@@ -91,7 +99,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setResizable(false);
 		setModal(true);
 
-		germplasmListTree = new LocalListFoldersTreeComponent(folderId);
+		germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), folderId, false);
 //		listLocationLabel = germplasmListTree.getHeading();
 //		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
 //		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
@@ -131,12 +139,36 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 			private static final long serialVersionUID = 993268331611479850L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
-				if(validateAllFields()){
-					source.saveList(getGermplasmListToSave());
-					
-					Window window = event.getButton().getWindow();
-			        window.getParent().removeWindow(window);
+			public void buttonClick(final ClickEvent event) {
+				
+				//Call method so that the variables will be updated, values will be used for the logic below
+				getGermplasmListToSave();
+				
+				if(germplasmList!=null && germplasmList.getStatus()>=100) {
+					MessageNotifier.showError(getWindow().getParent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
+				
+				} else if(!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null) || (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
+		            ConfirmDialog.show(getWindow().getParent().getWindow(), messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST)+"?", 
+			                messageSource.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED), 
+			                messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
+			                new ConfirmDialog.Listener() {
+								private static final long serialVersionUID = 1L;
+								public void onClose(ConfirmDialog dialog) {
+			                        if (dialog.isConfirmed()) {
+			    						source.saveList(getGermplasmListToSave());
+			    						Window window = event.getButton().getWindow();
+			    				        window.getParent().removeWindow(window);
+			                        }
+			                    }
+			                }
+			            ); 			
+				} else {
+					if(validateAllFields()){
+						source.saveList(getGermplasmListToSave());
+						
+						Window window = event.getButton().getWindow();
+				        window.getParent().removeWindow(window);
+					}
 				}
 			}
 			
@@ -189,7 +221,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		
 	}
 	
-	public GermplasmList getParentList(){
+	public GermplasmList getSelectedListOnTree(){
 		Integer folderId = null;
 		if(germplasmListTree.getSelectedListId() instanceof Integer){
 			folderId = (Integer) germplasmListTree.getSelectedListId();
@@ -213,11 +245,32 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		if(germplasmList != null){
 			currentId = germplasmList.getId();
 		}
-		germplasmList = listDetailsComponent.getGermplasmList();
-		germplasmList.setId(currentId);
-		germplasmList.setParent(getParentList());         
-		germplasmList.setStatus(LIST_NAMES_STATUS);
 		
+		GermplasmList selectedList = getSelectedListOnTree();
+		
+		//If selected item on list/folder tree is a list, use that as target germplasm list
+		if(selectedList!=null && !selectedList.getType().equals("FOLDER")){
+			germplasmList = getSelectedListOnTree();
+			
+			//Needed for overwriting
+			source.setCurrentlySavedGermplasmList(germplasmList);
+			
+			//If selected item is a folder, get parent of that folder
+			try {
+				selectedList = germplasmListManager.getGermplasmListById(selectedList.getParentId());
+			} catch (MiddlewareQueryException e) {
+				LOG.error("Error with getting parent list: " + selectedList.getParentId(), e);
+				e.printStackTrace();
+			}
+			
+		//If not, use old method, get germplasm list the old way
+		} else {
+			germplasmList = listDetailsComponent.getGermplasmList();
+			germplasmList.setId(currentId);
+			germplasmList.setStatus(LIST_NAMES_STATUS);
+		}
+		
+		germplasmList.setParent(selectedList);         
         return germplasmList;
 	}
 
@@ -230,7 +283,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		return true;
 	}
 	
-	protected BreedingManagerListDetailsComponent getDetailsComponent(){
+	public BreedingManagerListDetailsComponent getDetailsComponent(){
 		return this.listDetailsComponent;
 	}
 }

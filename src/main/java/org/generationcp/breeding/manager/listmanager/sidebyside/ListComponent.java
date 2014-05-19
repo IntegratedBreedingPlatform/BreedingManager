@@ -1719,5 +1719,9 @@ public class ListComponent extends CssLayout implements InitializingBean, Intern
 	        inventoryWindow.center();
 		}
 	}
+
+	@Override
+	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	}
 }
 

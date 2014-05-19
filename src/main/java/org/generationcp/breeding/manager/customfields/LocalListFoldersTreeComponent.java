@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	private static final long serialVersionUID = -3038021741795321888L;
+	private Boolean showFoldersOnly;
 	
     @Autowired
     protected SimpleResourceBundleMessageSource messageSource;
@@ -17,8 +19,20 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	
 	public LocalListFoldersTreeComponent(Integer folderId) {
 		super(folderId);
+		this.showFoldersOnly = true;
 	}
 
+	public LocalListFoldersTreeComponent(Integer folderId, Boolean showFoldersOnly) {
+		super(folderId);
+		this.showFoldersOnly = showFoldersOnly;
+	}
+
+	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId, Boolean showFoldersOnly) {
+		super(selectTreeItemOnSaveListener, folderId);
+		this.showFoldersOnly = showFoldersOnly;
+	}
+	
+	
 	@Override
 	protected boolean doIncludeActionsButtons() {
 		return true;
@@ -51,7 +65,7 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected boolean doShowFoldersOnly() {
-		return true;
+		return showFoldersOnly;
 	}
 	
 	@Override

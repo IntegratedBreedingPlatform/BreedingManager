@@ -799,6 +799,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         return this.currentlySavedGermplasmList;
     }
     
+    @Override
     public void setCurrentlySavedGermplasmList(GermplasmList list){
         this.currentlySavedGermplasmList = list;
     }

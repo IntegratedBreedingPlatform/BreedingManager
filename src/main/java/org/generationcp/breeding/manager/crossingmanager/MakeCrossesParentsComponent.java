@@ -751,7 +751,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		if(table.getParent().getParent() instanceof SelectParentsListDataComponent ){
 			SelectParentsListDataComponent parentComponent = (SelectParentsListDataComponent) table.getParent().getParent();
 			String listname = parentComponent.getListName();			
-			seedSource = listname + " : " + entryId;
+			seedSource = listname + ":" + entryId;
 		}
 		
 		return seedSource;
@@ -895,6 +895,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		public String getColumnName() {
 			return columnName;
 		}
+	}
+
+	@Override
+	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+		
 	}
 
 }

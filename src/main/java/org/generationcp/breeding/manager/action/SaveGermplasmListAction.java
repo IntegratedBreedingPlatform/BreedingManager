@@ -109,13 +109,22 @@ public class SaveGermplasmListAction implements Serializable {
 		
 		//get all the list to add
 		List<GermplasmListData> listToAdd = new ArrayList<GermplasmListData>();
+		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>();
+		
 		if(existingListDataEntries.size() > 0){
+			System.out.println("existinglistdataentries > 0");
 			listToAdd = getNewEntriesToSave(currentListDataEntries,existingListDataEntries);
-		}
-		else{
+			listToDelete = getNewEntriesToDelete(currentListDataEntries,existingListDataEntries);
+		} else {
+			System.out.println("existinglistdataentries == 0");
 			listToAdd.addAll(currentListDataEntries);
 		}
-        this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
+
+		if(listToAdd.size()>0)
+			this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
+		 
+		// DELETE non entries not part of list anymore
+        this.germplasmListManager.deleteGermplasmListData(listToDelete);
         
         //get all the updated entries 
         List<GermplasmListData> listToUpdate = new ArrayList<GermplasmListData>();
@@ -144,6 +153,16 @@ public class SaveGermplasmListAction implements Serializable {
 		}
 		return toreturn;
 	}
+	
+	private List<GermplasmListData> getNewEntriesToDelete(List<GermplasmListData> currentListDataEntries, List<GermplasmListData> existingListDataEntries){
+		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
+		for(GermplasmListData entry: existingListDataEntries){
+			if(!currentListDataEntries.contains(entry)){
+				toreturn.add(entry);
+			}
+		}
+		return toreturn;
+	}	
 	
 	private List<GermplasmListData> getEntriesToUpdate(List<GermplasmListData> currentListDataEntries, List<GermplasmListData> existingListDataEntries){		
 		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
