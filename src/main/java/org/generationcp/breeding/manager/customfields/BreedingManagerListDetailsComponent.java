@@ -221,6 +221,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
 		listNotesField.setValue(notes);
+		
+		listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
 	}
 	
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
