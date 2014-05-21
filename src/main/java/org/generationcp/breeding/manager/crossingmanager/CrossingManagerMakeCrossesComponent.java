@@ -389,4 +389,10 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 	public TabSheet getListDetailsTabSheet(){
 		return listDetailsTabSheet;
 	}
+
+	@Override
+	public void folderClicked(GermplasmList list) {
+		// TODO Auto-generated method stub
+		
+	}
 }

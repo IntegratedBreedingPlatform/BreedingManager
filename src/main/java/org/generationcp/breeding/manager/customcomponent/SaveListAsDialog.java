@@ -99,7 +99,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setResizable(false);
 		setModal(true);
 
-		germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), folderId, false);
+		if(germplasmList!=null)
+		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false);
+		else
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false);
+		
 //		listLocationLabel = germplasmListTree.getHeading();
 //		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
 //		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());

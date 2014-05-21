@@ -197,32 +197,41 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setGermplasmListDetails(GermplasmList germplasmList){
 		this.germplasmList = germplasmList;
 		
-		listNameField.setValue(germplasmList.getName());
-		
-		resetListNameFieldForExistingList(germplasmList);
-		
-		listDescriptionField.setValue(germplasmList.getDescription());
-		
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-        try {
-            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
-        } catch (ReadOnlyException e) {
-            LOG.error("Error in parsing date field.", e);
-            e.printStackTrace();
-        } catch (ConversionException e) {
-            LOG.error("Error in parsing date field.", e);
-            e.printStackTrace();
-        } catch (ParseException e) {
-            LOG.error("Error in parsing date field.", e);
-            e.printStackTrace();
-        }
-		
-		listTypeField.setValue(germplasmList.getType());
-		
-		String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
-		listNotesField.setValue(notes);
-		
-		listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
+		if(germplasmList!=null){
+			listNameField.setValue(germplasmList.getName());
+			
+			resetListNameFieldForExistingList(germplasmList);
+			
+			listDescriptionField.setValue(germplasmList.getDescription());
+			
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+	        try {
+	            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
+	        } catch (ReadOnlyException e) {
+	            LOG.error("Error in parsing date field.", e);
+	            e.printStackTrace();
+	        } catch (ConversionException e) {
+	            LOG.error("Error in parsing date field.", e);
+	            e.printStackTrace();
+	        } catch (ParseException e) {
+	            LOG.error("Error in parsing date field.", e);
+	            e.printStackTrace();
+	        }
+			
+			listTypeField.setValue(germplasmList.getType());
+			
+			String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
+			listNotesField.setValue(notes);
+			
+			listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
+		} else {
+			listNameField.setValue("");
+			listDescriptionField.setValue("");
+			listDateField.setValue(new Date());
+			listTypeField.setValue("");
+			listNotesField.setValue("");
+			listOwnerField.setValue("");
+		}
 	}
 	
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
@@ -336,4 +345,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			return "";
 		}
     }
+	
+	public GermplasmList getCurrentGermplasmList(){
+		return germplasmList;
+	}
 }
