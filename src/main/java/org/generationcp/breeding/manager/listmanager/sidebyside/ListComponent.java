@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.ui.*;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -72,26 +73,14 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.TableFieldFactory;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListComponent extends CssLayout implements InitializingBean, InternationalizableComponent, 
+public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
         BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
@@ -544,7 +533,8 @@ public class ListComponent extends CssLayout implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
-		
+		this.setSizeFull();
+
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);

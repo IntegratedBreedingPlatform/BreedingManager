@@ -673,6 +673,10 @@
 	background-color: #e3e3e3;
 }
 
+.lm-search-bar div.v-horizontallayout {
+	display: inline-block !important
+}
+
 .lm-search-bar .lm-subtitle {
 	padding-bottom: 12px;
 }

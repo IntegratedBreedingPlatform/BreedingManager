@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -10,13 +11,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-
 @Configurable
-public class ListSearchComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSearchComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 2325345518077870690L;
 	
@@ -58,9 +54,8 @@ public class ListSearchComponent extends CssLayout implements Internationalizabl
 
 	@Override
 	public void layoutComponents() {
-		
-		setHeight("480px");
-		setWidth("880px");
+
+        this.setSizeFull();
 		
 		final HorizontalLayout instructionLayout = new HorizontalLayout();
 		
@@ -70,21 +65,23 @@ public class ListSearchComponent extends CssLayout implements Internationalizabl
 		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();
+        listDataTablePanel.setSizeFull();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         
-        final CssLayout listDataTableLayout = new CssLayout();
+        final VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("878px");
-        listDataTableLayout.setHeight("400px");
-        
+        listDataTableLayout.setSizeFull();
+
         listDataTableLayout.addComponent(searchBar);
         listDataTableLayout.addComponent(searchResultsComponent);
 	
         listDataTablePanel.setContent(listDataTableLayout);
-        
+
 		addComponent(instructionLayout);
 		addComponent(listDataTablePanel);
-	}
+
+        this.setExpandRatio(listDataTablePanel,1.0F);
+    }
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

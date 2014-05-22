@@ -19,8 +19,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -28,13 +26,12 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
-public class GermplasmSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -48,7 +45,8 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
 	        " or to only return results which match the query exactly (when checked).";
 	
-	private HorizontalLayout searchBarLayout;
+	private HorizontalLayout searchBarLayoutLeft;
+	private HorizontalLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -122,44 +120,46 @@ public class GermplasmSearchBarComponent extends Panel implements Internationali
 			}
 		});
 		
-		addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
-            private static final long serialVersionUID = 288627665348761948L;
-
-            @Override
-            public void handleAction(Object sender, Object target) {
-                searchButtonClickAction();
-            }
-        });
+//		addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
+//            private static final long serialVersionUID = 288627665348761948L;
+//
+//            @Override
+//            public void handleAction(Object sender, Object target) {
+//                searchButtonClickAction();
+//            }
+//        });
 
 	}
 
 	@Override
 	public void layoutComponents() {
-		final CssLayout panelLayout = new CssLayout();
-		panelLayout.setMargin(true);
-		panelLayout.addStyleName("lm-search-bar");
+		setMargin(true);
+		addStyleName("lm-search-bar");
+		setWidth("100%");
 		
-		searchBarLayout = new HorizontalLayout();
-		searchBarLayout.setWidth("100%");
-		searchBarLayout.setHeight("24px");
+		searchBarLayoutLeft = new HorizontalLayout();
+		searchBarLayoutLeft.setHeight("24px");
+		searchBarLayoutLeft.setSpacing(true);
 		
-		searchBarLayout.setSpacing(true);
+		searchBarLayoutRight = new HorizontalLayout();
+		searchBarLayoutRight.setHeight("24px");
+		searchBarLayoutRight.setSpacing(true);
 		
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		searchField.setWidth("120px");
 		
-        searchBarLayout.addComponent(searchField);
-        searchBarLayout.addComponent(searchButton);
-        searchBarLayout.addComponent(likeOrEqualCheckBox);
-        searchBarLayout.addComponent(includeParentsCheckBox);
-        searchBarLayout.addComponent(popup);
+		searchBarLayoutLeft.addComponent(searchField);
+		searchBarLayoutLeft.addComponent(searchButton);
+		searchBarLayoutLeft.addComponent(likeOrEqualCheckBox);
+		searchBarLayoutRight.addComponent(includeParentsCheckBox);
+		searchBarLayoutRight.addComponent(popup);
         
-        searchBarLayout.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
-        searchBarLayout.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
-        searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
+		searchBarLayoutLeft.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayoutRight.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayoutRight.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 
-        panelLayout.addComponent(searchBarLayout);
-        setContent(panelLayout);
+        addComponent(searchBarLayoutLeft);
+        addComponent(searchBarLayoutRight);
 	}
 
 	@Override

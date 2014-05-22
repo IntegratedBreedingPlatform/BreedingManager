@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -12,13 +13,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-
 @Configurable
-public class GermplasmSelectionComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmSelectionComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -84,7 +80,7 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 
 	@Override
 	public void layoutComponents() {
-		
+		this.setSizeFull();
 		setMargin(true);
 		
 		headerLayout.setWidth("100%");
@@ -100,13 +96,13 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();
+        listDataTablePanel.setSizeFull();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         
-        final CssLayout listDataTableLayout = new CssLayout();
+        final VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("605px");
-        listDataTableLayout.setHeight("488px");
-        
+        listDataTableLayout.setSizeFull();
+
         listDataTableLayout.addComponent(searchBarComponent);
         listDataTableLayout.addComponent(searchResultsComponent);
 	
@@ -115,6 +111,8 @@ public class GermplasmSelectionComponent extends CssLayout implements Initializi
 		addComponent(headerLayout);
 		addComponent(instructionLayout);
 		addComponent(listDataTablePanel);
+
+        this.setExpandRatio(listDataTablePanel,1.0F);
 	}
 	
     public GermplasmSearchResultsComponent getSearchResultsComponent(){

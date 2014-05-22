@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.ui.*;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -23,10 +24,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -37,7 +34,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 
     private ListTabComponent listDetailsComponent = null;
     private AbsoluteLayout absoluteLayoutSource;
-    private CssLayout cssLayoutSource;
+    private ComponentContainer cssLayoutSource;
     private final String GIDPropertyId;
     //private Button addColumnButton;
     private final Table targetTable;
@@ -169,7 +166,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @param targetTable - table where data will be manipulated
      * @param gid - property of GID (button with GID as caption) on that table
      */
-    public AddColumnContextMenu(CssLayout cssLayoutSource, 
+    public AddColumnContextMenu(ComponentContainer cssLayoutSource,
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;

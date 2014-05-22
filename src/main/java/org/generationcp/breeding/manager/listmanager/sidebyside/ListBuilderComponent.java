@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -45,23 +46,14 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class ListBuilderComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
+public class ListBuilderComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
     
@@ -160,6 +152,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         buildNewListDesc.setWidth("500px");
         
         listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+        listEntriesLabel.setWidth("120px");
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
@@ -300,7 +293,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 	@Override
 	public void layoutComponents() {
 		
-		setMargin(true);
+		this.setMargin(true);
 		
 		this.setSizeFull();
 		addStyleName("lm-list-builder");
@@ -336,12 +329,11 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
 		toolsLayout.addStyleName("lm-list-desc");
 
         listDataTablePanel = new Panel();
+        listDataTablePanel.setSizeFull();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
-        
-        final CssLayout listDataTableLayout = new CssLayout();
+        final VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setWidth("587px");
-        listDataTableLayout.setHeight("462px");
+        listDataTableLayout.setSizeFull();
         listDataTableLayout.addStyleName("listDataTableLayout");
         
         listDataTablePanel.setContent(listDataTableLayout);
@@ -360,6 +352,7 @@ public class ListBuilderComponent extends CssLayout implements InitializingBean,
         this.addComponent(listDataTablePanel);
         this.addComponent(buttons);
         this.addComponent(menu);
+        this.setExpandRatio(listDataTablePanel,1.0F);
 	}
     
 	private void addBasicTableColumns(Table table){

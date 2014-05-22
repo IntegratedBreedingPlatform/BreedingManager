@@ -73,7 +73,8 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     private Label toWorkWith;
 
     private HorizontalLayout headerLayout;
-
+    private CssLayout innerLayout;
+    
     private TabSheet detailsTabSheet;
     
     private final Integer listId;
@@ -173,7 +174,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         headerLayout.addComponent(btnCloseAllTabs);
         headerLayout.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
         
-        final CssLayout innerLayout = new CssLayout();
+        innerLayout = new CssLayout();
         innerLayout.addComponent(noListLabel);
         innerLayout.addComponent(headerLayout);
         
@@ -320,6 +321,7 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
     	    this.addComponent(headerLayout);
+    	    this.addComponent(innerLayout);
     	    this.addComponent(detailsTabSheet);
     	
             headerLayout.setVisible(true);

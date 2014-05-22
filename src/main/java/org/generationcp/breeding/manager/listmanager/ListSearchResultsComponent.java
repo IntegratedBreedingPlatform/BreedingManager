@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.List;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -17,14 +18,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.Action;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 
 @Configurable
-public class ListSearchResultsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
@@ -66,9 +63,6 @@ public class ListSearchResultsComponent extends CssLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
 		
-		setWidth("100%");
-		setHeight("330px");
-
 		matchingListsLabel = new Label();
 		matchingListsLabel.setWidth("100%");
 		
