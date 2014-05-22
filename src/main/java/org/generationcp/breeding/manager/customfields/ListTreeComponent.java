@@ -450,8 +450,9 @@ public abstract class ListTreeComponent extends CssLayout implements
 	    				GermplasmList parent = parents.pop();
 	    				germplasmListTree.setChildrenAllowed(parent.getId(), true);
 	    				addGermplasmListNode(parent.getId().intValue());
+	    				germplasmListTree.expandItem(parent.getId());
 	    			}
-	    			
+
 	    			germplasmListTree.setNullSelectionAllowed(false);
 	    			germplasmListTree.select(listId);
 	    			germplasmListTree.setValue(listId);
