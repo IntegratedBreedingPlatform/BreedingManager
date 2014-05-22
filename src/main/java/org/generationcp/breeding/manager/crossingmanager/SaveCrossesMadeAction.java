@@ -177,7 +177,15 @@ public class SaveCrossesMadeAction implements Serializable {
 	
 	private void retrieveGermplasmsOfList() throws MiddlewareQueryException {
 		germplasmToListDataMap.clear();
-		this.existingListEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+		
+		List<GermplasmListData> allExistingEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+		
+		//Add only non deleted list data
+		existingListEntries = new ArrayList<GermplasmListData>();
+		for(GermplasmListData germplasmListData : allExistingEntries){
+			if(germplasmListData.getStatus()!=9)
+				this.existingListEntries.add(germplasmListData);
+		}
 		
 		List<Integer> gids = new ArrayList<Integer>();
 		for (GermplasmListData entry : existingListEntries){
@@ -224,8 +232,9 @@ public class SaveCrossesMadeAction implements Serializable {
     	int listId;
     	GermplasmList listToSave = crossesMade.getGermplasmList();
 		if (this.germplasmList == null){
+			
+			System.out.println("Case 1");
     		listId = this.germplasmListManager.addGermplasmList(listToSave);
-    		
     	} else {
     		// GCP-8225 : set the updates manually on List object so that list entries are not deleted
     		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
@@ -246,6 +255,7 @@ public class SaveCrossesMadeAction implements Serializable {
     
     private void saveGermplasmListDataRecords(CrossesMade crossesMade,
         List<Integer> germplasmIDs, GermplasmList list) throws MiddlewareQueryException {
+    	//dennis
     	
     	deleteRemovedListData(crossesMade);
         addNewGermplasmListData(crossesMade, germplasmIDs, list);
@@ -271,6 +281,14 @@ public class SaveCrossesMadeAction implements Serializable {
     	if (listToDelete.size() > 0){
     		this.germplasmListManager.deleteGermplasmListData(listToDelete);
     	}
+    	
+		//Update "exsitingListEntries", this is used to assign the entry id
+    	existingListEntries = new ArrayList<GermplasmListData>();
+		List<GermplasmListData> allExistingEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+		for(GermplasmListData germplasmListData : allExistingEntries){
+			if(germplasmListData.getStatus()!=9)
+				this.existingListEntries.add(germplasmListData);
+		}
 	}
 
 	

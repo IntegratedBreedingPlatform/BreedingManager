@@ -78,6 +78,8 @@ public abstract class ListTreeComponent extends CssLayout implements
     protected Label heading;
 	protected Tree germplasmListTree;
 	protected Button refreshButton;
+	
+	protected Boolean selectProgramListsByDefault;
     
     protected Object selectedListId;
     
@@ -85,15 +87,18 @@ public abstract class ListTreeComponent extends CssLayout implements
     
     public ListTreeComponent(Integer selectListId){
     	this.listId = selectListId;
+    	selectProgramListsByDefault = false;
     }
 
     public ListTreeComponent(ListTreeActionsListener treeActionsListener){
     	this.treeActionsListener = treeActionsListener;
+    	selectProgramListsByDefault = false;
     }
     
     public ListTreeComponent(ListTreeActionsListener treeActionsListener, Integer selectedListId){
     	this.treeActionsListener = treeActionsListener;
     	this.listId = selectedListId;
+    	selectProgramListsByDefault = true;
     }
     
 	@Override
@@ -452,6 +457,9 @@ public abstract class ListTreeComponent extends CssLayout implements
 	    			germplasmListTree.setValue(listId);
 	    			setSelectedListId(listId);
 	    		}
+	        } else if(selectProgramListsByDefault) {
+	        	germplasmListTree.select("LOCAL");
+    			germplasmListTree.setValue("LOCAL");
 	        }
         } catch(MiddlewareQueryException ex){
     		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);

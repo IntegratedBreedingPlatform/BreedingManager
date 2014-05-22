@@ -578,6 +578,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+		this.crossList = list;
 	}
 
 }

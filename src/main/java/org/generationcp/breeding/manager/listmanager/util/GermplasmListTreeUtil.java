@@ -176,7 +176,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		        } else if (location == VerticalDropLocation.MIDDLE && targetList.getType().equals("FOLDER")){
 	        		setParent(sourceItemId, targetItemId);
 		        //Dropped on a list with parent != LOCAL
-		        } else if (targetList!=null && targetList.getParentId()>=0){
+		        } else if (targetList!=null && targetList.getParentId()!=null && targetList.getParentId()>=0){
 		        	setParent(sourceItemId, targetList.getParentId());
 		        //Dropped on a list with parent == LOCAL 
 				} else {

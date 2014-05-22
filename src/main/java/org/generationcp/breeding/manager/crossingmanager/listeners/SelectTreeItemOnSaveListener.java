@@ -42,8 +42,6 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	@Override
 	public void folderClicked(GermplasmList list){
 		if(saveListAsDialog != null){
-			
-			System.out.println("list: "+list);
 			//Check also if folder is clicked (or list is null == central/local folders)
 			if((list!=null && list.getType().equals("FOLDER")) || list==null){
 				//Check if list old (with ID), if so, remove list details 

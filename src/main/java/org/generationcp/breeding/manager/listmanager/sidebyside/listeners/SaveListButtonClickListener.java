@@ -81,6 +81,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			listToSave.setStatus(Integer.valueOf(1));
 			listToSave.setUserId(getLocalIBDBUserId());
 			
+			System.out.println("currentlySavedList is null");
+			
 			try{
 				Integer listId = this.dataManager.addGermplasmList(listToSave);
 				
@@ -331,7 +333,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
     	 				} else {
     	 					listDataTable.unselect(entry.getId());
     	 				}
-    	 				System.out.println("Checkbox value: "+((Boolean) itemCheckBox.getValue()));
     	 			}
     	 			 
     	 		});

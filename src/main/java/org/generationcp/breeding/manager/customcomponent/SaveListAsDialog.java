@@ -1,13 +1,11 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -148,9 +146,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				//Call method so that the variables will be updated, values will be used for the logic below
 				getGermplasmListToSave();
 				
+				//If target list is locked
 				if(germplasmList!=null && germplasmList.getStatus()>=100) {
 					MessageNotifier.showError(getWindow().getParent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
-				
+		
+				//If target list to be overwritten is not itself and is an existing list
 				} else if(!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null) || (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
 		            ConfirmDialog.show(getWindow().getParent().getWindow(), messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST)+"?", 
 			                messageSource.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED), 
@@ -165,7 +165,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 			                        }
 			                    }
 			                }
-			            ); 			
+			            );
+		            
+		        //If target list to be overwritten is itself
 				} else {
 					if(validateAllFields()){
 						source.saveList(getGermplasmListToSave());
