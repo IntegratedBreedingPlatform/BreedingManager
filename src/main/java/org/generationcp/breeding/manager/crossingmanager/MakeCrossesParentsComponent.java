@@ -813,6 +813,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	return maleParentList;
     }
     
+    public void setFemaleParentList(GermplasmList list){
+    	femaleParentList = list;
+    }
+    
+    public void setMaleParentList(GermplasmList list){
+    	maleParentList = list;
+    }    
+    
     public void makeCrossButtonAction(){
     	List<GermplasmListEntry> femaleList = getCorrectSortedValue(femaleParents);
     	List<GermplasmListEntry> maleList = getCorrectSortedValue(maleParents);
