@@ -228,7 +228,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listNameField.setValue("");
 			listDescriptionField.setValue("");
 			listDateField.setValue(new Date());
-			listTypeField.setValue("");
+			listTypeField.setValue("LST");
 			listNotesField.setValue("");
 			listOwnerField.setValue("");
 		}
