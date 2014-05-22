@@ -88,10 +88,8 @@ public class CrossingManagerActionHandler implements Handler {
         if(itemsBeforeDelete!=itemsLeftAfterDelete){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getSaveFemaleListButton().setEnabled(true);
-        		((MakeCrossesParentsComponent) source).setFemaleParentList(null);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getSaveMaleListButton().setEnabled(true);
-        		((MakeCrossesParentsComponent) source).setMaleParentList(null);
         	}
         	
         //Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
