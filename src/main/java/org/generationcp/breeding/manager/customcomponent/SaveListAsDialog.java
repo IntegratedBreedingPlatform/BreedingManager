@@ -122,10 +122,10 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		if(germplasmList != null){
 			
 			GermplasmList parent = germplasmList.getParent();
-			if(parent != null){ // if not "Program Lists"
-				germplasmListTree.setListId(parent.getId());
-				germplasmListTree.setSelectedListId(parent.getId());
-			}
+			//if(parent != null){ // if not "Program Lists"
+			//	germplasmListTree.setListId(parent.getId());
+			//	germplasmListTree.setSelectedListId(parent.getId());
+			//}
 			
 			germplasmListTree.createTree();
 			
