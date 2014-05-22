@@ -607,6 +607,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         		//toggle folder
 	        	} else if(hasChildList){
 	        		expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
+	        		treeActionsListener.folderClicked(germplasmList);
 	        	}
         		
         		germplasmListTree.setNullSelectionAllowed(false);
@@ -615,6 +616,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         	}
 			        
         } catch (NumberFormatException e) {
+        	        	
         	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
@@ -654,4 +656,8 @@ public abstract class ListTreeComponent extends CssLayout implements
 		return toggleListTreeButton;
 	}
     
+	public ListTreeActionsListener getTreeActionsListener(){
+		return treeActionsListener;
+	}
+	
 }

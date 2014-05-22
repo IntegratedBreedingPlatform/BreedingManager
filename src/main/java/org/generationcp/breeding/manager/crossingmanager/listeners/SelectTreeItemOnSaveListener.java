@@ -34,11 +34,28 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 
 	@Override
 	public void openListDetails(GermplasmList list) {
-		if(saveListAsDialog != null){
+		if(saveListAsDialog != null && !list.getType().equals("FOLDER")){
 			saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 		}
 	}
 
+	@Override
+	public void folderClicked(GermplasmList list){
+		if(saveListAsDialog != null){
+			
+			System.out.println("list: "+list);
+			//Check also if folder is clicked (or list is null == central/local folders)
+			if((list!=null && list.getType().equals("FOLDER")) || list==null){
+				//Check if list old (with ID), if so, remove list details 
+				if(saveListAsDialog.getDetailsComponent().getCurrentGermplasmList()!=null 
+						&& saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId()!=null)
+					saveListAsDialog.getDetailsComponent().setGermplasmListDetails(null);
+			} else {
+				saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
+			}
+		}
+	}
+	
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub

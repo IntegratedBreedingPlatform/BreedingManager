@@ -311,6 +311,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    			saveMaleListButton.setEnabled(false);
 	                    		} else {
 	                    			saveMaleListButton.setEnabled(true);
+	                    			maleParentList = null;
 	                    		}
 	                    	}
 	                    } catch(MiddlewareQueryException e) {
@@ -450,6 +451,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    			saveFemaleListButton.setEnabled(false);
 	                    		} else {
 	                    			saveFemaleListButton.setEnabled(true);
+	                    			femaleParentList = null;
 	                    		}
 	                    	}
 	                    } catch(MiddlewareQueryException e) {
@@ -593,10 +595,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
 		    			entryObject.setFromFemaleTable(true);
 		    			this.saveFemaleListButton.setEnabled(true);
+            			femaleParentList = null;
 		    		} else{
 		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
 		    			entryObject.setFromFemaleTable(false);
 		    			this.saveMaleListButton.setEnabled(true);
+            			maleParentList = null;
 		    		}
 		    		
 		    		CheckBox tag = new CheckBox();
@@ -632,9 +636,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		if(targetTable.equals(femaleParents)){
     			this.saveFemaleListButton.setEnabled(true);
     			femaleListNameForCrosses = "";
+    			femaleParentList = null;
     		} else{
     			this.saveMaleListButton.setEnabled(true);
     			maleListNameForCrosses = "";
+    			maleParentList = null;
     		}
     	}
     	

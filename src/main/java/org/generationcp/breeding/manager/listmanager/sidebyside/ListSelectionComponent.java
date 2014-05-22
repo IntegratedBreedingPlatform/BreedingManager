@@ -147,4 +147,10 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 	public void openListSearchDialog() {
 		launchListSelectionWindow(getWindow(), listSearchComponent, messageSource.getMessage(Message.SEARCH_FOR_LISTS));
 	}
+
+	@Override
+	public void folderClicked(GermplasmList list) {
+		// TODO Auto-generated method stub
+		
+	}
 }
