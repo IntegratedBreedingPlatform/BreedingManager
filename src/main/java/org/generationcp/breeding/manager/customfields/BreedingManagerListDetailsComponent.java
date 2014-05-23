@@ -40,6 +40,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
+	private String defaultListType;
+	
 	private Label headerListLabel;
 	private Panel containerPanel;
 	private Label indicatesMandatoryLabel;
@@ -69,6 +71,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		super();
 		this.germplasmList = germplasmList;  
 	}
+	
+	public BreedingManagerListDetailsComponent(String defaultListType, GermplasmList germplasmList){
+		super();
+		this.defaultListType = defaultListType;
+		this.germplasmList = germplasmList;  
+	}	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -228,7 +236,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listNameField.setValue("");
 			listDescriptionField.setValue("");
 			listDateField.setValue(new Date());
-			listTypeField.setValue("LST");
+			listTypeField.setValue(defaultListType);
 			listNotesField.setValue("");
 			listOwnerField.setValue("");
 		}
