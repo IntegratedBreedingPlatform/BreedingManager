@@ -59,6 +59,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private Button saveButton;
 	
 	private final String windowCaption;
+	private String defaultListType;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -78,12 +79,21 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		this.windowCaption = null;
 	}
 	
+	public SaveListAsDialog(SaveListAsDialogSource source, String defaultListType, GermplasmList germplasmList){
+		this.source = source;
+		this.originalGermplasmList = germplasmList;
+		this.germplasmList = germplasmList;
+		this.defaultListType = defaultListType;
+		this.windowCaption = null;
+	}
+
 	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList, String windowCaption){
 		this.source = source;
 		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
 		this.windowCaption = windowCaption;
 	}
+	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -117,7 +127,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 //		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
 //		germplasmListTree.setHeading(listLocationLabel);
 		
-		listDetailsComponent = new BreedingManagerListDetailsComponent(germplasmList);
+		listDetailsComponent = new BreedingManagerListDetailsComponent(defaultListType(), germplasmList);
 		
 		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
 		cancelButton.setWidth("80px");
@@ -125,6 +135,10 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
 		saveButton.setWidth("80px");
 		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+	}
+	
+	public String defaultListType(){
+		return "LST";
 	}
 
 	@Override

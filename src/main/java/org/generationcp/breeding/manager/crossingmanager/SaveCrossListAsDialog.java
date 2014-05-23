@@ -13,10 +13,19 @@ public class SaveCrossListAsDialog extends SaveListAsDialog {
 		super(source, germplasmList);
 	}
 	
+	public SaveCrossListAsDialog(SaveListAsDialogSource source,
+			GermplasmList germplasmList, String defaultListType) {
+		super(source, defaultListType, germplasmList);
+	}
+	
 	@Override
 	public void initializeValues() {
 		super.initializeValues();
 		getDetailsComponent().getListTypeField().setValue("F1");
+	}
+
+	public String defaultListType(){
+		return "F1";
 	}
 
 }
