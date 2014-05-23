@@ -149,7 +149,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         buildNewListDesc = new Label();
         buildNewListDesc.setValue("Build your new list by selecting and dragging in entries from the lists to the left.");
-        buildNewListDesc.setWidth("500px");
+        buildNewListDesc.setWidth("100%");
         
         listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         listEntriesLabel.setWidth("120px");
@@ -293,7 +293,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	@Override
 	public void layoutComponents() {
 		
-		this.setMargin(true);
+		this.setMargin(true,true,true,false);
 		
 		this.setSizeFull();
 		addStyleName("lm-list-builder");
