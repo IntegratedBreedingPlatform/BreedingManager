@@ -1,7 +1,13 @@
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
@@ -146,12 +152,28 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				//Call method so that the variables will be updated, values will be used for the logic below
 				getGermplasmListToSave();
 				
+				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+				Date date;
+				try {
+					date = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT, Locale.ENGLISH).parse(listDetailsComponent.getListNotesField().getValue().toString());
+				} catch (ParseException e) {
+					date = new Date();
+				}
+				
 				//If target list is locked
 				if(germplasmList!=null && germplasmList.getStatus()>=100) {
 					MessageNotifier.showError(getWindow().getParent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
 		
 				//If target list to be overwritten is not itself and is an existing list
 				} else if(!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null) || (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
+					
+					final GermplasmList gl = getGermplasmListToSave();
+					gl.setName(listDetailsComponent.getListNameField().getValue().toString());
+					gl.setDescription(listDetailsComponent.getListDescriptionField().getValue().toString());
+					gl.setType(listDetailsComponent.getListTypeField().getValue().toString());
+					gl.setDate(Long.parseLong(formatter.format(date)));
+					gl.setNotes(listDetailsComponent.getListNotesField().getValue().toString());
+					
 		            ConfirmDialog.show(getWindow().getParent().getWindow(), messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST)+"?", 
 			                messageSource.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED), 
 			                messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
@@ -159,7 +181,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 								private static final long serialVersionUID = 1L;
 								public void onClose(ConfirmDialog dialog) {
 			                        if (dialog.isConfirmed()) {
-			    						source.saveList(getGermplasmListToSave());
+			    						source.saveList(gl);
 			    						Window window = event.getButton().getWindow();
 			    				        window.getParent().removeWindow(window);
 			                        }
@@ -170,7 +192,15 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		        //If target list to be overwritten is itself
 				} else {
 					if(validateAllFields()){
-						source.saveList(getGermplasmListToSave());
+						
+						GermplasmList gl = getGermplasmListToSave();
+						gl.setName(listDetailsComponent.getListNameField().getValue().toString());
+						gl.setDescription(listDetailsComponent.getListDescriptionField().getValue().toString());
+						gl.setType(listDetailsComponent.getListTypeField().getValue().toString());
+						gl.setDate(Long.parseLong(formatter.format(date)));
+						gl.setNotes(listDetailsComponent.getListNotesField().getValue().toString());
+						
+						source.saveList(gl);
 						
 						Window window = event.getButton().getWindow();
 				        window.getParent().removeWindow(window);
