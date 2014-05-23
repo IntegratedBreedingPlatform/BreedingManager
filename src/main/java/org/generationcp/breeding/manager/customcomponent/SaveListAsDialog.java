@@ -32,6 +32,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -47,6 +48,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	private final SaveListAsDialogSource source;
 	
+	private Label guideMessage;
 //	private Label listLocationLabel;
 	private LocalListFoldersTreeComponent germplasmListTree;
 	private Integer folderId;
@@ -107,6 +109,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false);
 		else
 			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false);
+		
+		guideMessage = new Label(messageSource.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)+".");
 		
 //		listLocationLabel = germplasmListTree.getHeading();
 //		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
@@ -214,7 +218,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	@Override
 	public void layoutComponents() {
 		setWidth("725px");
-		setHeight("493px");
+		setHeight("510px");
 		
 		contentLayout = new HorizontalLayout();
 		contentLayout.setSpacing(true);
@@ -223,7 +227,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		contentLayout.addStyleName("contentLayout");
 
 		contentLayout.setWidth("689px");
-		contentLayout.setHeight("344px");
+		contentLayout.setHeight("341px");
 		
 		germplasmListTree.addStyleName("germplasmListTree");
 		listDetailsComponent.addStyleName("listDetailsComponent");
@@ -244,6 +248,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		
 		mainLayout = new CssLayout();
 		mainLayout.setSizeFull();
+		mainLayout.addComponent(guideMessage);
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
 		mainLayout.addStyleName("mainlayout");
