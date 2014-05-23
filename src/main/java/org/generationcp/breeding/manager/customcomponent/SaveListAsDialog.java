@@ -157,9 +157,10 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				getGermplasmListToSave();
 				
 				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+				
 				Date date;
 				try {
-					date = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT, Locale.ENGLISH).parse(listDetailsComponent.getListNotesField().getValue().toString());
+					date = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH).parse(listDetailsComponent.getListDateField().getValue().toString());
 				} catch (ParseException e) {
 					date = new Date();
 				}
