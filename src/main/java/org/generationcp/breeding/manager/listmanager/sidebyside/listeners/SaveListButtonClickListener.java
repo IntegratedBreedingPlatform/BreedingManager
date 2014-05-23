@@ -1,12 +1,13 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside.listeners;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
@@ -30,9 +31,9 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
@@ -47,6 +48,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	private GermplasmListManager dataManager;
 	private WorkbenchDataManager workbenchDataManager;
 	private Table listDataTable;
+	
+	private Boolean forceHasChanges = false;
 	
 	private SimpleResourceBundleMessageSource messageSource;
 	
@@ -72,6 +75,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			return;
 		}
 		List<GermplasmListData> listEntries = this.source.getListEntriesFromTable();
+		System.out.println("List entries: "+listEntries);
 		
 		if(!validateListDetails(listToSave, currentlySavedList)){
 			return;
@@ -122,7 +126,15 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} else if(currentlySavedList != null){
 			
-			if(areThereChangesToList(currentlySavedList, listToSave)){
+			System.out.println("Currently saved list: "+currentlySavedList);
+			System.out.println("List to save: "+listToSave);
+			
+			Boolean hasChangesToListDetails = false;
+			
+			SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+			
+			if(areThereChangesToList(currentlySavedList, listToSave) || forceHasChanges){
+				System.out.println("has changes");
 				if(!currentlySavedList.getName().equals(listToSave.getName())){
 					if(!validateListName(listToSave)){
 						return;
@@ -159,10 +171,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 							, Notification.POSITION_CENTERED);
 					return;
 				}
+			} else {
+				System.out.println("has NO changes");
 			}
 			
 			boolean thereAreChangesInListEntries = false;
 			List<GermplasmListData> newEntries = getNewEntriesToSave(listEntries);
+			System.out.println("New entries "+newEntries);
 			if(!newEntries.isEmpty()){
 				setNeededValuesForNewListEntries(currentlySavedList, newEntries);
 				if(!saveNewListEntries(newEntries)){
@@ -172,6 +187,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			}
 			
 			List<GermplasmListData> entriesToUpdate = getUpdatedEntriesToSave(currentlySavedList, listEntries);
+			System.out.println("Entries to update: "+entriesToUpdate);
 			if(!entriesToUpdate.isEmpty()){
 				if(!updateListEntries(entriesToUpdate)){
 					return;
@@ -180,6 +196,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			}
 			
 			List<GermplasmListData> entriesToDelete = getEntriesToDelete(currentlySavedList, listEntries);
+			System.out.println("Entries to delete: "+entriesToDelete);
 			if(!entriesToDelete.isEmpty()){
 				if(!updateListEntries(entriesToDelete)){
 					return;
@@ -455,7 +472,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
 		
 		for(GermplasmListData entry: listEntries){
-			if(entry.getId() > 0){
+			if(entry.getId() > 0 || forceHasChanges){
 				toreturn.add(entry);
 			}
 		}
@@ -606,6 +623,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 		
 		return toreturn;
+	}
+	
+	public void setForceHasChanges(Boolean hasChanges){
+		forceHasChanges = hasChanges;
 	}
 	
     

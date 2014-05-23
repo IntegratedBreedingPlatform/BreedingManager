@@ -342,4 +342,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	public BreedingManagerListDetailsComponent getDetailsComponent(){
 		return this.listDetailsComponent;
 	}
+	
+	public SaveListAsDialogSource getSource(){
+		return source;
+	}
 }

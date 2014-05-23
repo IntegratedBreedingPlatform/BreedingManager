@@ -841,7 +841,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		saveListButtonListener.doSaveAction();
 	}
 	
+	public SaveListButtonClickListener getSaveListButtonListener(){
+		return saveListButtonListener;
+	}
+	
 	public BuildNewListDropHandler getBuildNewListDropHandler(){
 		return dropHandler;
 	}
+	
 }

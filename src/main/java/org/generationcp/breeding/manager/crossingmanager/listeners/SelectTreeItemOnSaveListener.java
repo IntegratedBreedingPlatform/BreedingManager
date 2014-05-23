@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,6 +37,9 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	public void openListDetails(GermplasmList list) {
 		if(saveListAsDialog != null && !list.getType().equals("FOLDER")){
 			saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
+			
+			ListBuilderComponent LBC = (ListBuilderComponent) saveListAsDialog.getSource();
+			LBC.getSaveListButtonListener().setForceHasChanges(true);
 		}
 	}
 
