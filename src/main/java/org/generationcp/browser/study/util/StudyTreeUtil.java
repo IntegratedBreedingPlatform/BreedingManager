@@ -207,7 +207,15 @@ public class StudyTreeUtil implements Serializable {
                     messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
                     Notification.POSITION_CENTERED);
         	return false;
-    	}
+    	} else if(newFolderName.toLowerCase().equals(messageSource.getMessage(Message.PROGRAM_STUDIES).toString().toLowerCase()) ||
+        		newFolderName.toLowerCase().equals(messageSource.getMessage(Message.PUBLIC_STUDIES).toString().toLowerCase())
+        			){
+        		MessageNotifier.showError(source.getWindow(),
+                	messageSource.getMessage(Message.INVALID_INPUT), 
+                	messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
+                	Notification.POSITION_CENTERED);
+        		return false;
+       	}
 		
 		return true;
 	}
