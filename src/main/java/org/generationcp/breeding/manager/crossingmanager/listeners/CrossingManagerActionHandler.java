@@ -100,5 +100,12 @@ public class CrossingManagerActionHandler implements Handler {
         		((MakeCrossesParentsComponent) source).getSaveMaleListButton().setEnabled(false);
         	}
         }
+        
+        //update the number of entries of male/female after delete
+        if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
+    		((MakeCrossesParentsComponent) source).updateFemaleNoOfEntries(table.size());
+    	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
+    		((MakeCrossesParentsComponent) source).updateMaleNoOfEntries(table.size());
+    	}
 	}
 }
