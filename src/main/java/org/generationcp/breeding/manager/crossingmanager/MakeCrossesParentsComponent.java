@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -55,6 +56,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -199,7 +201,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         maleParents.setImmediate(true);
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        maleParents.addContainerProperty(MALE_PARENTS_LABEL, String.class, null);
+        maleParents.addContainerProperty(MALE_PARENTS_LABEL, Button.class, null);
         
         maleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
         maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
@@ -248,13 +250,19 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		                    //Check first if item is dropped on top of itself
 		                    if(!transferable.getItemId().equals(targetItemId)){
 		                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(MALE_PARENTS_LABEL).getValue();
+		                        
+		                        GermplasmListEntry germplasmEntry = (GermplasmListEntry)transferable.getItemId();
+		                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
+		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+		                        gidButton.setDescription("Click to view Germplasm information");
+		                        
 		                        GermplasmListEntry maleItemId = (GermplasmListEntry) transferable.getItemId();
 		                        CheckBox tag = (CheckBox) sourceTable.getItem(maleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
 		                        	
 		                        sourceTable.removeItem(transferable.getItemId());
 		                        
 								Item item = targetTable.addItemAfter(targetItemId, maleItemId);
-		                      	item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
+		                      	item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
 		                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 		                      	
 		                      	if(selectedEntries.contains(maleItemId)){
@@ -283,6 +291,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
 	                    			if(listData.getStatus()!=9){
 	                    				String maleParentValue = listData.getDesignation();
+	                    				
+	    		                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(),true));
+	    		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+	    		                        gidButton.setDescription("Click to view Germplasm information");
+	    		                        
 	                    				CheckBox tag = new CheckBox();
 			                        	
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
@@ -296,7 +309,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                		            tag.setImmediate(true);
 	                    				
 	                    				Item item = targetTable.addItem(entryObject);
-	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(maleParentValue);
+	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 	                    				
 	                    				addedCount++;
@@ -340,7 +353,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         femaleParents.setImmediate(true);
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        femaleParents.addContainerProperty(FEMALE_PARENTS_LABEL, String.class, null);
+        femaleParents.addContainerProperty(FEMALE_PARENTS_LABEL, Button.class, null);
 
         femaleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
         femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
@@ -387,13 +400,19 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		                    //Check first if item is dropped on top of itself
 		                    if(!transferable.getItemId().equals(targetItemId)){
 		                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(FEMALE_PARENTS_LABEL).getValue();
+		                		
+		                		GermplasmListEntry germplasmEntry = (GermplasmListEntry)transferable.getItemId();
+		                		Button gidButton = new Button(femaleParentValue, new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
+		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+		                        gidButton.setDescription("Click to view Germplasm information");
+		                		
 		                		GermplasmListEntry femaleItemId = (GermplasmListEntry) transferable.getItemId();
 		                		CheckBox tag = (CheckBox) sourceTable.getItem(femaleItemId).getItemProperty(TAG_COLUMN_ID).getValue();
 								
 		                		sourceTable.removeItem(transferable.getItemId());
 		                		
 								Item item = targetTable.addItemAfter(targetItemId, transferable.getItemId());
-		                    	item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
+		                    	item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(gidButton);
 		                      	item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 		                      	
 		                      	if(selectedEntries.contains(femaleItemId)){
@@ -423,6 +442,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
 	                    			if(listData.getStatus()!=9){
 	                    				String femaleParentValue = listData.getDesignation();
+	                    				
+	                    				Button gidButton = new Button(femaleParentValue, new GidLinkClickListener(listData.getGid().toString(),true));
+	    		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+	    		                        gidButton.setDescription("Click to view Germplasm information");
+	                    				
 	                    				CheckBox tag = new CheckBox();
 			                        	
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
@@ -436,7 +460,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                		            tag.setImmediate(true);
 	                    				
 	                    				Item item = targetTable.addItem(entryObject);
-	                    				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(femaleParentValue);
+	                    				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(gidButton);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 	                    				
 	                    				addedCount++;
@@ -581,23 +605,31 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	for(Integer itemId : entryIdsInSourceTable){
     		if(selectedListEntries.contains(itemId)){
 	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
-	    		Button designationButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
-	    		String designation = designationButton.getCaption();
-	    		Button gidButton = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
-	    		Integer gid = Integer.valueOf(Integer.parseInt(gidButton.getCaption()));
+	    		
+	    		Button designationBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
+	    		String designation = designationBtn.getCaption();
+	    		
+	    		Button gidBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+	    		Integer gid = Integer.valueOf(Integer.parseInt(gidBtn.getCaption()));
 	    		
 	    		String seedSource = getSeedSource(sourceTable,entryId);
 	    		
 	    		GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
 	    		Item item = targetTable.addItem(entryObject);
+	    		
 	    		if(item != null){
+	    			
+	    			Button newGidButton = new Button(designation, new GidLinkClickListener(gid.toString(),true));
+	    			newGidButton.setStyleName(BaseTheme.BUTTON_LINK);
+	    			newGidButton.setDescription("Click to view Germplasm information");
+	    			
 		    		if(targetTable.equals(femaleParents)){
-		    			item.getItemProperty("Female Parents").setValue(entryObject.getDesignation());
+		    			item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(newGidButton);
 		    			entryObject.setFromFemaleTable(true);
 		    			this.saveFemaleListButton.setEnabled(true);
             			//femaleParentList = null;
 		    		} else{
-		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(entryObject.getDesignation());
+		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(newGidButton);
 		    			entryObject.setFromFemaleTable(false);
 		    			this.saveMaleListButton.setEnabled(true);
             			//maleParentList = null;
@@ -618,10 +650,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	
     	List<Integer> entryIdsInDestinationTable = new ArrayList<Integer>();
     	entryIdsInDestinationTable.addAll((Collection<Integer>) targetTable.getItemIds());
-    	
-    	System.out.println("Initial Entry IDs: "+initialEntryIdsInDestinationTable.size());
-    	System.out.println(entryIdsInSourceTable.size() + " vs " + entryIdsInDestinationTable.size());
-    	
+    	    	
     	if(initialEntryIdsInDestinationTable.size()==0 && entryIdsInSourceTable.size()==entryIdsInDestinationTable.size()){
     		if(targetTable.equals(femaleParents)){
     			this.saveFemaleListButton.setEnabled(false);
@@ -862,7 +891,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
             }
             
 			newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entry.getEntryId());
-			newItem.getItemProperty(container.getColumnName()).setValue(entry.getDesignation());
+			
+			String designationName = entry.getDesignation();
+			
+			Button gidButton = new Button(designationName, new GidLinkClickListener(designationName,true));
+            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+            gidButton.setDescription("Click to view Germplasm information");
+			
+			newItem.getItemProperty(container.getColumnName()).setValue(gidButton);
 
 		}
 		
