@@ -132,16 +132,6 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
 		matchingGermplasmsTable.setHeight("360px");
 
-		matchingGermplasmsTable.addListener(new ItemClickListener(){
-			
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void itemClick(final ItemClickEvent event) {
-				final Integer itemId = (Integer) event.getItemId(); 
-				launchGermplasmDetailsWindow(getWindow(), "Germplasm " + itemId.toString() , itemId);
-			}
-		});
-		
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
