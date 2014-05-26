@@ -1520,7 +1520,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                         germplasmList, workbenchDataManager, getWindow(), messageSource, "list");
                
                 source.getListSelectionComponent().getListTreeComponent().removeListFromTree(germplasmList);
-                source.getListSelectionComponent().updateUIForDeletedList(germplasmList);
+                source.updateUIForDeletedList(germplasmList);
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
                 e.printStackTrace();

@@ -22,12 +22,6 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	}
 	
 	@Override
-	public void updateUIForDeletedList(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
 		// TODO Auto-generated method stub
 		

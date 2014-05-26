@@ -97,5 +97,9 @@ public class ListSearchComponent extends VerticalLayout implements International
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public ListSearchResultsComponent getSearchResultsComponent(){
+		return searchResultsComponent;
+	}
 
 }

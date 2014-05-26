@@ -137,7 +137,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	 * @param list the list to load for editing
 	 */
     public void loadListForEditing(final GermplasmList list){
-    	listSelectionComponent.updateUIForDeletedList(list);
+    	updateUIForEditingList(list);
     	listSelectionComponent.getListDetailsLayout().repaintTabsheet();
 		
     	listBuilderComponent.editList(list);
@@ -284,4 +284,27 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		tabToUnselect.removeStyleName("tabHeaderSelectedStyle");
 		tabToUnselect.addStyleName("tabHeaderStyle");
 	}
+	
+	
+	public void updateUIForEditingList(GermplasmList list) {
+		//Check if tab for deleted list is opened
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+	}
+	
+	public void updateUIForDeletedList(GermplasmList list) {
+		
+		//Check if tab for deleted list is opened
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+		
+		//Check if deleted list is currently being edited in the list builder
+		if(getListBuilderComponent().getCurrentlySetGermplasmListInfo()!=null
+			&& list!=null	
+			&& getListBuilderComponent().getCurrentlySetGermplasmListInfo().getId() == list.getId()){
+			getListBuilderComponent().resetList();
+		}
+		
+		//Check if deleted list is in the search results
+		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
+	}
+	
 }

@@ -147,4 +147,8 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	public ListSelectionLayout getListManagerDetailsLayout() {
 		return this.displayDetailsLayout;
 	}
+	
+	public void removeSearchResult(Object itemId){
+		matchingListsTable.removeItem(itemId);
+	}
 }

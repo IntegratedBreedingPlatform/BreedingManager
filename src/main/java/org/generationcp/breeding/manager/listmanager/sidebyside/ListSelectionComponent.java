@@ -97,11 +97,6 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 	}
 	
 	@Override
-	public void updateUIForDeletedList(GermplasmList list) {
-		this.listSelectionLayout.removeTab(list.getId());
-	}
-
-	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
 		this.listSelectionLayout.renameTab(list.getId(), newName);
 	}
@@ -153,4 +148,9 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public ListSearchComponent getListSearchComponent(){
+		return listSearchComponent;
+	}
+	
 }

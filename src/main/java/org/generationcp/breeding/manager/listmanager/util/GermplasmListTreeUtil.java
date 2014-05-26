@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -32,6 +36,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -520,9 +525,18 @@ public class GermplasmListTreeUtil implements Serializable {
 						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
 								workbenchDataManager, source.getWindow(), messageSource, "item");
 						listTreeComponent.removeListFromTree(finalGpList);
-						
-						if (listener != null){
-							listener.updateUIForDeletedList(finalGpList);
+
+						//Run UI updator on delete of listSelectionComponent
+						Window listManagerWindow = mainWindow.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+						Iterator<Component> iterate = listManagerWindow.getComponentIterator();
+						while (iterate.hasNext()) {
+							Component c = (Component) iterate.next();
+							if(c instanceof ListManagerMain){
+								((ListManagerMain) c).updateUIForDeletedList(finalGpList);
+								//if (listener != null){
+								//	listener.updateUIForDeletedList(finalGpList);
+								//}
+							}
 						}
 						
 					} catch (Error e) {

@@ -210,8 +210,6 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
     	}
     }
 	
-	//@Override
-	@Override
 	public void updateUIForDeletedList(GermplasmList list){
 		String listName = list.getName();
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
