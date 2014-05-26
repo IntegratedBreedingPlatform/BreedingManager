@@ -249,7 +249,10 @@ public class GermplasmListTreeUtil implements Serializable {
                 	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
                 	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.CENTRAL));
 
-                	if(matchingGermplasmLists.size()==0) {
+                	if(matchingGermplasmLists.size()==0 
+                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PROGRAM_LISTS.toLowerCase()) 
+                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PUBLIC_LISTS.toLowerCase())		
+                			) {
                 		
                         User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
                         Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();

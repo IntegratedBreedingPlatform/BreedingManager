@@ -55,6 +55,9 @@ public abstract class ListTreeComponent extends CssLayout implements
 	public static final String CENTRAL = "CENTRAL";
 	public static final String LOCAL = "LOCAL";
 	
+	public static final String PROGRAM_LISTS = "Program Lists";
+	public static final String PUBLIC_LISTS = "Public Lists";
+	
     @Autowired
     protected GermplasmListManager germplasmListManager;
     
@@ -398,7 +401,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         }
 
         germplasmListTree.addItem(LOCAL);
-        germplasmListTree.setItemCaption(LOCAL, "Program Lists");
+        germplasmListTree.setItemCaption(LOCAL, PROGRAM_LISTS);
         if(doIncludeCentralLists()){
         	try {
         		centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
@@ -407,7 +410,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         		centralGermplasmListParent = new ArrayList<GermplasmList>();
         	}
         	germplasmListTree.addItem(CENTRAL);
-        	germplasmListTree.setItemCaption(CENTRAL, "Public Lists");
+        	germplasmListTree.setItemCaption(CENTRAL, PUBLIC_LISTS);
         }
         
         for (GermplasmList localParentList : localGermplasmListParent) {
