@@ -286,11 +286,16 @@ public class SaveCrossesMadeAction implements Serializable {
     	
 		//Update "exsitingListEntries", this is used to assign the entry id
     	existingListEntries = new ArrayList<GermplasmListData>();
-		List<GermplasmListData> allExistingEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
-		for(GermplasmListData germplasmListData : allExistingEntries){
-			if(germplasmListData.getStatus()!=9)
-				this.existingListEntries.add(germplasmListData);
-		}
+    	
+		List<GermplasmListData> allExistingEntries = new ArrayList<GermplasmListData>();
+		
+		if(germplasmList!=null){
+			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE));
+			for(GermplasmListData germplasmListData : allExistingEntries){
+				if(germplasmListData.getStatus()!=9)
+					this.existingListEntries.add(germplasmListData);
+			}
+    	}
 	}
 
 	
