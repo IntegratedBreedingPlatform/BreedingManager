@@ -131,7 +131,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
     private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
-    public static String TOOLS_BUTTON_ID = "Tools";
+    public static String TOOLS_BUTTON_ID = "Actions";
     
     private ContextMenu menu;
     private ContextMenuItem menuExportList;

@@ -134,7 +134,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
     
     //Tooltips
-  	public static String TOOLS_BUTTON_ID = "Tools";
+  	public static String TOOLS_BUTTON_ID = "Actions";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
   	private final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
   	
