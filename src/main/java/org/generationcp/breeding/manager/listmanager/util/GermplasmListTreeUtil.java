@@ -409,7 +409,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
         Label l = new Label();
         l.addStyleName(AppConstants.CssStyles.BOLD);
-        l.setValue("Item Name");
+        l.setValue(messageSource.getMessage(Message.ITEM_NAME));
 
         final TextField name = new TextField();
         name.setMaxLength(50);
@@ -584,7 +584,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	        
 		    String newName = name.getValue().toString();
 			if(newName.replace(" ","").equals("")){
-		    	MessageNotifier.showWarning(source.getWindow(),
+		    	MessageNotifier.showError(source.getWindow(),
 		                messageSource.getMessage(Message.INVALID_INPUT), 
 		                messageSource.getMessage(Message.INVALID_ITEM_NAME));
 		    	return;
