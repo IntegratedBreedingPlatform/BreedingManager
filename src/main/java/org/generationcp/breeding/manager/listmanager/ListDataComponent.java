@@ -260,10 +260,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 			   }
 			});
  
-    	 toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+    	 toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
     	 toolsButton.setData(TOOLS_BUTTON_ID);
     	 toolsButton.setIcon(ICON_TOOLS);
-    	 toolsButton.setWidth("100px");
+    	 toolsButton.setWidth("110px");
     	 toolsButton.setDescription(TOOLS_TOOLTIP);
     	 toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
     	 toolsButton.addListener(new GermplasmListButtonClickListener(this, germplasmList));
@@ -1531,6 +1531,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         Window parentWindow = this.getWindow();
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
         addEntriesDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+        addEntriesDialog.focusOnSearchField();
         parentWindow.addWindow(addEntriesDialog);
     }
     

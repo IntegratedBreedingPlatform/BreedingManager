@@ -132,6 +132,8 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
         
         window.addWindow(popupWindow);
         
+        listSearchComponent.focusOnSearchField();
+        
         return popupWindow;
 	}
 

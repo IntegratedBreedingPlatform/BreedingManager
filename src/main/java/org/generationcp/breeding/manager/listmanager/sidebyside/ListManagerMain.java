@@ -190,6 +190,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		
 		listSelectionComponent.setVisible(false);
 		plantSelectionComponent.setVisible(true);
+		plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
 		
 		plantFinderContent.requestRepaint();
 	}

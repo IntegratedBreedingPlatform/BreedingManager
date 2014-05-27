@@ -778,4 +778,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     	}
     }
     
+    public void focusOnSearchField(){
+    	searchField.focus();
+    }
+    
 }

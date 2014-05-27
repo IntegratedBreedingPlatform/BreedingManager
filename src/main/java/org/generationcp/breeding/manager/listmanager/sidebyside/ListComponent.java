@@ -220,10 +220,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		editHeaderButton =new IconButton("<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>","Edit List Header");
 		
-		toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+		toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
 		toolsButton.setIcon(ICON_TOOLS);
-		toolsButton.setWidth("100px");
+		toolsButton.setWidth("110px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		try{
@@ -1062,6 +1062,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         Window parentWindow = this.getWindow();
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
         addEntriesDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+        addEntriesDialog.focusOnSearchField();
         parentWindow.addWindow(addEntriesDialog);
     }
     

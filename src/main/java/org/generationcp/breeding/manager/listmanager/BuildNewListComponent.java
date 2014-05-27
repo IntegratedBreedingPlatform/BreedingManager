@@ -428,7 +428,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         resetMenuOptions();
         
-        toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+        toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
         toolsButton.setIcon(ICON_TOOLS);
         toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
         toolsButton.addListener(new ClickListener() {

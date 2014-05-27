@@ -119,6 +119,10 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
     	return searchResultsComponent;
     }
 
+    public GermplasmSearchBarComponent getSearchBarComponent(){
+    	return searchBarComponent;
+    }    
+    
 	@Override
 	public void updateLabels() {
 	}

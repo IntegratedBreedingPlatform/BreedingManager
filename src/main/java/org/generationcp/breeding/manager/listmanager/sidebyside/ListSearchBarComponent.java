@@ -86,6 +86,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         searchButton.setData(SEARCH_BUTTON);
         searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        searchButton.setClickShortcut(KeyCode.ENTER);
 
         Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
         descLbl.setWidth("300px");
@@ -189,4 +190,8 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		return germplasmListManager.searchForGermplasmList(q, o);
 	}
 
+	public TextField getSearchField(){
+		return searchField;
+	}
+	
 }

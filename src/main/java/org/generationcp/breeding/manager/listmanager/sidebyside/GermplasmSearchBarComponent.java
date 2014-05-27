@@ -19,6 +19,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -89,6 +90,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
         searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         searchButton.setData(SEARCH_BUTTON);
         searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
+        searchButton.setClickShortcut(KeyCode.ENTER);
 
         Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
         descLbl.setWidth("300px");
@@ -146,7 +148,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		searchBarLayoutRight.setSpacing(true);
 		
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
-		searchField.setWidth("120px");
+		searchField.setWidth("120px");		
 		
 		searchBarLayoutLeft.addComponent(searchField);
 		searchBarLayoutLeft.addComponent(searchButton);
@@ -160,8 +162,14 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
         addComponent(searchBarLayoutLeft);
         addComponent(searchBarLayoutRight);
+        
+        focusOnSearchField();
 	}
 
+	public void focusOnSearchField(){
+		searchField.focus();
+	}
+	
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub

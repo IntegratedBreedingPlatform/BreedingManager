@@ -101,5 +101,9 @@ public class ListSearchComponent extends VerticalLayout implements International
 	public ListSearchResultsComponent getSearchResultsComponent(){
 		return searchResultsComponent;
 	}
+	
+	public void focusOnSearchField(){
+		searchBar.getSearchField().focus();
+	}
 
 }

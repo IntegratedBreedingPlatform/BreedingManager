@@ -122,9 +122,9 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		
 		initializeListEntriesTable();
 		
-		toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+		toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		toolsButton.setWidth("100px");
+		toolsButton.setWidth("110px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		menu = new ContextMenu();

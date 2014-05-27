@@ -188,11 +188,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         resetMenuOptions();
         
-        toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+        toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
 		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		toolsButton.setWidth("100px");
+		toolsButton.setWidth("110px");
         toolsButton.addStyleName("lm-tools-button");
         
         dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
