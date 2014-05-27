@@ -13,7 +13,6 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -243,7 +242,7 @@ public class GermplasmListTreeUtil implements Serializable {
                 if(name.getValue().toString().replace(" ","").equals("")){
                 	MessageNotifier.showWarning(source.getWindow(),
                             messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
+                            messageSource.getMessage(Message.INVALID_ITEM_NAME));
                 	return;
                 }
 
@@ -394,14 +393,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		}
     	
         final Window w = new Window();
-        
-    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		w.setCaption("Rename Folder");
-    	} else {
-    		w.setCaption("Rename List");
-    	}
-    	
-        
+        w.setCaption("Rename Item");
         w.setWidth("320px");
         w.setHeight("160px");
         w.setModal(true);
@@ -417,11 +409,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
         Label l = new Label();
         l.addStyleName(AppConstants.CssStyles.BOLD);
-    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		l.setValue("Folder Name");
-    	} else {
-    		l.setValue("List Name");
-    	}
+        l.setValue("Item Name");
 
         final TextField name = new TextField();
         name.setMaxLength(50);
@@ -513,8 +501,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
 		final GermplasmList finalGpList = gpList;
 		ConfirmDialog.show(mainWindow,
-			messageSource.getMessage(Message.DELETE_LIST_FOLDER,targetTree.getItemCaption(lastItemId)),
-			messageSource.getMessage(Message.DELETE_LIST_FOLDER_CONFIRM,targetTree.getItemCaption(lastItemId)),
+			messageSource.getMessage(Message.DELETE_ITEM),
+			messageSource.getMessage(Message.DELETE_ITEM_CONFIRM),
 			messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = -6164460688355101277L;
 
@@ -533,9 +521,6 @@ public class GermplasmListTreeUtil implements Serializable {
 							Component c = (Component) iterate.next();
 							if(c instanceof ListManagerMain){
 								((ListManagerMain) c).updateUIForDeletedList(finalGpList);
-								//if (listener != null){
-								//	listener.updateUIForDeletedList(finalGpList);
-								//}
 							}
 						}
 						
@@ -601,7 +586,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			if(newName.replace(" ","").equals("")){
 		    	MessageNotifier.showWarning(source.getWindow(),
 		                messageSource.getMessage(Message.INVALID_INPUT), 
-		                messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
+		                messageSource.getMessage(Message.INVALID_ITEM_NAME));
 		    	return;
 		    }
 		    

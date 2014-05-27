@@ -252,7 +252,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         });
         
 
-        deleteFolderBtn = new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>","Delete Selected List/Folder");
+        deleteFolderBtn = new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>","Delete Item");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.setData(this);
         deleteFolderBtn.addListener(new Button.ClickListener() {
