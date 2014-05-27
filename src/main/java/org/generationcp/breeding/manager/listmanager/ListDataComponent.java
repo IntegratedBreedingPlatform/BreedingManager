@@ -183,8 +183,8 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
 	public static final String USER_HOME = "user.home";
-	public static String TOOLS_BUTTON_ID = "Tools";
-	private static String TOOLS_TOOLTIP = "Tools";
+	public static String TOOLS_BUTTON_ID = "Actions";
+	private static String TOOLS_TOOLTIP = "Actions";
 
 	private AddColumnContextMenu addColumnContextMenu;  
 	private String lastCellvalue = "";

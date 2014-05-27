@@ -128,7 +128,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private static final String USER_HOME = "user.home";
     private Window listManagerCopyToNewListDialog;
     
-    public static String TOOLS_BUTTON_ID = "Tools";
+    public static String TOOLS_BUTTON_ID = "Actions";
     
     //For Saving
     private ListManagerMain source;
