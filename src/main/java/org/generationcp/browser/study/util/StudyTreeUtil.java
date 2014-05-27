@@ -1,7 +1,6 @@
 package org.generationcp.browser.study.util;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.exception.GermplasmStudyBrowserException;
@@ -11,10 +10,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +63,8 @@ public class StudyTreeUtil implements Serializable {
 	public void addFolder(final Object parentItemId){
     	
         final Window w = new Window("Add new folder");
-        w.setWidth("300px");
-        w.setHeight("150px");
+        w.setWidth("320px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -81,8 +77,10 @@ public class StudyTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label("Folder Name");
+        l.addStyleName("gcp-form-title");
         final TextField name = new TextField();
         name.setMaxLength(50);
+        name.setWidth("190px");
 
         formContainer.addComponent(l);
         formContainer.addComponent(name);
@@ -190,7 +188,7 @@ public class StudyTreeUtil implements Serializable {
 		if(newFolderName.replace(" ","").equals("")){
         	MessageNotifier.showError(source.getWindow(),
                     messageSource.getMessage(Message.INVALID_INPUT), 
-                    messageSource.getMessage(Message.INVALID_BLANK_STUDY_FOLDER_NAME),
+                    messageSource.getMessage(Message.INVALID_ITEM_NAME),
                     Notification.POSITION_CENTERED);
         	return false;
         	
@@ -341,8 +339,8 @@ public class StudyTreeUtil implements Serializable {
 		final Window w = new Window();
 		
         w.setCaption(messageSource.getMessage(Message.RENAME_ITEM));
-        w.setWidth("300px");
-        w.setHeight("150px");
+        w.setWidth("320px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -354,12 +352,13 @@ public class StudyTreeUtil implements Serializable {
         HorizontalLayout formContainer = new HorizontalLayout();
         formContainer.setSpacing(true);
 
-        Label l = new Label(messageSource.getMessage(Message.NAME_LABEL));
+        Label l = new Label(messageSource.getMessage(Message.ITEM_NAME));
+        l.addStyleName("gcp-form-title");
 
         final TextField nameField = new TextField();
         nameField.setMaxLength(50);
         nameField.setValue(name);
-        nameField.setWidth("210px");
+        nameField.setWidth("200px");
 
         formContainer.addComponent(l);
         formContainer.addComponent(nameField);
@@ -489,8 +488,8 @@ public class StudyTreeUtil implements Serializable {
     	
     	String item = targetTree.getItemCaption(targetTree.getValue());
 		ConfirmDialog.show(source.getWindow(),
-				messageSource.getMessage(Message.DELETE_PARAM, item),
-				messageSource.getMessage(Message.DELETE_PARAM_CONFIRM, item),	
+				messageSource.getMessage(Message.DELETE_ITEM),
+				messageSource.getMessage(Message.DELETE_ITEM_CONFIRM),	
 				messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
 				private static final long serialVersionUID = 1L;
