@@ -472,6 +472,7 @@ public enum Message{
     ,SUCCESS_SAVE_FOR_MALE_LIST
     ,PARENTS_LISTS
     ,VIEW_LIST_HEADERS
+    ,NO_OF_ENTRIES
     
     //Crossing Manager-Summary page
     ,SUMMARY

@@ -97,6 +97,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     private TableWithSelectAllLayout femaleTableWithSelectAll;
     private TableWithSelectAllLayout maleTableWIthSelectAll;
     
+    private Label lblNoOfFemaleEntries;
+    private Label lblNoOfMaleEntries;
+    
     private Button saveFemaleListButton;
     private Button saveMaleListButton;
     private GermplasmList femaleParentList;
@@ -148,6 +151,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         lblFemaleParent= new Label(messageSource.getMessage(Message.FEMALE));
         lblFemaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
         lblFemaleParent.addStyleName(AppConstants.CssStyles.BOLD);
+        lblFemaleParent.setWidth("70px");
+        
+        lblNoOfFemaleEntries = new Label(messageSource.getMessage(Message.NO_OF_ENTRIES) + ": 0");
         
         initializeFemaleParentsTable();
         
@@ -169,6 +175,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         lblMaleParent=new Label(messageSource.getMessage(Message.MALE));
         lblMaleParent.setStyleName(Bootstrap.Typography.H5.styleName());
         lblMaleParent.addStyleName(AppConstants.CssStyles.BOLD);
+        lblMaleParent.setWidth("70px");
+        
+        lblNoOfMaleEntries = new Label(messageSource.getMessage(Message.NO_OF_ENTRIES) + ": 0");
         
         initializeMaleParentsTable();
         
@@ -249,10 +258,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                        
 		                    //Check first if item is dropped on top of itself
 		                    if(!transferable.getItemId().equals(targetItemId)){
-		                        String maleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(MALE_PARENTS_LABEL).getValue();
 		                        
 		                        GermplasmListEntry germplasmEntry = (GermplasmListEntry)transferable.getItemId();
-		                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
+		                        
+		                        Button gidButton = new Button(germplasmEntry.getDesignation(), new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
 		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		                        gidButton.setDescription("Click to view Germplasm information");
 		                        
@@ -333,6 +342,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					}
 					
 					assignEntryNumber(maleParents);
+					updateMaleNoOfEntries(maleParents.size());
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
@@ -399,10 +409,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 		                    //Check first if item is dropped on top of itself
 		                    if(!transferable.getItemId().equals(targetItemId)){
-		                		String femaleParentValue = (String) sourceTable.getItem(transferable.getItemId()).getItemProperty(FEMALE_PARENTS_LABEL).getValue();
-		                		
 		                		GermplasmListEntry germplasmEntry = (GermplasmListEntry)transferable.getItemId();
-		                		Button gidButton = new Button(femaleParentValue, new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
+		                		
+		                		Button gidButton = new Button(germplasmEntry.getDesignation(), new GidLinkClickListener(germplasmEntry.getGid().toString(),true));
 		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		                        gidButton.setDescription("Click to view Germplasm information");
 		                		
@@ -483,6 +492,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    }
 					}
                     assignEntryNumber(femaleParents);
+                    updateFemaleNoOfEntries(femaleParents.size());
                 }
 
                 public AcceptCriterion getAcceptCriterion() {
@@ -543,6 +553,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         femaleParentsTableLayout.setWidth("240px");
         femaleParentsTableLayout.setHeight("350px");
         femaleParentsTableLayout.addComponent(lblFemaleParent,"top:0px;left:0px");
+        femaleParentsTableLayout.addComponent(lblNoOfFemaleEntries,"top:4px;left:70px");
         femaleParentsTableLayout.addComponent(saveFemaleListButton,"top:0px;right:0px");
         femaleParentsTableLayout.addComponent(femaleTableWithSelectAll, "top:30px;left:0px");
         
@@ -550,6 +561,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         maleParentsTableLayout.setWidth("240px");
         maleParentsTableLayout.setHeight("350px");
         maleParentsTableLayout.addComponent(lblMaleParent, "top:0px;left:0px");
+        maleParentsTableLayout.addComponent(lblNoOfMaleEntries,"top:4px;left:70px");
         maleParentsTableLayout.addComponent(saveMaleListButton, "top:0px;right:0px");
         maleParentsTableLayout.addComponent(maleTableWIthSelectAll, "top:30px;left:0px");
         
@@ -627,11 +639,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		    			item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(newGidButton);
 		    			entryObject.setFromFemaleTable(true);
 		    			this.saveFemaleListButton.setEnabled(true);
+		    			updateFemaleNoOfEntries(femaleParents.size());
             			//femaleParentList = null;
 		    		} else{
 		    			item.getItemProperty(MALE_PARENTS_LABEL).setValue(newGidButton);
 		    			entryObject.setFromFemaleTable(false);
 		    			this.saveMaleListButton.setEnabled(true);
+		    			updateMaleNoOfEntries(maleParents.size());
             			//maleParentList = null;
 		    		}
 		    		
@@ -868,7 +882,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public void updateListDataTable(List<GermplasmListData> savedListEntries) {
 		ParentContainer container = (ParentContainer) saveListAsWindow.getData();
 
-			
 		List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
 		Table table = container.getTableWithSelectAll().getTable();
 		
@@ -912,7 +925,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     public Button getSaveMaleListButton(){
     	return saveMaleListButton;
     }
+    
+    public void updateFemaleNoOfEntries(Integer numOfEntries){
+    	lblNoOfFemaleEntries.setValue(messageSource.getMessage(Message.NO_OF_ENTRIES) + ": " + numOfEntries);
+    }
 
+    public void updateMaleNoOfEntries(Integer numOfEntries){
+    	lblNoOfMaleEntries.setValue(messageSource.getMessage(Message.NO_OF_ENTRIES) + ": " + numOfEntries);
+    }
     
 	private class ParentContainer {
 		private Button button;
