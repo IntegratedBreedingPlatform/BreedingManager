@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
@@ -35,6 +36,8 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -369,6 +372,8 @@ public abstract class ListTreeComponent extends CssLayout implements
 		    }
 	    );
 	
+	    addListTreeItemDescription();
+        
 	    germplasmListTree.setImmediate(true);
 	    if (doIncludeActionsButtons()){
 	    	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
@@ -376,6 +381,39 @@ public abstract class ListTreeComponent extends CssLayout implements
 	    treeContainerLayout.addComponent(germplasmListTree);
 	    germplasmListTree.requestRepaint();
 	
+	}
+	
+	private void addListTreeItemDescription(){
+		germplasmListTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+            private static final long serialVersionUID = -2669417630841097077L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+            	GermplasmList germplasmList;
+				
+            	try {
+					
+					germplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
+					
+					if(germplasmList != null){
+						if(!germplasmList.getType().equals("FOLDER")){
+							ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
+							return viewListHeaderWindow.getListHeaderComponent().toString();
+						}
+					}
+					
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MiddlewareQueryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            	
+                return "";
+            }
+        });
 	}
 	  
 	protected void createGermplasmListTree() {
@@ -547,11 +585,19 @@ public abstract class ListTreeComponent extends CssLayout implements
 	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
 	            // allow children if list has sub-lists
 	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+	            
+	            if(!hasChildList(listChild.getId())){
+	            	ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(listChild);
+	            	germplasmListTree.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+	            }
+	            
         	}
         }
         germplasmListTree.setNullSelectionAllowed(false);
         germplasmListTree.select(parentGermplasmListId);
         germplasmListTree.setValue(parentGermplasmListId);
+        
+        germplasmListTree.setDescription("Beheehehe");
     }
     
     public void updateButtons(Object itemId){
