@@ -393,16 +393,16 @@ public abstract class ListTreeComponent extends CssLayout implements
             	GermplasmList germplasmList;
 				
             	try {
-					
-					germplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
-					
-					if(germplasmList != null){
-						if(!germplasmList.getType().equals("FOLDER")){
-							ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
-							return viewListHeaderWindow.getListHeaderComponent().toString();
+					if(!itemId.toString().equals("CENTRAL") &&  !itemId.toString().equals("LOCAL")){
+						germplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
+						
+						if(germplasmList != null){
+							if(!germplasmList.getType().equals("FOLDER")){
+								ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
+								return viewListHeaderWindow.getListHeaderComponent().toString();
+							}
 						}
 					}
-					
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
