@@ -1276,33 +1276,10 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     }*/
     
     public void lockList() throws MiddlewareQueryException{
-        germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-        germplasmList.setStatus(germplasmList.getStatus()+100);
-        try {
-        germplasmListManager.updateGermplasmList(germplasmList);
-    
-        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-            "Locked a germplasm list.", 
-            "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
-        workbenchDataManager.addProjectActivity(projAct);
-        
-//        	deleteSelectedEntriesButton.setEnabled(false); 
-//            saveSortingButton.setEnabled(false);
-//            addEntriesButton.setEnabled(false);
-            
-            menuDeleteEntries.setVisible(false);
-            menuSaveChanges.setVisible(false);
-            menuAddEntry.setVisible(false);
-            
-           
-        }catch (MiddlewareQueryException e) {
-            LOG.error("Error with locking list.", e);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
-            return;
-        }
+    	listManagerMain.lockList(germplasmListId);
+        menuDeleteEntries.setVisible(false);
+        menuSaveChanges.setVisible(false);
+        menuAddEntry.setVisible(false);
     }
 
     public void finishAddingEntry(Integer gid) {

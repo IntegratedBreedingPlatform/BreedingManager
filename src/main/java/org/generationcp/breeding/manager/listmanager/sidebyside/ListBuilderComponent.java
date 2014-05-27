@@ -6,13 +6,16 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.ui.*;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -59,6 +62,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private static final long serialVersionUID = -7736422783255724272L;
     
+    private Action.Handler contextMenuActionHandler;
+    private Table listDataTable; 
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -75,6 +81,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_DELETE_SELECTED_ENTRIES };
+    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU_LOCKED = new Action[] { ACTION_SELECT_ALL };
     
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -86,10 +93,24 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Label totalListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
+    
+    private ViewListHeaderWindow viewListHeaderWindow;
+    private AbsoluteLayout headerActionsContainer;
     private Button editHeaderButton;
+    private Button viewHeaderButton;
+    
     private Button toolsButton;
     private Button saveButton;
     private Button resetButton;
+    
+    private AbsoluteLayout lockActionsContainer;
+    private Button lockButton;
+    private Button unlockButton;
+    
+    public static String LOCK_BUTTON_ID = "Lock Germplasm List";
+    public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";    
+    
+    private static String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
     
     //Layout Component
     private HorizontalLayout headerLayout;
@@ -102,6 +123,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private ContextMenu menu;
     private ContextMenuItem menuExportList;
     private ContextMenuItem menuCopyToList;
+    private ContextMenuItem menuDeleteSelectedEntries;
     
     private static final String USER_HOME = "user.home";
     private Window listManagerCopyToNewListDialog;
@@ -142,6 +164,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	@Override
 	public void instantiateComponents() {
 		
+		lockActionsContainer = new AbsoluteLayout();
+		
+	    unlockButton = new IconButton("<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        unlockButton.setData(UNLOCK_BUTTON_ID);
+        unlockButton.setVisible(false);
+	
+        lockButton = new IconButton("<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
+        lockButton.setData(LOCK_BUTTON_ID);
+        lockButton.setVisible(false);
+        
     	buildNewListTitle = new Label(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
     	buildNewListTitle.setWidth("200px");
         buildNewListTitle.setStyleName(Bootstrap.Typography.H4.styleName());
@@ -157,9 +189,20 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
 
+		headerActionsContainer = new AbsoluteLayout();
+		
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
+        
+		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
+		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
+		viewHeaderButton.setVisible(false);
+		
+		if(currentlySavedGermplasmList!=null){
+        	viewListHeaderWindow = new ViewListHeaderWindow(currentlySavedGermplasmList);
+        	viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+        }
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
@@ -169,7 +212,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         headerLayout = new HorizontalLayout();
 		instructionLayout = new HorizontalLayout();
         
-        final Table listDataTable = tableWithSelectAllLayout.getTable();
+        listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
         
         listDataTable.setWidth("100%");
@@ -181,7 +224,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         addColumnContextMenu = new AddColumnContextMenu(this, menu, 
         		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-        menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+        menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
@@ -273,6 +316,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			}
 		});
 		
+		viewHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = 329434322390122057L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				viewListHeaderWindow = new ViewListHeaderWindow(currentlySavedGermplasmList);
+				getWindow().addWindow(viewListHeaderWindow);
+			}
+		});
+		
 		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
@@ -288,8 +341,105 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		});
 		
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
+
+		//Lock button action
+		lockButton.addListener(new ClickListener(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                if(source.lockGermplasmList(currentlySavedGermplasmList)){
+                	setUIForLockedList();
+                }
+            }
+        });
+        
+		//Unlock button action
+        unlockButton.addListener(new ClickListener(){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                if(source.unlockGermplasmList(currentlySavedGermplasmList)){
+                	setUIForUnlockedList();
+                }
+            }
+        });
+		
 	}
 
+	public void setContextMenuActionHandler(final Table table){
+		
+		table.removeActionHandler(contextMenuActionHandler);
+		
+		contextMenuActionHandler = new Action.Handler() {
+
+            private static final long serialVersionUID = 1884343225476178686L;
+
+            @Override
+			public Action[] getActions(Object target, Object sender) {
+                return getContextMenuActions();
+            }
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                if(ACTION_SELECT_ALL == action) {
+                	table.setValue(table.getItemIds());
+                } else if(ACTION_DELETE_SELECTED_ENTRIES == action) {
+                    deleteSelectedEntries();
+                }
+            }
+        };
+        
+        table.addActionHandler(contextMenuActionHandler);
+	}
+	
+	public Action[] getContextMenuActions(){
+		if(currentlySavedGermplasmList!=null && currentlySavedGermplasmList.isLockedList())
+			return GERMPLASMS_TABLE_CONTEXT_MENU_LOCKED;
+		return GERMPLASMS_TABLE_CONTEXT_MENU;
+	}
+	
+	public void setUIForLockedList(){
+    	lockButton.setVisible(false);
+    	unlockButton.setVisible(true);
+		tableWithSelectAllLayout.getTable().setDropHandler(null);
+    	setContextMenuActionHandler(listDataTable);
+    	menuDeleteSelectedEntries.setVisible(false);
+    	addColumnContextMenu.setVisible(false);
+    	editHeaderButton.setVisible(false);
+    	viewHeaderButton.setVisible(true);
+    	
+    	viewListHeaderWindow = new ViewListHeaderWindow(currentlySavedGermplasmList);
+    	viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+    	
+    	saveButton.setEnabled(false);
+	}
+	
+	public void setUIForUnlockedList(){
+		lockButton.setVisible(true);
+    	unlockButton.setVisible(false);
+		tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
+    	setContextMenuActionHandler(listDataTable);
+    	menuDeleteSelectedEntries.setVisible(true);
+    	addColumnContextMenu.setVisible(true);
+    	editHeaderButton.setVisible(true);
+    	viewHeaderButton.setVisible(false);
+    	saveButton.setEnabled(true);
+	}
+
+	public void setUIForNewList(){
+		lockButton.setVisible(false);
+    	unlockButton.setVisible(false);
+		tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
+    	setContextMenuActionHandler(listDataTable);
+    	menuDeleteSelectedEntries.setVisible(true);
+    	addColumnContextMenu.setVisible(true);
+    	editHeaderButton.setVisible(true);
+    	viewHeaderButton.setVisible(false);
+    	saveButton.setEnabled(true);
+	}	
+	
 	@Override
 	public void layoutComponents() {
 		
@@ -317,17 +467,26 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		editDetails.setWidth("100%");
 		toolsLayout.setWidth("100%");
-
+		
 		editDetails.addComponent(new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel));
 		
-		editDetails.addComponent(editHeaderButton);
-		editDetails.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
+		lockActionsContainer.addComponent(lockButton, "right:0; bottom:0;");
+		lockActionsContainer.addComponent(unlockButton, "right:0; bottom:0;");
+		
+		editDetails.addComponent(lockActionsContainer);
+		editDetails.setComponentAlignment(lockActionsContainer, Alignment.BOTTOM_RIGHT);
+		
+		headerActionsContainer.addComponent(viewHeaderButton, "right:0; bottom:0;");
+		headerActionsContainer.addComponent(editHeaderButton, "right:0; bottom:0;");
+		
+		editDetails.addComponent(headerActionsContainer);
+		editDetails.setComponentAlignment(headerActionsContainer, Alignment.BOTTOM_RIGHT);
 		
 		toolsLayout.addComponent(totalListEntriesLabel);
 		toolsLayout.addComponent(toolsButton);
 		toolsLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		toolsLayout.addStyleName("lm-list-desc");
-
+		
         listDataTablePanel = new Panel();
         listDataTablePanel.setSizeFull();
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
@@ -384,25 +543,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         table.setWidth("100%");
         table.setHeight("280px");
         
-        table.addActionHandler(new Action.Handler() {
-
-            private static final long serialVersionUID = 1884343225476178686L;
-
-            @Override
-			public Action[] getActions(Object target, Object sender) {
-                return GERMPLASMS_TABLE_CONTEXT_MENU;
-            }
-
-            @Override
-            public void handleAction(Action action, Object sender, Object target) {
-                if(ACTION_SELECT_ALL == action) {
-                	table.setValue(table.getItemIds());
-                } else if(ACTION_DELETE_SELECTED_ENTRIES == action) {
-                    deleteSelectedEntries();
-                }
-            }
-        });
+        setContextMenuActionHandler(table);
     }
+    
     
     private void initializeHandlers() {
 		
@@ -528,6 +671,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         //reset the change status to false after loading the germplasm list details and list data in the screen
         setChanged(false);
         dropHandler.setChanged(false);
+        
+        if(germplasmList.isLockedList()){
+        	setUIForLockedList();
+        } else {
+        	setUIForUnlockedList();
+        }
     }
 	
 	public void resetList(){
@@ -795,6 +944,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     @Override
     public void setCurrentlySavedGermplasmList(GermplasmList list){
         this.currentlySavedGermplasmList = list;
+        if(list!=null && list.getId()!=null){
+        	if(list.getStatus()<100){
+        		setUIForUnlockedList();
+        	} else {
+        		setUIForLockedList();
+        	}
+        } else {
+        	setUIForNewList();
+        }
     }
 	
     public ListManagerMain getSource(){

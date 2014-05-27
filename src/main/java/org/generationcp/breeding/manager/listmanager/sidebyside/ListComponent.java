@@ -983,9 +983,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
     }
     
-    private void recreateTab() throws MiddlewareQueryException {
-        parentListDetailsComponent.getListSelectionLayout().removeTab(germplasmList.getId());
-        parentListDetailsComponent.getListSelectionLayout().createListDetailsTab(germplasmList.getId());
+    private void recreateTab() {
+        try {
+            parentListDetailsComponent.getListSelectionLayout().removeTab(germplasmList.getId());
+			parentListDetailsComponent.getListSelectionLayout().createListDetailsTab(germplasmList.getId());
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
     }
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -1539,29 +1543,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	
     public void lockGermplasmList() {
-        if(!germplasmList.isLockedList()){
-		    germplasmList.setStatus(germplasmList.getStatus()+100);
-		    try {
-		        germplasmListManager.updateGermplasmList(germplasmList);
-		
-		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-		                "Locked a germplasm list.",
-		                "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
-		                user,
-		                new Date());
-		        workbenchDataManager.addProjectActivity(projAct);
-		
-		        showHideOptionsForLocked(); // hide enabled elements for unlocked lists
-		        recreateTab();
-		
-		    } catch (MiddlewareQueryException e) {
-		        LOG.error("Error with locking list.", e);
-	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                    , Notification.POSITION_CENTERED);
-		    }
-		}
+    	if(source.lockGermplasmList(germplasmList)){
+	        showHideOptionsForLocked(); // hide enabled elements for unlocked lists
+	        recreateTab();
+    	}
 	}
     
     private void showHideOptionsForLocked() {

@@ -1,12 +1,20 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.ListManagerTabChangeListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -19,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -29,6 +38,13 @@ public class ListManagerMain extends VerticalLayout implements
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+
+    @Autowired
+    private GermplasmListManager germplasmListManager;
+
     
     private HorizontalLayout titleLayout;
     private Label mainTitle;
@@ -194,5 +210,22 @@ public class ListManagerMain extends VerticalLayout implements
 		
 		//TODO update Matching Lists table and Build/Edit List screen
 	}
+	
+    public void lockList(Integer listId) throws MiddlewareQueryException{
+        GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+        lockList(germplasmList);
+    }	
+    
+    public void lockList(GermplasmList germplasmList) throws MiddlewareQueryException{
+        germplasmList.setStatus(germplasmList.getStatus()+100);
+        germplasmListManager.updateGermplasmList(germplasmList);
+    
+        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+            "Locked a germplasm list.", 
+            "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
+        workbenchDataManager.addProjectActivity(projAct);
+    }	
 	
 }
