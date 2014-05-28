@@ -393,4 +393,9 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		// TODO Auto-generated method stub
 		
 	}
+
+	public MakeCrossesParentsComponent getParentsComponent() {
+		return parentsComponent;
+	}
+	
 }

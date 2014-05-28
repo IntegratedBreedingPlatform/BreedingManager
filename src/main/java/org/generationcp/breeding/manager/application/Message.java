@@ -474,6 +474,7 @@ public enum Message{
     ,PARENTS_LISTS
     ,VIEW_LIST_HEADERS
     ,NO_OF_ENTRIES
+    ,SAVE_CROSS_LIST_DESCRIPTION
     
     //Crossing Manager-Summary page
     ,SUMMARY
