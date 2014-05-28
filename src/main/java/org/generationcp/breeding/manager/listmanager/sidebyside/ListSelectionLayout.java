@@ -159,6 +159,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     @Override
     public void layoutComponents() {
+        this.setSizeFull();
+        this.setMargin(true);
 
         final HorizontalLayout listSelectionHeaderContainer = new HorizontalLayout();
         listSelectionHeaderContainer.setWidth("100%");
@@ -177,7 +179,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
         searchOrBrowseLayout.addComponent(toWorkWith);
 
         final VerticalLayout headerAndDesc = new VerticalLayout();
-        headerAndDesc.setSpacing(true);
         headerAndDesc.addComponent(noListLabel);
         headerAndDesc.addComponent(headerLbl);
         headerAndDesc.addComponent(searchOrBrowseLayout);
@@ -249,7 +250,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
         *
         * */
         this.displayDefault();
-        this.setSizeFull();
     }
     
     public void setDetailsTabSheetHeight() {

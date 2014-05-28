@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -20,7 +21,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListSelectionComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
+public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(ListSelectionComponent.class);
 
@@ -78,10 +79,7 @@ public class ListSelectionComponent extends CssLayout implements Internationaliz
 
 	@Override
 	public void layoutComponents() {
-		
-		setMargin(true);
-		
-		addComponent(listSelectionLayout);
+        addComponent(listSelectionLayout);
 		this.addStyleName("list-selection-component");
 		listSelectionLayout.addStyleName("list-selection-layout");
 	}
