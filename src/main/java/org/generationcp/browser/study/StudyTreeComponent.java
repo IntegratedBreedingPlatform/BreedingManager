@@ -358,7 +358,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 		
 		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription("Rename Item");
+        renameFolderBtn.setDescription(messageSource.getMessage(Message.RENAME_ITEM));
         renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         renameFolderBtn.setWidth("25px");
         renameFolderBtn.setHeight("30px");
@@ -375,7 +375,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         
         addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>");
         addFolderBtn.setHtmlContentAllowed(true);
-        addFolderBtn.setDescription("Add New Folder");
+        addFolderBtn.setDescription(messageSource.getMessage(Message.ADD_NEW_FOLDER));
         addFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         addFolderBtn.setWidth("25px");
         addFolderBtn.setHeight("30px");
@@ -390,7 +390,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         
         deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
-        deleteFolderBtn.setDescription("Delete Selected List/Folder");
+        deleteFolderBtn.setDescription(messageSource.getMessage(Message.DELETE_ITEM));
         deleteFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         deleteFolderBtn.setWidth("25px");
         deleteFolderBtn.setHeight("30px");

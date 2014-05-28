@@ -314,4 +314,9 @@
 .v-colorpicker-popup .v-horizontallayout {
   position: absolute !important;
   top: 410px !important;
-}  
+}
+
+.gwt-FileUpload {
+	display: inline !important;
+} 
+ 
