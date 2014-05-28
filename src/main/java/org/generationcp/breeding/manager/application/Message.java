@@ -320,6 +320,7 @@ public enum Message{
 	,FILL_WITH_CROSS_EXPANSION
     
     ,INVALID_INPUT
+    ,ITEM_NAME
     ,INVALID_ITEM_NAME
     ,NO_ENTRIES_ERROR_MESSAGE
     ,ERROR_SAVING_GERMPLASM_LIST
@@ -473,6 +474,7 @@ public enum Message{
     ,PARENTS_LISTS
     ,VIEW_LIST_HEADERS
     ,NO_OF_ENTRIES
+    ,SAVE_CROSS_LIST_DESCRIPTION
     
     //Crossing Manager-Summary page
     ,SUMMARY

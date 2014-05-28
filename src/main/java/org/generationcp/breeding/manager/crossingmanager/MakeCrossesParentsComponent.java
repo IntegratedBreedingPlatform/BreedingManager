@@ -795,6 +795,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				messageSource.getMessage(parentContainer.getSuccessMessage()));
 	}
 	
+    public boolean isFemaleListSaved(){
+    	return (femaleListNameForCrosses.length() > 0);
+    }
+    
+    public boolean isMaleListSaved(){
+    	return (maleListNameForCrosses.length() > 0);
+    }
+	
 	public String getSeedSource(Table table, Integer entryId){
 		String seedSource = "";
 		if(table.getParent().getParent() instanceof SelectParentsListDataComponent ){

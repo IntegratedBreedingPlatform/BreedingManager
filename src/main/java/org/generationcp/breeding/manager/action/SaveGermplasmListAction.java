@@ -112,11 +112,9 @@ public class SaveGermplasmListAction implements Serializable {
 		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>();
 		
 		if(existingListDataEntries.size() > 0){
-			System.out.println("existinglistdataentries > 0");
 			listToAdd = getNewEntriesToSave(currentListDataEntries,existingListDataEntries);
 			listToDelete = getNewEntriesToDelete(currentListDataEntries,existingListDataEntries);
 		} else {
-			System.out.println("existinglistdataentries == 0");
 			listToAdd.addAll(currentListDataEntries);
 		}
 

@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.Date;
+
 import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -7,7 +9,16 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -17,6 +28,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -55,9 +67,18 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	
 	private final Integer selectedListId;
 	
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerMain.class);
+	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    	
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
+
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+
+    
     public ListManagerMain(){
     	super();
     	this.selectedListId = null;
@@ -312,8 +333,59 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
+	
+	
+	public Boolean lockGermplasmList(GermplasmList germplasmList){
+	    if(!germplasmList.isLockedList()){
+		    germplasmList.setStatus(germplasmList.getStatus()+100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+		
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Locked a germplasm list.",
+		                "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		        return true;
+		    } catch (MiddlewareQueryException e) {
+		        LOG.error("Error with locking list.", e);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+	                    , Notification.POSITION_CENTERED);
+	            return false;
+		    }
+		}
+	    return false;
+	}
 
     private boolean isListBuilderShown = false;
+
+    public Boolean unlockGermplasmList(GermplasmList germplasmList){
+	    if(germplasmList.isLockedList()){
+		    germplasmList.setStatus(germplasmList.getStatus()-100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+		
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Unlocked a germplasm list.",
+		                "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		        return true;
+		    } catch (MiddlewareQueryException e) {
+		        LOG.error("Error with unlocking list.", e);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+	                    , Notification.POSITION_CENTERED);
+	            return false;
+		    }
+		}
+	    return false;
+	}
 
     public void toggleListBuilder(Button toggleBtn) {
 
@@ -341,5 +413,5 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
         isListBuilderShown = !isListBuilderShown;
 
     }
-
+	
 }
