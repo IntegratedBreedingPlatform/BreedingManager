@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -30,7 +31,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
     
     private AbsoluteLayout titleLayout;
     private Label mainTitle;
-    private Button buildNewListButton;
+    //private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
     // Tabs
@@ -218,14 +219,14 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
         
-        buildNewListButton = new Button();
-        buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
-        buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
-        buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        buildNewListButton.setIcon(AppConstants.Icons.ICON_PLUS);
-        
+        //buildNewListButton = new Button();
+        //buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
+        //buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
+        //buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        //buildNewListButton.setIcon(AppConstants.Icons.ICON_PLUS);
+
         titleLayout.addComponent(mainTitle,"top:0px;left:0px");
-        titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
+        //titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
 	}
 	
 	private void setTabHeader(){
@@ -247,18 +248,22 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	private void setTabContent(){
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
-		splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setMaxSplitPosition(COLLAPSED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setMinSplitPosition(MAX_EXPANDED_SPLIT_POSITION_RIGHT, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setImmediate(true);
+		//splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setMaxSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
+		//splitPanel.setMinSplitPosition(, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+
+        splitPanel.setImmediate(true);
 		
 		// Leave some room for the border
 		splitPanel.setWidth("98%");
 		splitPanel.setHeight("98%");
 		
-		splitPanel.addStyleName("tabContainerStyle");
-		
-		listSelectionComponent = new ListSelectionComponent(this, selectedListId);
+		splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
+        splitPanel.setStyleName("tabContainerStyle");
+
+
+        listSelectionComponent = new ListSelectionComponent(this, selectedListId);
 		plantSelectionComponent = new GermplasmSelectionComponent(this);
 		
         plantFinderContent = new AbsoluteLayout();
@@ -307,5 +312,34 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
-	
+
+    private boolean isListBuilderShown = false;
+
+    public void toggleListBuilder(Button toggleBtn) {
+
+        if (!isListBuilderShown) {
+            splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
+
+            toggleBtn.setCaption("<span class='fa fa-chevron-right'" +
+                    "style='font-size: 16px;" +
+                    "position: relative;" +
+                    "right: 3px;" +
+                    "top: 1px;'></span>" + "HIDE LIST BUILDER");
+
+        }
+        else {
+            splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+
+            toggleBtn.setCaption("<span class='fa fa-chevron-left'" +
+                    "style='font-size: 16px;" +
+                    "position: relative;" +
+                    "right: 3px;" +
+                    "top: 1px;'></span>" + "SHOW LIST BUILDER");
+
+        }
+
+        isListBuilderShown = !isListBuilderShown;
+
+    }
+
 }

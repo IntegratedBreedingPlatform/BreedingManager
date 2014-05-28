@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -29,14 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.Reindeer;
@@ -46,7 +40,7 @@ import com.vaadin.ui.themes.Runo;
  * @author Mark Agarrado
  */
 @Configurable
-public class ListSelectionLayout extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
     private static final long serialVersionUID = -6583178887344009055L;
@@ -73,12 +67,13 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     private Label toWorkWith;
 
     private HorizontalLayout headerLayout;
-    private CssLayout innerLayout;
+    private VerticalLayout innerLayout;
     
     private TabSheet detailsTabSheet;
     
     private final Integer listId;
-    
+    private Button listBuilderToggleBtn;
+
     public ListSelectionLayout(final ListManagerMain listManagerMain, final Integer listId) {
     	super();
         this.listManagerMain = listManagerMain;
@@ -106,7 +101,15 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     
     @Override
     public void instantiateComponents() {
-    	noListLabel = new Label();
+        listBuilderToggleBtn = new Button("<span class='fa fa-chevron-left'" +
+                "style='font-size: 16px;" +
+                "position: relative;" +
+                "right: 3px;" +
+                "top: 1px;'></span>" + "SHOW LIST BUILDER");
+        listBuilderToggleBtn.setHtmlContentAllowed(true);
+        listBuilderToggleBtn.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
+
+        noListLabel = new Label();
     	noListLabel.setImmediate(true);
     	
     	headingLabel = new Label();
@@ -142,7 +145,6 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
         toWorkWith = new Label();
         toWorkWith.setImmediate(true);
 
-        setSizeFull();
     }
 
     @Override
@@ -157,46 +159,97 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
     
     @Override
     public void layoutComponents() {
-    	setWidth("100%");
-    	setStyleName(Runo.TABSHEET_SMALL);
-        setMargin(false);
-    	
-        setDetailsTabSheetHeight();
-    	 
-    	//Components
-        headerLayout.setWidth("100%");
-        
-        final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-        headingLayout.addStyleName("lm-title");
-        headingLayout.setHeight("30px");
-        
-        headerLayout.addComponent(headingLayout);
-        headerLayout.addComponent(btnCloseAllTabs);
-        headerLayout.setComponentAlignment(btnCloseAllTabs, Alignment.BOTTOM_RIGHT);
-        
-        innerLayout = new CssLayout();
-        innerLayout.addComponent(noListLabel);
-        innerLayout.addComponent(headerLayout);
-        
+
+        final HorizontalLayout listSelectionHeaderContainer = new HorizontalLayout();
+        listSelectionHeaderContainer.setWidth("100%");
+
+        final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS,headingLabel);
+
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
-        
-        searchOrBrowseLayout.addComponent(searchForLists);
-        searchOrBrowseLayout.addComponent(or);
-        searchOrBrowseLayout.addComponent(browseForLists);
-        searchOrBrowseLayout.addComponent(toWorkWith);
-        
         // Ugh, bit of a hack - can't figure out how to space these nicely
         searchForLists.setWidth("43px");
         or.setWidth("16px");
         browseForLists.setWidth("48px");
-        
+
+        searchOrBrowseLayout.addComponent(searchForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(toWorkWith);
+
+        final VerticalLayout headerAndDesc = new VerticalLayout();
+        headerAndDesc.setSpacing(true);
+        headerAndDesc.addComponent(noListLabel);
+        headerAndDesc.addComponent(headerLbl);
+        headerAndDesc.addComponent(searchOrBrowseLayout);
+
+        final VerticalLayout headerBtnContainer = new VerticalLayout();
+        headerBtnContainer.setSizeUndefined();
+        headerBtnContainer.setSpacing(true);
+        headerBtnContainer.addComponent(listBuilderToggleBtn);
+        headerBtnContainer.addComponent(btnCloseAllTabs);
+        headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.BOTTOM_RIGHT);
+
+        listSelectionHeaderContainer.addComponent(headerAndDesc);
+        listSelectionHeaderContainer.addComponent(headerBtnContainer);
+        listSelectionHeaderContainer.setExpandRatio(headerAndDesc,1.0F);
+        listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer,Alignment.TOP_RIGHT);
+
+        this.addComponent(listSelectionHeaderContainer);
+        this.addComponent(detailsTabSheet);
+        this.setExpandRatio(detailsTabSheet,1.0f);
+
+
+
+
+        /*
+        * setWidth("100%");
+    	setStyleName(Reindeer.TABSHEET_SMALL);
+        setMargin(false);
+
+        setDetailsTabSheetHeight();
+
+    	//Components
+        headerLayout.setSizeUndefined();
+        final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
+        headerLbl.addStyleName("lm-title");
+        headerLbl.setHeight("30px");
+
+        headerLayout.addComponent(headerLbl);
+
+        innerLayout = new VerticalLayout();
+        innerLayout.setSizeUndefined();
+
+        final VerticalLayout headerBtnContainer = new VerticalLayout();
+        headerBtnContainer.setSpacing(true);
+        headerBtnContainer.addComponent(listBuilderToggleBtn);
+        headerBtnContainer.addComponent(btnCloseAllTabs);
+
+        final HorizontalLayout listSelectionHeader = new HorizontalLayout();
+        listSelectionHeader.setWidth("100%");
+
+        listSelectionHeader.addComponent(innerLayout);
+        listSelectionHeader.addComponent(headerBtnContainer);
+        listSelectionHeader.setExpandRatio(innerLayout,1.0F);
+
+
+
+
+        searchOrBrowseLayout.addComponent(searchForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(toWorkWith);
+
+        innerLayout.addComponent(noListLabel);
+        innerLayout.addComponent(headerLayout);
         innerLayout.addComponent(searchOrBrowseLayout);
-        
-        innerLayout.addComponent(detailsTabSheet);
-        
-        innerLayout.setWidth("100%");
-        addComponent(innerLayout);
-        displayDefault();
+
+        addComponent(listSelectionHeader);
+        addComponent(detailsTabSheet);
+
+        *
+        * */
+        this.displayDefault();
+        this.setSizeFull();
     }
     
     public void setDetailsTabSheetHeight() {
@@ -248,6 +301,13 @@ public class ListSelectionLayout extends CssLayout implements Internationalizabl
 			public void buttonClick(final ClickEvent event) {
 				listManagerMain.getListSelectionComponent().openListSearchDialog();
 			}
+        });
+
+        listBuilderToggleBtn.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                listManagerMain.toggleListBuilder(listBuilderToggleBtn);
+            }
         });
     }
 
