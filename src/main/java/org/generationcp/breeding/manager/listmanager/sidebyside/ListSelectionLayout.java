@@ -72,7 +72,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     private TabSheet detailsTabSheet;
     
     private final Integer listId;
-    private Button listBuilderToggleBtn;
 
     public ListSelectionLayout(final ListManagerMain listManagerMain, final Integer listId) {
     	super();
@@ -101,13 +100,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     @Override
     public void instantiateComponents() {
-        listBuilderToggleBtn = new Button("<span class='fa fa-chevron-left'" +
-                "style='font-size: 16px;" +
-                "position: relative;" +
-                "right: 3px;" +
-                "top: 1px;'></span>" + "SHOW LIST BUILDER");
-        listBuilderToggleBtn.setHtmlContentAllowed(true);
-        listBuilderToggleBtn.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
 
         noListLabel = new Label();
     	noListLabel.setImmediate(true);
@@ -186,7 +178,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
         final VerticalLayout headerBtnContainer = new VerticalLayout();
         headerBtnContainer.setSizeUndefined();
         headerBtnContainer.setSpacing(true);
-        headerBtnContainer.addComponent(listBuilderToggleBtn);
+        headerBtnContainer.addComponent(listManagerMain.listBuilderToggleBtn1);
         headerBtnContainer.addComponent(btnCloseAllTabs);
         headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.BOTTOM_RIGHT);
 
@@ -303,12 +295,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			}
         });
 
-        listBuilderToggleBtn.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                listManagerMain.toggleListBuilder(listBuilderToggleBtn);
-            }
-        });
     }
 
     @Override

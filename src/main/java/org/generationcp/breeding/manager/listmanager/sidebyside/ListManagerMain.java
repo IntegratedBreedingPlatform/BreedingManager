@@ -51,6 +51,9 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
     private Button listSelectionTabButton;
     private Button plantSelectionTabButton;
 
+    protected Button listBuilderToggleBtn1;   // toggle on list
+    protected Button listBuilderToggleBtn2;   // toggle on germplasm search
+
     // The tab content will be split between a plant finder component and a list builder component
     private HorizontalSplitPanel splitPanel;
     
@@ -104,7 +107,23 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 
 	@Override
 	public void instantiateComponents() {
-		setSizeFull(); 
+        listBuilderToggleBtn1 = new Button("<span class='fa fa-chevron-left'" +
+                "style='font-size: 16px;" +
+                "position: relative;" +
+                "right: 3px;" +
+                "top: 1px;'></span>" + "SHOW LIST BUILDER");
+        listBuilderToggleBtn1.setHtmlContentAllowed(true);
+        listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
+
+        listBuilderToggleBtn2 = new Button("<span class='fa fa-chevron-left'" +
+                "style='font-size: 16px;" +
+                "position: relative;" +
+                "right: 3px;" +
+                "top: 1px;'></span>" + "SHOW LIST BUILDER");
+        listBuilderToggleBtn2.setHtmlContentAllowed(true);
+        listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
+
+        setSizeFull();
         setTitleContent();
         setTabHeader();
         setTabContent();	
@@ -129,7 +148,8 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 				showListSelection();
 				selectTab(listSelectionTabButton);
 				deselectTab(plantSelectionTabButton);
-			}
+
+        	}
 
 		});
 		
@@ -141,11 +161,28 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 				showPlantSelection();
 				selectTab(plantSelectionTabButton);
 				deselectTab(listSelectionTabButton);
-			}
+
+        	}
 		});
+
+
+        listBuilderToggleBtn1.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                ListManagerMain.this.toggleListBuilder();
+            }
+        });
+
+
+        listBuilderToggleBtn2.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                ListManagerMain.this.toggleListBuilder();
+            }
+        });
 	}
 
-	@Override
+    @Override
 	public void layoutComponents() {
 		
 		addComponent(titleLayout,"top:0px; left:10px");
@@ -364,7 +401,7 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 
     public Boolean unlockGermplasmList(GermplasmList germplasmList){
 	    if(germplasmList.isLockedList()){
-		    germplasmList.setStatus(germplasmList.getStatus()-100);
+		    germplasmList.setStatus(germplasmList.getStatus() - 100);
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
 		
@@ -387,31 +424,34 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 	    return false;
 	}
 
-    public void toggleListBuilder(Button toggleBtn) {
-
+    public void toggleListBuilder() {
         if (!isListBuilderShown) {
             splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
 
-            toggleBtn.setCaption("<span class='fa fa-chevron-right'" +
+            String hideTxt = "<span class='fa fa-chevron-right'" +
                     "style='font-size: 16px;" +
                     "position: relative;" +
                     "right: 3px;" +
-                    "top: 1px;'></span>" + "HIDE LIST BUILDER");
+                    "top: 1px;'></span>" + "HIDE LIST BUILDER";
+
+            listBuilderToggleBtn1.setCaption(hideTxt);
+            listBuilderToggleBtn2.setCaption(hideTxt);
 
         }
         else {
             splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
-            toggleBtn.setCaption("<span class='fa fa-chevron-left'" +
+            String showTxt = "<span class='fa fa-chevron-left'" +
                     "style='font-size: 16px;" +
                     "position: relative;" +
                     "right: 3px;" +
-                    "top: 1px;'></span>" + "SHOW LIST BUILDER");
+                    "top: 1px;'></span>" + "SHOW LIST BUILDER";
 
+            listBuilderToggleBtn1.setCaption(showTxt);
+            listBuilderToggleBtn2.setCaption(showTxt);
         }
 
         isListBuilderShown = !isListBuilderShown;
-
     }
 	
 }

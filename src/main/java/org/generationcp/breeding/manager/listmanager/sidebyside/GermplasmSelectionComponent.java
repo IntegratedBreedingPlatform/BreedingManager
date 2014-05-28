@@ -31,7 +31,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 	private GermplasmSearchResultsComponent searchResultsComponent;
 
 	private final ListManagerMain source;
-    private Button listBuilderToggleBtn;
 
     public GermplasmSelectionComponent(final ListManagerMain source) {
 		super();
@@ -68,14 +67,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		searchResultsComponent = new GermplasmSearchResultsComponent(source);
 		searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
 
-        listBuilderToggleBtn = new Button("<span class='fa fa-chevron-left'" +
-                "style='font-size: 16px;" +
-                "position: relative;" +
-                "right: 3px;" +
-                "top: 1px;'></span>" + "SHOW LIST BUILDER");
-        listBuilderToggleBtn.setHtmlContentAllowed(true);
-        listBuilderToggleBtn.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
-
     }
 
 	@Override
@@ -87,12 +78,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 	@Override
 	public void addListeners() {
 
-        listBuilderToggleBtn.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                source.toggleListBuilder(listBuilderToggleBtn);
-            }
-        });
 	}
 
 	@Override
@@ -126,9 +111,9 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
         listDataTablePanel.setContent(listDataTableLayout);
 
         selectionHeaderContainer.addComponent(headingLayout);
-        selectionHeaderContainer.addComponent(listBuilderToggleBtn);
+        selectionHeaderContainer.addComponent(source.listBuilderToggleBtn2);
         selectionHeaderContainer.setExpandRatio(headingLayout,1.0F);
-        selectionHeaderContainer.setComponentAlignment(listBuilderToggleBtn,Alignment.TOP_RIGHT);
+        selectionHeaderContainer.setComponentAlignment(source.listBuilderToggleBtn2,Alignment.TOP_RIGHT);
 
         addComponent(selectionHeaderContainer);
         addComponent(instructionLayout);
