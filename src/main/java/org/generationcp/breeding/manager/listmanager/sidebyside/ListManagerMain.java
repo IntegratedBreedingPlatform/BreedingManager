@@ -2,16 +2,13 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.Date;
 
-import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -28,11 +25,12 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListManagerMain extends AbsoluteLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -426,32 +424,39 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 
     public void toggleListBuilder() {
         if (!isListBuilderShown) {
-            splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
-
-            String hideTxt = "<span class='fa fa-chevron-right'" +
-                    "style='font-size: 16px;" +
-                    "position: relative;" +
-                    "right: 3px;" +
-                    "top: 1px;'></span>" + "HIDE LIST BUILDER";
-
-            listBuilderToggleBtn1.setCaption(hideTxt);
-            listBuilderToggleBtn2.setCaption(hideTxt);
-
+           showListBuilder();
         }
         else {
-            splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
-
-            String showTxt = "<span class='fa fa-chevron-left'" +
-                    "style='font-size: 16px;" +
-                    "position: relative;" +
-                    "right: 3px;" +
-                    "top: 1px;'></span>" + "SHOW LIST BUILDER";
-
-            listBuilderToggleBtn1.setCaption(showTxt);
-            listBuilderToggleBtn2.setCaption(showTxt);
+        	hideListBuilder();
         }
 
         isListBuilderShown = !isListBuilderShown;
+    }
+    
+    public void showListBuilder() {
+        splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
+
+        String hideTxt = "<span class='fa fa-chevron-right'" +
+                "style='font-size: 16px;" +
+                "position: relative;" +
+                "right: 3px;" +
+                "top: 1px;'></span>" + "HIDE LIST BUILDER";
+
+        listBuilderToggleBtn1.setCaption(hideTxt);
+        listBuilderToggleBtn2.setCaption(hideTxt);
+    }
+    
+    public void hideListBuilder(){
+    	splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+
+        String showTxt = "<span class='fa fa-chevron-left'" +
+                "style='font-size: 16px;" +
+                "position: relative;" +
+                "right: 3px;" +
+                "top: 1px;'></span>" + "SHOW LIST BUILDER";
+
+        listBuilderToggleBtn1.setCaption(showTxt);
+        listBuilderToggleBtn2.setCaption(showTxt);
     }
 	
 }

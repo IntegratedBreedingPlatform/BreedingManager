@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -11,10 +10,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+
 @Configurable
 public class ListSearchComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 2325345518077870690L;
+	
+	private ListManagerMain source;
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -26,8 +32,9 @@ public class ListSearchComponent extends VerticalLayout implements International
 	private ListSearchBarComponent searchBar;
 	private ListSearchResultsComponent searchResultsComponent;
 
-	public ListSearchComponent(final ListSelectionLayout listSelectionLayout) {
+	public ListSearchComponent(ListManagerMain source, final ListSelectionLayout listSelectionLayout) {
 		super();
+		this.source = source;
 		this.listSelectionLayout = listSelectionLayout;
 	}
 
@@ -36,7 +43,7 @@ public class ListSearchComponent extends VerticalLayout implements International
 		searchDescription = new Label();
 		searchDescription.setValue(messageSource.getMessage(Message.SELECT_A_MATCHING_LIST_TO_VIEW_THE_DETAILS));
 		searchDescription.setWidth("375px");
-		searchResultsComponent = new ListSearchResultsComponent(listSelectionLayout);
+		searchResultsComponent = new ListSearchResultsComponent(source, listSelectionLayout);
 		searchBar = new ListSearchBarComponent(searchResultsComponent);
 	}
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.ui.*;
 
@@ -679,6 +680,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         }
     }
 	
+	public void addListsFromSearchResults(Set<Integer> lists) {
+		for (Integer id : lists) {
+			if(id != null){
+				dropHandler.addGermplasmList(id, true);
+			}
+			
+		}
+    }
 	public void resetList(){
 		
 		//list details fields

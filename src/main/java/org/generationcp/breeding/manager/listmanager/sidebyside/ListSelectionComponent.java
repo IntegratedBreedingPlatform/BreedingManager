@@ -64,7 +64,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		
 		listSelectionLayout = new ListSelectionLayout(source, selectedListId);
 		listTreeComponent = new ListManagerTreeComponent(this, selectedListId);
-		listSearchComponent = new ListSearchComponent(listSelectionLayout);
+		listSearchComponent = new ListSearchComponent(source,listSelectionLayout);
 	}
 
 	@Override
