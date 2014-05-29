@@ -604,7 +604,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				selectedColumn = event.getPropertyId();
 				selectedItemId = event.getItemId();
 				
-				System.out.println("Click listener, itemClick fired!");
                 if(event.getButton()==ItemClickEvent.BUTTON_RIGHT){
 
                     tableContextMenu.show(event.getClientX(), event.getClientY());

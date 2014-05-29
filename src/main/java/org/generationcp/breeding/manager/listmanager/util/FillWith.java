@@ -622,7 +622,7 @@ public class FillWith implements InternationalizableComponent  {
         for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            System.out.println("property id: " + propertyId);
+            
             if(!onlyFillWithThoseHavingEmptyValues   
             		|| table.getItem(listDataId).getItemProperty(propertyId).getValue()==null  
             		|| table.getItem(listDataId).getItemProperty(propertyId).getValue().equals("")

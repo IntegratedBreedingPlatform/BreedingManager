@@ -1617,7 +1617,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
 				
 				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId && parentFolder!=null){
-					System.out.println("Parent List ID: "+parentListId);
 					parentFolder = germplasmListManager.getGermplasmListById(parentListId);
 					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
 						toReturn = " > "+parentFolder.getName()+toReturn;

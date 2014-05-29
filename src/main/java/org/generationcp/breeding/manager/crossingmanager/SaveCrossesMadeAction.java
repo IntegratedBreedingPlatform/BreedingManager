@@ -107,9 +107,6 @@ public class SaveCrossesMadeAction implements Serializable {
      */
     public GermplasmList saveRecords(CrossesMade crossesMade)throws MiddlewareQueryException{
 
-    	System.out.println("SaveCrossesMadeAction.saveRecords()");
-    	System.out.println("CrossesMade: "+crossesMade);
-    	
         retrieveIbdbUserId();
         updateConstantFields(crossesMade);
         
@@ -235,8 +232,6 @@ public class SaveCrossesMadeAction implements Serializable {
     	int listId;
     	GermplasmList listToSave = crossesMade.getGermplasmList();
 		if (this.germplasmList == null){
-			
-			System.out.println("Case 1");
     		listId = this.germplasmListManager.addGermplasmList(listToSave);
     	} else {
     		// GCP-8225 : set the updates manually on List object so that list entries are not deleted
