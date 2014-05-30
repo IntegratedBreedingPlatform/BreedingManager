@@ -171,6 +171,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private ContextMenuItem tableContextMenu_DeleteEntries;
     private ContextMenuItem tableContextMenu_EditCell;
 
+    //Value change event is fired when table is populated, so we need a flag
+    private Boolean doneInitializing = false;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -382,6 +384,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	    		LOG.error("Error with displaying added columns for entries of list: " + germplasmList.getId(), ex);
 	    	}
 		}
+	    
 	}
 
 	@Override
@@ -506,22 +509,43 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     }else if(action.equals(MENU_SELECT_ALL)) {
                             listDataTable.setValue(listDataTable.getItemIds());
                     }else if(action.equals(MENU_EDIT_VALUE)){
-                            // Make the entire item editable
-                            HashMap<Object,Field> itemMap = fields.get(selectedItemId);
-            if(itemMap != null){
-                    for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-                                    Object column = entry.getKey();
-                                    if(column.equals(selectedColumn)){
-                                            Field f = entry.getValue();
-                                            Object fieldValue = f.getValue();
-                                                    lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
-                                    f.setReadOnly(false);
-                                    f.focus();
+                    	
+                    	HashMap<Object,Field> itemMap = fields.get(selectedItemId);
+                    	
+	                	// go through each field, set previous edited fields to blurred/readonly
+	                    for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+                            Object column = entry.getKey();
+                            //if(column.equals(selectedColumn)){
+                                 Field f = entry.getValue();
+                                 Object fieldValue = f.getValue();
+                                 if(!f.isReadOnly()){
+                                	f.setReadOnly(true);
+                                	
+                                	if(!fieldValue.equals(lastCellvalue)){
+                                		parentListDetailsComponent.setChanged(true);
+                                	}
+                                 }
+                            //}
+	                    }
+	                	
+                        // Make the entire item editable
+                        
+                        if(itemMap != null){
+                        	for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+                                Object column = entry.getKey();
+                                if(column.equals(selectedColumn)){
+                                    Field f = entry.getValue();
+                                    if(f.isReadOnly()){
+                                    	Object fieldValue = f.getValue();
+                                    	lastCellvalue = (fieldValue != null)? fieldValue.toString() : "";
+                                    	f.setReadOnly(false);
+                                    	f.focus();
                                     }
-                    }
-            }
+                                }
+                        	}
+                        }
 
-            listDataTable.select(selectedItemId);
+                        listDataTable.select(selectedItemId);
                     }else if(action.equals(MENU_COPY_TO_NEW_LIST)){
                         source.addSelectedPlantsToList(listDataTable);
                     }
@@ -614,6 +638,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     } else if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
                             tableContextMenu_DeleteEntries.setVisible(true);
                             tableContextMenu_EditCell.setVisible(true);
+                            doneInitializing = true;
                     } else {
                             tableContextMenu_DeleteEntries.setVisible(false);
                             tableContextMenu_EditCell.setVisible(false);
@@ -663,20 +688,46 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		            }
 		        });
 		        
+		        tf.addListener(new FocusListener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void focus(FocusEvent event) {
+						lastCellvalue = ((TextField) event.getComponent()).getValue().toString();
+					}
+		        });
+		        
 		        tf.addListener(new BlurListener() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void blur(BlurEvent event) {
 						HashMap<Object,Field> itemMap = fields.get(itemId);
+
+	                	// go through each field, set previous edited fields to blurred/readonly
+	                    for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
+                            Object column = entry.getKey();
+                            //if(column.equals(selectedColumn)){
+                                 Field f = entry.getValue();
+                                 Object fieldValue = f.getValue();
+                                 if(!f.isReadOnly()){
+                                	f.setReadOnly(true);
+                                	if(!fieldValue.equals(lastCellvalue)){
+                                		parentListDetailsComponent.setChanged(true);
+                                	}
+                                 }
+                            //}
+	                    }
+						
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
 		                	Object column = entry.getKey();
 		                	Field f = entry.getValue();
 		                	Object fieldValue = f.getValue();
 		                	
+		                	
 		                	// mark list as changed if value for the cell was changed
 		                	if (column.equals(selectedColumn)) {
-		                	    if (!fieldValue.toString().equals(lastCellvalue)) {
+		                	    if (!f.isReadOnly() && !fieldValue.toString().equals(lastCellvalue)) {
 		                	        parentListDetailsComponent.setChanged(true);
 		                	    }
 		                	}
@@ -739,6 +790,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						tf.setWidth(d.floatValue(), UNITS_EM);
 						tf.setReadOnly(true);
 						
+						if (doneInitializing && !tf.getValue().toString().equals(lastCellvalue)) {
+                	        parentListDetailsComponent.setChanged(true);
+                	    }
 						//parentListDetailsComponent.setChanged(true);
 					}
 	        	});
@@ -1279,6 +1333,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 //            if(this.germplasmListAccordionMenu != null)
 //                this.germplasmListAccordionMenu.refreshListData();
             
+            
+            doneInitializing = true;
             return true;
             
         } catch (MiddlewareQueryException ex) {

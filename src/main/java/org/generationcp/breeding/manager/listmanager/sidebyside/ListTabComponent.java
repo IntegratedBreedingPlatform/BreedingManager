@@ -90,4 +90,7 @@ public class ListTabComponent extends CssLayout implements InitializingBean, Int
         return this.listComponent;
     }
 
+	public GermplasmList getGermplasmList(){
+		return germplasmList;
+	}
 }
