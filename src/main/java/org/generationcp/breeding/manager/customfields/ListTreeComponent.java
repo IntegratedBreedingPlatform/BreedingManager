@@ -5,6 +5,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -18,6 +19,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -33,10 +35,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -90,6 +92,8 @@ public abstract class ListTreeComponent extends CssLayout implements
     protected Object selectedListId;
     
     protected ToggleButton toggleListTreeButton;
+    
+    private Map<Integer, GermplasmList> germplasmListsMap;
     
     public ListTreeComponent(Integer selectListId){
     	this.listId = selectListId;
@@ -337,6 +341,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 			treeContainerLayout.removeComponent(germplasmListTree);
 		}
 		germplasmListTree.removeAllItems();
+
 		createGermplasmListTree();
 		germplasmListTree.setStyleName("listTree");
 	    germplasmListTree.addStyleName(getTreeStyleName());
@@ -371,7 +376,8 @@ public abstract class ListTreeComponent extends CssLayout implements
 		        }
 		    }
 	    );
-	
+	    
+	    germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
 	    addListTreeItemDescription();
         
 	    germplasmListTree.setImmediate(true);
@@ -394,8 +400,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 				
             	try {
 					if(!itemId.toString().equals("CENTRAL") &&  !itemId.toString().equals("LOCAL")){
-						germplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
-						
+						germplasmList = germplasmListsMap.get(Integer.valueOf(itemId.toString()));
 						if(germplasmList != null){
 							if(!germplasmList.getType().equals("FOLDER")){
 								ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
@@ -406,11 +411,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (MiddlewareQueryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-            	
                 return "";
             }
         });
@@ -585,19 +586,12 @@ public abstract class ListTreeComponent extends CssLayout implements
 	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
 	            // allow children if list has sub-lists
 	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
-	            
-	            if(!hasChildList(listChild.getId())){
-	            	ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(listChild);
-	            	germplasmListTree.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
-	            }
-	            
         	}
         }
+        
         germplasmListTree.setNullSelectionAllowed(false);
         germplasmListTree.select(parentGermplasmListId);
         germplasmListTree.setValue(parentGermplasmListId);
-        
-        germplasmListTree.setDescription("Beheehehe");
     }
     
     public void updateButtons(Object itemId){
