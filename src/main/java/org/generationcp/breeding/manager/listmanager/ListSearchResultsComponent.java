@@ -16,7 +16,6 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -75,7 +74,6 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	@Autowired
     protected GermplasmListManager germplasmListManager;
 	
-    private List<Integer> germplasmListIds;
     private Map<Integer, GermplasmList> germplasmListsMap;
 	
 	public ListSearchResultsComponent(ListManagerMain source, final ListSelectionLayout displayDetailsLayout) {
@@ -140,10 +138,14 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID,
 				Message.CHECK_ICON);
 		
-		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
+		updateGermplasmListsMap();
 		addSearchListResultsItemDescription();
 		
 		addActionHandler();
+	}
+	
+	public void updateGermplasmListsMap(){
+		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
 	}
 	
 	private void addSearchListResultsItemDescription(){
@@ -161,14 +163,10 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 						ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
-					else{
-						return "no lists returned";
-					}
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
-            	
+				}
                 return "";
             }
         });
