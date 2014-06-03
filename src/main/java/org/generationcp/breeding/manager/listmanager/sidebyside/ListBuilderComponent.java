@@ -512,6 +512,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         buttons.addStyleName("lm-new-list-buttons");
 
         this.addComponent(buttons);
+        this.addComponent(menu);
+
 /*
 
 		headerActionsContainer.addComponent(viewHeaderButton, "right:0; bottom:0;");
@@ -549,7 +551,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
         this.addComponent(listBuilderPanel);
         this.addComponent(buttons);
-        this.addComponent(menu);
         this.setExpandRatio(listDataTablePanel,1.0F);
 
 
