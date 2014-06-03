@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import java.util.Date;
 
 import com.vaadin.ui.*;
-import javafx.scene.layout.Pane;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
