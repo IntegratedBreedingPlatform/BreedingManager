@@ -317,6 +317,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                		    		
 	                		            tag.setImmediate(true);
 	                    				
+	                		            //if the item is already existing in the target table, remove the existing item then add a new entry
+	                		            targetTable.removeItem(entryObject);
+	                		            
 	                    				Item item = targetTable.addItem(entryObject);
 	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
