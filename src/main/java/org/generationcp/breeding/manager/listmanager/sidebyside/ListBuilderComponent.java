@@ -683,7 +683,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public void addListsFromSearchResults(Set<Integer> lists) {
 		for (Integer id : lists) {
 			if(id != null){
-				dropHandler.addGermplasmList(id, true);
+				dropHandler.addGermplasmList(id, false);
 			}
 			
 		}
