@@ -449,7 +449,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         String hideTxt = "<span class='fa fa-chevron-right'" +
                 "style='position: relative;" +
                 "right: 3px;'" +
-                "'></span>" + "Show List Builder";
+                "'></span>" + "Hide List Builder";
 
         listBuilderToggleBtn1.setCaption(hideTxt);
         listBuilderToggleBtn2.setCaption(hideTxt);
@@ -461,7 +461,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         String showTxt = "<span class='fa fa-chevron-left'" +
                 "style='position: relative;" +
                 "right: 3px;'" +
-                "'></span>" + "Hide List Builder";
+                "'></span>" + "Show List Builder";
 
         listBuilderToggleBtn1.setCaption(showTxt);
         listBuilderToggleBtn2.setCaption(showTxt);
