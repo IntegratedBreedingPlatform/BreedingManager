@@ -178,7 +178,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private void updateCrossesMadeUI() {
 		int crossesCount = tableCrossesMade.size();
 		generateTotalCrossesLabel(crossesCount);
-		
+		updateCrossesMadeSaveButton();
+        
+        tableCrossesMade.setPageLength(0);
+        tableCrossesMade.requestRepaint();
+        addTableCrossesMadeCounter();
+	}
+	
+	public void updateCrossesMadeSaveButton(){
 		boolean isFemaleListSave = makeCrossesMain.getParentsComponent().isFemaleListSaved();
 		boolean isMaleListSave = makeCrossesMain.getParentsComponent().isMaleListSaved();
 		
@@ -190,10 +197,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			saveButton.setEnabled(false);
 	        saveButton.setDescription(messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		}
-        
-        tableCrossesMade.setPageLength(0);
-        tableCrossesMade.requestRepaint();
-        addTableCrossesMadeCounter();
 	}
     
     /**

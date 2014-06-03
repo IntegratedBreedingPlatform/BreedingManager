@@ -398,4 +398,8 @@ public class CrossingManagerMakeCrossesComponent extends AbsoluteLayout
 		return parentsComponent;
 	}
 	
+	public MakeCrossesTableComponent getCrossesTableComponent() {
+		return crossesTableComponent;
+	}
+	
 }

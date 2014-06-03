@@ -331,6 +331,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         
 	                    		if(addedCount==itemsLeftAfterAdding.size()){
 	                    			saveMaleListButton.setEnabled(false);
+	                    			
+	                    			//updates the crossesMade.savebutton if both parents are save at least once;
+	                        		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
+	                        		
 	                    		} else {
 	                    			saveMaleListButton.setEnabled(true);
 	                    			//maleParentList = null;
@@ -486,6 +490,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    		
 	                    		if(addedCount==itemsAfterAdding.size()){
 	                    			saveFemaleListButton.setEnabled(false);
+	                    			
+	                    			//updates the crossesMade.savebutton if both parents are save at least once;
+	                        		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
+	                        		
 	                    		} else {
 	                    			saveFemaleListButton.setEnabled(true);
 	                    			//femaleParentList = null;
@@ -678,7 +686,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     			this.saveMaleListButton.setEnabled(false);
     			maleListNameForCrosses = makeCrossesMain.getListDetailsTabSheet().getSelectedTab().getCaption();
     	    	updateCrossesSeedSource(maleParentContainer, ((SelectParentsListDataComponent) makeCrossesMain.getListDetailsTabSheet().getSelectedTab()).getGermplasmList());
-    		}        		
+    		}
+    		
+    		//updates the crossesMade.savebutton if both parents are save at least once;
+    		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
     	} else {
     		if(targetTable.equals(femaleParents)){
     			this.saveFemaleListButton.setEnabled(true);
@@ -794,6 +805,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 		makeCrossesMain.selectListInTree(list.getId());
 		makeCrossesMain.updateUIForDeletedList(list);
+		
+		//updates the crossesMade.savebutton if both parents are save at least once;
+		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 		
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 				messageSource.getMessage(parentContainer.getSuccessMessage()));
