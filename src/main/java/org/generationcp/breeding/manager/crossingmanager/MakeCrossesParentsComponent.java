@@ -814,11 +814,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 	
     public boolean isFemaleListSaved(){
-    	return (femaleListNameForCrosses.length() > 0);
+    	if(femaleListNameForCrosses != null){
+    		return (femaleListNameForCrosses.length() > 0);
+    	}
+    	return false;
     }
     
     public boolean isMaleListSaved(){
-    	return (maleListNameForCrosses.length() > 0);
+    	if(maleListNameForCrosses != null){
+    		return (maleListNameForCrosses.length() > 0);
+    	}
+    	return false;
     }
 	
 	public String getSeedSource(Table table, Integer entryId){
