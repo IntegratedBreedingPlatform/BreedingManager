@@ -191,6 +191,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         splitPanelContainer.setScrollable(true);
         splitPanelContainer.setSizeFull();
         splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
+
         splitPanelContainer.setContent(splitPanel);
 
         this.addComponent(splitPanelContainer);
@@ -325,8 +326,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         splitPanel.setImmediate(true);
         splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
         splitPanel.addStyleName("tabContainerStyle");
-        splitPanel.setSizeUndefined();
-        splitPanel.setWidth("100%");
 
 
 
@@ -341,11 +340,11 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         
 		splitPanel.setFirstComponent(plantFinderContent);
 		splitPanel.setSecondComponent(listBuilderComponent);
-		
-		plantFinderContent.setHeight("610px");
-		listBuilderComponent.setHeight("610px");
-		
-		addStyleName("lm-list-manager-main");
+
+        splitPanel.setWidth("100%");
+        splitPanel.setHeight("770px");
+
+        addStyleName("lm-list-manager-main");
 	}
 	
 	private void selectTab(final Button tabToSelect) {
@@ -448,10 +447,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
 
         String hideTxt = "<span class='fa fa-chevron-right'" +
-                "style='font-size: 16px;" +
                 "position: relative;" +
                 "right: 3px;" +
-                "top: 1px;'></span>" + "HIDE LIST BUILDER";
+                "'></span>" + "Show List Builder";
 
         listBuilderToggleBtn1.setCaption(hideTxt);
         listBuilderToggleBtn2.setCaption(hideTxt);
@@ -461,10 +459,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     	splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
         String showTxt = "<span class='fa fa-chevron-left'" +
-                "style='font-size: 16px;" +
                 "position: relative;" +
                 "right: 3px;" +
-                "top: 1px;'></span>" + "SHOW LIST BUILDER";
+                "'></span>" + "Hide List Builder";
 
         listBuilderToggleBtn1.setCaption(showTxt);
         listBuilderToggleBtn2.setCaption(showTxt);

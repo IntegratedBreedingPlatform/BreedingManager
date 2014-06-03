@@ -685,6 +685,12 @@
 	display: none;
 }
 
+
+
+.section_panel_layout {
+    margin-top: 20px;
+}
+
 .lm-tools-button  .v-button-info {
 	padding-left: 0;
 }

@@ -103,8 +103,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Button toolsButton;
     private Button saveButton;
     private Button resetButton;
-    
-    private AbsoluteLayout lockActionsContainer;
+
     private Button lockButton;
     private Button unlockButton;
     
@@ -164,9 +163,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
 	@Override
 	public void instantiateComponents() {
-		
-		lockActionsContainer = new AbsoluteLayout();
-		
+
 	    unlockButton = new IconButton("<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
         unlockButton.setData(UNLOCK_BUTTON_ID);
         unlockButton.setVisible(false);
@@ -208,8 +205,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        tableWithSelectAllLayout.setHeight("390px");
-        
+
         headerLayout = new HorizontalLayout();
 		instructionLayout = new HorizontalLayout();
         
@@ -217,7 +213,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         createGermplasmTable(listDataTable);
         
         listDataTable.setWidth("100%");
-		listDataTable.setHeight("340px");
+		listDataTable.setHeight("480px");
         
         menu = new ContextMenu();
         menu.setWidth("300px");
@@ -443,61 +439,107 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	
 	@Override
 	public void layoutComponents() {
-		
-		this.setMargin(true);
-		
-		this.setSizeFull();
-		addStyleName("lm-list-builder");
-		
-		headerLayout.setWidth("100%");
-		instructionLayout.setWidth("100%");
+        this.setWidth("100%");
+        this.setMargin(new MarginInfo(true,true,false,false));
+        this.setSpacing(false);
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, buildNewListTitle);
-		headingLayout.addStyleName("lm-title");
-		headingLayout.setHeight("30px");
-		headerLayout.addComponent(headingLayout);
 
-		instructionLayout.addComponent(buildNewListDesc);
-		instructionLayout.addStyleName("lm-subtitle");
+        //this.addComponent(headingLayout);
+        //this.addComponent(buildNewListDesc);
 
-		this.addComponent(headerLayout);
-		this.addComponent(instructionLayout);
+        final VerticalLayout listBuilderHeadingContainer = new VerticalLayout();
+        listBuilderHeadingContainer.setMargin(new MarginInfo(false,false,true,false));
 
-		final HorizontalLayout editDetails = new HorizontalLayout();
-		final HorizontalLayout toolsLayout = new HorizontalLayout();
-		
-		editDetails.setWidth("100%");
-		toolsLayout.setWidth("100%");
-		
-		editDetails.addComponent(new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel));
-		
-		lockActionsContainer.addComponent(lockButton, "right:0; bottom:0;");
-		lockActionsContainer.addComponent(unlockButton, "right:0; bottom:0;");
-		
-		editDetails.addComponent(lockActionsContainer);
-		editDetails.setComponentAlignment(lockActionsContainer, Alignment.BOTTOM_RIGHT);
-		
+        listBuilderHeadingContainer.addComponent(headingLayout);
+        listBuilderHeadingContainer.addComponent(buildNewListDesc);
+
+        this.addComponent(listBuilderHeadingContainer);
+
+
+        final Panel listBuilderPanel = new Panel();
+        listBuilderPanel.setStyleName(Reindeer.PANEL_LIGHT + " " + AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+        listBuilderPanel.setCaption(null);
+        listBuilderPanel.setWidth("100%");
+
+        final VerticalLayout listDataTableLayout = new VerticalLayout();
+        listDataTableLayout.setMargin(true);
+        listDataTableLayout.setSpacing(true);
+        listDataTableLayout.setSizeFull();
+        listDataTableLayout.addStyleName("listDataTableLayout");
+
+        listBuilderPanel.setContent(listDataTableLayout);
+
+
+        final HorizontalLayout listBuilderPanelTitleContainer = new HorizontalLayout();
+        listBuilderPanelTitleContainer.setWidth("100%");
+        listBuilderPanelTitleContainer.setSpacing(true);
+
+        HeaderLabelLayout listEntriesTitle = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
+        listBuilderPanelTitleContainer.addComponent(listEntriesTitle);
+
+
+        listBuilderPanelTitleContainer.addComponent(viewHeaderButton);
+        listBuilderPanelTitleContainer.addComponent(editHeaderButton);
+        listBuilderPanelTitleContainer.addComponent(lockButton);
+        listBuilderPanelTitleContainer.addComponent(unlockButton);
+
+        listBuilderPanelTitleContainer.setExpandRatio(listEntriesTitle,1.0f);
+
+        listBuilderPanelTitleContainer.setComponentAlignment(viewHeaderButton,Alignment.BOTTOM_LEFT);
+        listBuilderPanelTitleContainer.setComponentAlignment(editHeaderButton,Alignment.BOTTOM_LEFT);
+        listBuilderPanelTitleContainer.setComponentAlignment(lockButton, Alignment.BOTTOM_RIGHT);
+        listBuilderPanelTitleContainer.setComponentAlignment(unlockButton, Alignment.BOTTOM_RIGHT);
+
+        final HorizontalLayout toolsLayout = new HorizontalLayout();
+        toolsLayout.setWidth("100%");
+        toolsLayout.addComponent(totalListEntriesLabel);
+        toolsLayout.addComponent(toolsButton);
+        toolsLayout.setComponentAlignment(totalListEntriesLabel,Alignment.MIDDLE_LEFT);
+        toolsLayout.setExpandRatio(totalListEntriesLabel, 1.0F);
+
+        listDataTableLayout.addComponent(listBuilderPanelTitleContainer);
+        listDataTableLayout.addComponent(toolsLayout);
+        listDataTableLayout.addComponent(tableWithSelectAllLayout);
+
+        this.addComponent(listBuilderPanel);
+        //this.setExpandRatio(listBuilderPanel,1.0f);
+
+        final HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setMargin(new MarginInfo(false,false,true,false));
+        buttons.setWidth("170px");
+        buttons.addComponent(saveButton);
+        buttons.addComponent(resetButton);
+        buttons.setSpacing(true);
+        buttons.addStyleName("lm-new-list-buttons");
+
+        this.addComponent(buttons);
+/*
+
 		headerActionsContainer.addComponent(viewHeaderButton, "right:0; bottom:0;");
 		headerActionsContainer.addComponent(editHeaderButton, "right:0; bottom:0;");
-		
-		editDetails.addComponent(headerActionsContainer);
-		editDetails.setComponentAlignment(headerActionsContainer, Alignment.BOTTOM_RIGHT);
-		
-		toolsLayout.addComponent(totalListEntriesLabel);
+
+		listBuilderPanelTitleContainer.addComponent(headerActionsContainer);
+		listBuilderPanelTitleContainer.setComponentAlignment(headerActionsContainer, Alignment.BOTTOM_RIGHT);
+
+        lockActionsContainer.addComponent(lockButton, "right:0; bottom:0;");
+        lockActionsContainer.addComponent(unlockButton, "right:0; bottom:0;");
+
+        listBuilderPanelTitleContainer.addComponent(lockActionsContainer);
+        listBuilderPanelTitleContainer.setComponentAlignment(lockActionsContainer, Alignment.BOTTOM_RIGHT);
+
+
+        toolsLayout.addComponent(totalListEntriesLabel);
 		toolsLayout.addComponent(toolsButton);
 		toolsLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
 		toolsLayout.addStyleName("lm-list-desc");
-		
+
         listDataTablePanel = new Panel();
-        listDataTablePanel.setSizeFull();
+        listDataTablePanel.setWidth("100%");
+
+
         listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
-        final VerticalLayout listDataTableLayout = new VerticalLayout();
-        listDataTableLayout.setMargin(true);
-        listDataTableLayout.setSizeFull();
-        listDataTableLayout.addStyleName("listDataTableLayout");
-        
-        listDataTablePanel.setContent(listDataTableLayout);
-       
+
         final HorizontalLayout buttons = new HorizontalLayout();
         buttons.setWidth("170px");
         buttons.addComponent(saveButton);
@@ -505,14 +547,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         buttons.setSpacing(true);
         buttons.addStyleName("lm-new-list-buttons");
 
-        listDataTablePanel.addComponent(editDetails);
-        listDataTablePanel.addComponent(toolsLayout);
-        listDataTableLayout.addComponent(tableWithSelectAllLayout);
-        
-        this.addComponent(listDataTablePanel);
+
+
+        this.addComponent(listBuilderPanel);
         this.addComponent(buttons);
         this.addComponent(menu);
         this.setExpandRatio(listDataTablePanel,1.0F);
+
+
+ */
+
 	}
     
 	private void addBasicTableColumns(Table table){
