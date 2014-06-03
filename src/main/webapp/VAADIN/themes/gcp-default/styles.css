@@ -418,9 +418,12 @@
 	background-image: none;
 }
 
-.v-splitpanel-hsplitter-tabContainerStyle, .v-splitpanel-hsplitter-tabContainerStyle div {
+.v-splitpanel-hsplitter-tabContainerStyle{
     background: white;
-    width: 15px;
+}
+
+.v-splitpanel-hsplitter-tabContainerStyle div {
+    width: 14px;
 }
 
 .v-splitpanel-vsplitter, .v-splitpanel-vsplitter div {
@@ -539,8 +542,12 @@
 	background-color: #ffffff;
 }
 
-.v-panel-content-section_panel_layout > div {
-	background-color: #f6f6f6;
+.listDataTableLayout {
+	background-color: #f6f6f6 !important;
+    border: 1px solid rgb(228,228,228);
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
 
 /* TABSHEET in Crossing Manager */
@@ -669,28 +676,6 @@
 	padding-top: 7px;
 }
 
-.lm-list-manager-main .v-panel,
-.lm-list-manager-popup .v-panel {
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border-radius: none;
-}
-
-.lm-list-manager-main .v-panel-captionwrap,
-.lm-list-manager-main .v-panel-deco,
-.lm-list-manager-popup .v-panel-captionwrap,
-.lm-list-manager-popup .v-panel-deco {
-	display: none;
-}
-
-
-
-.section_panel_layout {
-    margin-top: 20px;
-}
-
 .lm-tools-button  .v-button-info {
 	padding-left: 0;
 }
@@ -698,11 +683,6 @@
 .lm-tools-button .v-button-wrap {
 	padding-top: 2px;
 	padding-left: 9px;
-}
-
-
-.lm-list-manager-popup .v-panel-content {
-	border: 1px solid rgb(228, 228, 228);
 }
 
 .lm-panel {

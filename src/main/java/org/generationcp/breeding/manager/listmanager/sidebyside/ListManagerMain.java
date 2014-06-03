@@ -319,7 +319,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
 		//splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setMaxSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setMaxSplitPosition(48, Sizeable.UNITS_PERCENTAGE);
 		//splitPanel.setMinSplitPosition(, Sizeable.UNITS_PERCENTAGE);
 		splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
@@ -342,7 +342,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		splitPanel.setSecondComponent(listBuilderComponent);
 
         splitPanel.setWidth("100%");
-        splitPanel.setHeight("770px");
+        splitPanel.setHeight("780px");
 
         addStyleName("lm-list-manager-main");
 	}

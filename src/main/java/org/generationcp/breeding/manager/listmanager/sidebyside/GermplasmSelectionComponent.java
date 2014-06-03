@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -82,8 +83,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 	@Override
 	public void layoutComponents() {
-		this.setSizeFull();
-        this.setMargin(true);
+		this.setMargin(true);
 
         final HorizontalLayout selectionHeaderContainer = new HorizontalLayout();
         selectionHeaderContainer.setWidth("100%");
@@ -98,12 +98,12 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();
-        listDataTablePanel.setSizeFull();
-        listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+        listDataTablePanel.setStyleName(Reindeer.PANEL_LIGHT + " "+AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         
         final VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
         listDataTableLayout.setSizeFull();
+        listDataTableLayout.addStyleName("listDataTableLayout");
 
         listDataTableLayout.addComponent(searchBarComponent);
         listDataTableLayout.addComponent(searchResultsComponent);

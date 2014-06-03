@@ -106,8 +106,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	public void instantiateComponents() {
 		
 		setWidth("100%");
-		setHeight("500px");
-		
+
 		matchingGermplasmsLabel = new Label();
 		matchingGermplasmsLabel.setWidth("100%");
 		
@@ -117,8 +116,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsLabel.setStyleName("lm-search-results-label");
        	
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
-		matchingGermplasmsTableWithSelectAll.setHeight("410px");
-		
+		matchingGermplasmsTableWithSelectAll.setHeight("500px");
+
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
@@ -130,7 +129,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.setSelectable(true);
 		matchingGermplasmsTable.setImmediate(true);
 		matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
-		matchingGermplasmsTable.setHeight("360px");
+		matchingGermplasmsTable.setHeight("470px");
 
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		

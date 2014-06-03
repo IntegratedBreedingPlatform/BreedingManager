@@ -445,20 +445,18 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, buildNewListTitle);
 
-        //this.addComponent(headingLayout);
-        //this.addComponent(buildNewListDesc);
-
         final VerticalLayout listBuilderHeadingContainer = new VerticalLayout();
-        listBuilderHeadingContainer.setMargin(new MarginInfo(false,false,true,false));
 
         listBuilderHeadingContainer.addComponent(headingLayout);
         listBuilderHeadingContainer.addComponent(buildNewListDesc);
+
+        buildNewListDesc.setStyleName("lm-subtitle");
 
         this.addComponent(listBuilderHeadingContainer);
 
 
         final Panel listBuilderPanel = new Panel();
-        listBuilderPanel.setStyleName(Reindeer.PANEL_LIGHT + " " + AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
+        listBuilderPanel.setStyleName(Reindeer.PANEL_LIGHT + " "+AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
         listBuilderPanel.setCaption(null);
         listBuilderPanel.setWidth("100%");
 
