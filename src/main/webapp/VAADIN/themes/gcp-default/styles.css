@@ -141,10 +141,6 @@
 	
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
-	padding-left: 25px !important;
-	background-position: left 3px top 1px !important;
-	background-image: url(images/folder-icon.png);
-	background-repeat: no-repeat;
 }
 
 .v-tree-node-listManagerTreeRegularParentNode {
@@ -158,9 +154,6 @@
 	
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
-	padding-left: 25px !important;
-	background-position: left 3px top 1px !important;
-	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
@@ -171,10 +164,6 @@
 
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
-	padding-left: 25px !important;
-	background-position: left 3px top 1px !important;
-	background-image: url(images/document-icon.png);
-	background-repeat: no-repeat;
 }
 
 /* COMPONENT TREE */
@@ -320,3 +309,12 @@
 	display: inline !important;
 } 
  
+ .v-icon {
+    width:17px;
+    height:17px;
+}
+
+img[src$="document-icon.png"] {
+  	width:14px;
+    height:16px;
+}

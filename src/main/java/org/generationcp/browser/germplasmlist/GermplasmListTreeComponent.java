@@ -37,6 +37,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -56,6 +57,9 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     
     public final static String REFRESH_BUTTON_ID = "GermplasmListTreeComponent Refresh Button";
 
+    private ThemeResource folderResource = new ThemeResource("../vaadin-retro/svg/folder-icon.svg");
+    private ThemeResource leafResource = new ThemeResource("images/document-icon.png");
+    
     private Tree germplasmListTree;
     private static TabSheet tabSheetGermplasmList;
     private HorizontalLayout germplasmListBrowserMainLayout;
@@ -86,6 +90,7 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
     
     // Called by GermplasmListButtonClickListener
     public void createTree() {
+    	
         this.removeComponent(germplasmListTree);
         germplasmListTree.removeAllItems();
         germplasmListTree = createGermplasmListTree(Database.LOCAL);
@@ -113,6 +118,14 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
         for (GermplasmList parentList : germplasmListParent) {
             germplasmListTree.addItem(parentList.getId());
             germplasmListTree.setItemCaption(parentList.getId(), parentList.getName());
+            
+            if (parentList.isFolder()){
+            	germplasmListTree.setItemIcon(parentList.getId(), folderResource);
+            }else{
+            	germplasmListTree.setItemIcon(parentList.getId(), leafResource);
+            	germplasmListTree.setChildrenAllowed(parentList.getId(), hasChildList(parentList.getId()));
+            }
+            
         }
 
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
@@ -159,6 +172,13 @@ public class GermplasmListTreeComponent extends VerticalLayout implements Initia
             germplasmListTree.addItem(listChild.getId());
             germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
             germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+            
+            if (listChild.isFolder()){
+            	germplasmListTree.setItemIcon(listChild.getId(), folderResource);
+            }else{
+            	germplasmListTree.setItemIcon(listChild.getId(), leafResource);
+            }
+            
             // allow children if list has sub-lists
             germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
         }

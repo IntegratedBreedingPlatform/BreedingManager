@@ -31,8 +31,10 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.dms.DatasetReference;
 import org.generationcp.middleware.domain.dms.FolderReference;
 import org.generationcp.middleware.domain.dms.Reference;
+import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.StudyDataManager;
@@ -43,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -85,6 +88,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     private Button deleteFolderBtn;
     private Button renameFolderBtn;
     
+    private ThemeResource folderResource = new ThemeResource("../vaadin-retro/svg/folder-icon.svg");
+	private ThemeResource studyResource = new ThemeResource("../vaadin-retro/svg/study-icon.svg");
+	private ThemeResource dataSetResource = new ThemeResource("../vaadin-retro/svg/dataset-icon.svg");
+    
     private Button refreshButton;
     
     private Integer rootNodeProjectId;
@@ -120,9 +127,11 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     	
     	studyTree.addItem(LOCAL);
         studyTree.setItemCaption(LOCAL, messageSource.getMessage(Message.PROGRAM_STUDIES));
-    	
+    	studyTree.setItemIcon(LOCAL, getThemeResourceByReference(new FolderReference(null,null)));
+        
         studyTree.addItem(CENTRAL);
         studyTree.setItemCaption(CENTRAL, messageSource.getMessage(Message.PUBLIC_STUDIES));
+        studyTree.setItemIcon(CENTRAL, getThemeResourceByReference(new FolderReference(null,null)));
         
         populateRootNode(studyTree, LOCAL, Database.LOCAL);
         populateRootNode(studyTree, CENTRAL, Database.CENTRAL);
@@ -172,6 +181,14 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         for (FolderReference ps : rootFolders) {
             studyTree.addItem(ps.getId());
             studyTree.setItemCaption(ps.getId(), ps.getName());
+            
+            if (!isFolder(ps.getId())){
+            	studyTree.setItemIcon(ps.getId(), studyResource);
+            }else{
+            	studyTree.setItemIcon(ps.getId(), getThemeResourceByReference(ps));
+            }
+            
+            
             studyTree.setParent(ps.getId(), rootNodeId);
             if (!hasChildStudy(ps.getId())){
             	studyTree.setChildrenAllowed(ps.getId(), false);
@@ -251,8 +268,10 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
             // check if the study has sub study
             if (hasChildStudy(sc.getId())) {
                 studyTree.setChildrenAllowed(sc.getId(), true);
+                studyTree.setItemIcon(sc.getId(), getThemeResourceByReference(sc));
             } else {
                 studyTree.setChildrenAllowed(sc.getId(), false);
+                studyTree.setItemIcon(sc.getId(), getThemeResourceByReference(sc));
             }
             
         }
@@ -575,4 +594,21 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
     public Tree getStudyTree(){
     	return studyTree;
     }
+    
+    private ThemeResource getThemeResourceByReference(Reference r){
+		
+		if (r instanceof FolderReference){
+			LOG.debug("r is FolderReference");
+			return folderResource;
+		}else if (r instanceof StudyReference){
+			LOG.debug("r is StudyReference");
+			return studyResource;
+		}else if (r instanceof DatasetReference){
+			LOG.debug("r is DatasetReference");
+			return dataSetResource;
+		}else{
+			return folderResource; 
+		}
+			
+	}
 }
