@@ -151,7 +151,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     @Override
     public void layoutComponents() {
-        this.setSizeFull();
         this.setMargin(true);
 
         final HorizontalLayout listSelectionHeaderContainer = new HorizontalLayout();
@@ -189,7 +188,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
         this.addComponent(listSelectionHeaderContainer);
         this.addComponent(detailsTabSheet);
-        this.setExpandRatio(detailsTabSheet,1.0f);
+        //this.setExpandRatio(detailsTabSheet,1.0f);
 
 
 

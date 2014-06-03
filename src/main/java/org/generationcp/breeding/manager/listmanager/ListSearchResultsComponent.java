@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -11,10 +12,10 @@ import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -72,6 +73,8 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	
 	@Autowired
     protected GermplasmListManager germplasmListManager;
+	
+    private Map<Integer, GermplasmList> germplasmListsMap;
 	
 	public ListSearchResultsComponent(ListManagerMain source, final ListSelectionLayout displayDetailsLayout) {
 		this.source = source;
@@ -135,9 +138,14 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		messageSource.setColumnHeader(matchingListsTable, CHECKBOX_COLUMN_ID,
 				Message.CHECK_ICON);
 		
+		updateGermplasmListsMap();
 		addSearchListResultsItemDescription();
 		
 		addActionHandler();
+	}
+	
+	public void updateGermplasmListsMap(){
+		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
 	}
 	
 	private void addSearchListResultsItemDescription(){
@@ -150,24 +158,15 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
             	GermplasmList germplasmList;
 				
             	try {
-					if(!itemId.toString().equals("CENTRAL") &&  !itemId.toString().equals("LOCAL")){
-						germplasmList = germplasmListManager.getGermplasmListById(Integer.valueOf(itemId.toString()));
-						
-						if(germplasmList != null){
-							if(!germplasmList.getType().equals("FOLDER")){
-								ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
-								return viewListHeaderWindow.getListHeaderComponent().toString();
-							}
-						}
+					germplasmList = germplasmListsMap.get(Integer.valueOf(itemId.toString()));
+					if(germplasmList != null){
+						ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
+						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (MiddlewareQueryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-            	
                 return "";
             }
         });

@@ -124,17 +124,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		currentSetting = null;
 		project = null;
 		crossingManagerTool = null;
-		
-		try{
-			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-			project = workbenchDataManager.getLastOpenedProject(wbUserId);
-			crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
-		} catch(MiddlewareQueryException ex){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
-			LOG.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
-			return;
-		}
 	}
 
 	@Override
@@ -293,14 +282,30 @@ public class CrossingSettingsDetailComponent extends CssLayout
 			}
 		}
 	}
+	
+	public void updateTemplateSettingVariables(){
+		try{
+ 			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+ 			project = workbenchDataManager.getLastOpenedProject(wbUserId);
+ 			crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
+ 		} catch(MiddlewareQueryException ex){
+ 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+ 					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
+ 			LOG.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
+ 			return;
+ 		}
+	}
 
 	private void saveSetting() {
+		
+		updateTemplateSettingVariables();
+		
 		CrossingManagerSetting currentlyDefinedSettingsInUi = getCurrentlyDefinedSetting();
 		
 		if(currentSetting == null){
 			TemplateSetting templateSetting = new TemplateSetting();
 			String settingName = getCurrentSettingNameinUI();
-			
+			templateSetting.setName(settingName);
 			if(!doesSettingNameExist(settingName, Integer.valueOf(project.getProjectId().intValue()), crossingManagerTool)){
 				templateSetting.setIsDefault(additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
 				templateSetting.setProjectId(Integer.valueOf(project.getProjectId().intValue()));
@@ -331,7 +336,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 					
 					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Settings have been saved."
 							, 3000, Notification.POSITION_CENTERED);
-					return;
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error with saving template setting.", ex);
 					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)

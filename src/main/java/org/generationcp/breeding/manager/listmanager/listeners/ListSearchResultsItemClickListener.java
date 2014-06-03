@@ -26,13 +26,15 @@ public class ListSearchResultsItemClickListener implements ItemClickListener {
 		Integer itemId = (Integer) event.getItemId();
 		
 		if(!event.isCtrlKey() && !event.isShiftKey()){
-			try{
-		        detailsLayout.createListDetailsTab(itemId);
-	        } catch (MiddlewareQueryException e){
-	            LOG.error("Error in displaying germplasm list details.", e);
-	            throw new InternationalizableException(e, Message.ERROR_DATABASE,
-	                    Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
-	        }
+			if(event.getButton() == ItemClickEvent.BUTTON_LEFT){
+				try{
+			        detailsLayout.createListDetailsTab(itemId);
+		        } catch (MiddlewareQueryException e){
+		            LOG.error("Error in displaying germplasm list details.", e);
+		            throw new InternationalizableException(e, Message.ERROR_DATABASE,
+		                    Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
+		        }
+			}			
 		}
 	}
 }

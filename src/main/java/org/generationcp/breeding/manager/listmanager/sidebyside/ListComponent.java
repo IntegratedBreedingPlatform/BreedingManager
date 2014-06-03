@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.ui.*;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -73,8 +72,20 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
@@ -316,7 +327,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			return 8; 
 		}
 		
-		return 13;
+		return 18;
 	}
 
 	@Override
@@ -557,7 +568,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void layoutComponents() {
-		this.setSizeFull();
+		//this.setSizeFull();
 
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
@@ -582,6 +593,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 			showHideOptionsForLocked();
 		}
+
+        headerLayout.setExpandRatio(headingLayout,1.0f);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
@@ -602,8 +615,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
 		
-		listDataTableWithSelectAll.setHeight("410px");
-		listDataTable.setHeight("360px");
+		//listDataTableWithSelectAll.setHeight("410px");
+		listDataTable.setHeight("480px");
 		
 		addComponent(listDataTableWithSelectAll);
         addComponent(tableContextMenu);

@@ -126,19 +126,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private boolean fromBuildNewList;
     private ListBuilderComponent buildNewListComponent;
     
-    public static String[] ADDABLE_PROPERTY_IDS = new String[] {PREFERRED_ID
-        , PREFERRED_NAME
-        , GERMPLASM_DATE
-        , LOCATIONS
-        , METHOD_NAME
-        , METHOD_ABBREV
-        , METHOD_NUMBER
-        , METHOD_GROUP
-        , CROSS_FEMALE_GID
-        , CROSS_FEMALE_PREF_NAME 
-        , CROSS_MALE_GID
-        , CROSS_MALE_PREF_NAME}; 
-    
+    public static List<String> ADDABLE_PROPERTY_IDS;
     
     /**
      * Add "Add column" context menu to a table
@@ -196,6 +184,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void setupContextMenu(){
+    	
+    	initializeAddableProperties();
         
         addColumnItem = sourceContextMenu.addItem(ADD_COLUMN_MENU);
         menuFillWithPreferredId = addColumnItem.addItem(FILL_WITH_PREFERRED_ID);
@@ -370,6 +360,24 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 }
             });
         }*/
+    }
+    
+    public void initializeAddableProperties(){
+    	
+    	ADDABLE_PROPERTY_IDS = new ArrayList<String>();
+    	
+    	ADDABLE_PROPERTY_IDS.add(PREFERRED_ID);
+    	ADDABLE_PROPERTY_IDS.add(PREFERRED_NAME);
+    	ADDABLE_PROPERTY_IDS.add(GERMPLASM_DATE);
+    	ADDABLE_PROPERTY_IDS.add(LOCATIONS);
+    	ADDABLE_PROPERTY_IDS.add(METHOD_NAME);
+    	ADDABLE_PROPERTY_IDS.add(METHOD_ABBREV);
+    	ADDABLE_PROPERTY_IDS.add(METHOD_NUMBER);
+    	ADDABLE_PROPERTY_IDS.add(METHOD_GROUP);
+    	ADDABLE_PROPERTY_IDS.add(CROSS_FEMALE_GID);
+    	ADDABLE_PROPERTY_IDS.add(CROSS_FEMALE_PREF_NAME);
+    	ADDABLE_PROPERTY_IDS.add(CROSS_MALE_GID);
+    	ADDABLE_PROPERTY_IDS.add(CROSS_MALE_PREF_NAME);
     }
     
     public void refreshAddColumnMenu() {
@@ -951,24 +959,24 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @return
      */
     public List<ListDataInfo> getListDataCollectionFromTable(Table table){
-        
-//        populateAddedColumns();
-        
         List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
+        List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
         
         for(Object itemId : table.getItemIds()){
-            Item item = table.getItem(itemId);
-            List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
-            for(String propertyId: ADDABLE_PROPERTY_IDS){
-                if(AddColumnContextMenu.propertyExists(propertyId, table)){
-                    if(item.getItemProperty(propertyId).getValue()!=null)
-                        columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
-                    else
-                        columns.add(new ListDataColumn(propertyId, null));
-                }
-            }
-            listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()),columns));
+        	Item item = table.getItem(itemId);
+        	List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
+	        for(String propertyId : propertyIds){
+	        	if(ADDABLE_PROPERTY_IDS.contains(propertyId)){
+	        		//System.out.println("Columns TO Save: " + propertyId);
+	        		if(item.getItemProperty(propertyId).getValue()!=null)
+	                    columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
+	                else
+	                    columns.add(new ListDataColumn(propertyId, null));
+	        	}
+	        }
+	        listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()),columns));
         }
+        
         return listDataCollection;
     }
 

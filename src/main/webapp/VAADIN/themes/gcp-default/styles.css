@@ -447,6 +447,17 @@
 .tabHeaderStyle div div .v-button:hover,
 .tabHeaderStyle div div .v-button:active{
 	border: 1px solid #e3e3e3;
+    border-bottom: 0;
+
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .tabHeaderStyle div div .v-button:focus,
@@ -459,7 +470,18 @@
 
 .tabHeaderStyle div div .v-button:focus,
 .tabHeaderStyle div div .v-pressed.v-button{
-	border: 1px solid #e3e3e3;
+    border: 1px solid #e3e3e3;
+    border-bottom: 0;
+
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .v-button-tabHeaderSelectedStyle,
@@ -476,11 +498,18 @@
 .tabHeaderSelectedStyle div div .v-button:hover,
 .tabHeaderSelectedStyle div div .v-button:active
 {
-	border: 1px solid #e3e3e3;
-}
+    border: 1px solid #e3e3e3;
+    border-bottom: 0;
 
-.tabContainerStyle {
-	border: 1px solid #e3e3e3;
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .tabStyleButton .v-button-caption {
@@ -656,6 +685,12 @@
 	display: none;
 }
 
+
+
+.section_panel_layout {
+    margin-top: 20px;
+}
+
 .lm-tools-button  .v-button-info {
 	padding-left: 0;
 }
@@ -665,10 +700,16 @@
 	padding-left: 9px;
 }
 
-.lm-list-manager-main .v-panel-content,
+
 .lm-list-manager-popup .v-panel-content {
 	border: 1px solid rgb(228, 228, 228);
 }
+
+.lm-panel {
+    border: 0;
+    border-top: 1px solid rgb(228,228,228);
+}
+
 
 .lm-search-results-label {
 	padding: 4px 0;

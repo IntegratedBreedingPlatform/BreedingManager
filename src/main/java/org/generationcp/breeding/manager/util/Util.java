@@ -16,8 +16,12 @@ package org.generationcp.breeding.manager.util;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
@@ -26,6 +30,7 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -498,5 +503,60 @@ public class Util {
         return returnString;
 	}
 	
+	public static Map<Integer, GermplasmList> getGermplasmLists(GermplasmListManager germplasmListManager, List<Integer> germplasmListIds){
+		Map<Integer,GermplasmList> germplasmListsMap = new HashMap<Integer,GermplasmList>();
+		List<GermplasmList> lists = new ArrayList<GermplasmList>();
+		
+		try {
+			//LOCAL
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				if(germplasmListIds.contains(listId)){
+					germplasmListsMap.put(listId, list);
+				}
+			}
+			
+			//CENTRAL			
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				if(germplasmListIds.contains(listId)){
+					germplasmListsMap.put(listId, list);
+				}
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return germplasmListsMap;
+	}
+	
+	public static Map<Integer, GermplasmList> getAllGermplasmLists(GermplasmListManager germplasmListManager){
+		Map<Integer,GermplasmList> germplasmListsMap = new HashMap<Integer,GermplasmList>();
+		List<GermplasmList> lists = new ArrayList<GermplasmList>();
+		
+		try {
+			//LOCAL
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				germplasmListsMap.put(listId, list);
+			}
+			
+			//CENTRAL			
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				germplasmListsMap.put(listId, list);
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return germplasmListsMap;
+	}
 }
 
