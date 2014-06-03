@@ -426,6 +426,11 @@
     width: 14px;
 }
 
+/* hide tabContainerStyle's scrollbar at all times */
+.v-splitpanel-second-container-tabContainerStyle.v-scrollable {
+    overflow: hidden;
+}
+
 .v-splitpanel-vsplitter, .v-splitpanel-vsplitter div {
 	height: 1px;
 	background-image: none;
