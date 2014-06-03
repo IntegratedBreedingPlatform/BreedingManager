@@ -178,7 +178,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         buildNewListTitle.addStyleName(AppConstants.CssStyles.BOLD);
         
         buildNewListDesc = new Label();
-        buildNewListDesc.setValue("Build your new list by selecting and dragging in entries from the lists to the left.");
+        buildNewListDesc.setValue("Build or revise your list by dragging in entries from the left..");
         buildNewListDesc.setWidth("500px");
         
         listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
