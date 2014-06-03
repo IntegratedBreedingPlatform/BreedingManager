@@ -101,18 +101,18 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	@Override
 	public void instantiateComponents() {
         listBuilderToggleBtn1 = new Button("<span class='fa fa-chevron-left'" +
-                "style='font-size: 16px;" +
+                "style='" +
                 "position: relative;" +
                 "right: 3px;" +
-                "top: 1px;'></span>" + "SHOW LIST BUILDER");
+                "'></span>" + "Show List Builder");
         listBuilderToggleBtn1.setHtmlContentAllowed(true);
         listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
 
         listBuilderToggleBtn2 = new Button("<span class='fa fa-chevron-left'" +
-                "style='font-size: 16px;" +
+                "style='" +
                 "position: relative;" +
                 "right: 3px;" +
-                "top: 1px;'></span>" + "SHOW LIST BUILDER");
+                "'></span>" + "Show List Builder");
         listBuilderToggleBtn2.setHtmlContentAllowed(true);
         listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
 
@@ -447,8 +447,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
 
         String hideTxt = "<span class='fa fa-chevron-right'" +
-                "position: relative;" +
-                "right: 3px;" +
+                "style='position: relative;" +
+                "right: 3px;'" +
                 "'></span>" + "Show List Builder";
 
         listBuilderToggleBtn1.setCaption(hideTxt);
@@ -459,8 +459,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     	splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
         String showTxt = "<span class='fa fa-chevron-left'" +
-                "position: relative;" +
-                "right: 3px;" +
+                "style='position: relative;" +
+                "right: 3px;'" +
                 "'></span>" + "Hide List Builder";
 
         listBuilderToggleBtn1.setCaption(showTxt);
