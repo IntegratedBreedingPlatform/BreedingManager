@@ -2,6 +2,8 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.Date;
 
+import com.vaadin.ui.*;
+import javafx.scene.layout.Pane;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -21,19 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListManagerMain extends AbsoluteLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = 5976245899964745758L;
     
@@ -183,9 +179,27 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
     @Override
 	public void layoutComponents() {
 		
-		addComponent(titleLayout,"top:0px; left:10px");
-		addComponent(tabHeaderLayout,"top:40px;left:10px;");
-		addComponent(splitPanel,"top:65px;left:10px;");
+        final VerticalLayout titleAndTabContainer = new VerticalLayout();
+        titleAndTabContainer.setMargin(new MarginInfo(false,false,false,true));
+        titleAndTabContainer.setSpacing(true);
+
+        titleAndTabContainer.addComponent(titleLayout);
+        titleAndTabContainer.addComponent(tabHeaderLayout);
+
+        this.addComponent(titleAndTabContainer);
+
+        final Panel splitPanelContainer = new Panel();
+        splitPanelContainer.setScrollable(true);
+        splitPanelContainer.setSizeFull();
+        splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
+        splitPanelContainer.setContent(splitPanel);
+
+        this.addComponent(splitPanelContainer);
+        this.setExpandRatio(splitPanelContainer,1.0F);
+
+        //this.setStyleName("green");
+        this.setMargin(false);
+        this.setSpacing(false);
 	}
 
 	/**
@@ -310,13 +324,11 @@ public class ListManagerMain extends AbsoluteLayout implements Internationalizab
 		splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
         splitPanel.setImmediate(true);
-		
-		// Leave some room for the border
-		splitPanel.setWidth("98%");
-		splitPanel.setHeight("98%");
-		
-		splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
-        splitPanel.setStyleName("tabContainerStyle");
+        splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
+        splitPanel.addStyleName("tabContainerStyle");
+        splitPanel.setSizeUndefined();
+        splitPanel.setWidth("100%");
+
 
 
         listSelectionComponent = new ListSelectionComponent(this, selectedListId);

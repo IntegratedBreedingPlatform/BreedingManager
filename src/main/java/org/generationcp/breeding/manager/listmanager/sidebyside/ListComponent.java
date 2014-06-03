@@ -327,7 +327,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			return 8; 
 		}
 		
-		return 13;
+		return 18;
 	}
 
 	@Override
@@ -593,6 +593,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 			showHideOptionsForLocked();
 		}
+
+        headerLayout.setExpandRatio(headingLayout,1.0f);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");

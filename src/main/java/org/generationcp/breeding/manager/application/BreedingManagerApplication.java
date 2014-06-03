@@ -151,9 +151,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
             	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
                 listManagerWindow.setName(name);
                 listManagerWindow.setSizeFull();
-                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
-                this.addWindow(listManagerWindow);
-                listManagerWindow.getContent().setHeight("100%");
+
+                listManagerWindow.setContent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
+                this.setMainWindow(listManagerWindow);
+
                 return listManagerWindow;
             } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
             	String listIdPart = name.substring(name.indexOf("-") + 1);
@@ -179,7 +180,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 listManagerSideBySideWindow.setSizeFull();
                 listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
                 this.setMainWindow(listManagerSideBySideWindow);
-                this.getMainWindow().getContent().setHeight("100%");
+                //this.getMainWindow().getContent().setHeight("100%");
                 return listManagerSideBySideWindow;
             }  else if(name.equals(MANAGE_SETTINGS_CROSSING_MANAGER)){
                 Window manageCrossingSettings = new Window(messageSource.getMessage(Message.CROSSING_SETTINGS_TAB_LABEL));
