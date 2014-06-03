@@ -83,7 +83,9 @@ public class SelectLocationFolderDialog extends Window implements
 		selectLocationButton = new Button(selectBtnCaption);
 		selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 				
-		germplasmListTree = new LocalListFoldersTreeComponent(folderId); 
+		germplasmListTree = new LocalListFoldersTreeComponent(folderId);
+		germplasmListTree.setHeight("390px");
+		germplasmListTree.setHeight("340px");
 				
 	}
 
@@ -127,19 +129,21 @@ public class SelectLocationFolderDialog extends Window implements
 	@Override
 	public void layoutComponents() {
 
-		setHeight("440px");
-		setWidth("275px");
+		setHeight("493px");
+		setWidth("376px");
 
 		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setHeight("70px");
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
 		buttonBar.addComponent(cancelButton);
 		buttonBar.addComponent(selectLocationButton);
 		
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setHeight("43px");
 		buttonLayout.setWidth("100%");
 		buttonLayout.addComponent(buttonBar);
-		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+		buttonLayout.setComponentAlignment(buttonBar, Alignment.TOP_CENTER);
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setMargin(true);
