@@ -153,7 +153,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 listManagerWindow.setSizeFull();
 
                 listManagerWindow.setContent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
-                this.setMainWindow(listManagerWindow);
+                this.addWindow(listManagerWindow);
 
                 return listManagerWindow;
             } else if(name.startsWith(LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)){
