@@ -80,6 +80,8 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossExpansion;
 	private ContextMenuItem menuFillWithSequenceNumber;
 	
+	private Table.HeaderClickListener headerClickListener;
+	
 	private GermplasmDetailModel germplasmDetail;
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
@@ -207,6 +209,33 @@ public class FillWith implements InternationalizableComponent  {
     
     private void setupContextMenu(){
     	
+    	headerClickListener = new Table.HeaderClickListener() {
+        	private static final long serialVersionUID = 4792602001489368804L;
+
+			public void headerClick(HeaderClickEvent event) {
+        		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
+        			String column = (String) event.getPropertyId();
+        			fillWithMenu.setData(column);
+        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
+            			menuFillWithLocationName.setVisible(false);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
+            			menuFillWithLocationName.setVisible(true);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
+            			menuFillWithLocationName.setVisible(false);
+            			menuFillWithCrossExpansion.setVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		}
+        		}
+        	}
+        };
+    	
 	   	 fillWithMenu = new ContextMenu();
 		 
 	   	 menuFillWithEmpty = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_EMPTY));
@@ -284,34 +313,14 @@ public class FillWith implements InternationalizableComponent  {
 	   		 listManagerTreeMenu.addComponent(fillWithMenu);
 	   	 }
 	   	 
-	   	 targetTable.addListener(new Table.HeaderClickListener() {
-        	private static final long serialVersionUID = 4792602001489368804L;
-
-			public void headerClick(HeaderClickEvent event) {
-        		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
-        			String column = (String) event.getPropertyId();
-        			fillWithMenu.setData(column);
-        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
-            			menuFillWithLocationName.setVisible(false);
-            			menuFillWithCrossExpansion.setVisible(false);
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
-            			menuFillWithLocationName.setVisible(true);
-            			menuFillWithCrossExpansion.setVisible(false);
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
-            			menuFillWithLocationName.setVisible(false);
-            			menuFillWithCrossExpansion.setVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		}
-        		}
-        	}
-        });
+	   	 targetTable.addListener(headerClickListener);
     }
 
+    public void setContextMenuEnabled(Boolean isEnabled){
+    	targetTable.removeListener(headerClickListener);
+    	if(isEnabled)
+    		targetTable.addListener(headerClickListener);
+    }
     
     public List<Integer> getGidsFromTable(Table table){
     	List<Integer> gids = new ArrayList<Integer>();

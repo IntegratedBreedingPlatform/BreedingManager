@@ -57,6 +57,10 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_ADD_TO_NEW_LIST = new Action("Add Selected List(s) to New List");
 	static final Action[] LISTS_TABLE_CONTEXT_MENU = new Action[] { ACTION_SELECT_ALL, ACTION_ADD_TO_NEW_LIST };
+	static final Action[] LISTS_TABLE_CONTEXT_MENU_LOCKED = new Action[] { ACTION_SELECT_ALL };
+	
+	private Action.Handler lockedRightClickActionHandler;
+	private Action.Handler unlockedRightClickActionHandler;
 	
 	//Tools Button Context Menu
     private ContextMenu menu;
@@ -140,6 +144,41 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		
 		updateGermplasmListsMap();
 		addSearchListResultsItemDescription();
+
+		lockedRightClickActionHandler = new Action.Handler() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if(ACTION_SELECT_ALL == action){
+					matchingListsTable.setValue(matchingListsTable.getItemIds());
+				}
+			}
+			
+			@Override
+			public Action[] getActions(Object target, Object sender) {
+				return LISTS_TABLE_CONTEXT_MENU_LOCKED;
+			}
+		};
+		
+		unlockedRightClickActionHandler = new Action.Handler() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if(ACTION_SELECT_ALL == action){
+					matchingListsTable.setValue(matchingListsTable.getItemIds());
+				}
+				else if(ACTION_ADD_TO_NEW_LIST == action){
+					addSelectedListToNewList();
+				}
+			}
+			
+			@Override
+			public Action[] getActions(Object target, Object sender) {
+				return LISTS_TABLE_CONTEXT_MENU;
+			}
+		};
 		
 		addActionHandler();
 	}
@@ -173,26 +212,24 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	}
 	
 	private void addActionHandler(){
-		matchingListsTable.addActionHandler(new Action.Handler() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if(ACTION_SELECT_ALL == action){
-					matchingListsTable.setValue(matchingListsTable.getItemIds());
-				}
-				else if(ACTION_ADD_TO_NEW_LIST == action){
-					addSelectedListToNewList();
-				}
-			}
-			
-			@Override
-			public Action[] getActions(Object target, Object sender) {
-				return LISTS_TABLE_CONTEXT_MENU;
-			}
-		});
+		refreshActionHandler();
+	}
+	
+	public void refreshActionHandler(){
+		matchingListsTable.removeActionHandler(lockedRightClickActionHandler);
+		matchingListsTable.removeActionHandler(unlockedRightClickActionHandler);
+		
+		if(source.listBuilderIsLocked()){
+			matchingListsTable.addActionHandler(lockedRightClickActionHandler);
+			menuAddToNewList.setVisible(false);
+		} else {
+			matchingListsTable.addActionHandler(unlockedRightClickActionHandler);
+			menuAddToNewList.setVisible(true);
+		}
 	}
 
+	
+	
 	@Override
 	public void initializeValues() {
 

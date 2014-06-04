@@ -107,6 +107,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Button lockButton;
     private Button unlockButton;
     
+    private FillWith fillWith;
+    
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";    
     
@@ -235,7 +237,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		toolsButton.setWidth("110px");
         toolsButton.addStyleName("lm-tools-button");
         
-        dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
+        dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
         
         saveButton = new Button();
         saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
@@ -264,7 +266,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	@Override
 	public void addListeners() {
 		
-		new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
+		fillWith = new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
 		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2331333436994090161L;
@@ -411,6 +413,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
     	
     	saveButton.setEnabled(false);
+    	
+    	source.setUIForLockedListBuilder();
+    	fillWith.setContextMenuEnabled(false);
 	}
 	
 	public void setUIForUnlockedList(){
@@ -423,6 +428,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	editHeaderButton.setVisible(true);
     	viewHeaderButton.setVisible(false);
     	saveButton.setEnabled(true);
+    	source.setUIForUnlockedListBuilder();
+    	fillWith.setContextMenuEnabled(true);
 	}
 
 	public void setUIForNewList(){
@@ -753,7 +760,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		setChanged(false);
 		
 		//List Data Table
-		dropHandler = new BuildNewListDropHandler(germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
+		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
 		initializeHandlers();
 		
 		//Reset Save Listener

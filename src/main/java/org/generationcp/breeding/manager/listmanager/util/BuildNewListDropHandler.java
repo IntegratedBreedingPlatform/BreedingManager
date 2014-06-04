@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -80,8 +81,10 @@ public class BuildNewListDropHandler implements DropHandler {
 	private GermplasmListNewColumnsInfo currentColumnsInfo;
 	
 	private boolean changed = false;
+	private ListManagerMain listManagerMain;
 	
-	public BuildNewListDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, Table targetTable) {
+	public BuildNewListDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, Table targetTable) {
+		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.targetTable = targetTable;
@@ -244,7 +247,7 @@ public class BuildNewListDropHandler implements DropHandler {
             final Integer newItemId = getNextListEntryId();
             Item newItem = targetTable.addItem(newItemId);
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true, true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -262,7 +265,7 @@ public class BuildNewListDropHandler implements DropHandler {
             importedGermplasmGids.add(gid);
             Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
             String preferredName = preferredNames.get(gid);
-            Button designationButton = new Button(preferredName, new GidLinkButtonClickListener(gid.toString(), true, true));
+            Button designationButton = new Button(preferredName, new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             designationButton.setStyleName(BaseTheme.BUTTON_LINK);
             designationButton.setDescription("Click to view Germplasm information");
             
@@ -369,7 +372,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	            
 	            Item newItem = targetTable.addItem(newItemId);
 	            
-	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true, true));
+	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            
 	            CheckBox tagCheckBox = new CheckBox();
@@ -388,7 +391,7 @@ public class BuildNewListDropHandler implements DropHandler {
     	 			 
     	 		});
 	            
-	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(gid.toString(), true, true));
+	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            designationButton.setDescription("Click to view Germplasm information");
 	            
@@ -481,7 +484,7 @@ public class BuildNewListDropHandler implements DropHandler {
 			Item newItem = targetTable.addItem(newItemId);
 			
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
-			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true, true));
+			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             gidButton.setDescription("Click to view Germplasm information");
             
@@ -505,7 +508,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
 	   		
 	   		String designation = getDesignationFromButtonCaption(sourceTable,itemId);
-	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(gid.toString(), true, true));
+	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	   		designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		designationButton.setDescription("Click to view Germplasm information");
 	   		

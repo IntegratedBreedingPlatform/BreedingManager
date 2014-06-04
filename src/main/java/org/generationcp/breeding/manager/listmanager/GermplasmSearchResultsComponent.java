@@ -72,6 +72,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
 	
+    private Action.Handler rightClickActionHandler;
+    
 	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
 	@Autowired
@@ -149,16 +151,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 			}
         });
 
-	}
-
-	@Override
-	public void initializeValues() {
-		
-	}
-
-	@Override
-	public void addListeners() {
-		matchingGermplasmsTable.addActionHandler(new Action.Handler() {
+		rightClickActionHandler = new Action.Handler() {
 	       	 private static final long serialVersionUID = -897257270314381555L;
 
 				@Override
@@ -177,9 +170,26 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	             		}
 	             	}
 				}
-			});
+			};
+		
 	}
 
+	@Override
+	public void initializeValues() {
+		
+	}
+
+	@Override
+	public void addListeners() {
+		matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+	}
+
+	public void setRightClickActionHandlerEnabled(Boolean isEnabled){
+		matchingGermplasmsTable.removeActionHandler(rightClickActionHandler);
+		if(isEnabled)
+			matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+	}
+	
 	@Override
 	public void layoutComponents() {
 		addComponent(matchingGermplasmsLabel);
@@ -191,7 +201,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
-        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), true, true));
+        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(listManagerMain, germplasm.getGid().toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
 			String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());

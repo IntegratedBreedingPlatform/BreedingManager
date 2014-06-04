@@ -350,11 +350,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			
 			for(GermplasmListData entry : listEntries){
 				String gid = String.format("%s", entry.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(gid,true,true));
+                Button gidButton = new Button(gid, new GidLinkButtonClickListener(source, gid,true,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 
-                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(gid,true,true));
+                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(source, gid,true,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 
@@ -430,6 +430,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	   			  menuExportList.setVisible(false);
 	   			  menuCopyToList.setVisible(false);
 	   			 }
+	   			 
+	   			 if(source!=null)
+	   				 menuCopyToList.setVisible(!source.listBuilderIsLocked());
 	   			 
 				 // Show items only when Germplasm List open is a local IBDB record (negative ID),
 	   			 // when the Germplasm List is not locked, and when not accessed directly from URL or popup window
@@ -648,13 +651,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     if(selectedColumn.equals(CHECKBOX_COLUMN_ID) || selectedColumn.equals(ListDataTablePropertyID.GID.getName()) || selectedColumn.equals(ListDataTablePropertyID.ENTRY_ID.getName())){
                             tableContextMenu_DeleteEntries.setVisible(true);
                             tableContextMenu_EditCell.setVisible(false);
+                            if(source!=null)
+                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
                     } else if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
                             tableContextMenu_DeleteEntries.setVisible(true);
                             tableContextMenu_EditCell.setVisible(true);
+                            if(source!=null)
+                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
                             doneInitializing = true;
                     } else {
                             tableContextMenu_DeleteEntries.setVisible(false);
                             tableContextMenu_EditCell.setVisible(false);
+                            if(source!=null)
+                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
                     }
                 }
 			}
@@ -1004,7 +1013,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
         	}
     		
-    		ConfirmDialog.show(getWindow(), "Unsave Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
 				private static final long serialVersionUID = 1L;	
 				@Override
@@ -1214,13 +1223,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             if (!fromUrl) {
                 // make GID as link only if the page wasn't directly accessed from the URL
                 String gidString = String.format("%s", gid.toString());
-                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(gidString,true,true));
+                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(source,gidString,true,true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
                 gidButton.setDescription("Click to view Germplasm information");
                 gidObject = gidButton;
                 
                 String desigString = listData.getDesignation();
-                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(gidString,true,true));
+                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(source,gidString,true,true));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK);
                 desigButton.setDescription("Click to view Germplasm information");
                 desigObject = desigButton;

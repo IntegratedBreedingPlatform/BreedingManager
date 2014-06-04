@@ -59,6 +59,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     @Autowired
     private TomcatUtil tomcatUtil;
     
+    private ListManagerMain listManagerMain;
     private String gid;
     private Boolean viaToolURL;
     private Boolean showAddToList;
@@ -69,7 +70,8 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         this.showAddToList = false;
     }
 
-    public GidLinkButtonClickListener(String gid, Boolean viaToolURL, Boolean showAddToList) {
+    public GidLinkButtonClickListener(ListManagerMain listManagerMain, String gid, Boolean viaToolURL, Boolean showAddToList) {
+    	this.listManagerMain = listManagerMain;
         this.gid = gid;
         this.viaToolURL = viaToolURL;
         this.showAddToList = showAddToList;
@@ -130,6 +132,9 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         if(showAddToList){
 	        Button addToListLink = new Button("Add to list");
+	        if(listManagerMain.listBuilderIsLocked())
+	        	addToListLink.setEnabled(false);
+	        
 			//addToListLink.setData(ADD_TO_LIST);
 			addToListLink.setImmediate(true);
 			addToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());

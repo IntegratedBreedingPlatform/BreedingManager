@@ -252,6 +252,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		return listSelectionComponent;
 	}
 	
+	public GermplasmSelectionComponent getPlantSelectionComponent(){
+		return plantSelectionComponent;
+	}
+	
 	protected void showPlantSelection() {
 		
 		plantFinderContent.setCaption("100%");
@@ -407,6 +411,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
     private boolean isListBuilderShown = false;
 
+    public void setUIForLockedListBuilder(){
+    	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
+    	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
+    }
+    
+    public void setUIForUnlockedListBuilder(){
+    	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(true);
+    	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
+    }
+    
     public Boolean unlockGermplasmList(GermplasmList germplasmList){
 	    if(germplasmList.isLockedList()){
 		    germplasmList.setStatus(germplasmList.getStatus() - 100);
@@ -467,4 +481,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         listBuilderToggleBtn2.setCaption(showTxt);
     }
 	
+    public Integer getListBuilderStatus(){
+    	if(listBuilderComponent!=null && listBuilderComponent.getCurrentlySavedGermplasmList()!=null)
+    		return listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
+    	return 0;
+    }
+    
+    public Boolean listBuilderIsLocked(){
+    	if(getListBuilderStatus()>100)
+    		return true;
+    	return false;
+    }
+    
 }
