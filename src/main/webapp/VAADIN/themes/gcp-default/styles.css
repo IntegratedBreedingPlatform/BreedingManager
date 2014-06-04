@@ -415,15 +415,16 @@
 
 .v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
 	width: 15px;
-	background-image: none;
+    background: none;
 }
 
 .v-splitpanel-hsplitter-tabContainerStyle{
-    background: white;
+    background: none;
 }
 
 .v-splitpanel-hsplitter-tabContainerStyle div {
-    width: 14px;
+    width: 15px;
+    background: none;
 }
 
 /* hide tabContainerStyle's scrollbar at all times */

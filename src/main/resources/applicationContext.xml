@@ -144,9 +144,9 @@
     </bean>
     
      <bean id="tomcatUtil" class="org.generationcp.commons.tomcat.util.TomcatUtil">
-        <property name="managerUrl"         value="http://localhost:18080/manager/text"/>
-        <property name="username"           value="tomcat"/>
-        <property name="password"           value="tomcat"/>
+        <property name="managerUrl" value="${tomcat.manager.url}"/>
+        <property name="username"   value="${tomcat.manager.username}"/>
+        <property name="password"   value="${tomcat.manager.password}"/>
     </bean>
     
     <!--

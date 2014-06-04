@@ -189,7 +189,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		boolean isFemaleListSave = makeCrossesMain.getParentsComponent().isFemaleListSaved();
 		boolean isMaleListSave = makeCrossesMain.getParentsComponent().isMaleListSaved();
 		
-		if( isFemaleListSave && isMaleListSave ){
+		if( isFemaleListSave && isMaleListSave && (tableCrossesMade.size() > 0) ){
 			saveButton.setEnabled(true);
 	        saveButton.setDescription("");
 		}

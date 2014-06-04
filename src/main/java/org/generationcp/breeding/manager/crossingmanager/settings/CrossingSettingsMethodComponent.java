@@ -266,17 +266,19 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 	}
 
 	private void showMethodDescription(Integer methodId){
-		try {
-		    final String methodDescription = germplasmDataManager.getMethodByID(methodId).getMdesc();
-		    breedingMethodsHelpPopup.setValue(methodDescription);
-		    breedingMethods.setDescription(methodDescription);
+		if(methodId != null){
+			try {				
+			    final String methodDescription = germplasmDataManager.getMethodByID(methodId).getMdesc();
+			    breedingMethodsHelpPopup.setValue(methodDescription);
+			    breedingMethods.setDescription(methodDescription);
 
-		} catch (MiddlewareQueryException e) {
-		    e.printStackTrace();
-		    LOG.error("Error getting method.");
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-			LOG.error("Error getting method");
+			} catch (MiddlewareQueryException e) {
+			    e.printStackTrace();
+			    LOG.error("Error getting method.");
+			} catch (ClassCastException e) {
+				e.printStackTrace();
+				LOG.error("Error getting method");
+			}
 		}
 	}
 

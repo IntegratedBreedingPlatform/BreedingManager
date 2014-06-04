@@ -151,7 +151,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     @Override
     public void layoutComponents() {
-        this.setMargin(true);
+        this.setMargin(new MarginInfo(true,false,true,true));
 
         final HorizontalLayout listSelectionHeaderContainer = new HorizontalLayout();
         listSelectionHeaderContainer.setWidth("100%");

@@ -83,7 +83,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 	@Override
 	public void layoutComponents() {
-		this.setMargin(true);
+        this.setMargin(new MarginInfo(true,false,true,true));
 
         final HorizontalLayout selectionHeaderContainer = new HorizontalLayout();
         selectionHeaderContainer.setWidth("100%");
