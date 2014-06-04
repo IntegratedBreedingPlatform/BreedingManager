@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.CssLayout;
 
 @Configurable 
-public class ListTabComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListTabComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	
