@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -30,11 +29,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * @author Mark Agarrado
@@ -58,7 +63,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     private Label headingLabel;
     private Label noListLabel;
-    private Label defaultLabel;
     
     private Button btnCloseAllTabs;
     private Button browseForLists;
@@ -67,7 +71,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     private Label toWorkWith;
 
     private HorizontalLayout headerLayout;
-    private VerticalLayout innerLayout;
+    private HorizontalLayout listSelectionHeaderContainer;
     
     private TabSheet detailsTabSheet;
     
@@ -110,13 +114,12 @@ public class ListSelectionLayout extends VerticalLayout implements International
     	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
     	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
     	
-    	defaultLabel = new Label();
-    	
     	headerLayout = new HorizontalLayout();
     	
     	detailsTabSheet = new TabSheet();
     	detailsTabSheet.setWidth("100%");
     	detailsTabSheet.addStyleName("listDetails");
+    	setDetailsTabSheetHeight();
     	
         btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
@@ -142,7 +145,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     @Override
     public void initializeValues() {
         headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
-        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
@@ -152,9 +154,11 @@ public class ListSelectionLayout extends VerticalLayout implements International
     @Override
     public void layoutComponents() {
         this.setMargin(new MarginInfo(true,false,true,true));
+        this.setWidth("100%");
 
-        final HorizontalLayout listSelectionHeaderContainer = new HorizontalLayout();
+        listSelectionHeaderContainer = new HorizontalLayout();
         listSelectionHeaderContainer.setWidth("100%");
+        listSelectionHeaderContainer.setHeight("43px");
 
         final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS,headingLabel);
 
@@ -244,7 +248,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
     
     public void setDetailsTabSheetHeight() {
-    	detailsTabSheet.setHeight("534px");
+    	detailsTabSheet.setHeight("647px");
 	}
 
 	public void displayDefault(){
@@ -298,8 +302,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
     @Override
     public void updateLabels() {
-        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
-        defaultLabel.setValue(messageSource.getMessage(Message.BROWSE_LIST_DEFAULT_MESSAGE)); 
+        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS)); 
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
@@ -355,22 +358,24 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     public void showDetailsTabsheet() {
         detailsTabSheet.setVisible(true);
+        this.addComponent(detailsTabSheet);
+        this.requestRepaintAll();
     }
     
     public void hideDetailsTabsheet() {
         btnCloseAllTabs.setVisible(false);
         detailsTabSheet.setVisible(false);
+        
+        this.removeComponent(detailsTabSheet);
+        this.requestRepaint();
     }
     
     public void repaintTabsheet() {
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
-    	    this.addComponent(headerLayout);
-    	    this.addComponent(innerLayout);
+    	    this.addComponent(listSelectionHeaderContainer);
     	    this.addComponent(detailsTabSheet);
     	
-            headerLayout.setVisible(true);
-            defaultLabel.setVisible(false);
             detailsTabSheet.setVisible(true);
             
             if(detailsTabSheet.getComponentCount() > 1){

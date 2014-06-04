@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.Date;
 
-import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -22,8 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -210,8 +217,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     public void loadListForEditing(final GermplasmList list){
     	updateUIForEditingList(list);
     	listSelectionComponent.getListDetailsLayout().repaintTabsheet();
-		
     	listBuilderComponent.editList(list);
+    	showListBuilder();
     }
 
 	/**
@@ -455,6 +462,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         }
 
         isListBuilderShown = !isListBuilderShown;
+        listSelectionComponent.getListDetailsLayout().repaintTabsheet();
     }
     
     public void showListBuilder() {
