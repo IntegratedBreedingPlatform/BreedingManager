@@ -724,3 +724,8 @@
 .green {
     background: green !important;
 }
+
+.closeAllTabsListManagerPosition span span {
+	position: relative;
+	top: -4px;
+}
