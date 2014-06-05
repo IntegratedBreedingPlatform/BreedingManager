@@ -105,10 +105,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         
         String preferredName = null;
         try{
-        	Name prefName = germplasmDataManager.getPreferredNameByGID(Integer.valueOf(gid));
-        	if(prefName != null){
-        		preferredName = prefName.getNval();
-        	}
+        	preferredName = germplasmDataManager.getPreferredNameValueByGID(Integer.valueOf(gid));
         } catch(MiddlewareQueryException ex){
         	LOG.error("Error with getting preferred name of " + gid, ex);
         }

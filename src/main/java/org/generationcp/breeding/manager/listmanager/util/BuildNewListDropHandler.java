@@ -349,8 +349,15 @@ public class BuildNewListDropHandler implements DropHandler {
     		
     		if(germplasmList.getListData() != null && germplasmList.getListData().size() > 0){
     			for(GermplasmListData listData : germplasmList.getListData()){
-        			if(listData.getId().equals(lrecid)){
-        				germplasmListData = listData;
+    				if(listData.getId().equals(lrecid)){
+        				//if gid > 0, update germplsmListData with records in changes table
+        				if(listData.getGid()>0) {
+        					germplasmListData = germplasmListManager.
+        							getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+        				} else {
+        					germplasmListData = listData;
+        				}
+        				break;
         			}
         		}
         	}
