@@ -68,6 +68,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	}
 	
 	public void doSaveAction(){
+		doSaveAction(true);
+	}
+	
+	public void doSaveAction(Boolean showMessages){
 		GermplasmList currentlySavedList = this.source.getCurrentlySavedGermplasmList();
 		GermplasmList listToSave = this.source.getCurrentlySetGermplasmListInfo();
 		
@@ -97,14 +101,17 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
 					
 				} else{
-					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+					if(showMessages){
+					    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
 							, Notification.POSITION_CENTERED);
+					}
 					return;
 				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error in saving germplasm list: " + listToSave, ex);
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+				if(showMessages)
+				    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
 						, Notification.POSITION_CENTERED);
 				return;
 			}
@@ -146,7 +153,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					Integer listId = this.dataManager.updateGermplasmList(listFromDB);
 					
 					if(listId == null){
-						MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+						if(showMessages)
+						    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 								, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
 								, Notification.POSITION_CENTERED);
 						return;
@@ -160,7 +168,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					}
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error in updating germplasm list: " + currentlySavedList.getId(), ex);
-					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+					if(showMessages)
+					    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
 							, Notification.POSITION_CENTERED);
 					return;
 				}
@@ -169,6 +178,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			boolean thereAreChangesInListEntries = false;
 			List<GermplasmListData> newEntries = getNewEntriesToSave(listEntries);
 			
+			System.out.println("New entries is empty: "+newEntries.isEmpty());
 			if(!newEntries.isEmpty()){
 				setNeededValuesForNewListEntries(currentlySavedList, newEntries);
 				if(!saveNewListEntries(newEntries)){
@@ -179,6 +189,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			List<GermplasmListData> entriesToUpdate = getUpdatedEntriesToSave(currentlySavedList, listEntries);
 			
+			System.out.println("Entries to update is empty: "+entriesToUpdate.isEmpty());
 			if(!entriesToUpdate.isEmpty()){
 				if(!updateListEntries(entriesToUpdate)){
 					return;
@@ -188,6 +199,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			List<GermplasmListData> entriesToDelete = getEntriesToDelete(currentlySavedList, listEntries);
 			
+			System.out.println("Entries to delete is empty: "+entriesToDelete.isEmpty());
 			if(!entriesToDelete.isEmpty()){
 				if(!updateListEntries(entriesToDelete)){
 					return;
@@ -195,10 +207,12 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				thereAreChangesInListEntries = true;
 			}
 			
+			System.out.println("Changes in list entries: "+thereAreChangesInListEntries);
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
 			
+			System.out.println("List entries is empty: "+listEntries.isEmpty());
 			if(!listEntries.isEmpty()){
 				saveListDataColumns(listToSave);
 			}
@@ -222,7 +236,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			ex.printStackTrace();
 		}
 		
-		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
+		if(showMessages)
+		    MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
 				, 3000, Notification.POSITION_CENTERED);
 		
 		((ListManagerMain) this.source.getSource()).closeList(currentlySavedList);

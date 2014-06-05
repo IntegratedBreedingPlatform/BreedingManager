@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +39,9 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -347,9 +350,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                if(source.lockGermplasmList(currentlySavedGermplasmList)){
+            	if(!currentlySavedGermplasmList.isLockedList()){
+            		currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() + 100);
+        		    try {
+        		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
+        		    	saveListButtonListener.doSaveAction(false);
+        		
+        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+        		                "Locked a germplasm list.",
+        		                "Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
+        		                user,
+        		                new Date());
+        		        workbenchDataManager.addProjectActivity(projAct);
+        		    } catch (MiddlewareQueryException e) {
+        		        LOG.error("Error with unlocking list.", e);
+        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+        	                    , Notification.POSITION_CENTERED);
+        		    }
                 	setUIForLockedList();
-                }
+        		}
             }
         });
         
@@ -359,9 +380,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                if(source.unlockGermplasmList(currentlySavedGermplasmList)){
+            	if(currentlySavedGermplasmList.isLockedList()){
+            		currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() - 100);
+        		    try {
+        		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
+        		    	saveListButtonListener.doSaveAction(false);
+        		
+        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+        		                "Unlocked a germplasm list.",
+        		                "Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
+        		                user,
+        		                new Date());
+        		        workbenchDataManager.addProjectActivity(projAct);
+        		    } catch (MiddlewareQueryException e) {
+        		        LOG.error("Error with unlocking list.", e);
+        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
+        	                    , Notification.POSITION_CENTERED);
+        		    }
                 	setUIForUnlockedList();
-                }
+        		}
             }
         });
 		
