@@ -169,7 +169,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     		return;
     	}
     	try {
-    		List<Germplasm> germplasms = germplasmDataManager.searchForGermplasm(searchQuery, (((Boolean) likeOrEqualCheckBox.getValue()).equals(true) ? Operation.EQUAL : Operation.LIKE), false);
+    		//TODO check if the newly introduced last parameter (searchPublicData flag) needs to be UI driven here too. Setting true as default to retain behavior on this screen for now.
+    		List<Germplasm> germplasms = germplasmDataManager.searchForGermplasm(searchQuery, (((Boolean) likeOrEqualCheckBox.getValue()).equals(true) ? Operation.EQUAL : Operation.LIKE), false, true);
     	
     		resultsTable.getTable().removeAllItems();
     		

@@ -44,14 +44,16 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			+ "  - Lists containing germplasms given a GID <br/>"
 			+ "  - Lists containing germplasms with names <br/>"
 			+ " containing the search query"
-			+ " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)"
-			+ " or to only return results which match the query exactly (when checked).";
+			+ " <br/><br/>The <b>Exact matches only</b> checkbox allows you to search using partial names (when unchecked)"
+			+ " or to only return results which match the query exactly (when checked)." + 
+	        " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm list data.";
 
 	private HorizontalLayout searchBarLayout;
 	private TextField searchField;
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
-	private CheckBox likeOrEqualCheckBox;
+	private CheckBox exactMatchesOnlyCheckBox;
+	private CheckBox searchPublicDataCheckBox;
 	private PopupView popup;
 
 	@Autowired
@@ -93,9 +95,12 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         popup = new PopupView(" ? ",descLbl);
         popup.setStyleName("gcp-popup-view");
         
-        likeOrEqualCheckBox = new CheckBox();
-        likeOrEqualCheckBox.setValue(true);
-        likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
+        exactMatchesOnlyCheckBox = new CheckBox();
+        exactMatchesOnlyCheckBox.setValue(true);
+        exactMatchesOnlyCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
+        
+        searchPublicDataCheckBox = new CheckBox();
+        searchPublicDataCheckBox.setCaption(messageSource.getMessage(Message.SEARCH_PUBLIC_DATA));
 	}
 
 	@Override
@@ -134,18 +139,18 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		panelLayout.addStyleName("lm-search-bar");
 		
 		searchBarLayout = new HorizontalLayout();
-		searchBarLayout.setWidth("55%");
 		searchBarLayout.setHeight("24px");
-		
 		searchBarLayout.setSpacing(true);
 		
         searchBarLayout.addComponent(searchField);
         searchBarLayout.addComponent(searchButton);
-        searchBarLayout.addComponent(likeOrEqualCheckBox);
         searchBarLayout.addComponent(popup);
-        
-        searchBarLayout.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.addComponent(exactMatchesOnlyCheckBox);
+        searchBarLayout.addComponent(searchPublicDataCheckBox);
+
+        searchBarLayout.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
         searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
 
         panelLayout.addComponent(searchBarLayout);
         setContent(panelLayout);
@@ -154,7 +159,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void searchButtonClickAction() {
@@ -164,13 +168,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	public void doSearch(String q) {
 		try {
-
-			List<GermplasmList> germplasmLists;
-			if ((Boolean) likeOrEqualCheckBox.getValue() == true) {
-				germplasmLists = doGermplasmListSearch(q, Operation.EQUAL);
-			} else {
-				germplasmLists = doGermplasmListSearch(q, Operation.LIKE);
-			}
+			boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
+			boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
+				
+			List<GermplasmList> germplasmLists = doGermplasmListSearch(q, exactMatchedOnly ? Operation.EQUAL : Operation.LIKE, searchPublicData);
 
 			if (germplasmLists == null || germplasmLists.isEmpty()) {
 				MessageNotifier.showWarning(getWindow(),
@@ -185,9 +186,9 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		}
 	}
 
-	private List<GermplasmList> doGermplasmListSearch(String q, Operation o)
+	private List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData)
 			throws MiddlewareQueryException {
-		return germplasmListManager.searchForGermplasmList(q, o);
+		return germplasmListManager.searchForGermplasmList(q, o, searchPublicData);
 	}
 
 	public TextField getSearchField(){

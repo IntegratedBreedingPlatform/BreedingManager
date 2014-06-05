@@ -197,11 +197,11 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	}
 	
 	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
-		return germplasmListManager.searchForGermplasmList(q, o);
+		return germplasmListManager.searchForGermplasmList(q, o, true);
 	}
 	
 	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{
-		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
+		return germplasmDataManager.searchForGermplasm(q, o, includeParents, true);
 	}	
 	
 	public GermplasmSearchResultsComponent getSearchResultsComponent(){
