@@ -255,13 +255,19 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		headerLayout.addComponent(listEntriesLabel);
+		
+		HorizontalLayout headerSubLayout = new HorizontalLayout();
+		headerSubLayout.addComponent(listEntriesLabel);
+		headerSubLayout.addComponent(totalListEntriesLabel);
+		headerSubLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerSubLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		
+		headerLayout.addComponent(headerSubLayout);
 		headerLayout.addComponent(viewListHeaderButton);
-		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(headerSubLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
 		addComponent(headerLayout);
-		addComponent(totalListEntriesLabel);
 		addComponent(tableWithSelectAllLayout);
 	}
 	

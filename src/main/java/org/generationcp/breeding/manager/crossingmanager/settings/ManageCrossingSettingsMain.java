@@ -43,7 +43,6 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	private BreedingManagerWizardDisplay wizardDisplay;
 	
 	private CrossingSettingsDetailComponent detailComponent;
-	private CrossingManagerMakeCrossesComponent makeCrossesComponent;
 	private TabSheet tabSheet;
 	
 	private CrossesMade crossesMade = new CrossesMade();
@@ -87,16 +86,15 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("1250px");
+		tabSheet.setHeight("1000px");
 		tabSheet.setWidth("100%");
 		
 		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 		
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
-		this.makeCrossesComponent  = new CrossingManagerMakeCrossesComponent(this);
 		
 		tabSheet.addTab(detailComponent, wizardStepNames[0]);
-		tabSheet.addTab(makeCrossesComponent, wizardStepNames[1]);
+		tabSheet.addTab(new CrossingManagerMakeCrossesComponent(this), wizardStepNames[1]);
 	}
 
 	private void instantiateWizardDisplay() {
@@ -116,13 +114,17 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	@Override
 	public void layoutComponents() {
 		setWidth("100%");
-		setHeight("1250px");
+		setHeight("1200px");
 		
 		addComponent(toolTitle);
 		addComponent(toolPopupView, "top:15px; left:240px");
 		addComponent(makeCrossesLabel, "top:40px;");
 		addComponent(wizardDisplay, "top:40px;left:250px");
 		addComponent(tabSheet, "top:80px;");
+	}
+
+	public CrossingSettingsDetailComponent getDetailComponent() {
+		return detailComponent;
 	}
 	
 	public void nextStep(){
@@ -154,6 +156,23 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 				listener.updatePage();
 			}
 		}
+		
+		if(step == 0){
+			tabSheet.setHeight("1200px");
+		}
+		else if(step == 1){
+			tabSheet.setHeight("1100px");
+		}
+	}
+
+	@Override
+	public CrossesMade getCrossesMade() {
+		return this.crossesMade;
+	}
+	
+	@Override
+	public void setCrossesMade(CrossesMade crossesMade) {
+		this.crossesMade = crossesMade;
 	}
 	
     public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList){
@@ -171,19 +190,5 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
     	this.parent.getWindow().setScrollTop(0);
         this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
     }
-    
-    //SETTER AND GETTERS
-	public CrossingSettingsDetailComponent getDetailComponent() {
-		return detailComponent;
-	}
-	
-	@Override
-	public CrossesMade getCrossesMade() {
-		return this.crossesMade;
-	}
-	
-	@Override
-	public void setCrossesMade(CrossesMade crossesMade) {
-		this.crossesMade = crossesMade;
-	}
+
 }

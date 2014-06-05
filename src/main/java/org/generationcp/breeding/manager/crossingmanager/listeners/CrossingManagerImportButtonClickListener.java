@@ -5,7 +5,6 @@ import org.generationcp.breeding.manager.crossingmanager.CrossingManagerAddition
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerDetailsComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.EmbeddedGermplasmListDetailComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
 import org.slf4j.Logger;
@@ -50,9 +49,9 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
             && (source instanceof CrossingManagerAdditionalDetailsComponent)) {
             ((CrossingManagerAdditionalDetailsComponent) source).nextButtonClickAction();
             
-        } else  if (CrossingMethodComponent.MAKE_CROSS_BUTTON_ID.equals(eventButtonData) 
-                && (source instanceof CrossingMethodComponent)) {
-            ((CrossingMethodComponent) source).makeCrossButtonAction();            
+        } else  if (MakeCrossesParentsComponent.MAKE_CROSS_BUTTON_ID.equals(eventButtonData) 
+                && (source instanceof MakeCrossesParentsComponent)) {
+            ((MakeCrossesParentsComponent) source).makeCrossButtonAction();            
             
         } else  if (AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID.equals(eventButtonData) 
                 && (source instanceof AdditionalDetailsCrossNameComponent)) {

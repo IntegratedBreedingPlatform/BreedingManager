@@ -99,9 +99,6 @@ public enum Message{
     ,LOCATION_HEADER
     ,LOT_COMMENT_HEADER
     
-    //Crossing Manager Select Parents
-    ,SELECT_PARENTS
-    
     //Crossing Manager Additional Details
     ,CHOOSE_HOW_CROSSES_WILL_BE_SPECIFIED
     ,SELECT_AN_OPTION
@@ -476,7 +473,6 @@ public enum Message{
     ,SUCCESS_SAVE_FOR_FEMALE_LIST
     ,SUCCESS_SAVE_FOR_MALE_LIST
     ,PARENTS_LISTS
-    ,INSTRUCTION_FOR_PARENT_LISTS
     ,VIEW_LIST_HEADERS
     ,NO_OF_ENTRIES
     ,SAVE_CROSS_LIST_DESCRIPTION

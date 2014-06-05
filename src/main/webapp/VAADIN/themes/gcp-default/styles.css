@@ -187,8 +187,8 @@
 }
 
 .crossingManagerTree {
-	width: 850px;
-	height: 400px;
+	width: 200px;
+	height: 300px;
 }
 
 .saveListTree {
@@ -548,10 +548,6 @@
 	background-color: #ffffff;
 }
 
-.v-panel-content-section_panel_layout > div {
-	background-color: #f6f6f6;
-}
-
 .listDataTableLayout {
 	background-color: #f6f6f6 !important;
     border: 1px solid rgb(228,228,228);
@@ -732,10 +728,4 @@
 .closeAllTabsListManagerPosition span span {
 	position: relative;
 	top: -4px;
-}
-
-.v-horizontallayout .v-captiontext{
-	text-transform: none;
-	font-size: 13px;	
-
 }

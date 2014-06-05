@@ -139,8 +139,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	@Override
 	public void initializeValues() {
 		try {
-			locations = germplasmDataManager.getAllLocations(); 
-//					.getAllBreedingLocations();
+			locations = germplasmDataManager.getAllBreedingLocations();
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error(e.getMessage());

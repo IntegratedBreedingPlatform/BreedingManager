@@ -488,7 +488,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         			} else if (this.selectListComponent != null){
         				this.selectListComponent.getListInfoComponent().displayListInfo(germplasmList);
         			} else if(this.makeCrossesComponent != null){
-        				this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(germplasmList.getId(), germplasmList.getName());
+        				this.makeCrossesComponent.createListDetailsTab(germplasmList.getId(), germplasmList.getName());
         			}
         			
         		//toggle folder
