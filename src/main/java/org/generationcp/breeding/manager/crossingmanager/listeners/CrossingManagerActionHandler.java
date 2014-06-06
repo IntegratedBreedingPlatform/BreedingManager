@@ -69,7 +69,7 @@ public class CrossingManagerActionHandler implements Handler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void removeSelectedEntriesAction(Table table) {
+	public void removeSelectedEntriesAction(Table table) {
 		
 		List<Object> itemsBeforeDelete = new ArrayList<Object>();
         itemsBeforeDelete.addAll((Collection<? extends Integer>) table.getValue());

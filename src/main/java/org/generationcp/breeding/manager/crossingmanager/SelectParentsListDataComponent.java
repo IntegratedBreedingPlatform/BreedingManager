@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
@@ -53,13 +56,17 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Integer germplasmListId;
 	private GermplasmList germplasmList;
 	private Long count;
-	
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
+
 	private Table listDataTable;
 	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
 	private String listName;
+	
+	private Button actionButton;
+	public static String ACTIONS_BUTTON_ID = "Actions";
+	private ContextMenu actionMenu;
 	
 	private ViewListHeaderWindow viewListHeaderWindow;
 	
@@ -111,6 +118,18 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewListHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewListHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+		
+		actionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		actionButton.setData(ACTIONS_BUTTON_ID);
+		actionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
+		actionButton.setWidth("110px");
+		actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		
+		actionMenu = new ContextMenu();
+		actionMenu.setWidth("250px");
+		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_MALE_LIST));
+		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
+		actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
 		tableWithSelectAllLayout.setWidth("100%");
@@ -218,6 +237,36 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	@Override
 	public void addListeners() {
+		
+		actionButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				actionMenu.show(event.getClientX(), event.getClientY());
+			}
+		});
+		
+		actionMenu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+			@Override
+			public void contextItemClick(ClickEvent event) {
+			  // Get reference to clicked item
+			  ContextMenuItem clickedItem = event.getClickedItem();
+			  if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+				  listDataTable.setValue(listDataTable.getItemIds());
+			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))){
+				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
+				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
+				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_MALE_LIST))){
+				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
+				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
+				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+			  }
+		   }
+		});
+		
 		viewListHeaderButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 329434322390122057L;
 
@@ -235,9 +284,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				if(action.equals(ACTION_ADD_TO_FEMALE_LIST)){
 					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
+					makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
 				} else if(action.equals(ACTION_ADD_TO_MALE_LIST)){
 					makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
 					makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
+					makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
 				}
 			}
 			
@@ -255,20 +306,23 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		
-		HorizontalLayout headerSubLayout = new HorizontalLayout();
-		headerSubLayout.addComponent(listEntriesLabel);
-		headerSubLayout.addComponent(totalListEntriesLabel);
-		headerSubLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
-		headerSubLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
-		
-		headerLayout.addComponent(headerSubLayout);
+		headerLayout.addComponent(listEntriesLabel);
 		headerLayout.addComponent(viewListHeaderButton);
-		headerLayout.setComponentAlignment(headerSubLayout, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
 		addComponent(headerLayout);
+		
+		HorizontalLayout subHeaderLayout = new HorizontalLayout();
+		subHeaderLayout.setWidth("100%");
+		subHeaderLayout.addComponent(totalListEntriesLabel);
+		subHeaderLayout.addComponent(actionButton);
+		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
+		
+		addComponent(subHeaderLayout);
 		addComponent(tableWithSelectAllLayout);
+		addComponent(actionMenu);
 	}
 	
 	private void openViewListHeaderWindow(){
