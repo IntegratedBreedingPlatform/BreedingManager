@@ -729,3 +729,10 @@
 	position: relative;
 	top: -4px;
 }
+
+.lm-toggle .bms-fa-chevron-left,
+.lm-toggle .bms-fa-chevron-right {
+    display: inline-block;
+    width: 10px;
+    right: 3px;
+}
