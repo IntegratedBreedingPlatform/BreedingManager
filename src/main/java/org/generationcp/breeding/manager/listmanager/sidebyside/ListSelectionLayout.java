@@ -125,6 +125,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
+        btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
         
         browseForLists = new Button();
         browseForLists.setImmediate(true);
@@ -183,7 +184,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
         headerBtnContainer.setSpacing(true);
         headerBtnContainer.addComponent(listManagerMain.listBuilderToggleBtn1);
         headerBtnContainer.addComponent(btnCloseAllTabs);
-        headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.BOTTOM_RIGHT);
+        headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
 
         listSelectionHeaderContainer.addComponent(headerAndDesc);
         listSelectionHeaderContainer.addComponent(headerBtnContainer);

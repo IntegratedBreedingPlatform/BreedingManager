@@ -43,16 +43,18 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	        "  - Germplasms with matching GID's <br/>" +
 	        "  - Germplasms with name containing search query <br/>" +
 	        "  - Parents of the result germplasms (if selected)" +
-	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
-	        " or to only return results which match the query exactly (when checked).";
+	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you to search using partial names (when unchecked)" +
+	        " or to only return results which match the query exactly (when checked)." + 
+	        " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm data.";
 	
 	private HorizontalLayout searchBarLayoutLeft;
 	private HorizontalLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
-    private CheckBox likeOrEqualCheckBox;
+    private CheckBox exactMatchesOnlyCheckBox;
     private CheckBox includeParentsCheckBox;
+    private CheckBox searchPublicDataCheckBox;
     private PopupView popup;
 
 	@Autowired
@@ -97,12 +99,15 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
         popup = new PopupView(" ? ",descLbl);
         popup.setStyleName("gcp-popup-view");
         
-        likeOrEqualCheckBox = new CheckBox();
-        likeOrEqualCheckBox.setValue(true);
-        likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
+        exactMatchesOnlyCheckBox = new CheckBox();
+        exactMatchesOnlyCheckBox.setValue(true);
+        exactMatchesOnlyCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
         includeParentsCheckBox = new CheckBox();
         includeParentsCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PARENTS));
+        
+        searchPublicDataCheckBox = new CheckBox();
+        searchPublicDataCheckBox.setCaption(messageSource.getMessage(Message.SEARCH_PUBLIC_DATA));
     }
 
 	@Override
@@ -121,16 +126,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 				searchButtonClickAction();	
 			}
 		});
-		
-//		addAction(new ShortcutListener("Next field", KeyCode.ENTER, null) {
-//            private static final long serialVersionUID = 288627665348761948L;
-//
-//            @Override
-//            public void handleAction(Object sender, Object target) {
-//                searchButtonClickAction();
-//            }
-//        });
-
 	}
 
 	@Override
@@ -152,14 +147,18 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		
 		searchBarLayoutLeft.addComponent(searchField);
 		searchBarLayoutLeft.addComponent(searchButton);
-		searchBarLayoutLeft.addComponent(likeOrEqualCheckBox);
+		searchBarLayoutLeft.addComponent(popup);
+		
+		searchBarLayoutRight.addComponent(exactMatchesOnlyCheckBox);
 		searchBarLayoutRight.addComponent(includeParentsCheckBox);
-		searchBarLayoutRight.addComponent(popup);
-        
-		searchBarLayoutLeft.setComponentAlignment(likeOrEqualCheckBox, Alignment.MIDDLE_CENTER);
+		searchBarLayoutRight.addComponent(searchPublicDataCheckBox);
+		
+		searchBarLayoutLeft.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
+		
+		searchBarLayoutRight.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
         searchBarLayoutRight.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
-        searchBarLayoutRight.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
-
+        searchBarLayoutRight.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
+        
         addComponent(searchBarLayoutLeft);
         addComponent(searchBarLayoutRight);
         
@@ -183,14 +182,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	
 	public void doSearch(String q){
 		try {
-			
-			List<Germplasm> germplasms;
 			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-			if((Boolean) likeOrEqualCheckBox.getValue() == true){
-				germplasms = doGermplasmSearch(q, Operation.EQUAL, includeParents);
-			} else {
-				germplasms = doGermplasmSearch(q, Operation.LIKE, includeParents);
-			}
+			boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue(); 
+			boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
+			
+			List<Germplasm> germplasms = doGermplasmSearch(q, exactMatchesOnly ? Operation.EQUAL : Operation.LIKE, includeParents, searchPublicData);
 			
 			if (germplasms == null || germplasms.isEmpty()) {
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
@@ -203,7 +199,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		}
 	}
 	
-	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{
-		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
+	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean searchPublicData) throws MiddlewareQueryException{
+		return germplasmDataManager.searchForGermplasm(q, o, includeParents, searchPublicData);
 	}
 }

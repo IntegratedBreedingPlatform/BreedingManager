@@ -132,8 +132,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         if(showAddToList){
 	        Button addToListLink = new Button("Add to list");
-	        if(listManagerMain.listBuilderIsLocked())
+	        if(listManagerMain.listBuilderIsLocked()){
 	        	addToListLink.setEnabled(false);
+	        	addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");
+	        }
 	        
 			//addToListLink.setData(ADD_TO_LIST);
 			addToListLink.setImmediate(true);
