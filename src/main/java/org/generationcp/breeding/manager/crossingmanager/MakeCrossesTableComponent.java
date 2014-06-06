@@ -346,9 +346,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void instantiateComponents() {
-		setMargin(true);
-		setSpacing(true);
-		
 		lblReviewCrosses = new Label(messageSource.getMessage(Message.REVIEW_CROSSES));
 		lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
 		lblReviewCrosses.addStyleName(AppConstants.CssStyles.BOLD);
@@ -425,6 +422,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
+		setSpacing(true);
+        setMargin(false,false,false,true);
+        setWidth("450px");
+		
 		HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setSpacing(true);
         labelContainer.setWidth("100%");
@@ -441,7 +442,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         makeCrossesLayout.addComponent(tableCrossesMade);
 		
         Panel makeCrossesPanel = new Panel();
-        makeCrossesPanel.setWidth("400px");
+        makeCrossesPanel.setWidth("420px");
         makeCrossesPanel.setLayout(makeCrossesLayout);
         makeCrossesPanel.addStyleName("section_panel_layout");
 		
@@ -469,8 +470,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		
 		if (updateCrossesMadeContainer(makeCrossesMain.getCrossesMadeContainer(), list)){
 			saveRecords();
-			makeCrossesMain.selectListInTree(crossList.getId());
-			makeCrossesMain.updateUIForDeletedList(crossList);
+			makeCrossesMain.getSelectParentsComponent().selectListInTree(crossList.getId());
+			makeCrossesMain.getSelectParentsComponent().updateUIForDeletedList(crossList);
 		}
 		
 	}
@@ -546,7 +547,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     		}
 
     		if (getCrossList() != null){
-    			makeCrossesMain.updateUIForDeletedList(this.getCrossList());
+    			makeCrossesMain.getSelectParentsComponent().updateUIForDeletedList(this.getCrossList());
     			
     			SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
     			try {

@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -63,6 +64,8 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private UpdateComponentLabelsAction messageSourceListener;
 
     private ApplicationContext applicationContext;
+    
+    private ListManagerMain listManagerMain;
     
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -152,7 +155,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 listManagerWindow.setName(name);
                 listManagerWindow.setSizeFull();
 
-                listManagerWindow.setContent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
+                listManagerMain = new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain();
+                
+                listManagerWindow.setContent(listManagerMain);
                 this.addWindow(listManagerWindow);
 
                 return listManagerWindow;
@@ -298,4 +303,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         }
     }
 
+    public ListManagerMain getListManagerMain(){
+    	return listManagerMain;
+    }
 }
