@@ -743,11 +743,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		if(targetTable.equals(femaleParents)){
     			saveFemaleListMenu.setEnabled(true);
     			femaleListNameForCrosses = "";
-    			//femaleParentList = null;
+    			femaleParentList = null;
     		} else{
     			saveMaleListMenu.setEnabled(true);
     			maleListNameForCrosses = "";
-    			//maleParentList = null;
+    			maleParentList = null;
     		}
     	}
     	
