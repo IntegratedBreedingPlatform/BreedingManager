@@ -84,20 +84,20 @@ public class CrossingManagerActionHandler implements Handler {
         List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
         itemsLeftAfterDelete.addAll((Collection<? extends Integer>) table.getValue());
         
-        //If an item has been deleted, enable save button
+        //If an item has been deleted, enable save option from action buttons
         if(itemsBeforeDelete!=itemsLeftAfterDelete){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveFemaleListButton().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getSaveFemaleListMenu().setEnabled(true);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveMaleListButton().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getSaveMaleListMenu().setEnabled(true);
         	}
         	
         //Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
 		} else if(this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size()==0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveFemaleListButton().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getSaveFemaleListMenu().setEnabled(false);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveMaleListButton().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getSaveMaleListMenu().setEnabled(false);
         	}
         }
         

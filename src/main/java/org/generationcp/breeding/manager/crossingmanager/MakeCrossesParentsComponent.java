@@ -1037,15 +1037,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     
     public void setMaleParentList(GermplasmList list){
     	maleParentList = list;
-    }    
-    
-    public Button getSaveFemaleListButton(){
-    	return actionFemaleListButton;
     }
-    
-    public Button getSaveMaleListButton(){
-    	return actionMaleListButton;
-    }	
     
 	public String getFemaleListNameForCrosses() {
 		return femaleListNameForCrosses;
@@ -1057,6 +1049,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public TabSheet getParentTabSheet() {
 		return parentTabSheet;
+	}
+
+	public ContextMenuItem getSaveFemaleListMenu() {
+		return saveFemaleListMenu;
+	}
+
+	public ContextMenuItem getSaveMaleListMenu() {
+		return saveMaleListMenu;
 	}
 
 	@Override
