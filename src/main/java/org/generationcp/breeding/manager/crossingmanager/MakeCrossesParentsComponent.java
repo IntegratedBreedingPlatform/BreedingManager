@@ -192,9 +192,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         saveMaleListMenu.setEnabled(false);
         maleListMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 
-        maleParentContainer = new ParentContainer(actionMaleListButton, maleTableWithSelectAll, 
+        maleParentContainer = new ParentContainer(saveMaleListMenu, maleTableWithSelectAll, 
         		MALE_PARENTS_LABEL, Message.SUCCESS_SAVE_FOR_MALE_LIST);
-        femaleParentContainer = new ParentContainer(actionFemaleListButton, femaleTableWithSelectAll, 
+        femaleParentContainer = new ParentContainer(saveFemaleListMenu, femaleTableWithSelectAll, 
         		FEMALE_PARENTS_LABEL, Message.SUCCESS_SAVE_FOR_FEMALE_LIST);
         
 	}
@@ -330,7 +330,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    			} 
 			                	}
 	                    		
-	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save button
+	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save option
 	                    		List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
 	                    		itemsLeftAfterAdding.addAll((Collection<? extends Integer>) targetTable.getItemIds());
         
@@ -489,7 +489,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    			} 
 			                	}
 	                    		
-	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save button
+	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save option
 	                    		List<Object> itemsAfterAdding = new ArrayList<Object>();
 	                    		itemsAfterAdding.addAll((Collection<? extends Integer>) targetTable.getItemIds());
 	                    		
@@ -850,7 +850,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 	
 	private void updateUIForSuccessfulSaving(ParentContainer parentContainer, GermplasmList list) {
-		parentContainer.getButton().setEnabled(false);
+		parentContainer.getOption().setEnabled(false);
 		makeCrossesMain.toggleNextButton();
 		
 		makeCrossesMain.getSelectParentsComponent().selectListInTree(list.getId());
@@ -982,22 +982,22 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     }
     
 	private class ParentContainer {
-		private Button button;
+		private ContextMenuItem option;
 		private TableWithSelectAllLayout tableWithSelectAll;
 		private String columnName;
 		private Message successMessage;
 		
-		public ParentContainer(Button button, TableWithSelectAllLayout tableWithSelectAll,
+		public ParentContainer(ContextMenuItem option, TableWithSelectAllLayout tableWithSelectAll,
 				String columnName, Message successMessage) {
 			super();
-			this.button = button;
+			this.option = option;
 			this.tableWithSelectAll = tableWithSelectAll;
 			this.columnName = columnName;
 			this.successMessage = successMessage;
 		}
 
-		public Button getButton() {
-			return button;
+		public ContextMenuItem getOption() {
+			return option;
 		}
 	
 		public TableWithSelectAllLayout getTableWithSelectAll() {
