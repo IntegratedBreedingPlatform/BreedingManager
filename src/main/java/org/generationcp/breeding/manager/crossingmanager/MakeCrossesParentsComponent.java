@@ -728,13 +728,34 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	    	
     	if(initialEntryIdsInDestinationTable.size()==0 && entryIdsInSourceTable.size()==entryIdsInDestinationTable.size()){
     		if(targetTable.equals(femaleParents)){
-    			saveFemaleListMenu.setEnabled(false);
-    			femaleListNameForCrosses = makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab().getCaption();
-    	    	updateCrossesSeedSource(femaleParentContainer, ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList());
-    		} else{
-    			saveMaleListMenu.setEnabled(false);
-    			maleListNameForCrosses = makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab().getCaption();
-    	    	updateCrossesSeedSource(maleParentContainer, ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList());
+    			GermplasmList femaleGermplasmList = ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList();
+    			
+    			//Checks the source list is a local list
+    			if(femaleGermplasmList.getId() < 0){
+    				saveFemaleListMenu.setEnabled(false);
+        			femaleListNameForCrosses = femaleGermplasmList.getName();
+        	    	updateCrossesSeedSource(femaleParentContainer, femaleGermplasmList);
+    			}
+    			else{//if the source list is a central list
+    				saveFemaleListMenu.setEnabled(true);
+    				femaleListNameForCrosses = "";
+        			femaleParentList = null;
+    			}
+    			
+    		} else{//if male
+    			GermplasmList maleGermplasmList = ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList();
+    			
+    			//Checks the source list is a local list
+    			if(maleGermplasmList.getId() < 0){
+    				saveMaleListMenu.setEnabled(false);
+        			maleListNameForCrosses = maleGermplasmList.getName();
+        	    	updateCrossesSeedSource(maleParentContainer, maleGermplasmList);
+    			}
+    			else{//if the source list is a central list
+    				saveMaleListMenu.setEnabled(true);
+    				maleListNameForCrosses = "";
+        			maleParentList = null;
+    			}
     		}
     		
     		//updates the crossesMade.savebutton if both parents are save at least once;
