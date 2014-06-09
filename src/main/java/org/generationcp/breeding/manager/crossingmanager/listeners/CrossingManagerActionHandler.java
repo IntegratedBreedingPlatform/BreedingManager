@@ -72,7 +72,7 @@ public class CrossingManagerActionHandler implements Handler {
 	public void removeSelectedEntriesAction(Table table) {
 		
 		List<Object> itemsBeforeDelete = new ArrayList<Object>();
-        itemsBeforeDelete.addAll((Collection<? extends Integer>) table.getValue());
+        itemsBeforeDelete.addAll((Collection<? extends Integer>) table.getItemIds());
 		
         List<Object> selectedItemIds = new ArrayList<Object>();
         selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
@@ -82,10 +82,10 @@ public class CrossingManagerActionHandler implements Handler {
         }
         
         List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
-        itemsLeftAfterDelete.addAll((Collection<? extends Integer>) table.getValue());
+        itemsLeftAfterDelete.addAll((Collection<? extends Integer>) table.getItemIds());
         
         //If an item has been deleted, enable save option from action buttons
-        if(itemsBeforeDelete!=itemsLeftAfterDelete && itemsLeftAfterDelete.size()!=0){
+        if((itemsBeforeDelete.size() != itemsLeftAfterDelete.size()) && itemsLeftAfterDelete.size() > 0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getSaveFemaleListMenu().setEnabled(true);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
