@@ -666,6 +666,9 @@ public abstract class ListTreeComponent extends CssLayout implements
         		germplasmListTree.select(germplasmListId);
         		germplasmListTree.setValue(germplasmListId);
         	}
+        	else{//when an empty folder is clicked
+        		treeActionsListener.folderClicked(germplasmList);
+        	}
 			        
         } catch (NumberFormatException e) {
         	        	
