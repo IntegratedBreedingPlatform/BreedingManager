@@ -47,8 +47,10 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 			if((list!=null && list.getType().equals("FOLDER")) || list==null){
 				//Check if list old (with ID), if so, remove list details 
 				if(saveListAsDialog.getDetailsComponent().getCurrentGermplasmList()!=null 
-						&& saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId()!=null)
+						&& saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId()!=null){
 					saveListAsDialog.getDetailsComponent().setGermplasmListDetails(null);
+					saveListAsDialog.setGermplasmList(null);//reset also the current list to save
+				}	
 			} else {
 				saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 			}
