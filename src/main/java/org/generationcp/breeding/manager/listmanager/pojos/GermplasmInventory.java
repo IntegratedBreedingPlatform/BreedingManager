@@ -113,6 +113,10 @@ public class GermplasmInventory implements Serializable{
 	}
 
 	public void addInventory(Double count){
+
+        if (count == null) {
+            return;
+        }
 		if (this.balance != null){
 			this.balance = this.balance + count;
 		} else {
