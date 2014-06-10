@@ -106,6 +106,12 @@
     	scope="session">
     	<aop:scoped-proxy/>
     </bean>
+
+    <bean id="locationDataManager" factory-bean="managerFactory"
+    	factory-method="getLocationDataManager"
+    	scope="session">
+    	<aop:scoped-proxy/>
+    </bean>
     
     <bean id="germplasmListManager" factory-bean="managerFactory"
     	factory-method="getGermplasmListManager"
