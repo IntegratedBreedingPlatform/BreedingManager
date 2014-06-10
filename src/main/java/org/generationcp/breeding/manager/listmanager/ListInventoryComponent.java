@@ -91,7 +91,7 @@ public class ListInventoryComponent extends VerticalLayout implements Initializi
                 listDataInventoryTable.setColumnReorderingAllowed(true);
                 
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ENTITY_ID, Integer.class, "");
-                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, Double.class, "");
+                listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_ACTUAL_LOT_BALANCE, Long.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_LOCATION_NAME, String.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_SCALE_NAME, String.class, "");
                 listDataInventoryTable.addContainerProperty(GERMPLASM_INVENTORY_LOT_COMMENT, String.class, "");
