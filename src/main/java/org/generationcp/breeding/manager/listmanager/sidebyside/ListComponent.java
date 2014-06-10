@@ -71,7 +71,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -153,7 +152,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
   	
 	//Theme Resource
   	private Window listManagerCopyToNewListDialog;
-	private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
 	private static final String USER_HOME = "user.home";
 	
 	private Object selectedColumn = "";
@@ -235,7 +233,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
-		toolsButton.setIcon(ICON_TOOLS);
+		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
 		toolsButton.setWidth("110px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		

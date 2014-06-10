@@ -107,39 +107,39 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	@Override
 	public void instantiateComponents() {
-        listBuilderToggleBtn1 = new Button("<span class='fa fa-chevron-left'" +
+        listBuilderToggleBtn1 = new Button("<span class='bms-fa-chevron-left'" +
                 "style='" +
                 "position: relative;" +
-                "right: 3px;" +
+                " bottom: 3px;" +
                 "'></span>" + "Show List Builder");
         listBuilderToggleBtn1.setHtmlContentAllowed(true);
-        listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
+        listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
-        listBuilderToggleBtn2 = new Button("<span class='fa fa-chevron-left'" +
+        listBuilderToggleBtn2 = new Button("<span class='bms-fa-chevron-left'" +
                 "style='" +
                 "position: relative;" +
-                "right: 3px;" +
+                " bottom: 3px;" +
                 "'></span>" + "Show List Builder");
         listBuilderToggleBtn2.setHtmlContentAllowed(true);
-        listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName());
+        listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
         setSizeFull();
         setTitleContent();
         setTabHeader();
-        setTabContent();	
+        setTabContent();
 	}
 
 	@Override
 	public void initializeValues() {
 		plantFinderContent.setWidth("100%");
-		
+
 		// By default, the list selection component will be opened first
         plantSelectionComponent.setVisible(false);
 	}
 
 	@Override
 	public void addListeners() {
-		
+
 		listSelectionTabButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 
@@ -152,7 +152,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         	}
 
 		});
-		
+
 		plantSelectionTabButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 
@@ -184,7 +184,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
     @Override
 	public void layoutComponents() {
-		
+
         final VerticalLayout titleAndTabContainer = new VerticalLayout();
         titleAndTabContainer.setMargin(new MarginInfo(false,false,false,true));
         titleAndTabContainer.setSpacing(true);
@@ -211,7 +211,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Loads the specified list in the list builder. Ensures the list is not currently open anywhere else.
-	 * 
+	 *
 	 * @param list the list to load for editing
 	 */
     public void loadListForEditing(final GermplasmList list){
@@ -223,7 +223,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Closes the specified list from any open views.
-	 * 
+	 *
 	 * @param list the list to close
 	 */
 	public void closeList(final GermplasmList list) {
@@ -237,7 +237,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void addSelectedPlantsToList(Table sourceTable){
 		listBuilderComponent.addFromListDataTable(sourceTable);
 	}
-	
+
 	/**
 	 * Add a plant to the list open in the list builder.
 	 * @param gid ID of the germplasm to add
@@ -245,7 +245,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void addPlantToList(final Integer gid) {
 		listBuilderComponent.addGermplasm(gid);
 	}
-	
+
 	public void showNodeOnTree(Integer listId){
 		listSelectionComponent.getListTreeComponent().setListId(listId);
 		listSelectionComponent.getListTreeComponent().createTree();
@@ -254,52 +254,52 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public ListBuilderComponent getListBuilderComponent() {
 		return listBuilderComponent;
 	}
-	
+
 	public ListSelectionComponent getListSelectionComponent(){
 		return listSelectionComponent;
 	}
-	
+
 	public GermplasmSelectionComponent getPlantSelectionComponent(){
 		return plantSelectionComponent;
 	}
-	
+
 	protected void showPlantSelection() {
-		
+
 		plantFinderContent.setCaption("100%");
-		
+
 		plantFinderContent.removeAllComponents();
 		plantFinderContent.addComponent(plantSelectionComponent);
-		
+
 		listSelectionComponent.setVisible(false);
 		plantSelectionComponent.setVisible(true);
 		plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
-		
+
 		plantFinderContent.requestRepaint();
 	}
 
 	protected void showListSelection() {
-		
+
 		plantFinderContent.setCaption("100%");
-		
+
 		plantFinderContent.removeAllComponents();
 		plantFinderContent.addComponent(listSelectionComponent);
-		
+
 		listSelectionComponent.setVisible(true);
 		plantSelectionComponent.setVisible(false);
-		
+
 		plantFinderContent.requestRepaint();
 	}
-	
+
 	private void setTitleContent() {
 		titleLayout = new AbsoluteLayout();
         titleLayout.setWidth("100%");
         titleLayout.setHeight("40px");
-        
+
         mainTitle = new Label();
         mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
-        
+
         //buildNewListButton = new Button();
         //buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
         //buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
@@ -309,7 +309,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         titleLayout.addComponent(mainTitle,"top:0px;left:0px");
         //titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
 	}
-	
+
 	private void setTabHeader(){
         listSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_LISTS));
         plantSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_GERMPLASM));
@@ -318,14 +318,14 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         plantSelectionTabButton.addStyleName("tabStyleButton");
         listSelectionTabButton.setImmediate(true);
         plantSelectionTabButton.setImmediate(true);
-        
+
         tabHeaderLayout = new HorizontalLayout();
         tabHeaderLayout.addStyleName("tabHeaderStyle");
         tabHeaderLayout.setSpacing(true);
         tabHeaderLayout.addComponent(listSelectionTabButton);
         tabHeaderLayout.addComponent(plantSelectionTabButton);
 	}
-	
+
 	private void setTabContent(){
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
@@ -342,13 +342,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         listSelectionComponent = new ListSelectionComponent(this, selectedListId);
 		plantSelectionComponent = new GermplasmSelectionComponent(this);
-		
+
         plantFinderContent = new AbsoluteLayout();
         plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
         plantFinderContent.addComponent(plantSelectionComponent,"top:0px;left:0px");
-        
+
         listBuilderComponent = new ListBuilderComponent(this);
-        
+
 		splitPanel.setFirstComponent(plantFinderContent);
 		splitPanel.setSecondComponent(listBuilderComponent);
 
@@ -357,46 +357,46 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         addStyleName("lm-list-manager-main");
 	}
-	
+
 	private void selectTab(final Button tabToSelect) {
 		tabToSelect.removeStyleName("tabHeaderStyle");
 		tabToSelect.addStyleName("tabHeaderSelectedStyle");
 	}
-	
+
 	private void deselectTab(final Button tabToUnselect) {
 		tabToUnselect.removeStyleName("tabHeaderSelectedStyle");
 		tabToUnselect.addStyleName("tabHeaderStyle");
 	}
-	
-	
+
+
 	public void updateUIForEditingList(GermplasmList list) {
 		//Check if tab for deleted list is opened
 		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
 	}
-	
+
 	public void updateUIForDeletedList(GermplasmList list) {
-		
+
 		//Check if tab for deleted list is opened
 		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
-		
+
 		//Check if deleted list is currently being edited in the list builder
 		if(getListBuilderComponent().getCurrentlySetGermplasmListInfo()!=null
-			&& list!=null	
+			&& list!=null
 			&& getListBuilderComponent().getCurrentlySetGermplasmListInfo().getId() == list.getId()){
 			getListBuilderComponent().resetList();
 		}
-		
+
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
-	
-	
+
+
 	public Boolean lockGermplasmList(GermplasmList germplasmList){
 	    if(!germplasmList.isLockedList()){
 		    germplasmList.setStatus(germplasmList.getStatus()+100);
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
-		
+
 		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
 		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
@@ -422,18 +422,18 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
     	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
     }
-    
+
     public void setUIForUnlockedListBuilder(){
     	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(true);
     	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
     }
-    
+
     public Boolean unlockGermplasmList(GermplasmList germplasmList){
 	    if(germplasmList.isLockedList()){
 		    germplasmList.setStatus(germplasmList.getStatus() - 100);
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
-		
+
 		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
 		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
@@ -464,25 +464,25 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         isListBuilderShown = !isListBuilderShown;
         listSelectionComponent.getListDetailsLayout().repaintTabsheet();
     }
-    
+
     public void showListBuilder() {
         splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
 
-        String hideTxt = "<span class='fa fa-chevron-right'" +
+        String hideTxt = "<span class='bms-fa-chevron-right'" +
                 "style='position: relative;" +
-                "right: 3px;'" +
+                " bottom: 3px;'" +
                 "'></span>" + "Hide List Builder";
 
         listBuilderToggleBtn1.setCaption(hideTxt);
         listBuilderToggleBtn2.setCaption(hideTxt);
     }
-    
+
     public void hideListBuilder(){
     	splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
 
-        String showTxt = "<span class='fa fa-chevron-left'" +
+        String showTxt = "<span class='bms-fa-chevron-left'" +
                 "style='position: relative;" +
-                "right: 3px;'" +
+                " bottom: 3px;'" +
                 "'></span>" + "Show List Builder";
 
         listBuilderToggleBtn1.setCaption(showTxt);

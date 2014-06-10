@@ -132,8 +132,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         
         if(showAddToList){
 	        Button addToListLink = new Button("Add to list");
-	        if(listManagerMain.listBuilderIsLocked())
+	        if(listManagerMain.listBuilderIsLocked()){
 	        	addToListLink.setEnabled(false);
+	        	addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");
+	        }
 	        
 			//addToListLink.setData(ADD_TO_LIST);
 			addToListLink.setImmediate(true);
@@ -147,14 +149,20 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					
-					Window listManagerWindow = ((BreedingManagerApplication) event.getComponent().getApplication()).getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
-					Iterator<Component> i = listManagerWindow.getComponentIterator();
-					while (i.hasNext()) {
-					    Component c = (Component) i.next();
-					    if(c instanceof ListManagerMain){
-					    	((ListManagerMain) c).getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
-					    }
-					}
+					((BreedingManagerApplication) event.getComponent().getApplication()).getListManagerMain().getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
+//					
+//					Window listManagerWindow = ((BreedingManagerApplication) event.getComponent().getApplication()).getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+//					
+//					System.out.println("ListManagerWindow: "+listManagerWindow);
+//					Iterator<Component> i = listManagerWindow.getComponentIterator();
+//					while (i.hasNext()) {
+//					    Component c = (Component) i.next();
+//					    System.out.println("Component: "+c);
+//					    if(c instanceof ListManagerMain){
+//					    	System.out.println("List Manager Main!");
+//					    	((ListManagerMain) c).getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
+//					    }
+//					}
 					mainWindow.removeWindow(germplasmWindow);
 				}
 	        	
