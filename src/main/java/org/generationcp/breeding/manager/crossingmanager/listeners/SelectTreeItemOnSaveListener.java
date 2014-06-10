@@ -13,7 +13,7 @@ import com.vaadin.ui.AbsoluteLayout;
 @Configurable
 public class SelectTreeItemOnSaveListener extends AbsoluteLayout 
 	        implements InitializingBean, InternationalizableComponent, ListTreeActionsListener {
-
+	
 	private static final long serialVersionUID = 1L;
 	private SaveListAsDialog saveListAsDialog;
 	
@@ -32,8 +32,11 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 		if(saveListAsDialog != null && !list.getType().equals("FOLDER")){
 			saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 			
-			ListBuilderComponent LBC = (ListBuilderComponent) saveListAsDialog.getSource();
-			LBC.getSaveListButtonListener().setForceHasChanges(true);
+			if(saveListAsDialog.getSource() instanceof ListBuilderComponent){
+				ListBuilderComponent LBC = (ListBuilderComponent) saveListAsDialog.getSource();
+				LBC.getSaveListButtonListener().setForceHasChanges(true);
+			}
+
 		}
 	}
 
