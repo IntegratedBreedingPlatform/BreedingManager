@@ -10,6 +10,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.TemplateSetting;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
+	
+	private Integer wbUserId;
+    private Project project;
 
 	private final CrossingSettingsDetailComponent settingsParentComponent;
 
@@ -77,6 +81,12 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 	@Override
 	public void instantiateComponents() {
+		
+		try {
+			retrieveIbdbUserId();
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
 
 		defineCrossingSettingsLabel =  new Label(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
 		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
@@ -154,6 +164,7 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 			TemplateSetting templateSettingFilter = new TemplateSetting();
 			templateSettingFilter.setTool(crossingManagerTool);
+			templateSettingFilter.setProjectId(project.getProjectId().intValue());
 
 			List<TemplateSetting> templateSettings = workbenchDataManager.getTemplateSettings(templateSettingFilter);
 
@@ -172,6 +183,11 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 			LOG.error("Error with retrieving Workbench template settings for Crossing Manager tool.", e);
 		}
 	}
+	
+    private void retrieveIbdbUserId() throws MiddlewareQueryException {
+        this.wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        this.project = workbenchDataManager.getLastOpenedProject(wbUserId);
+    }
 
 	public TemplateSetting getSelectedTemplateSetting(){
 		return (TemplateSetting) settingsComboBox.getValue();
