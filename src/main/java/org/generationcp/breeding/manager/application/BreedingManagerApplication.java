@@ -15,7 +15,6 @@ import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,10 +244,8 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     @Override
     public void close() {
         super.close();
-
         // implement this when we need to do something on session timeout
         messageSource.removeListener(messageSourceListener);
-
         LOG.debug("Application closed");
     }
     
@@ -259,27 +256,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     @Override
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
         super.doOnRequestStart(request, response);
-        
-        	Boolean lastOpenedProjectChanged = true;
-        	try {
-				lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
-				workbenchDataManager.close();
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-			}
-        	
-        	if (lastOpenedProjectChanged){	
-        		 try{
-        	        	managerFactoryProvider.close();
-        	        }catch(Exception e){
-        		        e.printStackTrace();	
-        	        }
-				close();
-				request.getSession().invalidate();
-			}
-        
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
-        
         synchronized (this) {
             HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
@@ -287,20 +264,18 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     
     @Override
     protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
-        super.doOnRequestEnd(request, response);
-        
+		super.doOnRequestEnd(request, response);
+		LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
 
-        LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
-        
-        synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
-        }
-        
-        try{
-        	managerFactoryProvider.close();
-        }catch(Exception e){
-	        e.printStackTrace();	
-        }
+		synchronized (this) {
+			HttpRequestAwareUtil.onRequestEnd(applicationContext, request, response);
+		}
+
+		try {
+			managerFactoryProvider.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     public ListManagerMain getListManagerMain(){
