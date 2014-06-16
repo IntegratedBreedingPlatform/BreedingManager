@@ -203,7 +203,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 	}
 	
 	public boolean usedInSubWindow(){
-		return false;
+		return true;
 	}
 	
 	protected boolean doIncludeTreeHeadingIcon(){
@@ -252,6 +252,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 			@Override
             public void buttonClick(Button.ClickEvent event) {
 				germplasmListTreeUtil.addFolder(selectedListId);
+				refreshRemoteTree();
             }
         });
         
@@ -267,6 +268,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 				if (data instanceof ListTreeComponent){
 					germplasmListTreeUtil.deleteFolderOrList((ListTreeComponent) data, 
 							Integer.valueOf(selectedListId.toString()), treeActionsListener);
+					refreshRemoteTree();
 				}
             }
         });
@@ -713,6 +715,9 @@ public abstract class ListTreeComponent extends CssLayout implements
     
 	public ListTreeActionsListener getTreeActionsListener(){
 		return treeActionsListener;
+	}
+	
+	public void refreshRemoteTree(){
 	}
 	
 }

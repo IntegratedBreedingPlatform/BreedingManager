@@ -114,9 +114,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setModal(true);
 
 		if(germplasmList!=null)
-		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false);
+		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false, true);
 		else
-			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false);
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false, true);
 		
 		guideMessage = new Label(messageSource.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)+".");
 		

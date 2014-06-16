@@ -26,7 +26,7 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 
 	@Override
 	protected boolean doIncludeRefreshButton() {
-		return true;
+		return false;
 	}
 
 	@Override

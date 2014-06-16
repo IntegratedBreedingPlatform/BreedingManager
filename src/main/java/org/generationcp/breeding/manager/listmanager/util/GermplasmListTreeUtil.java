@@ -186,6 +186,8 @@ public class GermplasmListTreeUtil implements Serializable {
 				} else {
 					setParent(sourceItemId, "LOCAL");
 				}
+		        
+		        source.refreshRemoteTree();
 			}
 
 			@Override
@@ -345,6 +347,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
                 // close popup
                 mainWindow.removeWindow(event.getComponent().getWindow());
+                source.refreshRemoteTree();
+                
             }
         });
 
@@ -378,8 +382,7 @@ public class GermplasmListTreeUtil implements Serializable {
     
     public void renameFolderOrList(final Integer listId, final ListTreeActionsListener listener){
     	final Window mainWindow;
-    	// show window
-        if (source.usedInSubWindow()){
+		if (source.usedInSubWindow()){
         	mainWindow = source.getWindow().getParent();
         } else {        	
         	mainWindow = source.getWindow();   	
@@ -426,7 +429,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
         Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        ok.addListener(new RenameListTreeItemListener(listener, listId, name));
+        ok.addListener(new RenameListTreeItemListener(source, listener, listId, name));
 
         Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
         cancel.addListener(new Button.ClickListener() {
@@ -453,6 +456,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
         // show window
         mainWindow.addWindow(w);
+        source.refreshRemoteTree();
+        
     }
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
@@ -486,6 +491,8 @@ public class GermplasmListTreeUtil implements Serializable {
 				throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
 			}
 
+			source.refreshRemoteTree();
+			
 			try {
 				if (hasChildren(gpList.getId())) {
 					throw new Error(HAS_CHILDREN);
@@ -513,16 +520,7 @@ public class GermplasmListTreeUtil implements Serializable {
 						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
 								workbenchDataManager, source.getWindow(), messageSource, "item");
 						listTreeComponent.removeListFromTree(finalGpList);
-
-						//Run UI updator on delete of listSelectionComponent
-						Window listManagerWindow = mainWindow.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
-						Iterator<Component> iterate = listManagerWindow.getComponentIterator();
-						while (iterate.hasNext()) {
-							Component c = (Component) iterate.next();
-							if(c instanceof ListManagerMain){
-								((ListManagerMain) c).updateUIForDeletedList(finalGpList);
-							}
-						}
+						((BreedingManagerApplication) mainWindow.getApplication()).getListManagerMain().updateUIForDeletedList(finalGpList);
 						
 					} catch (Error e) {
 						MessageNotifier.showError(mainWindow, e.getMessage(), "");
@@ -562,12 +560,14 @@ public class GermplasmListTreeUtil implements Serializable {
     private final class RenameListTreeItemListener implements
 			Button.ClickListener {
 		private static final long serialVersionUID = -8013177728518110200L;
+		private ListTreeComponent listTreeComponent;
 		private final ListTreeActionsListener listener;
 		private final Integer listId;
 		private final TextField name;
 		
-		private RenameListTreeItemListener(ListTreeActionsListener listener,
+		private RenameListTreeItemListener(ListTreeComponent listTreeComponent, ListTreeActionsListener listener,
 				Integer listId, TextField name) {
+			this.listTreeComponent = listTreeComponent; 
 			this.listener = listener;
 			this.listId = listId;
 			this.name = name;
@@ -634,6 +634,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		    }
 		
 		    mainWindow.removeWindow(event.getComponent().getWindow());
+		    listTreeComponent.refreshRemoteTree();
 		}
 }
 

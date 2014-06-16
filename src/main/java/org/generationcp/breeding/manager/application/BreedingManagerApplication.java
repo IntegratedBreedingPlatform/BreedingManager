@@ -65,6 +65,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private ApplicationContext applicationContext;
     
     private ListManagerMain listManagerMain;
+    private ManageCrossingSettingsMain manageCrossingSettingsMain;
     
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -193,7 +194,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
                 manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);
                 manageCrossingSettings.setSizeUndefined();
-                manageCrossingSettings.addComponent(new ManageCrossingSettingsMain(manageCrossingSettings));
+                
+                manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+                
+                manageCrossingSettings.addComponent(manageCrossingSettingsMain);
                 this.addWindow(manageCrossingSettings);
                 return manageCrossingSettings;
             } 
@@ -280,5 +284,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     public ListManagerMain getListManagerMain(){
     	return listManagerMain;
+    }
+    
+    public ManageCrossingSettingsMain getManageCrossingSettingsMain() {
+    	return manageCrossingSettingsMain;
     }
 }
