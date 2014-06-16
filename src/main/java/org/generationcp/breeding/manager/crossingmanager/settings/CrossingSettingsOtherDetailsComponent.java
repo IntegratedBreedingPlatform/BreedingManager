@@ -17,6 +17,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -65,6 +66,9 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
+	@Autowired
+	private LocationDataManager locationDataManager;
+	
 	private Label harvestDetailsLabel;
 
 	private ComboBox harvestLocations;
@@ -139,7 +143,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	@Override
 	public void initializeValues() {
 		try {
-			locations = germplasmDataManager.getAllBreedingLocations();
+			locations = locationDataManager.getAllLocations();
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error(e.getMessage());

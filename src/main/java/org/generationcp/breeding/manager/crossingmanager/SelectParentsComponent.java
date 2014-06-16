@@ -244,4 +244,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public TabSheet getListDetailsTabSheet(){
 		return listDetailsTabSheet;
 	}
+	
+	public CrossingManagerListTreeComponent getListTreeComponent(){
+		return listTreeComponent;
+	}
 }

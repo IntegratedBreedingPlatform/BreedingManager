@@ -25,6 +25,7 @@ import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
@@ -127,6 +128,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
      private GermplasmListManager germplasmListManager;
     @Autowired
      private WorkbenchDataManager workbenchDataManager;
+    @Autowired
+     private LocationDataManager locationDataManager;
     
     private Boolean viaToolURL;
     private Map<String, String> methodMap;
@@ -262,7 +265,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         locationComboBox = new ComboBox();
         locationComboBox.setWidth("300px");
         locationComboBox.setNullSelectionAllowed(false);
-        locations = germplasmDataManager.getAllBreedingLocations();
+        locations = locationDataManager.getAllLocations();
         populateHarvestLocation(false);
         locationComboBox.setImmediate(true);
         

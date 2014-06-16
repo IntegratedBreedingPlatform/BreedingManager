@@ -388,6 +388,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setColumnHeader(MALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_MALE_PARENT));
         tableCrossesMade.setColumnHeader(SOURCE, "SOURCE");
         
+        tableCrossesMade.setColumnWidth(SOURCE, 200);
+        
         tableCrossesMade.setColumnCollapsingAllowed(true);
         
         tableCrossesMade.setColumnCollapsed(FEMALE_PARENT_COLUMN, true);

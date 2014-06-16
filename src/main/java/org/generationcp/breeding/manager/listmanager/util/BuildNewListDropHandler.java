@@ -693,6 +693,7 @@ public class BuildNewListDropHandler implements DropHandler {
                 listener.listUpdated(event);
             }
         }
+        listManagerMain.showListBuilder();
     }
 	
 	public void addListener(final ListUpdatedListener listener) {

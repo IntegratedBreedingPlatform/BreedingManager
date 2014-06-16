@@ -15,12 +15,12 @@ public class GermplasmInventory implements Serializable{
 	private static final long serialVersionUID = -3941830468899799628L;
 
 	private Integer gid;
-	private Long balance;
+	private Double balance;
 	private String location;
 	private String scale;
 	private String comment;
 	
-	public GermplasmInventory(Integer gid, Long balance, String location,
+	public GermplasmInventory(Integer gid, Double balance, String location,
 			String scale, String comment) {
 		super();
 		this.gid = gid;
@@ -38,11 +38,11 @@ public class GermplasmInventory implements Serializable{
 		this.gid = gid;
 	}
 
-	public Long getBalance() {
+	public Double getBalance() {
 		return balance;
 	}
 
-	public void setBalance(Long balance) {
+	public void setBalance(Double balance) {
 		this.balance = balance;
 	}
 
@@ -112,7 +112,11 @@ public class GermplasmInventory implements Serializable{
 		return builder.toString();
 	}
 
-	public void addInventory(Long count){
+	public void addInventory(Double count){
+
+        if (count == null) {
+            return;
+        }
 		if (this.balance != null){
 			this.balance = this.balance + count;
 		} else {

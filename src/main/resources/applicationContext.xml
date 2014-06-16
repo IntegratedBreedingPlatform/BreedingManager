@@ -91,50 +91,56 @@
     <bean id="managerFactory" name="managerFactory"
     	factory-bean="managerFactoryProvider"
     	factory-method="createInstance"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
     <bean id="genotypicDataManager" factory-bean="managerFactory"
     	factory-method="getGenotypicDataManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
     <bean id="germplasmDataManager" factory-bean="managerFactory"
     	factory-method="getGermplasmDataManager"
-    	scope="session">
+    	scope="request">
+    	<aop:scoped-proxy/>
+    </bean>
+
+    <bean id="locationDataManager" factory-bean="managerFactory"
+    	factory-method="getLocationDataManager"
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
     <bean id="germplasmListManager" factory-bean="managerFactory"
     	factory-method="getGermplasmListManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
      <bean id="pedigreeDataManager" factory-bean="managerFactory"
     	factory-method="getPedigreeDataManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
     <bean id="inventoryDataManager" factory-bean="managerFactory"
     	factory-method="getInventoryDataManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     
     <bean id="studyDataManager" factory-bean="managerFactory"
     	factory-method="getNewStudyDataManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
 
     
     <bean id="userDataManager" factory-bean="managerFactory"
     	factory-method="getUserDataManager"
-    	scope="session">
+    	scope="request">
     	<aop:scoped-proxy/>
     </bean>
     

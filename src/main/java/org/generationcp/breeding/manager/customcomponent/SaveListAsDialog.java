@@ -49,16 +49,14 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private final SaveListAsDialogSource source;
 	
 	private Label guideMessage;
-//	private Label listLocationLabel;
 	private LocalListFoldersTreeComponent germplasmListTree;
-	private Integer folderId;
-	
 	private BreedingManagerListDetailsComponent listDetailsComponent;
 
 	private Button cancelButton;
 	private Button saveButton;
 	
 	private final String windowCaption;
+	@SuppressWarnings("unused")
 	private String defaultListType;
 	
 	@Autowired
@@ -116,16 +114,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setModal(true);
 
 		if(germplasmList!=null)
-		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false);
+		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false, true);
 		else
-			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false);
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false, true);
 		
 		guideMessage = new Label(messageSource.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)+".");
-		
-//		listLocationLabel = germplasmListTree.getHeading();
-//		listLocationLabel.setValue(messageSource.getMessage(Message.LIST_LOCATION));
-//		listLocationLabel.setStyleName(Bootstrap.Typography.H6.styleName());
-//		germplasmListTree.setHeading(listLocationLabel);
 		
 		listDetailsComponent = new BreedingManagerListDetailsComponent(defaultListType(), germplasmList);
 		
@@ -143,18 +136,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void initializeValues() {
-		if(germplasmList != null){
-			
-			GermplasmList parent = germplasmList.getParent();
-			//if(parent != null){ // if not "Program Lists"
-			//	germplasmListTree.setListId(parent.getId());
-			//	germplasmListTree.setSelectedListId(parent.getId());
-			//}
-			
+		if(germplasmList != null){		
 			germplasmListTree.createTree();
-			
 			listDetailsComponent.setGermplasmListDetails(germplasmList);
-
 		}
 	}
 
@@ -181,10 +165,12 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				
 				//If target list is locked
 				if(germplasmList!=null && germplasmList.getStatus()>=100) {
-					MessageNotifier.showError(getWindow().getParent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
-		
+					MessageNotifier.showError(getWindow().getParent().getWindow(), 
+							messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
+				
 				//If target list to be overwritten is not itself and is an existing list
-				} else if(!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null) || (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
+				} else if( (!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null)) 
+						|| (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
 					
 					final GermplasmList gl = getGermplasmListToSave();
 					gl.setName(listDetailsComponent.getListNameField().getValue().toString());
@@ -345,5 +331,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	public SaveListAsDialogSource getSource(){
 		return source;
+	}
+	
+	public void setGermplasmList(GermplasmList germplasmList){
+		this.germplasmList = germplasmList;
 	}
 }
