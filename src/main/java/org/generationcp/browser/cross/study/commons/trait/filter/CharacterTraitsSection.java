@@ -18,6 +18,7 @@ import org.generationcp.browser.cross.study.util.CrossStudyUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.h2h.CategoricalTraitInfo;
 import org.generationcp.middleware.domain.h2h.CharacterTraitInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.CrossStudyDataManager;
@@ -62,6 +63,7 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	public static final String TRAIT_BUTTON_ID = "CharacterTraitsSection Trait Button ID";
 	
 	private List<Integer> environmentIds = null;
+	private List<Integer> selectedTraits = null;
 	
 	private Window parentWindow;
 	private Label lblSectionTitle;
@@ -80,6 +82,13 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 	public CharacterTraitsSection(List<Integer> environmentIds, Window parentWindow){
 		super();
 		this.environmentIds = environmentIds;
+		this.parentWindow = parentWindow;
+	}
+	
+	public CharacterTraitsSection(List<Integer> environmentIds, List<Integer> selectedTraits, Window parentWindow){
+		super();
+		this.environmentIds = environmentIds;
+		this.selectedTraits = selectedTraits;
 		this.parentWindow = parentWindow;
 	}
 
@@ -142,6 +151,10 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 			List<CharacterTraitInfo> traitInfoObjects = null;
 			try{
 				traitInfoObjects = crossStudyDataManager.getTraitsForCharacterVariates(environmentIds);
+				if(selectedTraits != null) {
+					traitInfoObjects = filterUnwantedTraitsFromResults(traitInfoObjects, selectedTraits);
+				}
+
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with getting character trait info given environment ids: " + this.environmentIds.toString(), ex);
 				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting character trait info given environment ids. "
@@ -184,6 +197,20 @@ public class CharacterTraitsSection extends VerticalLayout implements Initializi
 				}
 			}
 		}
+	}
+	
+	// TODO : Rebecca is not happy with public/private method ordering
+	// TODO : warning - On2 may need to revisit for performance
+	private List<CharacterTraitInfo> filterUnwantedTraitsFromResults(List<CharacterTraitInfo> characterTraitInfos, List<Integer> desiredTraits) {
+		List<CharacterTraitInfo> filteredTraits = new ArrayList<CharacterTraitInfo>();
+		for (CharacterTraitInfo cto : characterTraitInfos) {
+			for (Integer traitId : desiredTraits) {
+				if(cto.getId() == traitId.intValue()) {
+					filteredTraits.add(cto);
+				}
+			}
+		}
+		return filteredTraits;
 	}
 	
 	@Override
