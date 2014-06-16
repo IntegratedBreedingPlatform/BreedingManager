@@ -8,8 +8,9 @@ public enum ListDataTablePropertyID {
     ,SEED_SOURCE("seedSource")
     ,DESIGNATION("desig")
     ,GROUP_NAME("groupName")
-//    ,STATUS("status")
     ,PARENTAGE("parentage")
+    ,AVAIL_INV("availInv")
+    ,SEED_RES("seedRes")
 	,TAG("tag");
     
     private String name;
