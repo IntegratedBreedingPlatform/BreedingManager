@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -43,6 +45,11 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	@Override
 	protected String getTreeStyleName() {
 		return "crossingManagerTree";
+	}
+	
+	@Override
+	public void refreshRemoteTree(){
+
 	}
 
 }

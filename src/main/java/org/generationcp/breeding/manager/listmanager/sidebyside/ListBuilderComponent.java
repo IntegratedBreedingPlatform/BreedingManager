@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.vaadin.ui.*;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -1095,6 +1096,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public void saveList(GermplasmList list) {
 		currentlySetGermplasmInfo = list;
 		saveListButtonListener.doSaveAction();
+		
+		//Refresh tree on save
+		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
 	}
 	
 	public SaveListButtonClickListener getSaveListButtonListener(){

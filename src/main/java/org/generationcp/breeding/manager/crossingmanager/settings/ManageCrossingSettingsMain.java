@@ -186,4 +186,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	public void setCrossesMade(CrossesMade crossesMade) {
 		this.crossesMade = crossesMade;
 	}
+	
+	public CrossingManagerMakeCrossesComponent getMakeCrossesComponent(){
+		return makeCrossesComponent;
+	}
 }

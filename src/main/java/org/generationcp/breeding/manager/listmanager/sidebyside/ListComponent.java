@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -1698,6 +1699,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				MessageNotifier.showMessage(this.getWindow(), messageSource.getMessage(Message.SUCCESS), "Changes to list header were saved."
 						, 3000, Notification.POSITION_CENTERED);
 			}
+			
+			//Refresh tree on save
+			((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
+			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error in updating germplasm list: " + germplasmList.getId(), ex);
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
