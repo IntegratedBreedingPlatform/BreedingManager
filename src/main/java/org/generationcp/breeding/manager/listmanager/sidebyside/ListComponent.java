@@ -385,6 +385,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	   		inventoryButton.setDescription("Click to view Inventory Details");
     	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
     	   		
+    	   		if(avail_inv.equals("-")){
+    	   			inventoryButton.setEnabled(false);
+    	   			inventoryButton.setDescription("No Lot for this Germplasm");
+    	   		}
+    	   		else{
+    	   			inventoryButton.setDescription("Click to view Inventory Details");
+    	   		}
+    	   		
     	   		//#2 Seed Reserved
     	   		String seed_res = "-"; //default value
     	   		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){

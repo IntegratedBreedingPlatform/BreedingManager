@@ -299,6 +299,14 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		inventoryButton.setDescription("Click to view Inventory Details");
 	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
 	   		
+	   		if(avail_inv.equals("-")){
+	   			inventoryButton.setEnabled(false);
+	   			inventoryButton.setDescription("No Lot for this Germplasm");
+	   		}
+	   		else{
+	   			inventoryButton.setDescription("Click to view Inventory Details");
+	   		}
+	   		
 	   		//#2 Seed Reserved
 	   		String seed_res = "-";
 	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
@@ -448,8 +456,15 @@ public class BuildNewListDropHandler implements DropHandler {
     	   		}
     	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
     	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	   		inventoryButton.setDescription("Click to view Inventory Details");
     	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+    	   		
+    	   		if(avail_inv.equals("-")){
+    	   			inventoryButton.setEnabled(false);
+    	   			inventoryButton.setDescription("No Lot for this Germplasm");
+    	   		}
+    	   		else{
+    	   			inventoryButton.setDescription("Click to view Inventory Details");
+    	   		}
     	   		
     	   		//#2 Seed Reserved
     	   		String seed_res = "-";
@@ -567,6 +582,14 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		inventoryButton.setDescription("Click to view Inventory Details");
+	   		
+	   		if(avail_inv.equals("-")){
+	   			inventoryButton.setEnabled(false);
+	   			inventoryButton.setDescription("No Lot for this Germplasm");
+	   		}
+	   		else{
+	   			inventoryButton.setDescription("Click to view Inventory Details");
+	   		}
 	   		
 	   		//#2 Seed Reserved
 	   		String seed_res = "-";
