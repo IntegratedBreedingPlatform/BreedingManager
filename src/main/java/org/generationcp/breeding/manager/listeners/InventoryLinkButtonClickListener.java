@@ -39,7 +39,7 @@ public class InventoryLinkButtonClickListener implements Button.ClickListener {
 		Window inventoryWindow = new Window("Inventory Details");
 		inventoryWindow.setModal(true);
         inventoryWindow.setWidth("810px");
-        inventoryWindow.setHeight("350px");
+        inventoryWindow.setHeight("355px");
         inventoryWindow.setResizable(false);
         inventoryWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         inventoryWindow.setContent(listInventoryComponent);
