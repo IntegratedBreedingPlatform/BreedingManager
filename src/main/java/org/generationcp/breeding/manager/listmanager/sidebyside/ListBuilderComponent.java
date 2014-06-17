@@ -297,7 +297,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                       deleteSelectedEntries();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
                       exportListAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
+                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
                       exportListForGenotypingOrderAction();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
                       copyToNewListAction();

@@ -130,21 +130,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
 	private AddColumnContextMenu addColumnContextMenu;
-	
-	//Tools Menu Options
-    private String MENU_SELECT_ALL="Select All";
-	private String MENU_EXPORT_LIST="Export List";
-	private String MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER="Export List for Genotyping Order";
-	private String MENU_COPY_TO_NEW_LIST="Copy to new list";
-	private String MENU_ADD_ENTRY="Add Entries";
-	private String MENU_SAVE_CHANGES="Save Changes";
-	private String MENU_DELETE_SELECTED_ENTRIES="Delete Selected Entries";
-	private String MENU_EDIT_LIST="Edit List";
-	private String MENU_EDIT_VALUE="Edit Value";
-	private String MENU_DELETE_LIST="Delete List";
-	private String MENU_INVENTORY_VIEW = "Inventory View";
 
-    
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -271,24 +257,24 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         initializeListDataTable(); //listDataTable
         
 		// Generate main level items
-		menuAddEntry = menu.addItem(MENU_ADD_ENTRY);
-		menuCopyToList = menu.addItem(MENU_COPY_TO_NEW_LIST);
-		menuDeleteList = menu.addItem(MENU_DELETE_LIST);
-		menuDeleteEntries = menu.addItem(MENU_DELETE_SELECTED_ENTRIES);
-		menuEditList = menu.addItem(MENU_EDIT_LIST);
-		menuExportList = menu.addItem(MENU_EXPORT_LIST);
-		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
-		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
-		menu.addItem(MENU_SELECT_ALL);
-		menu.addItem(MENU_INVENTORY_VIEW);
+		menuAddEntry = menu.addItem(messageSource.getMessage(Message.ADD_ENTRIES));
+		menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		menuDeleteList = menu.addItem(messageSource.getMessage(Message.DELETE_LIST));
+		menuDeleteEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		menuEditList = menu.addItem(messageSource.getMessage(Message.EDIT_LIST));
+		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
+		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
+		menuSaveChanges = menu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
+		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		
         tableContextMenu = new ContextMenu();
         tableContextMenu.setWidth("295px");
 
-        tableContextMenu_SelectAll = tableContextMenu.addItem(MENU_SELECT_ALL);
-        tableContextMenu_DeleteEntries = tableContextMenu.addItem(MENU_DELETE_SELECTED_ENTRIES);
-        tableContextMenu_EditCell = tableContextMenu.addItem(MENU_EDIT_VALUE);
-        tableContextMenu_CopyToNewList = tableContextMenu.addItem(MENU_COPY_TO_NEW_LIST);
+        tableContextMenu_SelectAll = tableContextMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        tableContextMenu_DeleteEntries = tableContextMenu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+        tableContextMenu_EditCell = tableContextMenu.addItem(messageSource.getMessage(Message.EDIT_VALUE));
+        tableContextMenu_CopyToNewList = tableContextMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
 	}
 	
 	private void initializeListDataTable(){
@@ -496,25 +482,25 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(MENU_SELECT_ALL)){
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 			    	  listDataTable.setValue(listDataTable.getItemIds());
-			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST)){
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
 			    	  exportListAction();
-			      }else if(clickedItem.getName().equals(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER)){
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
 			    	  exportListForGenotypingOrderAction();
-			      }else if(clickedItem.getName().equals(MENU_COPY_TO_NEW_LIST)){
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
 			    	  copyToNewListAction();
-			      }else if(clickedItem.getName().equals(MENU_ADD_ENTRY)){	  
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_ENTRIES))){	  
 			    	  addEntryButtonClickAction();
-			      }else if(clickedItem.getName().equals(MENU_SAVE_CHANGES)){	  
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
 			    	  saveChangesAction();
-			      }else if(clickedItem.getName().equals(MENU_DELETE_SELECTED_ENTRIES)){	 
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){	 
 			    	  deleteEntriesButtonClickAction();
-			      }else if(clickedItem.getName().equals(MENU_EDIT_LIST)){
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EDIT_LIST))){
 			    	  editListButtonClickAction();
-			      }else if(clickedItem.getName().equals(MENU_DELETE_LIST)){
+			      }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_LIST))){
                       deleteListButtonClickAction();
-                  } else if(clickedItem.getName().equals(MENU_INVENTORY_VIEW)){
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
                 	  viewInventoryAction();
                   }
 			      
@@ -552,11 +538,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             private static final long serialVersionUID = -2343109406180457070L;
             public void contextItemClick(ClickEvent event) {
                     String action = event.getClickedItem().getName();
-                    if (action.equals(MENU_DELETE_SELECTED_ENTRIES)) {
+                    if (action.equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
                             deleteEntriesButtonClickAction();
-                    }else if(action.equals(MENU_SELECT_ALL)) {
+                    }else if(action.equals(messageSource.getMessage(Message.SELECT_ALL))) {
                             listDataTable.setValue(listDataTable.getItemIds());
-                    }else if(action.equals(MENU_EDIT_VALUE)){
+                    }else if(action.equals(messageSource.getMessage(Message.EDIT_VALUE))){
                     	
                     	HashMap<Object,Field> itemMap = fields.get(selectedItemId);
                     	
@@ -594,7 +580,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                         }
 
                         listDataTable.select(selectedItemId);
-                    }else if(action.equals(MENU_COPY_TO_NEW_LIST)){
+                    }else if(action.equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
                         source.addSelectedPlantsToList(listDataTable);
                     }
             }
