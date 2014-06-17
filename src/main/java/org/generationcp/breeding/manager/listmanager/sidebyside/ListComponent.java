@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -73,6 +74,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -108,7 +110,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted="";
 	
-	private Label listEntriesLabel;
+	private Label topLabel;
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
 	private Button toolsButton;
@@ -129,7 +131,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
+	private ContextMenuItem menuInventoryView;
 	private AddColumnContextMenu addColumnContextMenu;
+	
+	private ContextMenu inventoryViewMenu; 
+	private ContextMenuItem menuInventorySaveChanges;
+	private ContextMenuItem menuListView;
 	
 	//Tools Menu Options
     private String MENU_SELECT_ALL="Select All";
@@ -143,7 +150,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private String MENU_EDIT_VALUE="Edit Value";
 	private String MENU_DELETE_LIST="Delete List";
 	private String MENU_INVENTORY_VIEW = "Inventory View";
-
+	
+	private String MENU_LIST_VIEW = "Return to List View";
+	private String MENU_INVENTORY_SAVE_CHANGES="Save Changes";
     
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
@@ -167,7 +176,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private Button editHeaderButton;
     
     private ViewListHeaderWindow viewListHeaderWindow;
-	
+
+    private AbsoluteLayout toolsMenuContainer;
+    
+    private Button inventoryViewToolsButton;
+    
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
 	
@@ -184,6 +197,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
     //Value change event is fired when table is populated, so we need a flag
     private Boolean doneInitializing = false;
+    
+    private ListInventoryTable listInventoryTable;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -224,9 +239,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 	@Override
 	public void instantiateComponents() {
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		listEntriesLabel.setWidth("120px");
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		topLabel.setWidth("160px");
+		topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
@@ -241,6 +256,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
 		toolsButton.setWidth("110px");
 		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		
+		inventoryViewToolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
+		inventoryViewToolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
+		inventoryViewToolsButton.setWidth("110px");
+		inventoryViewToolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		try{
 			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
@@ -280,7 +301,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuExportForGenotypingOrder = menu.addItem(MENU_EXPORT_LIST_FOR_GENOTYPING_ORDER);
 		menuSaveChanges = menu.addItem(MENU_SAVE_CHANGES);
 		menu.addItem(MENU_SELECT_ALL);
-		menu.addItem(MENU_INVENTORY_VIEW);
+		menuInventoryView = menu.addItem(MENU_INVENTORY_VIEW);
+		
+		
+		inventoryViewMenu = new ContextMenu();
+		inventoryViewMenu.setWidth("295px");
+		//inventoryViewMenu.setVisible(false);
+		
+		menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
+		menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
 		
         tableContextMenu = new ContextMenu();
         tableContextMenu.setWidth("295px");
@@ -325,6 +354,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		addColumnContextMenu = new AddColumnContextMenu(parentListDetailsComponent, menu, 
                 listDataTable, ListDataTablePropertyID.GID.getName());
+		
+		listInventoryTable = new ListInventoryTable(germplasmList.getId());
+		listInventoryTable.setVisible(false);
+		
 	}
 	
 	public int getNoOfEntries(){
@@ -489,6 +522,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	   		 }
 	   	 });
 		
+		inventoryViewToolsButton.addListener(new ClickListener() {
+	   		 private static final long serialVersionUID = 272707576878821700L;
+	
+				 @Override
+	   		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+	   			 inventoryViewMenu.show(event.getClientX(), event.getClientY());
+	   		 }
+	   	 });		
+		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2343109406180457070L;
 	
@@ -516,6 +558,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                       deleteListButtonClickAction();
                   } else if(clickedItem.getName().equals(MENU_INVENTORY_VIEW)){
                 	  viewInventoryAction();
+                  }
+			      
+		   }
+		});
+		
+		inventoryViewMenu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+	
+			@Override
+			public void contextItemClick(ClickEvent event) {
+			      // Get reference to clicked item
+			      ContextMenuItem clickedItem = event.getClickedItem();
+			      if(clickedItem.getName().equals(MENU_INVENTORY_SAVE_CHANGES)){	  
+			    	  //TODO: put action call here to save inventory changes
+                  } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
+                	  viewListAction();
                   }
 			      
 		   }
@@ -611,7 +669,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		
-		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, topLabel);
 		headerLayout.addComponent(headingLayout);
 		headerLayout.addComponent(viewHeaderButton);
 		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.BOTTOM_RIGHT);
@@ -644,9 +702,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			subHeaderLayout.addComponent(totalListEntriesLabel);
 			subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		}
+
 		
-		subHeaderLayout.addComponent(toolsButton);
-		subHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
+        toolsMenuContainer = new AbsoluteLayout();
+        toolsMenuContainer.setHeight("27px");
+        toolsMenuContainer.addComponent(toolsButton, "top:0; right:0;");
+		
+		subHeaderLayout.addComponent(toolsMenuContainer);
+		
+		subHeaderLayout.setComponentAlignment(toolsMenuContainer, Alignment.MIDDLE_RIGHT);
 		subHeaderLayout.addStyleName("lm-list-desc");
 		
 		addComponent(headerLayout);
@@ -656,9 +720,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listDataTable.setHeight("480px");
 		
 		addComponent(listDataTableWithSelectAll);
+		addComponent(listDataTableWithSelectAll);
+		addComponent(listInventoryTable);
         addComponent(tableContextMenu);
 
 		parentListDetailsComponent.addComponent(menu);
+		parentListDetailsComponent.addComponent(inventoryViewMenu);
+		
+		
+		
 	}
 
 	@Override
@@ -1799,12 +1869,65 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
 	}
 	
+	private void viewListAction(){
+		listDataTableWithSelectAll.setVisible(true);
+		listInventoryTable.setVisible(false);
+        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
+        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
+        
+        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + listEntriesCount + "</b>");
+	}	
+	
 	private void viewInventoryAction(){
-		listDataTable.setVisible(true);
+		
+    	if(parentListDetailsComponent.hasChanged()){
+    		String message = "";
+    		
+       		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding?";
+    		
+    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+				private static final long serialVersionUID = 1L;	
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						saveChangesAction();	
+					}
+					
+					listInventoryTable.loadInventoryData();
+					
+					listDataTableWithSelectAll.setVisible(false);
+					listInventoryTable.setVisible(true);
+			        toolsMenuContainer.removeComponent(toolsButton);
+			        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
+			        
+			        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
+			        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+			          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+				}
+			});
+    	} else {
+    		listInventoryTable.loadInventoryData();
+    		
+			listDataTableWithSelectAll.setVisible(false);
+			listInventoryTable.setVisible(true);
+	        toolsMenuContainer.removeComponent(toolsButton);
+	        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
+	        
+	        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+    	}
+    	
 	}
 
+
+	
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
 	}
 }
+
 

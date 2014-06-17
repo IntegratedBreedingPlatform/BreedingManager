@@ -235,6 +235,7 @@ public enum Message{
     ,LIST_DETAILS
     ,LIST_DATA
     ,LIST_SEED_INVENTORY
+    ,INVENTORY_VIEW
     ,CLOSE_ALL_TABS
     ,SAVE_IN
     ,CHANGE_LOCATION
