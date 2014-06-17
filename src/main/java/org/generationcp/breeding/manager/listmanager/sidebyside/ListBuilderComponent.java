@@ -91,6 +91,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
+	@Autowired
+	private InventoryDataManager inventoryDataManager;
+    
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     static final Action ACTION_SELECT_ALL = new Action("Select All");
     static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
@@ -250,7 +253,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		toolsButton.setWidth("110px");
         toolsButton.addStyleName("lm-tools-button");
         
-        dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
+        dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
         
         saveButton = new Button();
         saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
@@ -813,7 +816,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		setChanged(false);
 		
 		//List Data Table
-		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, tableWithSelectAllLayout.getTable());
+		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
 		initializeHandlers();
 		
 		//Reset Save Listener

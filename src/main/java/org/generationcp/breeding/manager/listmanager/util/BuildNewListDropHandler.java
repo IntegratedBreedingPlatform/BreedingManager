@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -20,6 +21,7 @@ import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -71,6 +73,7 @@ public class BuildNewListDropHandler implements DropHandler {
 	
 	private final GermplasmDataManager germplasmDataManager;
 	private final GermplasmListManager germplasmListManager;
+	private final InventoryDataManager inventoryDataManager;
 	
 	private Table targetTable;
 	
@@ -83,10 +86,11 @@ public class BuildNewListDropHandler implements DropHandler {
 	private boolean changed = false;
 	private ListManagerMain listManagerMain;
 	
-	public BuildNewListDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, Table targetTable) {
+	public BuildNewListDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
+		this.inventoryDataManager = inventoryDataManager;
 		this.targetTable = targetTable;
 	}
 
@@ -125,11 +129,13 @@ public class BuildNewListDropHandler implements DropHandler {
 				changed = true;
 				
 				//If table has selected items, add selected items
-				if(hasSelectedItems(sourceTable))
+				if(hasSelectedItems(sourceTable)){
 					addFromListDataTable(sourceTable);
-				//If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent)
-					addGermplasmFromList(((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId(), (Integer) transferable.getItemId());
+				} //If none, add what was dropped
+				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
+					Integer listId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
+					addGermplasmFromList(listId, (Integer) transferable.getItemId());
+				}
 
 			} else if(sourceTableData.equals(ListBuilderComponent.GERMPLASMS_TABLE_DATA)){
 				Object droppedOverItemId = dropData.getItemIdOver();
@@ -203,12 +209,10 @@ public class BuildNewListDropHandler implements DropHandler {
 			if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId))
 				currentColumnsInfo = germplasmListManager.getAdditionalColumnsForList(listId);
 			
-			GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+			
+			GermplasmList germplasmList = getGermplasmList(listId);
 			List<GermplasmListData> germplasmListData = germplasmList.getListData();
-			if(germplasmListData == null || germplasmListData.size() == 0 ){
-				germplasmListData = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, Integer.MAX_VALUE);
-			}
-
+			
 			//Fix for adding entries in reverse
 			if(germplasmListData.size()>1 && germplasmListData.get(0).getEntryId()>germplasmListData.get(1).getEntryId()){
 				Collections.reverse(germplasmListData);
@@ -340,12 +344,12 @@ public class BuildNewListDropHandler implements DropHandler {
     			}
     		}
         	
-    		GermplasmListData germplasmListData = null;
-    		
+    		//making sure that germplasmList has value
     		if(germplasmList == null){
-    			germplasmList = germplasmListManager.getGermplasmListById(listId);
-    			
+    			germplasmList = getGermplasmList(listId);
         	} 
+    		
+    		GermplasmListData germplasmListData = null;
     		
     		if(germplasmList.getListData() != null && germplasmList.getListData().size() > 0){
     			for(GermplasmListData listData : germplasmList.getListData()){
@@ -357,6 +361,9 @@ public class BuildNewListDropHandler implements DropHandler {
     		else{
         		germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
     		}
+    		
+    		//handles the data for inventory
+    		
     		
         	if(germplasmListData!=null && germplasmListData.getStatus()!=9){
         		
@@ -407,6 +414,26 @@ public class BuildNewListDropHandler implements DropHandler {
 	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
+	            //Inventory Related Columns
+    	   		
+    	   		//#1 Available Inventory
+    	   		String avail_inv = "N/A";
+    	   		if(germplasmListData.getInventoryInfo().getActualInventoryLotCount() != null && germplasmListData.getInventoryInfo().getActualInventoryLotCount() != 0){
+    	   			avail_inv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    	   		}
+    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,
+    	   				germplasmList.getId(),germplasmListData.getId(), germplasmListData.getGid()));
+    	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	   		inventoryButton.setDescription("Click to view Inventory Details");
+    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+    	   		
+    	   		//#2 Seed Reserved
+    	   		String seed_res = "N/A";
+    	   		if(germplasmListData.getInventoryInfo().getReservedLotCount() != null && germplasmListData.getInventoryInfo().getReservedLotCount() != 0){
+    	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
+    	   		}
+    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
 	    			String column = columnEntry.getKey();
 	    			for (ListDataColumnValues columnValue : columnEntry.getValue()){
@@ -453,12 +480,7 @@ public class BuildNewListDropHandler implements DropHandler {
 		if(sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListComponent)
 			listId = ((ListComponent) sourceTable.getParent().getParent()).getGermplasmListId();
 
-		GermplasmList germplasmList = null;
-		try {
-			germplasmList = germplasmListManager.getGermplasmListById(listId);
-		} catch (MiddlewareQueryException e) {
-            LOG.error("Error in getting germplasm list with id "+listId, e);
-		}
+		GermplasmList germplasmList = getGermplasmList(listId);
 		
     	//Load currentColumnsInfo if cached list info is null or not matching the needed list id
     	if(currentColumnsInfo==null || !currentColumnsInfo.getListId().equals(listId)){
@@ -702,4 +724,24 @@ public class BuildNewListDropHandler implements DropHandler {
         }
         listeners.remove(listener);
     }
+    
+    /**
+     * Reset the germplasmList, and make sure that the inventory columns are properly filled up
+     */
+    public GermplasmList getGermplasmList(Integer listId){
+    	GermplasmList germplasmList = null;
+    	
+    	try {
+			germplasmList = germplasmListManager.getGermplasmListById(listId);
+			
+			List<GermplasmListData> germplasmListData = inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Integer.MAX_VALUE);
+			germplasmList.setListData(germplasmListData);
+			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+
+    	return germplasmList;
+    }
+    
 }
