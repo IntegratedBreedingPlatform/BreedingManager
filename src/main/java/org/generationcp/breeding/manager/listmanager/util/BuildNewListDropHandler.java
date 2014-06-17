@@ -290,6 +290,20 @@ public class BuildNewListDropHandler implements DropHandler {
 	 			 
 	 		});
             
+            //Inventory Related Columns
+            
+	   		//#1 Available Inventory
+	   		String avail_inv = getAvailInvForGID(gid).toString();
+	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
+	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+	   		inventoryButton.setDescription("Click to view Inventory Details");
+	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+	   		
+	   		//#2 Seed Reserved
+	   		String seed_res = "-";
+	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+	   		
+            
             newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
             if(newItem!=null && gidButton!=null)
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
@@ -318,6 +332,17 @@ public class BuildNewListDropHandler implements DropHandler {
 	}
 	
 	
+	private Integer getAvailInvForGID(Integer gid) {
+		Integer avail_inv;
+		try {
+			avail_inv = inventoryDataManager.countLotsWithAvailableBalanceForGermplasm(gid);
+			return avail_inv;
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private Integer addGermplasmFromList(Integer listId, Integer lrecid){
 		return addGermplasmFromList(listId, lrecid, null);
 	}
@@ -417,22 +442,19 @@ public class BuildNewListDropHandler implements DropHandler {
 	            //Inventory Related Columns
     	   		
     	   		//#1 Available Inventory
-    	   		String avail_inv = "N/A";
+    	   		String avail_inv = "-";
     	   		if(germplasmListData.getInventoryInfo().getActualInventoryLotCount() != null && germplasmListData.getInventoryInfo().getActualInventoryLotCount() != 0){
     	   			avail_inv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	   		}
-    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,
-    	   				germplasmList.getId(),germplasmListData.getId(), germplasmListData.getGid()));
+    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
     	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
     	   		inventoryButton.setDescription("Click to view Inventory Details");
     	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
     	   		
     	   		//#2 Seed Reserved
-    	   		String seed_res = "N/A";
-    	   		if(germplasmListData.getInventoryInfo().getReservedLotCount() != null && germplasmListData.getInventoryInfo().getReservedLotCount() != 0){
-    	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
-    	   		}
+    	   		String seed_res = "-";
     	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+    	   		
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
 	    			String column = columnEntry.getKey();
@@ -542,12 +564,12 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		
 	   		//#1 Available Inventory
 	   		String avail_inv = getAvailInvFromButtonCaption(sourceTable, itemId);
-	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,listId,itemId,gid));
+	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		inventoryButton.setDescription("Click to view Inventory Details");
 	   		
 	   		//#2 Seed Reserved
-	   		String seed_res = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).getValue();
+	   		String seed_res = "-";
 	   		
 	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
 	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);

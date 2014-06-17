@@ -25,6 +25,12 @@ public class InventoryLinkButtonClickListener implements Button.ClickListener {
 		this.recordId = recordId;
 		this.gid = gid;
 	}
+	
+	public InventoryLinkButtonClickListener(Component source, Integer gid) {
+		super();
+		this.source = source;
+		this.gid = gid;
+	}
 
 	@Override
 	public void buttonClick(ClickEvent event) {

@@ -376,7 +376,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	   		//Inventory Related Columns
     	   		
     	   		//#1 Available Inventory
-    	   		String avail_inv = "N/A";
+    	   		String avail_inv = "-"; //default value
     	   		if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
     	   			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	   		}
@@ -386,7 +386,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
     	   		
     	   		//#2 Seed Reserved
-    	   		String seed_res = "N/A";
+    	   		String seed_res = "-"; //default value
     	   		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
     	   			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
     	   		}
