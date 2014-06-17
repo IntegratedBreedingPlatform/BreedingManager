@@ -252,7 +252,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 			@Override
             public void buttonClick(Button.ClickEvent event) {
 				germplasmListTreeUtil.addFolder(selectedListId);
-				refreshRemoteTree();
+				//refreshRemoteTree();
             }
         });
         
@@ -268,7 +268,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 				if (data instanceof ListTreeComponent){
 					germplasmListTreeUtil.deleteFolderOrList((ListTreeComponent) data, 
 							Integer.valueOf(selectedListId.toString()), treeActionsListener);
-					refreshRemoteTree();
+				//	refreshRemoteTree();
 				}
             }
         });
