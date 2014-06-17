@@ -243,6 +243,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
         
         resetMenuOptions();
         
@@ -297,10 +298,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                       deleteSelectedEntries();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
                       exportListAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
+                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
                       exportListForGenotypingOrderAction();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
                       copyToNewListAction();
+                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
+                	  viewInventoryAction();
                 }                
             }
             
@@ -1006,6 +1009,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             }
         }
     }// end of copyToNewListAction
+    
+    public void viewInventoryAction(){
+    	// TODO change the listDataTable to ListInventoryTable 
+    }
     
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
         Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();

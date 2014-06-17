@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.customcomponent.TableLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -87,8 +88,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		lotEntriesTable.addContainerProperty(LOT_UNITS, String.class, null);
 		lotEntriesTable.addContainerProperty(ACTUAL_BALANCE, Double.class, null);
 		lotEntriesTable.addContainerProperty(AVAILABLE_BALANCE, Double.class, null);
-		lotEntriesTable.addContainerProperty(RES_THIS_ENTRY, Double.class, null);
-		lotEntriesTable.addContainerProperty(RES_OTHER_ENTRY, Double.class, null);
+		lotEntriesTable.addContainerProperty(RES_THIS_ENTRY, String.class, null);
+		lotEntriesTable.addContainerProperty(RES_OTHER_ENTRY, String.class, null);
 		lotEntriesTable.addContainerProperty(COMMENTS, String.class, null);
 		lotEntriesTable.addContainerProperty(LOT_ID, Integer.class, null);
 	
@@ -105,9 +106,11 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	@Override
 	public void initializeValues() {
 		try {
-			List<ListEntryLotDetails> lotDetailEntries = inventoryDataManager.getLotDetailsForListEntry(listId,recordId,gid);
+			List<? extends LotDetails> lotDetailEntries = (listId != null && recordId != null)? 
+					inventoryDataManager.getLotDetailsForListEntry(listId,recordId,gid) 
+					: inventoryDataManager.getLotDetailsForGermplasm(gid);
 			
-			for(ListEntryLotDetails lotEntry : lotDetailEntries){
+			for(LotDetails lotEntry : lotDetailEntries){
 				Item newItem = lotEntriesTable.addItem(lotEntry.getLotId());
 				
 				String lotLocation="";
@@ -128,8 +131,17 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		   		
 		   		newItem.getItemProperty(ACTUAL_BALANCE).setValue(lotEntry.getActualLotBalance());
 		   		newItem.getItemProperty(AVAILABLE_BALANCE).setValue(lotEntry.getAvailableLotBalance());
-		   		newItem.getItemProperty(RES_THIS_ENTRY).setValue(lotEntry.getReservedTotalForEntry());
-		   		newItem.getItemProperty(RES_OTHER_ENTRY).setValue(lotEntry.getReservedTotalForOtherEntries());
+		   		
+		   		if(listId != null && recordId != null){
+		   			ListEntryLotDetails listEntrtlotDetail = (ListEntryLotDetails) lotEntry;
+		   			newItem.getItemProperty(RES_THIS_ENTRY).setValue(listEntrtlotDetail.getReservedTotalForEntry());
+			   		newItem.getItemProperty(RES_OTHER_ENTRY).setValue(listEntrtlotDetail.getReservedTotalForOtherEntries());
+		   		}
+		   		else{
+		   			newItem.getItemProperty(RES_THIS_ENTRY).setValue("-");
+			   		newItem.getItemProperty(RES_OTHER_ENTRY).setValue("-");
+		   		}
+		   		
 		   		newItem.getItemProperty(COMMENTS).setValue(lotEntry.getCommentOfLot());
 		   		newItem.getItemProperty(LOT_ID).setValue(lotEntry.getLotId());
 			}
