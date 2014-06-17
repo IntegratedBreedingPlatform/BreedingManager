@@ -1785,9 +1785,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
 	}
 	
-	private void viewInventoryAction(){
-		listDataTable.setVisible(true);
-	}
+	public void viewInventoryAction(){
+    	// TODO change the listDataTable to ListInventoryTable 
+    }
 
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
