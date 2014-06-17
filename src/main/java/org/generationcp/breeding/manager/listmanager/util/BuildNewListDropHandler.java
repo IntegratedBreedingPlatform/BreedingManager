@@ -538,13 +538,25 @@ public class BuildNewListDropHandler implements DropHandler {
 	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
 	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
 	   		
+	   		//Inventory Related Columns
+	   		
+	   		//#1 Available Inventory
+	   		String avail_inv = getAvailInvFromButtonCaption(sourceTable, itemId);
+	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,listId,itemId,gid));
+	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+	   		inventoryButton.setDescription("Click to view Inventory Details");
+	   		
+	   		//#2 Seed Reserved
+	   		String seed_res = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).getValue();
+	   		
 	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
 	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
 	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
 	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
 	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
-	   		
+	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			for (ListDataColumnValues columnValue : columnEntry.getValue()){
@@ -682,6 +694,15 @@ public class BuildNewListDropHandler implements DropHandler {
     	    return Integer.valueOf(buttonCaption);
     	}
     	return null;	
+    }
+    
+    private String getAvailInvFromButtonCaption(Table table, Integer itemId){
+    	Item item = table.getItem(itemId);
+   	    if(item!=null){
+    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).getCaption().toString();
+    	    return buttonCaption;
+    	}
+    	return null;
     }
     
     private String getDesignationFromButtonCaption(Table table, Integer itemId){
