@@ -124,7 +124,12 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(inventoryDetail.getEntryId());
 			newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(inventoryDetail.getLocationName());
 			newItem.getItemProperty(UNITS_COLUMN_ID).setValue(inventoryDetail.getScaleName());
-			
+			//newItem.getItemProperty(AVAIL_COLUMN_ID).setValue("");
+			newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(inventoryDetail.getAmount());
+			//newItem.getItemProperty(RESERVED_COLUMN_ID).setValue("");
+			//newItem.getItemProperty(NEW_RESERVATION_COLUMN_ID).setValue("");
+			newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(inventoryDetail.getComment());
+			newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(inventoryDetail.getLotId());
 		}
 	}
 }
