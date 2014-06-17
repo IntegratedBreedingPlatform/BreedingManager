@@ -289,4 +289,21 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public ManageCrossingSettingsMain getManageCrossingSettingsMain() {
     	return manageCrossingSettingsMain;
     }
+    
+    public void refreshListManagerTree(){
+		ListManagerMain listManagerMain = getListManagerMain();
+		if(listManagerMain!=null){
+			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshTree();
+		}
+    }
+    
+    public void refreshCrossingManagerTree(){
+		ManageCrossingSettingsMain manageCrossSettingsMain = getManageCrossingSettingsMain();
+		if(manageCrossSettingsMain!=null){
+			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshTree();
+		}
+    }
+    
+    
+    
 }
