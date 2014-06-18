@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -104,8 +105,7 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		cancelButton.addListener(new CloseWindowAction());
 	}
 
 	@SuppressWarnings("deprecation")
