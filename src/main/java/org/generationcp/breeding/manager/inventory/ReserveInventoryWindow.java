@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.inventory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +24,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReserveInventoryComponent extends Window implements InitializingBean, 
+public class ReserveInventoryWindow extends Window implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -5997291617886011653L;
 
@@ -42,14 +44,19 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 	
 	private Boolean isSingleScaled;
 	
+	private ReserveInventorySource source;
+	
 	//Inputs
 	private Map<String, List<ListEntryLotDetails>> scaleGrouping;
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 	
-	public ReserveInventoryComponent(Map<String, List<ListEntryLotDetails>> scaleGrouping, Boolean isSingleScaled) {
+	private ReserveInventoryAction reserveInventoryAction;
+	
+	public ReserveInventoryWindow(ReserveInventorySource source, Map<String, List<ListEntryLotDetails>> scaleGrouping, Boolean isSingleScaled) {
 		super();
+		this.source = source;
 		this.isSingleScaled = isSingleScaled;
 		this.scaleGrouping = scaleGrouping;
 	}
@@ -65,9 +72,9 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 	@Override
 	public void instantiateComponents() {
 		//window formatting
-		this.setCaption("Reserve Inventory");
+		this.setCaption(messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
-		
+		this.setModal(true);
 		
 		//components formatting
 		singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
@@ -99,13 +106,24 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 		for (Map.Entry<String, List<ListEntryLotDetails>> entry : scaleGrouping.entrySet()) {
 		    String scale = entry.getKey();
 		    List<ListEntryLotDetails> lotDetailList = entry.getValue();
-		    scaleRows.add(new ReserveInventoryRowComponent(entry.getKey(),lotDetailList.size()));
+		    scaleRows.add(new ReserveInventoryRowComponent(scale,lotDetailList.size()));
 		}
 	}
 
 	@Override
 	public void addListeners() {
 		cancelButton.addListener(new CloseWindowAction());
+		 
+		reserveInventoryAction = new ReserveInventoryAction(source);
+		
+		finishButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				reserveInventoryAction.validateReservations(getReservations());
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")
@@ -177,6 +195,16 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 		
 	}
 
+	protected Map<Double, List<ListEntryLotDetails>> getReservations() {
+		Map<Double, List<ListEntryLotDetails>> reservations = new HashMap<Double,List<ListEntryLotDetails>>();
+		
+		for(ReserveInventoryRowComponent row : scaleRows){
+			reservations.put(row.getReservationAmount(), scaleGrouping.get(row.getScale()));
+		}
+		
+		return reservations;
+	}
+
 	// SETTERS AND GETTERS
 	public Boolean getIsSingleScaled() {
 		return isSingleScaled;
@@ -185,4 +213,13 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 	public void setIsSingleScaled(Boolean isSingleScaled) {
 		this.isSingleScaled = isSingleScaled;
 	}
+
+	public List<ReserveInventoryRowComponent> getScaleRows() {
+		return scaleRows;
+	}
+
+	public void setScaleRows(List<ReserveInventoryRowComponent> scaleRows) {
+		this.scaleRows = scaleRows;
+	}
+	
 }

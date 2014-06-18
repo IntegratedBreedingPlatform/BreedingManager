@@ -21,6 +21,9 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
@@ -97,7 +100,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource {
+        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -1643,7 +1646,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
 			}
 			else{
-				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(source,lotDetailsGid);
+				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
 				reserveInventoryUtil.viewReserveInventoryWindow();
 			}
 		}
@@ -1979,6 +1982,25 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	}
+
+	@Override
+	public void updateListInventoryTable(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		source.getWindow().addWindow(reserveInventory);
+	}
+
+	@Override
+	public void addReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		source.getWindow().addWindow(reservationStatus);
 	}
 }
 
