@@ -7,13 +7,17 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -21,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+@Configurable
 public class ReservationStatusWindow extends Window implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout {
 	
@@ -64,6 +69,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 		
 		statusTable = new Table();
 		statusTable.setWidth("100%");
+		statusTable.setHeight("150px");
 		statusTable.setImmediate(true);
 		
 		statusTable.addContainerProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), String.class, null);
@@ -79,6 +85,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Message.AMOUNT_TO_RESERVE);
 		
 		okButton = new Button(messageSource.getMessage(Message.OK));
+		okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
@@ -93,7 +100,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 			newItem.getItemProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER)).setValue(designation);
 			newItem.getItemProperty(messageSource.getMessage(Message.LOCATION_HEADER)).setValue(lot.getLocationOfLot().getLname());
 			newItem.getItemProperty(messageSource.getMessage(Message.UNITS)).setValue(lot.getScaleOfLot().getName());
-			newItem.getItemProperty(messageSource.getMessage(Message.UNITS)).setValue(lot.getAvailableLotBalance());
+			newItem.getItemProperty(messageSource.getMessage(Message.AVAILABLE_BALANCE)).setValue(lot.getAvailableLotBalance());
 			newItem.getItemProperty(messageSource.getMessage(Message.AMOUNT_TO_RESERVE)).setValue(amountToReserve);
 		}
 	}
@@ -106,16 +113,17 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 	@Override
 	public void layoutComponents() {
 		//main window
-		setHeight("300px");
-		setWidth("800px");
+		setHeight("310px");
+		setWidth("750px");
 		
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
-		mainLayout.setMargin(true);
 		
 		mainLayout.addComponent(statusDescriptionLabel);
 		mainLayout.addComponent(statusTable);
 		mainLayout.addComponent(okButton);
+		
+		mainLayout.setComponentAlignment(okButton, Alignment.BOTTOM_CENTER);
 		
 		addComponent(mainLayout);
 	}
@@ -127,15 +135,15 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 	}
 	
 	private String getDesignation(Integer entityIdOfLot) {
-		String designation = "";
+		Name designation = null;
 		
 		try {
-			designation = germplasmDataManager.getPreferredNameValueByGID(entityIdOfLot);
+			designation = germplasmDataManager.getPreferredNameByGID(entityIdOfLot);
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return designation;
+		return designation.getNval();
 	}
 }

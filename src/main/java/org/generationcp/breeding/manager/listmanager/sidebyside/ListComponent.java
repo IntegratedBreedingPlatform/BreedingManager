@@ -193,6 +193,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     
     private ListInventoryTable listInventoryTable;
     
+    private ReserveInventoryWindow reserveInventory;
+    private ReservationStatusWindow reservationStatus;
+    
+    
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -1994,13 +1998,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void addReserveInventoryWindow(
 			ReserveInventoryWindow reserveInventory) {
-		source.getWindow().addWindow(reserveInventory);
+		this.reserveInventory = reserveInventory;
+		source.getWindow().addWindow(this.reserveInventory);
 	}
 
 	@Override
 	public void addReservationStatusWindow(
 			ReservationStatusWindow reservationStatus) {
-		source.getWindow().addWindow(reservationStatus);
+		this.reservationStatus = reservationStatus;
+		source.getWindow().removeWindow(reserveInventory);
+		source.getWindow().addWindow(this.reservationStatus);
 	}
 }
 

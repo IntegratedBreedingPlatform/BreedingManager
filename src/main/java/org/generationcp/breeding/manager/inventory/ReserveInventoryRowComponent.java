@@ -43,7 +43,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 	
 	@Override
 	public void instantiateComponents() {
-		amountToReserveLbl = new Label(messageSource.getMessage(Message.AMOUNT_TO_RESERVE));
+		amountToReserveLbl = new Label(messageSource.getMessage(Message.AMOUNT_TO_RESERVE) + ":");
 		amountToReserveLbl.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		reservedAmtTxtField = new TextField();
