@@ -124,7 +124,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		for(GermplasmListData inventoryDetail : inventoryDetails){
 			
 			Integer entryId = inventoryDetail.getEntryId();
-			System.out.println("entryId1: " + entryId);
 			String designation = inventoryDetail.getDesignation();
 			
 			ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
@@ -133,7 +132,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			for(ListEntryLotDetails lotDetail : lotDetails){
 				
 				Item newItem = listInventoryTable.addItem(lotDetail);
-				System.out.println("col:" + newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID));
 				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
 				newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
 				newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
