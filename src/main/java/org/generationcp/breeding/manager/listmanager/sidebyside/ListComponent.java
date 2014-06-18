@@ -22,9 +22,9 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -1969,8 +1969,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listInventoryTable.loadInventoryData();
 		
 		if(listInventoryTable.getTable().getItemIds().size()==0){
-			MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Warning", "There are no inventory details available for this list"
-                    , Notification.POSITION_TOP_RIGHT);
+			
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING),
+					"There are no inventory details available for this list", Notification.POSITION_TOP_RIGHT);
 			return;
 		}
 		
@@ -2000,6 +2001,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 		
 		removeReserveInventoryWindow(reserveInventory);
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
+				"All selected entries will be reserved in their respective lots.", Notification.POSITION_TOP_RIGHT);
 	}
 
 	@Override
