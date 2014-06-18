@@ -21,7 +21,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryComponent;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -40,6 +40,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -658,12 +659,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         
         
 	}//end of addListeners
-
-	protected void reserveInventoryAction() {
-		ReserveInventoryComponent reserveInventory = new ReserveInventoryComponent(false);
-		reserveInventory.setModal(true);
-		source.getWindow().addWindow(reserveInventory);
-	}
 
 	@Override
 	public void layoutComponents() {
@@ -1598,6 +1593,25 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return true;
 		
     } // end of saveChangesAction
+    
+	protected void reserveInventoryAction() {
+		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
+		}
+		else{
+			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+			
+			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
+			}
+			else{
+				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(source,lotDetailsGid);
+				reserveInventoryUtil.viewReserveInventoryWindow();
+			}
+		}
+	}//end of reserveInventoryAction
     
     //TODO review this method as there are redundant codes here that is also in saveChangesAction()
     //might be possible to eliminate this method altogether and reduce the number of middleware calls

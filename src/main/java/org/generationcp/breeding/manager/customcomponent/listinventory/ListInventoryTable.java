@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -16,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Button.ClickListener;
 
 @Configurable
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
@@ -82,6 +84,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		super.instantiateComponents();
 		
 		listInventoryTable = this.getTable();
+		listInventoryTable.setMultiSelect(true);
 		listInventoryTable.setImmediate(true);
 		
 		listInventoryTable.setHeight("480px");
@@ -168,5 +171,14 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ListEntryLotDetails> getSelectedLots(){
+		Collection<ListEntryLotDetails> selectedEntries = (Collection<ListEntryLotDetails>) listInventoryTable.getValue();
+		
+		List<ListEntryLotDetails> lotsSeleted = new ArrayList<ListEntryLotDetails>();
+		lotsSeleted.addAll(selectedEntries);
+		return lotsSeleted;
 	}
 }

@@ -1,10 +1,16 @@
 package org.generationcp.breeding.manager.inventory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -31,14 +37,20 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 	private Button cancelButton;
 	private Button finishButton;
 	
+	private List<ReserveInventoryRowComponent> scaleRows;
+	
 	private Boolean isSingleScaled;
+	
+	//Inputs
+	private Map<String, List<ListEntryLotDetails>> scaleGrouping;
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 	
-	public ReserveInventoryComponent(Boolean isSingleScaled) {
+	public ReserveInventoryComponent(Map<String, List<ListEntryLotDetails>> scaleGrouping, Boolean isSingleScaled) {
 		super();
 		this.isSingleScaled = isSingleScaled;
+		this.scaleGrouping = scaleGrouping;
 	}
 
 	@Override
@@ -65,6 +77,9 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 		contentPanel = new Panel();
 		contentPanel.addStyleName("section_panel_layout");
 		
+		
+		scaleRows = new ArrayList<ReserveInventoryRowComponent>();
+		
 		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
 		cancelButton.setWidth("80px");
 		
@@ -75,8 +90,16 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+		initializeScaleRows();
+	}
+
+	private void initializeScaleRows() {
+	
+		for (Map.Entry<String, List<ListEntryLotDetails>> entry : scaleGrouping.entrySet()) {
+		    String scale = entry.getKey();
+		    List<ListEntryLotDetails> lotDetailList = entry.getValue();
+		    scaleRows.add(new ReserveInventoryRowComponent(entry.getKey(),lotDetailList.size()));
+		}
 	}
 
 	@Override
@@ -94,6 +117,7 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 		
 		panelContentLayout = new VerticalLayout();
 		panelContentLayout.setMargin(true);
+		panelContentLayout.setSpacing(true);
 		
 		if(isSingleScaled){
 			setHeight("255px");
@@ -103,16 +127,32 @@ public class ReserveInventoryComponent extends Window implements InitializingBea
 			contentPanel.setHeight("120px");
 			
 			panelContentLayout.addComponent(singleScaleDescriptionLabel);
+			panelContentLayout.addComponent(scaleRows.get(0));
 			
 		}
 		else{
-			setHeight("355px");
+			setHeight("325px");
 			setWidth("430px");
 			
 			contentPanel.setWidth("383px");
-			contentPanel.setHeight("220px");
+			contentPanel.setHeight("190px");
 			
 			panelContentLayout.addComponent(multiScaleDescriptionLabel);
+			
+			VerticalLayout scaleLayout = new VerticalLayout();
+			scaleLayout.setSpacing(true);
+			scaleLayout.setHeight("90px");
+			
+			if(scaleRows.size() > 3){
+				scaleLayout.addStyleName(AppConstants.CssStyles.SCALE_ROW);
+			}
+			
+			for(ReserveInventoryRowComponent row : scaleRows){
+				scaleLayout.addComponent(row);
+			}
+			
+			panelContentLayout.addComponent(scaleLayout);
+			
 		}
 		
 		contentPanel.setLayout(panelContentLayout);

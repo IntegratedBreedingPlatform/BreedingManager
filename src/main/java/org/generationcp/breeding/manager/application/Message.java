@@ -116,6 +116,7 @@ public enum Message{
     ,RES
     ,TOTAL
     ,COMM
+    ,AMOUNT_TO_RESERVE
     
     //Crossing Manager Select Parents
     ,SELECT_PARENTS

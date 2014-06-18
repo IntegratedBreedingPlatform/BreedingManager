@@ -745,3 +745,8 @@
 	text-transform: none;
 	font-size: 13px;	
 }
+
+.scale-row > div {
+	overflow: scroll !important;
+	overflow-x: hidden !important;
+}
