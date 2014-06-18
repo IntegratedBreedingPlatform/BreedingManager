@@ -139,36 +139,38 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			@SuppressWarnings("unchecked")
 			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>)listDataInventory.getLotRows();
 			
-			for(ListEntryLotDetails lotDetail : lotDetails){
-				Item newItem = listInventoryTable.addItem(lotDetail);
-				
-				CheckBox itemCheckBox = new CheckBox();
-		        itemCheckBox.setData(lotDetail);
-		        itemCheckBox.setImmediate(true);
-		   		itemCheckBox.addListener(new ClickListener() {
-		 			private static final long serialVersionUID = 1L;
-		 			@Override
-		 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-		 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-		 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-		 					listInventoryTable.select(itemCheckBox.getData());
-		 				} else {
-		 					listInventoryTable.unselect(itemCheckBox.getData());
-		 				}
-		 			}
-		 			 
-		 		});
-				
-		   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
-				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-				newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
-				newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
-				newItem.getItemProperty(UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
-				newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
-				newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-				newItem.getItemProperty(RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
-				newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
-				newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+			if(lotDetails!=null){
+				for(ListEntryLotDetails lotDetail : lotDetails){
+					Item newItem = listInventoryTable.addItem(lotDetail);
+					
+					CheckBox itemCheckBox = new CheckBox();
+			        itemCheckBox.setData(lotDetail);
+			        itemCheckBox.setImmediate(true);
+			   		itemCheckBox.addListener(new ClickListener() {
+			 			private static final long serialVersionUID = 1L;
+			 			@Override
+			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+			 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+			 					listInventoryTable.select(itemCheckBox.getData());
+			 				} else {
+			 					listInventoryTable.unselect(itemCheckBox.getData());
+			 				}
+			 			}
+			 			 
+			 		});
+					
+			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
+					newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+					newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
+					newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
+					newItem.getItemProperty(UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
+					newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
+					newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
+					newItem.getItemProperty(RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
+					newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
+					newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+				}
 			}
 		}
 	}

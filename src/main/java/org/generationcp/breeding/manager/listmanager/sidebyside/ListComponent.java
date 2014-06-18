@@ -1912,32 +1912,32 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					if (dialog.isConfirmed()) {
 						saveChangesAction();	
 					}
-					
-					listInventoryTable.loadInventoryData();
-					
-					listDataTableWithSelectAll.setVisible(false);
-					listInventoryTable.setVisible(true);
-			        toolsMenuContainer.removeComponent(toolsButton);
-			        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
-			        
-			        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
-			        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-			          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+					viewInventoryActionConfirmed();
 				}
 			});
     	} else {
-    		listInventoryTable.loadInventoryData();
-    		
-			listDataTableWithSelectAll.setVisible(false);
-			listInventoryTable.setVisible(true);
-	        toolsMenuContainer.removeComponent(toolsButton);
-	        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
-	        
-	        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+    		viewInventoryActionConfirmed();
     	}
     	
+	}
+	
+	private void viewInventoryActionConfirmed(){
+		listInventoryTable.loadInventoryData();
+		
+		if(listInventoryTable.getTable().getItemIds().size()==0){
+			MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Warning", "There are no inventory details available for this list"
+                    , Notification.POSITION_TOP_RIGHT);
+			return;
+		}
+		
+		listDataTableWithSelectAll.setVisible(false);
+		listInventoryTable.setVisible(true);
+        toolsMenuContainer.removeComponent(toolsButton);
+        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
+        
+        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
+        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	}
 	
 	@Override

@@ -32,6 +32,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -1205,9 +1206,54 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}	
 	
 	private void viewInventoryAction(){
+		
+		if((changed || dropHandler.isChanged()) && currentlySavedGermplasmList!=null){
+			String message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+    		
+    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+				private static final long serialVersionUID = 1L;	
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						saveListButtonListener.doSaveAction();
+						viewInventoryActionConfirmed();
+					}
+					
+				}
+			});
+		} else if(currentlySavedGermplasmList==null) {
+			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
+    		
+    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+    			
+				private static final long serialVersionUID = 1L;	
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						openSaveListAsDialog();
+					}
+					
+				}
+			});
+		} else {
+			viewInventoryActionConfirmed();
+		}
+		
+		
+		
+	}
+	
+	private void viewInventoryActionConfirmed(){
 		if(currentlySavedGermplasmList!=null){
 			listInventoryTable.setListId(currentlySavedGermplasmList.getId());
 			listInventoryTable.loadInventoryData();
+		}
+		
+		if(listInventoryTable.getTable().getItemIds().size()==0){
+			MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Warning", "There are no inventory details available for this list"
+                    , Notification.POSITION_TOP_RIGHT);
+			return;
 		}
 		
 		tableWithSelectAllLayout.setVisible(false);
