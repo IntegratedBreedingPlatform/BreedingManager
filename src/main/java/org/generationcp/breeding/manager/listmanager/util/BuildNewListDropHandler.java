@@ -293,7 +293,11 @@ public class BuildNewListDropHandler implements DropHandler {
             //Inventory Related Columns
             
 	   		//#1 Available Inventory
-	   		String avail_inv = getAvailInvForGID(gid).toString();
+            String avail_inv = "";
+            Integer availInvGid = getAvailInvForGID(gid); 
+            if(availInvGid!=null)
+            	avail_inv = availInvGid.toString();
+            	
 	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		inventoryButton.setDescription("Click to view Inventory Details");
