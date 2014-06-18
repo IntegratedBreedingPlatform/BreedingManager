@@ -454,6 +454,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
     public void toggleListBuilder() {
+    	
+    	System.out.println("Toggle: "+isListBuilderShown);
+    	
         if (!isListBuilderShown) {
            showListBuilder();
         }
@@ -461,7 +464,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         	hideListBuilder();
         }
 
-        isListBuilderShown = !isListBuilderShown;
         listSelectionComponent.getListDetailsLayout().repaintTabsheet();
     }
 
@@ -475,6 +477,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         listBuilderToggleBtn1.setCaption(hideTxt);
         listBuilderToggleBtn2.setCaption(hideTxt);
+        
+        isListBuilderShown = true;
+        
+        System.out.println("Show: "+isListBuilderShown);
     }
 
     public void hideListBuilder(){
@@ -487,6 +493,11 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         listBuilderToggleBtn1.setCaption(showTxt);
         listBuilderToggleBtn2.setCaption(showTxt);
+        
+        isListBuilderShown = false;
+        
+        System.out.println("Hide: "+isListBuilderShown);
+        
     }
 	
     public Integer getListBuilderStatus(){
