@@ -16,14 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Button.ClickListener;
 
 @Configurable
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
 
 	private static final long serialVersionUID = 1L;
 
-	public static String TAG_ID = "Tag";
+	public static Class<?> TAG_COLUMN_TYPE = CheckBox.class;
+  	public static String TAG_COLUMN_ID="Tag";
 	
 	public static Class<?> ENTRY_NUMBER_COLUMN_TYPE = Integer.class;
 	public static String ENTRY_NUMBER_COLUMN_ID = "#";
@@ -65,11 +68,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
     private SimpleResourceBundleMessageSource messageSource;
 	
 	public ListInventoryTable() {
-		super(TAG_ID);
+		super(TAG_COLUMN_ID);
 	}
 	
 	public ListInventoryTable(Integer listId) {
-		super(TAG_ID);
+		super(TAG_COLUMN_ID);
 		this.listId = listId;
 	}
 	
@@ -86,6 +89,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.setColumnCollapsingAllowed(true);
 		listInventoryTable.setColumnReorderingAllowed(false);
 		
+		listInventoryTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		listInventoryTable.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, ENTRY_NUMBER_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(DESIGNATION_COLUMN_ID, DESIGNATION_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(LOCATION_COLUMN_ID, LOCATION_COLUMN_TYPE, null);
@@ -96,6 +100,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.addContainerProperty(COMMENT_COLUMN_ID, COMMENT_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(LOT_ID_COLUMN_ID, LOT_ID_COLUMN_TYPE, null);
 		
+		messageSource.setColumnHeader(listInventoryTable, TAG_COLUMN_ID, Message.CHECK_ICON);
 		messageSource.setColumnHeader(listInventoryTable, ENTRY_NUMBER_COLUMN_ID, Message.HASHTAG);
 		messageSource.setColumnHeader(listInventoryTable, DESIGNATION_COLUMN_ID, Message.LISTDATA_DESIGNATION_HEADER);
 		messageSource.setColumnHeader(listInventoryTable, LOCATION_COLUMN_ID, Message.LOCATION);
@@ -127,11 +132,31 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			String designation = inventoryDetail.getDesignation();
 			
 			ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			@SuppressWarnings("unchecked")
 			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>)listDataInventory.getLotRows();
 			
 			for(ListEntryLotDetails lotDetail : lotDetails){
 				
 				Item newItem = listInventoryTable.addItem(lotDetail);
+				
+				CheckBox itemCheckBox = new CheckBox();
+                itemCheckBox.setData(lotDetail);
+                itemCheckBox.setImmediate(true);
+    	   		itemCheckBox.addListener(new ClickListener() {
+    	 			private static final long serialVersionUID = 1L;
+    	 			@Override
+    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+    	 					listInventoryTable.select(itemCheckBox.getData());
+    	 				} else {
+    	 					listInventoryTable.unselect(itemCheckBox.getData());
+    	 				}
+    	 			}
+    	 			 
+    	 		});
+				
+    	   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
 				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
 				newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
 				newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
