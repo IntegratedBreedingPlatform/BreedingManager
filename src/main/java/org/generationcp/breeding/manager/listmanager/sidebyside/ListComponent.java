@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryComponent;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -137,6 +138,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenu inventoryViewMenu; 
 	private ContextMenuItem menuInventorySaveChanges;
 	private ContextMenuItem menuListView;
+	private ContextMenuItem menuReserveInventory;
 	
 	private String MENU_LIST_VIEW = "Return to List View";
 	private String MENU_INVENTORY_SAVE_CHANGES="Save Changes";
@@ -296,8 +298,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
         menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
-		
-        
+        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         
 		tableContextMenu = new ContextMenu();
 		tableContextMenu.setWidth("295px");
@@ -570,9 +571,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			    	  //TODO: put action call here to save inventory changes
                   } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
                 	  viewListAction();
-                  }
-			      
-		   }
+				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
+		          	  reserveInventoryAction();
+		          }      
+		    }
 		});
 		
 		editHeaderButton.addListener(new ClickListener() {
@@ -656,6 +658,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         
         
 	}//end of addListeners
+
+	protected void reserveInventoryAction() {
+		ReserveInventoryComponent reserveInventory = new ReserveInventoryComponent(false);
+		reserveInventory.setModal(true);
+		source.getWindow().addWindow(reserveInventory);
+	}
 
 	@Override
 	public void layoutComponents() {
