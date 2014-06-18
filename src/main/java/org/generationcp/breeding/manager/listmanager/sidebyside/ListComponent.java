@@ -289,17 +289,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuEditList = menu.addItem(messageSource.getMessage(Message.EDIT_LIST));
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
+		menuInventoryView = menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		menuSaveChanges = menu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
-		menuInventoryView = menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
-		
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
 
-		menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
-        menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
+        menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
         
 		tableContextMenu = new ContextMenu();
 		tableContextMenu.setWidth("295px");
@@ -1940,9 +1939,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	}
     	
 	}
-	
-
-
 	
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {

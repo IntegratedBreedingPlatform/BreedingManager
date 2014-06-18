@@ -26,7 +26,6 @@ public class ReserveInventoryUtil implements Serializable {
 		
 		boolean isSingleScaled = isLotsSingleScaled();
 		Map<String, List<ListEntryLotDetails>> scaleGrouping = getScaleGrouping();
-		System.out.println("isSingleScaled: " + isSingleScaled);
 		ReserveInventoryComponent reserveInventory = new ReserveInventoryComponent(scaleGrouping,isSingleScaled);
 		reserveInventory.setModal(true);
 		source.getWindow().addWindow(reserveInventory);
