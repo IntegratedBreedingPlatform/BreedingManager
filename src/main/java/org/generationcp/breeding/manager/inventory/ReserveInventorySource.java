@@ -11,4 +11,8 @@ public interface ReserveInventorySource {
 	public void addReserveInventoryWindow(ReserveInventoryWindow reserveInventory);
 	
 	public void addReservationStatusWindow(ReservationStatusWindow reservationStatus);
+
+	public void removeReserveInventoryWindow(ReserveInventoryWindow reserveInventory);
+
+	public void removeReservationStatusWindow(ReservationStatusWindow reservationStatus);
 }

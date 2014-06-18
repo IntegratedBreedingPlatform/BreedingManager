@@ -50,11 +50,9 @@ public class ReserveInventoryAction implements Serializable {
 		
 		if(invalidLotReservations.size() > 0){//if there is an invalid reservation
 			reservationStatus = new ReservationStatusWindow(invalidLotReservations);
-			source.addReservationStatusWindow(reservationStatus);
-			
-		}else{//all are valid reservations
-			source.updateListInventoryTable(validLotReservations);
+			source.addReservationStatusWindow(reservationStatus);	
 		}
+		source.updateListInventoryTable(validLotReservations);
 	}
 
 	// SETTERS AND GETTERS

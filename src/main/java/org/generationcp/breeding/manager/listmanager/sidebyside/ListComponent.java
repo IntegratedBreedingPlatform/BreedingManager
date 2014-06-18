@@ -1991,8 +1991,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void updateListInventoryTable(
 			Map<ListEntryLotDetails, Double> validReservations) {
-		// TODO Auto-generated method stub
+		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double new_res = entry.getValue();
+			
+			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
+			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+		}
 		
+		removeReserveInventoryWindow(reserveInventory);
 	}
 
 	@Override
@@ -2001,13 +2008,27 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.reserveInventory = reserveInventory;
 		source.getWindow().addWindow(this.reserveInventory);
 	}
+	
+	@Override
+	public void removeReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().removeWindow(this.reserveInventory);
+	}
 
 	@Override
 	public void addReservationStatusWindow(
 			ReservationStatusWindow reservationStatus) {
 		this.reservationStatus = reservationStatus;
-		source.getWindow().removeWindow(reserveInventory);
+		removeReserveInventoryWindow(reserveInventory);
 		source.getWindow().addWindow(this.reservationStatus);
+	}
+	
+	@Override
+	public void removeReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		source.getWindow().removeWindow(this.reservationStatus);
 	}
 }
 
