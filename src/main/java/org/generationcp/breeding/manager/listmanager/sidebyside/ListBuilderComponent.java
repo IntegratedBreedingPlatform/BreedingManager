@@ -261,8 +261,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
-        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
+        menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         inventoryViewMenu = new ContextMenu();
         inventoryViewMenu.setWidth("300px");
