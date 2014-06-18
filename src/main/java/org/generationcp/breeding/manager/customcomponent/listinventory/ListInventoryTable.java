@@ -9,7 +9,6 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
-import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -53,7 +52,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public static String RESERVED_COLUMN_ID = "RES";
 	
 	public static Class<?> NEWLY_RESERVED_COLUMN_TYPE = Double.class;
-	public static String NEWLY_RESERVED_COLUMN_ID = "RES";	
+	public static String NEWLY_RESERVED_COLUMN_ID = "NEW_RES";	
 	
 	public static Class<?> COMMENT_COLUMN_TYPE = String.class;
 	public static String COMMENT_COLUMN_ID = "COMMENT";

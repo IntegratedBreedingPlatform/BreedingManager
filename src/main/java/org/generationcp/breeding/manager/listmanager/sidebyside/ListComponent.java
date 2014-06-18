@@ -21,6 +21,9 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
@@ -97,7 +100,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource {
+        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource {
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -189,6 +192,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private Boolean doneInitializing = false;
     
     private ListInventoryTable listInventoryTable;
+    
+    private ReserveInventoryWindow reserveInventory;
+    private ReservationStatusWindow reservationStatus;
+    
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -1643,7 +1650,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
 			}
 			else{
-				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(source,lotDetailsGid);
+				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
 				reserveInventoryUtil.viewReserveInventoryWindow();
 			}
 		}
@@ -1979,6 +1986,49 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 	@Override
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	}
+
+	@Override
+	public void updateListInventoryTable(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double new_res = entry.getValue();
+			
+			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
+			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+		}
+		
+		removeReserveInventoryWindow(reserveInventory);
+	}
+
+	@Override
+	public void addReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().addWindow(this.reserveInventory);
+	}
+	
+	@Override
+	public void removeReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().removeWindow(this.reserveInventory);
+	}
+
+	@Override
+	public void addReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		removeReserveInventoryWindow(reserveInventory);
+		source.getWindow().addWindow(this.reservationStatus);
+	}
+	
+	@Override
+	public void removeReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		source.getWindow().removeWindow(this.reservationStatus);
 	}
 }
 

@@ -13,10 +13,11 @@ import com.vaadin.ui.Component;
 public class ReserveInventoryUtil implements Serializable {
 	private static final long serialVersionUID = -8873586745031285056L;
 	
-	private Component source;
+	private ReserveInventorySource source;
 	private List<ListEntryLotDetails> lotDetailList;
+	private ReserveInventoryWindow reserveInventory;
 	
-	public ReserveInventoryUtil(Component source, List<ListEntryLotDetails> lotDetailList) {
+	public ReserveInventoryUtil(ReserveInventorySource source, List<ListEntryLotDetails> lotDetailList) {
 		super();
 		this.source = source;
 		this.lotDetailList = lotDetailList;
@@ -26,9 +27,9 @@ public class ReserveInventoryUtil implements Serializable {
 		
 		boolean isSingleScaled = isLotsSingleScaled();
 		Map<String, List<ListEntryLotDetails>> scaleGrouping = getScaleGrouping();
-		ReserveInventoryComponent reserveInventory = new ReserveInventoryComponent(scaleGrouping,isSingleScaled);
-		reserveInventory.setModal(true);
-		source.getWindow().addWindow(reserveInventory);
+		
+		reserveInventory = new ReserveInventoryWindow(source, scaleGrouping, isSingleScaled);
+		source.addReserveInventoryWindow(reserveInventory);
 	}
 	
 	public Map<String, List<ListEntryLotDetails>> getScaleGrouping(){

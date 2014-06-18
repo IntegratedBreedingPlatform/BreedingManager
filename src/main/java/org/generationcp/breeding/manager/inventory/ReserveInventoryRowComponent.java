@@ -19,7 +19,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 	private static final long serialVersionUID = -3514286698020753573L;
 	
 	private Label amountToReserveLbl;
-	private TextField quantityTxtField;
+	private TextField reservedAmtTxtField;
 	private Label scaleLabel;
 	private int selectedLotPerScale;
 	private String scale;
@@ -43,11 +43,11 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 	
 	@Override
 	public void instantiateComponents() {
-		amountToReserveLbl = new Label(messageSource.getMessage(Message.AMOUNT_TO_RESERVE));
+		amountToReserveLbl = new Label(messageSource.getMessage(Message.AMOUNT_TO_RESERVE) + ":");
 		amountToReserveLbl.addStyleName(AppConstants.CssStyles.BOLD);
 		
-		quantityTxtField = new TextField();
-		quantityTxtField.setWidth("45px");
+		reservedAmtTxtField = new TextField();
+		reservedAmtTxtField.setWidth("45px");
 		
 		String scaleFullText = scale + " (" + selectedLotPerScale + " selected)";
 		scaleLabel = new Label(scaleFullText);
@@ -70,7 +70,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		setSpacing(true);
 		
 		addComponent(amountToReserveLbl);
-		addComponent(quantityTxtField);
+		addComponent(reservedAmtTxtField);
 		addComponent(scaleLabel);
 	}
 
@@ -79,4 +79,19 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		// TODO Auto-generated method stub
 		
 	}
+	
+	// SETTERS AND GETTERS
+	public String getScale() {
+		return scale;
+	}
+
+	public void setScale(String scale) {
+		this.scale = scale;
+	}
+	
+	public Double getReservationAmount(){
+		Double amount = Double.valueOf(reservedAmtTxtField.getValue().toString());
+		return amount;
+	}
+
 }
