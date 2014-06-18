@@ -267,8 +267,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewMenu = new ContextMenu();
         inventoryViewMenu.setWidth("300px");
         
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(MENU_LIST_VIEW);
         inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetMenuOptions();
         
@@ -357,11 +360,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			    	  //TODO: put action call here to save inventory changes
                   } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
                 	  viewListAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
+                	  copyToNewListFromInventoryViewAction();
 				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
 		          	  reserveInventoryAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+                	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
 		          }      
 		    }
-		});
+		});		
 		
 		toolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1345004576139547723L;
@@ -1074,6 +1081,39 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             }
         }
     }// end of copyToNewListAction
+    
+    private void copyToNewListFromInventoryViewAction(){
+        if(isCurrentListSaved()){
+            Collection<?> listEntries = (Collection<?>) listInventoryTable.getTable().getValue();
+            
+            if (listEntries == null || listEntries.isEmpty()){
+                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            } else {
+                listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+                listManagerCopyToNewListDialog.setModal(true);
+                listManagerCopyToNewListDialog.setWidth("617px");
+                listManagerCopyToNewListDialog.setHeight("230px");
+                listManagerCopyToNewListDialog.setResizable(false);
+                listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+                
+                try {
+                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
+                        source.getWindow(),
+                        listManagerCopyToNewListDialog,
+                        currentlySavedGermplasmList.getName(),
+                        tableWithSelectAllLayout.getTable(),
+                        getCurrentUserLocalId(),
+                        source,
+                        true));
+                    source.getWindow().addWindow(listManagerCopyToNewListDialog);
+                    listManagerCopyToNewListDialog.center();
+                } catch (MiddlewareQueryException e) {
+                    LOG.error("Error copying list entries.", e);
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
         Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();

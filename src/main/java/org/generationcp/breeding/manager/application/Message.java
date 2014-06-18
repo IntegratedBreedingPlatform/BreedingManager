@@ -114,6 +114,7 @@ public enum Message{
     ,UNITS
     ,AVAIL
     ,RES
+    ,NEW_RES
     ,TOTAL
     ,COMM
     ,AMOUNT_TO_RESERVE

@@ -52,6 +52,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public static Class<?> RESERVED_COLUMN_TYPE = Double.class;
 	public static String RESERVED_COLUMN_ID = "RES";
 	
+	public static Class<?> NEWLY_RESERVED_COLUMN_TYPE = Double.class;
+	public static String NEWLY_RESERVED_COLUMN_ID = "RES";	
+	
 	public static Class<?> COMMENT_COLUMN_TYPE = String.class;
 	public static String COMMENT_COLUMN_ID = "COMMENT";
 	
@@ -101,6 +104,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.addContainerProperty(AVAIL_COLUMN_ID, AVAIL_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(TOTAL_COLUMN_ID, TOTAL_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(RESERVED_COLUMN_ID, RESERVED_COLUMN_TYPE, null);
+		listInventoryTable.addContainerProperty(NEWLY_RESERVED_COLUMN_ID, NEWLY_RESERVED_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(COMMENT_COLUMN_ID, COMMENT_COLUMN_TYPE, null);
 		listInventoryTable.addContainerProperty(LOT_ID_COLUMN_ID, LOT_ID_COLUMN_TYPE, null);
 		
@@ -112,6 +116,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		messageSource.setColumnHeader(listInventoryTable, AVAIL_COLUMN_ID, Message.AVAIL);
 		messageSource.setColumnHeader(listInventoryTable, TOTAL_COLUMN_ID, Message.TOTAL);
 		messageSource.setColumnHeader(listInventoryTable, RESERVED_COLUMN_ID, Message.RES);
+		messageSource.setColumnHeader(listInventoryTable, NEWLY_RESERVED_COLUMN_ID, Message.NEW_RES);
 		messageSource.setColumnHeader(listInventoryTable, COMMENT_COLUMN_ID, Message.COMM);
 		messageSource.setColumnHeader(listInventoryTable, LOT_ID_COLUMN_ID, Message.LOT_ID);
 	}
@@ -168,6 +173,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
 					newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
+					newItem.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
 					newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
 					newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
 				}

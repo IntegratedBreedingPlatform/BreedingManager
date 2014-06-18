@@ -296,9 +296,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
 
+		inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
         menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
 		tableContextMenu = new ContextMenu();
 		tableContextMenu.setWidth("295px");
@@ -571,9 +573,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			    	  //TODO: put action call here to save inventory changes
                   } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
                 	  viewListAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
+                	  copyToNewListFromInventoryViewAction();
 				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
 		          	  reserveInventoryAction();
-		          }      
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+                	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
+		          }
 		    }
 		});
 		
@@ -1207,6 +1213,37 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     
     private void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
+        if (listEntries == null || listEntries.isEmpty()){
+            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            
+        } else {
+            listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+            listManagerCopyToNewListDialog.setModal(true);
+            listManagerCopyToNewListDialog.setWidth("617px");
+            listManagerCopyToNewListDialog.setHeight("230px");
+            listManagerCopyToNewListDialog.setResizable(false);
+            listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+            
+            try {
+                listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
+                        parentListDetailsComponent.getWindow(),
+                        listManagerCopyToNewListDialog,
+                        germplasmList.getName(),
+                        listDataTable,
+                        getCurrentUserLocalId(),
+                        source,
+                        false));
+                parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
+                listManagerCopyToNewListDialog.center();
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error copying list entries.", e);
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private void copyToNewListFromInventoryViewAction(){
+        Collection<?> listEntries = (Collection<?>) listInventoryTable.getTable().getValue();
         if (listEntries == null || listEntries.isEmpty()){
             MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
             
