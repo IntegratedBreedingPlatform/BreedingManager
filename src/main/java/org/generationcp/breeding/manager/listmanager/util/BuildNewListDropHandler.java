@@ -670,7 +670,7 @@ public class BuildNewListDropHandler implements DropHandler {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private List<Integer> getItemIds(Table table){
+    public List<Integer> getItemIds(Table table){
         List<Integer> itemIds = new ArrayList<Integer>();
         itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
         return itemIds;
@@ -732,7 +732,7 @@ public class BuildNewListDropHandler implements DropHandler {
         return trueOrderedSelectedItemIds;
     }    
     
-    private Integer getGidFromButtonCaption(Table table, Integer itemId){
+    public Integer getGidFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
     	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString();

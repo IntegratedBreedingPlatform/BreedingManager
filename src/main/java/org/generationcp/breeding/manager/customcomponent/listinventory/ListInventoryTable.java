@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -139,27 +140,26 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>)listDataInventory.getLotRows();
 			
 			for(ListEntryLotDetails lotDetail : lotDetails){
-				
 				Item newItem = listInventoryTable.addItem(lotDetail);
 				
 				CheckBox itemCheckBox = new CheckBox();
-                itemCheckBox.setData(lotDetail);
-                itemCheckBox.setImmediate(true);
-    	   		itemCheckBox.addListener(new ClickListener() {
-    	 			private static final long serialVersionUID = 1L;
-    	 			@Override
-    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-    	 					listInventoryTable.select(itemCheckBox.getData());
-    	 				} else {
-    	 					listInventoryTable.unselect(itemCheckBox.getData());
-    	 				}
-    	 			}
-    	 			 
-    	 		});
+		        itemCheckBox.setData(lotDetail);
+		        itemCheckBox.setImmediate(true);
+		   		itemCheckBox.addListener(new ClickListener() {
+		 			private static final long serialVersionUID = 1L;
+		 			@Override
+		 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+		 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+		 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+		 					listInventoryTable.select(itemCheckBox.getData());
+		 				} else {
+		 					listInventoryTable.unselect(itemCheckBox.getData());
+		 				}
+		 			}
+		 			 
+		 		});
 				
-    	   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
+		   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
 				newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
 				newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
 				newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
@@ -180,5 +180,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		List<ListEntryLotDetails> lotsSeleted = new ArrayList<ListEntryLotDetails>();
 		lotsSeleted.addAll(selectedEntries);
 		return lotsSeleted;
+	}
+	
+	public void setListId(Integer listId){
+		this.listId = listId;
 	}
 }

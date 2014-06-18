@@ -454,9 +454,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
     public void toggleListBuilder() {
-    	
-    	System.out.println("Toggle: "+isListBuilderShown);
-    	
         if (!isListBuilderShown) {
            showListBuilder();
         }
@@ -479,8 +476,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         listBuilderToggleBtn2.setCaption(hideTxt);
         
         isListBuilderShown = true;
-        
-        System.out.println("Show: "+isListBuilderShown);
     }
 
     public void hideListBuilder(){
@@ -495,9 +490,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         listBuilderToggleBtn2.setCaption(showTxt);
         
         isListBuilderShown = false;
-        
-        System.out.println("Hide: "+isListBuilderShown);
-        
     }
 	
     public Integer getListBuilderStatus(){
