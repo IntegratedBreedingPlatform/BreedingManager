@@ -111,6 +111,11 @@ public enum Message{
     ,LOT_BALANCE_HEADER
     ,LOCATION_HEADER
     ,LOT_COMMENT_HEADER
+    ,UNITS
+    ,AVAIL
+    ,RES
+    ,TOTAL
+    ,COMM
     
     //Crossing Manager Select Parents
     ,SELECT_PARENTS
