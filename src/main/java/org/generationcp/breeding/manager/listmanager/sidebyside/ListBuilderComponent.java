@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -19,6 +21,11 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
@@ -34,6 +41,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -76,7 +84,8 @@ import com.vaadin.ui.themes.Reindeer;
 
 
 @Configurable
-public class ListBuilderComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource {
+public class ListBuilderComponent extends VerticalLayout implements InitializingBean, 
+				BreedingManagerLayout, SaveListAsDialogSource, ReserveInventorySource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
     
@@ -145,10 +154,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private ContextMenuItem menuExportList;
     private ContextMenuItem menuCopyToList;
     private ContextMenuItem menuDeleteSelectedEntries;
-    private ContextMenu inventoryViewMenu;
     private AddColumnContextMenu addColumnContextMenu;
     private Action.Handler contextMenuActionHandler;
     
+    private ContextMenu inventoryViewMenu;
+	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuInventorySaveChanges;
+	
     //For Saving
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
@@ -161,6 +173,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     //Inventory Related Variables
     private ListInventoryTable listInventoryTable;
+    private ReserveInventoryWindow reserveInventory;
+    private ReservationStatusWindow reservationStatus;
+    private ReserveInventoryUtil reserveInventoryUtil;
+    private ReserveInventoryAction reserveInventoryAction;
+    private Map<ListEntryLotDetails, Double> validReservationsToSave;
     
     public ListBuilderComponent() {
         super();
@@ -265,13 +282,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewMenu = new ContextMenu();
         inventoryViewMenu.setWidth("300px");
         
-        inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-        inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
+        menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
+        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        menuCopyToNewListFromInventory.setEnabled(false);
+        
         resetMenuOptions();
+        resetInventoryMenuOptions();
         
         toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		toolsButton.setData(TOOLS_BUTTON_ID);
@@ -298,14 +319,24 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         resetButton.setCaption(messageSource.getMessage(Message.RESET));
         resetButton.setWidth("80px");
         resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
+        
+        //Inventory Related Variables
+        validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 	}
 	
     public void resetMenuOptions(){
         //initially disabled when the current list building is not yet save or being reset
         menuExportList.setEnabled(false);
-        //menuExportForGenotypingOrder.setEnabled(false);
         menuCopyToList.setEnabled(false);
     }
+    
+    private void resetInventoryMenuOptions() {
+        //disable the save button at first since there are no reservations yet
+        menuInventorySaveChanges.setEnabled(false);
+        
+        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        menuCopyToNewListFromInventory.setEnabled(false);
+	}
 
 	@Override
 	public void initializeValues() {
@@ -350,7 +381,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
 			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
-			    	  //TODO: put action call here to save inventory changes
+			    	  saveReservationChangesAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
@@ -1038,36 +1069,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }// end of copyToNewListAction
     
     private void copyToNewListFromInventoryViewAction(){
-        if(isCurrentListSaved()){
-            Collection<?> listEntries = (Collection<?>) listInventoryTable.getTable().getValue();
-            
-            if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
-            } else {
-                listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-                listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth("617px");
-                listManagerCopyToNewListDialog.setHeight("230px");
-                listManagerCopyToNewListDialog.setResizable(false);
-                listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
-                
-                try {
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
-                        source.getWindow(),
-                        listManagerCopyToNewListDialog,
-                        currentlySavedGermplasmList.getName(),
-                        tableWithSelectAllLayout.getTable(),
-                        getCurrentUserLocalId(),
-                        source,
-                        true));
-                    source.getWindow().addWindow(listManagerCopyToNewListDialog);
-                    listManagerCopyToNewListDialog.center();
-                } catch (MiddlewareQueryException e) {
-                    LOG.error("Error copying list entries.", e);
-                    e.printStackTrace();
-                }
-            }
-        }
+    	// TODO implement the copy to new list from the selection from listInventoryTable
     }
     
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
@@ -1187,17 +1189,47 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return dropHandler;
 	}
 	
+	
+	/*-------------------------------------LIST INVENTORY RELATED METHODS-------------------------------------*/
+	
 	private void viewListAction(){
-        toolsButtonContainer.addComponent(toolsButton, "top:0px; right:0px;");
-        toolsButtonContainer.removeComponent(inventoryViewToolsButton);
-        
-        tableWithSelectAllLayout.setVisible(true);
+		if(validReservationsToSave.size() == 0){
+			changeToListView();
+		}else{
+			String message = "You have unsaved reservations for this list. " +
+					"You will need to save them before changing views. " +
+					"Do you want to save your changes?";
+    		
+			ConfirmDialog.show(getWindow(), "Unsaved Changes", message, messageSource.getMessage(Message.YES), 
+						messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {   			
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						saveReservationChangesAction();
+						changeToListView();
+					}
+					else{
+						resetListInventoryView();
+					}
+					
+				}
+			});
+		}
+	}
+	
+	private void changeToListView() {
+		toolsButtonContainer.addComponent(toolsButton, "top:0px; right:0px;");
+		toolsButtonContainer.removeComponent(inventoryViewToolsButton);
+		
+		tableWithSelectAllLayout.setVisible(true);
 		listInventoryTable.setVisible(false);
-        
+		
         topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
-	}	
+       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");   
+	}
 	
 	private void viewInventoryAction(){
 		
@@ -1232,10 +1264,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			});
 		} else {
 			viewInventoryActionConfirmed();
-		}
-		
-		
-		
+		}	
 	}
 	
 	private void viewInventoryActionConfirmed(){
@@ -1261,6 +1290,120 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	private void reserveInventoryAction(){
-		//TODO: add reserve inventory action here
+		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
+		}
+		else{
+			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+			
+			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
+			}
+			else{
+		        //this util handles the inventory reservation related functions
+		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+				reserveInventoryUtil.viewReserveInventoryWindow();
+			}
+		}
 	}
+	
+	public void saveReservationChangesAction() {
+		if(getValidReservationsToSave().size() > 0){
+			reserveInventoryAction = new ReserveInventoryAction(this);
+			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
+			if(success){
+				resetListInventoryView();
+			}
+		}
+	}
+
+	@Override
+	public void updateListInventoryTable(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double new_res = entry.getValue();
+			
+			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
+			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+		}
+		
+		removeReserveInventoryWindow(reserveInventory);
+		
+		//update lot reservatios to save
+		updateLotReservationsToSave(validReservations);
+		
+		//enable now the Save Changes option
+		menuInventorySaveChanges.setEnabled(true);
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected entries will be reserved in their respective lots.", 
+				3000, Notification.POSITION_TOP_RIGHT);
+	}
+
+	@Override
+	public void addReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().addWindow(this.reserveInventory);
+	}
+
+	@Override
+	public void addReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		removeReserveInventoryWindow(reserveInventory);
+		source.getWindow().addWindow(this.reservationStatus);
+	}
+
+	@Override
+	public void removeReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().removeWindow(this.reserveInventory);
+	}
+
+	@Override
+	public void removeReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		source.getWindow().removeWindow(this.reservationStatus);
+		
+	}
+	
+    private void resetListInventoryView() {
+		listInventoryTable.updateListInventoryTableAfterSave();
+		
+		resetInventoryMenuOptions();
+		
+		validReservationsToSave.clear();//reset the reservations to save. 
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected entries are reserved in their respective lots.", 
+				3000, Notification.POSITION_TOP_RIGHT);
+	}
+    
+	private void updateLotReservationsToSave(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		
+		for(Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double amountToReserve = entry.getValue();
+			
+			if(validReservationsToSave.containsKey(lot)){
+				validReservationsToSave.remove(lot);
+				
+			}
+			
+			validReservationsToSave.put(lot,amountToReserve);
+		}
+	}
+    
+	public Map<ListEntryLotDetails, Double> getValidReservationsToSave(){
+		return validReservationsToSave;
+	}
+	
+	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
 }

@@ -1622,36 +1622,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return true;
 		
     } // end of saveChangesAction
-    
-	protected void reserveInventoryAction() {
-		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
-		}
-		else{
-			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
-			
-			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
-			}
-			else{
-		        //this util handles the inventory reservation related functions
-		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
-				reserveInventoryUtil.viewReserveInventoryWindow();
-			}
-		}
-	}//end of reserveInventoryAction
-	
-	protected void saveReservationChangesAction(){
-		if(getValidReservationsToSave().size() > 0){
-			reserveInventoryAction = new ReserveInventoryAction(this);
-			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
-			if(success){
-				resetListInventoryView();
-			}
-		}
-	}
 
 	//TODO review this method as there are redundant codes here that is also in saveChangesAction()
     //might be possible to eliminate this method altogether and reduce the number of middleware calls
@@ -1927,6 +1897,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
 	}
 	
+	@Override
+	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	}
+
+	/*-------------------------------------LIST INVENTORY RELATED METHODS-------------------------------------*/
+	
 	private void viewListAction(){
 		if(validReservationsToSave.size() == 0){
 			changeToListView();
@@ -1954,7 +1930,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}	
 	
-
+	private void changeToListView() {
+		listDataTableWithSelectAll.setVisible(true);
+		listInventoryTable.setVisible(false);
+        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
+        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
+        
+        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + listEntriesCount + "</b>");
+	}
 	
 	private void viewInventoryAction(){
 		
@@ -2000,11 +1985,35 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
           		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	}
 	
-	@Override
-	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	public void reserveInventoryAction() {
+		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
+		}
+		else{
+			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+			
+			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
+			}
+			else{
+		        //this util handles the inventory reservation related functions
+		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+				reserveInventoryUtil.viewReserveInventoryWindow();
+			}
+		}
+	}//end of reserveInventoryAction
+	
+	public void saveReservationChangesAction(){
+		if(getValidReservationsToSave().size() > 0){
+			reserveInventoryAction = new ReserveInventoryAction(this);
+			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
+			if(success){
+				resetListInventoryView();
+			}
+		}
 	}
-
-	/*-------------------------------------LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
 	@Override
 	public void updateListInventoryTable(
@@ -2028,17 +2037,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 				"All selected entries will be reserved in their respective lots.", 
 				3000, Notification.POSITION_TOP_RIGHT);
-	}
-	
-	private void changeToListView() {
-		listDataTableWithSelectAll.setVisible(true);
-		listInventoryTable.setVisible(false);
-        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
-        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
-        
-        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + listEntriesCount + "</b>");
 	}
 	
 	private void updateLotReservationsToSave(
