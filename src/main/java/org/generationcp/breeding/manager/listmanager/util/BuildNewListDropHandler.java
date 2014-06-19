@@ -149,6 +149,9 @@ public class BuildNewListDropHandler implements DropHandler {
 	                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
 	                Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
 	                Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+	                Object oldAvailInv = oldItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue();
+	                Object oldSeedRes = oldItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).getValue();
+	                
 	                sourceTable.removeItem(transferable.getItemId());
 	                
 	                Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
@@ -158,6 +161,8 @@ public class BuildNewListDropHandler implements DropHandler {
 	                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
 	                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
 	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
+	                newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(oldAvailInv);
+	                newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(oldSeedRes);
 	                
 	                assignSerializedEntryNumber();
 	                
