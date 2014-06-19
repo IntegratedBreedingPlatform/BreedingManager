@@ -1220,9 +1220,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public void saveList(GermplasmList list) {
 		currentlySetGermplasmInfo = list;
 		saveListButtonListener.doSaveAction();
-		
-		//Refresh tree on save
-		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
+
+		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 	}
 	
 	public SaveListButtonClickListener getSaveListButtonListener(){
