@@ -324,6 +324,7 @@ public enum Message{
     ,INVENTORY_VIEW
     ,EDIT_VALUE
     ,SAVE_CHANGES
+    ,RETURN_TO_LIST_VIEW
     ,DELETE_LIST
     ,ADD_ENTRIES
     ,COPY_TO_NEW_LIST
