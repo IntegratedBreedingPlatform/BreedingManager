@@ -78,9 +78,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private static final long serialVersionUID = -7736422783255724272L;
     
-    private Action.Handler contextMenuActionHandler;
-    private Table listDataTable; 
-    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -112,54 +109,41 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Label totalListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
-    
+    private Table listDataTable;
     private ViewListHeaderWindow viewListHeaderWindow;
-    private AbsoluteLayout headerActionsContainer;
+    
     private Button editHeaderButton;
     private Button viewHeaderButton;
-    
     private Button toolsButton;
     private Button inventoryViewToolsButton;
-    
     private Button saveButton;
     private Button resetButton;
-
     private Button lockButton;
     private Button unlockButton;
     
     private FillWith fillWith;
     
+    private Window listManagerCopyToNewListDialog;
+    
+    //String Literals
     public static String LOCK_BUTTON_ID = "Lock Germplasm List";
     public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";    
-    
     private static String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
-    
-    private String MENU_LIST_VIEW = "Return to List View";
-	private String MENU_INVENTORY_SAVE_CHANGES="Save Changes";
+    public static String TOOLS_BUTTON_ID = "Actions";
+    public static String INVENTORY_TOOLS_BUTTON_ID = "Actions";
+    private static final String USER_HOME = "user.home";
     
     //Layout Component
-    private HorizontalLayout headerLayout;
-	private HorizontalLayout instructionLayout;
-    Panel listDataTablePanel;
+    private AbsoluteLayout toolsButtonContainer;
     
-    private BuildNewListDropHandler dropHandler;
-    
-    //Tools Button Context Menu
+    //Context Menus
     private ContextMenu menu;
     private ContextMenuItem menuExportList;
     private ContextMenuItem menuCopyToList;
     private ContextMenuItem menuDeleteSelectedEntries;
-    
     private ContextMenu inventoryViewMenu;
-    
-    private static final String USER_HOME = "user.home";
-    private Window listManagerCopyToNewListDialog;
-    
-    public static String TOOLS_BUTTON_ID = "Actions";
-    public static String INVENTORY_TOOLS_BUTTON_ID = "Actions";
-    
-    private AbsoluteLayout toolsButtonContainer;
-    private ListInventoryTable listInventoryTable;
+    private AddColumnContextMenu addColumnContextMenu;
+    private Action.Handler contextMenuActionHandler;
     
     //For Saving
     private ListManagerMain source;
@@ -167,10 +151,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private GermplasmList currentlySetGermplasmInfo;
     private boolean changed = false;
     
-    private AddColumnContextMenu addColumnContextMenu;
-    
     //Listener
-    SaveListButtonClickListener saveListButtonListener;
+    private SaveListButtonClickListener saveListButtonListener;
+    private BuildNewListDropHandler dropHandler;
+    
+    //Inventory Related Variables
+    private ListInventoryTable listInventoryTable;
     
     public ListBuilderComponent() {
         super();
@@ -218,8 +204,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
 
-		headerActionsContainer = new AbsoluteLayout();
-		
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
@@ -242,9 +226,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         else
         	listInventoryTable = new ListInventoryTable();
         listInventoryTable.setVisible(false);
-        
-        headerLayout = new HorizontalLayout();
-		instructionLayout = new HorizontalLayout();
         
         listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
@@ -269,8 +250,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
-        inventoryViewMenu.addItem(MENU_LIST_VIEW);
-        inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetMenuOptions();
@@ -288,11 +269,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewToolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         inventoryViewToolsButton.setWidth("110px");
         inventoryViewToolsButton.addStyleName("lm-tools-button");        
-        
-        toolsButtonContainer = new AbsoluteLayout();
-        toolsButtonContainer.setHeight("27px");
-        toolsButtonContainer.setWidth("120px");
-        toolsButtonContainer.addComponent(toolsButton, "top:0; right:0");
         
         dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
         
@@ -356,9 +332,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(MENU_INVENTORY_SAVE_CHANGES)){	  
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
 			    	  //TODO: put action call here to save inventory changes
-                  } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
                 	  copyToNewListFromInventoryViewAction();
@@ -621,6 +597,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         listBuilderPanelTitleContainer.setComponentAlignment(lockButton, Alignment.BOTTOM_RIGHT);
         listBuilderPanelTitleContainer.setComponentAlignment(unlockButton, Alignment.BOTTOM_RIGHT);
 
+        toolsButtonContainer = new AbsoluteLayout();
+        toolsButtonContainer.setHeight("27px");
+        toolsButtonContainer.setWidth("120px");
+        toolsButtonContainer.addComponent(toolsButton, "top:0; right:0");
+        
         final HorizontalLayout toolsLayout = new HorizontalLayout();
         toolsLayout.setWidth("100%");
         toolsLayout.addComponent(totalListEntriesLabel);
@@ -634,7 +615,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         listDataTableLayout.addComponent(listInventoryTable);
 
         this.addComponent(listBuilderPanel);
-        //this.setExpandRatio(listBuilderPanel,1.0f);
 
         final HorizontalLayout buttons = new HorizontalLayout();
         buttons.setMargin(new MarginInfo(false,false,true,false));
@@ -647,48 +627,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         this.addComponent(buttons);
         this.addComponent(menu);
         this.addComponent(inventoryViewMenu);
-
-/*
-
-		headerActionsContainer.addComponent(viewHeaderButton, "right:0; bottom:0;");
-		headerActionsContainer.addComponent(editHeaderButton, "right:0; bottom:0;");
-
-		listBuilderPanelTitleContainer.addComponent(headerActionsContainer);
-		listBuilderPanelTitleContainer.setComponentAlignment(headerActionsContainer, Alignment.BOTTOM_RIGHT);
-
-        lockActionsContainer.addComponent(lockButton, "right:0; bottom:0;");
-        lockActionsContainer.addComponent(unlockButton, "right:0; bottom:0;");
-
-        listBuilderPanelTitleContainer.addComponent(lockActionsContainer);
-        listBuilderPanelTitleContainer.setComponentAlignment(lockActionsContainer, Alignment.BOTTOM_RIGHT);
-
-
-        toolsLayout.addComponent(totalListEntriesLabel);
-		toolsLayout.addComponent(toolsButton);
-		toolsLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
-		toolsLayout.addStyleName("lm-list-desc");
-
-        listDataTablePanel = new Panel();
-        listDataTablePanel.setWidth("100%");
-
-
-        listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
-
-        final HorizontalLayout buttons = new HorizontalLayout();
-        buttons.setWidth("170px");
-        buttons.addComponent(saveButton);
-        buttons.addComponent(resetButton);
-        buttons.setSpacing(true);
-        buttons.addStyleName("lm-new-list-buttons");
-
-
-
-        this.addComponent(listBuilderPanel);
-        this.addComponent(buttons);
-        this.setExpandRatio(listDataTablePanel,1.0F);
-
-
- */
 
 	}
     
