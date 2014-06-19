@@ -9,6 +9,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.DoubleValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -48,6 +50,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		
 		reservedAmtTxtField = new TextField();
 		reservedAmtTxtField.setWidth("45px");
+		reservedAmtTxtField.addValidator(new DoubleRangeValidator("Please specify a valid number."));
 		
 		String scaleFullText = scale + " (" + selectedLotPerScale + " selected)";
 		scaleLabel = new Label(scaleFullText);
@@ -80,6 +83,34 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		
 	}
 	
+    /** Double validator that accepts empty values */
+    public class DoubleRangeValidator extends DoubleValidator {
+        private static final long serialVersionUID = -3795353195313914432L;
+
+        public DoubleRangeValidator(String message) {
+            super(message);
+        }
+        
+        @Override
+        protected boolean isValidString(String value) {
+        	
+        	Double doubleValue;
+        	
+        	try {
+        		doubleValue = Double.valueOf(value);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        	
+            if (doubleValue > 0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+    }
+	
 	// SETTERS AND GETTERS
 	public String getScale() {
 		return scale;
@@ -94,4 +125,11 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		return amount;
 	}
 
+	public TextField getReservedAmtTxtField() {
+		return reservedAmtTxtField;
+	}
+	
+	public void validate() throws InvalidValueException {
+		reservedAmtTxtField.validate();
+	}
 }

@@ -1666,18 +1666,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			reserveInventoryAction = new ReserveInventoryAction(this);
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
 			if(success){
-				listInventoryTable.updateListInventoryTableAfterSave();
-				
-				validReservationsToSave.clear();//reset the reservations to save. 
-				
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-						"All selected entries are reserved in their respective lots.", 
-						3000, Notification.POSITION_TOP_RIGHT);
+				resetListInventoryView();
 			}
 		}
 	}
-    
-    //TODO review this method as there are redundant codes here that is also in saveChangesAction()
+
+	//TODO review this method as there are redundant codes here that is also in saveChangesAction()
     //might be possible to eliminate this method altogether and reduce the number of middleware calls
     private void performListEntriesDeletion(Map<Object, String> itemsToDelete){     
         try {
@@ -1952,15 +1946,33 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	
 	private void viewListAction(){
-		listDataTableWithSelectAll.setVisible(true);
-		listInventoryTable.setVisible(false);
-        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
-        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
-        
-        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + listEntriesCount + "</b>");
+		if(validReservationsToSave.size() == 0){
+			changeToListView();
+		}else{
+			String message = "You have unsaved reservations for this list. " +
+					"You will need to save them before changing views. " +
+					"Do you want to save your changes?";
+    		
+			ConfirmDialog.show(getWindow(), "Unsaved Changes", message, messageSource.getMessage(Message.YES), 
+						messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {   			
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						saveReservationChangesAction();
+						changeToListView();
+					}
+					else{
+						resetListInventoryView();
+					}
+					
+				}
+			});
+		}
 	}	
+	
+
 	
 	private void viewInventoryAction(){
 		
@@ -2033,6 +2045,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				3000, Notification.POSITION_TOP_RIGHT);
 	}
 	
+	private void changeToListView() {
+		listDataTableWithSelectAll.setVisible(true);
+		listInventoryTable.setVisible(false);
+        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
+        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
+        
+        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+       		 + "  <b>" + listEntriesCount + "</b>");
+	}
+	
 	private void updateLotReservationsToSave(
 			Map<ListEntryLotDetails, Double> validReservations) {
 		
@@ -2080,6 +2103,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ReservationStatusWindow reservationStatus) {
 		this.reservationStatus = reservationStatus;
 		source.getWindow().removeWindow(this.reservationStatus);
+	}
+	
+    private void resetListInventoryView() {
+		listInventoryTable.updateListInventoryTableAfterSave();
+		
+		validReservationsToSave.clear();//reset the reservations to save. 
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected entries are reserved in their respective lots.", 
+				3000, Notification.POSITION_TOP_RIGHT);
 	}
 }
 

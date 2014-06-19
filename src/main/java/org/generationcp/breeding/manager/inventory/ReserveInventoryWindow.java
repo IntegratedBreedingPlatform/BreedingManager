@@ -12,19 +12,21 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -121,9 +123,28 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				reserveInventoryAction.validateReservations(getReservations());
+				if(validateReserveAmount()){
+					reserveInventoryAction.validateReservations(getReservations());
+				}
 			}
 		});
+	}
+
+	protected boolean validateReserveAmount() {
+		try {
+			
+			for(ReserveInventoryRowComponent row : scaleRows){
+				row.validate();
+			}
+
+			return true;
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showError(getWindow(), 
+					this.messageSource.getMessage(Message.INVALID_INPUT), 
+					e.getMessage(), Notification.POSITION_TOP_RIGHT);
+			return false;
+		}
 	}
 
 	@SuppressWarnings("deprecation")
