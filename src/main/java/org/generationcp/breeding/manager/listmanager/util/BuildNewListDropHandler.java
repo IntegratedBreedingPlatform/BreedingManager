@@ -477,6 +477,11 @@ public class BuildNewListDropHandler implements DropHandler {
     	   		
     	   		//#2 Seed Reserved
     	   		String seed_res = "-";
+    	   		if(forEditList){
+    	   			if(germplasmListData.getInventoryInfo().getReservedLotCount() != null && germplasmListData.getInventoryInfo().getReservedLotCount() != 0){
+        	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
+        	   		}
+    	   		}
     	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
     	   		
 	            
