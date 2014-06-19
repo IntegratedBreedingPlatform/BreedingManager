@@ -863,6 +863,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//list data table
 		resetGermplasmTable();
 		
+		//list inventory table
+		listInventoryTable.reset();
+		
+		//returns the view to List View
+		changeToListView();
+		
 		//disabled the menu options when the build new list table has no rows
 		resetMenuOptions();
 		

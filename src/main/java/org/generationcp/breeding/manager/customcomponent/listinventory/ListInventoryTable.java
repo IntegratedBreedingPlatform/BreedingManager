@@ -211,4 +211,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void setListId(Integer listId){
 		this.listId = listId;
 	}
+
+	public void reset() {
+		listInventoryTable.removeAllItems();
+	}
 }
