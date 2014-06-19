@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -18,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 
@@ -33,7 +37,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public static Class<?> ENTRY_NUMBER_COLUMN_TYPE = Integer.class;
 	public static String ENTRY_NUMBER_COLUMN_ID = "#";
 	
-	public static Class<?> DESIGNATION_COLUMN_TYPE = String.class;
+	public static Class<?> DESIGNATION_COLUMN_TYPE = Button.class;
 	public static String DESIGNATION_COLUMN_ID = "DESIGNATION";
 	
 	public static Class<?> LOCATION_COLUMN_TYPE = String.class;
@@ -164,9 +168,20 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			 			 
 			 		});
 					
+			   		GermplasmListData germplasmListData = null;
+			   		
+			   		try {
+						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
+					} catch (MiddlewareQueryException e) {
+						e.printStackTrace();
+					}
+			   		
+			   		Button desigButton = new Button(String.format("%s", designation), new GidLinkButtonClickListener(((BreedingManagerApplication) getApplication()).getListManagerMain(),germplasmListData.getGid().toString(), true, true));
+		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+			   		
 			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
 					newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-					newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(designation);
+					newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(desigButton);
 					newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
 					newItem.getItemProperty(UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
 					newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
