@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
-import com.vaadin.ui.Component;
-
 public class ReserveInventoryUtil implements Serializable {
 	private static final long serialVersionUID = -8873586745031285056L;
 	

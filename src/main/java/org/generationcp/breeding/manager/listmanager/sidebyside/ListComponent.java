@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
@@ -191,11 +192,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     //Value change event is fired when table is populated, so we need a flag
     private Boolean doneInitializing = false;
     
+    //Inventory Related Variables
     private ListInventoryTable listInventoryTable;
-    
     private ReserveInventoryWindow reserveInventory;
     private ReservationStatusWindow reservationStatus;
-    
+    private ReserveInventoryUtil reserveInventoryUtil;
+    private ReserveInventoryAction reserveInventoryAction;
+    private Map<ListEntryLotDetails, Double> validReservationsToSave;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -302,7 +305,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
-
 		inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
@@ -311,11 +313,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         
 		tableContextMenu = new ContextMenu();
 		tableContextMenu.setWidth("295px");
-		
         tableContextMenu_SelectAll = tableContextMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         tableContextMenu_DeleteEntries = tableContextMenu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         tableContextMenu_EditCell = tableContextMenu.addItem(messageSource.getMessage(Message.EDIT_VALUE));
         tableContextMenu_CopyToNewList = tableContextMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        
+        //Inventory Related Variables
+        validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 	}
 	
 	private void initializeListDataTable(){
@@ -577,7 +581,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
 			      if(clickedItem.getName().equals(MENU_INVENTORY_SAVE_CHANGES)){	  
-			    	  //TODO: put action call here to save inventory changes
+			    	  saveReservationChangesAction();
                   } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
@@ -1650,11 +1654,28 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
 			}
 			else{
-				ReserveInventoryUtil reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+		        //this util handles the inventory reservation related functions
+		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
 				reserveInventoryUtil.viewReserveInventoryWindow();
 			}
 		}
 	}//end of reserveInventoryAction
+	
+	protected void saveReservationChangesAction(){
+		if(getValidReservationsToSave().size() > 0){
+			reserveInventoryAction = new ReserveInventoryAction(this);
+			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
+			if(success){
+				listInventoryTable.updateListInventoryTableAfterSave();
+				
+				validReservationsToSave.clear();//reset the reservations to save. 
+				
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All selected entries are reserved in their respective lots.", 
+						3000, Notification.POSITION_TOP_RIGHT);
+			}
+		}
+	}
     
     //TODO review this method as there are redundant codes here that is also in saveChangesAction()
     //might be possible to eliminate this method altogether and reduce the number of middleware calls
@@ -1989,6 +2010,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void setCurrentlySavedGermplasmList(GermplasmList list) {
 	}
 
+	/*-------------------------------------LIST INVENTORY RELATED METHODS-------------------------------------*/
+	
 	@Override
 	public void updateListInventoryTable(
 			Map<ListEntryLotDetails, Double> validReservations) {
@@ -2002,10 +2025,34 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		removeReserveInventoryWindow(reserveInventory);
 		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
-				"All selected entries will be reserved in their respective lots.", Notification.POSITION_TOP_RIGHT);
+		//update lot reservatios to save
+		updateLotReservationsToSave(validReservations);
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected entries will be reserved in their respective lots.", 
+				3000, Notification.POSITION_TOP_RIGHT);
 	}
-
+	
+	private void updateLotReservationsToSave(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		
+		for(Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double amountToReserve = entry.getValue();
+			
+			if(validReservationsToSave.containsKey(lot)){
+				validReservationsToSave.remove(lot);
+				
+			}
+			
+			validReservationsToSave.put(lot,amountToReserve);
+		}
+	}
+	
+	public Map<ListEntryLotDetails, Double> getValidReservationsToSave(){
+		return validReservationsToSave;
+	}
+	
 	@Override
 	public void addReserveInventoryWindow(
 			ReserveInventoryWindow reserveInventory) {

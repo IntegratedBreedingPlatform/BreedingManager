@@ -180,6 +180,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		}
 	}
 	
+	public void updateListInventoryTableAfterSave(){
+		loadInventoryData(); //reset
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<ListEntryLotDetails> getSelectedLots(){
 		Collection<ListEntryLotDetails> selectedEntries = (Collection<ListEntryLotDetails>) listInventoryTable.getValue();

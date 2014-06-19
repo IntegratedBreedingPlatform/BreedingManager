@@ -222,4 +222,5 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		this.scaleRows = scaleRows;
 	}
 	
+	
 }
