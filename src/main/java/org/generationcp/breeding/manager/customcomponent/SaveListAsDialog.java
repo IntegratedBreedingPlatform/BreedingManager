@@ -336,4 +336,12 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	public void setGermplasmList(GermplasmList germplasmList){
 		this.germplasmList = germplasmList;
 	}
+	
+	public BreedingManagerListDetailsComponent getListDetailsComponent(){
+		return listDetailsComponent;
+	}
+	
+	public LocalListFoldersTreeComponent getGermplasmListTree(){
+		return germplasmListTree;
+	}
 }

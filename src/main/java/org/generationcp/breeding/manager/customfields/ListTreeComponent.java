@@ -389,6 +389,11 @@ public abstract class ListTreeComponent extends CssLayout implements
 	
 	}
 	
+	public void reloadTreeItemDescription(){
+	    germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
+	    addListTreeItemDescription();
+	}
+	
 	private void addListTreeItemDescription(){
 		germplasmListTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 

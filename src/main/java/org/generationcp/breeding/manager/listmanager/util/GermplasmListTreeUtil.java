@@ -457,7 +457,6 @@ public class GermplasmListTreeUtil implements Serializable {
         // show window
         mainWindow.addWindow(w);
         source.refreshRemoteTree();
-        
     }
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
@@ -612,6 +611,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		            
 		            //rename tabs
 		            if (listener != null){
+		            	System.out.println("ASdasdasdas");
 		            	listener.updateUIForRenamedList(germplasmList, newName);
 		            }
 		    	} else {

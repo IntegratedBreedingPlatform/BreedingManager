@@ -1,8 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,10 +26,32 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	
 	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		// TODO Auto-generated method stub
-		
+		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) saveListAsDialog.getApplication(); 
+    	ListManagerMain listManagerMain = breedingManagerApplication.getListManagerMain();
+   		listManagerMain.getListSelectionComponent().updateUIForRenamedList(list, newName);
+   		
+   		ListNameField listNameField = saveListAsDialog.getListDetailsComponent().getListNameField();
+   		listNameField.getListNameValidator().setCurrentListName(newName);
+   		listNameField.setValue(newName);
+   		listNameField.setListNameValidator(listNameField.getListNameValidator());
+   		
+   		saveListAsDialog.getGermplasmListTree().reloadTreeItemDescription();
 	}
 
+//	public void updateUIForRenamedList(GermplasmList list, String newName) {
+//		this.listSelectionLayout.renameTab(list.getId(), newName);
+//	}
+//	
+//    public void renameTab(Integer listId, String newName){
+//        String tabDescription = generateTabDescription(listId);
+//        Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
+//        if (tab != null){
+//            tab.setCaption(newName);
+//            ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
+//            listDetails.setListNameLabel(newName);
+//        }
+//    }
+	
 	@Override
 	public void openListDetails(GermplasmList list) {
 		if(saveListAsDialog != null && !list.getType().equals("FOLDER")){
