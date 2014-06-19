@@ -55,6 +55,10 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -226,6 +230,19 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         else
         	listInventoryTable = new ListInventoryTable();
         listInventoryTable.setVisible(false);
+        listInventoryTable.getTable().setDropHandler(new DropHandler() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void drop(DragAndDropEvent event) {
+				MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Error", "You should switch back to inventory view before you can drop items to the list builder"
+	                    , Notification.POSITION_TOP_RIGHT);
+				return;	
+			}
+			@Override
+			public AcceptCriterion getAcceptCriterion() {
+				return AcceptAll.get();
+			}
+        });
         
         listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
