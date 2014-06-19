@@ -141,13 +141,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private AddColumnContextMenu addColumnContextMenu;
 	
 	private ContextMenu inventoryViewMenu; 
+	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
 	private ContextMenuItem menuListView;
 	private ContextMenuItem menuReserveInventory;
 	
-	private String MENU_LIST_VIEW = "Return to List View";
-	private String MENU_INVENTORY_SAVE_CHANGES="Save Changes";
-    
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -219,6 +217,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private InventoryDataManager inventoryDataManager;
 	
 	private Integer localUserId = null;
+
 	
 	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
@@ -305,11 +304,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
-		inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
-        menuListView = inventoryViewMenu.addItem(MENU_LIST_VIEW);
-        menuInventorySaveChanges = inventoryViewMenu.addItem(MENU_INVENTORY_SAVE_CHANGES);
+        menuListView = inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
+        menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        
+        resetInventoryMenuOptions();
         
 		tableContextMenu = new ContextMenu();
 		tableContextMenu.setWidth("295px");
@@ -322,6 +323,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 	}
 	
+	private void resetInventoryMenuOptions() {
+        //disable the save button at first since there are no reservations yet
+        menuInventorySaveChanges.setEnabled(false);
+        
+        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        menuCopyToNewListFromInventory.setEnabled(false);
+	}
+
 	private void initializeListDataTable(){
 		listDataTableWithSelectAll = new TableWithSelectAllLayout(Long.valueOf(listEntriesCount).intValue(), getNoOfEntries(), CHECKBOX_COLUMN_ID);
 		listDataTable = listDataTableWithSelectAll.getTable();
@@ -580,9 +589,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(MENU_INVENTORY_SAVE_CHANGES)){	  
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
 			    	  saveReservationChangesAction();
-                  } else if(clickedItem.getName().equals(MENU_LIST_VIEW)){
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
                 	  copyToNewListFromInventoryViewAction();
@@ -1254,34 +1263,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     }
     
     private void copyToNewListFromInventoryViewAction(){
-        Collection<?> listEntries = (Collection<?>) listInventoryTable.getTable().getValue();
-        if (listEntries == null || listEntries.isEmpty()){
-            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
-            
-        } else {
-            listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-            listManagerCopyToNewListDialog.setModal(true);
-            listManagerCopyToNewListDialog.setWidth("617px");
-            listManagerCopyToNewListDialog.setHeight("230px");
-            listManagerCopyToNewListDialog.setResizable(false);
-            listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
-            
-            try {
-                listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
-                        parentListDetailsComponent.getWindow(),
-                        listManagerCopyToNewListDialog,
-                        germplasmList.getName(),
-                        listDataTable,
-                        getCurrentUserLocalId(),
-                        source,
-                        false));
-                parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
-                listManagerCopyToNewListDialog.center();
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error copying list entries.", e);
-                e.printStackTrace();
-            }
-        }
+    	// TODO implement the copy to new list from the selection from listInventoryTable
     }
     
     private int getCurrentUserLocalId() throws MiddlewareQueryException {
@@ -2040,6 +2022,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		//update lot reservatios to save
 		updateLotReservationsToSave(validReservations);
 		
+		//enable now the Save Changes option
+		menuInventorySaveChanges.setEnabled(true);
+		
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 				"All selected entries will be reserved in their respective lots.", 
 				3000, Notification.POSITION_TOP_RIGHT);
@@ -2107,6 +2092,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
     private void resetListInventoryView() {
 		listInventoryTable.updateListInventoryTableAfterSave();
+		
+		resetInventoryMenuOptions();
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
