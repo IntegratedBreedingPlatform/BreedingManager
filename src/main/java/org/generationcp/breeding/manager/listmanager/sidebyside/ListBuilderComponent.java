@@ -438,7 +438,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			}
 		});
 		
-		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
+		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), 
+										messageSource, workbenchDataManager, inventoryDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
 		saveButton.addListener(new ClickListener() {
@@ -888,7 +889,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		//Reset Save Listener
 		saveButton.removeListener(saveListButtonListener);
-		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), messageSource, workbenchDataManager); 
+		saveListButtonListener = new SaveListButtonClickListener(this, germplasmListManager, tableWithSelectAllLayout.getTable(), 
+									messageSource, workbenchDataManager, inventoryDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
 		updateListTotal();

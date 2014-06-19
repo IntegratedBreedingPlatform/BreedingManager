@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
@@ -18,6 +19,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -47,6 +49,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	private ListBuilderComponent source;
 	private GermplasmListManager dataManager;
 	private WorkbenchDataManager workbenchDataManager;
+	private InventoryDataManager inventoryDataManager;
 	private Table listDataTable;
 	
 	private Boolean forceHasChanges = false;
@@ -54,12 +57,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	private SimpleResourceBundleMessageSource messageSource;
 	
 	public SaveListButtonClickListener(ListBuilderComponent source, GermplasmListManager dataManager, Table listDataTable
-			, SimpleResourceBundleMessageSource messageSource, WorkbenchDataManager workbenchDataManager){
+			, SimpleResourceBundleMessageSource messageSource, WorkbenchDataManager workbenchDataManager, InventoryDataManager inventoryDataManager){
 		this.source = source;
 		this.dataManager = dataManager;
 		this.listDataTable = listDataTable;
 		this.messageSource = messageSource;
 		this.workbenchDataManager = workbenchDataManager;
+		this.inventoryDataManager = inventoryDataManager;
 	}
 	
 	@Override
@@ -331,7 +335,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	private void updateListDataTableContent(GermplasmList currentlySavedList){
 		try{
 			int listDataCount = (int) this.dataManager.countGermplasmListDataByListId(currentlySavedList.getId());
-			List<GermplasmListData> savedListEntries = this.dataManager.getGermplasmListDataByListId(currentlySavedList.getId(), 0, listDataCount);
+			List<GermplasmListData> savedListEntries = this.inventoryDataManager.getLotCountsForList(currentlySavedList.getId(), 0, listDataCount);
 			
 			Table tempTable = cloneAddedColumnsToTemp(this.listDataTable);
 			
@@ -364,6 +368,33 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            designationButton.setDescription("Click to view Germplasm information");
 	            
+    	   		//Inventory Related Columns
+    	   		
+    	   		//#1 Available Inventory
+    	   		String avail_inv = "-"; //default value
+    	   		if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
+    	   			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    	   		}
+    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
+    	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	   		inventoryButton.setDescription("Click to view Inventory Details");
+    	   		
+    	   		
+    	   		if(avail_inv.equals("-")){
+    	   			inventoryButton.setEnabled(false);
+    	   			inventoryButton.setDescription("No Lot for this Germplasm");
+    	   		}
+    	   		else{
+    	   			inventoryButton.setDescription("Click to view Inventory Details");
+    	   		}
+    	   		
+    	   		//#2 Seed Reserved
+    	   		String seed_res = "-"; //default value
+    	   		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+    	   			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+    	   		}
+    	   		
+	            
 	            item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
 	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
 	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
@@ -371,7 +402,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
 	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-//	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
+	            item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+	            item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
 			}
 
 			copyAddedColumnsFromTemp(tempTable);
