@@ -1199,7 +1199,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					
 				}
 			});
-		} else if(currentlySavedGermplasmList==null) {
+		} else if(currentlySavedGermplasmList==null && listDataTable.size()>0) {
 			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
     		
     		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
