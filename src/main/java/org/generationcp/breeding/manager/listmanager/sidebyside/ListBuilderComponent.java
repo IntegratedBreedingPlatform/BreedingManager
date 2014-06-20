@@ -252,7 +252,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void drop(DragAndDropEvent event) {
-				MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Error", "You should switch back to inventory view before you can drop items to the list builder"
+				MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Error", "Switch the List Builder to List View in order to add new list entries."
 	                    , Notification.POSITION_TOP_RIGHT);
 				return;	
 			}
