@@ -1,6 +1,6 @@
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Component;
 
 @Configurable
 public class SelectTreeItemOnSaveListener extends AbsoluteLayout 
@@ -19,17 +20,26 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	
 	private static final long serialVersionUID = 1L;
 	private SaveListAsDialog saveListAsDialog;
+	private Component parentComponent;
 	
-	public SelectTreeItemOnSaveListener(SaveListAsDialog saveListAsDialog){
+	public SelectTreeItemOnSaveListener(SaveListAsDialog saveListAsDialog, Component parentComponent){
 		this.saveListAsDialog = saveListAsDialog;
+		this.parentComponent = parentComponent;
 	}
 	
 	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) saveListAsDialog.getApplication(); 
-    	ListManagerMain listManagerMain = breedingManagerApplication.getListManagerMain();
-   		listManagerMain.getListSelectionComponent().updateUIForRenamedList(list, newName);
-   		
+		System.out.println("parentCOmponent: " + parentComponent);
+    	if(parentComponent instanceof ListManagerMain){
+    		ListManagerMain listManagerMain = (ListManagerMain)parentComponent;
+    				listManagerMain.getListSelectionComponent().updateUIForRenamedList(list, newName);
+    	}
+    	
+    	if(parentComponent instanceof ManageCrossingSettingsMain){
+    		ManageCrossingSettingsMain manageCrossingSettingsMain = (ManageCrossingSettingsMain)parentComponent;
+    		manageCrossingSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().updateUIForRenamedList(list, newName);
+    	}
+    	
    		ListNameField listNameField = saveListAsDialog.getListDetailsComponent().getListNameField();
    		listNameField.getListNameValidator().setCurrentListName(newName);
    		listNameField.setValue(newName);
@@ -37,20 +47,6 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
    		
    		saveListAsDialog.getGermplasmListTree().reloadTreeItemDescription();
 	}
-
-//	public void updateUIForRenamedList(GermplasmList list, String newName) {
-//		this.listSelectionLayout.renameTab(list.getId(), newName);
-//	}
-//	
-//    public void renameTab(Integer listId, String newName){
-//        String tabDescription = generateTabDescription(listId);
-//        Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
-//        if (tab != null){
-//            tab.setCaption(newName);
-//            ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
-//            listDetails.setListNameLabel(newName);
-//        }
-//    }
 	
 	@Override
 	public void openListDetails(GermplasmList list) {

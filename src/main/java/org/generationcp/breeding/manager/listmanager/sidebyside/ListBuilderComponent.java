@@ -72,6 +72,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -1219,12 +1220,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						saveReservationChangesAction();
-						changeToListView();
 					}
 					else{
 						resetListInventoryView();
 					}
 					
+					changeToListView();
 				}
 			});
 		}
@@ -1332,13 +1333,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
 			if(success){
 				resetListInventoryView();
+				
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All reservations were saved.", 
+						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
 	}
 
 	@Override
 	public void updateListInventoryTable(
-			Map<ListEntryLotDetails, Double> validReservations) {
+			Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
 		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
 			ListEntryLotDetails lot = entry.getKey();
 			Double new_res = entry.getValue();
@@ -1355,9 +1360,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//enable now the Save Changes option
 		menuInventorySaveChanges.setEnabled(true);
 		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries will be reserved in their respective lots.", 
-				3000, Notification.POSITION_TOP_RIGHT);
+		if(!withInvalidReservations){
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+					"All selected entries will be reserved in their respective lots.", 
+					3000, Notification.POSITION_TOP_RIGHT);
+		}
 	}
 
 	@Override
@@ -1396,10 +1403,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		resetInventoryMenuOptions();
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
-		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries are reserved in their respective lots.", 
-				3000, Notification.POSITION_TOP_RIGHT);
 	}
     
 	private void updateLotReservationsToSave(
@@ -1421,6 +1424,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public Map<ListEntryLotDetails, Double> getValidReservationsToSave(){
 		return validReservationsToSave;
 	}
+
+	@Override
+	public Component getParentComponent() {
+		return source;
+	}
 	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
+	
+
 }

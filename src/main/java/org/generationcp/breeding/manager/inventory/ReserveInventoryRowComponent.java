@@ -25,6 +25,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 	private Label scaleLabel;
 	private int selectedLotPerScale;
 	private String scale;
+	private final String DEFAULT_ERROR = "Please specify a valid number.";;
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -50,7 +51,10 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 		
 		reservedAmtTxtField = new TextField();
 		reservedAmtTxtField.setWidth("45px");
-		reservedAmtTxtField.addValidator(new DoubleRangeValidator("Please specify a valid number."));
+		reservedAmtTxtField.setRequired(true);
+		
+		reservedAmtTxtField.setRequiredError(DEFAULT_ERROR);
+		reservedAmtTxtField.addValidator(new DoubleRangeValidator(DEFAULT_ERROR));
 		
 		String scaleFullText = scale + " (" + selectedLotPerScale + " selected)";
 		scaleLabel = new Label(scaleFullText);
@@ -96,10 +100,14 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
         	
         	Double doubleValue;
         	
+        	if(value.trim().length() == 0){
+        		return false;
+        	}
+        	
         	try {
         		doubleValue = Double.valueOf(value);
             } catch (NumberFormatException e) {
-                return false;
+            	return false;
             }
         	
             if (doubleValue > 0){
@@ -121,7 +129,12 @@ public class ReserveInventoryRowComponent extends HorizontalLayout  implements I
 	}
 	
 	public Double getReservationAmount(){
-		Double amount = Double.valueOf(reservedAmtTxtField.getValue().toString());
+		String amountTxt = reservedAmtTxtField.getValue().toString();
+		Double amount = Double.valueOf("0");
+		
+		if(amountTxt.length() > 0){
+			amount = Double.valueOf(amountTxt);
+		}
 		return amount;
 	}
 

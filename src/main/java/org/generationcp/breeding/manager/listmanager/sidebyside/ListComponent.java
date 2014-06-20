@@ -1919,12 +1919,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						saveReservationChangesAction();
-						changeToListView();
 					}
 					else{
 						resetListInventoryView();
 					}
 					
+					changeToListView();
 				}
 			});
 		}
@@ -2011,13 +2011,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
 			if(success){
 				resetListInventoryView();
+				
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All reservations were saved.", 
+						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
 	}
 	
 	@Override
 	public void updateListInventoryTable(
-			Map<ListEntryLotDetails, Double> validReservations) {
+			Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
 		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
 			ListEntryLotDetails lot = entry.getKey();
 			Double new_res = entry.getValue();
@@ -2034,9 +2038,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		//enable now the Save Changes option
 		menuInventorySaveChanges.setEnabled(true);
 		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries will be reserved in their respective lots.", 
-				3000, Notification.POSITION_TOP_RIGHT);
+		if(!withInvalidReservations){
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+					"All selected entries will be reserved in their respective lots.", 
+					3000, Notification.POSITION_TOP_RIGHT);
+		}
+		
 	}
 	
 	private void updateLotReservationsToSave(
@@ -2093,11 +2100,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		resetInventoryMenuOptions();
 		
-		validReservationsToSave.clear();//reset the reservations to save. 
-		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries are reserved in their respective lots.", 
-				3000, Notification.POSITION_TOP_RIGHT);
+		validReservationsToSave.clear();//reset the reservations to save.
+	}
+
+	@Override
+	public Component getParentComponent() {
+		return source;
 	}
 }
 
