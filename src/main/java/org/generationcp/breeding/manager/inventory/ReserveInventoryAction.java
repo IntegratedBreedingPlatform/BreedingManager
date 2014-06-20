@@ -53,19 +53,39 @@ public class ReserveInventoryAction implements Serializable {
 		validLotReservations = new HashMap<ListEntryLotDetails,Double>();
 		invalidLotReservations = new HashMap<ListEntryLotDetails,Double>();
 		
+		Map<Integer,Double> duplicatedLots = getTotalReserveAmountPerLot(reservations); 
+		
+		List<Integer> checkedLots = new ArrayList<Integer>();
+		
 		for(Map.Entry<Double, List<ListEntryLotDetails>> entry : reservations.entrySet()){
 			List<ListEntryLotDetails> lotList = entry.getValue();
-			Double amountReserved = entry.getKey();
+			Double amountReserved = entry.getKey();;
 			
 			for(ListEntryLotDetails lot : lotList){
 				Double availBalance = lot.getAvailableLotBalance();
-				if(availBalance < amountReserved){
-					invalidLotReservations.put(lot, amountReserved);
+				
+				if(checkedLots.contains(lot.getLotId())){ // duplicated lots mapped to GID that has multiple entries in list entries
+					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
+					
+					if(availBalance < totalAmountReserved){
+						validLotReservations.remove(lot);
+						invalidLotReservations.remove(lot);
+						
+						invalidLotReservations.put(lot, totalAmountReserved);
+						
+					}
 				}
 				else{
-					validLotReservations.put(lot, amountReserved);
+					if(availBalance < amountReserved){
+						invalidLotReservations.put(lot, amountReserved);
+					}
+					else{
+						validLotReservations.put(lot, amountReserved);
+					}
 				}
-			}
+				
+				checkedLots.add(lot.getLotId()); //marked all checked lots
+			}	
 		}
 		
 		boolean withInvalidReservations = false;
@@ -79,6 +99,31 @@ public class ReserveInventoryAction implements Serializable {
 		source.updateListInventoryTable(validLotReservations, withInvalidReservations);
 	}
 	
+	private Map<Integer, Double> getTotalReserveAmountPerLot(
+			Map<Double, List<ListEntryLotDetails>> reservations) {
+		Map<Integer,Double> duplicatedLots = new HashMap<Integer,Double>();
+		
+		for(Map.Entry<Double, List<ListEntryLotDetails>> entry: reservations.entrySet()){
+			List<ListEntryLotDetails> lotList = entry.getValue();
+			Double amountReserved = entry.getKey();
+			
+			for(ListEntryLotDetails lot : lotList){
+				Integer lotId = lot.getLotId();
+				if(duplicatedLots.containsKey(lotId)){//sum up the reservations
+					Double totalAmount = Double.valueOf(duplicatedLots.get(lotId)) + amountReserved;
+					
+					duplicatedLots.remove(lotId);
+					duplicatedLots.put(lotId, totalAmount);
+				}
+				else{
+					duplicatedLots.put(lotId, amountReserved);
+				}
+			}
+		}
+		
+		return duplicatedLots;
+	}
+
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId){
 		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
 		try {

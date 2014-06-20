@@ -72,12 +72,14 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 		statusTable.setHeight("150px");
 		statusTable.setImmediate(true);
 		
+		statusTable.addContainerProperty(messageSource.getMessage(Message.LOT_ID), Integer.class, null);
 		statusTable.addContainerProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), String.class, null);
 		statusTable.addContainerProperty(messageSource.getMessage(Message.LOCATION_HEADER), String.class, null);
 		statusTable.addContainerProperty(messageSource.getMessage(Message.UNITS), String.class, null);
 		statusTable.addContainerProperty(messageSource.getMessage(Message.AVAILABLE_BALANCE), Double.class, null);
 		statusTable.addContainerProperty(messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Double.class, null);
-	
+		
+		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LOT_ID), Message.LOT_ID);
 		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), Message.LISTDATA_DESIGNATION_HEADER);
 		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LOCATION_HEADER), Message.LOCATION_HEADER);
 		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.UNITS), Message.UNITS);
@@ -97,6 +99,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 			
 			Item newItem = statusTable.addItem(lot);
 			String designation = getDesignation(lot.getEntityIdOfLot());
+			newItem.getItemProperty(messageSource.getMessage(Message.LOT_ID)).setValue(lot.getLotId());
 			newItem.getItemProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER)).setValue(designation);
 			newItem.getItemProperty(messageSource.getMessage(Message.LOCATION_HEADER)).setValue(lot.getLocationOfLot().getLname());
 			newItem.getItemProperty(messageSource.getMessage(Message.UNITS)).setValue(lot.getScaleOfLot().getName());
@@ -114,7 +117,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 	public void layoutComponents() {
 		//main window
 		setHeight("310px");
-		setWidth("750px");
+		setWidth("780px");
 		
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
