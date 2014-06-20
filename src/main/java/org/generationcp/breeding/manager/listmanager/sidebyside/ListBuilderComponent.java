@@ -1401,7 +1401,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
 		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries are reserved in their respective lots.", 
+				"All reservations were saved.", 
 				3000, Notification.POSITION_TOP_RIGHT);
 	}
     
