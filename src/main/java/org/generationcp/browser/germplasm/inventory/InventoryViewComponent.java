@@ -128,7 +128,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 			   		//newItem.getItemProperty(RES_OTHER_ENTRY).setValue(listEntrtlotDetail.getReservedTotalForOtherEntries());
 		   		}
 		   		else{
-		   			newItem.getItemProperty(RES_THIS_ENTRY).setValue("-");
+		   			newItem.getItemProperty(RES_THIS_ENTRY).setValue(lotEntry.getReservedTotal());
+		   			//newItem.getItemProperty(RES_THIS_ENTRY).setValue("-");
 			   		//newItem.getItemProperty(RES_OTHER_ENTRY).setValue("-");
 		   		}
 		   		
