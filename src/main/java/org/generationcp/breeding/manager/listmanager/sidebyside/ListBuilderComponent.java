@@ -1339,7 +1339,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void updateListInventoryTable(
-			Map<ListEntryLotDetails, Double> validReservations) {
+			Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
 		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
 			ListEntryLotDetails lot = entry.getKey();
 			Double new_res = entry.getValue();
@@ -1356,9 +1356,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//enable now the Save Changes option
 		menuInventorySaveChanges.setEnabled(true);
 		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All selected entries will be reserved in their respective lots.", 
-				3000, Notification.POSITION_TOP_RIGHT);
+		if(!withInvalidReservations){
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+					"All selected entries will be reserved in their respective lots.", 
+					3000, Notification.POSITION_TOP_RIGHT);
+		}
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public interface ReserveInventorySource {
 	
-	public void updateListInventoryTable(Map<ListEntryLotDetails,Double> validReservations);
+	public void updateListInventoryTable(Map<ListEntryLotDetails,Double> validReservations, boolean withInvalidReservations);
 	
 	public void addReserveInventoryWindow(ReserveInventoryWindow reserveInventory);
 	

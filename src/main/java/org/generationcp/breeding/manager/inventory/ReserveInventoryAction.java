@@ -68,11 +68,15 @@ public class ReserveInventoryAction implements Serializable {
 			}
 		}
 		
+		boolean withInvalidReservations = false;
+		
 		if(invalidLotReservations.size() > 0){//if there is an invalid reservation
 			reservationStatus = new ReservationStatusWindow(invalidLotReservations);
-			source.addReservationStatusWindow(reservationStatus);	
+			source.addReservationStatusWindow(reservationStatus);
+			withInvalidReservations = true;
 		}
-		source.updateListInventoryTable(validLotReservations);
+		
+		source.updateListInventoryTable(validLotReservations, withInvalidReservations);
 	}
 	
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId){

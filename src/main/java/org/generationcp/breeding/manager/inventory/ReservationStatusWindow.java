@@ -65,7 +65,7 @@ public class ReservationStatusWindow extends Window implements InitializingBean,
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 		
-		statusDescriptionLabel = new Label("All selected entries will be reserved except for the following:");
+		statusDescriptionLabel = new Label("All selected entries will be reserved except for the following because of insufficient balance:");
 		
 		statusTable = new Table();
 		statusTable.setWidth("100%");
