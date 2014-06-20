@@ -611,7 +611,6 @@ public class GermplasmListTreeUtil implements Serializable {
 		            
 		            //rename tabs
 		            if (listener != null){
-		            	System.out.println("ASdasdasdas");
 		            	listener.updateUIForRenamedList(germplasmList, newName);
 		            }
 		    	} else {

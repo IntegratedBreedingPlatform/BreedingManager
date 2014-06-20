@@ -1085,4 +1085,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 	}
 
+	@Override
+	public Component getParentComponent() {
+		return makeCrossesMain.getSource();
+	}
+
 }

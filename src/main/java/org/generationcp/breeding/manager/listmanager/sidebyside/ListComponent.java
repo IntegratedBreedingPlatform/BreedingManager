@@ -2099,6 +2099,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				"All selected entries are reserved in their respective lots.", 
 				3000, Notification.POSITION_TOP_RIGHT);
 	}
+
+	@Override
+	public Component getParentComponent() {
+		return source;
+	}
 }
 
 
