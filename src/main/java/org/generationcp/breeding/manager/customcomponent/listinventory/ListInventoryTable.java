@@ -98,6 +98,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.setWidth("100%");
 		listInventoryTable.setColumnCollapsingAllowed(true);
 		listInventoryTable.setColumnReorderingAllowed(false);
+		listInventoryTable.setSelectable(true);
+		listInventoryTable.setMultiSelect(true);
 		
 		listInventoryTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		listInventoryTable.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, ENTRY_NUMBER_COLUMN_TYPE, null);
@@ -216,3 +218,4 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.removeAllItems();
 	}
 }
+

@@ -220,7 +220,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         buildNewListDesc.setWidth("500px");
         
         topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-        topLabel.setWidth("120px");
+        topLabel.setWidth("160px");
         topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
