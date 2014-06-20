@@ -68,11 +68,14 @@ public class ReserveInventoryAction implements Serializable {
 					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
 					
 					if(availBalance < totalAmountReserved){
-						validLotReservations.remove(lot);
+						removeAllLotfromValidReservation(lot.getLotId());
 						invalidLotReservations.remove(lot);
 						
 						invalidLotReservations.put(lot, totalAmountReserved);
 						
+					}
+					else{
+						validLotReservations.put(lot, totalAmountReserved);
 					}
 				}
 				else{
@@ -99,6 +102,15 @@ public class ReserveInventoryAction implements Serializable {
 		source.updateListInventoryTable(validLotReservations, withInvalidReservations);
 	}
 	
+	private void removeAllLotfromValidReservation(Integer lotId) {
+		for(ListEntryLotDetails lot : validLotReservations.keySet()){
+			if(lot.getLotId() == lotId){
+				validLotReservations.remove(lot);
+			}
+		}
+		
+	}
+
 	private Map<Integer, Double> getTotalReserveAmountPerLot(
 			Map<Double, List<ListEntryLotDetails>> reservations) {
 		Map<Integer,Double> duplicatedLots = new HashMap<Integer,Double>();
