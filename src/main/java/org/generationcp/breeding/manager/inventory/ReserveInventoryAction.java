@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.inventory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +76,7 @@ public class ReserveInventoryAction implements Serializable {
 	}
 	
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId){
+		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
 		try {
 			//userId
 			retrieveIbdbUserId();
@@ -112,8 +114,11 @@ public class ReserveInventoryAction implements Serializable {
 				reserveTransaction.setPreviousAmount(prevAmount);
 				reserveTransaction.setPersonId(personId);
 				
-				inventoryDataManager.addTransaction(reserveTransaction);
+				reserveTransactionList.add(reserveTransaction);
 			}
+			
+			inventoryDataManager.addTransactions(reserveTransactionList);
+			
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
