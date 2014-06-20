@@ -867,8 +867,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//list inventory table
 		listInventoryTable.reset();
 		
-		//returns the view to List View
-		changeToListView();
+		if(listInventoryTable.isVisible()){
+			//returns the view to List View
+			changeToListView();
+		}
+		
 		
 		//disabled the menu options when the build new list table has no rows
 		resetMenuOptions();
@@ -1228,15 +1231,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	private void changeToListView() {
-		toolsButtonContainer.addComponent(toolsButton, "top:0px; right:0px;");
-		toolsButtonContainer.removeComponent(inventoryViewToolsButton);
-		
 		tableWithSelectAllLayout.setVisible(true);
 		listInventoryTable.setVisible(false);
 		
-        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		toolsButtonContainer.addComponent(toolsButton, "top:0px; right:0px;");
+		toolsButtonContainer.removeComponent(inventoryViewToolsButton);
+		
+		topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");   
+       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
 	}
 	
 	private void viewInventoryAction(){
