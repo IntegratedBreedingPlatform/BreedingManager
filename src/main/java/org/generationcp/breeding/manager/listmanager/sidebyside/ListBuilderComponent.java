@@ -1220,12 +1220,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						saveReservationChangesAction();
-						changeToListView();
 					}
 					else{
 						resetListInventoryView();
 					}
 					
+					changeToListView();
 				}
 			});
 		}
@@ -1333,6 +1333,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
 			if(success){
 				resetListInventoryView();
+				
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All reservations were saved.", 
+						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
 	}
@@ -1399,10 +1403,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		resetInventoryMenuOptions();
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
-		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All reservations were saved.", 
-				3000, Notification.POSITION_TOP_RIGHT);
 	}
     
 	private void updateLotReservationsToSave(

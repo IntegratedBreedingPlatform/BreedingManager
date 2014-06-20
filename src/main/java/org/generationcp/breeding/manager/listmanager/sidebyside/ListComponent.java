@@ -1919,12 +1919,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						saveReservationChangesAction();
-						changeToListView();
 					}
 					else{
 						resetListInventoryView();
 					}
 					
+					changeToListView();
 				}
 			});
 		}
@@ -2011,6 +2011,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
 			if(success){
 				resetListInventoryView();
+				
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All reservations were saved.", 
+						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
 	}
@@ -2096,11 +2100,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		resetInventoryMenuOptions();
 		
-		validReservationsToSave.clear();//reset the reservations to save. 
-		
-		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-				"All reservations were saved.", 
-				3000, Notification.POSITION_TOP_RIGHT);
+		validReservationsToSave.clear();//reset the reservations to save.
 	}
 
 	@Override
