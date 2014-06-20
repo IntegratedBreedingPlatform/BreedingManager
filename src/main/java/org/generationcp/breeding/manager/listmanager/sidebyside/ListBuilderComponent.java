@@ -1246,6 +1246,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		if((changed || dropHandler.isChanged()) && currentlySavedGermplasmList!=null){
 			String message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+    		System.out.println("Changed: "+changed);
+    		System.out.println("isChanged: "+dropHandler.isChanged());
+    		System.out.println("currentlySaveGermplasmList: "+currentlySavedGermplasmList);
     		
     		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
@@ -1262,6 +1265,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		} else if(currentlySavedGermplasmList==null && listDataTable.size()>0) {
 			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
     		
+    		System.out.println("currentlySaveGermplasmList: "+currentlySavedGermplasmList);
+    		System.out.println("listDataTable.size(): "+listDataTable.size());
+			
     		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			
 				private static final long serialVersionUID = 1L;	

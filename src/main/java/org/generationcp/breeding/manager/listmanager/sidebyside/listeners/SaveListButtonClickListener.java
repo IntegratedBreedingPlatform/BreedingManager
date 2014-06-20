@@ -234,6 +234,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			activity.setProject(project);
 			activity.setUser(user);
 			this.workbenchDataManager.addProjectActivity(activity);
+
+			source.getBuildNewListDropHandler().setChanged(false);
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with saving Workbench activity.", ex);
