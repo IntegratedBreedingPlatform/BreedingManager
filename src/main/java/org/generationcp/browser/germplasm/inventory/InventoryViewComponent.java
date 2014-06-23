@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
@@ -33,6 +34,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	private Integer gid;
 	
 	private Table lotEntriesTable;
+	
+	private Label noEntriesLabel;
 
     private static final String LOT_LOCATION = "lotLocation";
     private static final String LOT_UNITS = "lotUnits";
@@ -74,6 +77,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		lotEntriesTable = new Table();
 		lotEntriesTable.setWidth("100%");
 		lotEntriesTable.setHeight("160px");
+		
+		noEntriesLabel = new Label(messageSource.getMessage(Message.THERE_IS_NO_INVENTORY_INFORMATION_AVAILABLE_FOR_THIS_GERMPLASM)+".");
 		
 		lotEntriesTable.addContainerProperty(LOT_LOCATION, String.class, null);
 		lotEntriesTable.addContainerProperty(LOT_UNITS, String.class, null);
@@ -147,7 +152,10 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	public void layoutComponents() {
 		setMargin(true);
 		setSpacing(true);
-		addComponent(lotEntriesTable);
+		if(lotEntriesTable.getItemIds().size()>0)
+			addComponent(lotEntriesTable);
+		else
+			addComponent(noEntriesLabel);
 		
 	}
 	
