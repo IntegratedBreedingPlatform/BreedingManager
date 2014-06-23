@@ -16,6 +16,7 @@ import java.io.File;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -47,6 +48,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
+@Deprecated
 @Configurable
 public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     implements InitializingBean, InternationalizableComponent{
@@ -74,11 +76,17 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     private Button exportButton;
     private Button makeCrossesButton;
     
-    private CrossingManagerMain crossingManager;
+//    private CrossingManagerMain crossingManager;
+    private ManageCrossingSettingsMain source;
     private Integer listId;
     
     public EmbeddedGermplasmListDetailComponent(CrossingManagerMain crossingManager, Integer listId) {
-        this.crossingManager = crossingManager;
+//        this.crossingManager = crossingManager;
+        this.listId = listId;
+    }
+    
+    public EmbeddedGermplasmListDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain, Integer listId) {
+        this.source = manageCrossingSettingsMain;
         this.listId = listId;
     }
     
@@ -125,7 +133,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         HorizontalLayout buttonArea = new HorizontalLayout();
         buttonArea.setMargin(true);
         buttonArea.setSpacing(true);
-        buttonArea.addComponent(exportButton);
+//        buttonArea.addComponent(exportButton);
         buttonArea.addComponent(makeCrossesButton);
         
         addComponent(layoutForList);
@@ -149,12 +157,12 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     public void makeNewCrossesButtonClickAction(){
         ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_CROSSES), 
             messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_MAKE_CROSSES_WIZARD), 
-            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             new ConfirmDialog.Listener() {
                 
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        crossingManager.reset();
+                        source.reset();
                     }
                 }
             }
@@ -162,7 +170,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     }
     
     public void exportToFileButtonClickAction(){
-        CrossesMade crossesMade = this.crossingManager.getCrossesMade();
+        CrossesMade crossesMade = this.source.getCrossesMade();
 
         if(crossesMade != null){
             String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
@@ -200,18 +208,18 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
                 return;
             }
             
-            CrossingManagerExporter exporter = new CrossingManagerExporter(crossesList, crossesMade, listCreator, listExporter);
-    
-            try {
-                exporter.exportCrossingManagerExcel(tempFileName);
-                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-                fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName().replace(" ", "_") + ".xls");
-    
-                this.getWindow().open(fileDownloadResource);
-        
-            } catch (CrossingManagerExporterException e) {
-                MessageNotifier.showError(getWindow(), "Error with exporting nursery file.", e.getMessage(), Notification.POSITION_CENTERED);
-            }
+//            CrossingManagerExporter exporter = new CrossingManagerExporter(crossesList, crossesMade, listCreator, listExporter);
+//    
+//            try {
+//                exporter.exportCrossingManagerExcel(tempFileName);
+//                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+//                fileDownloadResource.setFilename(crossesMade.getGermplasmList().getName().replace(" ", "_") + ".xls");
+//    
+//                this.getWindow().open(fileDownloadResource);
+//        
+//            } catch (CrossingManagerExporterException e) {
+//                MessageNotifier.showError(getWindow(), "Error with exporting nursery file.", e.getMessage(), Notification.POSITION_CENTERED);
+//            }
         } 
     
     }

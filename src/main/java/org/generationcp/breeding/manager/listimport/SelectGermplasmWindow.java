@@ -16,7 +16,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -148,7 +148,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
                 Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
 
-            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(germplasm.getGid().toString(), viaToolURL));
+            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), viaToolURL));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);                
                 
                 String crossExpansion = "";
@@ -253,7 +253,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         selectGermplasmLabel.setCaption("Multiple Germplasm Records found with the name " + this.germplasmName);
         messageSource.setCaption(this, Message.PLEASE_SELECT_A_GERMPLASM_FROM_THE_TABLE);
         messageSource.setCaption(doneButton, Message.SELECT_HIGHLIGHTED_GERMPLASM);
-        messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
+        messageSource.setCaption(cancelButton, Message.CANCEL);
     }
 
     private String getGermplasmNames(int gid) throws InternationalizableException {

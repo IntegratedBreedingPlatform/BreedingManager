@@ -63,9 +63,6 @@ public class GermplasmListManagerButtonClickListener implements Button.ClickList
     		ListManagerMain listManagerMain = component.getListManagerMain();
 			listManagerMain.showBuildNewListComponent();
 			listManagerMain.getBuildListComponent().addGermplasmToGermplasmTable(this.itemId, null);
-			
-			listManagerMain.getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
-			listManagerMain.getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
     	} else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }

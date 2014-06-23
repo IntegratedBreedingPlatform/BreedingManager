@@ -1,4 +1,4 @@
-@import url(../vaadin-retro/styles.css);
+@import url(../vaadin-retro/styles-min.css);
 
 .gcp-window-title {
     text-transform: uppercase;
@@ -18,14 +18,14 @@
 	text-transform: uppercase;
     font-size: 14px;
     font-weight: normal;
-    display: inline-block; 
+    display: inline-block;
 	color: #333333;
 }
 
 .gcp-window-title H2 {
     font-size: 12px;
     font-weight: normal;
-    display: inline-block; 
+    display: inline-block;
 	color: #333333;
 }
 
@@ -41,9 +41,23 @@
 	color: #333333;
 }
 
+.gcp-content-help-text {
+	font-style: italic;
+	padding-bottom: 10px;
+}
+
 
 .gcp-form-title {
 	font-weight: bold;
+}
+
+/* Search Bar Component Layout*/
+.v-panel-search-panel {
+	background-color: #e3e3e3;
+}
+
+.v-panel-search-panel div {
+	background-color: #e3e3e3;
 }
 
 .gcp-popup-view {
@@ -55,7 +69,7 @@
      margin: 2px 20px;
 	 margin-left: 2px;
      padding: 0px 5px;
-     text-decoration: none;	
+     text-decoration: none;
      border-radius: 50%;
 }
 
@@ -144,17 +158,42 @@
 	font-weight: bold;
 }
 
-.listManagerTree {
+
+.not-bold,
+.not-bold *,
+.v-caption-not-bold,
+.v-caption-not-bold *  {
+	font-weight: normal !important;
+}
+
+
+.listTree {
 	padding: 10px;
 	border: 1px solid e3e3e3;
 	background: #e3e3e3;
-	width: 200px;
-	height: 220px;
 	overflow: scroll;
-	border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    color: #33333;
+}
+
+.listTree {
+	padding: 10px;
+	border: 1px solid e3e3e3;
+	background: #e3e3e3;
+	overflow: scroll;
+}
+
+.listManagerTree {
+	width: 850px;
+	height: 400px;
+}
+
+.crossingManagerTree {
+	width: 850px;
+	height: 400px;
+}
+
+.saveListTree {
+	width: 315px;
+	height: 290px;
 }
 
 .listManagerTree-long {
@@ -169,26 +208,28 @@
 	font-size: 12px;
 	padding-bottom:5px;
 }
-	
+
 .v-tree-node-listManagerTreeRootNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
 
 .v-tree-node-listManagerTreeRegularParentNode {
 	padding-bottom:4px;
-	padding-top:4px;
+	margin-top:2px;
 }
 .v-tree-node-listManagerTreeRegularChildNode {
 	padding-bottom:3px;
 	padding-top:3px;
 }
-	
+
 .v-tree-node-listManagerTreeRegularParentNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/folder-icon.png);
 	background-repeat: no-repeat;
 }
@@ -200,7 +241,8 @@
 
 .v-tree-node-listManagerTreeRegularChildNode span {
 	margin-left: 5px;
-	padding-left: 25px;
+	padding-left: 25px !important;
+	background-position: left 3px top 1px !important;
 	background-image: url(images/document-icon.png);
 	background-repeat: no-repeat;
 }
@@ -224,10 +266,14 @@
 	padding: 10px;
 }
 
-.list-manager-search-bar {
+.gray-rounded-border{
 	border:1px solid #e0e0e0;
-	background: #efefef;
-	
+	border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+.italic {
+	font-style: italic;
 }
 
 .search-button {
@@ -261,14 +307,14 @@
     background: url(images/plus_icon.png) no-repeat !important;
     padding-left: 22px !important;
     padding-top: 3px !important;
-    padding-bottom: 3px !important;	
+    padding-bottom: 3px !important;
 }
 
 .link_with_eye_icon {
     background: url(images/eye_icon.png) no-repeat !important;
     padding-left: 30px !important;
 /*     padding-top: 2px !important; */
-    padding-bottom: 7px !important;	
+    padding-bottom: 7px !important;
 }
 
 .overflow_x_auto {
@@ -307,10 +353,6 @@
 .overflow_scroll {
 	overflow: scroll !important;
 }
-.v-panel-search-panel {
-	background-color: #e3e3e3;	
-	max-width: 98%;
-}
 
 /* context menu tools button */
 .v-ctxmenu .ctxmenu-menu-item:hover {
@@ -334,10 +376,10 @@
 }
 
 .v-panel {
-	border-radius: 3px;	
+	border-radius: 3px;
 }
 
-.v-panel-content .v-absolutelayout {
+.v-panel-content-dropHandlerPanel .v-absolutelayout  {
 	background-color: #e3e3e3;
 }
 
@@ -357,3 +399,354 @@
 	background: none !important;
 }
 
+/* Tabsheet formatting GCP-7370 */
+.v-tabsheet-content{
+	position:absolute;
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{height:36px;}
+.v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{height:36px;}
+
+.v-select-optiongroup-horizontalgroup .v-select-option {
+    display: inline-block;
+}
+
+
+.v-splitpanel-hsplitter, .v-splitpanel-hsplitter div {
+	width: 15px;
+    background: none;
+}
+
+.v-splitpanel-hsplitter-tabContainerStyle{
+    background: none;
+}
+
+.v-splitpanel-hsplitter-tabContainerStyle div {
+    width: 15px;
+    background: none;
+}
+
+/* hide tabContainerStyle's scrollbar at all times */
+.v-splitpanel-second-container-tabContainerStyle.v-scrollable {
+    overflow: hidden;
+}
+
+.v-splitpanel-vsplitter, .v-splitpanel-vsplitter div {
+	height: 1px;
+	background-image: none;
+}
+
+/* TabStyled Header */
+.v-button-tabStyleButton {
+	border-color: #f6f6f6;
+}
+
+.v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
+.tabHeaderStyle div div .v-button:hover,
+.tabHeaderStyle div div .v-button:hover .v-button-wrap,
+.tabHeaderStyle div div .v-button:active,
+.tabHeaderStyle div div .v-button:active .v-button-wrap
+{
+	border-color: #f6f6f6;
+	background: #f6f6f6;
+}
+
+.v-button-tabStyleButton,
+.tabHeaderStyle div div .v-button:hover,
+.tabHeaderStyle div div .v-button:active{
+	border: 1px solid #e3e3e3;
+    border-bottom: 0;
+
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.tabHeaderStyle div div .v-button:focus,
+.tabHeaderStyle div div .v-button:focus .v-button-wrap,
+.tabHeaderStyle div div .v-pressed.v-button,
+.tabHeaderStyle div div .v-pressed.v-button .v-button-wrap
+{
+	background: #ffffff;
+}
+
+.tabHeaderStyle div div .v-button:focus,
+.tabHeaderStyle div div .v-pressed.v-button{
+    border: 1px solid #e3e3e3;
+    border-bottom: 0;
+
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.v-button-tabHeaderSelectedStyle,
+.tabHeaderSelectedStyle .v-button-wrap,
+.tabHeaderSelectedStyle div div .v-button:hover,
+.tabHeaderSelectedStyle div div .v-button:hover .v-button-wrap,
+.tabHeaderSelectedStyle div div .v-button:active,
+.tabHeaderSelectedStyle div div .v-button:active .v-button-wrap
+{
+	background: #ffffff;
+}
+
+.v-button-tabHeaderSelectedStyle,
+.tabHeaderSelectedStyle div div .v-button:hover,
+.tabHeaderSelectedStyle div div .v-button:active
+{
+    border: 1px solid #e3e3e3;
+    border-bottom: 0;
+
+    -webkit-border-radius: 4px;
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius: 4px;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.tabStyleButton .v-button-caption {
+	color: #333;
+}
+
+/* Hides Required Field indicator */
+.v-required-field-indicator {
+	padding-left: 1px;
+	margin-top: 16px;
+	color: white;
+}
+
+.marked_mandatory {
+	color: red;
+}
+
+.searchPaneLayout, .white_bg_panel > div {
+	background-color: #ffffff !important;
+}
+
+.no-caption .v-caption {
+	height: 0px;
+}
+
+.v-verticallayout-no-caption > div {
+	background-color: #ffffff;
+}
+
+.v-panel-content-section_panel_layout > div {
+	background-color: #f6f6f6;
+}
+
+.listDataTableLayout {
+	background-color: #f6f6f6 !important;
+    border: 1px solid rgb(228,228,228);
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+}
+
+/* TABSHEET in Crossing Manager */
+.v-tabsheet-content-tabsheet-white > .v-tabsheet-tabsheetpanel {
+	background: #ffffff;
+}
+
+.tabsheet-white > .v-tabsheet-content {
+	border-color: #ffffff;
+}
+
+/* fix for 8270 */
+.listDetails .v-scrollable, .v-tabsheet-tabsheetpanel { width:100% !important; }
+
+
+/* Crossing Manager Settings Screen: General Layout */
+
+.cs-panel-section {
+	padding-bottom: 15px;
+}
+
+/* Crossing Manager Settings Screen: Form Layout and Styling */
+.cs .v-caption,
+.cs-form-label {
+	font-weight: bold;
+	width: 300px;
+	text-align: right;
+	white-space: normal;
+}
+
+.cs .v-formlayout-contentcell,
+.cs .v-formlayout-contentcell .v-textfield-readonly {
+	width: 100%;
+}
+
+.cs .v-textfield,
+.cs .v-filterselect-input,
+.cs-form-input {
+	width: 150px;
+}
+
+.cs-form-input {
+	padding-right: 6px;
+}
+
+.cs .v-formlayout-captioncell,
+.cs .v-slot {
+	width: 300px;
+	max-width: 300px;
+}
+
+/* Crossing Manager Settings Screen: Inline Icons */
+.v-button.cs-inline-icon .v-button-wrap {
+	width: 31px;
+	margin-top: 4px;
+}
+
+.cs-form-label {
+	padding-right: 12px;
+}
+
+/* Crossing Manager Settings Screen: Mandatory Star */
+.cs .v-caption-mandatory-field:after {
+	color: #990000;
+	content: " *";
+}
+
+/* Crossing Manager Settings Screen: Horizontal Radiobutton and Left to Right Checkbox Display */
+.cs .v-formlayout .v-radiobutton {
+	display: inline;
+	padding-left: 0;
+}
+
+.cs .v-formlayout .v-radiobutton:last-child {
+	padding-left: 12px;
+}
+
+.cs-form-label input[type="checkbox"],
+.cs-form-label label {
+	float: right;
+}
+
+.lm-title {
+	/* padding-top: 7px; */
+	padding-bottom: 4px;
+}
+
+.lm-subtitle {
+	padding-bottom: 36px;
+}
+
+.lm-list-manager-popup .lm-subtitle {
+	padding-bottom: 10px;
+}
+
+.lm-selection-help {
+	margin-top: -8px;
+}
+
+.lm-list-desc {
+	padding-top: 5px;
+	padding-bottom: 8px;
+}
+
+.lm-build-list-desc {
+	padding-bottom: 36px;
+}
+
+.lm-list-manager-main .v-button .v-button-caption {
+	font-size: 13px;
+}
+
+.v-button.lm-selection-help .v-button-caption {
+	padding-left: 14px;
+}
+
+.lm-table-select-all {
+	padding-top: 10px;
+}
+
+.lm-list-edit-list-details {
+	padding-top: 7px;
+}
+
+.lm-new-list-buttons {
+	padding-top: 7px;
+}
+
+.lm-tools-button  .v-button-info {
+	padding-left: 0;
+}
+
+.lm-tools-button .v-button-wrap {
+	padding-top: 2px;
+	padding-left: 9px;
+}
+
+.lm-panel {
+    border: 0;
+    border-top: 1px solid rgb(228,228,228);
+}
+
+
+.lm-search-results-label {
+	padding: 4px 0;
+}
+
+.lm-search-bar > div {
+	background-color: #e3e3e3;
+}
+
+.lm-search-bar div.v-horizontallayout {
+	display: inline-block !important
+}
+
+.lm-search-bar .lm-subtitle {
+	padding-bottom: 12px;
+}
+
+.lm-list-manager-popup .componenttree-expander {
+	margin-left: none;
+}
+
+.gwt-FileUpload {
+	display: inline !important;
+} 
+
+.green {
+    background: green !important;
+}
+
+.closeAllTabsListManagerPosition span span {
+	position: relative;
+	top: -4px;
+}
+
+.lm-toggle .bms-fa-chevron-left,
+.lm-toggle .bms-fa-chevron-right {
+    display: inline-block;
+    width: 10px;
+    right: 3px;
+}
+
+.v-horizontallayout .v-captiontext{
+	text-transform: none;
+	font-size: 13px;	
+}
+
+.scale-row > div {
+	overflow: scroll !important;
+	overflow-x: hidden !important;
+}

@@ -12,12 +12,17 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
+import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -39,25 +44,30 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class CrossingManagerDetailsComponent extends AbsoluteLayout 
-    implements InitializingBean, InternationalizableComponent, CrossesMadeContainer {
+    implements InitializingBean, InternationalizableComponent, SelectLocationFolderDialogSource {
     
     private static final long serialVersionUID = 9097810121003895303L;
     private final static Logger LOG = LoggerFactory.getLogger(CrossingManagerDetailsComponent.class);
     
-    private CrossingManagerMain source;
-    private Accordion accordion;
+//    private CrossingManagerMain source;
+//    private Accordion accordion;
     
-    private Component previousScreen;
+    private ManageCrossingSettingsMain source;
+//    private Component previousScreen;
     
+    private Label saveInFolderLabel;
+    private Label folderToSaveListTo;
     private Label germplasmListNameLabel;
     private Label germplasmListDescriptionLabel;
     private Label germplasmListTypeLabel;
@@ -67,6 +77,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     private ComboBox germplasmListType;
     private DateField germplasmListDate;
     private Label warnOnClickDone;
+    private Button changeLocationFolderButton;
     private Button backButton;
     private Button doneButton;
 
@@ -80,37 +91,26 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private CrossesMade crossesMade;
+//    private CrossesMade crossesMade;
         
     
     public CrossingManagerDetailsComponent(CrossingManagerMain source, Accordion accordion){
-        this.source = source;
-        this.accordion = accordion;
-        
-    }
-
-    @Override
-    public CrossesMade getCrossesMade() {
-        return this.crossesMade;
-    }
-
-
-    @Override
-    public void setCrossesMade(CrossesMade crossesMade) {
-        this.crossesMade = crossesMade;
+//        this.source = source;
+//        this.accordion = accordion;
         
     }
     
-    public void setPreviousScreen(Component backScreen){
-            this.previousScreen = backScreen; 
+    public CrossingManagerDetailsComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
+    	this.source = manageCrossingSettingsMain;
     }
 
-    
+       
     @Override
     public void afterPropertiesSet() throws Exception {
         setHeight("300px");
         setWidth("800px");
 
+        saveInFolderLabel = new Label();
         germplasmListNameLabel = new Label();
         germplasmListDescriptionLabel = new Label();
         germplasmListTypeLabel = new Label();
@@ -122,6 +122,11 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         
         germplasmListName.setMaxLength(50);
         
+        folderToSaveListTo = new Label("Program Lists");
+        folderToSaveListTo.setData(null);
+        folderToSaveListTo.addStyleName("not-bold");
+        folderToSaveListTo.setWidth("300px");
+        
         backButton = new Button();
         backButton.setData(BACK_BUTTON_ID);
         doneButton = new Button();
@@ -129,24 +134,38 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         warnOnClickDone = new Label();
         
+        changeLocationFolderButton = new Button();
+        changeLocationFolderButton.addStyleName(Reindeer.BUTTON_LINK);
+        changeLocationFolderButton.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 415799611820196717L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				displaySelectFolderDialog();
+			}
+		});
+
         germplasmListName.setWidth("250px");
         germplasmListDescription.setWidth("250px");
         germplasmListType.setWidth("250px");
         germplasmListType.setNullSelectionAllowed(false);
         
-        addComponent(germplasmListNameLabel, "top:45px; left:140px;");
-        addComponent(germplasmListDescriptionLabel, "top:75px; left:140px;");
-        addComponent(germplasmListTypeLabel, "top:105px; left:140px;");
-        addComponent(germplasmListDateLabel, "top:135px; left:140px;");
+        addComponent(saveInFolderLabel, "top:45px; left:140px;");
+        addComponent(germplasmListNameLabel, "top:75px; left:140px;");
+        addComponent(germplasmListDescriptionLabel, "top:105px; left:140px;");
+        addComponent(germplasmListTypeLabel, "top:135px; left:140px;");
+        addComponent(germplasmListDateLabel, "top:165px; left:140px;");
         
-        addComponent(germplasmListName, "top:25px; left:340px;");
-        addComponent(germplasmListDescription, "top:55px; left:340px;");
-        addComponent(germplasmListType, "top:85px; left:340px;");
-        addComponent(germplasmListDate, "top:115px; left:340px;");
+        addComponent(folderToSaveListTo, "top:28px; left:197px;");
+        addComponent(changeLocationFolderButton, "top:28px; left:497px;");
+        addComponent(germplasmListName, "top:55px; left:340px;");
+        addComponent(germplasmListDescription, "top:85px; left:340px;");
+        addComponent(germplasmListType, "top:115px; left:340px;");
+        addComponent(germplasmListDate, "top:145px; left:340px;");
         
-        addComponent(warnOnClickDone, "top:240px; left: 130px;");
-        addComponent(backButton, "top:165px; left: 340px;");
-        addComponent(doneButton, "top:165px; left: 410px;");
+        addComponent(warnOnClickDone, "top:270px; left: 130px;");
+        addComponent(backButton, "top:195px; left: 500px;");
+        addComponent(doneButton, "top:195px; left: 570px;");
         
         germplasmListDate.setResolution(DateField.RESOLUTION_DAY);
         germplasmListDate.setDateFormat(CrossingManagerMain.DATE_FORMAT);
@@ -169,12 +188,14 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
     
     @Override
     public void updateLabels() {
+    	messageSource.setCaption(saveInFolderLabel, Message.SAVE_IN_WITH_COLON);
         messageSource.setCaption(germplasmListNameLabel, Message.GERMPLASM_LIST_NAME);
         messageSource.setCaption(germplasmListDescriptionLabel, Message.GERMPLASM_LIST_DESCRIPTION);
         messageSource.setCaption(germplasmListTypeLabel, Message.GERMPLASM_LIST_TYPE);
         messageSource.setCaption(germplasmListDateLabel, Message.GERMPLASM_LIST_DATE);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(doneButton, Message.DONE);
+        messageSource.setCaption(changeLocationFolderButton, Message.CHANGE_LOCATION);
         messageSource.setCaption(warnOnClickDone, Message.CLICKING_ON_DONE_WOULD_MEAN_THE_LIST_LIST_ENTRIES_AND_GERMPLASM_RECORDS_WILL_BE_SAVED_IN_THE_DATABASE);
     }
 
@@ -215,7 +236,7 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
             //Bypass prompt
             //ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_CROSSES_MADE), 
             //    messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_CROSSES_MADE), 
-            //    messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            //    messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             //    new ConfirmDialog.Listener() {
             //        public void onClose(ConfirmDialog dialog) {
             //            if (dialog.isConfirmed()) {
@@ -232,11 +253,10 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction();
 
         try {
-            Integer listId = saveAction.saveRecords(crossesMade);
+            GermplasmList list = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
-            
-            this.source.viewGermplasmListCreated(listId);
+//            this.source.viewGermplasmListCreated(list);
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
@@ -260,8 +280,9 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
         list.setDate(Long.parseLong(formatter.format(date)));
         list.setType((String) germplasmListType.getValue()); // value = fCOde
         list.setUserId(0);
+        list.setParent((GermplasmList) folderToSaveListTo.getData());
         
-        this.crossesMade.setGermplasmList(list);
+        source.getCrossesMade().setGermplasmList(list);
     }
 
     
@@ -282,9 +303,55 @@ public class CrossingManagerDetailsComponent extends AbsoluteLayout
 
     
     public void backButtonClickAction(){
-        source.enableWizardTabs();
-        accordion.setSelectedTab(previousScreen);
+        source.backStep();
     }
 
+    @Override
+	public void setSelectedFolder(GermplasmList folder) {
+		try{
+			Deque<GermplasmList> parentFolders = new ArrayDeque<GermplasmList>();
+	        GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, folder, parentFolders);
+	        
+	        StringBuilder locationFolderString = new StringBuilder();
+	        locationFolderString.append("Program Lists");
+	        
+	        while(!parentFolders.isEmpty())
+	        {
+	        	locationFolderString.append(" > ");
+	        	GermplasmList parentFolder = parentFolders.pop();
+	        	locationFolderString.append(parentFolder.getName());
+	        }
+	        
+	        if(folder != null){
+	        	locationFolderString.append(" > ");
+	        	locationFolderString.append(folder.getName());
+	        }
+	        
+	        if(folder != null && folder.getName().length() >= 40){
+	        	this.folderToSaveListTo.setValue(folder.getName().substring(0, 47));
+	        } else if(locationFolderString.length() > 47){
+	        	int lengthOfFolderName = folder.getName().length();
+	        	this.folderToSaveListTo.setValue(locationFolderString.substring(0, (47 - lengthOfFolderName - 6)) + "... > " + folder.getName());
+	        } else{
+	        	this.folderToSaveListTo.setValue(locationFolderString.toString());
+	        }
+	        
+	        this.folderToSaveListTo.setDescription(locationFolderString.toString());
+	        this.folderToSaveListTo.setData(folder);
+	    } catch(MiddlewareQueryException ex){
+			LOG.error("Error with traversing parents of list: " + folder.getId(), ex);
+		}
+	}
+	
+	private void displaySelectFolderDialog(){
+		GermplasmList selectedFolder = (GermplasmList) folderToSaveListTo.getData();
+		SelectLocationFolderDialog selectFolderDialog = null;
+		if(selectedFolder != null){
+			selectFolderDialog = new SelectLocationFolderDialog(this, selectedFolder.getId());
+		} else{
+			selectFolderDialog = new SelectLocationFolderDialog(this, null);
+		}
+		this.getWindow().addWindow(selectFolderDialog);
+	}
 
 }

@@ -25,6 +25,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -42,6 +43,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
@@ -63,7 +65,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
     private static final long serialVersionUID = -1197900610042529900L;
     private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
-    private static final Integer MAX_LEADING_ZEROS = 10;
+    private static final Integer MAX_LEADING_ZEROS = 9;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -113,11 +115,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	this.fillWithSource = fillWithSource;
     	this.propertyIdToFill = propertyIdToFill;
     	this.parentWindow = parentWindow;
-    }
-    
-    @Override
-    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-        this.container = container;
     }
     
     @SuppressWarnings("serial")
@@ -186,6 +183,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     		});
 
         	okButton = new Button();
+        	okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         	okButton.addListener(new Button.ClickListener() {
     			private static final long serialVersionUID = -3519880320817778816L;
 
@@ -218,7 +216,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
     							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
     					return;
-    				} else if(startNumberTextField.getValue().toString().length() > 10){
+    				} else if(startNumberTextField.getValue().toString().length() > 9){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
     							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
     					return;
@@ -330,8 +328,13 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             addComponent(specifySuffixLabel, "top:150px;left:10px");
             addComponent(suffixTextField, "top:130px;left:175px");
         	addComponent(addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
-        	addComponent(okButton, "top:215px;left:200px");
-        	addComponent(cancelButton, "top:215px;left:250px");
+        	
+        	HorizontalLayout layoutButtonArea = new HorizontalLayout();
+            layoutButtonArea.setSpacing(true);
+            layoutButtonArea.addComponent(cancelButton);
+            layoutButtonArea.addComponent(okButton);
+            
+            addComponent(layoutButtonArea, "top:205px; left:200px");
         }
     }
     
@@ -366,7 +369,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         }
     }
     
-    // Action handler for Generation button
+    // Action handler for generating cross names
     public void generateNextNameButtonAction(){
         if (validateCrossNameFields()) {
             String suffix = ((String) suffixTextField.getValue()).trim();
@@ -473,7 +476,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
     
     @Override
-    public boolean updateCrossesMadeContainer() {
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
         
         if (this.container != null && this.container.getCrossesMade() != null && 
                 this.container.getCrossesMade().getCrossesMap()!= null && validateCrossNameFields() 

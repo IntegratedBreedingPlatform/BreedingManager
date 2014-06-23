@@ -1,0 +1,40 @@
+/*******************************************************************************
+ * Copyright (c) 2012, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
+
+package org.generationcp.breeding.manager.listmanager.listeners;
+
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.CollapseEvent;
+
+public class GermplasmListTreeCollapseListener implements Tree.CollapseListener{
+    
+    private static final long serialVersionUID = -5145904396164706110L;
+
+    private Layout source;
+
+    public GermplasmListTreeCollapseListener(Layout source) {
+        this.source = source;
+    }
+
+	@Override
+	public void nodeCollapse(CollapseEvent event) {
+        if (source instanceof ListTreeComponent) {
+    		((ListTreeComponent) source).setSelectedListId(event.getItemId());
+       		((ListTreeComponent) source).updateButtons(event.getItemId());
+        }		
+	}
+    
+
+}

@@ -219,7 +219,7 @@ public class SelectGermplasmListWindow extends Window implements InitializingBea
 
     @Override
     public void updateLabels() {
-        messageSource.setCaption(cancelButton, Message.CANCEL_LABEL);
+        messageSource.setCaption(cancelButton, Message.CANCEL);
         messageSource.setCaption(doneButton, Message.DONE_LABEL);
     }
 

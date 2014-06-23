@@ -124,7 +124,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     public void makeNewImportButtonClickAction(){
         ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.MAKE_NEW_IMPORT),
             messageSource.getMessage(Message.CONFIRM_REDIRECT_TO_IMPORT_WIZARD),
-            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL_LABEL), 
+            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
             new ConfirmDialog.Listener() {
                 
                 public void onClose(ConfirmDialog dialog) {

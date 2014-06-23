@@ -13,6 +13,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
+@Deprecated
 @Configurable
 public class ConfirmDialogSelectedTabCloseHandler implements TabSheet.CloseHandler{
 
@@ -23,7 +24,7 @@ public class ConfirmDialogSelectedTabCloseHandler implements TabSheet.CloseHandl
     
     @Override
     public void onTabClose(final TabSheet tabsheet, final Component tabContent) {
-        
+    	
         // if tab to be closed is a Germplasm List
         VerticalLayout content = (VerticalLayout) tabContent;
         if (content.getComponent(0) instanceof ListManagerTreeMenu) {

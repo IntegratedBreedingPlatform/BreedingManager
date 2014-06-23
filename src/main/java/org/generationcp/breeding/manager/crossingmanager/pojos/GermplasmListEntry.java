@@ -30,30 +30,52 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
     private Integer gid;
     private Integer entryId;
     private String designation;
+    private String seedSource;
+    private boolean isFromFemaleTable;
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId){
-            this.listDataId = listDataId;
+        this.listDataId = listDataId;
         this.gid = gid;
-        this.entryId = entryId;        
+        this.entryId = entryId;  
+        this.isFromFemaleTable = false;
     }
     
     public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation){
-            this.listDataId = listDataId;
+        this.listDataId = listDataId;
         this.gid = gid;
         this.entryId = entryId;        
         this.designation = designation;
+        this.isFromFemaleTable = false;
+    }
+    
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource){
+        this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+        this.designation = designation;
+        this.seedSource = seedSource;
+        this.isFromFemaleTable = false;
+    }
+    
+    public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource, boolean isFromFemaleTable){
+        this.listDataId = listDataId;
+        this.gid = gid;
+        this.entryId = entryId;        
+        this.designation = designation;
+        this.seedSource = seedSource;
+        this.isFromFemaleTable = isFromFemaleTable;
     }
     
     public Integer getListDataId() {
-            return listDataId;
-        }
+        return listDataId;
+    }
 
-        public void setListDataId(Integer listDataId) {
-            this.listDataId = listDataId;
-        }
+    public void setListDataId(Integer listDataId) {
+        this.listDataId = listDataId;
+    }
 
-        public Integer getGid() {
-            return gid;
+    public Integer getGid() {
+    	return gid;
     }
 
     public void setGid(Integer gid) {
@@ -76,11 +98,32 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         this.designation = designation;
     }
 
-    @Override
+    public String getSeedSource() {
+		return seedSource;
+	}
+
+	public void setSeedSource(String seedSource) {
+		this.seedSource = seedSource;
+	}
+	
+	public boolean isFromFemaleTable() {
+		return isFromFemaleTable;
+	}
+
+	public void setFromFemaleTable(boolean isFromFemaleTable) {
+		this.isFromFemaleTable = isFromFemaleTable;
+	}
+
+	@Override
     public int compareTo(GermplasmListEntry entry) {
         return this.entryId - entry.getEntryId();
     }
 
+	public GermplasmListEntry copy(){
+		GermplasmListEntry theCopy = new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource, this.isFromFemaleTable);
+		return theCopy;
+	}
+	
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -90,6 +133,8 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         builder.append(entryId);
         builder.append(", designation=");
         builder.append(designation);
+        builder.append(", seedSource=");
+        builder.append(seedSource);
         builder.append("]");
         return builder.toString();
     }
@@ -121,6 +166,22 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
         return true;
     }
     
-    
+    public boolean hasEqualGidWith(GermplasmListEntry entry){
+    	if(this.gid == null){
+    		if(entry.gid != null){
+    			return false;
+    		}
+    	} else {
+    		if(entry.gid == null){
+    			return false;
+    		} else{
+    			if(!this.gid.equals(entry.gid)){
+    				return false;
+    			}
+    		}
+    	}
+    	
+    	return true;
+    }
 
 }

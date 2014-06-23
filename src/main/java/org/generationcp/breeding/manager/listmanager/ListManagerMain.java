@@ -1,11 +1,20 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.ListManagerTabChangeListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -18,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ListManagerMain extends VerticalLayout implements
@@ -28,6 +38,13 @@ public class ListManagerMain extends VerticalLayout implements
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+    @Autowired
+    private WorkbenchDataManager workbenchDataManager;
+
+    @Autowired
+    private GermplasmListManager germplasmListManager;
+
     
     private HorizontalLayout titleLayout;
     private Label mainTitle;
@@ -73,8 +90,8 @@ public class ListManagerMain extends VerticalLayout implements
         buildNewListComponent = new BuildNewListComponent(this);
         
         tabSheet = new TabSheet();
-        tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.BROWSE_LISTS));
-        tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.SEARCH_LISTS_AND_GERMPLASM));
+        tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.VIEW_LISTS));
+        tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.VIEW_GERMPLASM));
         tabSheet.setHeight("580px");
         tabSheet.addListener(new ListManagerTabChangeListener(this));
         
@@ -103,12 +120,6 @@ public class ListManagerMain extends VerticalLayout implements
 	public void showBuildNewListComponent(){
 		if(buildNewListButton.isVisible()){
 			buildNewListButton.setVisible(false);
-			
-			//show the drop area in Browse List
-			this.browseListsComponent.getListManagerTreeComponent().getDropHandlerComponent().enableDropHandler();
-			
-			//show the drop area in Search Germplasm List and Germplasm
-			this.searchListsComponent.getSearchResultsComponent().getDropHandlerComponent().enableDropHandler();
 			
 			addComponent(buildNewListComponent);
 			buildNewListTitle.setVisible(true);
@@ -181,5 +192,40 @@ public class ListManagerMain extends VerticalLayout implements
 	public Label getBuildNewListTitle(){
 		return this.buildNewListTitle;
 	}
+	
+	public void updateUIForDeletedList(GermplasmList germplasmList){
+		Integer listId = germplasmList.getId();
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().removeListTab(listId);
+		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
+		
+		this.getBrowseListsComponent().getListManagerTreeComponent().removeListFromTree(germplasmList);
+		//TODO remove from Matching Lists table and Build/Edit List screen
+	}
+	
+	public void updateUIForRenamedList(Integer listId, String newName){
+		//remove from Browse Lists and Search Lists tabsheets
+		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		
+		//TODO update Matching Lists table and Build/Edit List screen
+	}
+	
+    public void lockList(Integer listId) throws MiddlewareQueryException{
+        GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+        lockList(germplasmList);
+    }	
+    
+    public void lockList(GermplasmList germplasmList) throws MiddlewareQueryException{
+        germplasmList.setStatus(germplasmList.getStatus()+100);
+        germplasmListManager.updateGermplasmList(germplasmList);
+    
+        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
+                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
+            "Locked a germplasm list.", 
+            "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
+        workbenchDataManager.addProjectActivity(projAct);
+    }	
 	
 }

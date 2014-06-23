@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -72,11 +72,13 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * @author Efficio
  *
  */
+@Deprecated
 @Configurable
 public class BuildNewListComponent extends AbsoluteLayout implements
         InitializingBean, InternationalizableComponent {
@@ -89,8 +91,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
+    public static final String SEED_SOURCE_DEFAULT = "";
 
-    private Object source;
+    private final Object source;
     
     public String DEFAULT_LIST_TYPE = "LST";
     
@@ -98,6 +101,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     private AbsoluteLayout fieldsLayout;
     private Panel fieldsPanel;
+    
+    private Label saveInLabel;
+    private Label saveInValue;
+    private Label saveInValueDummyContainer;
+    private Integer saveInListId;
+    private Button changeLocationButton;
+    private Window selectFolderWindow;
+    private ListManagerTreeFoldersComponent listManagerTreeFoldersComponent;
     
     private Label listNameLabel;
     private Label descriptionLabel;
@@ -120,7 +131,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     private static final ThemeResource ICON_TOOLS = new ThemeResource("images/tools.png");
     private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
-    public static String TOOLS_BUTTON_ID = "Tools";
+    public static String TOOLS_BUTTON_ID = "Actions";
     
     private ContextMenu menu;
     private ContextMenuItem menuExportList;
@@ -176,21 +187,110 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         fieldsPanel = new Panel();
         fieldsPanel.setWidth("100%");
-        fieldsPanel.setHeight("85px");
+        fieldsPanel.setHeight("115px");
         fieldsPanel.addStyleName("overflow_x_auto");
         fieldsPanel.addStyleName("overflow_y_hidden");
         fieldsPanel.addStyleName("no-background");
         fieldsPanel.addStyleName("no-border");
         
         fieldsLayout = new AbsoluteLayout();
-        fieldsLayout.setWidth("980px");
-        fieldsLayout.setHeight("65px");
+        fieldsLayout.setWidth("930px");
+        fieldsLayout.setHeight("95px");
         fieldsLayout.addStyleName("no-background");
+        
+        saveInLabel = new Label();
+        saveInLabel.setCaption(messageSource.getMessage(Message.SAVE_IN)+":*");
+        saveInLabel.addStyleName("bold");
+        fieldsLayout.addComponent(saveInLabel, "top:20px; left:0px;");
+
+        saveInValueDummyContainer = new Label();
+        saveInValueDummyContainer.setHeight("22px");
+        saveInValueDummyContainer.setWidth("355px");
+        saveInValueDummyContainer.addStyleName("v-textfield");
+        
+        saveInValue = new Label();
+        saveInValue.setCaption(generateSaveInString(null,false));
+        saveInValue.setDescription(generateSaveInString(null,true));
+        saveInValue.addStyleName("not-bold");
+        saveInValue.setWidth("350px");
+        
+        fieldsLayout.addComponent(saveInValueDummyContainer, "top:0px; left:65px;");
+        fieldsLayout.addComponent(saveInValue, "top:20px; left:70px;");
+        
+        changeLocationButton = new Button();
+        changeLocationButton.setCaption(messageSource.getMessage(Message.CHANGE_LOCATION));
+        changeLocationButton.addStyleName(Reindeer.BUTTON_LINK);
+        fieldsLayout.addComponent(changeLocationButton, "top:2px; left:430px;");
+        changeLocationButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				if(source instanceof ListManagerMain){
+					
+					AbsoluteLayout selectFolderWindowLayout = new AbsoluteLayout();
+					listManagerTreeFoldersComponent = new ListManagerTreeFoldersComponent((ListManagerMain) source, getBuildNewListComponent(), false, saveInListId);
+					
+					selectFolderWindowLayout.addComponent(listManagerTreeFoldersComponent, "top:10px; left:10px;");
+					
+					selectFolderWindow = new Window();
+					selectFolderWindow.setCaption(messageSource.getMessage(Message.LIST_LOCATION));
+					selectFolderWindow.setModal(true);
+					selectFolderWindow.center();
+					selectFolderWindow.setHeight("385px");
+					selectFolderWindow.setWidth("240px");
+					selectFolderWindow.setContent(selectFolderWindowLayout);
+					selectFolderWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+					selectFolderWindow.setResizable(false);
+					
+					Button cancelButton = new Button();
+					cancelButton.setCaption(messageSource.getMessage(Message.CANCEL));
+					cancelButton.setWidth("80px");
+					selectFolderWindowLayout.addComponent(cancelButton, "top:293px; left: 15px;");
+					cancelButton.addListener(new ClickListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+							if(source instanceof ListManagerMain){
+								((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+								((ListManagerMain) source).getWindow().removeWindow(selectFolderWindow);
+							}
+						}
+						
+					});
+					
+					Button selectLocationButton = new Button();
+					selectLocationButton.setCaption(messageSource.getMessage(Message.SELECT_LOCATION));
+					selectLocationButton.setWidth("120px");
+					selectLocationButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+					selectFolderWindowLayout.addComponent(selectLocationButton, "top:293px; left: 103px;");
+					selectLocationButton.addListener(new ClickListener(){
+						private static final long serialVersionUID = 1L;
+						@Override
+						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+							if(source instanceof ListManagerMain){
+								try {
+									saveInListId = Integer.valueOf(listManagerTreeFoldersComponent.getSelectedListId().toString());
+								} catch(NumberFormatException e) {
+									saveInListId = null;
+								}
+								updateSaveInDisplay();
+								((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().createTree();
+								((ListManagerMain) source).getWindow().removeWindow(selectFolderWindow);
+							}
+						}
+						
+					});
+					
+					((ListManagerMain) source).getWindow().addWindow(selectFolderWindow);
+				}
+			}
+        	
+        });
         
         listNameLabel = new Label();
         listNameLabel.setCaption(messageSource.getMessage(Message.NAME_LABEL)+":*");
         listNameLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listNameLabel, "top:20px;left:0px");
+        fieldsLayout.addComponent(listNameLabel, "top:50px;left:0px");
         
         listNameText = new TextField();
         listNameText.setWidth("200px");
@@ -199,17 +299,18 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             private static final long serialVersionUID = 2323698194362809907L;
 
-            public void valueChange(ValueChangeEvent event) {
+            @Override
+			public void valueChange(ValueChangeEvent event) {
                 hasChanges = true;
             }
             
         });
-        fieldsLayout.addComponent(listNameText, "top:0px;left:50px");        
+        fieldsLayout.addComponent(listNameText, "top:30px;left:50px");        
 
         listTypeLabel = new Label();
         listTypeLabel.setCaption(messageSource.getMessage(Message.TYPE_LABEL)+":*");
         listTypeLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listTypeLabel, "top:20px;left:260px");
+        fieldsLayout.addComponent(listTypeLabel, "top:50px;left:260px");
         
         listTypeComboBox = new ComboBox();
         listTypeComboBox.setWidth("200px");
@@ -246,12 +347,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(listTypeComboBox, "top:0px;left:302px");
+        fieldsLayout.addComponent(listTypeComboBox, "top:30px;left:302px");
 
         listDateLabel = new Label();
         listDateLabel.setCaption(messageSource.getMessage(Message.DATE_LABEL)+":*");
         listDateLabel.addStyleName("bold");
-        fieldsLayout.addComponent(listDateLabel, "top:20px;left:515px");
+        fieldsLayout.addComponent(listDateLabel, "top:50px;left:515px");
       
         listDateField = new DateField();
         listDateField.setDateFormat(DATE_FORMAT);
@@ -267,12 +368,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(listDateField, "top:0px;left:557px");
+        fieldsLayout.addComponent(listDateField, "top:30px;left:557px");
         
         descriptionLabel = new Label();
         descriptionLabel.setCaption(messageSource.getMessage(Message.DESCRIPTION_LABEL)+"*");
         descriptionLabel.addStyleName("bold");
-        fieldsLayout.addComponent(descriptionLabel, "top:55px;left:0px");
+        fieldsLayout.addComponent(descriptionLabel, "top:85px;left:0px");
         
         descriptionText = new TextField();
         descriptionText.setWidth("565px");
@@ -286,16 +387,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(descriptionText, "top:35px;left:89px");
+        fieldsLayout.addComponent(descriptionText, "top:65px;left:89px");
         
         notesLabel = new Label();
         notesLabel.setCaption(messageSource.getMessage(Message.NOTES)+":");
         notesLabel.addStyleName("bold");
-        fieldsLayout.addComponent(notesLabel, "top:20px; left: 675px;");
+        fieldsLayout.addComponent(notesLabel, "top:50px; left: 675px;");
         notesLabel.setVisible(true);
         
         notesTextArea = new TextArea();
-        notesTextArea.setWidth("250px");
+        notesTextArea.setWidth("200px");
         notesTextArea.setHeight("65px");
         notesTextArea.addStyleName("noResizeTextArea");
         notesTextArea.addListener(new Property.ValueChangeListener(){
@@ -308,7 +409,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             }
             
         });
-        fieldsLayout.addComponent(notesTextArea, "top:0px; left: 725px;");
+        fieldsLayout.addComponent(notesTextArea, "top:30px; left: 725px;");
         notesTextArea.setVisible(true);
 
         
@@ -318,15 +419,16 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         createGermplasmTable();
         
         menu = new ContextMenu();
+        menu.setWidth("255px");
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
-        menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
+        menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         
         resetMenuOptions();
         
-        toolsButton = new Button(messageSource.getMessage(Message.TOOLS));
+        toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
         toolsButton.setIcon(ICON_TOOLS);
         toolsButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
         toolsButton.addListener(new ClickListener() {
@@ -368,7 +470,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                       deleteSelectedEntries();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
                     exportListAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING))){
+                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
                     exportListForGenotypingOrderAction();
                 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
                     copyToNewListAction();
@@ -394,14 +496,14 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         resetButton.setCaption(messageSource.getMessage(Message.RESET));
         resetButton.setWidth("80px");
         resetButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
+     //   resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
         
         buttonRow.addComponent(resetButton);
         buttonRow.setComponentAlignment(resetButton, Alignment.MIDDLE_RIGHT);
         buttonRow.addComponent(saveButton);
         buttonRow.setComponentAlignment(saveButton, Alignment.MIDDLE_LEFT);
         
-        addComponent(buttonRow, "top:410px; left:0px;");
+        addComponent(buttonRow, "top:445px; left:0px;");
         
         setWidth("100%");
         setHeight("550px");
@@ -446,7 +548,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
             private static final long serialVersionUID = 1884343225476178686L;
 
-            public Action[] getActions(Object target, Object sender) {
+            @Override
+			public Action[] getActions(Object target, Object sender) {
                 return GERMPLASMS_TABLE_CONTEXT_MENU;
             }
 
@@ -464,11 +567,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
             private static final long serialVersionUID = 4275895057961980107L;
 
-            public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
+            @Override
+			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
                  hasChanges = true;
              }
         });
-        addComponent(germplasmsTable, "top:125px; left:0px;");
+        addComponent(germplasmsTable, "top:160px; left:0px;");
     }
         
     /**
@@ -486,10 +590,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             //Search Lists and Germplasms tab
             Table matchingGermplasmsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingGermplasmsTable();
-            Table matchingListsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingListsTable();
+            //Table matchingListsTable = ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getMatchingListsTable();
             
             matchingGermplasmsTable.setDragMode(TableDragMode.ROW); 
-            matchingListsTable.setDragMode(TableDragMode.ROW);
+            //matchingListsTable.setDragMode(TableDragMode.ROW);
             germplasmsTable.setDragMode(TableDragMode.ROW);
             fromDropHandler = false;
         }
@@ -503,10 +607,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         germplasmsTable.setDropHandler(new DropHandler() {
             private static final long serialVersionUID = -6676297159926786216L;
 
-            public void drop(DragAndDropEvent dropEvent) {
+            @Override
+			public void drop(DragAndDropEvent dropEvent) {
                 TableTransferable transferable = (TableTransferable) dropEvent.getTransferable();
                 
-                Table sourceTable = (Table) transferable.getSourceComponent();
+                Table sourceTable = transferable.getSourceComponent();
                 AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 setFromDropHandler(false);
                 handleDrop(sourceTable, transferable, dropData);                
@@ -536,8 +641,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 //        }
         
         //Handle drops from MATCHING GERMPLASMS TABLE
-        if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
-            
+        if(sourceTable.getData().equals(GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA)){
             List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
             
             //If table has value (item/s is/are highlighted in the source table, add that)
@@ -552,25 +656,8 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             } else {
                 addGermplasmToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
             }
-            
-        //Handle drops from MATCHING LISTS TABLE
-        } else if(sourceTable.getData().equals(SearchResultsComponent.MATCHING_LISTS_TABLE_DATA)){
-            List<Integer> selectedItemIds = getSelectedItemIds(sourceTable);
-            
-            //If table has value (item/s is/are highlighted in the source table, add that)
-            if(selectedItemIds.size()>0){
-                for(int i=0;i<selectedItemIds.size();i++){
-                    if(i==0)
-                        addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), droppedOverItemId);
-                    else
-                        addGermplasmListDataToGermplasmTable(selectedItemIds.get(i), selectedItemIds.get(i-1));
-                }
-            //Add dragged item itself
-            } else {
-                addGermplasmListDataToGermplasmTable(Integer.valueOf(transferable.getItemId().toString()), droppedOverItemId);
-            }
-            
-        //Handle drops from MATCHING GERMPLASMS TABLE
+       
+        //Handle drops from LIST DATA COMPONENT
         } else if(sourceTable.getData().equals(ListDataComponent.LIST_DATA_COMPONENT_TABLE_DATA)){
                 
                 addGermplasmToGermplasmTable(transferable, droppedOverItemId);
@@ -599,17 +686,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         }
         
         updateAddedColumnValues();
-        updateDropListEntries();
         
         //marked changes in Germplasm table
         setHasChanges(true);
     }
     
-    //update the dropHandlerListEntries
-    public void updateDropListEntries(){
-        ((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().getDropHandlerComponent().updateNoOfEntries();
-        ((ListManagerMain) source).getListManagerSearchListsComponent().getSearchResultsComponent().getDropHandlerComponent().updateNoOfEntries();
-    }
 
     /**
      * Should be called just before data is inserted into the destination table, this will copy
@@ -622,7 +703,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 addColumnContextMenu.addColumn(addablePropertyId);
             }
         }
-        //dennis
     }
     
     
@@ -631,13 +711,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
      */
     private void addGermplasmListDataToGermplasmTable(Integer listId, Object droppedOnItemIdObject){
         
-        int start = 0;
-        int listDataCount;
-        
+        GermplasmList list = new GermplasmList();
         List<GermplasmListData> listDatas = new ArrayList<GermplasmListData>();
         try {
-            listDataCount = (int) germplasmListManager.countGermplasmListDataByListId(listId);
-            listDatas = this.germplasmListManager.getGermplasmListDataByListId(listId, start, listDataCount);
+            list = germplasmListManager.getGermplasmListById(listId);
+            listDatas = list.getListData();
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in retrieving germplasm list data.", e);
             e.printStackTrace();
@@ -649,14 +727,23 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         for (GermplasmListData data : listDatas) {
         
             Item newItem;
-            if(droppedOnItemIdObject==null || this.getFromDropHandler()){
-                newItem = germplasmsTable.addItem(getNextListEntryId());
+            
+            // assign new itemId for new entries, else use listDataId as itemId
+            if (!fromEditList) {
+            	
+            	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+            	
+                if(droppedOnItemIdObject==null || this.getFromDropHandler()){
+                    newItem = germplasmsTable.addItem(getNextListEntryId());
+                } else {
+                    newItem = germplasmsTable.addItem(getNextListEntryId());
+                    //newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+                }
             } else {
-                newItem = germplasmsTable.addItem(getNextListEntryId());
-                //newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
+                newItem = germplasmsTable.addItem(data.getId());
             }
 
-            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkButtonClickListener(data.getGid().toString(), true));
+            Button gidButton = new Button(String.format("%s", data.getGid()), new GidLinkClickListener(data.getGid().toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -675,24 +762,42 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(data.getSeedSource());
             }
             else{
-            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+                if (list != null) {
+                    String seedSource = list.getName() + ": " + data.getEntryId();
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+                } else {
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                }
             }
             
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(data.getDesignation());
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
-        }        
+        }
         assignSerializedEntryNumber();
+        
+        // render additional columns
+        try {
+            ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer(listId, germplasmsTable);
+            newColumnsRenderer.render();
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in rendering additional columns.");
+            e.printStackTrace();
+        }
     }
     
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Handle drops from List Data table
+     * 
      * @param transferable
      * @param droppedOn
      */
     private void addGermplasmToGermplasmTable(TableTransferable transferable, Object droppedOnItemIdObject){
         Integer itemId = (Integer) transferable.getItemId();
-        Table sourceTable = (Table) transferable.getSourceComponent();
+        Table sourceTable = transferable.getSourceComponent();
         
         List<Integer> itemIds = getSelectedItemIds(sourceTable);
 
@@ -701,76 +806,81 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
         setupInheritedColumnsFromSourceTable(sourceTable, germplasmsTable);
         
-        if(itemIds.size()>0){
-            
-            for(Integer currentItemId : itemIds){
-                if(droppedOnItemIdObject==null || this.getFromDropHandler()){
-                    newItem = germplasmsTable.addItem(getNextListEntryId());
-                } else {
-                	newItemId = getNextListEntryId();
-                    newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, newItemId);
-                    droppedOnItemIdObject = newItemId;
-                    System.out.println("new item: "+droppedOnItemIdObject);
-                    System.out.println("gid: "+Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption()));
-                }
-                
-                Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
-                
-                Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-
-                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
-                newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
-                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
-                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
-                
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
-                    newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
-                    newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
-                    newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
-                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
-                    newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
-                    newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
-                    newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
-            }
-        } else {
-            if(droppedOnItemIdObject==null || this.getFromDropHandler())
+        if(itemIds.size() == 0){
+            itemIds.add(itemId);
+        }
+        
+        for(Integer currentItemId : itemIds){
+        	
+        	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+        	
+            if(droppedOnItemIdObject==null || this.getFromDropHandler()){
                 newItem = germplasmsTable.addItem(getNextListEntryId());
-            else
-                newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, getNextListEntryId());
-
-            Integer gid = Integer.valueOf(((Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
+            } else {
+                newItemId = getNextListEntryId();
+                newItem = germplasmsTable.addItemAfter(droppedOnItemIdObject, newItemId);
+                droppedOnItemIdObject = newItemId;
+            }
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-
             newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
-            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
-            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
-            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
             
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
-                newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
-                newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
-                newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
-                newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
-                newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
-                newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
-            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
-                newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(itemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
+            //set seed source to "[Germplasm List Name]: [Entry ID]"
+            if (sourceTable.getParent() instanceof ListDataComponent) {
+                ListDataComponent tableParent = (ListDataComponent) sourceTable.getParent();
+                String seedSource = tableParent.getListName() + ": ";
+                List<GermplasmListData> listDatas = tableParent.getListDatas();
+                for (GermplasmListData listData : listDatas) {
+                    if (currentItemId == listData.getId()) {
+                        seedSource = seedSource + listData.getEntryId();
+                        break;
+                    }
+                }
+                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+            } else {
+                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+            }
+            
+            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
+            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
+            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
+            
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
+                newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
+                newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
+                newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
+                newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
+                newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID))
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).getValue());
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME))
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).getValue());
+            }
+            if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).getValue());
+            }
         }
         
         assignSerializedEntryNumber();
@@ -779,6 +889,10 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Copy to New List tools context menu
+     * 
      * @param transferable
      * @param droppedOn
      */
@@ -791,6 +905,9 @@ public class BuildNewListComponent extends AbsoluteLayout implements
         
         if(itemIds.size()>0){
             for(Integer currentItemId : itemIds){
+            	
+            	droppedOnItemIdObject = null; //force to add item at the bottom, for now..
+            	
                 if(droppedOnItemIdObject==null || this.getFromDropHandler())
                     newItem = germplasmsTable.addItem(getNextListEntryId());
                 else
@@ -798,30 +915,67 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 
                 Integer gid = Integer.valueOf(((Button) sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption());
                 
-                Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+                Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+                
+                //set seed source to "[Germplasm List Name]: [Entry ID]"
+                if (sourceTable.getParent() instanceof ListDataComponent) {
+                    ListDataComponent tableParent = (ListDataComponent) sourceTable.getParent();
+                    String seedSource = tableParent.getListName() + ": ";
+                    List<GermplasmListData> listDatas = tableParent.getListDatas();
+                    for (GermplasmListData listData : listDatas) {
+                        if (currentItemId == listData.getId()) {
+                            seedSource = seedSource + listData.getEntryId();
+                            break;
+                        }
+                    }
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(seedSource);
+                } else {
+                    newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(SEED_SOURCE_DEFAULT);
+                }
                 newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue());
                 newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(sourceTable.getItem(currentItemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).getValue());
                 
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+                //TODO these if statements are repeated somewhere else in this class, let us think about putting them in a method which can be called in the places where this is needed
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
                     newItem.getItemProperty(AddColumnContextMenu.LOCATIONS).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.LOCATIONS).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_ID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_ID).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.PREFERRED_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.PREFERRED_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
+                    newItem.getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.GERMPLASM_DATE).getValue());
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NAME).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_ABBREV).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_ABBREV).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_NUMBER).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_NUMBER).getValue());
-                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
                     newItem.getItemProperty(AddColumnContextMenu.METHOD_GROUP).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.METHOD_GROUP).getValue());
-                
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_GID).getValue());
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME).getValue());
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_GID).getValue());
+                }
+                if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                    newItem.getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).setValue(sourceTable.getItem(currentItemId).getItemProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME).getValue());
+                }
             }
         }
         assignSerializedEntryNumber();
@@ -831,6 +985,12 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     
     /**
      * Add a germplasm to a table, adds it after/before a certain germplasm given the droppedOn item id
+     * 
+     * Called by:
+     * - Drop handler from Matching Germplasms table
+     * - Save to List button in Germplasm Details
+     * - Copy to New List context menu from Matching Germplasms table
+     * 
      * @param gid
      * @param droppedOn
      */
@@ -847,7 +1007,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 newItem = germplasmsTable.addItem(getNextListEntryId());
             }
             
-            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(gid.toString(), true));
+            Button gidButton = new Button(String.format("%s", gid), new GidLinkClickListener(gid.toString(), true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
             String crossExpansion = "";
@@ -868,7 +1028,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             if(newItem!=null && gidButton!=null)
                 newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("From List Manager");
+            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("Germplasm Search");
             newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(preferredName);
             newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
             
@@ -1123,18 +1283,19 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
-                listManagerCopyToNewListDialog.setWidth("700px");
-                listManagerCopyToNewListDialog.setHeight("350px");
+                listManagerCopyToNewListDialog.setWidth("617px");
+                listManagerCopyToNewListDialog.setHeight("230px");
+                listManagerCopyToNewListDialog.setResizable(true);
                 
-                try {
-                    
-                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(((ListManagerMain) source).getWindow(), listManagerCopyToNewListDialog, listName, germplasmsTable,getCurrentUserLocalId(), true));
-                    ((ListManagerMain) source).getWindow().addWindow(listManagerCopyToNewListDialog);
-                    
-                } catch (MiddlewareQueryException e) {
-                    LOG.error("Error copying list entries.", e);
-                    e.printStackTrace();
-                }
+                // COMMENT OUT codes, causing compile error in side by side implementation	
+//                try {
+//                    listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(((ListManagerMain) source).getWindow(), listManagerCopyToNewListDialog, listName, germplasmsTable,getCurrentUserLocalId(), true));
+//                    ((ListManagerMain) source).getWindow().addWindow(listManagerCopyToNewListDialog);
+//                    
+//                } catch (MiddlewareQueryException e) {
+//                    LOG.error("Error copying list entries.", e);
+//                    e.printStackTrace();
+//                }
             }
             
         }
@@ -1266,8 +1427,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             germplasmsTable.removeItem(selectedItemId);
         }
         assignSerializedEntryNumber();
-        
-        this.updateDropListEntries(); //update the drop handler count
     }
 
     public void setupSaveButtonClickListener(){
@@ -1280,26 +1439,51 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     }
     
     private void updateAddedColumnValues(){
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS))
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.LOCATIONS)){
             addColumnContextMenu.setLocationColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_ID)){
             addColumnContextMenu.setPreferredIdColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.PREFERRED_NAME)){
             addColumnContextMenu.setPreferredNameColumnValues(false);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.GERMPLASM_DATE)){
+            addColumnContextMenu.setGermplasmDateColumnValues(false);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NAME)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_ABBREV)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_NUMBER)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP))
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.METHOD_GROUP)){
             addColumnContextMenu.setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_GID)){
+            addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+            addColumnContextMenu.setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_GID)){
+            addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+        }
+        if(addColumnContextMenu.propertyExists(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+            addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+        }
     }
     
-    public void viewEditList(int id){
+    public void viewEditList(int listId){
         
+    	//ResetListButtonClickListener resetListButtonClick = new ResetListButtonClickListener(this, messageSource);
+    	//resetListButtonClick.resetListBuilder();
+    	
     	this.fromEditList = true;
-        this.germplasmListId = id;
+        this.germplasmListId = listId;
         Label buildNewListTitle = ((ListManagerMain) source).getBuildNewListTitle();
         buildNewListTitle.setValue("EDIT LIST");
         
@@ -1333,11 +1517,11 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             
             this.notesTextArea.setValue(notes);
             
+            updateSaveInDisplay(currentlySavedGermplasmList.getParentId());
+            
             //List Data Table
             germplasmsTable.removeAllItems();
             addGermplasmListDataToGermplasmTable(germplasmListId, null);
-            updateDropListEntries();
-            
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in loading field values.", e);
             e.printStackTrace();
@@ -1412,4 +1596,63 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 	public void setFromEditList(boolean fromEditList) {
 		this.fromEditList = fromEditList;
 	}
+	
+	private String generateSaveInString(Integer listId, Boolean returnFull){
+		
+		String finalPart = "";
+		String toReturn = "";
+		int shortenedLength = 50;
+		
+		Integer parentListId;
+		Integer previousParentListId=null;
+		
+		try {
+			if(listId!=null && listId!=0){
+				finalPart = " > "+germplasmListManager.getGermplasmListById(listId).getName();
+				toReturn = finalPart;
+			}
+			GermplasmList parentList = germplasmListManager.getGermplasmListById(listId);
+			if(parentList!=null){
+				parentListId = parentList.getParentId();
+				GermplasmList parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+				
+				while(parentListId!=null && parentListId!=0 && previousParentListId!=parentListId && parentFolder!=null){
+					parentFolder = germplasmListManager.getGermplasmListById(parentListId);
+					if(parentFolder!=null && parentFolder.getName()!=null && parentFolder.getName()!="")
+						toReturn = " > "+parentFolder.getName()+toReturn;
+					previousParentListId = parentListId;
+					parentListId = parentFolder.getParentId();
+				}
+			}
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		toReturn = "Program Lists" + toReturn;
+		
+		if(!returnFull && toReturn.length()>shortenedLength){
+			toReturn = toReturn.substring(0, shortenedLength - finalPart.length()).trim()+".."+finalPart;
+		}
+		
+		return toReturn;
+	}
+	
+	public void updateSaveInDisplay(){
+		saveInValue.setCaption(generateSaveInString(saveInListId, false));
+		saveInValue.setDescription(generateSaveInString(saveInListId, true));
+	}
+	
+	public void updateSaveInDisplay(Integer listId){
+		saveInListId = listId;
+		updateSaveInDisplay();
+	}	
+	
+	public BuildNewListComponent getBuildNewListComponent(){
+		return this;
+	}
+	
+	public Integer getSaveInListId(){
+		return saveInListId;
+	}
 }
+

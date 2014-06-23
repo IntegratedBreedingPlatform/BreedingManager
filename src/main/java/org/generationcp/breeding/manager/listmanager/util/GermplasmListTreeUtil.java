@@ -3,11 +3,16 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -28,12 +33,11 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
@@ -43,10 +47,10 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
-
+	
 	private static final long serialVersionUID = 1L;
 
-	private ListManagerTreeComponent source;
+	private ListTreeComponent source;
 	private Tree targetTree;
 	private static final String NO_SELECTION = "Please select a folder item";
     public final static String NOT_FOLDER = "Selected item is not a folder.";
@@ -54,7 +58,6 @@ public class GermplasmListTreeUtil implements Serializable {
     public final static String HAS_CHILDREN = "Folder has child items.";
 
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
-    public static String MY_LIST = "";
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -66,7 +69,7 @@ public class GermplasmListTreeUtil implements Serializable {
     private WorkbenchDataManager workbenchDataManager;
     
     
-	public GermplasmListTreeUtil(ListManagerTreeComponent source, Tree targetTree){
+	public GermplasmListTreeUtil(ListTreeComponent source, Tree targetTree){
 		this.source = source;
 		this.targetTree = targetTree;
 		setupTreeDragAndDropHandler();
@@ -74,14 +77,14 @@ public class GermplasmListTreeUtil implements Serializable {
 	
     public void setParent(Object sourceItemId, Object targetItemId){
 
-    	if(sourceItemId.equals(ListManagerTreeComponent.LOCAL) || sourceItemId.equals(ListManagerTreeComponent.CENTRAL)){
+    	if(sourceItemId.equals(ListTreeComponent.LOCAL) || sourceItemId.equals(ListTreeComponent.CENTRAL)){
     		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_ROOT_FOLDERS));
     		return;
     	}
     	
-    	if(targetItemId!=null && targetItemId.equals(ListManagerTreeComponent.CENTRAL)){
+    	if(targetItemId!=null && targetItemId.equals(ListTreeComponent.CENTRAL)){
     		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
@@ -91,9 +94,9 @@ public class GermplasmListTreeUtil implements Serializable {
     	Integer sourceId = null;
     	Integer targetId = null;
     	
-    	if(sourceItemId!=null && !sourceItemId.equals(ListManagerTreeComponent.LOCAL) && !sourceItemId.equals(ListManagerTreeComponent.CENTRAL))
+    	if(sourceItemId!=null && !sourceItemId.equals(ListTreeComponent.LOCAL) && !sourceItemId.equals(ListTreeComponent.CENTRAL))
     		sourceId = Integer.valueOf(sourceItemId.toString());
-    	if(targetItemId!=null && !targetItemId.equals(ListManagerTreeComponent.LOCAL) && !targetItemId.equals(ListManagerTreeComponent.CENTRAL))
+    	if(targetItemId!=null && !targetItemId.equals(ListTreeComponent.LOCAL) && !targetItemId.equals(ListTreeComponent.CENTRAL))
     		targetId = Integer.valueOf(targetItemId.toString());
     	
 		if(sourceId!=null && sourceId>0){
@@ -131,15 +134,17 @@ public class GermplasmListTreeUtil implements Serializable {
         //apply to UI
         if(targetItemId==null || targetTree.getItem(targetItemId)==null){
         	targetTree.setChildrenAllowed(sourceItemId, true);
-        	targetTree.setParent(sourceItemId, ListManagerTreeComponent.LOCAL);
-        	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
+        	targetTree.setParent(sourceItemId, ListTreeComponent.LOCAL);
+        	targetTree.expandItem(ListTreeComponent.LOCAL);
 		} else {
 			targetTree.setChildrenAllowed(targetItemId, true);
         	targetTree.setParent(sourceItemId, targetItemId);
         	targetTree.expandItem(targetItemId);
 		}
+        
+        source.setSelectedListId(sourceItemId);
         targetTree.select(sourceItemId);
-    	
+        targetTree.setValue(sourceItemId);
     }
 
     public void setupTreeDragAndDropHandler(){
@@ -175,12 +180,14 @@ public class GermplasmListTreeUtil implements Serializable {
 		        } else if (location == VerticalDropLocation.MIDDLE && targetList.getType().equals("FOLDER")){
 	        		setParent(sourceItemId, targetItemId);
 		        //Dropped on a list with parent != LOCAL
-		        } else if (targetList!=null && targetList.getParentId()>=0){
+		        } else if (targetList!=null && targetList.getParentId()!=null && targetList.getParentId()>=0){
 		        	setParent(sourceItemId, targetList.getParentId());
 		        //Dropped on a list with parent == LOCAL 
 				} else {
 					setParent(sourceItemId, "LOCAL");
 				}
+		        
+		        source.refreshRemoteTree();
 			}
 
 			@Override
@@ -192,10 +199,17 @@ public class GermplasmListTreeUtil implements Serializable {
     }
     
     public void addFolder(final Object parentItemId){
+    	final Window mainWindow;
+    	// show window
+        if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
     	
         final Window w = new Window("Add new folder");
         w.setWidth("300px");
-        w.setHeight("150px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -208,6 +222,7 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label("Folder Name");
+        l.addStyleName(AppConstants.CssStyles.BOLD);
         final TextField name = new TextField();
         name.setMaxLength(50);
 
@@ -216,23 +231,20 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
-
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+     
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = -4225085062616113624L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
                 Integer newFolderId = null;
                 
                 if(name.getValue().toString().replace(" ","").equals("")){
                 	MessageNotifier.showWarning(source.getWindow(),
                             messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
+                            messageSource.getMessage(Message.INVALID_ITEM_NAME));
                 	return;
                 }
 
@@ -243,7 +255,10 @@ public class GermplasmListTreeUtil implements Serializable {
                 	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
                 	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.CENTRAL));
 
-                	if(matchingGermplasmLists.size()==0) {
+                	if(matchingGermplasmLists.size()==0 
+                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PROGRAM_LISTS.toLowerCase()) 
+                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PUBLIC_LISTS.toLowerCase())		
+                			) {
                 		
                         User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
                         Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
@@ -269,8 +284,9 @@ public class GermplasmListTreeUtil implements Serializable {
 	                	
 	            	} else {
 	        			MessageNotifier.showWarning(source.getWindow(),
-	                            messageSource.getMessage(Message.INVALID_INPUT), 
-	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
+	                            messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));        
+	        			return;
 	            	}
                 	
                 	
@@ -297,66 +313,81 @@ public class GermplasmListTreeUtil implements Serializable {
     		        
                     //If parent of list does not exist
     		        if (parentList==null && !source.isFolder(parentItemId)){
-    		        	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
-    		        	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
+    		        	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+    		        	targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
     		        //If parent of list is root node
     		        } else if (parentList!=null && !source.isFolder(parentItemId) && (parentList.getParentId()==null || parentList.getParentId()==0)){
-    		        	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
-        		        targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
+    		        	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+        		        targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
                     //If folder
     		        } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
     		        	targetTree.setChildrenAllowed(parentItemId, true);
                         Boolean parentSet = targetTree.setParent(newFolderId, parentItemId);
                         if(!parentSet)
-                        	parentSet = targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
+                        	parentSet = targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
                     //If list, add to parent
                     } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null) {
                     	targetTree.setChildrenAllowed(parentList.getParentId(), true);
                     	targetTree.setParent(newFolderId, parentList.getParentId());
                     //All else, add to LOCAL list
                     } else {
-                    	targetTree.setChildrenAllowed(ListManagerTreeComponent.LOCAL, true);
-                    	targetTree.setParent(newFolderId, ListManagerTreeComponent.LOCAL);
+                    	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+                    	targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
                     }
 
                     if (targetTree.getValue() != null) {
                         if (!targetTree.isExpanded(targetTree.getValue()))
                             targetTree.expandItem(parentItemId);
                     } else {
-                    	targetTree.expandItem(ListManagerTreeComponent.LOCAL);
+                    	targetTree.expandItem(ListTreeComponent.LOCAL);
 					}
                     targetTree.select(newFolderId);
                     source.updateButtons(newFolderId);
                 }
 
                 // close popup
-                source.getWindow().removeWindow(event.getComponent().getWindow());
+                mainWindow.removeWindow(event.getComponent().getWindow());
+                source.refreshRemoteTree();
+                
             }
         });
 
-        Button cancel = new Button("Cancel");
+        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
         cancel.addListener(new Button.ClickListener() {
-            @Override
+            private static final long serialVersionUID = -971341450278698928L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	mainWindow.removeWindow(w);
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+    	mainWindow.addWindow(w);    	
     }    
 
     
-    public void renameFolder(final Integer listId){
-
+    public void renameFolderOrList(final Integer listId, final ListTreeActionsListener listener){
+    	final Window mainWindow;
+		if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
+        
     	GermplasmList germplasmList = null;
         try {
 			germplasmList = germplasmListManager.getGermplasmListById(listId);
@@ -365,16 +396,9 @@ public class GermplasmListTreeUtil implements Serializable {
 		}
     	
         final Window w = new Window();
-        
-    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		w.setCaption("Rename Folder");
-    	} else {
-    		w.setCaption("Rename List");
-    	}
-    	
-        
-        w.setWidth("300px");
-        w.setHeight("150px");
+        w.setCaption("Rename Item");
+        w.setWidth("320px");
+        w.setHeight("160px");
         w.setModal(true);
         w.setResizable(false);
         w.setStyleName(Reindeer.WINDOW_LIGHT);
@@ -387,12 +411,8 @@ public class GermplasmListTreeUtil implements Serializable {
         formContainer.setSpacing(true);
 
         Label l = new Label();
-        
-    	if(germplasmList.getType().equalsIgnoreCase("FOLDER")){
-    		l.setCaption("Folder Name");
-    	} else {
-    		l.setCaption("List Name");
-    	}
+        l.addStyleName(AppConstants.CssStyles.BOLD);
+        l.setValue(messageSource.getMessage(Message.ITEM_NAME));
 
         final TextField name = new TextField();
         name.setMaxLength(50);
@@ -406,88 +426,48 @@ public class GermplasmListTreeUtil implements Serializable {
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.setSpacing(true);
-        btnContainer.setWidth("100%");
 
-        Label spacer = new Label("");
-        btnContainer.addComponent(spacer);
-        btnContainer.setExpandRatio(spacer, 1.0F);
-
-        Button ok = new Button("Ok");
+        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        ok.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                Integer newItem = null;
-                
-                if(name.getValue().toString().replace(" ","").equals("")){
-                	MessageNotifier.showWarning(source.getWindow(),
-                            messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_LIST_FOLDER_NAME));
-                	return;
-                }
-                
-                try {
-                	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-                	
-                	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
-                	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.CENTRAL));
-                	
-                	Boolean nameAlreadyExisting = false;
-                	for(GermplasmList glist : matchingGermplasmLists){
-                		if(!glist.getId().equals(germplasmList.getId())){
-                			nameAlreadyExisting = true;
-                		}
-                	}
+        ok.addListener(new RenameListTreeItemListener(source, listener, listId, name));
 
-                	if(!nameAlreadyExisting){
-	                	germplasmList.setName(name.getValue().toString());
-	                	germplasmListManager.updateGermplasmList(germplasmList);
-	                	
-	                    targetTree.setItemCaption(listId, name.getValue().toString());
-	                    targetTree.select(listId);
-                	} else {
-            			MessageNotifier.showWarning(source.getWindow(),
-                                messageSource.getMessage(Message.INVALID_INPUT), 
-                                messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));                		
-                	}
-                	
-                } catch (MiddlewareQueryException e) {
-                	MessageNotifier.showWarning(source.getWindow(),
-                            messageSource.getMessage(Message.ERROR_DATABASE), 
-                            messageSource.getMessage(Message.ERROR_REPORT_TO));
-                } catch (Error e) {
-                	MessageNotifier.showError(source.getWindow(), 
-                            messageSource.getMessage(Message.ERROR_INTERNAL), 
-                            messageSource.getMessage(Message.ERROR_REPORT_TO));
-        			e.printStackTrace();
-                    return;
-                }
-
-                source.getWindow().removeWindow(event.getComponent().getWindow());
-            }
-        });
-
-        Button cancel = new Button("Cancel");
+        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
         cancel.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = -5337463407790224943L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	mainWindow.removeWindow(w);
             }
         });
 
-        btnContainer.addComponent(ok);
         btnContainer.addComponent(cancel);
+        btnContainer.addComponent(ok);
 
+        HorizontalLayout spacerLayout = new HorizontalLayout();
+        spacerLayout.setHeight("5px");
+        
         container.addComponent(formContainer);
+        container.addComponent(spacerLayout);
         container.addComponent(btnContainer);
+        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
 
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+        mainWindow.addWindow(w);
+        source.refreshRemoteTree();
     }
 
-	public void deleteFolderOrList(final Integer lastItemId, final TabSheet tabSheet) {
+	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
+			final ListTreeActionsListener listener) {
+		
+		final Window mainWindow;
+        if (source.usedInSubWindow()){
+        	mainWindow = source.getWindow().getParent();
+        } else {        	
+        	mainWindow = source.getWindow();   	
+        }  
 		 
 		GermplasmList gpList = null; 
 		try {
@@ -510,6 +490,8 @@ public class GermplasmListTreeUtil implements Serializable {
 				throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
 			}
 
+			source.refreshRemoteTree();
+			
 			try {
 				if (hasChildren(gpList.getId())) {
 					throw new Error(HAS_CHILDREN);
@@ -519,35 +501,28 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 		} catch (Error e) {
-			MessageNotifier.showError(source.getWindow(),messageSource.getMessage(Message.ERROR),e.getMessage());
+			MessageNotifier.showError(mainWindow,messageSource.getMessage(Message.ERROR),e.getMessage());
 			return;
 		}
 
 		final GermplasmList finalGpList = gpList;
-		ConfirmDialog.show(source.getWindow(),
-				messageSource.getMessage(Message.DELETE_LIST_FOLDER,targetTree.getItemCaption(lastItemId)),
-				messageSource.getMessage(Message.DELETE_LIST_FOLDER_CONFIRM,targetTree.getItemCaption(lastItemId)),
-				messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+		ConfirmDialog.show(mainWindow,
+			messageSource.getMessage(Message.DELETE_ITEM),
+			messageSource.getMessage(Message.DELETE_ITEM_CONFIRM),
+			messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+				private static final long serialVersionUID = -6164460688355101277L;
+
 			@Override
 			public void onClose(ConfirmDialog dialog) {
 				if (dialog.isConfirmed()) {
 					try {
-						GermplasmList parent = germplasmListManager.getGermplasmListById(finalGpList.getId()).getParent();
-						germplasmListManager.deleteGermplasmList(finalGpList);
-						targetTree.removeItem(lastItemId);
-						targetTree.select(null);
-						if (parent == null) {
-							targetTree.select(MY_LIST);
-						} else {
-							targetTree.select(parent.getId());
-							targetTree.expandItem(parent.getId());
-						}
+						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
+								workbenchDataManager, source.getWindow(), messageSource, "item");
+						listTreeComponent.removeListFromTree(finalGpList);
+						((BreedingManagerApplication) mainWindow.getApplication()).getListManagerMain().updateUIForDeletedList(finalGpList);
 						
-						Tab tab = Util.getTabWithDescription(tabSheet, finalGpList.getId().toString());
-						if(tab!=null)
-							tabSheet.removeTab(tab);
 					} catch (Error e) {
-						MessageNotifier.showError(source.getWindow(), e.getMessage(), "");
+						MessageNotifier.showError(mainWindow, e.getMessage(), "");
 					} catch (MiddlewareQueryException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -561,5 +536,106 @@ public class GermplasmListTreeUtil implements Serializable {
     public boolean hasChildren(Integer id) throws MiddlewareQueryException {
         return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
     }
+    
+    public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
+    	if(list == null){
+    		return;
+    	} else{
+    		Integer parentId = list.getParentId();
+    		
+    		if(parentId != null && parentId != 0){
+	    		GermplasmList parent = germplasmListManager.getGermplasmListById(list.getParentId());
+	    		
+	    		if(parent != null){
+	    			parents.push(parent);
+	    			traverseParentsOfList(germplasmListManager, parent, parents);
+	    		}
+    		}
+    		
+    		return;
+    	}
+    }
+    
+    private final class RenameListTreeItemListener implements
+			Button.ClickListener {
+		private static final long serialVersionUID = -8013177728518110200L;
+		private ListTreeComponent listTreeComponent;
+		private final ListTreeActionsListener listener;
+		private final Integer listId;
+		private final TextField name;
+		
+		private RenameListTreeItemListener(ListTreeComponent listTreeComponent, ListTreeActionsListener listener,
+				Integer listId, TextField name) {
+			this.listTreeComponent = listTreeComponent; 
+			this.listener = listener;
+			this.listId = listId;
+			this.name = name;
+		}
+		
+		@Override
+		public void buttonClick(Button.ClickEvent event) {
+			final Window mainWindow;
+			if (source.usedInSubWindow()){
+	        	mainWindow = source.getWindow().getParent();
+	        } else {        	
+	        	mainWindow = source.getWindow();   	
+	        }  
+	        
+		    String newName = name.getValue().toString();
+			if(newName.replace(" ","").equals("")){
+		    	MessageNotifier.showError(source.getWindow(),
+		                messageSource.getMessage(Message.INVALID_INPUT), 
+		                messageSource.getMessage(Message.INVALID_ITEM_NAME));
+		    	return;
+		    }
+		    
+		    try {
+		    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+		    	
+		    	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(newName, 0, 1, Operation.EQUAL, Database.LOCAL);
+		    	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(newName, 0, 1, Operation.EQUAL, Database.CENTRAL));
+		    	
+		    	Boolean nameAlreadyExisting = false;
+		    	for(GermplasmList glist : matchingGermplasmLists){
+		    		if(!glist.getId().equals(germplasmList.getId())){
+		    			nameAlreadyExisting = true;
+		    		}
+		    	}
+		
+		    	if(!nameAlreadyExisting){
+		        	germplasmList.setName(newName);
+		        	germplasmListManager.updateGermplasmList(germplasmList);
+		        	
+		            targetTree.setItemCaption(listId, newName);
+		            targetTree.select(listId);
+		            
+		            //rename tabs
+		            if (listener != null){
+		            	listener.updateUIForRenamedList(germplasmList, newName);
+		            }
+		    	} else {
+					MessageNotifier.showWarning(source.getWindow(),
+		                    messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
+		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)); 
+					return;
+		    	}
+		    	
+		    } catch (MiddlewareQueryException e) {
+		    	MessageNotifier.showWarning(source.getWindow(),
+		                messageSource.getMessage(Message.ERROR_DATABASE), 
+		                messageSource.getMessage(Message.ERROR_REPORT_TO));
+		    } catch (Error e) {
+		    	MessageNotifier.showError(source.getWindow(), 
+		                messageSource.getMessage(Message.ERROR_INTERNAL), 
+		                messageSource.getMessage(Message.ERROR_REPORT_TO));
+				e.printStackTrace();
+		        return;
+		    }
+		
+		    mainWindow.removeWindow(event.getComponent().getWindow());
+		    listTreeComponent.refreshRemoteTree();
+		}
+}
+
     
 }

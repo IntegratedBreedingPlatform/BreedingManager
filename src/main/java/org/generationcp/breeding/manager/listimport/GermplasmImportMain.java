@@ -57,12 +57,18 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private Label crossingManagerTitle;
     
 	private Boolean viaToolURL;
+	private boolean viaPopup; 
 	
     public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL){
         this.parent = parent;
         this.viaToolURL = viaToolURL;
     }
 
+    public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, boolean viaPopup){
+        this.parent = parent;
+        this.viaToolURL = viaToolURL;
+        this.viaPopup = viaPopup;
+    }
     @Override
     public void afterPropertiesSet() throws Exception {
         setMargin(false);
@@ -78,7 +84,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         
         wizardScreenOne = new GermplasmImportFileComponent(this, accordion);
         wizardScreenTwo = new SpecifyGermplasmDetailsComponent(this, accordion, viaToolURL);
-        wizardScreenThree = new SaveGermplasmListComponent(this, accordion);
+        wizardScreenThree = new SaveGermplasmListComponent(this, accordion, viaPopup);
         
         wizardScreenOne.setNextScreen(wizardScreenTwo);
         wizardScreenTwo.setNextScreen(wizardScreenThree);
@@ -171,7 +177,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     }
 
     public void reset(){
-        this.parent.replaceComponent(this, new GermplasmImportMain(this.parent, viaToolURL));
+        this.parent.replaceComponent(this, new GermplasmImportMain(this.parent, viaToolURL, viaPopup));
     }
     
     public void setTitleContent(String guideMessage){

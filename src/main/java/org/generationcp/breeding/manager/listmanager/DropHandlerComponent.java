@@ -14,6 +14,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Table.TableTransferable;
 
+@Deprecated
 public class DropHandlerComponent extends Panel {
 
 	private static final long serialVersionUID = 1L;
@@ -39,6 +40,7 @@ public class DropHandlerComponent extends Panel {
 		
 		setWidth(width + "px");
 		setHeight("105px");
+		addStyleName("dropHandlerPanel");
 		
 		initializeComponents();
 		
@@ -62,7 +64,7 @@ public class DropHandlerComponent extends Panel {
 		
 		dropLayout.addComponent(dropTable,"top:15px;left:15px");
 		
-		dropLayout.addComponent(new Label("<style>.v-panel-content .v-absolutelayout div.drop-handler  { border-radius: 0px; text-align: center } " +
+		dropLayout.addComponent(new Label("<style>.v-panel-content .v-absolutelayout div.drop-handler  { border-radius: 0px; text-align: center; } " +
 				".v-panel-content .v-absolutelayout .drop-handler div.v-table-cell-wrapper { background-color: #fff; height: 45px; width: " + getColumnWidth(width) + "; display: table-cell; vertical-align: middle; white-space: normal;} " +
 				".v-panel-content .v-absolutelayout .drop-handler div.v-table-body-wrapper { background-color: #fff; } " +
 				".v-panel-content .v-absolutelayout  div.drop-handler tr.v-table-row { background-color: #fff; } " +

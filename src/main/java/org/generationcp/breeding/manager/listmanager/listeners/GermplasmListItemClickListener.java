@@ -12,7 +12,8 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 
 public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener{
@@ -38,25 +38,27 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
     @Override
     public void itemClick(ItemClickEvent event) {
 
-        if (source instanceof ListManagerTreeComponent) {
+        if (source instanceof ListTreeComponent) {
         	String item = event.getItemId().toString();
         	
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
 	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
 	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
-	            
 	                    try {
-	                        ((ListManagerTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
+	                        ((ListTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
 	                    } catch (InternationalizableException e) {
 	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
 	                        e.printStackTrace();
 	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 	                    }
 	        	} else{
-	        		((ListManagerTreeComponent) source).expandOrCollapseListTreeNode(item);
+	        		((ListTreeComponent) source).expandOrCollapseListTreeNode(item);
+	        		((ListTreeComponent) source).getTreeActionsListener().folderClicked(null);
+
 	        	}
-	        	((ListManagerTreeComponent) source).setSelectedListId(event.getItemId());
-            	((ListManagerTreeComponent) source).updateButtons(event.getItemId());
+	        	((ListTreeComponent) source).setSelectedListId(event.getItemId());
+            	((ListTreeComponent) source).updateButtons(event.getItemId());
+            	
             }
         }
         
@@ -71,7 +73,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                 }
             } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
-                    ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+                    ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource());
                 } catch (InternationalizableException e) {  
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();

@@ -43,13 +43,13 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.Reindeer;
@@ -96,10 +96,10 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
         return harvestLocComboBox;
     }
 
-    @Override
-    public void setCrossesMadeContainer(CrossesMadeContainer container) {
-        this.container = container;
-    }
+//    @Override
+//    public void setCrossesMadeContainer(CrossesMadeContainer container) {
+//        this.container = container;
+//    }
     
     @Override
     public void afterPropertiesSet() throws Exception {  
@@ -240,7 +240,7 @@ public class AdditionalDetailsCrossInfoComponent extends AbsoluteLayout
     }
 
     @Override
-    public boolean updateCrossesMadeContainer() {
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
         if (validateRequiredFields()){
             
             if (this.container != null && this.container.getCrossesMade() != null && 

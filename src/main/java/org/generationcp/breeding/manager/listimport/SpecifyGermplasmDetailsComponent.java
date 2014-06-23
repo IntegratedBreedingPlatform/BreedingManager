@@ -21,9 +21,11 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
@@ -38,6 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
@@ -125,8 +128,11 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
      private GermplasmListManager germplasmListManager;
     @Autowired
      private WorkbenchDataManager workbenchDataManager;
+    @Autowired
+     private LocationDataManager locationDataManager;
     
     private Boolean viaToolURL;
+    private Map<String, String> methodMap;
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion, Boolean viaToolURL){
         this.source = source;
@@ -180,6 +186,21 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         breedingMethodComboBox = new ComboBox();
         breedingMethodComboBox.setWidth("320px");
         breedingMethodComboBox.setNullSelectionAllowed(false);
+        breedingMethodComboBox.addListener(new ComboBox.ValueChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateComboBoxDescription();
+			}
+        });
+        breedingMethodComboBox.addListener(new ComboBox.ItemSetChangeListener(){
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void containerItemSetChange(ItemSetChangeEvent event) {
+				updateComboBoxDescription();
+			}
+        });
+        
         methods = germplasmDataManager.getAllMethods();
         populateMethods();
         
@@ -194,6 +215,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				populateMethods(((Boolean) event.getProperty().getValue()).equals(true));
+				updateComboBoxDescription();
 			}
 			
 		});
@@ -243,7 +265,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         locationComboBox = new ComboBox();
         locationComboBox.setWidth("300px");
         locationComboBox.setNullSelectionAllowed(false);
-        locations = germplasmDataManager.getAllBreedingLocations();
+        locations = locationDataManager.getAllLocations();
         populateHarvestLocation(false);
         locationComboBox.setImmediate(true);
         
@@ -383,7 +405,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     }
 
 	private Map<String, String> populateMethods() {
-		Map<String, String> methodMap = new HashMap<String, String>();
+		methodMap = new HashMap<String, String>();
         for(Method method : methods){
         	
             //method.getMcode()
@@ -398,6 +420,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         if(breedingMethodComboBox.getValue()==null && methods.get(0) != null){
         	breedingMethodComboBox.setValue(methods.get(0).getMid());
+        	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
         }
 		return methodMap;
 	}
@@ -663,9 +686,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             		List<Name> names = germplasmDataManager.getNamesByGID(importedGermplasm.getGid(), 0, null);
                             		boolean thereIsMatchingName = false;
                             		for(Name name : names){
-                            			if(name.getNval().equals(importedGermplasm.getDesig())){
+                            			String nameInDb = name.getNval().toLowerCase();
+                            			String nameInImportFile = importedGermplasm.getDesig().toLowerCase();
+                            			String standardizedNameInImportFile = GermplasmDataManagerUtil.standardizeName(nameInImportFile).toLowerCase();
+                            			String nameInImportFileWithSpacesRemoved = GermplasmDataManagerUtil.removeSpaces(nameInImportFile).toLowerCase();
+                            			
+                            			if(nameInDb.equals(nameInImportFile)
+                            					|| nameInDb.equals(standardizedNameInImportFile)
+                            					|| nameInDb.equals(nameInImportFileWithSpacesRemoved)){
                             				thereIsMatchingName = true;
-                            			}
+                            			} 
                             		}
                             		
                             		if(thereIsMatchingName){
@@ -888,6 +918,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         breedingMethodComboBox.setNullSelectionAllowed(false);
         breedingMethodComboBox.addItem(breedingMethod);
         breedingMethodComboBox.setValue(breedingMethod);
+        
+        
     }
     public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException{
         germplasmDateField.setValue(germplasmDate);
@@ -964,6 +996,14 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     public List<GermplasmName> getGermplasmNameObjects(){
     	return germplasmNameObjects;
+    }
+    
+    private void updateComboBoxDescription(){
+    	Object breedingMethodComboBoxValue = breedingMethodComboBox.getValue();
+    	breedingMethodComboBox.setDescription("");
+    	if(breedingMethodComboBoxValue!=null){
+    		breedingMethodComboBox.setDescription(methodMap.get(breedingMethodComboBoxValue.toString()));
+    	}
     }
     
 }

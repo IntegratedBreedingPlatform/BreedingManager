@@ -6,6 +6,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEditListNotes;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -161,7 +162,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         iBDBUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId, projectId);
 	}
 
-	private Label createCaptionAndValueLbl(Message caption,String value) {
+	public Label createCaptionAndValueLbl(Message caption,String value) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<b>"); //make the caption bold
 		sb.append(messageSource.getMessage(caption));
@@ -237,7 +238,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 			// local list
             if(userIsListOwner() && germplasmList.getId()<0){
                 if(germplasmList.getStatus()>=100){
-                    unlockButton = new Button("Click to Open List");
+                    unlockButton = new Button(messageSource.getMessage(Message.CLICK_TO_OPEN_LIST));
                     unlockButton.setData(UNLOCK_BUTTON_ID);
                     unlockButton.setIcon(ICON_LOCK);
                     unlockButton.setWidth("140px");
@@ -247,7 +248,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     layout.addComponent(unlockButton);
                     
                 } else if(isUnlockedList()) {
-                    lockButton = new Button("Click to Lock List");
+                    lockButton = new Button(messageSource.getMessage(Message.CLICK_TO_LOCK_LIST));
                     lockButton.setData(LOCK_BUTTON_ID);
                     lockButton.setIcon(ICON_UNLOCK);
                     lockButton.setWidth("140px");
@@ -257,10 +258,16 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
                     layout.addComponent(lockButton);
                 }
                 
-            // central lists    
+            // central lists  or if not list owner  
             } else{
-            	listStatus = new Label(germplasmList.getStatusString());
-            	listStatus.setWidth("80px");
+            	String statusString = germplasmList.getStatusString();
+				listStatus = new Label(statusString);
+				
+				//compute length of label
+				int baseWidth = 25;
+				int finalWidth = baseWidth + (5 * statusString.length());
+            	listStatus.setWidth(finalWidth + "px");
+ 
             	layout.addComponent(listStatus);
             }
         }
@@ -421,42 +428,13 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         if(germplasmList.getStatus()<100){ 
             try {
             	
-            	GermplasmList parentFolder = germplasmList.getParent();
-            	
-                germplasmListManager.deleteGermplasmList(germplasmList);
-                
-                User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-                ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-                        workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-                        "Deleted a germplasm list.", 
-                        "Deleted germplasm list with id = "+germplasmList.getId()+" and name = "+germplasmList.getName()+".",
-                        user,
-                        new Date());
-                workbenchDataManager.addProjectActivity(projAct);
+            	ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, 
+            			germplasmList, workbenchDataManager, getWindow(), messageSource, "list");
+               
                 lockButton.setEnabled(false);
                 deleteButton.setEnabled(false);
-                getWindow().showNotification("Germplasm List", "Successfully deleted", Notification.TYPE_WARNING_MESSAGE);
-                //Close confirmation window
-                
-                //Set listId on listManagerTreeComponent so when createTree is invoked, it is expanded until the parent of the deleted list
-                if(parentFolder!=null)
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().setListId(parentFolder.getId());
-                
-                //Re-use refresh action on GermplasmListTreeComponent
-                if (listManagerTreeMenu != null && listManagerTreeMenu.getDetailsLayout()!= null && 
-                		listManagerTreeMenu.getDetailsLayout().getTreeComponent()!= null){
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().createTree();
-                }
-                
-                //Close tab
-                TabSheet parentTabSheet = listManagerTreeMenu.getDetailsLayout().getTabSheet();
-				Tab tab = Util.getTabWithDescription(parentTabSheet, germplasmList.getId().toString());
-                parentTabSheet.removeTab(tab);
-                
-                if(parentFolder!=null)
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(parentFolder.getId());
-                else
-                	listManagerTreeMenu.getDetailsLayout().getTreeComponent().getGermplasmListTree().expandItem(ListManagerTreeComponent.LOCAL);
+
+                listManagerTreeMenu.getListManagerMain().updateUIForDeletedList(germplasmList);           
                 
             } catch (MiddlewareQueryException e) {
                 getWindow().showNotification("Error", "There was a problem deleting the germplasm list", Notification.TYPE_ERROR_MESSAGE);
@@ -496,7 +474,7 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
         
         // delete button only for local unlocked lists - only list owner can delete
         if (this.germplasmList.getId() < 0 && isUnlockedList() && userIsListOwner()){
-        	deleteButton = new Button("Delete");
+        	deleteButton = new Button(messageSource.getMessage(Message.DELETE));
         	deleteButton.setData(DELETE_BUTTON_ID);
         	deleteButton.setWidth("80px");
         	deleteButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -513,5 +491,9 @@ public class ListDetailComponent extends GridLayout implements InitializingBean,
 
 	private boolean isUnlockedList() {
 		return germplasmList.getStatus() == 1;
+	}
+	
+	public void setLblName(String name){
+		lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
 	}
 }

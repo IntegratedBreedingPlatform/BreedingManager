@@ -15,15 +15,25 @@ package org.generationcp.breeding.manager.util;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Database;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +45,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -54,9 +65,6 @@ public class Util {
 
 	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
 	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
-	
-	@Autowired
-	private static WorkbenchDataManager workbenchDataManager;
 	
 	@Autowired
     private static SimpleResourceBundleMessageSource messageSource;
@@ -352,15 +360,6 @@ public class Util {
         return isLeapYear;
     }  
     
-	public static Component createHeaderComponent (String header) {
-        CssLayout l = new CssLayout();
-        l.setWidth("200px");
-        Label l1 = new Label("<b>" + header + "</b>",Label.CONTENT_XHTML);
-        l1.setStyleName(Bootstrap.Typography.H4.styleName());
-        l.addComponent(l1);
-        return l;
-	}
-
 	/**
 	 * Opens and attaches a modal window containing the location manager
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
@@ -387,7 +386,7 @@ public class Util {
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(false);
         layout.setSpacing(false);
-        layout.setHeight("100%");
+        layout.setHeight("500px");
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
@@ -396,8 +395,8 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("90%");
-        popupWindow.setHeight("80%");
+        popupWindow.setWidth("95%");
+        popupWindow.setHeight("97%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
@@ -436,7 +435,7 @@ public class Util {
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(false);
         layout.setSpacing(false);
-        layout.setHeight("100%");
+        layout.setHeight("500px");
         
         Embedded listInfoPage = new Embedded("", listBrowserLink);
         listInfoPage.setType(Embedded.TYPE_BROWSER);
@@ -445,8 +444,8 @@ public class Util {
         layout.addComponent(listInfoPage);
         
         Window popupWindow = new Window();
-        popupWindow.setWidth("90%");
-        popupWindow.setHeight("80%");
+        popupWindow.setWidth("95%");
+        popupWindow.setHeight("97%");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
@@ -459,5 +458,105 @@ public class Util {
         return popupWindow;
 	}
 	
+	/**
+	 * Generates a string concatenation of full path of a folder
+	 * eg. output "Program Lists > Folder 1 > Sub Folder 1 >"
+	 * 
+	 * where "Sub Folder 1" is the name of the folder
+	 * 
+	 * @param germplasmListManager
+	 * @param folder
+	 * @return
+	 * @throws MiddlewareQueryException
+	 */
+	public static String generateListFolderPathLabel(GermplasmListManager germplasmListManager, GermplasmList folder) throws MiddlewareQueryException{
+		
+		Deque<GermplasmList> parentFolders = new ArrayDeque<GermplasmList>();
+        GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, folder, parentFolders);
+        
+        StringBuilder locationFolderString = new StringBuilder();
+        locationFolderString.append("Program Lists");
+        
+        while(!parentFolders.isEmpty())
+        {
+        	locationFolderString.append(" > ");
+        	GermplasmList parentFolder = parentFolders.pop();
+        	locationFolderString.append(parentFolder.getName());
+        }
+        
+        if(folder != null){
+        	locationFolderString.append(" > ");
+        	locationFolderString.append(folder.getName());
+        }
+        
+        String returnString = locationFolderString.toString();
+        if(folder != null && folder.getName().length() >= 40){
+        	returnString = folder.getName().substring(0, 47);
+        	
+        } else if(locationFolderString.length() > 47){
+        	int lengthOfFolderName = folder.getName().length();
+        	returnString = locationFolderString.substring(0, (47 - lengthOfFolderName - 6)) + "... > " + folder.getName();
+        } 
+        
+        returnString += " > ";
+        
+        return returnString;
+	}
+	
+	public static Map<Integer, GermplasmList> getGermplasmLists(GermplasmListManager germplasmListManager, List<Integer> germplasmListIds){
+		Map<Integer,GermplasmList> germplasmListsMap = new HashMap<Integer,GermplasmList>();
+		List<GermplasmList> lists = new ArrayList<GermplasmList>();
+		
+		try {
+			//LOCAL
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				if(germplasmListIds.contains(listId)){
+					germplasmListsMap.put(listId, list);
+				}
+			}
+			
+			//CENTRAL			
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				if(germplasmListIds.contains(listId)){
+					germplasmListsMap.put(listId, list);
+				}
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return germplasmListsMap;
+	}
+	
+	public static Map<Integer, GermplasmList> getAllGermplasmLists(GermplasmListManager germplasmListManager){
+		Map<Integer,GermplasmList> germplasmListsMap = new HashMap<Integer,GermplasmList>();
+		List<GermplasmList> lists = new ArrayList<GermplasmList>();
+		
+		try {
+			//LOCAL
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				germplasmListsMap.put(listId, list);
+			}
+			
+			//CENTRAL			
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
+			for(GermplasmList list : lists){
+				Integer listId = list.getId();
+				germplasmListsMap.put(listId, list);
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return germplasmListsMap;
+	}
 }
 

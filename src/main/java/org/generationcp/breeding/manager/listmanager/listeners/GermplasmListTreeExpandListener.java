@@ -12,7 +12,7 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -35,14 +35,18 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
 
     @Override
     public void nodeExpand(ExpandEvent event) {
-        if (source instanceof ListManagerTreeComponent && (!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL"))) {
-            try {
-           		((ListManagerTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
-            } catch (InternationalizableException e) {
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
+        if (source instanceof ListTreeComponent){
+        	if(!event.getItemId().toString().equals("CENTRAL") && !event.getItemId().toString().equals("LOCAL")) {
+	            try {
+	           		((ListTreeComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+	            } catch (InternationalizableException e) {
+	                LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                e.printStackTrace();
+	                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+	            }
+        	}
+       		((ListTreeComponent) source).setSelectedListId(event.getItemId());
+       		((ListTreeComponent) source).updateButtons(event.getItemId());
         }
     }
     

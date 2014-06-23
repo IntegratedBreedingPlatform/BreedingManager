@@ -28,10 +28,6 @@ public class BreedingManagerUtil{
     
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 
-    public static String generateFemaleandMaleCrossName(String femaleName, String maleName){
-        return femaleName + "/" + maleName;
-    }
-    
     /**
      * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
      * (matches upper case of UserDefinedField either fCode or fName). Query is:
@@ -210,6 +206,54 @@ public class BreedingManagerUtil{
 		
     }
     
+    /**
+     * Queries for program's favorite locations and sets the values to combobox and map.  Only selects locations with ltype = 410, 411, or 412
+     * 
+     * @param workbenchDataManager
+     * @param germplasmDataManager
+     * @param locationComboBox
+     * @param mapLocation
+     * @throws MiddlewareQueryException
+     */
+    public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
+    	
+    	locationComboBox.removeAllItems();
+    	
+        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
+        List<Integer> favoriteLocationIds = new ArrayList<Integer>();
+        List<Location> favoriteLocations = new ArrayList<Location>();
+         
+		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		Long lastProjectId = workbenchDataManager.getLastOpenedProject(workbenchUserId).getProjectId();
+        
+        //Get location Id's
+        favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(lastProjectId, 0, 10000));
+        
+        //Convert to int
+        for(Long favoriteLocationLongId : favoriteLocationLongIds){
+        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
+        }
+        
+        //Get locations
+        favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
+	        
+
+		for(Location favoriteLocation : favoriteLocations){
+			if(favoriteLocation.getLtype() != null && (favoriteLocation.getLtype().equals(Integer.valueOf(410))
+					|| favoriteLocation.getLtype().equals(Integer.valueOf(411))
+					|| favoriteLocation.getLtype().equals(Integer.valueOf(412)))){
+				Integer locId = favoriteLocation.getLocid();
+				locationComboBox.addItem(locId);
+				locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
+				if (mapLocation != null){
+					mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
+				}
+			}
+		}
+		
+    }
+    
     
     /**
      * Queries for program's favorite locations and sets the values to combobox and map
@@ -254,7 +298,49 @@ public class BreedingManagerUtil{
 		
     }
     
-    
+    /**
+     * Queries for program's favorite locations and sets the values to combobox and map.  Only selects method with GEN type.
+     * 
+     * @param workbenchDataManager
+     * @param germplasmDataManager
+     * @param locationComboBox
+     * @param mapLocation
+     * @throws MiddlewareQueryException
+     */
+    public static void populateWithFavoriteMethodsOfTypeGen(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox methodComboBox, Map<String, Integer> mapMethods) throws MiddlewareQueryException {
+    	
+		methodComboBox.removeAllItems();
+    	
+        List<Integer> favoriteMethodIds = new ArrayList<Integer>();
+        List<Method> favoriteMethods = new ArrayList<Method>();
+         
+		try {
+			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
 
+			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
+	        
+	        //Get Methods
+	        if (!favoriteMethodIds.isEmpty()){
+	        	favoriteMethods = germplasmDataManager.getMethodsByIDs(favoriteMethodIds);
+	        }
+	        
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+
+		for(Method favoriteMethod : favoriteMethods){
+			if(favoriteMethod.getMtype() != null && favoriteMethod.getMtype().equals("GEN")){
+				Integer methodId = favoriteMethod.getMid();
+				methodComboBox.addItem(methodId);
+				methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
+				if (mapMethods != null){
+					mapMethods.put(favoriteMethod.getMname(), methodId);
+				}
+			}
+		}
+		
+    }
 
 }

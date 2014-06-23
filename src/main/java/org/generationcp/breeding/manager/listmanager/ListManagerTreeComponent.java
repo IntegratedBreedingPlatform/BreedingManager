@@ -7,9 +7,11 @@ import java.util.Deque;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
+import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -36,58 +39,63 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable
+@Deprecated
 public class ListManagerTreeComponent extends VerticalLayout implements
 		InternationalizableComponent, InitializingBean, Serializable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ListManagerTreeComponent.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(ListManagerTreeComponent.class);
 	
-	private static final long serialVersionUID = -224052511814636864L;
-	private final static int BATCH_SIZE = 50;
+	protected static final long serialVersionUID = -224052511814636864L;
+	protected final static int BATCH_SIZE = 50;
 	public final static String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
 	public static final String CENTRAL = "CENTRAL";
 	public static final String LOCAL = "LOCAL";
 	
-	private Label heading;
-	private ListManagerMain listManagerMain;
-	private Tree germplasmListTree;
-    private AbsoluteLayout germplasmListBrowserMainLayout;
-	private Button refreshButton;
-	private DropHandlerComponent dropHandler;
+	protected Label heading;
+	protected ListManagerMain listManagerMain;
+	protected Tree germplasmListTree;
+    protected AbsoluteLayout germplasmListBrowserMainLayout;
+	protected Button refreshButton;
 	
     @Autowired
-    private GermplasmListManager germplasmListManager;
+    protected GermplasmListManager germplasmListManager;
     
     @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+    protected SimpleResourceBundleMessageSource messageSource;
     
-    private ListManagerDetailsLayout displayDetailsLayout; 
+    protected ListManagerDetailsLayout displayDetailsLayout; 
     
-    private boolean forGermplasmListWindow;
+    protected boolean forGermplasmListWindow;
 
-    private HorizontalLayout controlButtonsLayout; 
-    private VerticalLayout treeContainerLayout;
+    protected HorizontalLayout controlButtonsLayout; 
+    protected VerticalLayout treeContainerLayout;
     
-    private Integer listId;
-    private GermplasmListTreeUtil germplasmListTreeUtil;
-    private SelectGermplasmListComponent selectListComponent;
+    protected Integer listId;
+    protected GermplasmListTreeUtil germplasmListTreeUtil;
+    protected SelectGermplasmListComponent selectListComponent;
     
-    private final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
+    protected final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
     
+    protected Button addFolderBtn;
+    protected Button deleteFolderBtn;
+    protected Button renameFolderBtn;
     
-    private Button addFolderBtn;
-    private Button deleteFolderBtn;
-    private Button renameFolderBtn;
+    protected Object selectedListId;
     
-    private Object selectedListId;
+    private boolean forSelectingFolderToSaveIn;
+    
+    private CrossingManagerMakeCrossesComponent makeCrossesComponent;
     
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow) {
     	this.listManagerMain = listManagerMain;
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.listId = null;
+        this.forSelectingFolderToSaveIn = false;
     }
     
     public ListManagerTreeComponent(ListManagerMain listManagerMain, AbsoluteLayout germplasmListBrowserMainLayout, boolean forGermplasmListWindow, Integer listId) {
@@ -95,66 +103,97 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.germplasmListBrowserMainLayout = germplasmListBrowserMainLayout;
         this.forGermplasmListWindow=forGermplasmListWindow;
         this.listId = listId;
+        this.forSelectingFolderToSaveIn = false;
     }
     
     public ListManagerTreeComponent(SelectGermplasmListComponent selectListComponent){
     	this.selectListComponent = selectListComponent;
+    	this.forSelectingFolderToSaveIn = false;
+    }
+    
+    public ListManagerTreeComponent(boolean forSelectingFolderToSaveIn, Integer folderId){
+    	super();
+    	this.forSelectingFolderToSaveIn = forSelectingFolderToSaveIn;
+    	this.selectListComponent = null;
+    	this.listManagerMain = null;
+        this.germplasmListBrowserMainLayout = null;
+        this.forGermplasmListWindow = false;
+        this.listId = folderId;
+    }
+    
+    public ListManagerTreeComponent(CrossingManagerMakeCrossesComponent makeCrossesComponent){
+    	super();
+    	this.makeCrossesComponent = makeCrossesComponent;
+    	this.forSelectingFolderToSaveIn = false;
+    	this.selectListComponent = null;
+    	this.listManagerMain = null;
+        this.germplasmListBrowserMainLayout = null;
+        this.forGermplasmListWindow = false;
+        this.listId = null;
     }
 
     @Override
 	public void afterPropertiesSet() throws Exception {
-    	
-		setSpacing(true);
+    	setSpacing(true);
 		
     	displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
-    	//setComponentAlignment(displayDetailsLayout, Alignment.MIDDLE_RIGHT);
     	
-		heading = new Label();
-		heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
-		heading.setStyleName(Bootstrap.Typography.H4.styleName());
-		heading.setWidth("90px");
-    			
-        
+    	heading = new Label();
+    	heading.setWidth("90px");
+    	if(makeCrossesComponent == null){
+			heading.setValue(messageSource.getMessage(Message.PROJECT_LISTS));
+			heading.setStyleName(Bootstrap.Typography.H4.styleName());
+		} else{
+			heading.setValue("Available Lists");
+			heading.setStyleName(Bootstrap.Typography.H6.styleName());
+    	}
+    	
 		if (this.germplasmListBrowserMainLayout != null){
 			displayDetailsLayout = new ListManagerDetailsLayout(listManagerMain, this, germplasmListBrowserMainLayout, forGermplasmListWindow);
+			initializeButtonPanel();
+			addComponent(controlButtonsLayout);
+		}
+		
+		if(forSelectingFolderToSaveIn || makeCrossesComponent != null){
 			initializeButtonPanel();
 			addComponent(controlButtonsLayout);
 		}
     	
 		germplasmListTree = new Tree();
 		
-		refreshButton = new Button();
-		refreshButton.setData(REFRESH_BUTTON_ID);
-		refreshButton.addListener(new GermplasmListButtonClickListener(this));
-		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
-		refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		
-		dropHandler = new DropHandlerComponent(listManagerMain, 220);
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
+			refreshButton = new Button();
+			refreshButton.setData(REFRESH_BUTTON_ID);
+			refreshButton.addListener(new GermplasmListButtonClickListener(this));
+			refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
+			refreshButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		}
 		
 		treeContainerLayout = new VerticalLayout();
 		treeContainerLayout.addComponent(germplasmListTree);
 		
 		addComponent(treeContainerLayout);
-		addComponent(refreshButton);
-		addComponent(dropHandler);
+		if(!forSelectingFolderToSaveIn && makeCrossesComponent == null){
+			addComponent(refreshButton);
+		}
 		
 		createTree();
 		
-		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
+//		germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
 	}
 
-	private void initializeButtonPanel() {
+	protected void initializeButtonPanel() {
 		renameFolderBtn =new Button("<span class='glyphicon glyphicon-pencil' style='right: 2px;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
-        renameFolderBtn.setDescription("Rename Folder");
+        renameFolderBtn.setDescription("Rename Item");
         renameFolderBtn.setStyleName(Bootstrap.Buttons.INFO.styleName());
         renameFolderBtn.setWidth("40px");
         renameFolderBtn.setEnabled(false);
         renameFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolder(Integer.valueOf(selectedListId.toString()));
+//				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -165,7 +204,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         addFolderBtn.setWidth("40px");
         addFolderBtn.setEnabled(false);
         addFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
 				germplasmListTreeUtil.addFolder(selectedListId);
@@ -180,10 +219,10 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         deleteFolderBtn.setWidth("40px");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+			protected static final long serialVersionUID = 1L;
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.deleteFolderOrList(Integer.valueOf(selectedListId.toString()), displayDetailsLayout.getTabSheet());
+//				germplasmListTreeUtil.deleteFolderOrList(getListManagerTreeComponent(), Integer.valueOf(selectedListId.toString()), listManagerMain, makeCrossesComponent);
             }
         });
         
@@ -203,7 +242,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	@Override
 	public void attach() {
 		super.attach();
-		if(listId != null){
+		if(listId != null && !forSelectingFolderToSaveIn){
 			try{
 				displayDetailsLayout.createListInfoFromBrowseScreen(listId.intValue());
 			} catch(MiddlewareQueryException ex){
@@ -244,7 +283,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
         
         germplasmListTree.setItemStyleGenerator(new ItemStyleGenerator() {
-        	private static final long serialVersionUID = -5690995097357568121L;
+        	protected static final long serialVersionUID = -5690995097357568121L;
 
 			@Override
             public String getStyle(Object itemId) {
@@ -273,15 +312,15 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 
         germplasmListTree.setImmediate(true);
         
-        if (this.listManagerMain != null){
-        	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
+        if (this.listManagerMain != null || this.forSelectingFolderToSaveIn){
+//        	germplasmListTreeUtil = new GermplasmListTreeUtil(this, germplasmListTree);
         }
         treeContainerLayout.addComponent(germplasmListTree);
         germplasmListTree.requestRepaint();
 
     }
 
-    private Tree createGermplasmListTree() {
+    protected Tree createGermplasmListTree() {
         List<GermplasmList> localGermplasmListParent = new ArrayList<GermplasmList>();
         List<GermplasmList> centralGermplasmListParent = new ArrayList<GermplasmList>();
 
@@ -297,53 +336,65 @@ public class ListManagerTreeComponent extends VerticalLayout implements
             localGermplasmListParent = new ArrayList<GermplasmList>();
         }
         
-        try {
-            centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
-        } catch (MiddlewareQueryException e) {
-        	LOG.error("Error in getting top level lists.", e);
-            if (getWindow() != null){
-                MessageNotifier.showWarning(getWindow(), 
-                        messageSource.getMessage(Message.ERROR_DATABASE),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
-            }
-            centralGermplasmListParent = new ArrayList<GermplasmList>();
+        if(!forSelectingFolderToSaveIn){
+	        try {
+	            centralGermplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE, Database.CENTRAL);
+	        } catch (MiddlewareQueryException e) {
+	        	LOG.error("Error in getting top level lists.", e);
+	        	/** must be commented out because this will always cause an error if there is a prob with the Middleware call
+	        	 * that is because at this point this component class is not yet attached to its parent so getWindow() will trigger an NPE
+	            if (getWindow() != null){
+	                MessageNotifier.showWarning(getWindow(), 
+	                        messageSource.getMessage(Message.ERROR_DATABASE),
+	                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
+	            }
+	            **/
+	            centralGermplasmListParent = new ArrayList<GermplasmList>();
+	        }
         }
         
         Tree germplasmListTree = new Tree();
-        if (listManagerMain != null){
+        if (listManagerMain != null || this.forSelectingFolderToSaveIn || makeCrossesComponent != null){
         	germplasmListTree.setDragMode(TreeDragMode.NODE);
         }
 
         germplasmListTree.addItem(LOCAL);
         germplasmListTree.setItemCaption(LOCAL, "Program Lists");
         
-        germplasmListTree.addItem(CENTRAL);
-        germplasmListTree.setItemCaption(CENTRAL, "Public Lists");        
+        if(!forSelectingFolderToSaveIn){
+	        germplasmListTree.addItem(CENTRAL);
+	        germplasmListTree.setItemCaption(CENTRAL, "Public Lists");
+        }
         
         for (GermplasmList localParentList : localGermplasmListParent) {
-            germplasmListTree.addItem(localParentList.getId());
-            germplasmListTree.setItemCaption(localParentList.getId(), localParentList.getName());
-            germplasmListTree.setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));
-            germplasmListTree.setParent(localParentList.getId(), LOCAL);
+        	if(!forSelectingFolderToSaveIn || isFolder(localParentList.getId())){
+	            germplasmListTree.addItem(localParentList.getId());
+	            germplasmListTree.setItemCaption(localParentList.getId(), localParentList.getName());
+	            germplasmListTree.setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));
+	            germplasmListTree.setParent(localParentList.getId(), LOCAL);
+        	}
         }
-
-        for (GermplasmList centralParentList : centralGermplasmListParent) {
-            germplasmListTree.addItem(centralParentList.getId());
-            germplasmListTree.setItemCaption(centralParentList.getId(), centralParentList.getName());
-            germplasmListTree.setChildrenAllowed(centralParentList.getId(), hasChildList(centralParentList.getId()));
-            germplasmListTree.setParent(centralParentList.getId(), CENTRAL);
-        }        
+        
+        if(!forSelectingFolderToSaveIn){
+	        for (GermplasmList centralParentList : centralGermplasmListParent) {
+	            germplasmListTree.addItem(centralParentList.getId());
+	            germplasmListTree.setItemCaption(centralParentList.getId(), centralParentList.getName());
+	            germplasmListTree.setChildrenAllowed(centralParentList.getId(), hasChildList(centralParentList.getId()));
+	            germplasmListTree.setParent(centralParentList.getId(), CENTRAL);
+	        }
+        }
         
         germplasmListTree.addListener(new GermplasmListTreeExpandListener(this));
         germplasmListTree.addListener(new GermplasmListItemClickListener(this));
-
+        germplasmListTree.addListener(new GermplasmListTreeCollapseListener(this));
+        
         try{
         	if(listId != null){
 	        	GermplasmList list = germplasmListManager.getGermplasmListById(listId);
 	    		
 	    		if(list != null){
 	    			Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
-	    			traverseParentsOfList(list, parents);
+	    			GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, list, parents);
 	    			
 	    			if(listId < 0){
 	                	germplasmListTree.expandItem(LOCAL);
@@ -357,38 +408,26 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	    				addGermplasmListNode(parent.getId().intValue(), germplasmListTree);
 	    				germplasmListTree.expandItem(parent.getId());
 	    			}
-	    			
+	    			germplasmListTree.setNullSelectionAllowed(false);
 	    			germplasmListTree.select(listId);
+	    			germplasmListTree.setValue(listId);
+	    			setSelectedListId(listId);
 	    		}
 	        }
         } catch(MiddlewareQueryException ex){
     		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
     	}
         
+        if(forSelectingFolderToSaveIn){
+        	germplasmListTree.setNullSelectionAllowed(false);
+        }
+        
         return germplasmListTree;
     }
     
-    private void traverseParentsOfList(GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
-    	if(list == null){
-    		return;
-    	} else{
-    		Integer parentId = list.getParentId();
-    		
-    		if(parentId != null && parentId != 0){
-	    		GermplasmList parent = germplasmListManager.getGermplasmListById(list.getParentId());
-	    		
-	    		if(parent != null){
-	    			parents.push(parent);
-	    			traverseParentsOfList(parent, parents);
-	    		}
-    		}
-    		
-    		return;
-    	}
-    }
-    
     public void updateButtons(Object itemId){
-    	if (listManagerMain != null){
+    	setSelectedListId(itemId);
+    	if (listManagerMain != null || forSelectingFolderToSaveIn || makeCrossesComponent != null){
     		try {
     			//If any of the central lists/folders is selected
     			if(Integer.valueOf(itemId.toString())>0){
@@ -448,6 +487,8 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         			//open details in Select List pop-up
         			} else if (this.selectListComponent != null){
         				this.selectListComponent.getListInfoComponent().displayListInfo(germplasmList);
+        			} else if(this.makeCrossesComponent != null){
+        				this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(germplasmList.getId(), germplasmList.getName());
         			}
         			
         		//toggle folder
@@ -455,9 +496,11 @@ public class ListManagerTreeComponent extends VerticalLayout implements
 	        		expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
 	        	}
         		
+        		germplasmListTree.setNullSelectionAllowed(false);
+        		germplasmListTree.select(germplasmListId);
+        		germplasmListTree.setValue(germplasmListId);
         	}
-					
-	                
+			        
         } catch (NumberFormatException e) {
         	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
@@ -472,7 +515,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         
     }    
 	
-    private boolean hasChildList(int listId) {
+    protected boolean hasChildList(int listId) {
 
         List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
 
@@ -489,7 +532,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return !listChildren.isEmpty();
     }
 
-    private boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException{
+    protected boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException{
         boolean isFolder = list.getType().equalsIgnoreCase("FOLDER");
         return isFolder && !hasChildList(list.getId());
     }
@@ -526,13 +569,17 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
 
         for (GermplasmList listChild : germplasmListChildren) {
-            germplasmListTree.addItem(listChild.getId());
-            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
-            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
-            // allow children if list has sub-lists
-            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	if(!forSelectingFolderToSaveIn || isFolder(listChild.getId())){
+	            germplasmListTree.addItem(listChild.getId());
+	            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+	            // allow children if list has sub-lists
+	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	}
         }
-        
+        germplasmListTree.setNullSelectionAllowed(false);
+        germplasmListTree.select(parentGermplasmListId);
+        germplasmListTree.setValue(parentGermplasmListId);
     }
     
     public void addGermplasmListNode(int parentGermplasmListId, Tree germplasmListTree) throws InternationalizableException{
@@ -549,12 +596,16 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         }
 
         for (GermplasmList listChild : germplasmListChildren) {
-            germplasmListTree.addItem(listChild.getId());
-            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
-            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
-            // allow children if list has sub-lists
-            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	if(!forSelectingFolderToSaveIn || isFolder(listChild.getId())){
+	            germplasmListTree.addItem(listChild.getId());
+	            germplasmListTree.setItemCaption(listChild.getId(), listChild.getName());
+	            germplasmListTree.setParent(listChild.getId(), parentGermplasmListId);
+	            // allow children if list has sub-lists
+	            germplasmListTree.setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
+        	}
         }
+        germplasmListTree.setNullSelectionAllowed(false);
+        germplasmListTree.select(parentGermplasmListId);
     }
     
     
@@ -567,7 +618,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         return true;
     }
     
-    public ListManagerDetailsLayout getViewDetailsTabbedLayout(){
+    public ListManagerDetailsLayout getListManagerDetailsLayout(){
     	return this.displayDetailsLayout;
     }
     
@@ -577,24 +628,71 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	} else{
     		this.germplasmListTree.collapseItem(nodeId);
     	}
-    	germplasmListTree.select(nodeId);
+    	germplasmListTree.setNullSelectionAllowed(false);
     	germplasmListTree.setValue(nodeId);
+    	germplasmListTree.select(nodeId);
     }
     
     public Tree getGermplasmListTree(){
     	return germplasmListTree;
     }
     
-    public DropHandlerComponent getDropHandlerComponent(){
-    	return dropHandler;
-    }
-
     public void setSelectedListId(Object listId){
     	this.selectedListId = listId;
+    	germplasmListTree.setNullSelectionAllowed(false);
+    	germplasmListTree.select(listId);
+    	germplasmListTree.setValue(listId);
     }
     
     public void setListId(Integer listId){
     	this.listId = listId;
     }
     
+    public Object getSelectedListId(){
+    	return selectedListId;
+    }
+    
+    private ListManagerTreeComponent getListManagerTreeComponent(){
+    	return this;
+    }
+    
+    public Tree getTree(){
+    	return this.germplasmListTree;
+    }
+    
+    @Override
+    public Window getWindow() {
+    	if(super.getWindow().getParent() != null){
+    		return super.getWindow().getParent();
+    	} else {
+    		return super.getWindow();
+    	}
+    }
+    
+    public void removeListFromTree(GermplasmList germplasmList){
+    	Integer listId = germplasmList.getId();
+		Item item = germplasmListTree.getItem(listId);
+    	if (item != null){
+    		germplasmListTree.removeItem(listId);
+    	}
+    	GermplasmList parent = germplasmList.getParent();
+		if (parent == null) {
+			germplasmListTree.select(LOCAL);
+			setSelectedListId(LOCAL);
+		} else {
+			germplasmListTree.select(parent.getId());
+			germplasmListTree.expandItem(parent.getId());
+			setSelectedListId(parent.getId());
+		}
+    }
+    
+    //SETTERS and GETTERS
+	public Label getHeading() {
+		return heading;
+	}
+
+	public void setHeading(Label heading) {
+		this.heading = heading;
+	}
+
 }

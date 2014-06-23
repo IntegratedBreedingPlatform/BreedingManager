@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.util.AddColumnContextMenu;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
@@ -73,7 +74,12 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 		if(currentlySavedList == null){
 			listToSave.setStatus(Integer.valueOf(1));
-			listToSave.setParent(null);
+			try {
+				listToSave.setParent(dataManager.getGermplasmListById(source.getSaveInListId()));
+			} catch (MiddlewareQueryException e) {
+				listToSave.setParent(null);
+				e.printStackTrace();
+			}
 			listToSave.setUserId(getLocalIBDBUserId());
 			
 			try{
@@ -109,6 +115,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			updateListDataTableContent(currentlySavedList);
 			
+			saveListDataColumns(listToSave);
+			
 		} else if(currentlySavedList != null){
 			
 			if(areThereChangesToList(currentlySavedList, listToSave)){
@@ -125,6 +133,12 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					listFromDB.setDate(listToSave.getDate());
 					listFromDB.setType(listToSave.getType());
 					listFromDB.setNotes(listToSave.getNotes());
+					try {
+						listFromDB.setParent(dataManager.getGermplasmListById(source.getSaveInListId()));
+					} catch (MiddlewareQueryException e) {
+						listToSave.setParent(null);
+						e.printStackTrace();
+					}
 					
 					Integer listId = this.dataManager.updateGermplasmList(listFromDB);
 					
@@ -178,17 +192,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
-		}
-		
-		
-		
-		try {
-			dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable)); 
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error in saving germplasm list columns: " + listToSave, e);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-					, Notification.POSITION_CENTERED);
-			return;
+			
+			saveListDataColumns(listToSave);
+			
 		}
 		
 		try{
@@ -205,10 +211,22 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with saving Workbench activity.", ex);
+			ex.printStackTrace();
 		}
 		
 		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
 				, 3000, Notification.POSITION_CENTERED);
+	}
+	
+	private void saveListDataColumns(GermplasmList listToSave) {
+	    try {
+            dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable)); 
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
+            MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
+                    , Notification.POSITION_CENTERED);
+            e.printStackTrace();
+        }
 	}
 	
 	private boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
@@ -285,13 +303,15 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			int listDataCount = (int) this.dataManager.countGermplasmListDataByListId(currentlySavedList.getId());
 			List<GermplasmListData> savedListEntries = this.dataManager.getGermplasmListDataByListId(currentlySavedList.getId(), 0, listDataCount);
 			
+			Table tempTable = cloneAddedColumnsToTemp(this.listDataTable);
+			
 			this.listDataTable.setImmediate(true);
 			this.listDataTable.removeAllItems();
 			
 			for(GermplasmListData entry : savedListEntries){
 				Item item = this.listDataTable.addItem(entry.getId());
 				
-				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkButtonClickListener(entry.getGid().toString(), true));
+				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				
 	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
@@ -303,7 +323,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 //	            item.getItemProperty(ListDataTablePropertyID.STATUS.getName()).setValue(entry.getStatusString());
 			}
 			
-			this.listDataTable.requestRepaint();
+			copyAddedColumnsFromTemp(tempTable);
+            
+            this.listDataTable.requestRepaint();
 			return;
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
@@ -313,7 +335,73 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 	}
 	
-	private boolean areThereChangesToList(GermplasmList currentlySavedList, GermplasmList newListInfo){
+	private Table cloneAddedColumnsToTemp(Table sourceTable) {
+	    Table newTable = new Table();
+	    
+	    // copy added column values from source table
+	    for (Object sourceItemId : sourceTable.getItemIds()){
+            Item sourceItem = sourceTable.getItem(sourceItemId);
+            Item newItem = newTable.addItem(sourceItemId);
+            
+            for(String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
+                // copy only addable properties present in source table
+                if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)){
+                    // setup added columns first before copying values
+                    if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
+                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_ID, AddColumnContextMenu.PREFERRED_ID_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_NAME, AddColumnContextMenu.PREFERRED_NAME_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
+                        newTable.addContainerProperty(AddColumnContextMenu.GERMPLASM_DATE, AddColumnContextMenu.GERMPLASM_DATE_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS)){
+                        newTable.addContainerProperty(AddColumnContextMenu.LOCATIONS, AddColumnContextMenu.LOCATIONS_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NAME, AddColumnContextMenu.METHOD_NAME_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
+                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_ABBREV, AddColumnContextMenu.METHOD_ABBREV_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
+                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NUMBER, AddColumnContextMenu.METHOD_NUMBER_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
+                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_GROUP, AddColumnContextMenu.METHOD_GROUP_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_GID, AddColumnContextMenu.CROSS_FEMALE_GID_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_GID, AddColumnContextMenu.CROSS_MALE_GID_TYPE, "");
+                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME, AddColumnContextMenu.CROSS_MALE_PREF_NAME_TYPE, "");
+                    }
+
+                    // copy value to new table
+                    Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
+                    newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
+                }
+            }
+	    }
+	    
+	    return newTable;
+	}
+	
+	private void copyAddedColumnsFromTemp(Table tempTable) {
+	    List<Object> listDataIdList = new ArrayList<Object>(this.listDataTable.getItemIds());
+        List<Object> tempTableIdList = new ArrayList<Object>(tempTable.getItemIds());
+        
+        // iterate through actual table rows using index (so temp table counterpart items can be accessed easily)
+        for (int i=0; i<listDataIdList.size(); i++) {
+            Item listDataItem = this.listDataTable.getItem(listDataIdList.get(i));
+            Item tempItem = tempTable.getItem(tempTableIdList.get(i));
+            
+            // for each row, get columns from temp table, then copy to actual table
+            for (Object tempPropertyId : tempTable.getContainerPropertyIds()) {
+                // copy value from temp table to actual list data table
+                Property tempItemProperty = tempItem.getItemProperty(tempPropertyId);
+                listDataItem.getItemProperty(tempPropertyId).setValue(tempItemProperty.getValue());
+            }
+        }
+	}
+	
+    private boolean areThereChangesToList(GermplasmList currentlySavedList, GermplasmList newListInfo){
 		if(!currentlySavedList.getName().equals(newListInfo.getName())){
 			return true;
 		} else if(!currentlySavedList.getDescription().equals(newListInfo.getDescription())){

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
@@ -38,7 +39,9 @@ public class CrossesMade implements Serializable{
     
     private CrossingManagerUploader crossingManagerUploader;
     
+    private CrossingManagerSetting setting;
     private GermplasmList germplasmList;
+
     
     public CrossesMade(){
     }
@@ -83,5 +86,13 @@ public class CrossesMade implements Serializable{
     public void setGermplasmList(GermplasmList germplasmList) {
         this.germplasmList = germplasmList;
     }
+
+	public CrossingManagerSetting getSetting() {
+		return setting;
+	}
+
+	public void setSetting(CrossingManagerSetting setting) {
+		this.setting = setting;
+	}
     
 }

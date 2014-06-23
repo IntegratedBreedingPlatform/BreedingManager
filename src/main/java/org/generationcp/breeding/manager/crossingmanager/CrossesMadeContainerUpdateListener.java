@@ -22,21 +22,13 @@ package org.generationcp.breeding.manager.crossingmanager;
  * @author Darla Ani
  *
  */
-public interface CrossesMadeContainerUpdateListener {
-    
-    /**
-     * Sets the CrossesMadeContainer that it will update (and get
-     * Crosses Made information from)
-     * 
-     * @param container to update
-     */
-    public void setCrossesMadeContainer(CrossesMadeContainer container);
+public interface CrossesMadeContainerUpdateListener {    
     
     /**
      * Validate fields and updates CrossesMadeContainer.
      * 
      * @return true if validation and update successful. Else, return false.
      */
-    public boolean updateCrossesMadeContainer();
+    public boolean updateCrossesMadeContainer(CrossesMadeContainer container);
     
 }

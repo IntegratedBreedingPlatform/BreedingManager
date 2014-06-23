@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
+import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -32,6 +33,7 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Table;
@@ -51,7 +53,7 @@ public class FillWith implements InternationalizableComponent  {
     private GermplasmDataManager germplasmDataManager;
 
     private ListManagerTreeMenu listManagerTreeMenu;
-    private AbsoluteLayout absoluteLayout;
+    private AbstractLayout parentLayout;
     
     private Table targetTable;
     private String GIDPropertyId;
@@ -78,12 +80,22 @@ public class FillWith implements InternationalizableComponent  {
 	private ContextMenuItem menuFillWithCrossExpansion;
 	private ContextMenuItem menuFillWithSequenceNumber;
 	
+	private Table.HeaderClickListener headerClickListener;
+	
 	private GermplasmDetailModel germplasmDetail;
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
     
-    private boolean fromBuildNewList;
     private BuildNewListComponent buildNewListComponent;
+    
+    private ListTabComponent listDetailsComponent;
+    
+    private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
+    
+    public FillWith(String GIDPropertyId, Table targetTable){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    }
     
 	/**
 	 * Add Fill With context menu to a table
@@ -105,15 +117,15 @@ public class FillWith implements InternationalizableComponent  {
     
 	/**
 	 * Add Fill With context menu to a table
-	 * @param absoluteLayout - contextMenu will attach to this
+	 * @param parentLayout - contextMenu will attach to this
 	 * @param targetTable - table where data will be manipulated
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 */
-    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
+    public FillWith(AbstractLayout parentLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
-    	this.absoluteLayout = absoluteLayout;
+    	this.parentLayout = parentLayout;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	
@@ -122,30 +134,107 @@ public class FillWith implements InternationalizableComponent  {
     
 	/**
 	 * Add Fill With context menu to a table
-	 * @param absoluteLayout - contextMenu will attach to this
+	 * @param parentLayout - contextMenu will attach to this
 	 * @param targetTable - table where data will be manipulated
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 * @param fromBuildNewList - specify if the creation is from BuildNewListComponent
 	 */
-    public FillWith(AbsoluteLayout absoluteLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
+    public FillWith(AbstractLayout parentLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
     		String GIDPropertyId, boolean fromBuildNewList){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
-    	this.absoluteLayout = absoluteLayout;
+    	this.parentLayout = parentLayout;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
-    	this.fromBuildNewList = fromBuildNewList;
     	
     	if(fromBuildNewList){
-    		buildNewListComponent = ((BuildNewListComponent) absoluteLayout);
+    		buildNewListComponent = ((BuildNewListComponent) parentLayout);
     	}
     	
     	setupContextMenu();
     }
     
+    public FillWith(ListTabComponent listDetailsComponent, AbstractLayout parentLayout
+    		,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.parentLayout = parentLayout;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.listDetailsComponent = listDetailsComponent;
+    	
+    	setupContextMenu();
+    }
+    
+    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
+    		, final Table targetTable, String GIDPropertyId){
+    	this.GIDPropertyId = GIDPropertyId;
+    	this.targetTable = targetTable;
+    	this.parentLayout = buildListComponent;
+    	this.messageSource = messageSource;
+    	this.filledWithPropertyIds = new ArrayList<String>();
+    	this.buildListComponent = buildListComponent;
+    	
+    	setupContextMenu();
+    }
+    
+    public void fillWith(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
+		 if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
+			 fillWithPreferredID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)) {
+			 fillWithPreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)) {
+			 fillWithGermplasmDate(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)) {
+			 fillWithLocation(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
+		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)) {
+			 fillWithMethodName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)) {			 
+			 fillWithMethodAbbreviation(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)) {			 
+			 fillWithMethodNumber(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
+		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)) {			 
+			 fillWithMethodGroup(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
+		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)) {			 
+			 fillWithCrossFemaleGID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)) {			 
+			 fillWithCrossFemalePreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)) {			 
+			 fillWithCrossMaleGID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
+		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)) {			 
+			 fillWithCrossMalePreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);	 
+		 }
+    }
     
     private void setupContextMenu(){
+    	
+    	headerClickListener = new Table.HeaderClickListener() {
+        	private static final long serialVersionUID = 4792602001489368804L;
+
+			public void headerClick(HeaderClickEvent event) {
+        		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
+        			String column = (String) event.getPropertyId();
+        			fillWithMenu.setData(column);
+        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
+            			menuFillWithLocationName.setVisible(false);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
+            			menuFillWithLocationName.setVisible(true);
+            			menuFillWithCrossExpansion.setVisible(false);
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
+            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
+            			menuFillWithLocationName.setVisible(false);
+            			menuFillWithCrossExpansion.setVisible(true);
+            			fillWithMenu.show(event.getClientX(), event.getClientY());
+            		}
+        		}
+        	}
+        };
     	
 	   	 fillWithMenu = new ContextMenu();
 		 
@@ -185,7 +274,7 @@ public class FillWith implements InternationalizableComponent  {
 		   			 if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_EMPTY))){
 		   				 fillWithEmpty(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME))){
-		   				 fillWithLocation();
+		   				 fillWithLocation(targetTable);
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_GERMPLASM_DATE))){
 		   				 fillWithGermplasmDate(targetTable, (String) fillWithMenu.getData());
 		   			 } else if(clickedItem.getName().equals(messageSource.getMessage(Message.FILL_WITH_PREF_NAME))){
@@ -218,40 +307,20 @@ public class FillWith implements InternationalizableComponent  {
 	   			}
 	   	 });
 	   	 
-	   	 if(absoluteLayout!=null){
-	   		 absoluteLayout.addComponent(fillWithMenu);
+	   	 if(parentLayout!=null){
+	   		 parentLayout.addComponent(fillWithMenu);
 	   	 } else {
 	   		 listManagerTreeMenu.addComponent(fillWithMenu);
 	   	 }
 	   	 
-	   	 targetTable.addListener(new Table.HeaderClickListener() {
-        	private static final long serialVersionUID = 4792602001489368804L;
-
-			public void headerClick(HeaderClickEvent event) {
-        		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
-        			String column = (String) event.getPropertyId();
-        			fillWithMenu.setData(column);
-        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
-            			menuFillWithLocationName.setVisible(false);
-            			menuFillWithCrossExpansion.setVisible(false);
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
-            			menuFillWithLocationName.setVisible(true);
-            			menuFillWithCrossExpansion.setVisible(false);
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
-            			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
-            			menuFillWithLocationName.setVisible(false);
-            			menuFillWithCrossExpansion.setVisible(true);
-            			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		}
-        		}
-        	}
-        });
+	   	 targetTable.addListener(headerClickListener);
     }
 
+    public void setContextMenuEnabled(Boolean isEnabled){
+    	targetTable.removeListener(headerClickListener);
+    	if(isEnabled)
+    		targetTable.addListener(headerClickListener);
+    }
     
     public List<Integer> getGidsFromTable(Table table){
     	List<Integer> gids = new ArrayList<Integer>();
@@ -270,78 +339,92 @@ public class FillWith implements InternationalizableComponent  {
     	return itemIds;
 	}
 	
+	private void markHasChangesFlagsAndToggleTableEditable(Table table){
+		//mark flag that changes have been made in listDataTable
+		if(listManagerTreeMenu != null){ 
+			listManagerTreeMenu.setChanged(true); 
+		}
+	       
+	    //mark flag that changes have been made in buildNewListTable
+	    if(buildNewListComponent != null){ 
+	    	buildNewListComponent.setHasChanges(true); 
+	    }
+	    
+	    if(listDetailsComponent != null){
+	    	listDetailsComponent.setChanged(true);
+	    }
+	    
+	    if(buildListComponent != null){
+	    	buildListComponent.setChanged(true);
+	    }
+	    
+	    //To trigger TableFieldFactory (fix for truncated data)
+		if(table.isEditable()){
+			table.setEditable(false);
+			table.setEditable(true);
+		}
+	}
+	
     public void fillWithEmpty(Table table, String propertyId){
        List<Integer> itemIds = getItemIds(table);
        for(Integer itemId: itemIds){
            table.getItem(itemId).getItemProperty(propertyId).setValue("");
        }
        
-       //mark flag that changes have been made in listDataTable
-       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-       
-       //mark flag that changes have been made in buildNewListTable
-       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
-       
+       markHasChangesFlagsAndToggleTableEditable(table);	
     }
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent);
+        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent
+        		, buildListComponent);
         attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);
     }
     
-	public void fillWithGermplasmDate(Table table, String propertyId){
+    
+    public void fillWithGermplasmDate(Table table, String propertyId){
+    	fillWithGermplasmDate(table, propertyId, false);
+    }
+    
+	public void fillWithGermplasmDate(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
 		   Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasmGidDateMap.get(gid));
+			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
     }
  
-    public void fillWithMethodName(Table table, String propertyId){
+	public void fillWithMethodName(Table table, String propertyId){
+		fillWithMethodName(table, propertyId, false);
+	}
+	
+    public void fillWithMethodName(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMname().toString());
+			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 	       
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -349,86 +432,72 @@ public class FillWith implements InternationalizableComponent  {
     }    
 
     public void fillWithMethodAbbreviation(Table table, String propertyId){
+    	fillWithMethodAbbreviation(table, propertyId, false);
+    }
+    
+    public void fillWithMethodAbbreviation(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMcode().toString());
+			   }
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
     }   
     
+    
     public void fillWithMethodNumber(Table table, String propertyId){
+    	fillWithMethodNumber(table, propertyId, false);
+    }
+    
+    public void fillWithMethodNumber(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMid().toString());
+			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
 	   }
     }       
     
-    public void fillWithMethodGroup(Table table, String propertyId){
+    public void fillWithMethodGroup(Table table, String propertyId) {
+    	fillWithMethodGroup(table, propertyId, false);
+    }
+    
+    public void fillWithMethodGroup(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
 	   try {
 		   List<Integer> itemIds = getItemIds(table);
 		   List<Integer> gids = getGidsFromTable(table);
 		   Map<Integer,Object> germplasmGidDateMap = germplasmDataManager.getMethodsByGids(gids);
 		   
 		   for(Integer itemId: itemIds){
-			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());			   
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(((Method) germplasmGidDateMap.get(gid)).getMgrp().toString());
+			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-		   
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -436,27 +505,21 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     public void fillWithCrossFemaleGID(Table table, String propertyId){
+    	fillWithCrossFemaleGID(table, propertyId, false);
+    }
+    
+    public void fillWithCrossFemaleGID(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
  	   try {
 		   List<Integer> itemIds = getItemIds(table);
-		   List<Integer> gids = getGidsFromTable(table);
 		   for(Integer itemId: itemIds){
-			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
-			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid1());
+			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+				   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid1());
+			   } 
 		   }
 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-		   //mark flag that changes have been made in listDataTable
-	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	       
-	       //mark flag that changes have been made in buildNewListTable
-	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
 	   } catch (MiddlewareQueryException e) {
 		   e.printStackTrace();
@@ -464,58 +527,47 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     public void fillWithCrossFemalePreferredName(Table table, String propertyId){
+    	fillWithCrossFemalePreferredName(table, propertyId, false);
+    }
+    
+    public void fillWithCrossFemalePreferredName(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
- 		   List<Integer> gids = getGidsFromTable(table);
  		   for(Integer itemId: itemIds){
- 			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
- 			  Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
- 			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
- 			   List<Integer> parentGids = new ArrayList<Integer>();
- 			   parentGids.add(germplasm.getGpid1());
- 			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
- 			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid1()));
+ 			  if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+ 				  Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+ 				  Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+ 				  List<Integer> parentGids = new ArrayList<Integer>();
+ 				  parentGids.add(germplasm.getGpid1());
+ 				  Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
+ 				  table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid1()));
+ 			  } 
  		   }
  		   
-		   //To trigger TableFieldFactory (fix for truncated data)
- 		  if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
- 		   //mark flag that changes have been made in listDataTable
- 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
- 	       
- 	       //mark flag that changes have been made in buildNewListTable
- 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+ 		   markHasChangesFlagsAndToggleTableEditable(table);
 
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
  	   }    	    	
     }
     
-    public void fillWithCrossMaleGID(Table table, String propertyId){
+    public void fillWithCrossMaleGID(Table table, String propertyId) {
+    	fillWithCrossMaleGID(table, propertyId, false);
+    }
+    
+    public void fillWithCrossMaleGID(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
   	   try {
  		   List<Integer> itemIds = getItemIds(table);
- 		   List<Integer> gids = getGidsFromTable(table);
  		   for(Integer itemId: itemIds){
- 			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
- 			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
- 			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
- 			   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid2());
+ 			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+ 				   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+ 				   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+ 				   table.getItem(itemId).getItemProperty(propertyId).setValue(germplasm.getGpid2());
+ 			   }
  		   }
- 		   
-		   //To trigger TableFieldFactory (fix for truncated data)
- 		  if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
- 		   //mark flag that changes have been made in listDataTable
- 	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
- 	       
- 	       //mark flag that changes have been made in buildNewListTable
- 	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+ 		   	
+		   
+ 		  markHasChangesFlagsAndToggleTableEditable(table);
  	       
  	   } catch (MiddlewareQueryException e) {
  		   e.printStackTrace();
@@ -523,90 +575,84 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     public void fillWithCrossMalePreferredName(Table table, String propertyId){
+    	fillWithCrossMalePreferredName(table, propertyId, false);
+    }
+    
+    public void fillWithCrossMalePreferredName(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
    	   try {
   		   List<Integer> itemIds = getItemIds(table);
-  		   List<Integer> gids = getGidsFromTable(table);
   		   for(Integer itemId: itemIds){
-  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
-  			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
-  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
-  			   List<Integer> parentGids = new ArrayList<Integer>();
-  			   parentGids.add(germplasm.getGpid2());
-  			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
-  			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid2()));
+  			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+	  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
+	  			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+	  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
+	  			   List<Integer> parentGids = new ArrayList<Integer>();
+	  			   parentGids.add(germplasm.getGpid2());
+	  			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
+	  			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid2()));
+  			 	}
   		   }
   		   
-		   //To trigger TableFieldFactory (fix for truncated data)
-  		   if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-  		   //mark flag that changes have been made in listDataTable
-  	       if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-  	       
-  	       //mark flag that changes have been made in buildNewListTable
-  	       if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+		   markHasChangesFlagsAndToggleTableEditable(table);
 
   	   } catch (MiddlewareQueryException e) {
   		   e.printStackTrace();
   	   }        	
     }
 
-    protected void fillWithPreferredName(Table table, String propertyId) {
+    protected void fillWithPreferredName(Table table, String propertyId){
+    	fillWithPreferredName(table, propertyId, false);
+    }
+    
+    protected void fillWithPreferredName(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues) {
         for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
-            //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            Item item = table.getItem(listDataId);
-            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-            Button b = (Button) gidObject;
-            String gid = b.getCaption();
-            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(propertyId).setValue(gModel.getGermplasmPreferredName());
+        	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(listDataId).getItemProperty(propertyId).getValue() == null || table.getItem(listDataId).getItemProperty(propertyId).getValue().equals(""))){
+	            //iterate through the table elements' IDs
+
+	            Item item = table.getItem(listDataId);
+	            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+	            Button b = (Button) gidObject;
+	            String gid = b.getCaption();
+	            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
+	            item.getItemProperty(propertyId).setValue(gModel.getGermplasmPreferredName());
+        	}
         }
         
-        //To trigger TableFieldFactory (fix for truncated data)
-        if(targetTable.isEditable()){
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
-		}
-
-        //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }
+        markHasChangesFlagsAndToggleTableEditable(table);
 
 	}
     
     protected void fillWithPreferredID(Table table, String propertyId) {
+    	fillWithPreferredID(table, propertyId, false);
+    }
+    
+    protected void fillWithPreferredID(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues) {    	
         for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
             //iterate through the table elements' IDs
             int listDataId = (Integer) i.next();
-            Item item = table.getItem(listDataId);
-            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-            Button b = (Button) gidObject;
-            String gid = b.getCaption();
-            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
-            item.getItemProperty(propertyId).setValue(gModel.getPrefID());
+            
+            if(!onlyFillWithThoseHavingEmptyValues   
+            		|| table.getItem(listDataId).getItemProperty(propertyId).getValue()==null  
+            		|| table.getItem(listDataId).getItemProperty(propertyId).getValue().equals("")
+            ){
+	            Item item = table.getItem(listDataId);
+	            Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+	            Button b = (Button) gidObject;
+	            String gid = b.getCaption();
+	            GermplasmDetailModel gModel = getGermplasmDetails(Integer.valueOf(gid));
+	            item.getItemProperty(propertyId).setValue(gModel.getPrefID());
+            }
         }
 
-        //To trigger TableFieldFactory (fix for truncated data)
-        if(targetTable.isEditable()){
-		   targetTable.setEditable(false);
-		   targetTable.setEditable(true);
-        }
-
-        //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+        markHasChangesFlagsAndToggleTableEditable(table);	
 
 	}
     
-    
-    protected void fillWithLocation() {
+    protected void fillWithLocation(Table targetTable) {
+    	
+    	String propertyId = ListDataTablePropertyID.SEED_SOURCE.getName();
+    	
         try {
             List<Integer> gidList = getGidsFromTable(targetTable);
             Map<Integer, String> gidLocations;
@@ -614,66 +660,90 @@ public class FillWith implements InternationalizableComponent  {
             
             List<Integer> itemIds = getItemIds(targetTable);
             for (Integer itemId : itemIds) {
-                Item item = targetTable.getItem(itemId);
-                Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
-                Button b= (Button) gidObject;
-                String gid=b.getCaption();
-                item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
+           		Item item = targetTable.getItem(itemId);
+           		Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+           		Button b= (Button) gidObject;
+           		String gid=b.getCaption();
+           		item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
             }
     		
-    	    //To trigger TableFieldFactory (fix for truncated data)
-        	if(targetTable.isEditable()){
-    		   targetTable.setEditable(false);
-    		   targetTable.setEditable(true);
-    		}
-	
-            //mark flag that changes have been made in listDataTable
-            if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-            
-            //mark flag that changes have been made in buildNewListTable
-            if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+    	    markHasChangesFlagsAndToggleTableEditable(targetTable);	
 
         } catch (MiddlewareQueryException e) {
             e.printStackTrace();
         }
 	}
     
+    protected void fillWithLocation(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues) {
+    	
+        try {
+            List<Integer> gidList = getGidsFromTable(table);
+            Map<Integer, String> gidLocations;
+            gidLocations = germplasmDataManager.getLocationNamesByGids(gidList);
+            
+            List<Integer> itemIds = getItemIds(table);
+            for (Integer itemId : itemIds) {
+            	if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+            		Item item = table.getItem(itemId);
+            		Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
+            		Button b= (Button) gidObject;
+            		String gid=b.getCaption();
+            		item.getItemProperty(propertyId).setValue(gidLocations.get(new Integer(gid)));
+            	}
+            }
+    		
+    	    //To trigger TableFieldFactory (fix for truncated data)
+        	if(table.isEditable()){
+    		   table.setEditable(false);
+    		   table.setEditable(true);
+    		}
+	
+        } catch (MiddlewareQueryException e) {
+            e.printStackTrace();
+        }
+	}    
+    
     public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZeros, 
     		boolean spaceBetweenPrefixAndCode, boolean spaceBetweenSuffixAndCode){
+    	fillWithSequence(propertyId, prefix, suffix, startNumber, numOfZeros, spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode, false);
+    }
+    
+    public void fillWithSequence(String propertyId, String prefix, String suffix, int startNumber, int numOfZeros, 
+    		boolean spaceBetweenPrefixAndCode, boolean spaceBetweenSuffixAndCode, Boolean onlyFillWithThoseHavingEmptyValues){
     	List<Integer> itemIds = getItemIds(targetTable);
     	int number = startNumber;
         for (Integer itemId : itemIds) {
-            Item item = targetTable.getItem(itemId);
-            StringBuilder builder = new StringBuilder();
-            builder.append(prefix);
-            if(spaceBetweenPrefixAndCode){
-            	builder.append(" ");
-            }
-            
-            if(numOfZeros > 0){
-            	String numberString = "" + number;
-            	int numOfZerosNeeded = numOfZeros - numberString.length();
-                for (int i = 0; i < numOfZerosNeeded; i++){
-                	builder.append("0");
-                }
-            }
-            builder.append(number);
-            
-            if(suffix != null && spaceBetweenSuffixAndCode){
-            	builder.append(" ");
-            }
-            
-            if(suffix != null){
-            	builder.append(suffix);
-            }
-            
-            item.getItemProperty(propertyId).setValue(builder.toString());
-            ++number;
+        	if(!onlyFillWithThoseHavingEmptyValues || (targetTable.getItem(itemId).getItemProperty(propertyId).getValue() == null || targetTable.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
+	            Item item = targetTable.getItem(itemId);
+	            StringBuilder builder = new StringBuilder();
+	            builder.append(prefix);
+	            if(spaceBetweenPrefixAndCode){
+	            	builder.append(" ");
+	            }
+	            
+	            if(numOfZeros > 0){
+	            	String numberString = "" + number;
+	            	int numOfZerosNeeded = numOfZeros - numberString.length();
+	                for (int i = 0; i < numOfZerosNeeded; i++){
+	                	builder.append("0");
+	                }
+	            }
+	            builder.append(number);
+	            
+	            if(suffix != null && spaceBetweenSuffixAndCode){
+	            	builder.append(" ");
+	            }
+	            
+	            if(suffix != null){
+	            	builder.append(suffix);
+	            }
+	            
+	            item.getItemProperty(propertyId).setValue(builder.toString());
+	            ++number;
+        	}
         }
         
-        if(listManagerTreeMenu != null){
-     	   listManagerTreeMenu.setChanged(true);
-        }
+        markHasChangesFlagsAndToggleTableEditable(targetTable);
     }
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
@@ -693,7 +763,7 @@ public class FillWith implements InternationalizableComponent  {
     	levelComboBox.setNullSelectionAllowed(false);
     	layout.addComponent(levelComboBox, "top:10px;left:10px");
     	
-    	Button okButton = new Button("OK");
+    	Button okButton = new Button(messageSource.getMessage(Message.OK));
     	okButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -3519880320817778816L;
 
@@ -706,7 +776,7 @@ public class FillWith implements InternationalizableComponent  {
 		});
     	layout.addComponent(okButton, "top:50px;left:10px"); 
     	
-    	Button cancelButton = new Button("Cancel");
+    	Button cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
     	cancelButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -3519880320817778816L;
 
@@ -742,28 +812,19 @@ public class FillWith implements InternationalizableComponent  {
 	            }
 	        }
 	    	
-		   //To trigger TableFieldFactory (fix for truncated data)
-	    	if(targetTable.isEditable()){
-			   targetTable.setEditable(false);
-			   targetTable.setEditable(true);
-		   }
-
-	        //mark flag that changes have been made in listDataTable
-	        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-	        
-	        //mark flag that changes have been made in buildNewListTable
-	        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
+		   markHasChangesFlagsAndToggleTableEditable(targetTable);	
 
     	}
     }
     
     private void displaySequenceNumberPopupWindow(String propertyId){
     	Window specifySequenceNumberWindow = new Window("Specify Sequence Number");
-    	specifySequenceNumberWindow.setHeight("300px");
-    	specifySequenceNumberWindow.setWidth("500px");
+    	specifySequenceNumberWindow.setHeight("320px");
+    	specifySequenceNumberWindow.setWidth("530px");
     	specifySequenceNumberWindow.setModal(true);
     	specifySequenceNumberWindow.setResizable(false);
     	specifySequenceNumberWindow.setContent(new AdditionalDetailsCrossNameComponent(this, propertyId, specifySequenceNumberWindow));
+    	specifySequenceNumberWindow.addStyleName(Reindeer.WINDOW_LIGHT);
     	this.targetTable.getWindow().addWindow(specifySequenceNumberWindow);
     }
     
@@ -787,22 +848,22 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     private String getGermplasmPrefID(int gid) throws InternationalizableException {
-   	 String prefId = "";
-   	try {
-           ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
+    	String prefId = "";
+    	try {
+    		ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
           
-           for (Name n : names) {
-               if (n.getNstat() == 8) {
-                   prefId = n.getNval();
-                   break;
-               }
-           }
-           return prefId;
-       } catch (MiddlewareQueryException e) {
-//           throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
-       }
+    		for (Name n : names) {
+    			if (n.getNstat() == 8) {
+    				prefId = n.getNval();
+    				break;
+    			}
+    		}
+    		return prefId;
+    	} catch (MiddlewareQueryException e) {
+    		LOG.error("Error with getting preferred id of germplasm: " + gid, e);
+    	}
 		return prefId;
-   }
+    }
 
 	@Override
 	public void updateLabels() {
@@ -840,9 +901,5 @@ public class FillWith implements InternationalizableComponent  {
 	
 	public int getNumberOfEntries(){
 		return targetTable.getItemIds().size();
-	}
-	
-	public void setFromBuildNewList(boolean fromBuildNewList){
-		this.fromBuildNewList = fromBuildNewList;
 	}
 }

@@ -2,12 +2,13 @@ package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.util.ComponentTree;
-import org.generationcp.breeding.manager.util.ComponentTree.ComponentTreeItem;
+import org.generationcp.breeding.manager.inventory.InventoryViewComponent;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.ComponentTree;
+import org.generationcp.commons.vaadin.ui.ComponentTreeItem;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private int userId;
     private ListDetailComponent listDetailComponent;
     
-    private ListInventoryComponent listInventoryComponent;
+    private InventoryViewComponent listInventoryComponent;
     private ListManagerMain listManagerMain;
     
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
@@ -111,7 +112,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         listDataComponent = new ListDataComponent(this, germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this, listManagerMain);
         listDataComponent.setData(LIST_DATA);
        
-        listInventoryComponent = new ListInventoryComponent(germplasmListId);
+        listInventoryComponent = new InventoryViewComponent(germplasmListId);
         listInventoryComponent.setData(LIST_SEED_INVENTORY);
         
         ComponentTree content = new ComponentTree();
@@ -132,7 +133,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			}
         });
         
-        listData = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
+        listData = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.LIST_DATA)));
         listData.addChild(listDataComponent);
         listData.addListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -144,7 +145,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 			}
         });
         
-        listSeedInventory = content.addChild(Util.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
+        listSeedInventory = content.addChild(ComponentTreeItem.createHeaderComponent(messageSource.getMessage(Message.LIST_SEED_INVENTORY)));
         listSeedInventory.addChild(listInventoryComponent);
         listSeedInventory.addListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -192,4 +193,12 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
 	    this.hasChanged = hasChanged;
 	}
 
+	public ListDetailComponent getListDetailComponent(){
+		return listDetailComponent;
+	}
+	
+	public ListManagerMain getListManagerMain(){
+		return listManagerMain;
+	}
+	
 }

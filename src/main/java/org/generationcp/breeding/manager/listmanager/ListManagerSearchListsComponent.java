@@ -53,8 +53,8 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	private AbsoluteLayout searchBar;
 	private Label searchLabel;
 	private TextField searchField;
-	private SearchResultsComponent searchResultsComponent;
-	private ListManagerMain listManagerMain;
+	private GermplasmSearchResultsComponent searchResultsComponent;
+	private final ListManagerMain listManagerMain;
 	private Button searchButton;
     private CheckBox likeOrEqualCheckBox;
     private CheckBox includeParentsCheckBox;
@@ -153,7 +153,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
         searchBar.addComponent(likeOrEqualCheckBox, "top:13px; left: 350px;");
         searchBar.addComponent(includeParentsCheckBox, "top:13px; left: 500px;");
         
-        searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
+        //searchResultsComponent = new SearchResultsComponent(this.listManagerMain, this);
         
         //addComponent(searchBar, "top:20px; left:20px;");
         //p.addComponent(searchBar);
@@ -187,7 +187,6 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
 						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
 			} 
-			searchResultsComponent.applyGermplasmListResults(germplasmLists);
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			
 		} catch (MiddlewareQueryException e) {
@@ -198,14 +197,14 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 	}
 	
 	private List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws MiddlewareQueryException{
-		return germplasmListManager.searchForGermplasmList(q, o);
+		return germplasmListManager.searchForGermplasmList(q, o, true);
 	}
 	
 	private List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws MiddlewareQueryException{
-		return germplasmDataManager.searchForGermplasm(q, o, includeParents);
+		return germplasmDataManager.searchForGermplasm(q, o, includeParents, true);
 	}	
 	
-	public SearchResultsComponent getSearchResultsComponent(){
+	public GermplasmSearchResultsComponent getSearchResultsComponent(){
 		return searchResultsComponent;
 	}
 	
