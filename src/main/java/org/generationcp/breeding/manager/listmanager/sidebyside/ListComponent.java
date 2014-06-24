@@ -185,7 +185,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
     @SuppressWarnings("unused")
     private ContextMenuItem tableContextMenu_SelectAll;
-    @SuppressWarnings("unused")
+    
     private ContextMenuItem tableContextMenu_CopyToNewList;
     private ContextMenuItem tableContextMenu_DeleteEntries;
     private ContextMenuItem tableContextMenu_EditCell;
@@ -369,7 +369,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		addColumnContextMenu = new AddColumnContextMenu(parentListDetailsComponent, menu, 
                 listDataTable, ListDataTablePropertyID.GID.getName());
 		
-		listInventoryTable = new ListInventoryTable(germplasmList.getId());
+		listInventoryTable = new ListInventoryTable(source, germplasmList.getId(),true,false);
 		listInventoryTable.setVisible(false);
 		
 	}

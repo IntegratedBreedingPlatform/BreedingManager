@@ -34,7 +34,7 @@ import org.generationcp.breeding.manager.listmanager.constants.ListDataTableProp
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
-import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler.ListUpdatedEvent;
+import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -247,23 +247,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
 
         if(currentlySavedGermplasmList!=null)
-        	listInventoryTable = new ListInventoryTable(currentlySavedGermplasmList.getId());
+        	listInventoryTable = new ListInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
         else
-        	listInventoryTable = new ListInventoryTable();
+        	listInventoryTable = new ListInventoryTable(source, null, false, true);
         listInventoryTable.setVisible(false);
-        listInventoryTable.getTable().setDropHandler(new DropHandler() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void drop(DragAndDropEvent event) {
-				MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Error", "Switch the List Builder to List View in order to add new list entries."
-	                    , Notification.POSITION_TOP_RIGHT);
-				return;	
-			}
-			@Override
-			public AcceptCriterion getAcceptCriterion() {
-				return AcceptAll.get();
-			}
-        });
         
         listDataTable = tableWithSelectAllLayout.getTable();
         createGermplasmTable(listDataTable);
