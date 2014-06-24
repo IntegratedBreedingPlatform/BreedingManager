@@ -981,7 +981,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			
 			String designationName = entry.getDesignation();
 			
-			Button gidButton = new Button(designationName, new GidLinkClickListener(designationName,true));
+			Button gidButton = new Button(designationName, new GidLinkClickListener(entry.getGid().toString(),true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             gidButton.setDescription("Click to view Germplasm information");
 			
