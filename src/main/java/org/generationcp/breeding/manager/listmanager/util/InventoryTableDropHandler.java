@@ -21,8 +21,9 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
@@ -31,7 +32,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class InventoryTableDropHandler extends DropHandlerMethods implements DropHandler {
 
 	private static final long serialVersionUID = 1L;
-	
+	private Integer lastDroppedListId;
 	
 	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
 		this.listManagerMain = listManagerMain;
@@ -50,23 +51,27 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
 	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
-	        targetTable = (Table) dropData.getTarget();
+	        //targetTable = (Table) dropData.getTarget();
 			
 			if(sourceTableData.equals(ListInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
 				changed = true;
 				
-				Integer listId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
+				lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
+				
+				List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
-					//addFromListDataTable(sourceTable);
+					lotDetails.addAll(getInventoryTableItemIds(sourceTable));
 				} //If none, add what was dropped
 				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
-					
-					//addGermplasmFromList(listId, (Integer) transferable.getItemId());
+					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
 				}
-			
+
 				System.out.println("Drag from list data to list manager inventory view.");
+				System.out.println("LotDetails: "+lotDetails);
+				
+				addSelectedInventoryDetails(lotDetails, sourceTable);
 				
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
@@ -97,8 +102,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			allLotDetailsToBeAdded.addAll(getLotDetailsWithEntryId(uniqueEntryId, sourceTable));
 		}
 		
+		int nextId = getInventoryTableNextEntryId();
+		
 		for(ListEntryLotDetails lotDetail : allLotDetailsToBeAdded){
-			addItemToDestinationTable(lotDetail, sourceTable, targetTable);
+			addItemToDestinationTable(lotDetail, nextId, sourceTable, targetTable);
 		}
 		
 	}
@@ -114,9 +121,20 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	private List<Integer> getUniqueEntryNumbers(List<ListEntryLotDetails> selectedItemIds, Table sourceTable){
 		List<Integer> uniqueEntryIds = new ArrayList<Integer>();
 		for(ListEntryLotDetails lotDetail : selectedItemIds){
-			if(!uniqueEntryIds.contains(lotDetail.getEntityIdOfLot()))
-				uniqueEntryIds.add(lotDetail.getEntityIdOfLot());
+			
+			GermplasmListData germplasmListData = null;
+	   		
+	   		try {
+				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetail.getId());
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+			
+			if(!uniqueEntryIds.contains(germplasmListData.getEntryId()))
+				uniqueEntryIds.add(germplasmListData.getEntryId());
 		}
+		
+		System.out.println("Entry IDs: "+uniqueEntryIds);
 		return uniqueEntryIds;
 	}
 	
@@ -131,13 +149,26 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
         List<ListEntryLotDetails> matchingLotDetails = new ArrayList<ListEntryLotDetails>();
 	    allLotDetails.addAll((Collection<? extends ListEntryLotDetails>) sourceTable.getItemIds());
 	    for(ListEntryLotDetails lotDetail : allLotDetails){
-	    	if(lotDetail.getEntityIdOfLot().equals(entryId))
+
+	    	GermplasmListData germplasmListData = null;
+	   		try {
+				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetail.getId());
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+	    	
+	    	if(germplasmListData!=null && germplasmListData.getEntryId().equals(entryId))
 	    		matchingLotDetails.add(lotDetail);
 	    }
+	    
+	    System.out.println("Entry ID: "+entryId);
+	    System.out.println("MatchingLotDetails: "+matchingLotDetails);
 	    return matchingLotDetails;
 	}	
 	
-	private Item addItemToDestinationTable(ListEntryLotDetails lotDetail, Table sourceTable, final Table targetTable){
+
+	
+	private Item addItemToDestinationTable(ListEntryLotDetails lotDetail, Integer entryId, Table sourceTable, final Table targetTable){
 		
 		Item newItem = targetTable.addItem(lotDetail);
 		
@@ -158,30 +189,75 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
  			 
  		});
 		
-   		String desig = "";
-   		String gid = "";
+   		Button sourceDesigButton = new Button();
+   		Button desigButton = new Button();
+   		
    		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
    		if(itemFromSourceTable!=null){
-   			desig = (String) itemFromSourceTable.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).getValue();
-   			desig = (String) itemFromSourceTable.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).getValue();
+   			sourceDesigButton = (Button) itemFromSourceTable.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).getValue();
+   			if(sourceDesigButton!=null){
+   				desigButton.setValue(sourceDesigButton.getValue());
+   				desigButton.setCaption(sourceDesigButton.getCaption());
+   				for(Object listener : sourceDesigButton.getListeners(ClickEvent.class)){
+   					desigButton.addListener((GidLinkButtonClickListener) listener);	
+   				}
+   			}
    		}
    		
-   		Button desigButton = new Button(String.format("%s", desig), new GidLinkButtonClickListener(listManagerMain,gid, true, true));
         desigButton.setStyleName(BaseTheme.BUTTON_LINK);
    		
    		newItem.getItemProperty(ListInventoryTable.TAG_COLUMN_ID).setValue(itemCheckBox);
-		newItem.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).setValue("999");
+		newItem.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
 		newItem.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).setValue(desigButton);
 		newItem.getItemProperty(ListInventoryTable.LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
 		newItem.getItemProperty(ListInventoryTable.UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
 		newItem.getItemProperty(ListInventoryTable.AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
 		newItem.getItemProperty(ListInventoryTable.TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-		newItem.getItemProperty(ListInventoryTable.RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
+		newItem.getItemProperty(ListInventoryTable.RESERVED_COLUMN_ID).setValue(0);
 		newItem.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(0);
 		newItem.getItemProperty(ListInventoryTable.COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ListInventoryTable.LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
 		
 		return newItem;
 	}
+
 	
+	private List<ListEntryLotDetails> getInventoryTableItemIds(Table table){
+		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getItemIds());
+		return lotDetails;
+	}
+	
+	private Integer getInventoryTableNextEntryId(){
+		int nextId = 0;
+		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){
+			
+//			GermplasmListData germplasmListData = null;
+//			
+//	   		try {
+//				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetails.getId());
+//			} catch (MiddlewareQueryException e) {
+//				e.printStackTrace();
+//			}
+//
+//	   		System.out.println("GermplasmListData: "+germplasmListData);
+//	   		System.out.println("LastDroppedListId: "+lastDroppedListId);
+//	   		System.out.println("LRecId: "+lotDetails.getId());
+//	   		System.out.println("EntryId: "+germplasmListData.getEntryId());
+//	   		
+//			if(germplasmListData!=null && germplasmListData.getEntryId() > nextId)
+//				nextId = germplasmListData.getEntryId();
+			
+			Integer entryId = 0;
+			Item item = targetTable.getItem(lotDetails);
+			if(item!=null)
+				entryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+			
+			if(entryId > nextId)
+				nextId = entryId;
+			
+			System.out.println("Highest entry id: "+nextId);
+		}
+		return nextId+1;
+	}
 }
