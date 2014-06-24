@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -1332,6 +1335,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			reserveInventoryAction = new ReserveInventoryAction(this);
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
 			if(success){
+				refreshInventoryColumns(getValidReservationsToSave());
 				resetListInventoryView();
 				
 				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
@@ -1339,6 +1343,37 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
+	}
+	
+private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave){
+		
+		Set<Integer> entryIds = new HashSet<Integer>();
+		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
+			entryIds.add(details.getKey().getId());
+		 }
+		
+		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
+		
+		try {
+			if (!entryIds.isEmpty())
+				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(currentlySavedGermplasmList.getId(), new ArrayList<Integer>(entryIds));
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		for (GermplasmListData listData : germplasmListDataEntries){
+			Item item = listDataTable.getItem(listData.getId());
+			
+			// Seed Reserved
+	   		String seed_res = "-"; //default value
+	   		if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
+	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+	   		}
+			
+	   		item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+		}
+		
+		
 	}
 
 	@Override
