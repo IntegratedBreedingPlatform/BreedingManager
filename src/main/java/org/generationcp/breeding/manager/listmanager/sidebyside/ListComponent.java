@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -398,68 +399,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		    getAllListEntries();
 			
 			for(GermplasmListData entry : listEntries){
-				String gid = String.format("%s", entry.getGid().toString());
-                Button gidButton = new Button(gid, new GidLinkButtonClickListener(source, gid,true,true));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-                gidButton.setDescription("Click to view Germplasm information");
-                
-                Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(source, gid,true,true));
-                desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-                desigButton.setDescription("Click to view Germplasm information");
-                
-                CheckBox itemCheckBox = new CheckBox();
-                itemCheckBox.setData(entry.getId());
-                itemCheckBox.setImmediate(true);
-    	   		itemCheckBox.addListener(new ClickListener() {
-    	 			private static final long serialVersionUID = 1L;
-    	 			@Override
-    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-    	 					listDataTable.select(itemCheckBox.getData());
-    	 				} else {
-    	 					listDataTable.unselect(itemCheckBox.getData());
-    	 				}
-    	 			}
-    	 			 
-    	 		});
-    	   		
-    	   		Item newItem = listDataTable.addItem(entry.getId());
-    	   		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).setValue(entry.getGroupName());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-
-    	   		
-    	   		//Inventory Related Columns
-    	   		
-    	   		//#1 Available Inventory
-    	   		String avail_inv = "-"; //default value
-    	   		if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
-    	   			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-    	   		}
-    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),entry.getId(), entry.getGid()));
-    	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	   		inventoryButton.setDescription("Click to view Inventory Details");
-    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
-    	   		
-    	   		if(avail_inv.equals("-")){
-    	   			inventoryButton.setEnabled(false);
-    	   			inventoryButton.setDescription("No Lot for this Germplasm");
-    	   		}
-    	   		else{
-    	   			inventoryButton.setDescription("Click to view Inventory Details");
-    	   		}
-    	   		
-    	   		//#2 Seed Reserved
-    	   		String seed_res = "-"; //default value
-    	   		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
-    	   			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-    	   		}
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+				addListEntryToTable(entry);
     	   	}
 			
 			listDataTable.sort(new Object[]{ListDataTablePropertyID.ENTRY_ID.getName()}, new boolean[]{true});
@@ -473,6 +413,71 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	    	}
 		}
 	    
+	}
+
+	private void addListEntryToTable(GermplasmListData entry) {
+		String gid = String.format("%s", entry.getGid().toString());
+		Button gidButton = new Button(gid, new GidLinkButtonClickListener(source, gid,true,true));
+		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+		gidButton.setDescription("Click to view Germplasm information");
+		
+		Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(source, gid,true,true));
+		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		desigButton.setDescription("Click to view Germplasm information");
+		
+		CheckBox itemCheckBox = new CheckBox();
+		itemCheckBox.setData(entry.getId());
+		itemCheckBox.setImmediate(true);
+		itemCheckBox.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				CheckBox itemCheckBox = (CheckBox) event.getButton();
+				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+					listDataTable.select(itemCheckBox.getData());
+				} else {
+					listDataTable.unselect(itemCheckBox.getData());
+				}
+			}
+			 
+		});
+		
+		Item newItem = listDataTable.addItem(entry.getId());
+		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
+		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
+		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);
+		newItem.getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName()).setValue(entry.getGroupName());
+		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+
+		
+		//Inventory Related Columns
+		
+		//#1 Available Inventory
+		String avail_inv = "-"; //default value
+		if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
+			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+		}
+		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),entry.getId(), entry.getGid()));
+		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+		inventoryButton.setDescription("Click to view Inventory Details");
+		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+		
+		if(avail_inv.equals("-")){
+			inventoryButton.setEnabled(false);
+			inventoryButton.setDescription("No Lot for this Germplasm");
+		}
+		else{
+			inventoryButton.setDescription("Click to view Inventory Details");
+		}
+		
+		//#2 Seed Reserved
+		String seed_res = "-"; //default value
+		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+		}
+		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
 	}
 
 	private void getAllListEntries() {
@@ -1361,26 +1366,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         try {
             listDataId = this.germplasmListManager.addGermplasmListData(listData);
             
-            Object gidObject;
-            Object desigObject;
-            if (!fromUrl) {
-                // make GID as link only if the page wasn't directly accessed from the URL
-                String gidString = String.format("%s", gid.toString());
-                Button gidButton = new Button(gidString, new GidLinkButtonClickListener(source,gidString,true,true));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-                gidButton.setDescription("Click to view Germplasm information");
-                gidObject = gidButton;
-                
-                String desigString = listData.getDesignation();
-                Button desigButton = new Button(desigString, new GidLinkButtonClickListener(source,gidString,true,true));
-                desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-                desigButton.setDescription("Click to view Germplasm information");
-                desigObject = desigButton;
-            } else {
-                gidObject = gid;
-                desigObject = listData.getDesignation();
-            }
-            
             // create table if added entry is first listdata record
             if (listDataTable == null){
                 if (noListDataLabel != null){
@@ -1391,48 +1376,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 
             } else {
                 listDataTable.setEditable(false);
+                List<GermplasmListData> inventoryData =  this.inventoryDataManager.getLotCountsForListEntries(
+                		this.germplasmList.getId(), 
+						new ArrayList<Integer>(Collections.singleton(listDataId)));
+                if (inventoryData != null){
+                	listData = inventoryData.get(0);
+                }
+                addListEntryToTable(listData);
+
                 
-                Object[] visibleColumns = listDataTable.getVisibleColumns();
-                
-                listDataTable.setVisibleColumns(new String[] {
-                        CHECKBOX_COLUMN_ID,
-                        ListDataTablePropertyID.GID.getName()
-                        ,ListDataTablePropertyID.ENTRY_ID.getName()
-                        ,ListDataTablePropertyID.ENTRY_CODE.getName()
-                        ,ListDataTablePropertyID.SEED_SOURCE.getName()
-                        ,ListDataTablePropertyID.DESIGNATION.getName()
-                        ,ListDataTablePropertyID.AVAIL_INV.getName()
-                        ,ListDataTablePropertyID.SEED_RES.getName()
-                        ,ListDataTablePropertyID.GROUP_NAME.getName()
-//                  ,ListDataTablePropertyID.STATUS.getName()
-                });
-                
-                
-                CheckBox itemCheckBox = new CheckBox();
-                itemCheckBox.setData(listData.getId());
-                itemCheckBox.setImmediate(true);
-                itemCheckBox.addListener(new ClickListener() {
-                    private static final long serialVersionUID = 1L;
-                    @Override
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                        CheckBox itemCheckBox = (CheckBox) event.getButton();
-                        if(((Boolean) itemCheckBox.getValue()).equals(true)){
-                            listDataTable.select(itemCheckBox.getData());
-                        } else {
-                            listDataTable.unselect(itemCheckBox.getData());
-                        }
-                    }
-                     
-                });
-                
-                listDataTable.addItem(new Object[] {
-                        itemCheckBox, gidObject,listData.getEntryId(), listData.getEntryCode(), listData.getSeedSource(),
-                        desigObject, listData.getGroupName()
-//                            , listData.getStatusString()
-                }, listDataId);
-                
-                listDataTable.setVisibleColumns(visibleColumns);
-                
+    	   		Object[] visibleColumns = listDataTable.getVisibleColumns();
                 if(isColumnVisible(visibleColumns, AddColumnContextMenu.PREFERRED_ID)){
                     addColumnContextMenu.setPreferredIdColumnValues(false);            
                 }
@@ -1495,11 +1448,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
                         , Notification.POSITION_CENTERED);
             }
-            //populateTable();
-            //listDataTable.requestRepaint();
-//            if(this.germplasmListAccordionMenu != null)
-//                this.germplasmListAccordionMenu.refreshListData();
-            
             
             doneInitializing = true;
             return true;
