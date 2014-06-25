@@ -539,8 +539,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 							}
 							else{
 								listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
-								listBuilderComponent.resetList();
 								
+								
+								if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
+									//Has currently saved List, just load the previous lots
+									listBuilderComponent.viewInventoryActionConfirmed();
+								}
+								else{
+									//if no list save, just reset the list
+									listBuilderComponent.resetList();
+								}
 							}
 						}
 					});
