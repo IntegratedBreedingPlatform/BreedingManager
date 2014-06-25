@@ -106,10 +106,13 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		}
 		
 		int nextId = getInventoryTableNextEntryId();
-		int nextLrecId = getInventoryTableNextTempLrecId();
+		int lastLrecId = allLotDetailsToBeAdded.get(0).getId();
 		
 		for(ListEntryLotDetails lotDetail : allLotDetailsToBeAdded){
+			if(lastLrecId!=lotDetail.getId())
+				nextId++;
 			addItemToDestinationTable(lotDetail, nextId, sourceTable, targetTable);
+			lastLrecId = lotDetail.getId();
 		}
 	
 		//Update counter
