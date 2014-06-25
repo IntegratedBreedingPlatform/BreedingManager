@@ -162,6 +162,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	}
 	
 	private void displayInventoryDetails(List<GermplasmListData> inventoryDetails){
+		
 		listInventoryTable.removeAllItems();
 		for(GermplasmListData inventoryDetail : inventoryDetails){
 			
@@ -201,7 +202,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 						e.printStackTrace();
 					}
 			   		
-			   		Button desigButton = new Button(String.format("%s", designation), new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
+			   		Button desigButton = new Button(String.format("%s", designation), 
+			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 			   		
 			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);

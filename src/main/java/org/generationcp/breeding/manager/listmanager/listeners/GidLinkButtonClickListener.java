@@ -12,8 +12,6 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import java.util.Iterator;
-
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
@@ -31,13 +29,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;

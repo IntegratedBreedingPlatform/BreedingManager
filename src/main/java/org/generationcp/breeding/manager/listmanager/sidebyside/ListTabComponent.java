@@ -19,7 +19,6 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 	private final ListSelectionLayout listSelectionLayout;
 	private ListComponent listComponent;
 	private final GermplasmList germplasmList;
-	private boolean hasChanged = false;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -69,14 +68,6 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 		
 	}
 	
-	public boolean hasChanged() {
-	    return hasChanged;
-	}
-	
-	public void setChanged(boolean hasChanged) {
-	    this.hasChanged = hasChanged;
-	}
-	
 	public void setListNameLabel(String name){
 	    //TODO implement changing of List Name in details section for Rename List
         //lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
@@ -86,7 +77,7 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 	    return this.listSelectionLayout;
 	}
 	
-	public ListComponent getListDataComponent() {
+	public ListComponent getListComponent() {
         return this.listComponent;
     }
 

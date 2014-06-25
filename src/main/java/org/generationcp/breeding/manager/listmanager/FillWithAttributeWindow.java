@@ -173,11 +173,11 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
 
         if(listDetailsComponent != null){
-        	listDetailsComponent.setChanged(true);
+        	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
         }
         
         if(buildListComponent != null){
-        	buildListComponent.setChanged(true);
+        	buildListComponent.setHasUnsavedChanges(true);
         }
      }
     

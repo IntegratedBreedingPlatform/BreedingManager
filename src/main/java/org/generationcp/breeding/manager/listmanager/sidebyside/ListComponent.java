@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -201,6 +202,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private ReserveInventoryUtil reserveInventoryUtil;
     private ReserveInventoryAction reserveInventoryAction;
     private Map<ListEntryLotDetails, Double> validReservationsToSave;
+    private Boolean hasChanges;
     
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -238,6 +240,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		initializeValues();
 		addListeners();
 		layoutComponents();
+		
+		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+			changeToListView();
+		}
+		else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+			viewInventoryActionConfirmed();
+		}
 	}
 	
 	@Override
@@ -325,6 +334,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         
         //Inventory Related Variables
         validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
+        
+        //Keep Track the changes in ListDataTable and/or ListInventoryTable
+        hasChanges = false;
+        
+        ListSelectionLayout listSelection = source.getListSelectionComponent().getListDetailsLayout();
+		listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
 	}
 	
 	private void resetInventoryMenuOptions() {
@@ -660,7 +675,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                                 	f.setReadOnly(true);
                                 	
                                 	if(!fieldValue.equals(lastCellvalue)){
-                                		parentListDetailsComponent.setChanged(true);
+                                		setHasUnsavedChanges(true);
                                 	}
                                  }
                             //}
@@ -879,7 +894,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                                  if(!f.isReadOnly()){
                                 	f.setReadOnly(true);
                                 	if(!fieldValue.equals(lastCellvalue)){
-                                		parentListDetailsComponent.setChanged(true);
+                                		setHasUnsavedChanges(true);
                                 	}
                                  }
                             //}
@@ -894,7 +909,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		                	// mark list as changed if value for the cell was changed
 		                	if (column.equals(selectedColumn)) {
 		                	    if (!f.isReadOnly() && !fieldValue.toString().equals(lastCellvalue)) {
-		                	        parentListDetailsComponent.setChanged(true);
+		                	    	setHasUnsavedChanges(true);
 		                	    }
 		                	}
 		                	
@@ -957,9 +972,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						tf.setReadOnly(true);
 						
 						if (doneInitializing && !tf.getValue().toString().equals(lastCellvalue)) {
-                	        parentListDetailsComponent.setChanged(true);
+							setHasUnsavedChanges(true);
                 	    }
-						//parentListDetailsComponent.setChanged(true);
 					}
 	        	});
 		        
@@ -1075,7 +1089,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 	private void removeRowsInListDataTable(Collection<?> selectedIds){
     	//marks that there is a change in listDataTable
-    	parentListDetailsComponent.setChanged(true);
+		setHasUnsavedChanges(true);
     	
     	//Marks the Local Germplasm to be deleted 
     	try {
@@ -1146,7 +1160,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private void editListButtonClickAction() {
 		final ListBuilderComponent ListBuilderComponent = source.getListBuilderComponent();
 		
-    	if(ListBuilderComponent.isChanged()){
+    	if(ListBuilderComponent.hasUnsavedChanges()){
     		String message = "";
     		
     		String buildNewListTitle = ListBuilderComponent.getBuildNewListTitle().getValue().toString();
@@ -1554,7 +1568,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             
             listDataTable.requestRepaint();
             //reset flag to indicate unsaved changes
-            parentListDetailsComponent.setChanged(false);
+            setHasUnsavedChanges(true);
             
             if(showSuccessMessage){
             	MessageNotifier.showMessage(window, 
@@ -1855,8 +1869,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	/*-------------------------------------LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
 	private void viewListAction(){
-		if(validReservationsToSave.size() == 0){
-			changeToListView();
+		if(!hasUnsavedChanges()){
+			source.setModeView(ModeView.LIST_VIEW);
 		}else{
 			String message = "You have unsaved reservations for this list. " +
 					"You will need to save them before changing views. " +
@@ -1881,59 +1895,53 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}	
 	
-	private void changeToListView() {
-		listDataTableWithSelectAll.setVisible(true);
-		listInventoryTable.setVisible(false);
-        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
-        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
-        
-        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + listEntriesCount + "</b>");
+	public void changeToListView(){
+		if(listInventoryTable.isVisible()){
+			listDataTableWithSelectAll.setVisible(true);
+			listInventoryTable.setVisible(false);
+	        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
+	        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
+	        
+	        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	       		 + "  <b>" + listEntriesCount + "</b>");
+	        
+	        setHasUnsavedChanges(false);
+		}
 	}
 	
-	private void viewInventoryAction(){
+	public void changeToInventoryView(){
+		if(listDataTableWithSelectAll.isVisible()){
+			listDataTableWithSelectAll.setVisible(false);
+			listInventoryTable.setVisible(true);
+	        toolsMenuContainer.removeComponent(toolsButton);
+	        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
+	        
+	        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+		}
+	}
+	
+	public void setHasUnsavedChanges(Boolean hasChanges) {
+		this.hasChanges = hasChanges;
 		
-    	if(parentListDetailsComponent.hasChanged()){
-    		String message = "";
-    		
-       		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding?";
-    		
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						saveChangesAction();	
-					}
-					viewInventoryActionConfirmed();
-				}
-			});
-    	} else {
-    		viewInventoryActionConfirmed();
-    	}
-    	
+		ListSelectionLayout listSelection = source.getListSelectionComponent().getListDetailsLayout();
+		listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
 	}
 	
-	private void viewInventoryActionConfirmed(){
+	public Boolean hasUnsavedChanges() {
+		return hasChanges;
+	}
+
+	private void viewInventoryAction(){
+		source.setModeView(ModeView.INVENTORY_VIEW);
+	}
+	
+	public void viewInventoryActionConfirmed(){
 		listInventoryTable.loadInventoryData();
 		
-		if(listInventoryTable.getTable().getItemIds().size()==0){
-			
-			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING),
-					"There are no inventory details available for this list", Notification.POSITION_TOP_RIGHT);
-			return;
-		}
-		
-		listDataTableWithSelectAll.setVisible(false);
-		listInventoryTable.setVisible(true);
-        toolsMenuContainer.removeComponent(toolsButton);
-        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
-        
-        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+		changeToInventoryView();
 	}
 	
 	public void reserveInventoryAction() {
@@ -1957,7 +1965,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}//end of reserveInventoryAction
 	
 	public void saveReservationChangesAction(){
-		if(getValidReservationsToSave().size() > 0){
+		if(hasUnsavedChanges()){
 			reserveInventoryAction = new ReserveInventoryAction(this);
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
 			if(success){
@@ -2042,6 +2050,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 			
 			validReservationsToSave.put(lot,amountToReserve);
+		}
+		
+		if(validReservationsToSave.size() > 0){
+			setHasUnsavedChanges(true);
 		}
 	}
 	

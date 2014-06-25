@@ -100,7 +100,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
 					
-					source.setChanged(false);
+					source.setHasUnsavedChanges(false);
 					
 					((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
 					
@@ -165,7 +165,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					} else{
 						currentlySavedList = listFromDB;
 						this.source.setCurrentlySavedGermplasmList(listFromDB);
-						source.setChanged(false);
+						source.setHasUnsavedChanges(false);
 						
 						((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
 						

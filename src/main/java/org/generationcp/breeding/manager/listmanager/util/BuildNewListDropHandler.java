@@ -43,7 +43,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	        targetTable = (Table) dropData.getTarget();
 			
 			if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
-				changed = true;
+				setHasUnsavedChanges(true);
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
@@ -53,7 +53,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 					addGermplasm((Integer) transferable.getItemId());
 				
 			} else if (sourceTableData.equals(MATCHING_LISTS_TABLE_DATA)){
-				changed = true;
+				setHasUnsavedChanges(true);
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable))
@@ -63,7 +63,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 					addGermplasmList((Integer) transferable.getItemId());
 	
 			} else if (sourceTableData.equals(LIST_DATA_TABLE_DATA)){
-				changed = true;
+				setHasUnsavedChanges(true);
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
@@ -79,6 +79,9 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 				
 				//Check first if item is dropped on top of itself
 				if(!transferable.getItemId().equals(droppedOverItemId)) {
+					
+					setHasUnsavedChanges(true);
+					
 	                Item oldItem = sourceTable.getItem(transferable.getItemId());
 	                Object oldCheckBox = oldItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).getValue();
 	                Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
@@ -120,5 +123,12 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	public AcceptCriterion getAcceptCriterion() {
 		return AcceptAll.get();
 	}
-    
+
+	/*
+	 * Marks List Builder if there is unsaved changes in the list data table during drop and drag actions
+	 * */
+	public void setHasUnsavedChanges(boolean changed){
+		this.changed = changed;
+    	listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
+	}
 }
