@@ -322,6 +322,7 @@ public enum Message{
     
     ,SELECT_ALL
     ,INVENTORY_VIEW
+    ,TOTAL_LOTS
     ,EDIT_VALUE
     ,SAVE_CHANGES
     ,RETURN_TO_LIST_VIEW

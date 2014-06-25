@@ -1221,7 +1221,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        toolsButtonContainer.removeComponent(toolsButton);
 	        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
-	        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
+	        topLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS));
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 		}
