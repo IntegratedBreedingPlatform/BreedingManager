@@ -511,6 +511,8 @@ public class DropHandlerMethods {
 			FW.fillWith(targetTable, column, true);
     	}
     	fireListUpdatedEvent();
+    	
+    	setHasUnsavedChanges(true);
 	}
 
 
@@ -715,6 +717,14 @@ public class DropHandlerMethods {
             return listCount;
         }
     }
+	
+	/*
+	 * Marks List Builder if there is unsaved changes in the list data table during drop and drag actions
+	 * */
+	public void setHasUnsavedChanges(boolean changed){
+		this.changed = changed;
+    	listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
+	}
     
 }
 
