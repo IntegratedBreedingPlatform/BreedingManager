@@ -76,6 +76,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	private Boolean enableDragSource;
 	private Boolean enableDropHandler;
 	
+	private InventoryTableDropHandler inventoryTableDropHandler;
+	
 	@Autowired
 	GermplasmListManager germplasmListManager;
 
@@ -244,13 +246,18 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	}
 	
 	public void setDropHandler(){
+		inventoryTableDropHandler = new InventoryTableDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable);
 		if(enableDropHandler)
-			listInventoryTable.setDropHandler(new InventoryTableDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable));
+			listInventoryTable.setDropHandler(inventoryTableDropHandler);
 	}
 	
 	public void setDragSource(){
 		if(enableDragSource)
 			listInventoryTable.setDragMode(TableDragMode.ROW);
+	}
+	
+	public InventoryTableDropHandler getInventoryTableDropHandler(){
+		return inventoryTableDropHandler;
 	}
 	
 }

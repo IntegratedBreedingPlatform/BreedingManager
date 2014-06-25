@@ -276,6 +276,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
             </plugin>
+<!--
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
@@ -288,7 +289,7 @@
                                 <copy todir="src/main/resources" overwrite="true">
                                     <fileset dir="pipeline/config/${envConfig}" id="fromDir">
                                         <include name="workbench.properties"/>
-                                        <!-- <include name="IBPDatasource.properties" />  -->
+                                        < ! - - <include name="IBPDatasource.properties" />  - - >
                                     </fileset>
                                 </copy>
                             </tasks>
@@ -299,6 +300,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
 

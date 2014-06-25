@@ -235,7 +235,7 @@ public class DropHandlerMethods {
 		return null;
 	}
 
-	protected Integer addGermplasmFromList(Integer listId, Integer lrecid){
+	public Integer addGermplasmFromList(Integer listId, Integer lrecid){
 		return addGermplasmFromList(listId, lrecid, null);
 	}
 	

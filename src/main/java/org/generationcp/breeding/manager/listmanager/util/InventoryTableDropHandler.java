@@ -2,9 +2,12 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
@@ -34,12 +37,16 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	private static final long serialVersionUID = 1L;
 	private Integer lastDroppedListId;
 	
+	private List<ListDataAndLotDetails> listDataAndLotDetails;
+	
 	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.inventoryDataManager = inventoryDataManager;
 		this.targetTable = targetTable;
+		
+		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 
 	@Override
@@ -62,15 +69,11 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
-					lotDetails.addAll(getInventoryTableItemIds(sourceTable));
+					lotDetails.addAll(getInventoryTableSelectedItemIds(sourceTable));
 				} //If none, add what was dropped
 				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
 					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
 				}
-
-				System.out.println("Drag from list data to list manager inventory view.");
-				System.out.println("LotDetails: "+lotDetails);
-				
 				addSelectedInventoryDetails(lotDetails, sourceTable);
 				
 			} else {
@@ -103,10 +106,17 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		}
 		
 		int nextId = getInventoryTableNextEntryId();
+		int nextLrecId = getInventoryTableNextTempLrecId();
 		
 		for(ListEntryLotDetails lotDetail : allLotDetailsToBeAdded){
 			addItemToDestinationTable(lotDetail, nextId, sourceTable, targetTable);
 		}
+	
+		//Update counter
+		listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+		
+		//Update buttons
+		listManagerMain.getListBuilderComponent().setEnabledInventorySaveChangesButton(true);
 		
 	}
     
@@ -122,19 +132,14 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		List<Integer> uniqueEntryIds = new ArrayList<Integer>();
 		for(ListEntryLotDetails lotDetail : selectedItemIds){
 			
-			GermplasmListData germplasmListData = null;
-	   		
-	   		try {
-				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetail.getId());
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+			Item item = sourceTable.getItem(lotDetail);
+			if(item!=null){
+				int currentEntryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+				if(!uniqueEntryIds.contains(currentEntryId))
+					uniqueEntryIds.add(currentEntryId);
 			}
-			
-			if(!uniqueEntryIds.contains(germplasmListData.getEntryId()))
-				uniqueEntryIds.add(germplasmListData.getEntryId());
 		}
 		
-		System.out.println("Entry IDs: "+uniqueEntryIds);
 		return uniqueEntryIds;
 	}
 	
@@ -150,30 +155,50 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	    allLotDetails.addAll((Collection<? extends ListEntryLotDetails>) sourceTable.getItemIds());
 	    for(ListEntryLotDetails lotDetail : allLotDetails){
 
-	    	GermplasmListData germplasmListData = null;
-	   		try {
-				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetail.getId());
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+			Item item = sourceTable.getItem(lotDetail);
+			if(item!=null){
+				int currentEntryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+				if(currentEntryId == entryId){
+					matchingLotDetails.add(lotDetail);
+				}
 			}
+			
 	    	
-	    	if(germplasmListData!=null && germplasmListData.getEntryId().equals(entryId))
-	    		matchingLotDetails.add(lotDetail);
 	    }
 	    
-	    System.out.println("Entry ID: "+entryId);
-	    System.out.println("MatchingLotDetails: "+matchingLotDetails);
 	    return matchingLotDetails;
 	}	
-	
+
+
+	/**
+	 * To be called after (callback) saving new entries in list builder (on list inventory view) to update lrecid of listentrylotdetails
+	 * @param lrecId
+	 * @param entryId
+	 */
+	public void assignLrecIdToRowsFromListWithEntryId(Integer listId, Integer entryId){
+	   List<ListEntryLotDetails> itemIds = getLotDetailsWithEntryId(entryId, targetTable);
+	   for(ListEntryLotDetails itemId : itemIds){
+		  try {
+			 GermplasmListData listData = germplasmListManager.getGermplasmListDataByListIdAndEntryId(listId, entryId);
+			 if(listData!=null)
+				 itemId.setId(listData.getId());
+		  } catch (MiddlewareQueryException e) {
+			 e.printStackTrace();
+          }
+	   }
+	}
 
 	
 	private Item addItemToDestinationTable(ListEntryLotDetails lotDetail, Integer entryId, Table sourceTable, final Table targetTable){
 		
-		Item newItem = targetTable.addItem(lotDetail);
+		listDataAndLotDetails.add(new ListDataAndLotDetails(lastDroppedListId, lotDetail.getId(), entryId));
+		
+		ListEntryLotDetails newLotDetail = lotDetail.makeClone();
+		Item newItem = targetTable.addItem(newLotDetail);
+		newLotDetail.setId(0);
 		
 		CheckBox itemCheckBox = new CheckBox();
-        itemCheckBox.setData(lotDetail);
+        itemCheckBox.setData(newLotDetail);
         itemCheckBox.setImmediate(true);
    		itemCheckBox.addListener(new ClickListener() {
  			private static final long serialVersionUID = 1L;
@@ -228,25 +253,15 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return lotDetails;
 	}
 	
+	private List<ListEntryLotDetails> getInventoryTableSelectedItemIds(Table table){
+		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getValue());
+		return lotDetails;
+	}	
+	
 	private Integer getInventoryTableNextEntryId(){
 		int nextId = 0;
 		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){
-			
-//			GermplasmListData germplasmListData = null;
-//			
-//	   		try {
-//				germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(lastDroppedListId, lotDetails.getId());
-//			} catch (MiddlewareQueryException e) {
-//				e.printStackTrace();
-//			}
-//
-//	   		System.out.println("GermplasmListData: "+germplasmListData);
-//	   		System.out.println("LastDroppedListId: "+lastDroppedListId);
-//	   		System.out.println("LRecId: "+lotDetails.getId());
-//	   		System.out.println("EntryId: "+germplasmListData.getEntryId());
-//	   		
-//			if(germplasmListData!=null && germplasmListData.getEntryId() > nextId)
-//				nextId = germplasmListData.getEntryId();
 			
 			Integer entryId = 0;
 			Item item = targetTable.getItem(lotDetails);
@@ -256,8 +271,31 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			if(entryId > nextId)
 				nextId = entryId;
 			
-			System.out.println("Highest entry id: "+nextId);
 		}
 		return nextId+1;
 	}
+	
+	private Integer getInventoryTableNextTempLrecId(){
+		int nextId = 0;
+		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){
+			
+			if(lotDetails.getId() < nextId){
+				nextId = lotDetails.getId();
+			}
+		}
+		return nextId-1;
+	}	
+	
+	public List<ListDataAndLotDetails> getListDataAndLotDetails(){
+		return listDataAndLotDetails;
+	}
+
+	public void setListDataAndLotDetails(List<ListDataAndLotDetails> listDataAndLotDetails){
+		this.listDataAndLotDetails = listDataAndLotDetails;
+	}
+	
+	public void resetListDataAndLotDetails(){
+		this.listDataAndLotDetails.clear();
+	}
+	
 }
