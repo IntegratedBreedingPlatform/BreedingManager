@@ -302,6 +302,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		// Add Column menu will be initialized after list data table is created
         initializeListDataTable(); //listDataTable
+        initializeListInventoryTable(); //listInventoryTable
         
 		// Generate main level items
 		menuAddEntry = menu.addItem(messageSource.getMessage(Message.ADD_ENTRIES));
@@ -384,10 +385,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		addColumnContextMenu = new AddColumnContextMenu(parentListDetailsComponent, menu, 
                 listDataTable, ListDataTablePropertyID.GID.getName());
-		
+	}
+	
+	public void initializeListInventoryTable(){
 		listInventoryTable = new ListInventoryTable(source, germplasmList.getId(),true,false);
 		listInventoryTable.setVisible(false);
-		
 	}
 	
 	public int getNoOfEntries(){
@@ -409,13 +411,29 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             e.printStackTrace();
         }
 	    
-	    if(listEntriesCount > 0){
-		    listEntries = new ArrayList<GermplasmListData>();
+	    loadEntriesToListDataTable();
+	}
+	
+	public void resetListDataTableValues(){
+		listDataTable.setEditable(false);
+		listDataTable.removeAllItems();
+		
+		loadEntriesToListDataTable();
+		
+		listDataTable.refreshRowCache();
+        listDataTable.setImmediate(true);
+        listDataTable.setEditable(true);
+		listDataTable.requestRepaint();
+	}
+	
+	public void loadEntriesToListDataTable(){
+		if(listEntriesCount > 0){
+	    	listEntries = new ArrayList<GermplasmListData>();
 		    getAllListEntries();
 			
 			for(GermplasmListData entry : listEntries){
 				addListEntryToTable(entry);
-    	   	}
+		   	}
 			
 			listDataTable.sort(new Object[]{ListDataTablePropertyID.ENTRY_ID.getName()}, new boolean[]{true});
 			
@@ -496,7 +514,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	private void getAllListEntries() {
-		List<GermplasmListData> entries = null; 
+		List<GermplasmListData> entries = null;
 		try{
 			entries = inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Long.valueOf(listEntriesCount).intValue());
 			
@@ -766,7 +784,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		//listDataTableWithSelectAll.setHeight("410px");
 		listDataTable.setHeight("480px");
 		
-		addComponent(listDataTableWithSelectAll);
 		addComponent(listDataTableWithSelectAll);
 		addComponent(listInventoryTable);
         addComponent(tableContextMenu);
@@ -1583,6 +1600,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
         //Update counter
 		updateListEntriesCountLabel();
+		
+		setHasUnsavedChanges(false);
         
 		return true;
 		
@@ -1914,12 +1933,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if(listDataTableWithSelectAll.isVisible()){
 			listDataTableWithSelectAll.setVisible(false);
 			listInventoryTable.setVisible(true);
-	        toolsMenuContainer.removeComponent(toolsButton);
+			
+			toolsMenuContainer.removeComponent(toolsButton);
 	        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS));
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        			
+			setHasUnsavedChanges(false);
 		}
 	}
 	
