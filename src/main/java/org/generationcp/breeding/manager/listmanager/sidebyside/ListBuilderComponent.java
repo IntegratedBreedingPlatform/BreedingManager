@@ -39,7 +39,6 @@ import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.Lis
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
-import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -88,8 +87,9 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, 
 				BreedingManagerLayout, SaveListAsDialogSource, ReserveInventorySource, UnsavedChangesSource {
+	private static final long serialVersionUID = 4997159450197570044L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -1278,18 +1278,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		changeToInventoryView();
 		
-		if(listInventoryTable.getTable().getItemIds().size()==0){
-			MessageNotifier.showWarning(getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME), "Warning", "There are no inventory details available for this list"
-                    , Notification.POSITION_TOP_RIGHT);
-			return;
-		}
-		
-		tableWithSelectAllLayout.setVisible(false);
-		listInventoryTable.setVisible(true);
-        toolsButtonContainer.removeComponent(toolsButton);
-        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
-        
-        topLabel.setValue(messageSource.getMessage(Message.INVENTORY_VIEW));
         refreshListInventoryItemCount();
 	}
 	
