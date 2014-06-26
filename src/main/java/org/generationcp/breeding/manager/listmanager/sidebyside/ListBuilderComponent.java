@@ -1227,8 +1227,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        toolsButtonContainer.removeComponent(toolsButton);
 	        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
-	        topLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
 	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	        
 	        setHasUnsavedChanges(false);
@@ -1282,7 +1282,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void refreshListInventoryItemCount(){
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	}
 	
