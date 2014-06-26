@@ -622,9 +622,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 					toSave.saveChangesAction();
 				}
 			}
-			
-			//Change all List in View Lists to List View
-			listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
 		}
 		
 		if(listBuilderComponent.hasUnsavedChanges()){
@@ -641,6 +638,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		}
 		
 		resetUnsavedStatus();
+		updateView(modeView);
 	}
 	
 	public void resetUnsavedStatus(){

@@ -1952,7 +1952,31 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	private void viewInventoryAction(){
-		source.setModeView(ModeView.INVENTORY_VIEW);
+		if(!hasUnsavedChanges()){
+			source.setModeView(ModeView.INVENTORY_VIEW);
+		}
+		else{
+			String message = "You have unsaved changes to the list you are currently editing.. " +
+					"You will need to save them before changing views. " +
+					"Do you want to save your changes?";
+    		
+			ConfirmDialog.show(getWindow(), "Unsaved Changes", message, messageSource.getMessage(Message.YES), 
+						messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {   			
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						source.saveAllListChangesAction();
+					}
+					else{
+						resetListInventoryTableValues();
+					}
+					
+					source.setModeView(ModeView.INVENTORY_VIEW);
+				}
+			});
+		}
 	}
 	
 	public void viewInventoryActionConfirmed(){
