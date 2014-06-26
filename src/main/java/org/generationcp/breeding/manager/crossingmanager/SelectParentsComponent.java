@@ -15,6 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Alignment;
@@ -164,13 +165,14 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         final CssLayout layout = new CssLayout();
         layout.setMargin(true);
         layout.setWidth("100%");
-        layout.setHeight("490px");
+        layout.setHeight("515px");
 
         layout.addComponent(content);
+      
         
         final Window popupWindow = new Window();
         popupWindow.setWidth("900px");
-        popupWindow.setHeight("550px");
+        popupWindow.setHeight("575px");
         popupWindow.setModal(true);
         popupWindow.setResizable(false);
         popupWindow.center();
@@ -178,6 +180,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         popupWindow.setContent(layout);
         popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         popupWindow.addStyleName("lm-list-manager-popup");
+        popupWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+        popupWindow.setScrollable(false);
         
         window.addWindow(popupWindow);
         
@@ -247,5 +251,16 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	
 	public CrossingManagerListTreeComponent getListTreeComponent(){
 		return listTreeComponent;
+	}
+
+	@Override
+	public void addListToFemaleList(Integer germplasmListId) {
+		source.getParentsComponent().addListToFemaleTable(germplasmListId);
+		
+	}
+
+	@Override
+	public void addListToMaleList(Integer germplasmListId) {
+		source.getParentsComponent().addListToMaleTable(germplasmListId);
 	}
 }

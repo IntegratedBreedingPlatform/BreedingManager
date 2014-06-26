@@ -61,7 +61,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	        //targetTable = (Table) dropData.getTarget();
 			
 			if(sourceTableData.equals(ListInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
-				changed = true;
+				super.setHasUnsavedChanges(true);
 				
 				lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 				

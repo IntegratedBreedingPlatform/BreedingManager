@@ -559,8 +559,34 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 				}
 				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
 					
+					modeView = newModeView;
+					
 					message = "You have unsaved reservations to one or more list. Do you want to save them before changing views?";
-					// TODO 
+					
+					ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
+		    			
+						private static final long serialVersionUID = 1L;	
+						@Override
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								saveAllListChangesAction();	
+							}
+							else{
+								//cancel all the unsaved changes
+								listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+								listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+								
+								if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
+									listBuilderComponent.changeToListView();
+								}
+								else{
+									listBuilderComponent.resetList();
+								}
+								
+								resetUnsavedStatus();
+							}
+						}
+					});
 				}
 			}
 			else{
@@ -578,7 +604,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			listBuilderComponent.viewInventoryActionConfirmed();
 		}
 		else if(modeView.equals(ModeView.LIST_VIEW)){
-			listBuilderComponent.viewListAction();
+			listBuilderComponent.changeToListView();
 		}
 			
 	}

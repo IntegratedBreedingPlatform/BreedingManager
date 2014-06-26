@@ -685,18 +685,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     	
 	                	// go through each field, set previous edited fields to blurred/readonly
 	                    for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-                            Object column = entry.getKey();
-                            //if(column.equals(selectedColumn)){
-                                 Field f = entry.getValue();
-                                 Object fieldValue = f.getValue();
-                                 if(!f.isReadOnly()){
-                                	f.setReadOnly(true);
-                                	
-                                	if(!fieldValue.equals(lastCellvalue)){
-                                		setHasUnsavedChanges(true);
-                                	}
-                                 }
-                            //}
+	                    	Field f = entry.getValue();
+                             Object fieldValue = f.getValue();
+                             if(!f.isReadOnly()){
+                            	f.setReadOnly(true);
+                            	
+                            	if(!fieldValue.equals(lastCellvalue)){
+                            		setHasUnsavedChanges(true);
+                            	}
+                             }
 	                    }
 	                	
                         // Make the entire item editable
@@ -904,17 +901,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	                	// go through each field, set previous edited fields to blurred/readonly
 	                    for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
-                            Object column = entry.getKey();
-                            //if(column.equals(selectedColumn)){
-                                 Field f = entry.getValue();
-                                 Object fieldValue = f.getValue();
-                                 if(!f.isReadOnly()){
-                                	f.setReadOnly(true);
-                                	if(!fieldValue.equals(lastCellvalue)){
-                                		setHasUnsavedChanges(true);
-                                	}
-                                 }
-                            //}
+                             Field f = entry.getValue();
+                             Object fieldValue = f.getValue();
+                             if(!f.isReadOnly()){
+                            	f.setReadOnly(true);
+                            	if(!fieldValue.equals(lastCellvalue)){
+                            		setHasUnsavedChanges(true);
+                            	}
+                             }
 	                    }
 						
 		                for (Map.Entry<Object, Field> entry : itemMap.entrySet()){
@@ -1905,10 +1899,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						saveReservationChangesAction();
 					}
 					else{
-						resetListInventoryView();
+						resetListInventoryTableValues();
 					}
 					
-					changeToListView();
+					source.setModeView(ModeView.LIST_VIEW);
 				}
 			});
 		}
@@ -1992,7 +1986,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
 			if(success){
 				refreshInventoryColumns(getValidReservationsToSave());
-				resetListInventoryView();
+				resetListInventoryTableValues();
 				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 						"All reservations were saved.", 
 						3000, Notification.POSITION_TOP_RIGHT);
@@ -2112,12 +2106,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		source.getWindow().removeWindow(this.reservationStatus);
 	}
 	
-    private void resetListInventoryView() {
+    public void resetListInventoryTableValues() {
 		listInventoryTable.updateListInventoryTableAfterSave();
 		
 		resetInventoryMenuOptions();
 		
 		validReservationsToSave.clear();//reset the reservations to save.
+		
+		setHasUnsavedChanges(false);
 	}
 
 	@Override

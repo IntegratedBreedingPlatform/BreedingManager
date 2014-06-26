@@ -1182,7 +1182,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	
 	public void viewListAction(){
 		if(!hasUnsavedChanges()){
-			changeToListView();
+			source.setModeView(ModeView.LIST_VIEW);
 		}else{
 			String message = "You have unsaved reservations for this list. " +
 					"You will need to save them before changing views. " +
@@ -1198,16 +1198,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						saveReservationChangesAction();
 					}
 					else{
-						resetListInventoryView();
+						resetListInventoryTableValues();
 					}
 					
-					changeToListView();
+					source.setModeView(ModeView.LIST_VIEW);
 				}
 			});
 		}
 	}
 	
-	private void changeToListView() {
+	public void changeToListView() {
 		if(listInventoryTable.isVisible()){
 			tableWithSelectAllLayout.setVisible(true);
 			listInventoryTable.setVisible(false);
@@ -1307,7 +1307,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void saveReservationChangesAction() {
-		
 
 		List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
 		List<ListDataAndLotDetails> listDataAndLotDetails = listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
@@ -1331,7 +1330,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
 			if(success){
 				refreshInventoryColumns(getValidReservationsToSave());
-				resetListInventoryView();
+				resetListInventoryTableValues();
 				
 				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 						"All reservations were saved.", 
@@ -1427,12 +1426,14 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		
 	}
 	
-    private void resetListInventoryView() {
+    public void resetListInventoryTableValues() {
 		listInventoryTable.updateListInventoryTableAfterSave();
 		
 		resetInventoryMenuOptions();
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
+		
+		setHasUnsavedChanges(false);
 	}
     
 	private void updateLotReservationsToSave(

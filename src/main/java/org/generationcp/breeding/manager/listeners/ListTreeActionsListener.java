@@ -8,5 +8,9 @@ public interface ListTreeActionsListener {
 	
 	public void openListDetails(GermplasmList list);
 	
+	public void addListToFemaleList(Integer germplasmListId);
+	
+	public void addListToMaleList(Integer germplasmListId);
+	
 	public void folderClicked(GermplasmList list);
 }

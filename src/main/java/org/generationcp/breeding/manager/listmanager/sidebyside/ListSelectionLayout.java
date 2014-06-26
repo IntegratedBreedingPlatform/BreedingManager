@@ -441,5 +441,16 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			}
 		}
 	}
+	
+	public void resetInventoryViewForCancelledChanges() {
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			if(listComponent.hasUnsavedChanges()){
+				listComponent.resetListInventoryTableValues();
+			}
+		}
+	}
 
 }
