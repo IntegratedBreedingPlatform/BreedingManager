@@ -1214,6 +1214,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
+	        
+	        setHasUnsavedChanges(false);
 		}
 	}
 	
@@ -1227,28 +1229,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        topLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS));
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        
+	        setHasUnsavedChanges(false);
 		}
 	}
 	
 	public void viewInventoryAction(){
 		
 		if((currentlySavedGermplasmList!=null && hasChanges) 
-				|| (currentlySavedGermplasmList==null && listDataTable.size()>0)){
-			String message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
-			
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						saveListButtonListener.doSaveAction();
-						viewInventoryActionConfirmed();
-					}
-					
-				}
-			});
-		} else if(currentlySavedGermplasmList==null && listDataTable.size()>0) {
+				|| (currentlySavedGermplasmList==null && listDataTable.size()>0)) {
 			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
     		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
     			

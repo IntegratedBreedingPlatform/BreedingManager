@@ -1455,6 +1455,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             }
             
             if(showSuccessMessage){
+            	setHasUnsavedChanges(false);
             	MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
                     "Successful in adding list entries.", 3000, Notification.POSITION_CENTERED);
