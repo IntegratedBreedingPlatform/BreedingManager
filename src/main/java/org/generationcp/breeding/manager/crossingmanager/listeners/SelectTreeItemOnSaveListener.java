@@ -89,5 +89,17 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void addListToFemaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListToMaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

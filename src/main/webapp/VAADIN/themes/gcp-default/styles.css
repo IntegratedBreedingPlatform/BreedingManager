@@ -750,3 +750,8 @@
 	overflow: scroll !important;
 	overflow-x: hidden !important;
 }
+
+.align-center {
+	margin-left:auto;
+	margin-right:auto;
+}

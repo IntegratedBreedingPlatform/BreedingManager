@@ -287,68 +287,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	                    	dropToFemaleOrMaleTable(sourceTable, maleParents, (Integer) transferable.getItemId());
 	                    }
 	                    
-	                //Dragged from the tree
-					} else {
-						Transferable transferable = dropEvent.getTransferable();
-	                    Table targetTable = (Table) dropEvent.getTargetDetails().getTarget();
-	                    
-	                    try {
-	                    	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
-	                    	if(draggedListFromTree!=null){
-	                    		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
-	                    		
-	                    		Integer addedCount = 0;
-	                    		
-	                    		for(GermplasmListData listData : germplasmListDataFromListFromTree){
-	                    			if(listData.getStatus()!=9){
-	                    				String maleParentValue = listData.getDesignation();
-	                    				
-	    		                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(),true));
-	    		                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-	    		                        gidButton.setDescription("Click to view Germplasm information");
-	    		                        
-	                    				CheckBox tag = new CheckBox();
-			                        	
-	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
-	                    				
-	                		    		if(targetTable.equals(maleParents)){
-	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
-	                		    			maleListNameForCrosses = draggedListFromTree.getName();
-	                		    	    	updateCrossesSeedSource(maleParentContainer, draggedListFromTree);
-	                		    		}
-	                		    		
-	                		            tag.setImmediate(true);
-	                    				
-	                		            //if the item is already existing in the target table, remove the existing item then add a new entry
-	                		            targetTable.removeItem(entryObject);
-	                		            
-	                    				Item item = targetTable.addItem(entryObject);
-	                    				item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
-	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-	                    				
-	                    				addedCount++;
-	                    			} 
-			                	}
-	                    		
-	                    		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save option
-	                    		List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
-	                    		itemsLeftAfterAdding.addAll((Collection<? extends Integer>) targetTable.getItemIds());
-        
-	                    		if(addedCount==itemsLeftAfterAdding.size()){
-	                    			saveMaleListMenu.setEnabled(false);
-	                    			
-	                    			//updates the crossesMade.savebutton if both parents are save at least once;
-	                        		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
-	                        		
-	                    		} else {
-	                    			saveMaleListMenu.setEnabled(true);
-	                    			//maleParentList = null;
-	                    		}
-	                    	}
-	                    } catch(MiddlewareQueryException e) {
-	                    	LOG.error("Error in getting list by GID",e);	
-	                    }
-					}
+					} 
 					
 					assignEntryNumber(maleParents);
 					updateMaleNoOfEntries(maleParents.size());
@@ -1088,6 +1027,142 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	@Override
 	public Component getParentComponent() {
 		return makeCrossesMain.getSource();
+	}
+	
+	
+	public void addListToMaleTable(Integer germplasmListId){
+		
+        try {
+        	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
+        	if(draggedListFromTree!=null){
+        		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+        		
+        		Integer addedCount = 0;
+        		
+        		for(GermplasmListData listData : germplasmListDataFromListFromTree){
+        			if(listData.getStatus()!=9){
+        				String maleParentValue = listData.getDesignation();
+        				
+                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(),true));
+                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                        gidButton.setDescription("Click to view Germplasm information");
+                        
+        				CheckBox tag = new CheckBox();
+                    	
+        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+        				
+    		    		
+    		    		tag.addListener(new ParentsTableCheckboxListener(maleParents, entryObject, maleParentsTagAll));
+    		    		maleListNameForCrosses = draggedListFromTree.getName();
+    		    	    updateCrossesSeedSource(maleParentContainer, draggedListFromTree);
+    		    		
+    		    		
+    		            tag.setImmediate(true);
+        				
+    		            //if the item is already existing in the target table, remove the existing item then add a new entry
+    		            maleParents.removeItem(entryObject);
+    		            
+        				Item item = maleParents.addItem(entryObject);
+        				item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
+        				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+        				
+        				addedCount++;
+        			} 
+            	}
+        		
+        		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save option
+        		List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
+        		itemsLeftAfterAdding.addAll((Collection<? extends Integer>) maleParents.getItemIds());
+
+        		if(addedCount==itemsLeftAfterAdding.size()){
+        			saveMaleListMenu.setEnabled(false);
+        			
+        			//updates the crossesMade.savebutton if both parents are save at least once;
+            		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
+            		
+        		} else {
+        			saveMaleListMenu.setEnabled(true);
+        			//maleParentList = null;
+        		}
+        	}
+        	
+        	
+        } catch(MiddlewareQueryException e) {
+        	LOG.error("Error in getting list by GID",e);	
+        }
+        
+        assignEntryNumber(maleParents);
+		updateMaleNoOfEntries(maleParents.size());
+        
+        
+	}
+	
+	
+	public void addListToFemaleTable(Integer germplasmListId){
+		
+        try {
+        	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
+        	if(draggedListFromTree!=null){
+        		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+        		
+        		Integer addedCount = 0;
+        		
+        		for(GermplasmListData listData : germplasmListDataFromListFromTree){
+        			if(listData.getStatus()!=9){
+        				String maleParentValue = listData.getDesignation();
+        				
+                        Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(),true));
+                        gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+                        gidButton.setDescription("Click to view Germplasm information");
+                        
+        				CheckBox tag = new CheckBox();
+                    	
+        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+        				
+    		    		
+    		    		tag.addListener(new ParentsTableCheckboxListener(femaleParents, entryObject, femaleParentsTagAll));
+    		    		femaleListNameForCrosses = draggedListFromTree.getName();
+    		    	    updateCrossesSeedSource(femaleParentContainer, draggedListFromTree);
+    		    		
+    		    		
+    		            tag.setImmediate(true);
+        				
+    		            //if the item is already existing in the target table, remove the existing item then add a new entry
+    		            femaleParents.removeItem(entryObject);
+    		            
+        				Item item = femaleParents.addItem(entryObject);
+        				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(gidButton);
+        				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+        				
+        				addedCount++;
+        			} 
+            	}
+        		
+        		//After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this will enable/disable the save option
+        		List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
+        		itemsLeftAfterAdding.addAll((Collection<? extends Integer>) femaleParents.getItemIds());
+
+        		if(addedCount==itemsLeftAfterAdding.size()){
+        			saveFemaleListMenu.setEnabled(false);
+        			
+        			//updates the crossesMade.savebutton if both parents are save at least once;
+            		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
+            		
+        		} else {
+        			saveFemaleListMenu.setEnabled(true);
+        			//maleParentList = null;
+        		}
+        	}
+        	
+        	
+        } catch(MiddlewareQueryException e) {
+        	LOG.error("Error in getting list by GID",e);	
+        }
+        
+        assignEntryNumber(femaleParents);
+		updateMaleNoOfEntries(femaleParents.size());
+        
+        
 	}
 
 }
