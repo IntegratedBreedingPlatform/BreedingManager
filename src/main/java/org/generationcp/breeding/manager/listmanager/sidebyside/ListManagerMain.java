@@ -528,7 +528,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 					
 					modeView = newModeView;
 					
-					message = "You have unsaved changes to one or more list. Do you want to save them before changing views?";
+					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
 					
 		    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
 		    			
@@ -561,7 +561,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 					
 					modeView = newModeView;
 					
-					message = "You have unsaved reservations to one or more list. Do you want to save them before changing views?";
+					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
 					
 					ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
 		    			
