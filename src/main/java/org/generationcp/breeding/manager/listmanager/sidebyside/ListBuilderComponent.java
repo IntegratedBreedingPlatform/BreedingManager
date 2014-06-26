@@ -1201,7 +1201,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						resetListInventoryTableValues();
 					}
 					
-					source.updateView(ModeView.LIST_VIEW);
+					source.setModeView(ModeView.LIST_VIEW);
 				}
 			});
 		}
