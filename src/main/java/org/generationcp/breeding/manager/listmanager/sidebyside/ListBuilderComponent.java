@@ -159,7 +159,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
-	private ContextMenuItem menuInventorySaveChanges;
 	
     //For Saving
     private ListManagerMain source;
@@ -272,7 +271,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-        menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
@@ -318,9 +316,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
     
     private void resetInventoryMenuOptions() {
-        //disable the save button at first since there are no reservations yet
-        menuInventorySaveChanges.setEnabled(false);
-        
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
         menuCopyToNewListFromInventory.setEnabled(false);
 	}
@@ -367,9 +362,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
-			    	  saveReservationChangesAction();
-                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
                 	  copyToNewListFromInventoryViewAction();
@@ -762,7 +755,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private void updateListTotal() {
     	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
-		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+    	if(!listInventoryTable.isVisible())
+    		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
 	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
 		
 	}
@@ -1164,7 +1158,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	
 	public void saveList(GermplasmList list, Boolean showMessages) {
 		currentlySetGermplasmInfo = list;
-		saveListButtonListener.doSaveAction(showMessages);
+		saveListButtonListener.doSaveAction(showMessages, false);
 
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 	}
@@ -1307,25 +1301,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void saveReservationChangesAction() {
-
-		List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
-		List<ListDataAndLotDetails> listDataAndLotDetails = listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
-		for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
-			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
-				dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-				alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
-			}
-		}
 		
-	    saveList(currentlySavedGermplasmList, false);
-	    
-	    for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
-	    	listInventoryTable.getInventoryTableDropHandler().assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
-		}
-		
-	    listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
-
 		if(hasUnsavedChanges()){
+		
+			List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+			List<ListDataAndLotDetails> listDataAndLotDetails = listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
+			for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+				if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
+					dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+				}
+			}
+			
+		    saveList(currentlySavedGermplasmList, false);
+		    
+		    for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+		    	listInventoryTable.getInventoryTableDropHandler().assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+			}
+			
+		    listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
+
+		
 			reserveInventoryAction = new ReserveInventoryAction(this);
 			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), currentlySavedGermplasmList.getId());
 			if(success){
@@ -1385,9 +1381,6 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		
 		//update lot reservatios to save
 		updateLotReservationsToSave(validReservations);
-		
-		//enable now the Save Changes option
-		menuInventorySaveChanges.setEnabled(true);
 		
 		if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
@@ -1485,14 +1478,25 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			setHasUnsavedChanges(true);
 		}
 		
+		if(listInventoryTable.getInventoryTableDropHandler().isChanged()){
+			setHasUnsavedChanges(true);
+		}		
+		
 		// TODO mark the changes in germplasmListDataTable during fill with and add column functions
 		
 		return hasChanges;
 	}
 	
+	public void resetUnsavedChangesFlag(){
+		breedingManagerListDetailsComponent.setChanged(false);
+		dropHandler.setChanged(false);
+		listInventoryTable.getInventoryTableDropHandler().setChanged(false);
+		hasChanges = false;
+	}
+	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
-	public void setEnabledInventorySaveChangesButton(Boolean value){
-		menuInventorySaveChanges.setEnabled(value);
+	public ListInventoryTable getListInventoryTable(){
+		return listInventoryTable;
 	}
 }

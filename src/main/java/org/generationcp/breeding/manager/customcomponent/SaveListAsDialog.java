@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeIte
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -187,6 +188,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 								public void onClose(ConfirmDialog dialog) {
 			                        if (dialog.isConfirmed()) {
 			    						source.saveList(gl);
+			    						saveReservationChanges();
 			    						Window window = event.getButton().getWindow();
 			    				        window.getParent().removeWindow(window);
 			                        }
@@ -206,6 +208,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 						gl.setNotes(listDetailsComponent.getListNotesField().getValue().toString());
 						
 						source.saveList(gl);
+						saveReservationChanges();
 						
 						Window window = event.getButton().getWindow();
 				        window.getParent().removeWindow(window);
@@ -343,5 +346,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	public LocalListFoldersTreeComponent getGermplasmListTree(){
 		return germplasmListTree;
+	}
+	
+	public void saveReservationChanges(){
+		if(source instanceof ListBuilderComponent){
+			((ListBuilderComponent) source).saveReservationChangesAction();
+		}
 	}
 }

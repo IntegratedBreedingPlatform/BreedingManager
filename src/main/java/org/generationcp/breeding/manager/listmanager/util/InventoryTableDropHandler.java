@@ -118,9 +118,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		//Update counter
 		listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
 		
-		//Update buttons
-		listManagerMain.getListBuilderComponent().setEnabledInventorySaveChangesButton(true);
-		
 	}
     
 	
