@@ -30,6 +30,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
@@ -81,6 +82,7 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 
@@ -1354,6 +1356,25 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		for (GermplasmListData listData : germplasmListDataEntries){
 			Item item = listDataTable.getItem(listData.getId());
 			
+			//#1 Available Inventory
+			String avail_inv = "-"; //default value
+			if(listData.getInventoryInfo().getActualInventoryLotCount() != null && listData.getInventoryInfo().getActualInventoryLotCount() != 0){
+				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			}
+			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source, currentlySavedGermplasmList.getId(),listData.getId(), listData.getGid()));
+			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+			inventoryButton.setDescription("Click to view Inventory Details");
+			
+			if(avail_inv.equals("-")){
+				inventoryButton.setEnabled(false);
+				inventoryButton.setDescription("No Lot for this Germplasm");
+			}
+			else{
+				inventoryButton.setDescription("Click to view Inventory Details");
+			}
+			item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+			
+		
 			// Seed Reserved
 	   		String seed_res = "-"; //default value
 	   		if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
