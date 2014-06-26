@@ -1445,7 +1445,12 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	}
 	
     public void resetListInventoryTableValues() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+    	if(currentlySavedGermplasmList != null){
+    		listInventoryTable.updateListInventoryTableAfterSave();
+    	}
+    	else{
+    		listInventoryTable.reset();
+    	}
 		
 		resetInventoryMenuOptions();
 		
