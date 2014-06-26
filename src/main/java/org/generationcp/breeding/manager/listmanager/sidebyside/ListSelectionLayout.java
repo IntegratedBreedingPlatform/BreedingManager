@@ -421,5 +421,25 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			}
 		}
 	}
+	
+	public void updateHasChangesForAllList(Boolean hasChanges){
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			listComponent.setHasUnsavedChanges(hasChanges);
+		}
+	}
+
+	public void resetListViewForCancelledChanges() {
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			if(listComponent.hasUnsavedChanges()){
+				listComponent.resetListDataTableValues();
+			}
+		}
+	}
 
 }

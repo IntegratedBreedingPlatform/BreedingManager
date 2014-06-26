@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -538,8 +539,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 								saveAllListChangesAction();	
 							}
 							else{
+								//cancel all the unsaved changes
+								listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
 								listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
-								
 								
 								if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
 									//Has currently saved List, just load the previous lots
@@ -549,6 +551,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 									//if no list save, just reset the list
 									listBuilderComponent.resetList();
 								}
+								
+								resetUnsavedStatus();
 							}
 						}
 					});
@@ -582,7 +586,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void saveAllListChangesAction() {
 		
 		if(getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()){
-			Map<ListComponent,Boolean> listToUpdate = listSelectionComponent.getListDetailsLayout().getListStatusForChanges();
+			Map<ListComponent,Boolean> listToUpdate = new HashMap<ListComponent, Boolean>(); 
+			listToUpdate.putAll(listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
 			
 			for(Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()){
 				Boolean isListHasUnsavedChanges = list.getValue();
@@ -606,8 +611,15 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 				listBuilderComponent.getSaveListButtonListener().doSaveAction();
 				//Change ListBuilder View to List View
 				listBuilderComponent.viewInventoryActionConfirmed();
-			}
+			}	
 		}
+		
+		resetUnsavedStatus();
+	}
+	
+	public void resetUnsavedStatus(){
+		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
+		listBuilderComponent.setHasUnsavedChanges(false);
 	}
 
 	public boolean hasUnsavedChanges() {
