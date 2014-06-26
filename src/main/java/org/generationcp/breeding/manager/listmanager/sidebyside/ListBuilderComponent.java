@@ -747,6 +747,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
             }
             assignSerializedEntryNumber();
+            setHasUnsavedChanges(true);
         }else{
             MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
