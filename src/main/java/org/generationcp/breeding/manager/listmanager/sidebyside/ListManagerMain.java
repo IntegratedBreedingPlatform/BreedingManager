@@ -596,6 +596,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		}
 		
 	}
+	
+	public void setModeViewOnly(ModeView newModeView) {
+		this.modeView = newModeView; 
+	}
 
 	public void updateView(ModeView modeView) {
 		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);

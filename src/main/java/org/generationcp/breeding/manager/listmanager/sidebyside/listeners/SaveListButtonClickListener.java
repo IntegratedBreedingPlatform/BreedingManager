@@ -186,7 +186,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			boolean thereAreChangesInListEntries = false;
 			List<GermplasmListData> newEntries = getNewEntriesToSave(listEntries);
 			
-			System.out.println("New entries is empty: "+newEntries.isEmpty());
 			if(!newEntries.isEmpty()){
 				setNeededValuesForNewListEntries(currentlySavedList, newEntries);
 				if(!saveNewListEntries(newEntries)){
@@ -197,7 +196,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			List<GermplasmListData> entriesToUpdate = getUpdatedEntriesToSave(currentlySavedList, listEntries);
 			
-			System.out.println("Entries to update is empty: "+entriesToUpdate.isEmpty());
 			if(!entriesToUpdate.isEmpty()){
 				if(!updateListEntries(entriesToUpdate)){
 					return;
@@ -207,24 +205,20 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			List<GermplasmListData> entriesToDelete = getEntriesToDelete(currentlySavedList, listEntries);
 			
-			System.out.println("Entries to delete is empty: "+entriesToDelete.isEmpty());
 			if(!entriesToDelete.isEmpty()){
 				if(!updateListEntries(entriesToDelete)){
 					return;
 				}
 				thereAreChangesInListEntries = true;
 			}
-			
-			System.out.println("Changes in list entries: "+thereAreChangesInListEntries);
+
 			if(thereAreChangesInListEntries){
 				updateListDataTableContent(currentlySavedList);
 			}
 			
-			System.out.println("List entries is empty: "+listEntries.isEmpty());
 			if(!listEntries.isEmpty()){
 				saveListDataColumns(listToSave);
 			}
-			
 		}
 		
 		try{

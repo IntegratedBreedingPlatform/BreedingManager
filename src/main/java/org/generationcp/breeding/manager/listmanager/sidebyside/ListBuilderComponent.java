@@ -1156,6 +1156,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 		
+		setHasUnsavedChanges(false);
 		source.updateView(source.getModeView());
 	}
 	
@@ -1164,6 +1165,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		saveListButtonListener.doSaveAction(showMessages, false);
 
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
+		
+		setHasUnsavedChanges(false);
+		source.updateView(source.getModeView());
 	}
 	
 	public SaveListButtonClickListener getSaveListButtonListener(){
@@ -1192,13 +1196,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				@Override
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
-						saveReservationChangesAction();
+						if(currentlySavedGermplasmList == null){
+							source.setModeViewOnly(ModeView.LIST_VIEW);
+							openSaveListAsDialog();
+						}
+						else{
+							saveList(currentlySavedGermplasmList);
+							source.setModeView(ModeView.LIST_VIEW);
+						}
 					}
 					else{
 						resetListInventoryTableValues();
+						source.setModeView(ModeView.LIST_VIEW);
 					}
 					
-					source.setModeView(ModeView.LIST_VIEW);
+					
 				}
 			});
 		}
@@ -1265,6 +1277,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				@Override
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
+						source.setModeViewOnly(ModeView.INVENTORY_VIEW);
 						openSaveListAsDialog();
 					}
 					else{
