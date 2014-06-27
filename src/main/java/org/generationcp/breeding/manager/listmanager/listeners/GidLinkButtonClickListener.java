@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
@@ -133,7 +134,11 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	        	addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");
 	        }
 	        
-			//addToListLink.setData(ADD_TO_LIST);
+	        if(listManagerMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
+	        	addToListLink.setEnabled(false);
+	        	addToListLink.setDescription("Please switch to inventory view before adding a germplasm entry to the list.");
+	        }
+	        
 			addToListLink.setImmediate(true);
 			addToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
 			addToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
@@ -144,21 +149,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					
-					((BreedingManagerApplication) event.getComponent().getApplication()).getListManagerMain().getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
-//					
-//					Window listManagerWindow = ((BreedingManagerApplication) event.getComponent().getApplication()).getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
-//					
-//					System.out.println("ListManagerWindow: "+listManagerWindow);
-//					Iterator<Component> i = listManagerWindow.getComponentIterator();
-//					while (i.hasNext()) {
-//					    Component c = (Component) i.next();
-//					    System.out.println("Component: "+c);
-//					    if(c instanceof ListManagerMain){
-//					    	System.out.println("List Manager Main!");
-//					    	((ListManagerMain) c).getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
-//					    }
-//					}
+					listManagerMain.getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
 					mainWindow.removeWindow(germplasmWindow);
 				}
 	        	

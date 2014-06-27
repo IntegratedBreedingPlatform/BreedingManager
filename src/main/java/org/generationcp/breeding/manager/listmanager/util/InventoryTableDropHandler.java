@@ -2,15 +2,14 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -30,6 +29,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class InventoryTableDropHandler extends DropHandlerMethods implements DropHandler {
@@ -60,7 +60,13 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
 	        //targetTable = (Table) dropData.getTarget();
 			
-			if(sourceTableData.equals(ListInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
+	        if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
+	        	String message = "Please switch to inventory view before adding a germplasm entry to the list.";
+	        	
+	        	MessageNotifier.showWarning(listManagerMain.getWindow(), 
+							"Warning!", message, Notification.POSITION_TOP_RIGHT);
+				
+			} else if(sourceTableData.equals(ListInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
 				super.setHasUnsavedChanges(true);
 				
 				lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
