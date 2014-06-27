@@ -822,8 +822,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		dropHandler.addGermplasmList(germplasmList.getId(), true);
         
         //reset the change status to false after loading the germplasm list details and list data in the screen
-        setHasUnsavedChanges(false);
-        dropHandler.setChanged(false);
+        resetUnsavedChangesFlag();
         
         if(germplasmList.isLockedList()){
         	setUIForLockedList();
@@ -862,9 +861,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//Rename the Build New List Header
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 		
-		//Reset the marker for changes in Build New List
-		setHasUnsavedChanges(false);
-		
 		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
 		initializeHandlers();
 		
@@ -876,6 +872,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		updateListTotal();
 		
+		//Reset the marker for changes in Build New List
+		resetUnsavedChangesFlag();
 		updateView(source.getModeView());
 	}
 	
@@ -1157,7 +1155,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 		
-		setHasUnsavedChanges(false);
+		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
 	}
 	
@@ -1167,7 +1165,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 		
-		setHasUnsavedChanges(false);
+		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
 	}
 	
@@ -1229,7 +1227,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
 	        
-	        setHasUnsavedChanges(false);
+	        resetUnsavedChangesFlag();
 		}
 	}
 	
@@ -1244,7 +1242,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
 	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	        
-	        setHasUnsavedChanges(false);
+	        resetUnsavedChangesFlag();
 		}
 	}
 	
@@ -1260,11 +1258,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						saveListButtonListener.doSaveAction();
+						//reset status for list builder and its drop handler
+						resetUnsavedChangesFlag();
 						source.setModeView(ModeView.INVENTORY_VIEW);
 					}
 					else{
 						//reset status for list builder and its drop handler
-						dropHandler.setHasUnsavedChanges(false);
+						resetUnsavedChangesFlag();
 						source.setModeView(ModeView.INVENTORY_VIEW);
 					}
 					
@@ -1474,7 +1474,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
-		setHasUnsavedChanges(false);
+		resetUnsavedChangesFlag();
 	}
     
 	private void updateLotReservationsToSave(
@@ -1539,7 +1539,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		breedingManagerListDetailsComponent.setChanged(false);
 		dropHandler.setChanged(false);
 		listInventoryTable.getInventoryTableDropHandler().setChanged(false);
-		hasChanges = false;
+		setHasUnsavedChanges(false);
 	}
 	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/

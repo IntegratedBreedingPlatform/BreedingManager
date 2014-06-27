@@ -647,7 +647,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	
 	public void resetUnsavedStatus(){
 		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
-		listBuilderComponent.setHasUnsavedChanges(false);
+		listBuilderComponent.resetUnsavedChangesFlag();
 	}
 
 	public boolean hasUnsavedChanges() {
