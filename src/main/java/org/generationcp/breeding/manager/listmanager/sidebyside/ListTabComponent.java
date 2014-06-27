@@ -41,6 +41,9 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 	@Override
 	public void instantiateComponents() {
 		listComponent = new ListComponent(source, this, germplasmList);
+		if(germplasmList != null){
+			listSelectionLayout.addUpdateListStatusForChanges(listComponent, false);
+		}
 	}
 
 	@Override
