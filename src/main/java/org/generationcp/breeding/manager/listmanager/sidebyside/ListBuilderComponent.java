@@ -759,7 +759,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private void updateListTotal() {
     	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
     	if(!listInventoryTable.isVisible())
-    		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+    		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
 		
 	}
