@@ -339,8 +339,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         //Keep Track the changes in ListDataTable and/or ListInventoryTable
         hasChanges = false;
         
-        ListSelectionLayout listSelection = source.getListSelectionComponent().getListDetailsLayout();
-		listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
+        // ListSelectionComponent is null when tool launched from BMS dashboard
+        if (source != null && source.getListSelectionComponent() != null){
+        	ListSelectionLayout listSelection = source.getListSelectionComponent().getListDetailsLayout();
+        	listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
+        }
 	}
 	
 	private void resetInventoryMenuOptions() {
