@@ -1249,6 +1249,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						saveListButtonListener.doSaveAction();
 						source.setModeView(ModeView.INVENTORY_VIEW);
 					}
+					else{
+						//reset status for list builder and its drop handler
+						dropHandler.setHasUnsavedChanges(false);
+						source.setModeView(ModeView.INVENTORY_VIEW);
+					}
 					
 				}
 			});
@@ -1262,7 +1267,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					if (dialog.isConfirmed()) {
 						openSaveListAsDialog();
 					}
-					
+					else{
+						resetList();
+						source.setModeView(ModeView.INVENTORY_VIEW);
+					}
 				}
 			});
 		} else {

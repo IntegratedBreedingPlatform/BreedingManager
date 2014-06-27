@@ -213,6 +213,8 @@ public class DropHandlerMethods {
             
         	fireListUpdatedEvent();
         	
+        	setHasUnsavedChanges(true);
+        	
             return newItemId;
             
         } catch (MiddlewareQueryException e) {
