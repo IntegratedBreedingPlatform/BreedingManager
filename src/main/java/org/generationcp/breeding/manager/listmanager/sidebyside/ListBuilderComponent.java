@@ -1333,10 +1333,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			if(success){
 				refreshInventoryColumns(getValidReservationsToSave());
 				resetListInventoryTableValues();
-				
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-						"All reservations were saved.", 
-						3000, Notification.POSITION_TOP_RIGHT);
 			}
 		}
 	}

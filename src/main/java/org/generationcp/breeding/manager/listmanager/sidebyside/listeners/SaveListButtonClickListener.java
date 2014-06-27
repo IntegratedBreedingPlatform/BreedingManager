@@ -247,7 +247,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 		
 		if(showMessages)
-		    MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
+		    MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS)
 				, 3000, Notification.POSITION_TOP_RIGHT);
 		
 		if(callSaveReservation)
