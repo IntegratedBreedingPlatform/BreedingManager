@@ -351,11 +351,11 @@ public class FillWith implements InternationalizableComponent  {
 	    }
 	    
 	    if(listDetailsComponent != null){
-	    	listDetailsComponent.setChanged(true);
+	    	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
 	    }
 	    
 	    if(buildListComponent != null){
-	    	buildListComponent.setChanged(true);
+	    	buildListComponent.setHasUnsavedChanges(true);
 	    }
 	    
 	    //To trigger TableFieldFactory (fix for truncated data)

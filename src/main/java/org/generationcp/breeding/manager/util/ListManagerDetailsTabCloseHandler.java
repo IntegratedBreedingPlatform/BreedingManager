@@ -2,8 +2,8 @@ package org.generationcp.breeding.manager.util;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
     
     private void confirmTabClose(final TabSheet tabsheet, final Component tabContent) {
         final ListTabComponent listDetails = (ListTabComponent) tabContent;
-        boolean valuesModified = listDetails.hasChanged();
+        boolean valuesModified = listDetails.getListComponent().hasUnsavedChanges();
         
         // check if the list in the tab to be closed is from local and has values that were modified
         if (listDetails.getGermplasmList()!=null && listDetails.getGermplasmList().getId()<0 && valuesModified) {
@@ -82,7 +82,7 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
                     
                     if (dialog.isConfirmed()) {
                         //FIXME sidebyside: call saveChanges if dialog is confirmed
-                        ListComponent listDataComponent = listDetails.getListDataComponent();
+                        ListComponent listDataComponent = listDetails.getListComponent();
                         listDataComponent.saveChangesAction(tabsheet.getWindow());
                     }
                     

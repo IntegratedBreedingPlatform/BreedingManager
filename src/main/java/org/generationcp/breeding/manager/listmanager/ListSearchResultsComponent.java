@@ -7,6 +7,7 @@ import java.util.Set;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
@@ -176,7 +177,13 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			
 			@Override
 			public Action[] getActions(Object target, Object sender) {
-				return LISTS_TABLE_CONTEXT_MENU;
+				
+				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+					return LISTS_TABLE_CONTEXT_MENU_LOCKED;
+				}
+				else{
+					return LISTS_TABLE_CONTEXT_MENU;
+				}
 			}
 		};
 		
