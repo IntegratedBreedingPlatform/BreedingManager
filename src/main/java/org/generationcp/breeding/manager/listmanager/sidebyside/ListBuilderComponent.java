@@ -833,6 +833,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
 	
 	public void addListsFromSearchResults(Set<Integer> lists) {
+		dropHandler.setHasUnsavedChanges(true);
 		for (Integer id : lists) {
 			if(id != null){
 				dropHandler.addGermplasmList(id, false);
