@@ -181,6 +181,15 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	}
 	
 	public void doSearch(String q){
+		
+		if(q.replaceAll(" ", "").trim().equals("")){
+			MessageNotifier.showWarning(getWindow(),
+					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY),
+					Notification.POSITION_CENTERED);
+			return;
+		}
+		
 		try {
 			boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
 			boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue(); 
