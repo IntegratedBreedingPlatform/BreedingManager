@@ -1609,51 +1609,46 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     //might be possible to eliminate this method altogether and reduce the number of middleware calls
     private void performListEntriesDeletion(Map<Object, String> itemsToDelete){     
         try {
-            if(getCurrentUserLocalId()==germplasmList.getUserId()) {
-                designationOfListEntriesDeleted="";
+            designationOfListEntriesDeleted="";
+            
+            for (Map.Entry<Object, String> item : itemsToDelete.entrySet()) {
                 
-                for (Map.Entry<Object, String> item : itemsToDelete.entrySet()) {
-                    
-                    Object sLRecId = item.getKey();
-                    String sDesignation = item.getValue();
-                    
-                    try {
-                        int lrecId=Integer.valueOf(sLRecId.toString());
-                        designationOfListEntriesDeleted += sDesignation +",";
-                        germplasmListManager.deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
-                    } catch (MiddlewareQueryException e) {
-                        LOG.error("Error with deleting list entries.", e);
-                        e.printStackTrace();
-                    }
-                }
-                
-                deleteGermplasmDialogBox(gidsWithoutChildrenToDelete);
-                designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
-    
-                //Change entry IDs on listData
-                List<GermplasmListData> listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0
-                            , (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId()));
-                Integer entryId = 1;
-                for (GermplasmListData listData : listDatas) {
-                    listData.setEntryId(entryId);
-                    entryId++;
-                }
-                germplasmListManager.updateGermplasmListData(listDatas);
+                Object sLRecId = item.getKey();
+                String sDesignation = item.getValue();
                 
                 try {
-                    logDeletedListEntriesToWorkbenchProjectActivity();
+                    int lrecId=Integer.valueOf(sLRecId.toString());
+                    designationOfListEntriesDeleted += sDesignation +",";
+                    germplasmListManager.deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
                 } catch (MiddlewareQueryException e) {
-                    LOG.error("Error logging workbench activity.", e);
+                    LOG.error("Error with deleting list entries.", e);
                     e.printStackTrace();
                 }
-
-                //reset items to delete in listDataTable
-                itemsToDelete.clear(); 
-                
-            } else {
-                showMessageInvalidDeletingListEntries();
             }
             
+            deleteGermplasmDialogBox(gidsWithoutChildrenToDelete);
+            designationOfListEntriesDeleted=designationOfListEntriesDeleted.substring(0,designationOfListEntriesDeleted.length()-1);
+
+            //Change entry IDs on listData
+            List<GermplasmListData> listDatas = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0
+                        , (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId()));
+            Integer entryId = 1;
+            for (GermplasmListData listData : listDatas) {
+                listData.setEntryId(entryId);
+                entryId++;
+            }
+            germplasmListManager.updateGermplasmListData(listDatas);
+            
+            try {
+                logDeletedListEntriesToWorkbenchProjectActivity();
+            } catch (MiddlewareQueryException e) {
+                LOG.error("Error logging workbench activity.", e);
+                e.printStackTrace();
+            }
+
+            //reset items to delete in listDataTable
+            itemsToDelete.clear(); 
+                
         } catch (NumberFormatException e) {
             LOG.error("Error with deleting list entries.", e);
             e.printStackTrace();
@@ -1698,13 +1693,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
     }
 
-    private void showMessageInvalidDeletingListEntries(){
-    MessageNotifier.showError(this.getWindow()
-        , messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES) 
-        , messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES)
-        , Notification.POSITION_CENTERED);
-    }
-    
     public void deleteListButtonClickAction() {
         ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:", "Are you sure that you want to delete this list?", "Yes", "No"
                 , new ConfirmDialog.Listener() {
