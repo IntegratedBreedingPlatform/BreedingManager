@@ -157,6 +157,14 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				
 				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
 				
+				try {
+				    listDetailsComponent.getListDateField().validate();
+				} catch (Exception e) {
+					MessageNotifier.showError(getWindow().getParent().getWindow(), 
+							messageSource.getMessage(Message.ERROR), e.getMessage());
+					return;
+				}
+				
 				Date date;
 				try {
 					date = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH).parse(listDetailsComponent.getListDateField().getValue().toString());
@@ -170,7 +178,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 							messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
 				
 				//If target list to be overwritten is not itself and is an existing list
-				} else if( (!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null)) 
+				} else if( (germplasmList.getType()!=null && !germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null)) 
 						|| (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
 					
 					final GermplasmList gl = getGermplasmListToSave();

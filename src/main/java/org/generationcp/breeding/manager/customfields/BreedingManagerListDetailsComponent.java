@@ -193,9 +193,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         GermplasmList list = new GermplasmList();
         
         list.setName(listName);
-        list.setDescription(listDescription);
-        list.setType(listTypeField.getValue().toString()); // value = fCOde
-        list.setDate(Long.parseLong(formatter.format(date)));
+        
+        if(listDescription!=null)
+            list.setDescription(listDescription);
+        
+        if(listTypeField!=null && listTypeField.getValue()!=null)
+        	list.setType(listTypeField.getValue().toString()); // value = fCOde
+        
+        if(date!=null && formatter.format(date)!=null)
+        	list.setDate(Long.parseLong(formatter.format(date)));
         list.setNotes(listNotesField.getValue().toString());
         list.setUserId(0);
 
