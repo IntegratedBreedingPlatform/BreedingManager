@@ -15,6 +15,7 @@ public enum Message{
     
     //Validation Messages
     ,VALIDATION_DATE_FORMAT
+    ,DATE_MUST_BE_IN_THIS_FORMAT
     
     //Error Messages
     ,ERROR_INTERNAL

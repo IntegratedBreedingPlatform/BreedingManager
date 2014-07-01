@@ -161,7 +161,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				    listDetailsComponent.getListDateField().validate();
 				} catch (Exception e) {
 					MessageNotifier.showError(getWindow().getParent().getWindow(), 
-							messageSource.getMessage(Message.ERROR), e.getMessage());
+							messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.DATE_MUST_BE_IN_THIS_FORMAT));
 					return;
 				}
 				
