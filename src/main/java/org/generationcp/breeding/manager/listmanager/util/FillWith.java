@@ -751,7 +751,7 @@ public class FillWith implements InternationalizableComponent  {
     	crossExpansionLevel = Integer.valueOf(1);
     	final Window specifyCrossExpansionLevelWindow = new Window("Specify Expansion Level");
     	specifyCrossExpansionLevelWindow.setHeight("135px");
-    	specifyCrossExpansionLevelWindow.setWidth("210px");
+    	specifyCrossExpansionLevelWindow.setWidth("250px");
     	specifyCrossExpansionLevelWindow.setModal(true);
     	specifyCrossExpansionLevelWindow.setResizable(false);
     	specifyCrossExpansionLevelWindow.setStyleName(Reindeer.WINDOW_LIGHT);
