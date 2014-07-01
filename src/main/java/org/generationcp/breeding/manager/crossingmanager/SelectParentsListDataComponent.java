@@ -244,7 +244,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     			if(entry.getInventoryInfo().getActualInventoryLotCount() != null){
     				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     			}
-    			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid()));
+    			
+    			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid());
+    			Button inventoryButton = new Button(avail_inv, inventoryClickListener);
+    			inventoryButton.setData(inventoryClickListener);
     			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
     			inventoryButton.setDescription("Click to view Inventory Details");
     			

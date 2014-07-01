@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -24,6 +25,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -71,12 +73,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     
     private static final String TAG_COLUMN_ID = "Tag";
     private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
+    private static final String AVAIL_INV_COLUMN_ID = "Avail Inv";
+    private static final String SEED_RES_COLUMN_ID = "Seed Res";
         
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private InventoryDataManager inventoryDataManager;    
     
     private TabSheet parentTabSheet;
     private Label parentListsLabel;
@@ -213,10 +220,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         maleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         maleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
         maleParents.addContainerProperty(MALE_PARENTS_LABEL, Button.class, null);
+        maleParents.addContainerProperty(AVAIL_INV_COLUMN_ID, Button.class, null);
+        maleParents.addContainerProperty(SEED_RES_COLUMN_ID, String.class, null);
         
         maleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
         maleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
         maleParents.setColumnHeader(MALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        maleParents.setColumnHeader(AVAIL_INV_COLUMN_ID, messageSource.getMessage(Message.AVAIL_INV));
+        maleParents.setColumnHeader(SEED_RES_COLUMN_ID, messageSource.getMessage(Message.SEED_RES));
         
         maleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         maleParents.setDragMode(TableDragMode.ROW);
@@ -312,10 +323,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         femaleParents.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
         femaleParents.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
         femaleParents.addContainerProperty(FEMALE_PARENTS_LABEL, Button.class, null);
+        femaleParents.addContainerProperty(AVAIL_INV_COLUMN_ID, Button.class, null);
+        femaleParents.addContainerProperty(SEED_RES_COLUMN_ID, String.class, null);
 
         femaleParents.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
         femaleParents.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
         femaleParents.setColumnHeader(FEMALE_PARENTS_LABEL, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+        femaleParents.setColumnHeader(AVAIL_INV_COLUMN_ID, messageSource.getMessage(Message.AVAIL_INV));
+        femaleParents.setColumnHeader(SEED_RES_COLUMN_ID, messageSource.getMessage(Message.SEED_RES));
         
         femaleParents.setColumnWidth(TAG_COLUMN_ID, 25);
         femaleParents.setDragMode(TableDragMode.ROW);
@@ -657,6 +672,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		    		}
 		            tag.setImmediate(true);
 		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+		            
+		            Button sourceAvailInvButton = ((Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue());
+		            Button newAvailInvButton = new Button();
+		            
+		            newAvailInvButton.setCaption(sourceAvailInvButton.getCaption());
+		            newAvailInvButton.addListener((InventoryLinkButtonClickListener) sourceAvailInvButton.getData());
+		            newAvailInvButton.setStyleName(BaseTheme.BUTTON_LINK);
+		            newAvailInvButton.setDescription("Click to view Inventory Details");
+		            
+		            item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(newAvailInvButton);
+		            item.getItemProperty(SEED_RES_COLUMN_ID).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue());
 		        }
 	    	}
             targetTable.requestRepaint();
@@ -1035,7 +1061,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         try {
         	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
         	if(draggedListFromTree!=null){
-        		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+        		List<GermplasmListData> germplasmListDataFromListFromTree = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
         		
         		Integer addedCount = 0;
         		
@@ -1062,10 +1088,38 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		            //if the item is already existing in the target table, remove the existing item then add a new entry
     		            maleParents.removeItem(entryObject);
     		            
+    		            String avail_inv = "-"; //default value
+    	    			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+    	    				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    	    			}
+    	    			
+    	    			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmListId,listData.getId(), listData.getGid());
+    	    			Button inventoryButton = new Button(avail_inv, inventoryClickListener);
+    	    			inventoryButton.setData(inventoryClickListener);
+    	    			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	    			inventoryButton.setDescription("Click to view Inventory Details");
+    	    			
+    	    			if(avail_inv.equals("-")){
+    	    				inventoryButton.setEnabled(false);
+    	    				inventoryButton.setDescription("No Lot for this Germplasm");
+    	    			}
+    	    			else{
+    	    				inventoryButton.setDescription("Click to view Inventory Details");
+    	    			}
+    	    			
+    	    			String seed_res = "-"; //default value
+    	    			if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
+    	    				seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+    	    			}
+    		            
+    		            
         				Item item = maleParents.addItem(entryObject);
         				item.getItemProperty(MALE_PARENTS_LABEL).setValue(gidButton);
         				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
         				
+        				item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
+        				item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seed_res);
+    		            
         				addedCount++;
         			} 
             	}
@@ -1100,10 +1154,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	
 	public void addListToFemaleTable(Integer germplasmListId){
 		
+		//dennis
         try {
         	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
+        	
         	if(draggedListFromTree!=null){
-        		List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
+        		
+        		List<GermplasmListData> germplasmListDataFromListFromTree = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
         		
         		Integer addedCount = 0;
         		
@@ -1130,9 +1187,38 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		            //if the item is already existing in the target table, remove the existing item then add a new entry
     		            femaleParents.removeItem(entryObject);
     		            
+    		            
+    		            String avail_inv = "-"; //default value
+    	    			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+    	    				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    	    			}
+    	    			
+    	    			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmListId,listData.getId(), listData.getGid());
+    	    			Button inventoryButton = new Button(avail_inv, inventoryClickListener);
+    	    			inventoryButton.setData(inventoryClickListener);
+    	    			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	    			inventoryButton.setDescription("Click to view Inventory Details");
+    	    			
+    	    			if(avail_inv.equals("-")){
+    	    				inventoryButton.setEnabled(false);
+    	    				inventoryButton.setDescription("No Lot for this Germplasm");
+    	    			}
+    	    			else{
+    	    				inventoryButton.setDescription("Click to view Inventory Details");
+    	    			}
+    	    			
+    	    			String seed_res = "-"; //default value
+    	    			if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
+    	    				seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+    	    			}
+    		            
+    		            
         				Item item = femaleParents.addItem(entryObject);
         				item.getItemProperty(FEMALE_PARENTS_LABEL).setValue(gidButton);
         				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+        				
+        				item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
+        				item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seed_res);
         				
         				addedCount++;
         			} 
