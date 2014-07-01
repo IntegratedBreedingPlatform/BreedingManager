@@ -755,3 +755,19 @@
 	margin-left:auto;
 	margin-right:auto;
 }
+
+/* 
+Makes the tab header of the tabsheet in List Manager expands
+the user click the hide list builder component button  
+*/
+div.v-tabsheet-tabcontainer {
+	width: 100% !important;
+}
+
+/* 
+Makes the arrow heads <> of tab header fixed on the right side of the pane.  
+*/
+div.v-tabsheet-scroller {
+	position: absolute !important;
+	right: 0px !important;
+}

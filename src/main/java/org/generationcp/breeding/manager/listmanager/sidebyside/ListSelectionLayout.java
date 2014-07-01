@@ -317,7 +317,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     public void showDetailsTabsheet() {
         detailsTabSheet.setVisible(true);
         this.addComponent(detailsTabSheet);
-        this.requestRepaintAll();
+        this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
@@ -329,18 +329,26 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
     
     public void repaintTabsheet() {
-    	if(detailsTabSheet.isVisible()){
-    	    this.removeAllComponents();
-    	    this.addComponent(listSelectionHeaderContainer);
-    	    this.addComponent(detailsTabSheet);
+//    	if(detailsTabSheet.isVisible()){
+//    	    this.removeAllComponents();
+//    	    this.addComponent(listSelectionHeaderContainer);
+//    	    this.addComponent(detailsTabSheet);
+//    	
+//            detailsTabSheet.setVisible(true);
+//            
+//            if(detailsTabSheet.getComponentCount() > 1){
+//            	btnCloseAllTabs.setVisible(true);
+//            }
+//            this.requestRepaint();
+//    	}
     	
-            detailsTabSheet.setVisible(true);
-            
-            if(detailsTabSheet.getComponentCount() > 1){
-            	btnCloseAllTabs.setVisible(true);
-            }
-            this.requestRepaintAll();
-    	}
+    	if(detailsTabSheet.getComponentCount() > 1){
+        	btnCloseAllTabs.setVisible(true);
+        }
+    	
+    	this.removeComponent(detailsTabSheet);
+    	this.addComponent(detailsTabSheet);
+    	this.requestRepaint();
     }
     
     public void renameTab(Integer listId, String newName){

@@ -340,16 +340,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private void setTabContent(){
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
-		//splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
 		splitPanel.setMaxSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		//splitPanel.setMinSplitPosition(, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+		splitPanel.setSplitPosition(0,Sizeable.UNITS_PERCENTAGE,true);
 
         splitPanel.setImmediate(true);
         splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
         splitPanel.addStyleName("tabContainerStyle");
-
-
 
         listSelectionComponent = new ListSelectionComponent(this, selectedListId);
 		plantSelectionComponent = new GermplasmSelectionComponent(this);
