@@ -324,7 +324,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         	addComponent(startNumberTextField, "top:67px;left:175px");
             addComponent(sequenceNumCheckBox, "top:100px;left:10px");
             addComponent(leadingZerosSelect, "top:98px;left:335px");
-            addComponent(howManyDigitsLabel, "top:116px;left:389px");
+            addComponent(howManyDigitsLabel, "top:119px;left:389px");
             addComponent(specifySuffixLabel, "top:150px;left:10px");
             addComponent(suffixTextField, "top:130px;left:175px");
         	addComponent(addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
