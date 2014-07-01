@@ -1425,7 +1425,11 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		//update lot reservatios to save
 		updateLotReservationsToSave(validReservations);
 		
-		if(!withInvalidReservations){
+		if(validReservations.size() == 0){//if there are no valid reservations
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
+					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+		
+		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 					"All selected entries will be reserved in their respective lots.", 
 					3000, Notification.POSITION_TOP_RIGHT);

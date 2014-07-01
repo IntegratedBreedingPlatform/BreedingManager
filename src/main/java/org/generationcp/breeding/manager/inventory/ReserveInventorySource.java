@@ -15,4 +15,5 @@ public interface ReserveInventorySource {
 	public void removeReserveInventoryWindow(ReserveInventoryWindow reserveInventory);
 
 	public void removeReservationStatusWindow(ReservationStatusWindow reservationStatus);
+	
 }

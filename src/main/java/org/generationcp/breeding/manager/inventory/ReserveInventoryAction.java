@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -17,6 +22,8 @@ import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ReserveInventoryAction implements Serializable {
@@ -30,7 +37,7 @@ public class ReserveInventoryAction implements Serializable {
     
     @Autowired
     private UserDataManager userDataManager;
-	
+    
 	private Map<ListEntryLotDetails,Double> validLotReservations;
 	private Map<ListEntryLotDetails,Double> invalidLotReservations;
 	
@@ -90,7 +97,7 @@ public class ReserveInventoryAction implements Serializable {
 		
 		boolean withInvalidReservations = false;
 		
-		if(invalidLotReservations.size() > 0){//if there is an invalid reservation
+		if(validLotReservations.size()>0 && invalidLotReservations.size() > 0){//if there is an invalid reservation
 			reservationStatus = new ReservationStatusWindow(invalidLotReservations);
 			source.addReservationStatusWindow(reservationStatus);
 			withInvalidReservations = true;

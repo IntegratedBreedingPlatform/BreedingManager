@@ -2080,7 +2080,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		//enable now the Save Changes option
 		menuInventorySaveChanges.setEnabled(true);
 		
-		if(!withInvalidReservations){
+		if(validReservations.size() == 0){//if there are no valid reservations
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
+					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+		
+		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 					"All selected entries will be reserved in their respective lots.", 
 					3000, Notification.POSITION_TOP_RIGHT);
