@@ -7,14 +7,18 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -79,6 +83,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	@Autowired
     private GermplasmListManager germplasmListManager;
+	
+	@Autowired
+	private InventoryDataManager inventoryDataManager;
 	
 	public SelectParentsListDataComponent(Integer germplasmListId, String listName, MakeCrossesParentsComponent makeCrossesParentsComponent){
 		super();
@@ -147,6 +154,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_RESERVATION.getName(), String.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
@@ -155,6 +164,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnHeader(CHECKBOX_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+		listDataTable.setColumnHeader(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), messageSource.getMessage(Message.AVAIL_INV));
+		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_RESERVATION.getName(), messageSource.getMessage(Message.SEED_RES));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_GROUPNAME_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
@@ -163,6 +174,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 25);
 		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 25);
 		listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 130);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), 70);
+		listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_RESERVATION.getName(), 70);
 		listDataTable.setColumnWidth(ListDataTablePropertyID.PARENTAGE.getName(), 130);
 		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 100);
 		listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 60);
@@ -172,6 +185,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
         		CHECKBOX_COLUMN_ID
         		,ListDataTablePropertyID.ENTRY_ID.getName()
         		,ListDataTablePropertyID.DESIGNATION.getName()
+        		,ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()
+        		,ListDataTablePropertyID.SEED_RESERVATION.getName()
         		,ListDataTablePropertyID.PARENTAGE.getName()
         		,ListDataTablePropertyID.ENTRY_CODE.getName()
         		,ListDataTablePropertyID.GID.getName()
@@ -197,7 +212,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	@Override
 	public void initializeValues() {
 		try{
-			List<GermplasmListData> listEntries = germplasmListManager.getGermplasmListDataByListId(germplasmListId, 0, Integer.MAX_VALUE);
+			List<GermplasmListData> listEntries = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
+			
 			for(GermplasmListData entry : listEntries){
 				String gid = String.format("%s", entry.getGid().toString());
                 Button gidButton = new Button(gid, new GidLinkClickListener(gid,true));
@@ -224,8 +240,29 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	 			}
     	 		});
     	   		
+    			String avail_inv = "-"; //default value
+    			if(entry.getInventoryInfo().getActualInventoryLotCount() != null){
+    				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    			}
+    			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid()));
+    			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+    			inventoryButton.setDescription("Click to view Inventory Details");
+    			
+    			if(avail_inv.equals("-")){
+    				inventoryButton.setEnabled(false);
+    				inventoryButton.setDescription("No Lot for this Germplasm");
+    			}
+    			else{
+    				inventoryButton.setDescription("Click to view Inventory Details");
+    			}
+    			
+    			String seed_res = "-"; //default value
+    			if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+    				seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+    			}
+    	   		
     	   		listDataTable.addItem(new Object[] {
-                        itemCheckBox, entry.getEntryId(), desigButton, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource()}
+                        itemCheckBox, entry.getEntryId(), desigButton, inventoryButton, seed_res, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource()}
     	   			, entry.getId());
 			}
 		} catch(MiddlewareQueryException ex){

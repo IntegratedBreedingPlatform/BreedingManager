@@ -7,6 +7,8 @@ public enum ListDataTablePropertyID {
     ,ENTRY_CODE("entryCode")
     ,SEED_SOURCE("seedSource")
     ,DESIGNATION("desig")
+    ,AVAILABLE_INVENTORY("availInv")
+    ,SEED_RESERVATION("seedRes")
     ,GROUP_NAME("groupName")
     ,PARENTAGE("parentage")
     ,AVAIL_INV("availInv")
