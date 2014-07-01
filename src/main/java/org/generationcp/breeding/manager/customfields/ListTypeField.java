@@ -56,6 +56,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		if(isMandatory){
 			mandatoryMark = new MandatoryMarkLabel();
 			
+			listTypeComboBox.setNullSelectionAllowed(false);
 			listTypeComboBox.setRequired(true);
 			listTypeComboBox.setRequiredError("Please specify the type of the list.");
 		}
