@@ -1380,7 +1380,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			
 			//#1 Available Inventory
 			String avail_inv = "-"; //default value
-			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+			if(listData.getInventoryInfo().getLotCount().intValue() != 0){
 				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source, currentlySavedGermplasmList.getId(),listData.getId(), listData.getGid()));

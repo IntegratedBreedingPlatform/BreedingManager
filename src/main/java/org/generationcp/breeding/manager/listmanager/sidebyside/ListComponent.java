@@ -492,7 +492,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		//#1 Available Inventory
 		String avail_inv = "-"; //default value
-		if(entry.getInventoryInfo().getActualInventoryLotCount() != null){
+		
+		if(entry.getInventoryInfo().getLotCount().intValue() != 0){
 			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
 		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),entry.getId(), entry.getGid()));
@@ -2033,7 +2034,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			
 			//#1 Available Inventory
 			String avail_inv = "-"; //default value
-			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+			if(listData.getInventoryInfo().getLotCount().intValue() != 0){
 				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),listData.getId(), listData.getGid()));
