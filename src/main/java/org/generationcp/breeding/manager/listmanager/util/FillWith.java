@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -753,6 +754,7 @@ public class FillWith implements InternationalizableComponent  {
     	specifyCrossExpansionLevelWindow.setWidth("210px");
     	specifyCrossExpansionLevelWindow.setModal(true);
     	specifyCrossExpansionLevelWindow.setResizable(false);
+    	specifyCrossExpansionLevelWindow.setStyleName(Reindeer.WINDOW_LIGHT);
     	
     	AbsoluteLayout layout = new AbsoluteLayout();
     	final ComboBox levelComboBox = new ComboBox();
@@ -774,9 +776,11 @@ public class FillWith implements InternationalizableComponent  {
 				targetTable.getWindow().removeWindow(specifyCrossExpansionLevelWindow);
 			}
 		});
+    	okButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     	layout.addComponent(okButton, "top:50px;left:10px"); 
     	
     	Button cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
+    	cancelButton.setStyleName(Bootstrap.Buttons.DEFAULT.styleName());
     	cancelButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -3519880320817778816L;
 
