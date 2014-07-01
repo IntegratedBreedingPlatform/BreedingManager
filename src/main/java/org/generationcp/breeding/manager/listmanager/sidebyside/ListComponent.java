@@ -26,6 +26,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -196,7 +197,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private Boolean doneInitializing = false;
     
     //Inventory Related Variables
-    private ListInventoryTable listInventoryTable;
+    private ListManagerInventoryTable listInventoryTable;
     private ReserveInventoryWindow reserveInventory;
     private ReservationStatusWindow reservationStatus;
     private ReserveInventoryUtil reserveInventoryUtil;
@@ -391,7 +392,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	
 	public void initializeListInventoryTable(){
-		listInventoryTable = new ListInventoryTable(source, germplasmList.getId(),true,false);
+		listInventoryTable = new ListManagerInventoryTable(source, germplasmList.getId(),true,false);
 		listInventoryTable.setVisible(false);
 	}
 	

@@ -23,6 +23,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -173,7 +174,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private BuildNewListDropHandler dropHandler;
     
     //Inventory Related Variables
-    private ListInventoryTable listInventoryTable;
+    private ListManagerInventoryTable listInventoryTable;
     private ReserveInventoryWindow reserveInventory;
     private ReservationStatusWindow reservationStatus;
     private ReserveInventoryUtil reserveInventoryUtil;
@@ -244,9 +245,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
 
         if(currentlySavedGermplasmList!=null)
-        	listInventoryTable = new ListInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
+        	listInventoryTable = new ListManagerInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
         else
-        	listInventoryTable = new ListInventoryTable(source, null, false, true);
+        	listInventoryTable = new ListManagerInventoryTable(source, null, false, true);
         listInventoryTable.setVisible(false);
         
         listDataTable = tableWithSelectAllLayout.getTable();

@@ -565,7 +565,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         parentTabSheet.addTab(femaleParentsTableLayout,messageSource.getMessage(Message.LABEL_FEMALE_PARENTS));
         parentTabSheet.addTab(maleParentsTableLayout,messageSource.getMessage(Message.LABEL_MALE_PARENTS));
         parentTabSheet.setWidth("420px");
-        parentTabSheet.setHeight("460px");
+        parentTabSheet.setHeight("465px");
         
         HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES,parentListsLabel);
         addComponent(parentLabelLayout);

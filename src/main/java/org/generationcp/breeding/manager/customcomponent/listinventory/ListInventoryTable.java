@@ -7,8 +7,6 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -26,7 +24,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -34,8 +31,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 	private static final long serialVersionUID = 1L;
 
-    public static final String INVENTORY_TABLE_DATA = "BuildNewListInventoryTableData";
-	
 	public static Class<?> TAG_COLUMN_TYPE = CheckBox.class;
   	public static String TAG_COLUMN_ID="Tag";
 	
@@ -69,14 +64,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public static Class<?> LOT_ID_COLUMN_TYPE = Integer.class;
 	public static String LOT_ID_COLUMN_ID = "LOT_ID";
 	
-	private ListManagerMain listManagerMain;
-	private Table listInventoryTable;
-	private Integer listId;
-	
-	private Boolean enableDragSource;
-	private Boolean enableDropHandler;
-	
-	private InventoryTableDropHandler inventoryTableDropHandler;
+	protected Table listInventoryTable;
+	protected Integer listId;
 	
 	@Autowired
 	GermplasmListManager germplasmListManager;
@@ -85,26 +74,15 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	GermplasmDataManager germplasmDataManager;
 	
 	@Autowired
-	private InventoryDataManager inventoryDataManager;
+	protected InventoryDataManager inventoryDataManager;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
-	public ListInventoryTable(ListManagerMain listManagerMain, Integer listId) {
+	public ListInventoryTable(Integer listId) {
 		super(TAG_COLUMN_ID);
-		this.listManagerMain = listManagerMain;
 		this.listId = listId;
-		this.enableDragSource = false;
-		this.enableDropHandler = false;
 	}
-	
-	public ListInventoryTable(ListManagerMain listManagerMain, Integer listId, Boolean enableDragSource, Boolean enableDropHandler) {
-		super(TAG_COLUMN_ID);
-		this.listManagerMain = listManagerMain;
-		this.listId = listId;
-		this.enableDragSource = enableDragSource;
-		this.enableDropHandler = enableDropHandler;
-	}	
 	
 	@Override
 	public void instantiateComponents() {
@@ -114,10 +92,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable = this.getTable();
 		listInventoryTable.setMultiSelect(true);
 		listInventoryTable.setImmediate(true);
-		listInventoryTable.setData(INVENTORY_TABLE_DATA);
-
-		setDragSource();
-		setDropHandler();
 		
 		listInventoryTable.setHeight("480px");
 		listInventoryTable.setWidth("100%");
@@ -163,7 +137,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		
 	}
 	
-	private void displayInventoryDetails(List<GermplasmListData> inventoryDetails){
+	public void displayInventoryDetails(List<GermplasmListData> inventoryDetails){
 		
 		listInventoryTable.removeAllItems();
 		for(GermplasmListData inventoryDetail : inventoryDetails){
@@ -205,7 +179,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					}
 			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 
-			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
+			   					new GidLinkButtonClickListener(germplasmListData.getGid().toString(), true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 			   		
 			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
@@ -244,20 +218,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void reset() {
 		listInventoryTable.removeAllItems();
 	}
-	
-	public void setDropHandler(){
-		inventoryTableDropHandler = new InventoryTableDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable);
-		if(enableDropHandler)
-			listInventoryTable.setDropHandler(inventoryTableDropHandler);
-	}
-	
-	public void setDragSource(){
-		if(enableDragSource)
-			listInventoryTable.setDragMode(TableDragMode.ROW);
-	}
-	
-	public InventoryTableDropHandler getInventoryTableDropHandler(){
-		return inventoryTableDropHandler;
+
+	public void setMaxRows(int i) {
+		listInventoryTable.setHeight("100%");
+		listInventoryTable.setPageLength(i);
 	}
 	
 }

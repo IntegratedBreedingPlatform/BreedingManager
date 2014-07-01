@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
@@ -66,7 +67,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	        	MessageNotifier.showWarning(listManagerMain.getWindow(), 
 							"Warning!", message, Notification.POSITION_TOP_RIGHT);
 				
-			} else if(sourceTableData.equals(ListInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
+			} else if(sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
 				super.setHasUnsavedChanges(true);
 				
 				lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();

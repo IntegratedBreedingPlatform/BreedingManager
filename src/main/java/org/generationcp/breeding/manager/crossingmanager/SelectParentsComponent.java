@@ -84,7 +84,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         
         listDetailsTabSheet = new TabSheet();
         listDetailsTabSheet.setWidth("460px");
-        listDetailsTabSheet.setHeight("460px");
+        listDetailsTabSheet.setHeight("465px");
         listDetailsTabSheet.setVisible(false);
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));

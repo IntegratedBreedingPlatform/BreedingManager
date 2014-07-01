@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -14,8 +15,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
-import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -64,17 +63,29 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Label totalListEntriesLabel;
 
 	private Table listDataTable;
-	private CheckBox selectAllCheckBox;
 	private Button viewListHeaderButton;
 	private String listName;
 	
 	private Button actionButton;
-	public static String ACTIONS_BUTTON_ID = "Actions";
 	private ContextMenu actionMenu;
+	
+	private Button inventoryViewActionButton;
+	private ContextMenu inventoryViewActionMenu;
+	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuInventorySaveChanges;
+	private ContextMenuItem menuListView;
+	private ContextMenuItem menuReserveInventory;
+	
+	public static String ACTIONS_BUTTON_ID = "Actions";
 	
 	private ViewListHeaderWindow viewListHeaderWindow;
 	
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
+	private CrossingManagerInventoryTable listInventoryTable;
+	
+	//Layout variables
+	private HorizontalLayout headerLayout;
+	private HorizontalLayout subHeaderLayout;
 	
 	private MakeCrossesParentsComponent makeCrossesParentsComponent;
 	
@@ -132,12 +143,47 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		actionButton.setWidth("110px");
 		actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
+		inventoryViewActionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		inventoryViewActionButton.setData(ACTIONS_BUTTON_ID);
+		inventoryViewActionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
+		inventoryViewActionButton.setWidth("110px");
+		inventoryViewActionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		
 		actionMenu = new ContextMenu();
 		actionMenu.setWidth("250px");
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_MALE_LIST));
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
+		actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
+		inventoryViewActionMenu = new ContextMenu();
+		inventoryViewActionMenu.setWidth("295px");
+		menuCopyToNewListFromInventory = inventoryViewActionMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        menuReserveInventory = inventoryViewActionMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        menuListView = inventoryViewActionMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
+        menuInventorySaveChanges = inventoryViewActionMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
+        inventoryViewActionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        resetInventoryMenuOptions();
+        
+		initializeListDataTable();
+		initializeListInventoryTable(); //listInventoryTable
+		
+		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_LIST_HEADERS));
+		viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
+	}
+	
+	private void resetInventoryMenuOptions() {
+        //disable the save button at first since there are no reservations yet
+        menuInventorySaveChanges.setEnabled(false);
+        
+        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        menuCopyToNewListFromInventory.setEnabled(false);
+        
+        //Temporarily disable the reserve inventory option
+        menuReserveInventory.setEnabled(false);
+	}
+	
+	private void initializeListDataTable(){
 		tableWithSelectAllLayout = new TableWithSelectAllLayout(count.intValue(),9,CHECKBOX_COLUMN_ID);
 		tableWithSelectAllLayout.setWidth("100%");
 		
@@ -191,12 +237,12 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
         		,ListDataTablePropertyID.ENTRY_CODE.getName()
         		,ListDataTablePropertyID.GID.getName()
         		,ListDataTablePropertyID.SEED_SOURCE.getName()});
-		
-		selectAllCheckBox = new CheckBox(messageSource.getMessage(Message.SELECT_ALL));
-		selectAllCheckBox.setImmediate(true);
-		
-		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_LIST_HEADERS));
-		viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
+	}
+	
+	private void initializeListInventoryTable(){
+		listInventoryTable = new CrossingManagerInventoryTable(germplasmList.getId());
+		listInventoryTable.setVisible(false);
+		listInventoryTable.setMaxRows(9);
 	}
 
 	private void retrieveListDetails() {
@@ -303,8 +349,40 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
 				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
 				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
+				  viewInventoryAction();
 			  }
 		   }
+		});
+		
+		inventoryViewActionButton.addListener(new ClickListener() {
+	   		 private static final long serialVersionUID = 272707576878821700L;
+	
+				 @Override
+	   		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+					 inventoryViewActionMenu.show(event.getClientX(), event.getClientY());
+	   		 }
+	   	 });
+		
+		inventoryViewActionMenu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+	
+			@Override
+			public void contextItemClick(ClickEvent event) {
+			      // Get reference to clicked item
+			      ContextMenuItem clickedItem = event.getClickedItem();
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
+			    	  //saveReservationChangesAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
+                	  viewListAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
+                	  //copyToNewListFromInventoryViewAction();
+				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
+		          	  //reserveInventoryAction();
+                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+                	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
+		          }
+		    }
 		});
 		
 		viewListHeaderButton.addListener(new ClickListener() {
@@ -344,7 +422,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		setMargin(true);
 		setSpacing(true);
 		
-		HorizontalLayout headerLayout = new HorizontalLayout();
+		addComponent(actionMenu);
+		addComponent(inventoryViewActionMenu);
+		
+		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.addComponent(listEntriesLabel);
 		headerLayout.addComponent(viewListHeaderButton);
@@ -353,7 +434,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		addComponent(headerLayout);
 		
-		HorizontalLayout subHeaderLayout = new HorizontalLayout();
+		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
 		subHeaderLayout.addComponent(totalListEntriesLabel);
 		subHeaderLayout.addComponent(actionButton);
@@ -362,8 +443,65 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		addComponent(subHeaderLayout);
 		addComponent(tableWithSelectAllLayout);
-		addComponent(actionMenu);
+		addComponent(listInventoryTable);
+
 	}
+	
+	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
+	
+	private void viewListAction(){
+		changeToListView();
+	}	
+	
+	public void changeToListView(){
+		if(listInventoryTable.isVisible()){
+			tableWithSelectAllLayout.setVisible(true);
+			listInventoryTable.setVisible(false);
+			
+			subHeaderLayout.removeComponent(inventoryViewActionButton);
+			subHeaderLayout.addComponent(actionButton);
+			subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
+			
+			listEntriesLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+	       		 + "  <b>" + count + "</b>");
+	        
+	        this.removeComponent(listInventoryTable);
+	        this.addComponent(tableWithSelectAllLayout);
+	        
+	        this.requestRepaint();
+		}
+	}
+	
+	private void viewInventoryAction(){
+		viewInventoryActionConfirmed();
+	}
+	
+	public void viewInventoryActionConfirmed(){
+		listInventoryTable.loadInventoryData();
+		changeToInventoryView();
+	}
+	
+	public void changeToInventoryView(){
+		if(tableWithSelectAllLayout.isVisible()){
+			tableWithSelectAllLayout.setVisible(false);
+			listInventoryTable.setVisible(true);
+			
+			subHeaderLayout.removeComponent(actionButton);
+	        subHeaderLayout.addComponent(inventoryViewActionButton);
+	        subHeaderLayout.setComponentAlignment(inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
+	        
+	        listEntriesLabel.setValue(messageSource.getMessage(Message.LOTS));
+	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        
+	        this.removeComponent(tableWithSelectAllLayout);
+	        this.addComponent(listInventoryTable);
+	        
+	        this.requestRepaint();
+		}
+	}
+	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
 	
 	private void openViewListHeaderWindow(){
 		this.getWindow().addWindow(viewListHeaderWindow);
