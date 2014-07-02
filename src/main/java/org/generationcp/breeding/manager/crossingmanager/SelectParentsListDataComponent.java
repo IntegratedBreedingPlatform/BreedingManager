@@ -286,14 +286,13 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	 			}
     	 		});
     	   		
+    			
+    			//#1 Available Inventory
     			String avail_inv = "-"; //default value
-    			if(entry.getInventoryInfo().getActualInventoryLotCount() != null){
+    			if(entry.getInventoryInfo().getLotCount().intValue() != 0){
     				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     			}
-    			
-    			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid());
-    			Button inventoryButton = new Button(avail_inv, inventoryClickListener);
-    			inventoryButton.setData(inventoryClickListener);
+    			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid()));
     			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
     			inventoryButton.setDescription("Click to view Inventory Details");
     			
@@ -305,10 +304,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     				inventoryButton.setDescription("Click to view Inventory Details");
     			}
     			
-    			String seed_res = "-"; //default value
-    			if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
-    				seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-    			}
+    			// Seed Reserved
+    	   		String seed_res = "-"; //default value
+    	   		if(entry.getInventoryInfo().getReservedLotCount().intValue() != 0){
+    	   			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+    	   		}
     	   		
     	   		listDataTable.addItem(new Object[] {
                         itemCheckBox, entry.getEntryId(), desigButton, inventoryButton, seed_res, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource()}
