@@ -72,9 +72,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     private CheckBox femaleParentsTagAll;
     private Table maleParents;
     private CheckBox maleParentsTagAll;
-
-    private GermplasmList femaleParentList;
-    private GermplasmList maleParentList;
     
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
         
@@ -187,11 +184,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		    			entryObject.setFromFemaleTable(true);
 		    			femaleParentTab.getSaveActionMenu().setEnabled(true);
 		    			femaleParentTab.updateNoOfEntries(femaleParents.size());
+		    			femaleParentTab.setHasUnsavedChanges(true);
             			//femaleParentList = null;
 		    		} else{
 		    			entryObject.setFromFemaleTable(false);
 		    			maleParentTab.getSaveActionMenu().setEnabled(true);
 		    			maleParentTab.updateNoOfEntries(maleParents.size());
+		    			maleParentTab.setHasUnsavedChanges(true);
             			//maleParentList = null;
 		    		}
 		    		
@@ -229,13 +228,15 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     			//Checks the source list is a local list
     			if(femaleGermplasmList.getId() < 0){
     				femaleParentTab.getSaveActionMenu().setEnabled(false);
+    				femaleParentTab.setHasUnsavedChanges(false);
         			femaleParentTab.setListNameForCrosses(femaleGermplasmList.getName());
         	    	updateCrossesSeedSource(femaleParentTab, femaleGermplasmList);
     			}
     			else{//if the source list is a central list
     				femaleParentTab.getSaveActionMenu().setEnabled(true);
+    				femaleParentTab.setHasUnsavedChanges(true);
     				femaleParentTab.setListNameForCrosses("");
-        			femaleParentList = null;
+    				femaleParentTab.setGermplasmList(null);
     			}
     			
     		} else{//if male
@@ -244,14 +245,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     			//Checks the source list is a local list
     			if(maleGermplasmList.getId() < 0){
     				maleParentTab.getSaveActionMenu().setEnabled(false);
+    				maleParentTab.setHasUnsavedChanges(false);
     				maleParentTab.setListNameForCrosses(maleGermplasmList.getName());
         	    	updateCrossesSeedSource(maleParentTab, maleGermplasmList);
     			}
     			else{//if the source list is a central list
     				maleParentTab.getSaveActionMenu().setEnabled(true);
+    				maleParentTab.setHasUnsavedChanges(true);
     				maleParentTab.setListNameForCrosses("");
-        			maleParentList = null;
+    				maleParentTab.setGermplasmList(null);
     			}
+    			
     		}
     		
     		//updates the crossesMade.savebutton if both parents are save at least once;
@@ -260,11 +264,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		if(targetTable.equals(femaleParents)){
     			femaleParentTab.getSaveActionMenu().setEnabled(true);
     			femaleParentTab.setListNameForCrosses("");
-    			femaleParentList = null;
+    			femaleParentTab.setGermplasmList(null);
+    			femaleParentTab.setHasUnsavedChanges(true);
     		} else{
     			maleParentTab.getSaveActionMenu().setEnabled(true);
     			maleParentTab.setListNameForCrosses("");
-    			maleParentList = null;
+    			maleParentTab.setGermplasmList(null);
+    			maleParentTab.setHasUnsavedChanges(true);
     		}
     	}
     	
@@ -299,16 +305,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public void updateCrossesSeedSource(ParentTabComponent parentTab,
 			GermplasmList savedList) {
 		if (parentTab.equals(femaleParentTab)){
-			this.femaleParentList = savedList;
-			if (femaleParentTab.getListNameForCrosses() != null && !femaleParentTab.getListNameForCrosses().equals(femaleParentList.getName())){
-				femaleParentTab.setListNameForCrosses(femaleParentList.getName());
+			femaleParentTab.setGermplasmList(savedList);
+			if (femaleParentTab.getListNameForCrosses() != null 
+					&& !femaleParentTab.getListNameForCrosses().equals(femaleParentTab.getGermplasmList().getName())){
+				femaleParentTab.setListNameForCrosses(femaleParentTab.getGermplasmList().getName());
 				makeCrossesMain.updateCrossesSeedSource(femaleParentTab.getListNameForCrosses(), 
 						maleParentTab.getListNameForCrosses());
 			}
 		} else {
-			this.maleParentList = savedList;
-			if (maleParentTab.getListNameForCrosses() != null && !maleParentTab.getListNameForCrosses().equals(maleParentList.getName())){
-				maleParentTab.setListNameForCrosses(maleParentList.getName());
+			maleParentTab.setGermplasmList(savedList);
+			if (maleParentTab.getListNameForCrosses() != null 
+					&& !maleParentTab.getListNameForCrosses().equals(maleParentTab.getGermplasmList().getName())){
+				maleParentTab.setListNameForCrosses(maleParentTab.getGermplasmList().getName());
 				makeCrossesMain.updateCrossesSeedSource(femaleParentTab.getListNameForCrosses(), 
 						maleParentTab.getListNameForCrosses());
 			}
@@ -404,8 +412,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public void addListToMaleTable(Integer germplasmListId){
 		
         try {
-        	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
-        	if(draggedListFromTree!=null){
+        	GermplasmList listFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
+        	if(listFromTree!=null){
         		List<GermplasmListData> germplasmListDataFromListFromTree = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
         		
         		Integer addedCount = 0;
@@ -420,12 +428,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
                         
         				CheckBox tag = new CheckBox();
                     	
-        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), listFromTree.getName()+":"+listData.getEntryId());
         				
     		    		
     		    		tag.addListener(new ParentsTableCheckboxListener(maleParents, entryObject, maleParentsTagAll));
-    		    		maleParentTab.setListNameForCrosses(draggedListFromTree.getName());
-    		    	    updateCrossesSeedSource(maleParentTab, draggedListFromTree);
+    		    		maleParentTab.setListNameForCrosses(listFromTree.getName());
+    		    	    updateCrossesSeedSource(maleParentTab, listFromTree);
     		    		
     		    		
     		            tag.setImmediate(true);
@@ -479,23 +487,26 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
         		if(addedCount==itemsLeftAfterAdding.size()){
         			maleParentTab.getSaveActionMenu().setEnabled(false);
+        			maleParentTab.setHasUnsavedChanges(false);
         			
         			//updates the crossesMade.savebutton if both parents are save at least once;
             		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
             		
         		} else {
         			maleParentTab.getSaveActionMenu().setEnabled(true);
+        			maleParentTab.setHasUnsavedChanges(true);
         			//maleParentList = null;
         		}
         	}
         	
-        	
+        	maleParentTab.setGermplasmList(listFromTree);
         } catch(MiddlewareQueryException e) {
         	LOG.error("Error in getting list by GID",e);	
         }
         
         assignEntryNumber(maleParents);
 		maleParentTab.updateNoOfEntries(maleParents.size());
+		parentTabSheet.setSelectedTab(1);
 	}
 	
 	
@@ -504,9 +515,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 		//dennis
         try {
-        	GermplasmList draggedListFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
+        	GermplasmList listFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
         	
-        	if(draggedListFromTree!=null){
+        	if(listFromTree!=null){
         		
         		List<GermplasmListData> germplasmListDataFromListFromTree = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
         		
@@ -522,12 +533,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
                         
         				CheckBox tag = new CheckBox();
                     	
-        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
+        				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), listFromTree.getName()+":"+listData.getEntryId());
         				
     		    		
     		    		tag.addListener(new ParentsTableCheckboxListener(femaleParents, entryObject, femaleParentsTagAll));
-    		    		femaleParentTab.setListNameForCrosses(draggedListFromTree.getName());
-    		    	    updateCrossesSeedSource(femaleParentTab, draggedListFromTree);
+    		    		femaleParentTab.setListNameForCrosses(listFromTree.getName());
+    		    	    updateCrossesSeedSource(femaleParentTab, listFromTree);
     		    		
     		    		
     		            tag.setImmediate(true);
@@ -580,23 +591,26 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
         		if(addedCount==itemsLeftAfterAdding.size()){
         			femaleParentTab.getSaveActionMenu().setEnabled(false);
+        			femaleParentTab.setHasUnsavedChanges(false);
         			
         			//updates the crossesMade.savebutton if both parents are save at least once;
             		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
             		
         		} else {
         			femaleParentTab.getSaveActionMenu().setEnabled(true);
+        			femaleParentTab.setHasUnsavedChanges(true);
         			//maleParentList = null;
         		}
         	}
         	
-        	
+        	femaleParentTab.setGermplasmList(listFromTree);
         } catch(MiddlewareQueryException e) {
         	LOG.error("Error in getting list by GID",e);	
         }
         
         assignEntryNumber(femaleParents);
         femaleParentTab.updateNoOfEntries(femaleParents.size());
+        parentTabSheet.setSelectedTab(0);
 	}
 
 	//SETTERS AND GETTERS
@@ -609,19 +623,19 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     }
     
     public GermplasmList getFemaleList(){
-    	return femaleParentList;
+    	return femaleParentTab.getGermplasmList();
     }
     
     public GermplasmList getMaleList(){
-    	return maleParentList;
+    	return maleParentTab.getGermplasmList();
     }
     
     public void setFemaleParentList(GermplasmList list){
-    	femaleParentList = list;
+    	femaleParentTab.setGermplasmList(list);
     }
     
     public void setMaleParentList(GermplasmList list){
-    	maleParentList = list;
+    	maleParentTab.setGermplasmList(list);
     }
     
 	public String getFemaleListNameForCrosses() {
@@ -650,6 +664,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public void setMaleParentTab(ParentTabComponent maleParentTab) {
 		this.maleParentTab = maleParentTab;
+	}
+
+	public void setHasUnsavedChanges(boolean hasChanges) {
+		femaleParentTab.setHasUnsavedChanges(hasChanges);
+		maleParentTab.setHasUnsavedChanges(hasChanges);
 	}
 
 }

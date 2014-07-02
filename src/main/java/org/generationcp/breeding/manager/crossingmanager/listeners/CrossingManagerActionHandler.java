@@ -51,8 +51,11 @@ public class CrossingManagerActionHandler implements Handler {
 			selectAllAction((Table) sender);
 		} else if (ACTION_REMOVE_SELECTED_ENTRIES.equals(action) && sender instanceof Table){
 				removeSelectedEntriesAction((Table) sender);     
-				if(this.source instanceof MakeCrossesParentsComponent)
-					((MakeCrossesParentsComponent) source).assignEntryNumber((Table) sender);
+				if(this.source instanceof MakeCrossesParentsComponent){
+					MakeCrossesParentsComponent makeCrosses = ((MakeCrossesParentsComponent) source);
+					makeCrosses.assignEntryNumber((Table) sender);
+					makeCrosses.setHasUnsavedChanges(true);
+				}
 		} else if (ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) source).deleteCrossAction();
 		}
@@ -88,15 +91,19 @@ public class CrossingManagerActionHandler implements Handler {
         if((itemsBeforeDelete.size() != itemsLeftAfterDelete.size()) && itemsLeftAfterDelete.size() > 0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getFemaleParentTab().getSaveActionMenu().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getFemaleParentTab().setHasUnsavedChanges(true);;
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getMaleParentTab().getSaveActionMenu().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getMaleParentTab().setHasUnsavedChanges(true);
         	}
         //Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
 		} else if(this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size()==0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getFemaleParentTab().getSaveActionMenu().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getFemaleParentTab().setHasUnsavedChanges(false);;
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getMaleParentTab().getSaveActionMenu().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getMaleParentTab().setHasUnsavedChanges(false);
         	}
         }
         
