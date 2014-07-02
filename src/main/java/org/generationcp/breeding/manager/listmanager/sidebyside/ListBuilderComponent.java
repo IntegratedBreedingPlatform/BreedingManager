@@ -22,7 +22,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
@@ -1418,7 +1417,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			Double new_res = entry.getValue();
 			
 			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+			itemToUpdate.getItemProperty(ListManagerInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
 		}
 		
 		removeReserveInventoryWindow(reserveInventory);
@@ -1549,7 +1548,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
-	public ListInventoryTable getListInventoryTable(){
+	public ListManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
 	}
 }
