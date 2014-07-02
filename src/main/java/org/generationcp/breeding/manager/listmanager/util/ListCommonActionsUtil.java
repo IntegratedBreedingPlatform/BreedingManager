@@ -90,16 +90,18 @@ public class ListCommonActionsUtil {
     		Button viewHeaderButton) {
     	GermplasmList savedList = null;
     	try{
-    		
+    		Integer listId = null;
     		GermplasmList listFromDB = dataManager.getGermplasmListById(listToSave.getId());
-    		listFromDB.setName(listToSave.getName());
-			listFromDB.setDescription(listToSave.getDescription());
-			listFromDB.setDate(listToSave.getDate());
-			listFromDB.setType(listToSave.getType());
-			listFromDB.setNotes(listToSave.getNotes());
-			listFromDB.setParent(listToSave.getParent());
+    		if(listFromDB!=null) {
+	    		listFromDB.setName(listToSave.getName());
+				listFromDB.setDescription(listToSave.getDescription());
+				listFromDB.setDate(listToSave.getDate());
+				listFromDB.setType(listToSave.getType());
+				listFromDB.setNotes(listToSave.getNotes());
+				listFromDB.setParent(listToSave.getParent());
 			
-			Integer listId = dataManager.updateGermplasmList(listFromDB);
+				listId = dataManager.updateGermplasmList(listFromDB);
+    		}
 			
 			if(listId == null){
 				if(showMessages)

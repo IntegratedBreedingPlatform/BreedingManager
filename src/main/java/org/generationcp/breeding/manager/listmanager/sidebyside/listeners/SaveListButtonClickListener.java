@@ -93,7 +93,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			return;
 		}
 		
-		if(currentlySavedList == null){
+		if(currentlySavedList == null || listToSave.getId()==null){
 			listToSave.setStatus(Integer.valueOf(1));
 			listToSave.setUserId(getLocalIBDBUserId());
 			
