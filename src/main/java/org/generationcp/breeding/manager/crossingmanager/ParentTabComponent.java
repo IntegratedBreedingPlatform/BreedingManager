@@ -571,7 +571,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 			// #5
 			String seed_res = "-"; //default value
-			if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+			if(entry.getInventoryInfo().getReservedLotCount().intValue() != 0){
 				seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 			}
 			
