@@ -48,6 +48,7 @@ public class GermplasmCharacteristicsComponent extends GridLayout implements Ini
         setRows(2);
         setColumns(3);
         setSpacing(true);
+        setWidth("100%");
         
         lblPrefName = new Label("<b>" + messageSource.getMessage(Message.PREFNAME_LABEL) + ":</b> " + gDetailModel.getGermplasmPreferredName()); // "Preferred Name"
         lblPrefName.setContentMode(Label.CONTENT_XHTML);
