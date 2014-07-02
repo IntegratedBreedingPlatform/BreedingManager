@@ -87,24 +87,24 @@ public class CrossingManagerActionHandler implements Handler {
         //If an item has been deleted, enable save option from action buttons
         if((itemsBeforeDelete.size() != itemsLeftAfterDelete.size()) && itemsLeftAfterDelete.size() > 0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveFemaleListMenu().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getFemaleParentTab().getSaveActionMenu().setEnabled(true);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveMaleListMenu().setEnabled(true);
+        		((MakeCrossesParentsComponent) source).getMaleParentTab().getSaveActionMenu().setEnabled(true);
         	}
         //Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
 		} else if(this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size()==0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveFemaleListMenu().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getFemaleParentTab().getSaveActionMenu().setEnabled(false);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
-        		((MakeCrossesParentsComponent) source).getSaveMaleListMenu().setEnabled(false);
+        		((MakeCrossesParentsComponent) source).getMaleParentTab().getSaveActionMenu().setEnabled(false);
         	}
         }
         
         //update the number of entries of male/female after delete
         if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
-    		((MakeCrossesParentsComponent) source).updateFemaleNoOfEntries(table.size());
+    		((MakeCrossesParentsComponent) source).getFemaleParentTab().updateNoOfEntries(table.size());
     	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
-    		((MakeCrossesParentsComponent) source).updateMaleNoOfEntries(table.size());
+    		((MakeCrossesParentsComponent) source).getMaleParentTab().updateNoOfEntries(table.size());
     	}
 	}
 }
