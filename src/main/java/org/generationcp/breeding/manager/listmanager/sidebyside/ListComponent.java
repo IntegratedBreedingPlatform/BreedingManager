@@ -512,7 +512,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		//#2 Seed Reserved
 		String seed_res = "-"; //default value
-		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+		if(entry.getInventoryInfo().getReservedLotCount().intValue() != 0){
 			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
 		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
@@ -2053,7 +2053,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			
 			// Seed Reserved
 	   		String seed_res = "-"; //default value
-	   		if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
+	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
 	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			

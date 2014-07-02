@@ -1400,7 +1400,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		
 			// Seed Reserved
 	   		String seed_res = "-"; //default value
-	   		if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
+	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
 	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
