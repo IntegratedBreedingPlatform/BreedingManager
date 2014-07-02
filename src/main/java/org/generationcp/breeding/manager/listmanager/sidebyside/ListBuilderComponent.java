@@ -219,7 +219,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         buildNewListDesc = new Label();
         buildNewListDesc.setValue("Build or revise your list by dragging in entries from the left.");
-        buildNewListDesc.setWidth("500px");
+        buildNewListDesc.addStyleName("lm-word-wrap");
+        buildNewListDesc.setWidth("100%");
+        buildNewListDesc.setHeight("55px");
         
         topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         topLabel.setWidth("160px");
@@ -589,8 +591,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
         listBuilderHeadingContainer.addComponent(headingLayout);
         listBuilderHeadingContainer.addComponent(buildNewListDesc);
-
-        buildNewListDesc.setStyleName("lm-subtitle");
 
         this.addComponent(listBuilderHeadingContainer);
 

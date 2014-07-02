@@ -48,7 +48,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	        " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm data.";
 	
 	private HorizontalLayout searchBarLayoutLeft;
-	private HorizontalLayout searchBarLayoutRight;
+	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -135,12 +135,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		setWidth("100%");
 		
 		searchBarLayoutLeft = new HorizontalLayout();
-		searchBarLayoutLeft.setHeight("24px");
+		//searchBarLayoutLeft.setHeight("24px");
 		searchBarLayoutLeft.setSpacing(true);
 		
-		searchBarLayoutRight = new HorizontalLayout();
-		searchBarLayoutRight.setHeight("24px");
-		searchBarLayoutRight.setSpacing(true);
+		searchBarLayoutRight = new CssLayout();
+		//searchBarLayoutRight.setHeight("24px");
 		
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		searchField.setWidth("120px");		
@@ -149,18 +148,24 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		searchBarLayoutLeft.addComponent(searchButton);
 		searchBarLayoutLeft.addComponent(popup);
 		
+		exactMatchesOnlyCheckBox.addStyleName("lm-component-wrap");
+		includeParentsCheckBox.addStyleName("lm-component-wrap");
+		searchPublicDataCheckBox.addStyleName("lm-component-wrap");
+		
 		searchBarLayoutRight.addComponent(exactMatchesOnlyCheckBox);
 		searchBarLayoutRight.addComponent(includeParentsCheckBox);
 		searchBarLayoutRight.addComponent(searchPublicDataCheckBox);
 		
 		searchBarLayoutLeft.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 		
-		searchBarLayoutRight.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
-        searchBarLayoutRight.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
-        searchBarLayoutRight.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
+		//searchBarLayoutRight.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
+        //searchBarLayoutRight.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
+        //searchBarLayoutRight.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
         
         addComponent(searchBarLayoutLeft);
         addComponent(searchBarLayoutRight);
+        
+       
         
         focusOnSearchField();
 	}
