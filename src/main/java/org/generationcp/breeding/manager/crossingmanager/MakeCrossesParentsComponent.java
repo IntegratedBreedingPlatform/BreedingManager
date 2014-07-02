@@ -433,8 +433,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		            //if the item is already existing in the target table, remove the existing item then add a new entry
     		            maleParents.removeItem(entryObject);
     		            
-    		            String avail_inv = "-"; //default value
-    	    			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+
+    		            
+    	    			
+    	    			//#1 Available Inventory
+    	    			String avail_inv = "-"; //default value
+    	    			if(listData.getInventoryInfo().getLotCount().intValue() != 0){
     	    				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	    			}
     	    			
@@ -452,11 +456,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	    				inventoryButton.setDescription("Click to view Inventory Details");
     	    			}
     	    			
-    	    			String seed_res = "-"; //default value
-    	    			if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
-    	    				seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-    	    			}
-    		            
+    	    			// Seed Reserved
+    	    	   		String seed_res = "-"; //default value
+    	    	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
+    	    	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+    	    	   		}
     		            
         				Item item = maleParents.addItem(entryObject);
         				item.getItemProperty(DESIGNATION_ID).setValue(gidButton);
@@ -532,8 +536,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		            femaleParents.removeItem(entryObject);
     		            
     		            
-    		            String avail_inv = "-"; //default value
-    	    			if(listData.getInventoryInfo().getActualInventoryLotCount() != null){
+    	    			//#1 Available Inventory
+    	    			String avail_inv = "-"; //default value
+    	    			if(listData.getInventoryInfo().getLotCount().intValue() != 0){
     	    				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	    			}
     	    			
@@ -551,10 +556,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	    				inventoryButton.setDescription("Click to view Inventory Details");
     	    			}
     	    			
-    	    			String seed_res = "-"; //default value
-    	    			if(listData.getInventoryInfo().getReservedLotCount() != null && listData.getInventoryInfo().getReservedLotCount() != 0){
-    	    				seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-    	    			}
+    	    			// Seed Reserved
+    	    	   		String seed_res = "-"; //default value
+    	    	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
+    	    	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+    	    	   		}
     		            
     		            
         				Item item = femaleParents.addItem(entryObject);
