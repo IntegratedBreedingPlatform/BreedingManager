@@ -192,7 +192,7 @@ public class ListCommonActionsUtil {
 			if(savedListEntries!=null) {
 				for (GermplasmListData savedEntry : savedListEntries) {
 					//check entries to be deleted
-					if(!listEntries.contains(savedEntry)){
+					if(!listEntries.contains(savedEntry) || forceHasChanges){
 						savedEntry.setStatus(Integer.valueOf(9));
 						entriesToDelete.add(savedEntry);
 					} else {//add to map for possible update

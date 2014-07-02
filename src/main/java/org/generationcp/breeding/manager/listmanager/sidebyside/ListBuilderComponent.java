@@ -1157,6 +1157,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
+		saveListButtonListener.setForceHasChanges(false);
 	}
 	
 	public void saveList(GermplasmList list, Boolean showMessages) {
