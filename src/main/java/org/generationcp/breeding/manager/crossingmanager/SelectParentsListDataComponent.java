@@ -5,6 +5,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
@@ -122,10 +123,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public void instantiateComponents() {
 		retrieveListDetails();
 		
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL).toUpperCase());
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H5.styleName());
-		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		listEntriesLabel.setWidth("120px");
+		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		listEntriesLabel.setWidth("160px");
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML);
@@ -430,9 +430,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		headerLayout.addComponent(listEntriesLabel);
+		
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
+		headerLayout.addComponent(headingLayout);
 		headerLayout.addComponent(viewListHeaderButton);
-		headerLayout.setComponentAlignment(listEntriesLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
 		addComponent(headerLayout);

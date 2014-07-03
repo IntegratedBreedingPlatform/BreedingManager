@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -136,10 +137,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	@Override
 	public void instantiateComponents() {
-		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL).toUpperCase());
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H5.styleName());
-		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		listEntriesLabel.setWidth("120px");
+		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		listEntriesLabel.setWidth("160px");
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
          		 + "  <b>0</b>", Label.CONTENT_XHTML);
@@ -499,7 +499,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.addComponent(actionMenu);
 		this.addComponent(inventoryViewActionMenu);
 		
-		this.addComponent(listEntriesLabel);
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
+		this.addComponent(headingLayout);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
