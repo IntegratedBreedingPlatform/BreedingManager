@@ -16,14 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -98,6 +99,24 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void addListeners() {
+		
+		listDetailsTabSheet.setCloseHandler(new CloseHandler() {
+			private static final long serialVersionUID = -7085023295466691749L;
+
+			@Override
+			public void onTabClose(TabSheet tabsheet, Component tabContent) {
+				if(tabsheet.getComponentCount() > 1){
+		            String tabCaption=tabsheet.getTab(tabContent).getCaption();
+		            Tab tab = Util.getTabToFocus(tabsheet, tabCaption);
+		            tabsheet.removeTab(tabsheet.getTab(tabContent));
+		            tabsheet.setSelectedTab(tab.getComponent());
+		        }else{
+		            tabsheet.removeTab(tabsheet.getTab(tabContent));
+		            hideDetailsTabsheet();
+		        }
+			}
+		});
+		 
 		closeAllTabsButton.addListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -2946008623293356900L;
 
@@ -118,6 +137,11 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				openBrowseForListDialog();
 			}
         });
+	}
+
+	protected void hideDetailsTabsheet() {
+		closeAllTabsButton.setVisible(false);
+		listDetailsTabSheet.setVisible(false);
 	}
 
 	@Override
@@ -190,6 +214,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
     public void createListDetailsTab(Integer listId, String listName){
     	listDetailsTabSheet.setVisible(true);
+    	
     	if(Util.isTabExist(listDetailsTabSheet, listName)){
     		Tab tabToFocus = null;
     		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
