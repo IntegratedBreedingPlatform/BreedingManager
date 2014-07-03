@@ -139,7 +139,7 @@ public class SaveGermplasmListAction implements Serializable {
         int currentSaveListCount = (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
         List<GermplasmListData> currentSavedList = inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Long.valueOf(currentSaveListCount).intValue());
         if (source != null){
-        	source.updateListDataTable(currentSavedList);
+        	source.updateListDataTable(germplasmList.getId(), currentSavedList);
         }
         
 	}
