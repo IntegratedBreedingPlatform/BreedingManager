@@ -143,6 +143,16 @@ public class ListCommonActionsUtil {
     		SimpleResourceBundleMessageSource messageSource,
     		Boolean showMessages) {
     	
+    	if(forceHasChanges) {
+    		return replaceListEntries(
+    				listToSave,
+    				listEntries,
+    				germplasmListManager,
+    				source,
+    				messageSource,
+    				showMessages);
+    	}
+    	
     	List<GermplasmListData> newEntries = new ArrayList<GermplasmListData>();
 		List<GermplasmListData> entriesToUpdate = new ArrayList<GermplasmListData>();
 		List<GermplasmListData> entriesToDelete = new ArrayList<GermplasmListData>();
@@ -204,15 +214,7 @@ public class ListCommonActionsUtil {
 		for(GermplasmListData entry: listEntries){
 			if(entry.getId() > 0 || forceHasChanges){
 				GermplasmListData listEntry = new GermplasmListData();
-				listEntry.setDesignation(entry.getDesignation());
-				listEntry.setEntryCode(entry.getEntryCode());
-				listEntry.setEntryId(entry.getEntryId());
-				listEntry.setGid(entry.getGid());
-				listEntry.setGroupName(entry.getGroupName());
-				listEntry.setSeedSource(entry.getSeedSource());
-				listEntry.setList(listToSave);
-				listEntry.setStatus(Integer.valueOf(0));
-				listEntry.setLocalRecordId(Integer.valueOf(0));
+				copyFieldsToNewListEntry(listEntry,entry,listToSave);
 				newEntries.add(listEntry);
 			}
 			if(entry.getId() < 0 && !savedListEntriesMap.isEmpty()){
@@ -278,7 +280,22 @@ public class ListCommonActionsUtil {
 		
 	}
 
-    private static boolean saveListEntries(
+    private static void copyFieldsToNewListEntry(GermplasmListData destination,
+			GermplasmListData origin, GermplasmList listToSave) {
+    	if(destination!=null && origin!=null) {
+    		destination.setDesignation(origin.getDesignation());
+    		destination.setEntryCode(origin.getEntryCode());
+    		destination.setEntryId(origin.getEntryId());
+    		destination.setGid(origin.getGid());
+    		destination.setGroupName(origin.getGroupName());
+    		destination.setSeedSource(origin.getSeedSource());
+    		destination.setList(listToSave);
+    		destination.setStatus(Integer.valueOf(0));
+    		destination.setLocalRecordId(Integer.valueOf(0));
+    	}
+	}
+
+	private static boolean saveListEntries(
     		GermplasmList listToSave,
     		List<GermplasmListData> newEntries,
     		List<GermplasmListData> entriesToUpdate,
@@ -321,8 +338,55 @@ public class ListCommonActionsUtil {
 			}
     	}
 		if(hasError) {
-			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+			if(showMessages) {
+				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
 					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
+			}
+			return false;
+		}
+		return true;
+	}
+    
+    private static boolean replaceListEntries(
+    		GermplasmList listToSave,
+    		List<GermplasmListData> listEntries,
+    		GermplasmListManager dataManager,
+    		Component source,
+    		SimpleResourceBundleMessageSource messageSource,
+    		Boolean showMessages){
+    	
+    	boolean hasError = false;
+    	
+		try {
+			dataManager.deleteGermplasmListDataByListId(listToSave.getId());
+		} catch (MiddlewareQueryException ex) {
+			LOG.error("Error in deleting germplasm list entries.", ex);
+			hasError = true;
+		}
+		
+    	if(!hasError && !listEntries.isEmpty()) {
+    		try{
+    			List<GermplasmListData> newEntries = new ArrayList<GermplasmListData>();
+    			for(GermplasmListData entry: listEntries){
+    				GermplasmListData listEntry = new GermplasmListData();
+    				copyFieldsToNewListEntry(listEntry,entry,listToSave);
+    				newEntries.add(listEntry);
+    			}
+    			List<Integer> savedEntryPKs = dataManager.addGermplasmListData(newEntries);
+				if(!(savedEntryPKs.size() == newEntries.size())){
+					hasError = true;
+				}			
+			} catch(MiddlewareQueryException ex){
+				LOG.error("Error in saving germplasm list entries.", ex);
+				hasError = true;
+			}
+    	}
+    	
+		if(hasError) {
+			if(showMessages) {
+				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
+			}
 			return false;
 		}
 		return true;
