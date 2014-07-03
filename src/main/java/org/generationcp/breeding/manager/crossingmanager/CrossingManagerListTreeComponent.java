@@ -117,11 +117,15 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		        		
 		        		expandOrCollapseListTreeNode(event.getItemId());
 			        	getTreeActionsListener().folderClicked(null);
+			        	
+			        	CrossingManagerListTreeComponent.this.updateButtons(event.getItemId());
 		        		
 	        		}else{
 	        			addToFemaleListButton.setEnabled(true);
 		        		addToMaleListButton.setEnabled(true);
 		        		openForReviewButton.setEnabled(true);
+		        		
+		        		CrossingManagerListTreeComponent.this.updateButtons(event.getItemId());
 	        		}
 	        		
 	        	} else{
@@ -131,6 +135,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 		        	expandOrCollapseListTreeNode(event.getItemId());
 		        	getTreeActionsListener().folderClicked(null);
+		        	CrossingManagerListTreeComponent.this.updateButtons(event.getItemId());
 
 	        	}
 				
