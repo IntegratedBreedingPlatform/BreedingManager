@@ -584,6 +584,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		}
 		
+		resetUnsavedChangesFlag();
 		listDataTable.requestRepaint();
 	}
 	
