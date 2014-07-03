@@ -1777,11 +1777,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.germplasmListManager, 
 			this.source, 
 			messageSource, 
-			true, 
-			viewListHeaderWindow, 
-			viewHeaderButton);
+			true);
 		if(list!=null) {
-			viewListHeaderWindow = new ViewListHeaderWindow(list);	
 			if(!list.getId().equals(germplasmList.getId())) {
 				ListCommonActionsUtil.
 				overwriteListEntries(
@@ -1791,6 +1788,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						germplasmListManager, 
 						source, messageSource, true);
 				source.closeList(list);
+			} else {
+				viewListHeaderWindow = new ViewListHeaderWindow(list);
+				if(viewHeaderButton!=null) {
+					viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+				}				
 			}
 		}
 		//Refresh tree on save

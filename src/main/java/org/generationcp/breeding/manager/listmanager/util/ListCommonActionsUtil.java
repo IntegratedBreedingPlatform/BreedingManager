@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -85,9 +84,7 @@ public class ListCommonActionsUtil {
     		GermplasmListManager dataManager,
     		Component source,
     		SimpleResourceBundleMessageSource messageSource,
-    		Boolean showMessages,
-    		ViewListHeaderWindow viewListHeaderWindow,
-    		Button viewHeaderButton) {
+    		Boolean showMessages) {
     	GermplasmList savedList = null;
     	try{
     		Integer listId = null;
@@ -122,10 +119,6 @@ public class ListCommonActionsUtil {
 							updateUIForRenamedList(listToSave, listToSave.getName());
 					
 					component.showNodeOnTree(listFromDB.getId());
-					viewListHeaderWindow = new ViewListHeaderWindow(listFromDB);
-					if(viewHeaderButton!=null) {
-						viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
-					}
 					MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
 							"Changes to list header were saved.", 3000);
 				}

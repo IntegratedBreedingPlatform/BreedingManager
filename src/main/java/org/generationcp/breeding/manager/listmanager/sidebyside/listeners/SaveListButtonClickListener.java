@@ -1,12 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside.listeners;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -38,7 +36,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class SaveListButtonClickListener implements Button.ClickListener{
@@ -137,10 +134,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} else if(currentlySavedList != null){
 			
-			Boolean hasChangesToListDetails = false;
-			
-			SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-			
 			if(areThereChangesToList(currentlySavedList, listToSave) || forceHasChanges){
 				if(!currentlySavedList.getName().equals(listToSave.getName())){
 					if(!validateListName(listToSave)){
@@ -150,7 +143,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				
 				listToSave = ListCommonActionsUtil.overwriteList(
 						listToSave, 
-						dataManager, source, messageSource, showMessages, null, null);
+						dataManager, source, messageSource, showMessages);
 			} 
 			
 			if(listToSave!=null) {
@@ -206,8 +199,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
             dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable));
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
-            MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-                    , Notification.POSITION_TOP_RIGHT);
+            MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
             e.printStackTrace();
         }
 	}
@@ -244,8 +236,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(!centralLists.isEmpty()){
 				if(centralLists.size()==1 && centralLists.get(0).getId()!=list.getId()){
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE)
-						, Notification.POSITION_TOP_RIGHT);
+						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
 					return false;
 				}
 			}
@@ -254,15 +245,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			if(!localLists.isEmpty()){
 				if(localLists.size()==1 && localLists.get(0).getId()!=list.getId()){
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)
-						, Notification.POSITION_TOP_RIGHT);
+						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
 					return false;
 				}
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting germplasm list by list name - " + list.getName(), ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_VALIDATING_LIST)
-					, Notification.POSITION_TOP_RIGHT);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_VALIDATING_LIST));
 			return false;
 		}
 		
@@ -361,8 +350,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			return;
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_TOP_RIGHT);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 			return;
 		}
 	}
@@ -454,18 +442,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			listEntry.setLocalRecordId(Integer.valueOf(0));
 		}
 	}
-
-	private List<GermplasmListData> getNewEntriesToSave(List<GermplasmListData> listEntries){
-		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
-		
-		for(GermplasmListData entry: listEntries){
-			if(entry.getId() > 0 || forceHasChanges){
-				toreturn.add(entry);
-			}
-		}
-		
-		return toreturn;
-	}
 	
 	private boolean saveNewListEntries(List<GermplasmListData> listEntries){
 		try{
@@ -483,131 +459,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 			return false;
 		}
-	}
-	
-	private boolean updateListEntries(List<GermplasmListData> listEntries){
-		try{
-			List<Integer> savedEntryPKs = this.dataManager.updateGermplasmListData(listEntries);
-			
-			if(!(savedEntryPKs.size() == listEntries.size())){
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-						, Notification.POSITION_TOP_RIGHT);
-				return false;
-			}
-			return true;
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error in updating germplasm list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-					, Notification.POSITION_TOP_RIGHT);
-			return false;
-		}
-	}
-	
-	private List<GermplasmListData> getUpdatedEntriesToSave(GermplasmList currentlySavedList, List<GermplasmListData> listEntriesToCheck){
-		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
-		
-		try{
-			int listDataCount = (int) this.dataManager.countGermplasmListDataByListId(currentlySavedList.getId());
-			List<GermplasmListData> savedListEntries = this.dataManager.getGermplasmListDataByListId(currentlySavedList.getId(), 0, listDataCount);
-			
-			for(GermplasmListData entryToCheck : listEntriesToCheck){
-				if(entryToCheck.getId() < 0){
-					GermplasmListData matchingSavedEntry = null;
-					for(GermplasmListData savedEntry: savedListEntries){
-						if(entryToCheck.getId().equals(savedEntry.getId())){
-							matchingSavedEntry = savedEntry;
-							break;
-						}
-					}
-					
-					if(matchingSavedEntry != null){
-						boolean thereIsAChange = false;
-						if(!matchingSavedEntry.getDesignation().equals(entryToCheck.getDesignation())){
-							thereIsAChange = true;
-							String designation = entryToCheck.getDesignation();
-							if(designation != null && designation.length() != 0){
-								matchingSavedEntry.setDesignation(designation);
-							} else{
-								matchingSavedEntry.setDesignation("-");
-							}
-						}
-						
-						if(!matchingSavedEntry.getEntryCode().equals(entryToCheck.getEntryCode())){
-							thereIsAChange = true;
-							String entryCode = entryToCheck.getEntryCode();
-							if(entryCode != null && entryCode.length() != 0){
-								matchingSavedEntry.setEntryCode(entryCode);
-							} else{
-								matchingSavedEntry.setEntryCode(entryToCheck.getEntryId().toString());
-							}
-						}
-						
-						if(!matchingSavedEntry.getEntryId().equals(entryToCheck.getEntryId())){
-							thereIsAChange = true;
-							matchingSavedEntry.setEntryId(entryToCheck.getEntryId());
-						}
-						
-						if(!matchingSavedEntry.getGroupName().equals(entryToCheck.getGroupName())){
-							thereIsAChange = true;
-							String groupName = entryToCheck.getGroupName();
-							if(groupName != null && groupName.length() != 0){
-								if(groupName.length() > 255){
-									groupName = groupName.substring(0, 255);
-								}
-								matchingSavedEntry.setGroupName(groupName);
-							} else{
-								matchingSavedEntry.setGroupName("-");
-							}
-						}
-						
-						if(!matchingSavedEntry.getSeedSource().equals(entryToCheck.getSeedSource())){
-							thereIsAChange = true;
-							String seedSource = entryToCheck.getSeedSource();
-							if(seedSource != null && seedSource.length() != 0){
-								matchingSavedEntry.setSeedSource(seedSource);
-							} else{
-								matchingSavedEntry.setSeedSource("-");
-							}
-						}
-						
-						if(thereIsAChange){
-							toreturn.add(matchingSavedEntry);
-						}
-					}
-				}
-			}
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_TOP_RIGHT);
-		}
-		
-		return toreturn;
-	}
-	
-	private List<GermplasmListData> getEntriesToDelete(GermplasmList currentlySavedList, List<GermplasmListData> listEntriesToCheck){
-		List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
-		
-		try{
-			int listDataCount = (int) this.dataManager.countGermplasmListDataByListId(currentlySavedList.getId());
-			List<GermplasmListData> savedListEntries = this.dataManager.getGermplasmListDataByListId(currentlySavedList.getId(), 0, listDataCount);
-			
-			for(GermplasmListData savedEntry : savedListEntries){
-				if(!listEntriesToCheck.contains(savedEntry)){
-					savedEntry.setStatus(Integer.valueOf(9));
-					toreturn.add(savedEntry);
-				}
-			}
-			
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_TOP_RIGHT);
-		}
-		
-		return toreturn;
 	}
 	
 	public void setForceHasChanges(Boolean hasChanges){
