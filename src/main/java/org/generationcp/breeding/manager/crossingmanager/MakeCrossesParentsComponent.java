@@ -211,10 +211,15 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		            newAvailInvButton.setStyleName(BaseTheme.BUTTON_LINK);
 		            newAvailInvButton.setDescription("Click to view Inventory Details");
 		            
+		            String seed_res = "-";
+		            if(sourceTable.getItemIds().size() == selectedListEntries.size())
+		            	seed_res = sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue().toString();
+		            
 		            item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(newAvailInvButton);
-		            item.getItemProperty(SEED_RES_COLUMN_ID).setValue(sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue());
+		            item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seed_res);
 		        }
 	    	}
+
             targetTable.requestRepaint();
         }
     	
@@ -266,14 +271,22 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     			femaleParentTab.setListNameForCrosses("");
     			femaleParentTab.setGermplasmList(null);
     			femaleParentTab.setHasUnsavedChanges(true);
+    			clearSeedReservationValues(femaleParents);
     		} else{
     			maleParentTab.getSaveActionMenu().setEnabled(true);
     			maleParentTab.setListNameForCrosses("");
     			maleParentTab.setGermplasmList(null);
     			maleParentTab.setHasUnsavedChanges(true);
+    			clearSeedReservationValues(maleParents);
     		}
     	}
     	
+	}
+
+	private void clearSeedReservationValues(Table table){
+		for(Object itemId : table.getItemIds()){
+			table.getItem(itemId).getItemProperty(SEED_RES_COLUMN_ID).setValue("-");
+		}
 	}
 	
 	@SuppressWarnings("unused")
@@ -495,6 +508,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         		} else {
         			maleParentTab.getSaveActionMenu().setEnabled(true);
         			maleParentTab.setHasUnsavedChanges(true);
+        			clearSeedReservationValues(maleParents);
         			//maleParentList = null;
         		}
         	}
@@ -513,7 +527,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	@SuppressWarnings("unchecked")
 	public void addListToFemaleTable(Integer germplasmListId){
 		
-		//dennis
         try {
         	GermplasmList listFromTree = germplasmListManager.getGermplasmListById(germplasmListId);
         	
@@ -599,6 +612,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         		} else {
         			femaleParentTab.getSaveActionMenu().setEnabled(true);
         			femaleParentTab.setHasUnsavedChanges(true);
+        			clearSeedReservationValues(femaleParents);
         			//maleParentList = null;
         		}
         	}
