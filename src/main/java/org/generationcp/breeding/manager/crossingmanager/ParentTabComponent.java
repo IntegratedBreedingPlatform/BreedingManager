@@ -390,6 +390,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								newItem.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(oldAvailInv);
 								newItem.getItemProperty(SEED_RES_COLUMN_ID).setValue(oldSeedRes);
 								
+								menuInventorySaveChanges.setEnabled(true);
 								setHasUnsavedChanges(true);
 		                    }
 	                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
