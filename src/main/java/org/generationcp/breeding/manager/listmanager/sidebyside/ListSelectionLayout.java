@@ -39,6 +39,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -79,6 +80,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
     private HorizontalLayout headerLayout;
     private HorizontalLayout listSelectionHeaderContainer;
+    private HorizontalLayout searchOrBrowseContainer;
     
     private TabSheet detailsTabSheet;
     private Map<ListComponent,Boolean> listStatusForChanges;
@@ -133,7 +135,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-        btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
+        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
+        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPadding");
         
         browseForLists = new Button();
         browseForLists.setImmediate(true);
@@ -167,12 +170,17 @@ public class ListSelectionLayout extends VerticalLayout implements International
         this.setWidth("100%");
 
         listSelectionHeaderContainer = new HorizontalLayout();
+        listSelectionHeaderContainer.setHeight("26px");
         listSelectionHeaderContainer.setWidth("100%");
-        listSelectionHeaderContainer.setHeight("43px");
 
         final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS,headingLabel);
 
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+        
+        searchOrBrowseContainer = new HorizontalLayout();
+        searchOrBrowseContainer.setHeight("19px");
+        searchOrBrowseContainer.setWidth("100%");
+        
         // Ugh, bit of a hack - can't figure out how to space these nicely
         searchForLists.setWidth("43px");
         or.setWidth("16px");
@@ -182,25 +190,30 @@ public class ListSelectionLayout extends VerticalLayout implements International
         searchOrBrowseLayout.addComponent(or);
         searchOrBrowseLayout.addComponent(browseForLists);
         searchOrBrowseLayout.addComponent(toWorkWith);
-
-        final VerticalLayout headerAndDesc = new VerticalLayout();
-        headerAndDesc.addComponent(noListLabel);
-        headerAndDesc.addComponent(headerLbl);
-        headerAndDesc.addComponent(searchOrBrowseLayout);
-
+        
+        searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
+        searchOrBrowseContainer.addComponent(btnCloseAllTabs);
+        searchOrBrowseContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
+    
+        final VerticalLayout header = new VerticalLayout();
+        header.setWidth("100%");
+        header.addComponent(noListLabel);
+        header.addComponent(headerLbl);
+        
+        
         final VerticalLayout headerBtnContainer = new VerticalLayout();
         headerBtnContainer.setSizeUndefined();
         headerBtnContainer.setSpacing(true);
         headerBtnContainer.addComponent(source.listBuilderToggleBtn1);
-        headerBtnContainer.addComponent(btnCloseAllTabs);
-        headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
+        
 
-        listSelectionHeaderContainer.addComponent(headerAndDesc);
+        listSelectionHeaderContainer.addComponent(header);
         listSelectionHeaderContainer.addComponent(headerBtnContainer);
-        listSelectionHeaderContainer.setExpandRatio(headerAndDesc,1.0F);
+        listSelectionHeaderContainer.setExpandRatio(header,1.0F);
         listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer,Alignment.TOP_RIGHT);
 
         this.addComponent(listSelectionHeaderContainer);
+        this.addComponent(searchOrBrowseContainer);
         this.addComponent(detailsTabSheet);
         this.displayDefault();
     }
@@ -332,6 +345,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
     	    this.addComponent(listSelectionHeaderContainer);
+    	    this.addComponent(searchOrBrowseContainer);
     	    this.addComponent(detailsTabSheet);
     	
             detailsTabSheet.setVisible(true);

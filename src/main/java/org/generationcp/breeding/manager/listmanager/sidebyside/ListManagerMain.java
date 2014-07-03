@@ -340,7 +340,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private void setTabContent(){
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
-		splitPanel.setMaxSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
 		splitPanel.setSplitPosition(0,Sizeable.UNITS_PERCENTAGE,true);
 
         splitPanel.setImmediate(true);
@@ -353,7 +353,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         plantFinderContent = new AbsoluteLayout();
         plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
         plantFinderContent.addComponent(plantSelectionComponent,"top:0px;left:0px");
-
+        
         listBuilderComponent = new ListBuilderComponent(this);
 
 		splitPanel.setFirstComponent(plantFinderContent);
