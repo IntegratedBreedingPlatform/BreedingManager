@@ -143,14 +143,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
-	private ContextMenuItem menuInventoryView;
 	private AddColumnContextMenu addColumnContextMenu;
 	
 	private ContextMenu inventoryViewMenu; 
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
-	private ContextMenuItem menuListView;
-	private ContextMenuItem menuReserveInventory;
 	
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
@@ -313,15 +310,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuEditList = menu.addItem(messageSource.getMessage(Message.EDIT_LIST));
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
-		menuInventoryView = menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		menuSaveChanges = menu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
-        menuListView = inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
         menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
@@ -511,7 +505,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		//#2 Seed Reserved
 		String seed_res = "-"; //default value
-		if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+		if(entry.getInventoryInfo().getReservedLotCount() != 0){
 			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
 		newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
