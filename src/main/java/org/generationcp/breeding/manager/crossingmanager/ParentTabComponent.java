@@ -109,6 +109,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private GermplasmList germplasmList;
     private String parentLabel;
     private Integer rowCount;
+    private List<GermplasmListData> listEntries;
+    private long listEntriesCount;
 	
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
     private MakeCrossesParentsComponent source;
@@ -345,6 +347,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			germplasmList = saveListAction.saveRecords();
 			updateCrossesSeedSource(germplasmList);
 			source.updateUIForSuccessfulSaving(this, germplasmList);
+			
+			setHasUnsavedChanges(false);
 
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in saving the Parent List",e);
@@ -489,6 +493,42 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
     		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
     		entry.setEntryId(entryNumber);
 			entryNumber++;
+		}
+	}
+	
+	public void resetListDataTableValues(){
+		listDataTable.removeAllItems();
+		loadEntriesToListDataTable();
+		listDataTable.requestRepaint();
+	}
+	
+	public void loadEntriesToListDataTable(){
+		try {
+			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
+			
+			if(listEntriesCount > 0){
+				listEntries = new ArrayList<GermplasmListData>();
+				getAllListEntries();
+				
+				updateListDataTable(germplasmList.getId(), listEntries);
+			}
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void getAllListEntries() {
+		if(germplasmList != null){
+			List<GermplasmListData> entries = null;
+			try{
+				entries = inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Long.valueOf(listEntriesCount).intValue());
+				
+				listEntries.addAll(entries);
+			} catch(MiddlewareQueryException ex){
+				LOG.error("Error with retrieving list entries for list: " + germplasmList.getId(), ex);
+				listEntries = new ArrayList<GermplasmListData>();
+			}
 		}
 	}
 
@@ -676,6 +716,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					}
 					else{
 						//reset status for list builder and its drop handler
+						resetListDataTableValues();
 						resetUnsavedChangesFlag();
 						viewInventoryActionConfirmed();
 					}
