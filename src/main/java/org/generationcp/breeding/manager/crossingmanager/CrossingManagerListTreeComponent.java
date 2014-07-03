@@ -115,7 +115,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		        		addToMaleListButton.setEnabled(false);
 		        		openForReviewButton.setEnabled(false);
 		        		
-		        		expandOrCollapseListTreeNode(item);
+		        		expandOrCollapseListTreeNode(event.getItemId());
 			        	getTreeActionsListener().folderClicked(null);
 		        		
 	        		}else{
@@ -129,7 +129,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	        		addToMaleListButton.setEnabled(false);
 	        		openForReviewButton.setEnabled(false);
 
-		        	expandOrCollapseListTreeNode(item);
+		        	expandOrCollapseListTreeNode(event.getItemId());
 		        	getTreeActionsListener().folderClicked(null);
 
 	        	}
