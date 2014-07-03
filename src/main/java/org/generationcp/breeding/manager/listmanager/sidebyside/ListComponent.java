@@ -143,14 +143,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
-	private ContextMenuItem menuInventoryView;
 	private AddColumnContextMenu addColumnContextMenu;
 	
 	private ContextMenu inventoryViewMenu; 
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
-	private ContextMenuItem menuListView;
-	private ContextMenuItem menuReserveInventory;
 	
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
@@ -313,15 +310,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuEditList = menu.addItem(messageSource.getMessage(Message.EDIT_LIST));
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
-		menuInventoryView = menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		menuSaveChanges = menu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
-        menuListView = inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
         menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
@@ -493,7 +487,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		//#1 Available Inventory
 		String avail_inv = "-"; //default value
-		
 		if(entry.getInventoryInfo().getLotCount().intValue() != 0){
 			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
@@ -1066,7 +1059,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	}catch(Exception e){
     		LOG.error("Database error!", e);
 			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
-					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
+					+ messageSource.getMessage(Message.ERROR_REPORT_TO));
     	}
     	
     	return false;
@@ -1099,7 +1092,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         	
         }else{
             MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES) 
-                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
     }
 	
@@ -1125,10 +1118,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 		} catch (NumberFormatException e) {
 			LOG.error("Error with deleting list entries.", e);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.", Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error with deleting list entries.", e);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.", Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
 		}
     	
     	//marks the entryId and designationId of the list entries to delete
@@ -1222,13 +1215,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
                 MessageNotifier.showError(source.getWindow()
                             , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                            , Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             }
         } else {
             MessageNotifier.showError(source.getWindow()
                     , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
         }
     }
     
@@ -1260,19 +1252,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             } catch (GermplasmListExporterException e) {
                 MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                        , e.getMessage(), Notification.POSITION_CENTERED);
+                        , e.getMessage());
             }
         } else {
             MessageNotifier.showError(source.getWindow()
                     , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
         }
     }
     
     private void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
         if (listEntries == null || listEntries.isEmpty()){
-            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
             
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
@@ -1338,8 +1330,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with id: " + gid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
-                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return false;
         }
         
@@ -1463,7 +1454,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             	setHasUnsavedChanges(false);
             	MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
-                    "Successful in adding list entries.", 3000, Notification.POSITION_CENTERED);
+                    "Successful in adding list entries.", 3000);
             }
             
             User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
@@ -1476,8 +1467,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 workbenchDataManager.addProjectActivity(projAct);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error with adding workbench activity log.", e);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                        , Notification.POSITION_CENTERED);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             }
             
             doneInitializing = true;
@@ -1485,8 +1475,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return false;
         }
 		
@@ -1591,7 +1580,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             	MessageNotifier.showMessage(window, 
                     messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
-                    ,3000, Notification.POSITION_CENTERED);
+                    ,3000);
         	}
         
         } catch (MiddlewareQueryException e) {
@@ -1771,8 +1760,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with unlocking list.", e);
-		        MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-		                , Notification.POSITION_CENTERED);
+		        MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 		    }
         }
     }
@@ -1784,46 +1772,31 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     
 	@Override
 	public void saveList(GermplasmList list) {
-		try{
-			String oldName = germplasmList.getName();
-			GermplasmList listFromDB = this.germplasmListManager.getGermplasmListById(germplasmList.getId());
-			listFromDB.setName(list.getName());
-			listFromDB.setDescription(list.getDescription());
-			listFromDB.setDate(list.getDate());
-			listFromDB.setType(list.getType());
-			listFromDB.setNotes(list.getNotes());
-			listFromDB.setParent(list.getParent());
-			
-			Integer listId = this.germplasmListManager.updateGermplasmList(listFromDB);
-			
-			if(listId == null){
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-						, Notification.POSITION_CENTERED);
-				return;
-			} else{
-				germplasmList = listFromDB;
-				
-				if(!oldName.equals(list.getName())){
-					source.getListSelectionComponent().updateUIForRenamedList(germplasmList, list.getName());
-				}
-				
-				source.showNodeOnTree(listFromDB.getId());
-				viewListHeaderWindow = new ViewListHeaderWindow(listFromDB);
-				viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
-				MessageNotifier.showMessage(this.getWindow(), messageSource.getMessage(Message.SUCCESS), "Changes to list header were saved."
-						, 3000, Notification.POSITION_CENTERED);
+		list = ListCommonActionsUtil.overwriteList(
+			list, 
+			this.germplasmListManager, 
+			this.source, 
+			messageSource, 
+			true);
+		if(list!=null) {
+			if(!list.getId().equals(germplasmList.getId())) {
+				ListCommonActionsUtil.
+				overwriteListEntries(
+						list, listEntries, 
+						germplasmList.getId().intValue()!=
+						list.getId().intValue(), 
+						germplasmListManager, 
+						source, messageSource, true);
+				source.closeList(list);
+			} else {
+				viewListHeaderWindow = new ViewListHeaderWindow(list);
+				if(viewHeaderButton!=null) {
+					viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+				}				
 			}
-			
-			//Refresh tree on save
-			((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
-			
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error in updating germplasm list: " + germplasmList.getId(), ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-					, Notification.POSITION_CENTERED);
-			return;
 		}
+		//Refresh tree on save
+		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
 	}
 	
 	public void openViewListHeaderWindow(){
@@ -1842,7 +1815,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showMessage(getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
                     messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
-                    ,3000, Notification.POSITION_CENTERED);
+                    ,3000);
 		}
 	}
 	
@@ -1981,14 +1954,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void reserveInventoryAction() {
 		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
+					"Please change to Inventory View first.");
 		}
 		else{
 			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
 			
 			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
+						"Please select at least 1 lot to reserve.");
 			}
 			else{
 		        //this util handles the inventory reservation related functions
@@ -2006,8 +1979,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				refreshInventoryColumns(getValidReservationsToSave());
 				resetListInventoryTableValues();
 				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-						"All reservations were saved.", 
-						3000, Notification.POSITION_TOP_RIGHT);
+						"All reservations were saved.");
 			}
 		}
 	}
@@ -2089,7 +2061,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 					"All selected entries will be reserved in their respective lots.", 
-					3000, Notification.POSITION_TOP_RIGHT);
+					3000);
 		}
 		
 	}
@@ -2161,6 +2133,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public Component getParentComponent() {
 		return source;
 	}
+	
+	public AddColumnContextMenu getAddColumnContextMenu(){
+    	return addColumnContextMenu;
+    }
 }
 
 

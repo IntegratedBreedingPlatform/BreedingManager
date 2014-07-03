@@ -22,7 +22,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
@@ -82,7 +81,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -462,8 +460,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		        workbenchDataManager.addProjectActivity(projAct);
         		    } catch (MiddlewareQueryException e) {
         		        LOG.error("Error with unlocking list.", e);
-        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-        	                    , Notification.POSITION_CENTERED);
+        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
         		    }
                 	setUIForLockedList();
         		}
@@ -492,8 +489,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		        workbenchDataManager.addProjectActivity(projAct);
         		    } catch (MiddlewareQueryException e) {
         		        LOG.error("Error with unlocking list.", e);
-        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-        	                    , Notification.POSITION_CENTERED);
+        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
         		    }
                 	setUIForUnlockedList();
         		}
@@ -751,7 +747,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             setHasUnsavedChanges(true);
         }else{
             MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES)
-                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
         
         updateListTotal();
@@ -992,13 +988,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
                     MessageNotifier.showError(source.getWindow()
                                 , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                                , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                                , Notification.POSITION_CENTERED);
+                                , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
                 }
             } else {
                 MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
             }
         }
     }
@@ -1023,12 +1018,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 } catch (GermplasmListExporterException e) {
                     MessageNotifier.showError(source.getWindow() 
                             , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                            , e.getMessage(), Notification.POSITION_CENTERED);
+                            , e.getMessage());
                 }
             } else {
                 MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED), Notification.POSITION_CENTERED);
+                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
             }
         }
     }
@@ -1038,7 +1033,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             Collection<?> listEntries = (Collection<?>) tableWithSelectAllLayout.getTable().getValue();
             
             if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
             } else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
@@ -1158,6 +1153,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
+		saveListButtonListener.setForceHasChanges(false);
 	}
 	
 	public void saveList(GermplasmList list, Boolean showMessages) {
@@ -1312,14 +1308,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private void reserveInventoryAction(){
 		if(!inventoryViewMenu.isVisible()){//checks if the screen is in the inventory view
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-					"Please change to Inventory View first.", Notification.POSITION_TOP_RIGHT);
+					"Please change to Inventory View first.");
 		}
 		else{
 			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
 			
 			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.", Notification.POSITION_TOP_RIGHT);
+						"Please select at least 1 lot to reserve.");
 			}
 			else{
 		        //this util handles the inventory reservation related functions
@@ -1418,7 +1414,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			Double new_res = entry.getValue();
 			
 			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+			itemToUpdate.getItemProperty(ListManagerInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
 		}
 		
 		removeReserveInventoryWindow(reserveInventory);
@@ -1433,7 +1429,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 					"All selected entries will be reserved in their respective lots.", 
-					3000, Notification.POSITION_TOP_RIGHT);
+					3000);
 		}
 	}
 
@@ -1549,7 +1545,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
-	public ListInventoryTable getListInventoryTable(){
+	public ListManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
 	}
 }
