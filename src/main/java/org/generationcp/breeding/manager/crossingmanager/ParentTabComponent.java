@@ -552,7 +552,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
             // #4
             String avail_inv = "-"; //default value
-			if(entry.getInventoryInfo().getActualInventoryLotCount() != null){
+			if(entry.getInventoryInfo().getLotCount().intValue() != 0){
 				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 			
