@@ -520,7 +520,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateListDataTable(List<GermplasmListData> savedListEntries) {
+	public void updateListDataTable(Integer germplasmListId, List<GermplasmListData> savedListEntries) {
 		List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
 				
 		selectedItemIds.addAll((Collection<GermplasmListEntry>) listDataTable.getValue());
@@ -555,7 +555,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 			
-			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmList.getId(),entry.getId(), entry.getGid());
+			InventoryLinkButtonClickListener inventoryClickListener = new InventoryLinkButtonClickListener(this,germplasmListId,entry.getId(), entry.getGid());
 			Button inventoryButton = new Button(avail_inv, inventoryClickListener);
 			inventoryButton.setData(inventoryClickListener);
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
