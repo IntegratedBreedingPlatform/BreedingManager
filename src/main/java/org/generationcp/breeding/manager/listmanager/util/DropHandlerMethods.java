@@ -337,7 +337,7 @@ public class DropHandlerMethods {
     	   		
     	   		//#1 Available Inventory
     	   		String avail_inv = "-";
-    	   		if(germplasmListData.getInventoryInfo().getActualInventoryLotCount() != null && germplasmListData.getInventoryInfo().getActualInventoryLotCount() != 0){
+    	   		if(germplasmListData.getInventoryInfo().getLotCount().intValue() != 0){
     	   			avail_inv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	   		}
     	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
@@ -355,7 +355,7 @@ public class DropHandlerMethods {
     	   		//#2 Seed Reserved
     	   		String seed_res = "-";
     	   		if(forEditList){
-    	   			if(germplasmListData.getInventoryInfo().getReservedLotCount() != null && germplasmListData.getInventoryInfo().getReservedLotCount() != 0){
+    	   			if(germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0){
         	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
         	   		}
     	   		}
