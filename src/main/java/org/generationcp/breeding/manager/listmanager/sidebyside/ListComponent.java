@@ -1809,7 +1809,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				totalListEntriesLabel.setWidth("250px");
 			} else if(noListDataLabel != null){
 				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-				noListDataLabel.setWidth("250px");
+				noListDataLabel.setWidth("135px");
 			}
 		} else {
 			if(totalListEntriesLabel != null){
