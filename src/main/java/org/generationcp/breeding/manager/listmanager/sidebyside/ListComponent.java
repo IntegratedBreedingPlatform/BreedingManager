@@ -1806,7 +1806,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if(count == 0) {
 			if(totalListEntriesLabel != null){
 				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-				totalListEntriesLabel.setWidth("250px");
+				totalListEntriesLabel.setWidth("135px");
 			} else if(noListDataLabel != null){
 				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 				noListDataLabel.setWidth("135px");
