@@ -143,12 +143,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuInventoryView;
 	private AddColumnContextMenu addColumnContextMenu;
 	
 	private ContextMenu inventoryViewMenu; 
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
-	
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuListView;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuReserveInventory;
+
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
   	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
@@ -310,12 +316,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuEditList = menu.addItem(messageSource.getMessage(Message.EDIT_LIST));
 		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
 		menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
+		menuInventoryView = menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		menuSaveChanges = menu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        menuListView = inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
         menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
