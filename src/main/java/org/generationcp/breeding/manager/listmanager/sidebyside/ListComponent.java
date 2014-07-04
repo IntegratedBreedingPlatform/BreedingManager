@@ -1361,18 +1361,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         listData.setGid(gid);
         listData.setLocalRecordId(Integer.valueOf(0));
         listData.setStatus(Integer.valueOf(0));
-        
-        String preferredId = "-";
-        try{
-            Name nameRecord = this.germplasmDataManager.getPreferredIdByGID(gid);
-            if(nameRecord != null){
-                preferredId = nameRecord.getNval();
-            }
-        } catch(MiddlewareQueryException ex){
-            preferredId = "-";
-        }
-        listData.setEntryCode(preferredId);
-        
+        listData.setEntryCode(listData.getEntryId().toString());
         listData.setSeedSource("From Add Entry Feature of List Manager");
         
         String groupName = "-";
@@ -1457,18 +1446,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     "Successful in adding list entries.", 3000);
             }
             
-            User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-
-            ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-                            workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-                            "Added list entry.", 
-                            "Added " + gid + " as list entry to " + germplasmList.getId() + ":" + germplasmList.getName(),user,new Date());
-            try {
-                workbenchDataManager.addProjectActivity(projAct);
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error with adding workbench activity log.", e);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-            }
             
             doneInitializing = true;
             return true;
