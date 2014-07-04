@@ -273,7 +273,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	} // end of doDeleteAction
 
 	private void doNextAction(){
-		if(nameComponent.validateInputFields() && additionalDetailsComponent.validateInputFields()){
+		if(nameComponent.validateInputFields() && additionalDetailsComponent.validateInputFields() && methodComponent.validateInputFields()){
 			if (additionalDetailsComponent.settingsFileNameProvided()){
 				saveSetting();
 			}
