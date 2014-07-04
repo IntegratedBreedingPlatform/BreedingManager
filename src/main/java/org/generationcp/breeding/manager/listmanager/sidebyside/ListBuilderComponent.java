@@ -531,8 +531,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void setUIForLockedList(){
-    	lockButton.setVisible(false);
-    	unlockButton.setVisible(true);
+		if(currentlySavedGermplasmList.isLocalList() && localUserIsListOwner()){
+    	    lockButton.setVisible(false);
+    	    unlockButton.setVisible(true);
+		} else {
+    	    lockButton.setVisible(false);
+    	    unlockButton.setVisible(false);
+		}
 		tableWithSelectAllLayout.getTable().setDropHandler(null);
     	setContextMenuActionHandler(listDataTable);
     	menuDeleteSelectedEntries.setVisible(false);
@@ -550,8 +555,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void setUIForUnlockedList(){
-		lockButton.setVisible(true);
-    	unlockButton.setVisible(false);
+		if(currentlySavedGermplasmList.isLocalList() && localUserIsListOwner()){
+    	    lockButton.setVisible(true);
+        	unlockButton.setVisible(false);
+		} else {
+    	    lockButton.setVisible(false);
+    	    unlockButton.setVisible(false);
+		}
 		tableWithSelectAllLayout.getTable().setDropHandler(dropHandler);
     	setContextMenuActionHandler(listDataTable);
     	menuDeleteSelectedEntries.setVisible(true);
@@ -1548,4 +1558,17 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	public ListManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
 	}
+	
+	private boolean localUserIsListOwner() {
+		if(currentlySavedGermplasmList==null)
+			return true;
+        try {
+			return currentlySavedGermplasmList.getUserId().equals(getCurrentUserLocalId());
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+        return false;
+    }
+	
+	
 }
