@@ -282,7 +282,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		if(listEntriesCount == 0) {
 			noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-            noListDataLabel.setWidth("250px");
+            noListDataLabel.setWidth("135px");
 		} else {
         	totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
         		 + "  <b>" + listEntriesCount + "</b>", Label.CONTENT_XHTML);
@@ -402,6 +402,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void initializeValues() {
+		
+		
 	    try {
             localUserId = getCurrentUserLocalId();
         } catch (MiddlewareQueryException e) {
@@ -410,6 +412,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
 	    
 	    loadEntriesToListDataTable();
+	   
 	}
 	
 	public void resetListDataTableValues(){
@@ -427,8 +430,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void loadEntriesToListDataTable(){
 		if(listEntriesCount > 0){
 	    	listEntries = new ArrayList<GermplasmListData>();
+	    	    	
 		    getAllListEntries();
-			
+		   
 			for(GermplasmListData entry : listEntries){
 				addListEntryToTable(entry);
 		   	}
@@ -442,6 +446,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	    	} catch(MiddlewareQueryException ex){
 	    		LOG.error("Error with displaying added columns for entries of list: " + germplasmList.getId(), ex);
 	    	}
+	    	
 		}
 	    
 	}
@@ -2110,10 +2115,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public Component getParentComponent() {
 		return source;
 	}
+
 	
 	public AddColumnContextMenu getAddColumnContextMenu(){
     	return addColumnContextMenu;
     }
+
+
 }
 
 
