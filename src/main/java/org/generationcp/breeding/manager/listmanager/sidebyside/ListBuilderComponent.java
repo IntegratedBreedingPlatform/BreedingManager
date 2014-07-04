@@ -222,7 +222,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         buildNewListDesc.setHeight("55px");
         
         topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-        topLabel.setWidth("160px");
+        topLabel.setWidth("130px");
         topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
@@ -630,8 +630,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
         listBuilderPanelTitleContainer.setExpandRatio(listEntriesTitle,1.0f);
 
-        listBuilderPanelTitleContainer.setComponentAlignment(viewHeaderButton,Alignment.BOTTOM_LEFT);
-        listBuilderPanelTitleContainer.setComponentAlignment(editHeaderButton,Alignment.BOTTOM_LEFT);
+        listBuilderPanelTitleContainer.setComponentAlignment(viewHeaderButton,Alignment.BOTTOM_RIGHT);
+        listBuilderPanelTitleContainer.setComponentAlignment(editHeaderButton,Alignment.BOTTOM_RIGHT);
         listBuilderPanelTitleContainer.setComponentAlignment(lockButton, Alignment.BOTTOM_RIGHT);
         listBuilderPanelTitleContainer.setComponentAlignment(unlockButton, Alignment.BOTTOM_RIGHT);
 
