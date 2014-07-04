@@ -426,7 +426,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	                    				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), draggedListFromTree.getName()+":"+listData.getEntryId());
 	                    				
 	                		    		if(targetTable.equals(listDataTable)){
-	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, selectAll));
+	                		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, getSelectAllCheckBox()));
 	                		    			listNameForCrosses = draggedListFromTree.getName();
 	                		    	    	updateCrossesSeedSource(draggedListFromTree);
 	                		    		}
@@ -851,5 +851,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		// TODO mark other unsaved changes in dropHandler, listDataTable, inventoryTable
 		
 		return hasChanges;
+	}
+	
+	public CheckBox getSelectAllCheckBox(){
+		return tableWithSelectAllLayout.getCheckBox();
 	}
 }

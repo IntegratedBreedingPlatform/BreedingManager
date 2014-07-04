@@ -196,9 +196,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		    		
 		    		CheckBox tag = new CheckBox();
 		    		if(targetTable.equals(femaleParents)){
-		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentsTagAll));
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, femaleParentTab.getSelectAllCheckBox()));
 		    		} else{
-		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentsTagAll));
+		    			tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, maleParentTab.getSelectAllCheckBox()));
 		    		}
 		            tag.setImmediate(true);
 		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
@@ -444,7 +444,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), listFromTree.getName()+":"+listData.getEntryId());
         				
     		    		
-    		    		tag.addListener(new ParentsTableCheckboxListener(maleParents, entryObject, maleParentsTagAll));
+    		    		tag.addListener(new ParentsTableCheckboxListener(maleParents, entryObject, maleParentTab.getSelectAllCheckBox()));
     		    		maleParentTab.setListNameForCrosses(listFromTree.getName());
     		    	    updateCrossesSeedSource(maleParentTab, listFromTree);
     		    		
@@ -549,7 +549,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         				GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(), listData.getDesignation(), listFromTree.getName()+":"+listData.getEntryId());
         				
     		    		
-    		    		tag.addListener(new ParentsTableCheckboxListener(femaleParents, entryObject, femaleParentsTagAll));
+    		    		tag.addListener(new ParentsTableCheckboxListener(femaleParents, entryObject, femaleParentTab.getSelectAllCheckBox()));
     		    		femaleParentTab.setListNameForCrosses(listFromTree.getName());
     		    	    updateCrossesSeedSource(femaleParentTab, listFromTree);
     		    		
