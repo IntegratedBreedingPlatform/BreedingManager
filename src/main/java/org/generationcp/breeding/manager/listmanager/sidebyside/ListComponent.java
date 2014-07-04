@@ -86,7 +86,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -128,7 +127,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Button toolsButton;
 	private Table listDataTable;
 	private TableWithSelectAllLayout listDataTableWithSelectAll;
-	private Label noListDataLabel;
 	
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout subHeaderLayout;
@@ -178,7 +176,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     
     private ViewListHeaderWindow viewListHeaderWindow;
 
-    private AbsoluteLayout toolsMenuContainer;
+    private HorizontalLayout toolsMenuContainer;
     
     private Button inventoryViewToolsButton;
     
@@ -286,13 +284,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			listEntriesCount = 0;
 		}
 		
+		totalListEntriesLabel = new Label("",Label.CONTENT_XHTML);
+		totalListEntriesLabel.setWidth("135px");
+		
 		if(listEntriesCount == 0) {
-			noListDataLabel = new Label(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-            noListDataLabel.setWidth("135px");
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 		} else {
-        	totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-        		 + "  <b>" + listEntriesCount + "</b>", Label.CONTENT_XHTML);
-        	totalListEntriesLabel.setWidth("135px");
+        	totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+        		 + "  <b>" + listEntriesCount + "</b>");
         }
 		
 	    unlockButton = new IconButton("<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>", LOCK_TOOLTIP);
@@ -767,21 +766,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
-		subHeaderLayout.setSpacing(true);
-		
-		if(listEntriesCount == 0) {
-			subHeaderLayout.addComponent(noListDataLabel); 
-			subHeaderLayout.setComponentAlignment(noListDataLabel, Alignment.MIDDLE_LEFT);
-		} else{
-			subHeaderLayout.addComponent(totalListEntriesLabel);
-			subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
-		}
+		subHeaderLayout.setSpacing(true);		
+		subHeaderLayout.addComponent(totalListEntriesLabel);
+		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 
-		
-        toolsMenuContainer = new AbsoluteLayout();
+        toolsMenuContainer = new HorizontalLayout();
+        toolsMenuContainer.setWidth("110px");
         toolsMenuContainer.setHeight("27px");
-        toolsMenuContainer.addComponent(toolsButton, "top:0; right:0;");
-		
+        toolsMenuContainer.addComponent(toolsButton);
+	
 		subHeaderLayout.addComponent(toolsMenuContainer);
 		
 		subHeaderLayout.setComponentAlignment(toolsMenuContainer, Alignment.MIDDLE_RIGHT);
@@ -798,10 +791,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         addComponent(tableContextMenu);
 
 		parentListDetailsComponent.addComponent(menu);
-		parentListDetailsComponent.addComponent(inventoryViewMenu);
-		
-		
-		
+		parentListDetailsComponent.addComponent(inventoryViewMenu);	
 	}
 
 	@Override
@@ -1392,12 +1382,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             
             // create table if added entry is first listdata record
             if (listDataTable == null){
-                if (noListDataLabel != null){
-                    removeComponent(noListDataLabel);
-                }
                 initializeListDataTable();
                 initializeValues();
-                
             } else {
                 listDataTable.setEditable(false);
                 List<GermplasmListData> inventoryData =  this.inventoryDataManager.getLotCountsForListEntries(
@@ -1813,23 +1799,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private void updateListEntriesCountLabel(){
 		int count = listDataTable.getItemIds().size();
 		if(count == 0) {
-			if(totalListEntriesLabel != null){
-				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-				totalListEntriesLabel.setWidth("135px");
-			} else if(noListDataLabel != null){
-				noListDataLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-				noListDataLabel.setWidth("135px");
-			}
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 		} else {
-			if(totalListEntriesLabel != null){
-				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-		        		 + "  <b>" + count + "</b>");
-		    } else if(noListDataLabel != null){
-	        	noListDataLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
 	        		 + "  <b>" + count + "</b>");
-	        	noListDataLabel.setContentMode(Label.CONTENT_XHTML);
-	        	noListDataLabel.setWidth("135px");
-			}
         }
 	}
 	
@@ -1870,7 +1843,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if(listInventoryTable.isVisible()){
 			listDataTableWithSelectAll.setVisible(true);
 			listInventoryTable.setVisible(false);
-	        toolsMenuContainer.addComponent(toolsButton, "top:0px; right:0px;");
+	        toolsMenuContainer.addComponent(toolsButton);
 	        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
@@ -1887,7 +1860,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			listInventoryTable.setVisible(true);
 			
 			toolsMenuContainer.removeComponent(toolsButton);
-	        toolsMenuContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
+	        toolsMenuContainer.addComponent(inventoryViewToolsButton);
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
 	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
