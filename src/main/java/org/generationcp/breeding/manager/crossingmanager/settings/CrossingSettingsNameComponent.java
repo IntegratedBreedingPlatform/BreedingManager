@@ -33,6 +33,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		InitializingBean {
 
 	private static final int SEPARATOR_MAX_CHARS_LENGTH = 3;
+	private static final int STARTING_NUM_MAX_CHARS_LENGTH = 9;
 	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
 	private static final Integer MAX_LEADING_ZEROS = 9;
@@ -108,6 +109,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 
         startNumberTextField = new TextField(messageSource.getMessage(Message.SPECIFY_DIFFERENT_STARTING_SEQUENCE_NUMBER));
         startNumberTextField.setImmediate(true);
+        startNumberTextField.setMaxLength(STARTING_NUM_MAX_CHARS_LENGTH);
 
         separatorTextField = new TextField(messageSource.getMessage(Message.SEPARATOR_FOR_PARENTAGE_DESIGNATION));
         separatorTextField.setImmediate(true);
