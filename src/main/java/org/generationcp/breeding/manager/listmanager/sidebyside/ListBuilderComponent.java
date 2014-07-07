@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
@@ -44,7 +45,6 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -1194,31 +1194,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			String message = "You have unsaved reservations for this list. " +
 					"You will need to save them before changing views. " +
 					"Do you want to save your changes?";
-    		
-			ConfirmDialog.show(getWindow(), "Unsaved Changes", message, messageSource.getMessage(Message.YES), 
-						messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {   			
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						if(currentlySavedGermplasmList == null){
-							source.setModeViewOnly(ModeView.LIST_VIEW);
-							openSaveListAsDialog();
-						}
-						else{
-							saveList(currentlySavedGermplasmList);
-							source.setModeView(ModeView.LIST_VIEW);
-						}
-					}
-					else{
-						resetListInventoryTableValues();
-						source.setModeView(ModeView.LIST_VIEW);
-					}
-					
-					
-				}
-			});
+			source.showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 		}
 	}
 	
@@ -1254,46 +1230,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void viewInventoryAction(){
-		
 		if(currentlySavedGermplasmList!=null && hasChanges){
 			String message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
-			
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						saveListButtonListener.doSaveAction();
-						//reset status for list builder and its drop handler
-						resetUnsavedChangesFlag();
-						source.setModeView(ModeView.INVENTORY_VIEW);
-					}
-					else{
-						//reset status for list builder and its drop handler
-						resetUnsavedChangesFlag();
-						source.setModeView(ModeView.INVENTORY_VIEW);
-					}
-					
-				}
-			});
+			source.showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
 		} else if(currentlySavedGermplasmList==null && listDataTable.size()>0) {
 			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						source.setModeViewOnly(ModeView.INVENTORY_VIEW);
-						openSaveListAsDialog();
-					}
-					else{
-						resetList();
-						source.setModeView(ModeView.INVENTORY_VIEW);
-					}
-				}
-			});
+			source.showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
 		} else {
 			source.setModeView(ModeView.INVENTORY_VIEW);
 		}	
@@ -1516,15 +1458,15 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	public Component getParentComponent() {
 		return source;
 	}
-
+	
 	@Override
-	public void setHasChangesMain(boolean hasChanges) {
-		source.setHasUnsavedChanges(hasChanges);
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		source.setHasUnsavedChangesMain(hasChanges);
 	}
 	
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
-		setHasChangesMain(this.hasChanges);
+		setHasUnsavedChangesMain(this.hasChanges);
 	}
 	
 	public boolean hasUnsavedChanges() {
@@ -1569,6 +1511,16 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		}
         return false;
     }
+
+	public void discardChangesInListView() {
+		editList(currentlySavedGermplasmList);
+		viewInventoryActionConfirmed();
+	}
+
+	public void discardChangesInInventoryView() {
+		listInventoryTable.updateListInventoryTableAfterSave();
+		changeToListView();
+	}
 	
 	
 }

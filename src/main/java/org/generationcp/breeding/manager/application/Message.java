@@ -330,6 +330,8 @@ public enum Message{
     ,LOTS
     ,EDIT_VALUE
     ,SAVE_CHANGES
+    ,UNSAVED_CHANGES
+    ,DISCARD_CHANGES
     ,RETURN_TO_LIST_VIEW
     ,DELETE_LIST
     ,ADD_ENTRIES

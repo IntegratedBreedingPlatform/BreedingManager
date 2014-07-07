@@ -7,10 +7,11 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -39,7 +40,8 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, 
+										BreedingManagerLayout, UnsavedChangesConfirmDialogSource {
 	
     private static final long serialVersionUID = 5976245899964745758L;
     
@@ -74,7 +76,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	
 	//Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
-	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent 
+	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
+	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -521,68 +524,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		if(this.modeView != newModeView){
 			if(hasChanges){
 				if(this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)){
-					
-					modeView = newModeView;
-					
 					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
-					
-		    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-		    			
-						private static final long serialVersionUID = 1L;	
-						@Override
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								saveAllListChangesAction();	
-							}
-							else{
-								//cancel all the unsaved changes
-								listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
-								listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
-								
-								if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
-									//Has currently saved List, just load the previous lots
-									listBuilderComponent.viewInventoryActionConfirmed();
-								}
-								else{
-									//if no list save, just reset the list
-									listBuilderComponent.resetList();
-								}
-								
-								resetUnsavedStatus();
-							}
-						}
-					});
+					showUnsavedChangesConfirmDialog(message,newModeView);
 				}
 				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
-					
-					modeView = newModeView;
-					
 					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
-					
-					ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-		    			
-						private static final long serialVersionUID = 1L;	
-						@Override
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								saveAllListChangesAction();	
-							}
-							else{
-								//cancel all the unsaved changes
-								listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
-								listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
-								
-								if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
-									listBuilderComponent.changeToListView();
-								}
-								else{
-									listBuilderComponent.resetList();
-								}
-								
-								resetUnsavedStatus();
-							}
-						}
-					});
+					showUnsavedChangesConfirmDialog(message,newModeView);
 				}
 			}
 			else{
@@ -591,6 +538,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			}
 		}
 		
+	}
+	
+	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView){
+		modeView = newModeView;
+		unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.getWindow().addWindow(unsavedChangesDialog);
 	}
 	
 	public void setModeViewOnly(ModeView newModeView) {
@@ -608,7 +561,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		}
 			
 	}
-
+	
+	@Override
 	public void saveAllListChangesAction() {
 		
 		if(getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()){
@@ -639,7 +593,47 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		
 		resetUnsavedStatus();
 		updateView(modeView);
-	}
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of saveAllListChangesAction()
+	
+	@Override
+	public void discardAllListChangesAction(){
+		//cancel all the unsaved changes
+		listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		
+		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
+			if(modeView.equals(ModeView.INVENTORY_VIEW)){
+				listBuilderComponent.discardChangesInListView();
+			}
+			else if(modeView.equals(ModeView.LIST_VIEW)){
+				listBuilderComponent.discardChangesInInventoryView();
+			}
+		}
+		else{
+			//if no list save, just reset the list
+			listBuilderComponent.resetList();
+		}
+		
+		resetUnsavedStatus();
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of discardAllListChangesAction()
+	
+	@Override
+	public void cancelAllListChangesAction(){
+		
+		//Return to Previous Mode View
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			setModeViewOnly(ModeView.INVENTORY_VIEW);
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			setModeViewOnly(ModeView.LIST_VIEW);
+		}
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of cancelAllListChangesAction()
 	
 	public void resetUnsavedStatus(){
 		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
@@ -650,7 +644,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		return hasChanges;
 	}
 
-	public void setHasUnsavedChanges(boolean hasChanges) {
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
     

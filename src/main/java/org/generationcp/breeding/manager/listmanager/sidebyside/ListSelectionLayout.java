@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -39,7 +40,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -380,8 +380,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
 
 	@Override
-	public void setHasChangesMain(boolean hasChanges) {
-		source.setHasUnsavedChanges(hasChanges);
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		source.setHasUnsavedChangesMain(hasChanges);
 	}
 
 	public Map<ListComponent,Boolean> getListStatusForChanges(){
@@ -393,10 +393,10 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		listStatusForChanges.put(listComponent, status);
 		
 		if(hasUnsavedChanges()){
-			setHasChangesMain(true);
+			setHasUnsavedChangesMain(true);
 		}
 		else{
-			setHasChangesMain(false);
+			setHasUnsavedChangesMain(false);
 		}
 	}
 	

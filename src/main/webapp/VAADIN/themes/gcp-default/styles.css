@@ -791,3 +791,14 @@ div.listDetails div.v-tabsheet-scroller {
 	float: left !important;
 }
 
+/*
+Make the Unsaved Changes Confirm Dialog to have a similar formatting to the defualt ConfirmDialog class 
+*/
+div.unsaved-changes-dialog div.v-window-outerheader {
+	background: #CECECE;
+	text-align: center;
+}
+
+div.unsaved-changes-dialog div.v-window-contents>div {
+	background: #CECECE;
+}
