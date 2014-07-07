@@ -2,7 +2,12 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
@@ -17,12 +22,20 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -61,8 +74,8 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ParentTabComponent extends VerticalLayout implements InitializingBean, 
-						InternationalizableComponent, BreedingManagerLayout, 
-						SaveListAsDialogSource, SaveGermplasmListActionSource {
+						InternationalizableComponent, BreedingManagerLayout, SaveGermplasmListActionSource, 
+						SaveListAsDialogSource, ReserveInventorySource {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ParentTabComponent.class);
 	private static final long serialVersionUID = 2124522470629189449L;
@@ -119,6 +132,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private SaveListAsDialog saveListAsWindow;
 	
 	private boolean hasChanges = false;
+	
+    //Inventory Related Variables
+    private ReserveInventoryWindow reserveInventory;
+    private ReservationStatusWindow reservationStatus;
+    private ReserveInventoryUtil reserveInventoryUtil;
+    private ReserveInventoryAction reserveInventoryAction;
+    private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
 	public ParentTabComponent(CrossingManagerMakeCrossesComponent makeCrossesMain,
 				MakeCrossesParentsComponent source, String parentLabel, Integer rowCount) {
@@ -176,6 +196,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         
         initializeParentTable();
         initializeListInventoryTable();
+        
+      //Inventory Related Variables
+        validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 	}
 
 	private void resetInventoryMenuOptions() {
@@ -184,9 +207,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
         menuCopyToNewListFromInventory.setEnabled(false);
-        
-        //Temporarily disable the reserve inventory option
-        menuReserveInventory.setEnabled(false);
 	}
 
 	private void initializeParentTable() {
@@ -306,13 +326,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				// Get reference to clicked item
 				ContextMenuItem clickedItem = event.getClickedItem();
 				if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
-					//saveReservationChangesAction();
+					saveReservationChangesAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
 					viewListAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
 					//copyToNewListFromInventoryViewAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
-					//reserveInventoryAction();
+					reserveInventoryAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 					listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
 				}
@@ -675,7 +695,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		resetInventoryMenuOptions();
 		
-		//validReservationsToSave.clear();//reset the reservations to save. 
+		validReservationsToSave.clear();//reset the reservations to save. 
 		
 		resetUnsavedChangesFlag();
 	}
@@ -791,8 +811,177 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	        this.requestRepaint();
 		}
 	}
+	
+	public void reserveInventoryAction() {
+		if(!inventoryViewActionMenu.isVisible()){//checks if the screen is in the inventory view
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please change to Inventory View first.");
+		}
+		else{
+			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+			
+			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"Please select at least 1 lot to reserve.");
+			}
+			else{
+		        //this util handles the inventory reservation related functions
+		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+				reserveInventoryUtil.viewReserveInventoryWindow();
+			}
+		}
+	}
+	
+	@Override
+	public void updateListInventoryTable(
+			Map<ListEntryLotDetails, Double> validReservations,
+			boolean withInvalidReservations) {
+		for(Map.Entry<ListEntryLotDetails, Double> entry: validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double new_res = entry.getValue();
+			
+			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
+			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+		}
+		
+		removeReserveInventoryWindow(reserveInventory);
+		
+		//update lot reservatios to save
+		updateLotReservationsToSave(validReservations);
+		
+		//enable now the Save Changes option
+		menuInventorySaveChanges.setEnabled(true);
+		
+		if(validReservations.size() == 0){//if there are no valid reservations
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
+					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+		
+		} else if(!withInvalidReservations){
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+					"All selected entries will be reserved in their respective lots.", 
+					3000);
+		}
+	}
+
+	private void updateLotReservationsToSave(
+			Map<ListEntryLotDetails, Double> validReservations) {
+		for(Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()){
+			ListEntryLotDetails lot = entry.getKey();
+			Double amountToReserve = entry.getValue();
+			
+			if(validReservationsToSave.containsKey(lot)){
+				validReservationsToSave.remove(lot);
+				
+			}
+			
+			validReservationsToSave.put(lot,amountToReserve);
+		}
+		
+		if(validReservationsToSave.size() > 0){
+			setHasUnsavedChanges(true);
+		}
+	}
+
+	@Override
+	public void addReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().addWindow(this.reserveInventory);
+	}
+
+	@Override
+	public void addReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		removeReserveInventoryWindow(reserveInventory);
+		source.getWindow().addWindow(this.reservationStatus);
+	}
+
+	@Override
+	public void removeReserveInventoryWindow(
+			ReserveInventoryWindow reserveInventory) {
+		this.reserveInventory = reserveInventory;
+		source.getWindow().removeWindow(this.reserveInventory);
+	}
+
+	@Override
+	public void removeReservationStatusWindow(
+			ReservationStatusWindow reservationStatus) {
+		this.reservationStatus = reservationStatus;
+		source.getWindow().removeWindow(this.reservationStatus);
+	}
+	
+	public void saveReservationChangesAction() {
+		if(hasUnsavedChanges()){
+			reserveInventoryAction = new ReserveInventoryAction(this);
+			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
+			if(success){
+				refreshInventoryColumns(getValidReservationsToSave());
+				resetListInventoryTableValues();
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+						"All reservations were saved.");
+			}
+		}
+	}
+	
+	public void refreshInventoryColumns(
+			Map<ListEntryLotDetails, Double> validReservationsToSave2) {
+		
+		Set<Integer> entryIds = new HashSet<Integer>();
+		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
+			entryIds.add(details.getKey().getId());
+		 }
+		
+		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
+		
+		try {
+			if (!entryIds.isEmpty())
+				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		for (GermplasmListData listData : germplasmListDataEntries){
+			GermplasmListEntry itemId = new GermplasmListEntry(listData.getId(),listData.getGid(), listData.getEntryId(), listData.getDesignation(), listData.getSeedSource());
+			
+			Item item = listDataTable.getItem(itemId);
+			
+			//#1 Available Inventory
+			String avail_inv = "-"; //default value
+			if(listData.getInventoryInfo().getLotCount().intValue() != 0){
+				avail_inv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			}
+			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source, germplasmList.getId(),listData.getId(), listData.getGid()));
+			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+			inventoryButton.setDescription("Click to view Inventory Details");
+			
+			if(avail_inv.equals("-")){
+				inventoryButton.setEnabled(false);
+				inventoryButton.setDescription("No Lot for this Germplasm");
+			}
+			else{
+				inventoryButton.setDescription("Click to view Inventory Details");
+			}
+
+			item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
+			
+		
+			// Seed Reserved
+	   		String seed_res = "-"; //default value
+	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
+	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+	   		}
+			
+	   		item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seed_res);
+		}
+		
+	}
+	
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
 
+	public Map<ListEntryLotDetails, Double> getValidReservationsToSave(){
+		return validReservationsToSave;
+	}
 
 	public ContextMenuItem getSaveActionMenu() {
 		return saveActionMenu;
