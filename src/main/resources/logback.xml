@@ -4,20 +4,16 @@
 
 	<!-- console appender -->
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
-			by default -->
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method
-				[%line] - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method [%line] - %msg%n</pattern>
 		</encoder>
 	</appender>
 
 	<!-- rolling file appender for system logs -->
 	<!-- NOTE: You can use ${HOSTNAME} property to separate logs of each host. -->
-	<appender name="SYSTEM-LOG"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<appender name="SYSTEM-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!-- Enable prudent mode if log file will be written from multiple JVMs -->
-		<!-- -->
 		<prudent>true</prudent>
 		<append>true</append>
 
@@ -26,8 +22,7 @@
 		</rollingPolicy>
 
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method
-				[%line] - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method [%line] - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -37,9 +32,7 @@
 	</root>
 
 	<!-- Set the log levels -->
-	<logger name="org.generationcp" level="TRACE" />
-	<logger name="org.hibernate.cfg" level="WARN" />
-	<logger name="org.eclipse.jetty.server.nio.SelectChannelConnector"
-		level="INFO" />
-	<logger name="org.eclipse.jetty.util.log" level="INFO" />
+    <logger name="org.generationcp" level="TRACE"/>
+    <logger name="org.hibernate.cfg" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
 </configuration>
