@@ -20,6 +20,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -98,9 +99,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	private void initializeComponents(){
 		
 		componentTree = new ComponentTree();
-		componentTree.setWidth("100%");
-		componentTree.setHeight("380px");
-		componentTree.addStyleName("overflow_y_scroll");
+		componentTree.setSizeFull();
 		componentTree.addStyleName("component-tree");
 		
 		germplasmDetailModel = germplasmQueries.getGermplasmDetails(gid);
@@ -468,6 +467,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	}
 	
 	private void layoutComponents(){
+		setSizeFull();
 		addComponent(componentTree);
 	}
 	

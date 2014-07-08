@@ -318,3 +318,16 @@ img[src$="document-icon.png"] {
   	width:14px;
     height:16px;
 }
+
+.gsb-component-wrap {
+	display: inline-block !important;
+	float: left !important;
+}
+
+.gsb-div-wrap div.v-horizontallayout {
+	display: inline-block !important
+}
+
+.gsb-div-wrap div.v-csslayout {
+	display: inline-block !important
+}
