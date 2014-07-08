@@ -1345,7 +1345,15 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			}
 			item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
 			
-		
+			
+			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue(); 
+			String gidString = "";
+			
+			if(gidButton!=null)
+				gidString = gidButton.getCaption();
+			
+			updateAvailInvValues(Integer.valueOf(gidString), avail_inv);
+
 			// Seed Reserved
 	   		String seed_res = "-"; //default value
 	   		if(listData.getInventoryInfo().getReservedLotCount().intValue() != 0){
@@ -1495,6 +1503,28 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		setHasUnsavedChanges(false);
 	}
 	
+	private void updateAvailInvValues(Integer gid, String availInv){
+		List<Integer> itemIds = getItemIds(listDataTable);
+		for(Integer itemId : itemIds){
+			Item item = listDataTable.getItem(itemId);
+			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+			String currentGid = "";
+			if(gidButton!=null)
+				currentGid = gidButton.getCaption();
+			
+			if(currentGid.equals(gid.toString())){
+				if(availInv.equals("0")){
+					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption("-");
+					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(false);
+				} else {
+					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
+					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(true);
+				}
+			}
+		}
+		listDataTable.requestRepaint();
+	}
+	
 	/*-------------------------------------END OF LIST INVENTORY RELATED METHODS-------------------------------------*/
 	
 	public ListManagerInventoryTable getListInventoryTable(){
@@ -1521,6 +1551,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		listInventoryTable.updateListInventoryTableAfterSave();
 		changeToListView();
 	}
+	
 	
 	
 }

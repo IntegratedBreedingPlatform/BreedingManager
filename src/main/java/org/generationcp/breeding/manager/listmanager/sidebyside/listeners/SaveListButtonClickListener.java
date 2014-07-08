@@ -1,8 +1,11 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside.listeners;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -276,7 +279,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			List<GermplasmListData> savedListEntries = this.inventoryDataManager.getLotCountsForList(currentlySavedList.getId(), 0, listDataCount);
 
 			Table tempTable = cloneAddedColumnsToTemp(this.listDataTable);
-
+			
 			this.listDataTable.setImmediate(true);
 			this.listDataTable.removeAllItems();
 
@@ -302,35 +305,35 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 					});
 
-            Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
-            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
-            designationButton.setDescription("Click to view Germplasm information");
-
-			//Inventory Related Columns
-
-			//#1 Available Inventory
-			String avail_inv = "-"; //default value
-			if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
-				avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-			Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription("Click to view Inventory Details");
-
-
-			if(avail_inv.equals("-")){
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription("No Lot for this Germplasm");
-			}
-			else{
+	            Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
+	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+	            designationButton.setDescription("Click to view Germplasm information");
+	
+				//Inventory Related Columns
+	
+				//#1 Available Inventory
+				String avail_inv = "-"; //default value
+				if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
+					avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+				}
+				Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
+				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
-			}
-
-			//#2 Seed Reserved
-			String seed_res = "-"; //default value
-			if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
-				seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-			}
+	
+	
+				if(avail_inv.equals("-")){
+					inventoryButton.setEnabled(false);
+					inventoryButton.setDescription("No Lot for this Germplasm");
+				}
+				else{
+					inventoryButton.setDescription("Click to view Inventory Details");
+				}
+	
+				//#2 Seed Reserved
+				String seed_res = "-"; //default value
+				if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
+					seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+				}
 
 
 	            item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
@@ -342,10 +345,11 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 	            item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
 	            item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+	            
 			}
 
 			copyAddedColumnsFromTemp(tempTable);
-
+			
             this.listDataTable.requestRepaint();
 			return;
 		} catch(MiddlewareQueryException ex){
@@ -355,6 +359,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		}
 	}
 
+	
 	private Table cloneAddedColumnsToTemp(Table sourceTable) {
 	    Table newTable = new Table();
 	    
@@ -467,3 +472,4 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	
     
 }
+
