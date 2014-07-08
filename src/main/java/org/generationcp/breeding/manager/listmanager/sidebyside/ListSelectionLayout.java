@@ -389,7 +389,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	}
 	
 	public void addUpdateListStatusForChanges(ListComponent listComponent, Boolean status){
-		removeListStatusForChanges(listComponent, status);
+		removeListStatusForChanges(listComponent);
 		listStatusForChanges.put(listComponent, status);
 		
 		if(hasUnsavedChanges()){
@@ -414,7 +414,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		return false;
 	}
 
-	public void removeListStatusForChanges(ListComponent listComponent, Boolean status){
+	public void removeListStatusForChanges(ListComponent listComponent){
 		if(listStatusForChanges.containsKey(listComponent)){
 			listStatusForChanges.remove(listComponent);
 		}

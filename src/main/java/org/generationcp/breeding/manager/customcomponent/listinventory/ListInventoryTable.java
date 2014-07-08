@@ -130,7 +130,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		if(listId!=null){
 			try {
 				List<GermplasmListData> inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
-				this.getTable().setPageLength(inventoryDetails.size());
 				displayInventoryDetails(inventoryDetails);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
@@ -173,14 +172,6 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			 			 
 			 		});
 					
-			   		/**GermplasmListData germplasmListData = null;
-			   		
-			   		try {
-						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
-					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
-					}**/
-			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 
 			   					new GidLinkButtonClickListener(inventoryDetail.getGid().toString(), true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);

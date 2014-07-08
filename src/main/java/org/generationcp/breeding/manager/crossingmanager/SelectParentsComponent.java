@@ -1,9 +1,16 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
@@ -33,7 +40,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-												InternationalizableComponent, ListTreeActionsListener {
+												InternationalizableComponent, ListTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
 	
@@ -49,6 +56,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
     private Label instructionForSelectParents;
     private TabSheet listDetailsTabSheet;
     private Button closeAllTabsButton;
+    
+    private Map<SelectParentsListDataComponent,Boolean> listStatusForChanges;
     
 	public SelectParentsComponent(CrossingManagerMakeCrossesComponent source) {
 		super();
@@ -91,6 +100,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
         closeAllTabsButton.setVisible(false);
+        
+        listStatusForChanges = new HashMap<SelectParentsListDataComponent,Boolean>();
 	}
 
 	@Override
@@ -287,5 +298,73 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	@Override
 	public void addListToMaleList(Integer germplasmListId) {
 		source.getParentsComponent().addListToMaleTable(germplasmListId);
+	}
+
+	public void updateViewForAllLists(ModeView modeView) {
+		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
+		selectParentComponents.addAll(listStatusForChanges.keySet());
+		
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+				selectParentComponent.changeToListView();
+			}
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+				selectParentComponent.viewInventoryActionConfirmed();
+			}
+		}
+	}
+	
+	public Map<SelectParentsListDataComponent,Boolean> getListStatusForChanges(){
+		return listStatusForChanges;
+	}
+
+	public void addUpdateListStatusForChanges(
+			SelectParentsListDataComponent selectParentsListDataComponent,
+			boolean hasChanges) {
+		removeListStatusForChanges(selectParentsListDataComponent);
+		listStatusForChanges.put(selectParentsListDataComponent, hasChanges);
+		
+		if(hasUnsavedChanges()){
+			setHasUnsavedChangesMain(true);
+		}
+		else{
+			setHasUnsavedChangesMain(false);
+		}
+	}
+	
+	public boolean hasUnsavedChanges() {
+		List<Boolean> listOfStatus = new ArrayList<Boolean>();
+		
+		listOfStatus.addAll(listStatusForChanges.values());
+		
+		for(Boolean status: listOfStatus){
+			if(status){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public void removeListStatusForChanges(SelectParentsListDataComponent selectParentsListDataComponent) {
+		if(listStatusForChanges.containsKey(selectParentsListDataComponent)){
+			listStatusForChanges.remove(selectParentsListDataComponent);
+		}
+	}
+
+	@Override
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		source.setHasUnsavedChangesMain(hasChanges);
+	}
+
+	public void updateHasChangesForAllList(boolean hasChanges) {
+		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
+		selectParentComponents.addAll(listStatusForChanges.keySet());
+		
+		for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+			selectParentComponent.setHasUnsavedChanges(hasChanges);
+		}
 	}
 }

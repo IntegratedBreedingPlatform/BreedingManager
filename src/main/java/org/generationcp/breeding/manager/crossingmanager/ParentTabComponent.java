@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -33,7 +34,6 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -90,6 +90,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	//Tables
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	private Table listDataTable;
+	@SuppressWarnings("unused")
 	private CheckBox selectAll;
 	
 	private CrossingManagerInventoryTable listInventoryTable;
@@ -101,7 +102,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ContextMenu inventoryViewActionMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
+	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
+	@SuppressWarnings("unused")
 	private ContextMenuItem menuReserveInventory;
 	
 	private static final String TAG_COLUMN_ID = "Tag";
@@ -263,8 +266,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -369,6 +371,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			source.updateUIForSuccessfulSaving(this, germplasmList);
 			
 			setHasUnsavedChanges(false);
+			source.getMakeCrossesMain().updateView(source.getMakeCrossesMain().getModeView());
 
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in saving the Parent List",e);
@@ -497,8 +500,14 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void updateNoOfEntries(int numOfEntries) {
-		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + numOfEntries + "</b>");
+		if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)){
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+		       		 + "  <b>" + numOfEntries + "</b>");
+		}
+		else if(makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+		       		 + "  <b>" + numOfEntries + "</b>");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -533,7 +542,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				updateListDataTable(germplasmList.getId(), listEntries);
 			}
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
+			LOG.error("Error loading list data in Parent Tab Component. " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -576,8 +585,19 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 		
+	}
+	
+	public void updateListDataTable(GermplasmList germplasmList){
+		Integer germplasmListId = germplasmList.getId();
+		
+		try {
+			List<GermplasmListData> germplasmListDataFromListFromTree = inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
+			updateListDataTable(germplasmListId,germplasmListDataFromListFromTree);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error in retrieving list data entries with lot counts",e);
+			e.printStackTrace();
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -652,36 +672,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	private void viewListAction(){
 		if(!hasUnsavedChanges()){
-			changeToListView();
+			source.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		}else{
 			String message = "You have unsaved reservations for this list. " +
 					"You will need to save them before changing views. " +
 					"Do you want to save your changes?";
-    		
-			ConfirmDialog.show(getWindow(), "Unsaved Changes", message, messageSource.getMessage(Message.YES), 
-						messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {   			
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						if(germplasmList == null){
-							changeToListView();
-							openSaveListAsDialog();
-						}
-						else{
-							saveList(germplasmList);
-							changeToListView();
-						}
-					}
-					else{
-						resetListInventoryTableValues();
-						changeToListView();
-					}
-					
-					
-				}
-			});
+			source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 		}
 	}	
 	
@@ -720,49 +716,25 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 	
 	private void viewInventoryAction(){
-		if(germplasmList!=null && hasChanges){
-			String message = "You have unsaved changes to the parent list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+		if(hasChanges){
+			String message = "";
+			if(germplasmList != null){
+				message = "You have unsaved changes to the parent list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+			}
+			else if(germplasmList == null){
+				message = "You need to save the parent list that you're building before you can switch to the inventory view. Do you want to save the list?";
+			}
 			
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						saveList(germplasmList);
-						//reset status for list builder and its drop handler
-						resetUnsavedChangesFlag();
-						viewInventoryActionConfirmed();
-					}
-					else{
-						//reset status for list builder and its drop handler
-						resetListDataTableValues();
-						resetUnsavedChangesFlag();
-						viewInventoryActionConfirmed();
-					}
-					
-				}
-			});
-		} else if(germplasmList==null && listDataTable.size()>0) {
-			String message = "You need to save the parent list that you're building before you can switch to the inventory view. Do you want to save the list?";
-    		ConfirmDialog.show(getWindow(), "Unsaved Changes", message, "Yes", "No", new ConfirmDialog.Listener() {
-    			
-				private static final long serialVersionUID = 1L;	
-				@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						openSaveListAsDialog();
-					}
-					else{
-						resetList();
-						viewInventoryActionConfirmed();
-					}
-				}
-			});
-		} else {
-			viewInventoryActionConfirmed();
-		}
-		
+			if(makeCrossesMain.areBothParentsNewListWithUnsavedChanges()){
+				MessageNotifier.showError(getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
+			}
+			else{ 
+				source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
+			}
+		} 
+		else {
+			source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
+		}	
 	}
 	
 	public void resetList() {
@@ -802,8 +774,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	        subHeaderLayout.setComponentAlignment(inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 	        
 	        listEntriesLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
 	        
 	        this.removeComponent(tableWithSelectAllLayout);
 	        this.addComponent(listInventoryTable);
@@ -1033,7 +1004,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
-		//setHasChangesMain(this.hasChanges);
+		source.setHasChanges(this.hasChanges);
 	}
 	
 	public boolean hasUnsavedChanges() {	
@@ -1044,5 +1015,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public CheckBox getSelectAllCheckBox(){
 		return tableWithSelectAllLayout.getCheckBox();
+	}
+
+	public void discardChangesInListView() {
+		updateListDataTable(germplasmList);
+		viewInventoryActionConfirmed();
+	}
+
+	public void discardChangesInInventoryView() {
+		listInventoryTable.updateListInventoryTableAfterSave();
+		changeToListView();
 	}
 }

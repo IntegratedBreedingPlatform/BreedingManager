@@ -7,9 +7,11 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
@@ -39,12 +41,12 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class MakeCrossesParentsComponent extends VerticalLayout implements BreedingManagerLayout,
-									InitializingBean, InternationalizableComponent {
+									InitializingBean, InternationalizableComponent, UnsavedChangesSource {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesParentsComponent.class);
 	private static final long serialVersionUID = -4789763601080845176L;
 	
-	private static final int PARENTS_TABLE_ROW_COUNT = 10;
+	private static final int PARENTS_TABLE_ROW_COUNT = 9;
     
     private static final String TAG_COLUMN_ID = "Tag";
     private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
@@ -69,11 +71,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     private ParentTabComponent maleParentTab;
     
     private Table femaleParents;
-    private CheckBox femaleParentsTagAll;
     private Table maleParents;
-    private CheckBox maleParentsTagAll;
     
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
+    
+    private Boolean hasChanges;
         
     public MakeCrossesParentsComponent(CrossingManagerMakeCrossesComponent parentComponent){
     	this.makeCrossesMain = parentComponent;
@@ -685,4 +687,53 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		maleParentTab.setHasUnsavedChanges(hasChanges);
 	}
 
+	public void updateViewForAllParentLists(ModeView modeView) {
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			femaleParentTab.changeToListView();
+			maleParentTab.changeToListView();
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			femaleParentTab.viewInventoryActionConfirmed();
+			maleParentTab.viewInventoryActionConfirmed();
+		}
+	}
+
+	public CrossingManagerMakeCrossesComponent getMakeCrossesMain() {
+		return makeCrossesMain;
+	}
+
+	public Boolean hasUnsavedChanges() {
+		
+		hasChanges = false;
+		
+		if(femaleParentTab.hasUnsavedChanges()){
+			hasChanges = true;
+		}
+		else if(maleParentTab.hasUnsavedChanges()){
+			hasChanges = true;
+		}
+		
+		return hasChanges;
+	}
+
+	public void setHasChanges(Boolean hasChanges) {
+		this.hasChanges = hasChanges;
+		
+		setHasUnsavedChangesMain(this.hasChanges);
+	}
+	
+	@Override
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		if(femaleParentTab.hasUnsavedChanges() || maleParentTab.hasUnsavedChanges()){
+			makeCrossesMain.setHasUnsavedChangesMain(true);
+		}
+		else{
+			makeCrossesMain.setHasUnsavedChangesMain(hasChanges);
+		}
+	}
+
+	public void updateHasChangesForAllParentList() {
+		femaleParentTab.resetUnsavedChangesFlag();
+		maleParentTab.resetUnsavedChangesFlag();
+	}
 }

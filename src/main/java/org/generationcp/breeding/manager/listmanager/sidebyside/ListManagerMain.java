@@ -36,7 +36,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -418,8 +417,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		        return true;
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with locking list.", e);
-	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                    , Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 	            return false;
 		    }
 		}
@@ -455,8 +453,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		        return true;
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with unlocking list.", e);
-	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                    , Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 	            return false;
 		    }
 		}

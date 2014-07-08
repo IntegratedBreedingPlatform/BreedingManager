@@ -11,6 +11,7 @@ import java.util.Set;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
@@ -54,13 +55,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsListDataComponent extends VerticalLayout implements InitializingBean, 
-							InternationalizableComponent, BreedingManagerLayout, ReserveInventorySource {
+							InternationalizableComponent, BreedingManagerLayout, 
+							ReserveInventorySource {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SelectParentsListDataComponent.class);
 	private static final long serialVersionUID = 7907737258051595316L;
@@ -89,7 +90,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private ContextMenu inventoryViewActionMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
+	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
+	@SuppressWarnings("unused")
 	private ContextMenuItem menuReserveInventory;
 	
 	public static String ACTIONS_BUTTON_ID = "Actions";
@@ -136,6 +139,13 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		initializeValues();
 		addListeners();
 		layoutComponents();
+		
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			changeToListView();
+		}
+		else if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
+			viewInventoryActionConfirmed();
+		}
 	}
 
 	@Override
@@ -197,6 +207,12 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 	    //Inventory Related Variables
         validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
+        
+        // ListSelectionComponent is null when tool launched from BMS dashboard
+        if (makeCrossesParentsComponent.getMakeCrossesMain() != null && makeCrossesParentsComponent.getMakeCrossesMain() != null){
+        	SelectParentsComponent selectParentComponent = makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
+        	selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
+        }
 	}
 	
 	private void resetInventoryMenuOptions() {
@@ -343,8 +359,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting list entries for list: " + germplasmListId);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list entries."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list entries.");
 		}
 	}
 
@@ -479,7 +494,15 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 	
 	private void viewListAction(){
-		changeToListView();
+		if(!hasUnsavedChanges()){
+			makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
+		}else{
+			String message = "You have unsaved reservations for this list. " +
+					"You will need to save them before changing views. " +
+					"Do you want to save your changes?";
+			
+			makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
+		}
 	}	
 	
 	public void changeToListView(){
@@ -503,7 +526,15 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 	
 	private void viewInventoryAction(){
-		viewInventoryActionConfirmed();
+		if(!hasUnsavedChanges()){
+			makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
+		}
+		else{
+			String message = "You have unsaved changes to the list you are currently editing.. " +
+					"You will need to save them before changing views. " +
+					"Do you want to save your changes?";
+			makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
+		}
 	}
 	
 	public void viewInventoryActionConfirmed(){
@@ -717,9 +748,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		return validReservationsToSave;
 	}
 
-	public boolean hasUnsavedChanges() {	
-		// TODO mark other unsaved changes in dropHandler, listDataTable, inventoryTable
-		
+	public boolean hasUnsavedChanges() {		
 		return hasChanges;
 	}
 
@@ -741,7 +770,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
-		//setHasChangesMain(this.hasChanges);
+		
+		SelectParentsComponent selectParentComponent = makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
+		selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
 	}
-
 }

@@ -1230,13 +1230,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void viewInventoryAction(){
-		if(currentlySavedGermplasmList!=null && hasChanges){
-			String message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+		if(hasUnsavedChanges()){
+			String message = "";
+			if(currentlySavedGermplasmList!=null){
+				message = "You have unsaved changes to the list you are editing. You will need to save them before changing views. Do you want to save your changes?";
+			} else if(currentlySavedGermplasmList==null) {
+				message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
+			}
 			source.showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
-		} else if(currentlySavedGermplasmList==null && listDataTable.size()>0) {
-			String message = "You need to save the list that you're building before you can switch to the inventory view. Do you want to save the list?";
-			source.showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
-		} else {
+		}
+		else {
 			source.setModeView(ModeView.INVENTORY_VIEW);
 		}	
 	}
